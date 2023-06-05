@@ -109,4 +109,20 @@ namespace cpp
 
     return method_wrapper( impl );
   }
+
+  result protocol::cpp_generate_private_key()
+  {
+    return method_wrapper([&](result& _result){
+      _result.content = fc::ecc::private_key::generate().key_to_wif();
+    });
+  }
+
+  result protocol::cpp_calculate_public_key( const std::string& wif )
+  {
+    return method_wrapper([&](result& _result){
+      const auto private_key = fc::ecc::private_key::wif_to_key(wif);
+      FC_ASSERT(private_key.valid(), "given string is not valid private key");
+      _result.content = fc::ecc::public_key::to_base58( private_key->get_public_key(), false/*is_sha256*/ );
+    });
+  }
 }

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from .wax import (
     calculate_digest,
+    calculate_public_key,
+    generate_private_key,
     serialize_transaction,
     validate_operation,
     validate_transaction,
@@ -15,4 +17,6 @@ __all__ = [
     "serialize_transaction",
     "validate_operation",
     "validate_transaction",
+    "generate_private_key",
+    "calculate_public_key",
 ]

@@ -1,41 +1,53 @@
 # distutils: language = c++
+from functools import wraps
+
 from libcpp.string cimport string
 
 from wax cimport error_code, result, protocol
 from .wax_result import python_result, python_error_code
 
-def handle_exception(ex: Exception) -> python_result:
-    return python_result(value=0, content="", exception_message=str(ex))
+def cpp_function(foo):
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        try:
+            value, content, exception_message = foo(*args, **kwargs)
+            return python_result(status=python_error_code(value), result=content, exception_message=exception_message)
+        except Exception as ex:
+            return python_result(value=0, content="", exception_message=str(ex))
+    return wrapper
 
-
+@cpp_function
 def validate_operation(operation: bytes) -> python_result:
     cdef protocol obj
-    try:
-        result = obj.cpp_validate_operation(operation)
-        return python_result(status=python_error_code(result.value), result=result.content, exception_message=result.exception_message)
-    except Exception as ex:
-        return handle_exception(ex)
+    response = obj.cpp_validate_operation(operation)
+    return response.value, response.content, response.exception_message
 
+@cpp_function
 def validate_transaction(transaction: bytes) -> python_result:
     cdef protocol obj
-    try:
-        result = obj.cpp_validate_transaction(transaction)
-        return python_result(status=python_error_code(result.value), result=result.content, exception_message=result.exception_message)
-    except Exception as ex:
-        return handle_exception(ex)
+    response = obj.cpp_validate_transaction(transaction)
+    return response.value, response.content, response.exception_message
 
+@cpp_function
 def calculate_digest(transaction: bytes, chain_id: bytes) -> python_result:
     cdef protocol obj
-    try:
-        result = obj.cpp_calculate_digest(transaction, chain_id)
-        return python_result(status=python_error_code(result.value), result=result.content, exception_message=result.exception_message)
-    except Exception as ex:
-        return handle_exception(ex)
+    response = obj.cpp_calculate_digest(transaction, chain_id)
+    return response.value, response.content, response.exception_message
 
+@cpp_function
 def serialize_transaction(transaction: bytes) -> python_result:
     cdef protocol obj
-    try:
-        result = obj.cpp_serialize_transaction(transaction)
-        return python_result(status=python_error_code(result.value), result=result.content, exception_message=result.exception_message)
-    except Exception as ex:
-        return handle_exception(ex)
+    response = obj.cpp_serialize_transaction(transaction)
+    return response.value, response.content, response.exception_message
+
+@cpp_function
+def generate_private_key() -> python_result:
+    cdef protocol obj
+    response =  obj.cpp_generate_private_key()
+    return response.value, response.content, response.exception_message
+
+@cpp_function
+def calculate_public_key(wif: bytes) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_public_key(wif)
+    return response.value, response.content, response.exception_message
