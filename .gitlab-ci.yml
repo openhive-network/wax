@@ -55,7 +55,7 @@ deploy:
   rules: *build_rules
   script:
     - echo -e "${TXT_BLUE}Deploying...${TXT_CLEAR}"
-    - poetry config repositories.gitlab https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
+    - poetry config repositories.gitlab "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
     - poetry config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
     - poetry publish --repository gitlab
   tags: *shared_tags
