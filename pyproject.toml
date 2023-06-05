@@ -34,3 +34,8 @@ enable = true
 metadata = true
 tagged-metadata = true
 dirty = true
+
+[tool.poetry-dynamic-versioning.substitution]
+files = [
+    "wax/__init__.py",
+]

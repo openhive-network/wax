@@ -10,6 +10,8 @@ from .wax import (
 )
 from .wax_result import python_error_code, python_result
 
+__version__ = "0.0.0"
+
 __all__ = [
     "python_error_code",
     "python_result",
