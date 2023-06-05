@@ -34,6 +34,7 @@ enable = true
 metadata = true
 tagged-metadata = true
 dirty = true
+style = "semver"
 
 [tool.poetry-dynamic-versioning.substitution]
 files = [

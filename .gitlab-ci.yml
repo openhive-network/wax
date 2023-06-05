@@ -2,9 +2,14 @@ image: registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
 
 stages:
   - build
+  - test
+  - tag
+  - build_production
   - deploy
 
 variables:
+  GIT_DEPTH: 0
+  GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
   # colors:
   TXT_BLUE: "\e[1;34m"
@@ -21,22 +26,12 @@ variables:
     - pip list
   tags: *shared_tags
 
-.build_rules: &build_rules
-  - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop"'  # always on master and develop
-  - if: '$CI_PIPELINE_SOURCE == "web"'
-    when: manual
-  - if: '$CI_MERGE_REQUEST_ID'
-    when: manual
-  - if: '$CI_OPEN_MERGE_REQUESTS'
-    when: never
-  - when: manual
-
-build_wheel:
-  stage: build
+.build_wheel_base:
   extends: .configuration
-  rules: *build_rules
   script:
     - echo -e "${TXT_BLUE}Building wheel...${TXT_CLEAR}"
+    - git fetch --tags --force
+    - rm -rf dist/
     - poetry build --format wheel
     - ls -al dist/
   artifacts:
@@ -44,18 +39,85 @@ build_wheel:
     paths:
       - "dist/"
       - ".build/logs/"
-  tags: *shared_tags
+      - ".build/*.so"
 
-deploy:
-  stage: deploy
+build_wheel:
+  stage: build
+  extends: .build_wheel_base
+
+test_importing_wax:
+  stage: test
+  extends: .configuration
   needs:
     - job: build_wheel
       artifacts: true
+  script:
+    - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
+    - poetry env use python3
+    - source $(poetry env info --path)/bin/activate
+    - pip install dist/*.whl
+    - pip list
+    - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
+    - cd ..  # needed to import installed package instead of local one
+    - python3 -c "import wax; print(wax.__version__)"
+
+tag_production:
+  stage: tag
   extends: .configuration
-  rules: *build_rules
+  only:
+    - master
+    - develop
+  script:
+    - echo -e "${TXT_BLUE}Tagging job starting...${TXT_CLEAR}"
+    - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_REPOSITORY_URL#*@}"
+    - echo -e "${TXT_BLUE}Raw version from 'poetry version' is...${TXT_CLEAR}" && poetry version
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
+        VERSION_TAG="v$(poetry version patch -s)";
+      else
+        VERSION_TAG="v$(poetry version prerelease -s)";
+      fi
+    - echo -e "${TXT_BLUE}Current tags are...${TXT_CLEAR}" && git show-ref --tags
+    - echo -e "${TXT_BLUE}New tag will be '${VERSION_TAG}'${TXT_CLEAR}"
+    - git tag "${VERSION_TAG}"
+    - git push -o ci.skip origin "${VERSION_TAG}"
+
+build_wheel_production:
+  stage: build_production
+  extends: .build_wheel_base
+  only:
+    - master
+    - develop
+  variables:
+    WAX_SKIP_BUILD: 1
+
+.deploy_base:
+  stage: deploy
+  extends: .configuration
   script:
     - echo -e "${TXT_BLUE}Deploying...${TXT_CLEAR}"
+    - ls -al dist/
     - poetry config repositories.gitlab "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
     - poetry config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
     - poetry publish --repository gitlab
-  tags: *shared_tags
+
+deploy_feature_branch:
+  extends: .deploy_base
+  needs:
+    - job: test_importing_wax
+    - job: build_wheel
+      artifacts: true
+  when: manual
+  allow_failure: true
+  except:
+    - master
+    - develop
+
+deploy_production:
+  extends: .deploy_base
+  needs:
+    - job: test_importing_wax
+    - job: build_wheel_production
+      artifacts: true
+  only:
+    - master
+    - develop
