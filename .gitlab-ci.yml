@@ -21,9 +21,20 @@ variables:
     - pip list
   tags: *shared_tags
 
+.build_rules: &build_rules
+  - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop"'  # always on master and develop
+  - if: '$CI_PIPELINE_SOURCE == "web"'
+    when: manual
+  - if: '$CI_MERGE_REQUEST_ID'
+    when: manual
+  - if: '$CI_OPEN_MERGE_REQUESTS'
+    when: never
+  - when: manual
+
 build_wheel:
   stage: build
   extends: .configuration
+  rules: *build_rules
   script:
     - echo -e "${TXT_BLUE}Building wheel...${TXT_CLEAR}"
     - poetry build --format wheel
@@ -41,6 +52,7 @@ deploy:
     - job: build_wheel
       artifacts: true
   extends: .configuration
+  rules: *build_rules
   script:
     - echo -e "${TXT_BLUE}Deploying...${TXT_CLEAR}"
     - poetry config repositories.gitlab https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
