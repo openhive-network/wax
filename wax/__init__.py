@@ -7,6 +7,8 @@ from .wax import (
     serialize_transaction,
     validate_operation,
     validate_transaction,
+    calculate_manabar_full_regeneration_time,
+    calculate_current_manabar_value,
 )
 from .wax_result import python_error_code, python_result
 
@@ -21,4 +23,6 @@ __all__ = [
     "validate_transaction",
     "generate_private_key",
     "calculate_public_key",
+    "calculate_manabar_full_regeneration_time",
+    "calculate_current_manabar_value",
 ]

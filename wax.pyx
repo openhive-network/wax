@@ -51,3 +51,15 @@ def calculate_public_key(wif: bytes) -> python_result:
     cdef protocol obj
     response = obj.cpp_calculate_public_key(wif)
     return response.value, response.content, response.exception_message
+
+@cpp_function
+def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_manabar_full_regeneration_time( now, max_mana, current_mana, last_update_time )
+    return response.value, response.content, response.exception_message
+
+@cpp_function
+def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_current_manabar_value( now, max_mana, current_mana, last_update_time )
+    return response.value, response.content, response.exception_message

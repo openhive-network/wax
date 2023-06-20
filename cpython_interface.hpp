@@ -33,5 +33,7 @@ namespace cpp
       result cpp_serialize_transaction( const std::string& transaction );
       result cpp_calculate_public_key( const std::string& wif );
       result cpp_generate_private_key();
+      result cpp_calculate_manabar_full_regeneration_time( const int32_t now, const int64_t max_mana, const int64_t current_mana, const int32_t last_update_time );
+      result cpp_calculate_current_manabar_value( const int32_t now, const int64_t max_mana, const int64_t current_mana, const int32_t last_update_time );
   };
 }
