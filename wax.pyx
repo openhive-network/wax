@@ -29,6 +29,12 @@ def validate_transaction(transaction: bytes) -> python_result:
     return response.value, response.content, response.exception_message
 
 @cpp_function
+def calculate_transaction_id(transaction: bytes) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_transaction_id(transaction)
+    return response.value, response.content, response.exception_message
+
+@cpp_function
 def calculate_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
     cdef protocol obj
     response = obj.cpp_calculate_sig_digest(transaction, chain_id)

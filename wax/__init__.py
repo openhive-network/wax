@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .wax import (
+    calculate_transaction_id,
     calculate_sig_digest,
     calculate_public_key,
     generate_private_key,
@@ -17,6 +18,7 @@ __version__ = "0.0.0"
 __all__ = [
     "python_error_code",
     "python_result",
+    "calculate_transaction_id",
     "calculate_sig_digest",
     "serialize_transaction",
     "validate_operation",

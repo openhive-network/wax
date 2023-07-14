@@ -78,6 +78,14 @@ namespace cpp
     });
   }
 
+  result protocol::cpp_calculate_transaction_id( const std::string& transaction )
+  {
+    return method_wrapper([&]( result& _result )
+    {
+      _result.content = get_transaction(transaction).id().str();
+    });
+  }
+
   result protocol::cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id )
   {
     return method_wrapper([&]( result& _result )
