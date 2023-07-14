@@ -78,7 +78,7 @@ namespace cpp
     });
   }
 
-  result protocol::cpp_calculate_digest( const std::string& transaction, const std::string& chain_id )
+  result protocol::cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id )
   {
     return method_wrapper([&]( result& _result )
     {
