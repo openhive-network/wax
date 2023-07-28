@@ -24,6 +24,22 @@ set(CMAKE_VERBOSE_MAKEFILE "ON")
 
 include(hive_targets)
 
+SET( BOOST_COMPONENTS )
+LIST( APPEND  BOOST_COMPONENTS
+      # atomic
+      chrono
+      context
+      coroutine
+      # date_time
+      filesystem
+      # iostreams
+      # locale
+      # regex
+      system
+      thread
+      # program_options
+      unit_test_framework )
+
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_DIR}/protocol)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)

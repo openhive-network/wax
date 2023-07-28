@@ -198,3 +198,4 @@ pyrightconfig.json
 # Custom
 .build/
 wax.cpp
+build_wasm
