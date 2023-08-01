@@ -1,0 +1,22 @@
+{
+  "name": "@hive/wax",
+  "version": "0.0.1",
+  "description": "call hived functions from JavaScript",
+  "main": "build_wasm/wax_wasm.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "node wasm/wax_wasm_test/run_node.mjs"
+  },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "files": [
+    "build_wasm/wax_wasm.mjs",
+    "build_wasm/wax_wasm.wasm",
+    "build_wasm/wax.d.ts",
+    "wasm/wax.d.ts"
+  ],
+  "types": "wasm/wax.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.syncad.com/hive/wax.git"
+  }
+}
