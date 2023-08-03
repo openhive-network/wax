@@ -22,6 +22,11 @@ const transaction = JSON.stringify({
   extensions: []
 });
 
+const numToHighLow = num => [
+  (num | 0) & 0xFFFFFFFF,
+  ((num | 0) / 0x100000000) | 0
+];
+
 const my_entrypoint = async() => {
   const provider = await Module();
   const instance = new provider.protocol();
@@ -58,6 +63,10 @@ const my_entrypoint = async() => {
   testLib("cpp_validate_operation", JSON.stringify(vote_operation)); // validate single operation in json format
 
   testLib("cpp_validate_transaction", transaction); // validate entire transaction
+
+  testLib("cpp_calculate_manabar_full_regeneration_time", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
+
+  testLib("cpp_calculate_current_manabar_value", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 };
 
 my_entrypoint()
