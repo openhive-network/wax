@@ -126,7 +126,7 @@ namespace cpp
     });
   }
 
-  int64_t __current_manabar(const int32_t now, const int64_t max_mana, const int64_t current_mana, const int32_t last_update_time)
+  int64_t __current_manabar(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
   {
     using namespace hive::chain::util;
     const manabar_params params{max_mana, HIVE_RC_REGEN_TIME};
@@ -135,7 +135,7 @@ namespace cpp
     return manabar.current_mana;
   }
 
-  result protocol::cpp_calculate_manabar_full_regeneration_time( const int32_t now, const int64_t max_mana, const int64_t current_mana, const int32_t last_update_time )
+  result protocol::cpp_calculate_manabar_full_regeneration_time( const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time )
   {
     // safe is used because of detected issue with overflow
     using safe_uint128_t = fc::safe<fc::uint128_t>;
@@ -152,7 +152,7 @@ namespace cpp
     });
   }
 
-  result protocol::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const int32_t last_update_time) {
+  result protocol::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
     return method_wrapper([&](result &_result) {
       _result.content = std::to_string(__current_manabar(now, max_mana, current_mana, last_update_time));
     });
