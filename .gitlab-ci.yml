@@ -14,6 +14,10 @@ variables:
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
+  NPM_TOKEN: $CI_JOB_TOKEN
+
+  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:1d271c28906d267c1172641bb2aa42727f16b513
+  EMSCRIPTEN_IMAGE_TAG: "@sha256:14287297ffbb7a55d134f1ab326f67aa8b387151f5118b21bf68e74ff1d437ed"
 
 .shared_tags: &shared_tags
   - hived-for-tests
@@ -45,6 +49,32 @@ build_wheel:
   stage: build
   extends: .build_wheel_base
 
+wax_wasm_build:
+  stage: build
+  image: registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43$EMSCRIPTEN_IMAGE_TAG
+  interruptible: true
+  variables:
+    BINARIES_DIR: "build_wasm"
+  script:
+    - echo "Building Wax tool WASM version"
+    - git config --global --add safe.directory '*'
+    - mkdir -vp "$CI_PROJECT_DIR/$BINARIES_DIR"
+    - cd "$CI_PROJECT_DIR/$BINARIES_DIR"
+    - cmake -DBoost_NO_WARN_NEW_VERSIONS=1 -DBoost_USE_STATIC_RUNTIME=ON -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" -S "$CI_PROJECT_DIR/wasm/src/" -B "$CI_PROJECT_DIR/$BINARIES_DIR"
+    - make -j 8
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax.d.ts"
+      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.mjs"
+      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.wasm"
+
+    when: always
+    expire_in: 1 week
+
+  tags:
+    - public-runner-docker
+    - hived-for-tests
+
 test_importing_wax:
   stage: test
   extends: .configuration
@@ -60,6 +90,18 @@ test_importing_wax:
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
     - cd ..  # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__)"
+
+test_wax_wasm:
+  stage: test
+  image: registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43$EMSCRIPTEN_IMAGE_TAG
+  interruptible: true
+  needs:
+    - job: wax_wasm_build
+      artifacts: true
+  tags: *shared_tags
+  script:
+    - cd "$CI_PROJECT_DIR/wasm/wax_wasm_test"
+    - node run_node.mjs
 
 tag_production:
   stage: tag
@@ -118,6 +160,19 @@ deploy_production:
     - job: test_importing_wax
     - job: build_wheel_production
       artifacts: true
+  only:
+    - master
+    - develop
+
+deploy_wax_wasm_production:
+  stage: deploy
+  image: node:16-alpine
+  script:
+    - npm publish
+  needs:
+    - job: wax_wasm_build
+      artifacts: true
+  tags: *shared_tags
   only:
     - master
     - develop
