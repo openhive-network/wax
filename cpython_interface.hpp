@@ -3,8 +3,6 @@
 #include<string>
 #include<functional>
 
-#include <hive/protocol/asset.hpp>
-
 namespace cpp
 {
   enum error_code { fail = 0, ok = 1 };
@@ -33,7 +31,6 @@ namespace cpp
       using callback = std::function<void(result&)>;
 
       result method_wrapper( callback&& method );
-      json_asset cpp_generate_nai(const hive::protocol::asset& asset)const;
 
     public:
 

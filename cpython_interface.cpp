@@ -110,7 +110,7 @@ namespace cpp
     });
   }
 
-  json_asset protocol::cpp_generate_nai(const hive::protocol::asset& asset)const
+  json_asset cpp_generate_nai(const hive::protocol::asset& asset)
   {
     try
     {
