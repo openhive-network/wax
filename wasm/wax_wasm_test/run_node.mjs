@@ -22,6 +22,31 @@ const transaction = JSON.stringify({
   extensions: []
 });
 
+const protoOps = [
+  {
+    comment: {
+      parent_permlink: "/",
+      author: "alice",
+      permlink: "/",
+      title: "Best comment",
+      body: "<span>comment</span>",
+      json_metadata: "{}"
+    }
+  },
+  {
+    vote: {
+      voter: "bob",
+      author: "alice",
+      permlink: "/",
+      weight: 1
+    }
+  }
+];
+
+const protoTx = JSON.stringify({
+  operations: protoOps
+});
+
 const negate = (value) => {
   const low = ~((value % (2**32)) | 0);
   const high = ~((value / (2**32)) | 0);
@@ -58,7 +83,7 @@ const numToHighLow = (value) => {
     (value % (2**32)) | 0,
     (value / (2**32)) | 0
   ];
-}
+};
 
 const my_entrypoint = async() => {
   const provider = await Module();
@@ -100,6 +125,10 @@ const my_entrypoint = async() => {
   testLib("cpp_calculate_manabar_full_regeneration_time", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
   testLib("cpp_calculate_current_manabar_value", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
+
+  protoOps.forEach(op => void testLib("cpp_validate_proto_operation", JSON.stringify(op)));
+
+  testLib("cpp_validate_proto_transaction", protoTx);
 
   assert.deepEqual(
     instance.hive(...numToHighLow(10)),

@@ -36,6 +36,8 @@ namespace cpp
 
       result cpp_validate_operation( const std::string& operation );
       result cpp_validate_transaction( const std::string& transaction );
+      result cpp_validate_proto_operation( const std::string& operation );
+      result cpp_validate_proto_transaction( const std::string& transaction );
       result cpp_calculate_transaction_id( const std::string& transaction );
       result cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id );
       result cpp_serialize_transaction( const std::string& transaction );

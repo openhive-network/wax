@@ -58,6 +58,28 @@ namespace cpp
     return fc::json::from_string( trx ).as<hive::protocol::transaction>();
   }
 
+  fc::mutable_variant_object parse_proto_operation( const fc::variant& op )
+  {
+    std::string key = op.get_object().begin()->key();
+
+    return fc::mutable_variant_object{"type", key + "_operation"}
+      ("value", fc::variant_object{std::move(op.get_object()[key].get_object())});
+  }
+
+  hive::protocol::transaction get_proto_transaction(const std::string& trx)
+  {
+    fc::variant var = fc::json::from_string( trx );
+    const fc::variants& ops = var.get_object()["operations"].get_array();
+    fc::variants result;
+
+    for(const auto& op : ops)
+      result.emplace_back(std::move( parse_proto_operation(op) ));
+
+    var = fc::mutable_variant_object{ std::move(var) }( "operations", result );
+
+    return var.as<hive::protocol::transaction>();
+  }
+
   result protocol::cpp_validate_operation( const std::string& operation )
   {
     return method_wrapper([&]( result& )
@@ -75,6 +97,28 @@ namespace cpp
     return method_wrapper([&]( result& )
     {
       get_transaction(transaction).validate();
+    });
+  }
+
+  result protocol::cpp_validate_proto_operation( const std::string& operation )
+  {
+    return method_wrapper([&]( result& )
+    {
+      fc::variant op = fc::json::from_string( operation );
+
+      op = parse_proto_operation(op);
+      hive::protocol::operation _operation = op.as<hive::protocol::operation>();
+
+      validate_visitor _visitor;
+      _operation.visit( _visitor );
+    });
+  }
+
+  result protocol::cpp_validate_proto_transaction( const std::string& transaction )
+  {
+    return method_wrapper([&]( result& )
+    {
+      get_proto_transaction(transaction).validate();
     });
   }
 

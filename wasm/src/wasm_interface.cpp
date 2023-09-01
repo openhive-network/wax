@@ -58,6 +58,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .constructor<>()
     .function("cpp_validate_operation", &protocol::cpp_validate_operation)
     .function("cpp_validate_transaction", &protocol::cpp_validate_transaction)
+    .function("cpp_validate_proto_operation", &protocol::cpp_validate_proto_operation)
+    .function("cpp_validate_proto_transaction", &protocol::cpp_validate_proto_transaction)
     .function("cpp_calculate_transaction_id", &protocol::cpp_calculate_transaction_id)
     .function("cpp_calculate_sig_digest", &protocol::cpp_calculate_sig_digest)
     .function("cpp_serialize_transaction", &protocol::cpp_serialize_transaction)
