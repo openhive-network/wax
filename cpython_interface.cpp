@@ -110,6 +110,46 @@ namespace cpp
     });
   }
 
+  json_asset protocol::cpp_generate_nai(const hive::protocol::asset& asset)const
+  {
+    try
+    {
+      return {
+        boost::lexical_cast< std::string >( asset.amount.value ),
+        /* uint64_t */ uint32_t( asset.symbol.decimals() ),
+        asset.symbol.to_nai_string()
+      };
+    }
+    catch(...)
+    {
+      return {
+        "",
+        0,
+        ""
+      };
+    }
+  }
+
+  json_asset protocol::general_asset(const uint32_t asset_num, const int64_t amount)const
+  {
+    return cpp_generate_nai(hive::protocol::asset{ amount, hive::protocol::asset_symbol_type::from_asset_num(asset_num) });
+  }
+
+  json_asset protocol::hive(const int64_t amount)const
+  {
+    return cpp_generate_nai(hive::protocol::HIVE_asset{amount});
+  }
+
+  json_asset protocol::hbd(const int64_t amount)const
+  {
+    return cpp_generate_nai(hive::protocol::HBD_asset{amount});
+  }
+
+  json_asset protocol::vests(const int64_t amount)const
+  {
+    return cpp_generate_nai(hive::protocol::VEST_asset{amount});
+  }
+
   result protocol::cpp_generate_private_key()
   {
     return method_wrapper([&](result& _result){

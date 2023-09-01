@@ -22,10 +22,43 @@ const transaction = JSON.stringify({
   extensions: []
 });
 
-const numToHighLow = num => [
-  (num | 0) & 0xFFFFFFFF,
-  ((num | 0) / 0x100000000) | 0
-];
+const negate = (value) => {
+  const low = ~((value % (2**32)) | 0);
+  const high = ~((value / (2**32)) | 0);
+
+  let a48 = high >>> 16;
+  let a32 = high & 0xFFFF;
+  let a16 = low >>> 16;
+  let a00 = low & 0xFFFF;
+
+  let c48 = 0, c32 = 0, c16 = 0, c00 = 0;
+  c00 += a00 + 1;
+  c16 += c00 >>> 16;
+  c00 &= 0xFFFF;
+  c16 += a16 + (1 >>> 16);
+  c32 += c16 >>> 16;
+  c16 &= 0xFFFF;
+  c32 += a32;
+  c48 += c32 >>> 16;
+  c32 &= 0xFFFF;
+  c48 += a48;
+  c48 &= 0xFFFF;
+
+  return [
+    (c16 << 16) | c00,
+    (c48 << 16) | c32
+  ];
+};
+
+const numToHighLow = (value) => {
+  if (value < 0)
+    return negate(-value);
+
+  return [
+    (value % (2**32)) | 0,
+    (value / (2**32)) | 0
+  ];
+}
 
 const my_entrypoint = async() => {
   const provider = await Module();
@@ -67,6 +100,42 @@ const my_entrypoint = async() => {
   testLib("cpp_calculate_manabar_full_regeneration_time", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
   testLib("cpp_calculate_current_manabar_value", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
+
+  assert.deepEqual(
+    instance.hive(...numToHighLow(10)),
+    {
+      nai: "@@000000021",
+      precision: 3,
+      amount: "10"
+    }
+  );
+
+  assert.deepEqual(
+    instance.hive(...numToHighLow(10000000000)),
+    {
+      nai: "@@000000021",
+      precision: 3,
+      amount: "10000000000"
+    }
+  );
+
+  assert.deepEqual(
+    instance.hbd(...numToHighLow(Number.MAX_SAFE_INTEGER + 1)),
+    {
+      nai: "@@000000013",
+      precision: 3,
+      amount: `${Number.MAX_SAFE_INTEGER + 1}`
+    }
+  );
+
+  assert.deepEqual(
+    instance.vests(...numToHighLow(Number.MIN_SAFE_INTEGER)),
+    {
+      nai: "@@000000037",
+      precision: 6,
+      amount: `${Number.MIN_SAFE_INTEGER}`
+    }
+  );
 };
 
 my_entrypoint()
