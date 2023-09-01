@@ -199,3 +199,6 @@ pyrightconfig.json
 .build/
 wax.cpp
 build_wasm
+
+# Generated files
+package.json

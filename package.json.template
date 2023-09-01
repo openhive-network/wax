@@ -1,6 +1,6 @@
 {
   "name": "@hive/wax",
-  "version": "0.0.1",
+  "version": "",
   "description": "call hived functions from JavaScript",
   "main": "build_wasm/wax_wasm.mjs",
   "type": "module",

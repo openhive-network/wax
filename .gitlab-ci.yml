@@ -64,9 +64,28 @@ wax_wasm_build:
     - make -j 8
   artifacts:
     paths:
+      - "$CI_PROJECT_DIR/package.json"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax.d.ts"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.mjs"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.wasm"
+
+    when: always
+    expire_in: 1 week
+
+  tags:
+    - public-runner-docker
+    - hived-for-tests
+
+wax_wasm_package_generation:
+  stage: build
+  image: docker:latest
+  before_script:
+    - apk add jq git
+  script:
+    - scripts/bump_npm_version.sh
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/package.json"
 
     when: always
     expire_in: 1 week
@@ -93,7 +112,7 @@ test_importing_wax:
 
 test_wax_wasm:
   stage: test
-  image: registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43$EMSCRIPTEN_IMAGE_TAG
+  image: node:16-alpine
   interruptible: true
   needs:
     - job: wax_wasm_build
@@ -172,7 +191,6 @@ deploy_wax_wasm_production:
   needs:
     - job: wax_wasm_build
       artifacts: true
+    - job: wax_wasm_package_generation
+      artifacts: true
   tags: *shared_tags
-  only:
-    - master
-    - develop
