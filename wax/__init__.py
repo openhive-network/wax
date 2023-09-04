@@ -8,6 +8,8 @@ from .wax import (
     serialize_transaction,
     validate_operation,
     validate_transaction,
+    validate_proto_operation,
+    validate_proto_transaction,
     calculate_manabar_full_regeneration_time,
     calculate_current_manabar_value,
 )
@@ -23,6 +25,8 @@ __all__ = [
     "serialize_transaction",
     "validate_operation",
     "validate_transaction",
+    "validate_proto_operation",
+    "validate_proto_transaction",
     "generate_private_key",
     "calculate_public_key",
     "calculate_manabar_full_regeneration_time",

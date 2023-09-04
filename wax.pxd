@@ -15,6 +15,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
+        result cpp_validate_proto_operation( string operation )
+        result cpp_validate_proto_transaction( string transaction )
         result cpp_calculate_transaction_id( string transaction )
         result cpp_calculate_sig_digest( string transaction, string chain_id )
         result cpp_serialize_transaction( string transaction )
