@@ -20,17 +20,17 @@ class protocol_wasm : public protocol
     result cpp_calculate_current_manabar_value( const int32_t now, const int32_t max_mana_low, const int32_t max_mana_high, const int32_t current_mana_low, const int32_t current_mana_high, const uint32_t last_update_time )
     { return cpp::protocol::cpp_calculate_current_manabar_value(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
 
-    json_asset general_asset(const uint32_t asset_num, const int32_t amount_low, const int32_t amount_high)const
-    { return cpp::protocol::general_asset(asset_num, join_lh(amount_low, amount_high)); }
+    json_asset cpp_general_asset(const uint32_t asset_num, const int32_t amount_low, const int32_t amount_high)const
+    { return cpp::protocol::cpp_general_asset(asset_num, join_lh(amount_low, amount_high)); }
 
-    json_asset hive(const int32_t amount_low, const int32_t amount_high)const
-    { return cpp::protocol::hive(join_lh(amount_low, amount_high)); }
+    json_asset cpp_hive(const int32_t amount_low, const int32_t amount_high)const
+    { return cpp::protocol::cpp_hive(join_lh(amount_low, amount_high)); }
 
-    json_asset hbd(const int32_t amount_low, const int32_t amount_high)const
-    { return cpp::protocol::hbd(join_lh(amount_low, amount_high)); }
+    json_asset cpp_hbd(const int32_t amount_low, const int32_t amount_high)const
+    { return cpp::protocol::cpp_hbd(join_lh(amount_low, amount_high)); }
 
-    json_asset vests(const int32_t amount_low, const int32_t amount_high)const
-    { return cpp::protocol::vests(join_lh(amount_low, amount_high)); }
+    json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const
+    { return cpp::protocol::cpp_vests(join_lh(amount_low, amount_high)); }
 };
 
 using manabar_fn_t = result(const int32_t, const int32_t, const int32_t, const int32_t, const int32_t, const uint32_t);
@@ -78,10 +78,10 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:
     .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&protocol_wasm::cpp_calculate_manabar_full_regeneration_time))
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&protocol_wasm::cpp_calculate_current_manabar_value))
-    .function("general_asset", select_overload<json_asset(const uint32_t, const int32_t, const int32_t)const>(&protocol_wasm::general_asset))
-    .function("hive", select_overload<ext_json_asset_fn_t>(&protocol_wasm::hive))
-    .function("hbd", select_overload<ext_json_asset_fn_t>(&protocol_wasm::hbd))
-    .function("vests", select_overload<ext_json_asset_fn_t>(&protocol_wasm::vests))
+    .function("cpp_general_asset", select_overload<json_asset(const uint32_t, const int32_t, const int32_t)const>(&protocol_wasm::cpp_general_asset))
+    .function("cpp_hive", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_hive))
+    .function("cpp_hbd", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_hbd))
+    .function("cpp_vests", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_vests))
   ;
 }
 

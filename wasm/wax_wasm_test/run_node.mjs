@@ -131,7 +131,7 @@ const my_entrypoint = async() => {
   testLib("cpp_validate_proto_transaction", protoTx);
 
   assert.deepEqual(
-    instance.hive(...numToHighLow(10)),
+    instance.cpp_hive(...numToHighLow(10)),
     {
       nai: "@@000000021",
       precision: 3,
@@ -140,7 +140,7 @@ const my_entrypoint = async() => {
   );
 
   assert.deepEqual(
-    instance.hive(...numToHighLow(10000000000)),
+    instance.cpp_hive(...numToHighLow(10000000000)),
     {
       nai: "@@000000021",
       precision: 3,
@@ -149,7 +149,7 @@ const my_entrypoint = async() => {
   );
 
   assert.deepEqual(
-    instance.hbd(...numToHighLow(Number.MAX_SAFE_INTEGER + 1)),
+    instance.cpp_hbd(...numToHighLow(Number.MAX_SAFE_INTEGER + 1)),
     {
       nai: "@@000000013",
       precision: 3,
@@ -158,7 +158,7 @@ const my_entrypoint = async() => {
   );
 
   assert.deepEqual(
-    instance.vests(...numToHighLow(Number.MIN_SAFE_INTEGER)),
+    instance.cpp_vests(...numToHighLow(Number.MIN_SAFE_INTEGER)),
     {
       nai: "@@000000037",
       precision: 6,

@@ -174,22 +174,22 @@ namespace cpp
     }
   }
 
-  json_asset protocol::general_asset(const uint32_t asset_num, const int64_t amount)const
+  json_asset protocol::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::asset{ amount, hive::protocol::asset_symbol_type::from_asset_num(asset_num) });
   }
 
-  json_asset protocol::hive(const int64_t amount)const
+  json_asset protocol::cpp_hive(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::HIVE_asset{amount});
   }
 
-  json_asset protocol::hbd(const int64_t amount)const
+  json_asset protocol::cpp_hbd(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::HBD_asset{amount});
   }
 
-  json_asset protocol::vests(const int64_t amount)const
+  json_asset protocol::cpp_vests(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::VEST_asset{amount});
   }
