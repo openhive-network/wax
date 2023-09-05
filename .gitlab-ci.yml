@@ -176,17 +176,21 @@ deploy_production:
     - master
     - develop
 
-deploy_wax_wasm_production:
+deploy_wax_wasm_dev_package:
   stage: deploy
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
+  variables:
+    PUBLISH_TOKEN: "$NPM_TOKEN"
+    NPM_SCOPE: "@hive"
+    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/"
+
   script:
+    - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$NPM_REGISTRY"
     - npm publish
   needs:
     - job: test_wax_wasm
     - job: wax_wasm_build
-      artifacts: true
-    - job: wax_wasm_package_generation
       artifacts: true
   tags: *shared_tags
 
