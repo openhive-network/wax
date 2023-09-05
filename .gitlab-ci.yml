@@ -69,7 +69,7 @@ wax_wasm_package_generation:
   variables:
     PUBLISH_TOKEN: "$NPM_TOKEN"
     NPM_SCOPE: "@hive"
-    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/419/packages/npm/"
+    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/"
   script:
     - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$GITLAB_REGISTRY"
   artifacts:
