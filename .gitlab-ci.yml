@@ -78,10 +78,14 @@ wax_wasm_build:
 wax_wasm_package_generation:
   stage: build
   image: docker:latest
+  variables:
+    PUBLISH_TOKEN: "$NPM_TOKEN"
+    NPM_SCOPE: "@hive"
+    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/419/packages/npm/"
   before_script:
     - apk add jq git
   script:
-    - scripts/bump_npm_version.sh
+    - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$GITLAB_REGISTRY"
   artifacts:
     paths:
       - "$CI_PROJECT_DIR/package.json"
@@ -195,3 +199,24 @@ deploy_wax_wasm_production:
     - job: wax_wasm_package_generation
       artifacts: true
   tags: *shared_tags
+
+deploy_wax_wasm_production_public_npm:
+  stage: deploy
+  image: docker:latest
+  variables:
+    PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN" # Add token variable here
+    NPM_SCOPE: "@hiveio"
+    NPM_REGISTRY: "registry.npmjs.org/"
+  before_script:
+    - apk add jq git npm
+  script:
+    - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$GITLAB_REGISTRY"
+    - npm publish
+  needs:
+    - job: wax_wasm_build
+      artifacts: true
+  tags: *shared_tags
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: manual
+      allow_failure: true
