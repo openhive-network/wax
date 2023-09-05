@@ -100,14 +100,18 @@ test_importing_wax:
 
 test_wax_wasm:
   stage: test
-  image: node:16-alpine
+  # emscripten image can be used as it contains all needed tools (node and npm).
+  image: ${EMSCRIPTEN_IMAGE}
+
   interruptible: true
   needs:
     - job: wax_wasm_build
       artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
-  tags: *shared_tags
+  tags:
+    - public-runner-docker
+
   script:
     - npm run test
 
