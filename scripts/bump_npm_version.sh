@@ -9,6 +9,8 @@ SCOPE="${2:-@hiveio}"
 # gitlab.syncad.com/api/v4/projects/419/packages/npm/
 REGISTRY_URL="${3:-registry.npmjs.org/}"
 
+git config --global --add safe.directory '*'
+
 git fetch --tags
 
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
