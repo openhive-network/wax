@@ -81,7 +81,6 @@ wax_wasm_package_generation:
 
   tags:
     - public-runner-docker
-    - hived-for-tests
 
 test_importing_wax:
   stage: test
