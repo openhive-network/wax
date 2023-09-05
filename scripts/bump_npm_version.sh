@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+PROJECT_DIR="${SCRIPTPATH}/.."
+
 PUBLISH_TOKEN="${1}"
 # @hive
 SCOPE="${2:-@hiveio}"
@@ -22,12 +25,12 @@ else
   NEW_VERSION="${TAG}-dev.${SHORT_HASH}"
 fi
 
-echo> "${CI_PROJECT_DIR}/.npmrc"
+echo> "${PROJECT_DIR}/.npmrc"
 
 if [ "$REGISTRY_URL" != "registry.npmjs.org/" ]; then
-  echo "${SCOPE}:registry=https://${REGISTRY_URL}" >> "${CI_PROJECT_DIR}/.npmrc"
+  echo "${SCOPE}:registry=https://${REGISTRY_URL}" >> "${PROJECT_DIR}/.npmrc"
 fi
 
-echo "//${REGISTRY_URL}:_authToken=\"${PUBLISH_TOKEN}\"" >> "${CI_PROJECT_DIR}/.npmrc"
+echo "//${REGISTRY_URL}:_authToken=\"${PUBLISH_TOKEN}\"" >> "${PROJECT_DIR}/.npmrc"
 
-jq ".name = \"${SCOPE}/wax\" | .version = \"$NEW_VERSION\"" "${CI_PROJECT_DIR}/package.json.template" > "${CI_PROJECT_DIR}/package.json"
+jq ".name = \"${SCOPE}/wax\" | .version = \"$NEW_VERSION\"" "${PROJECT_DIR}/package.json.template" > "${PROJECT_DIR}/package.json"
