@@ -16,8 +16,11 @@ variables:
   TXT_CLEAR: "\e[0m"
   NPM_TOKEN: $CI_JOB_TOKEN
 
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:1d271c28906d267c1172641bb2aa42727f16b513
-  EMSCRIPTEN_IMAGE_TAG: "@sha256:14287297ffbb7a55d134f1ab326f67aa8b387151f5118b21bf68e74ff1d437ed"
+
+include:
+  - project: 'hive/common-ci-configuration'
+    ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
+    file: '/templates/wasm_build.gitlab-ci.yml'
 
 .shared_tags: &shared_tags
   - hived-for-tests
@@ -50,30 +53,14 @@ build_wheel:
   extends: .build_wheel_base
 
 wax_wasm_build:
+  extends: .wasm_build_job_template
   stage: build
-  image: registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43$EMSCRIPTEN_IMAGE_TAG
-  interruptible: true
   variables:
-    BINARIES_DIR: "build_wasm"
-  script:
-    - echo "Building Wax tool WASM version"
-    - git config --global --add safe.directory '*'
-    - mkdir -vp "$CI_PROJECT_DIR/$BINARIES_DIR"
-    - cd "$CI_PROJECT_DIR/$BINARIES_DIR"
-    - cmake -DBoost_NO_WARN_NEW_VERSIONS=1 -DBoost_USE_STATIC_RUNTIME=ON -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" -S "$CI_PROJECT_DIR/wasm/src/" -B "$CI_PROJECT_DIR/$BINARIES_DIR"
-    - make -j 8
-  artifacts:
-    paths:
-      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax.d.ts"
-      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.mjs"
-      - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.wasm"
-
-    when: always
-    expire_in: 1 week
+    SOURCE_DIR: "${CI_PROJECT_DIR}/wasm/src/"
+    BINARIES_DIR: "${CI_PROJECT_DIR}/build_wasm"
 
   tags:
     - public-runner-docker
-    - hived-for-tests
 
 wax_wasm_package_generation:
   stage: build
