@@ -130,6 +130,18 @@ const my_entrypoint = async() => {
 
   testLib("cpp_validate_proto_transaction", protoTx);
 
+  instance.cpp_validate_proto_operation("{}"); // Test if no segfault occurs
+  instance.cpp_validate_proto_transaction("{}"); // Test if no segfault occurs
+
+  assert.deepEqual(
+    instance.cpp_general_asset(3200000035, ...numToHighLow(10)),
+    {
+      nai: "@@000000021",
+      precision: 3,
+      amount: "10"
+    }
+  );
+
   assert.deepEqual(
     instance.cpp_hive(...numToHighLow(10)),
     {

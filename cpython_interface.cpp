@@ -60,7 +60,11 @@ namespace cpp
 
   fc::mutable_variant_object parse_proto_operation( const fc::variant& op )
   {
+    FC_ASSERT(op.is_object() && op.get_object().size(), "Operation cannot be empty");
+
     std::string key = op.get_object().begin()->key();
+
+    FC_ASSERT(op.get_object()[key].is_object(), "Operation should contain the body");
 
     return fc::mutable_variant_object{"type", key + "_operation"}
       ("value", fc::variant_object{std::move(op.get_object()[key].get_object())});
@@ -69,6 +73,8 @@ namespace cpp
   hive::protocol::transaction get_proto_transaction(const std::string& trx)
   {
     fc::variant var = fc::json::from_string( trx );
+    FC_ASSERT(var.is_object() && var.get_object().contains("operations") && var.get_object()["operations"].is_array(), "Transaction cannot be empty");
+
     const fc::variants& ops = var.get_object()["operations"].get_array();
     fc::variants result;
 
