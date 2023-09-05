@@ -178,7 +178,8 @@ deploy_production:
 
 deploy_wax_wasm_production:
   stage: deploy
-  image: node:16-alpine
+  # emscripten image can be used as it contains all needed tools.
+  image: ${EMSCRIPTEN_IMAGE}
   script:
     - npm publish
   needs:
@@ -191,13 +192,12 @@ deploy_wax_wasm_production:
 
 deploy_wax_wasm_production_public_npm:
   stage: deploy
-  image: docker:latest
+  # emscripten image can be used as it contains all needed tools.
+  image: ${EMSCRIPTEN_IMAGE}
   variables:
     PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN" # Add token variable here
     NPM_SCOPE: "@hiveio"
     NPM_REGISTRY: "registry.npmjs.org/"
-  before_script:
-    - apk add jq git npm
   script:
     - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$NPM_REGISTRY"
     - npm publish
