@@ -4,7 +4,7 @@ from functools import wraps
 from libcpp.string cimport string
 
 from wax cimport error_code, result, protocol
-from .wax_result import python_result, python_error_code
+from .wax_result import python_result, python_error_code, python_json_asset
 
 def return_python_result(foo):
     @wraps(foo)
@@ -14,6 +14,18 @@ def return_python_result(foo):
             return python_result(status=python_error_code(value), result=content, exception_message=exception_message)
         except Exception as ex:
             return python_result(value=0, content="", exception_message=str(ex))
+    return wrapper
+
+def return_python_json_asset(foo):
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        amount, precision, nai = foo(*args, **kwargs)
+        return python_json_asset(
+            amount=amount,
+            precision=precision,
+            nai=nai
+        )
+
     return wrapper
 
 @return_python_result
@@ -81,3 +93,27 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
     cdef protocol obj
     response = obj.cpp_calculate_current_manabar_value( now, max_mana, current_mana, last_update_time )
     return response.value, response.content, response.exception_message
+
+@return_python_json_asset
+def general_asset(asset_num: int, amount: int) -> python_json_asset:
+    cdef protocol obj
+    response = obj.cpp_general_asset(asset_num, amount)
+    return response.amount, response.precision, response.nai
+
+@return_python_json_asset
+def hive(amount: int) -> python_json_asset:
+    cdef protocol obj
+    response = obj.cpp_hive(amount)
+    return response.amount, response.precision, response.nai
+
+@return_python_json_asset
+def hbd(amount: int) -> python_json_asset:
+    cdef protocol obj
+    response = obj.cpp_hbd(amount)
+    return response.amount, response.precision, response.nai
+
+@return_python_json_asset
+def vests(amount: int) -> python_json_asset:
+    cdef protocol obj
+    response = obj.cpp_vests(amount)
+    return response.amount, response.precision, response.nai

@@ -14,3 +14,10 @@ class python_result:  # noqa: N801
     status: python_error_code
     result: bytes
     exception_message: bytes
+
+
+@dataclass
+class python_json_asset:  # noqa: N801
+    amount: bytes
+    precision: int
+    nai: bytes
