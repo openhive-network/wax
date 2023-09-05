@@ -64,7 +64,6 @@ wax_wasm_build:
     - make -j 8
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/package.json"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax.d.ts"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.mjs"
       - "$CI_PROJECT_DIR/$BINARIES_DIR/wax_wasm.wasm"
@@ -117,10 +116,11 @@ test_wax_wasm:
   needs:
     - job: wax_wasm_build
       artifacts: true
+    - job: wax_wasm_package_generation
+      artifacts: true
   tags: *shared_tags
   script:
-    - cd "$CI_PROJECT_DIR/wasm/wax_wasm_test"
-    - node run_node.mjs
+    - npm run test
 
 tag_production:
   stage: tag
@@ -189,6 +189,7 @@ deploy_wax_wasm_production:
   script:
     - npm publish
   needs:
+    - job: test_wax_wasm
     - job: wax_wasm_build
       artifacts: true
     - job: wax_wasm_package_generation
