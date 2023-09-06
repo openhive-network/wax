@@ -4,6 +4,7 @@
   "description": "call hived functions from JavaScript",
   "main": "build_wasm/wax_wasm.mjs",
   "type": "module",
+  "private": false,
   "scripts": {
     "test": "node wasm/wax_wasm_test/run_node.mjs"
   },
