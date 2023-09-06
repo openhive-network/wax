@@ -13,9 +13,21 @@ git config --global --add safe.directory '*'
 
 git fetch --tags
 
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-TAG=$(git describe --abbrev=0 --tags | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-.+)?')
 SHORT_HASH=$(git rev-parse --short HEAD)
+CURRENT_BRANCH_IMPL=$(git branch -r --contains "${SHORT_HASH}")
+if [ "${CURRENT_BRANCH_IMPL}" = "" ]; then
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+else
+  CURRENT_BRANCH="${CURRENT_BRANCH_IMPL#*/}"
+fi
+TAG=$(git tag --sort=taggerdate | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-.+)?' | tail -1)
+
+echo "Preparing npm packge for ${CURRENT_BRANCH}@${TAG} (#${SHORT_HASH})"
+
+if [ "${TAG}" = "" ]; then
+  echo "Could not find a valid tag name for branch"
+  exit 1
+fi
 
 NEW_VERSION=""
 
