@@ -49,7 +49,7 @@ target_link_options( wax_wasm PUBLIC -fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1
                                      -sINITIAL_MEMORY=67108864 -sSINGLE_FILE=1 -sENVIRONMENT="web"
                                      -sUSE_ES6_IMPORT_META=0)
 
-set_target_properties( wax_wasm PROPERTIES OUTPUT_NAME wax_wasm.mjs )
+set_target_properties( wax_wasm PROPERTIES OUTPUT_NAME wax_wasm.js )
 
 # Helper target, just to perform TypeScript wrapper generation
 ADD_EXECUTABLE( wax_ts_gen ${SOURCES} )

@@ -25,6 +25,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!wasm/lib
 lib64/
 parts/
 sdist/
@@ -201,8 +202,11 @@ wax.cpp
 build_wasm
 
 # Generated files
-package.json
+/package.json
+/examples/ts/yarn.lock
 .npmrc
-
-# Generater protobuf 
+proto
+dist
+node_modules
+/examples/ts/package-lock.json
 wax/proto

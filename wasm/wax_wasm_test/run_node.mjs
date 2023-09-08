@@ -1,6 +1,6 @@
 import { strict as assert } from 'assert';
 
-import Module from '../../build_wasm/wax_wasm.mjs';
+import Module from '../../build_wasm/wax_wasm.js';
 
 const vote_operation = {
   type: "vote_operation",

@@ -2,20 +2,34 @@
   "name": "",
   "version": "",
   "description": "call hived functions from JavaScript",
-  "main": "build_wasm/wax_wasm.mjs",
+  "main": "wasm/dist/wax.js",
   "type": "module",
   "private": false,
   "scripts": {
-    "test": "node wasm/wax_wasm_test/run_node.mjs"
+    "prebuild": "sh scripts/compile_proto_ts.sh",
+    "build": "rimraf wasm/dist && tsc",
+    "postbuild": "fix-esm-import-path wasm/dist/proto",
+    "test": "node wasm/wax_wasm_test/run_node.mjs",
+    "examples": "cd examples/ts && npm install && npm run examples && cd ../.."
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "fix-esm-import-path": "^1.4.0",
+    "rimraf": "^5.0.1",
+    "ts-proto": "^1.156.7",
+    "typescript": "4.4.4"
+  },
+  "dependencies": {
+    "protobufjs": "^7.2.5"
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "files": [
-    "build_wasm/wax_wasm.mjs",
+    "build_wasm/wax_wasm.js",
     "build_wasm/wax_wasm.wasm",
     "build_wasm/wax.d.ts",
-    "wasm/wax.d.ts"
+    "wasm/dist"
   ],
-  "types": "wasm/wax.d.ts",
+  "types": "wasm/dist/wax.d.ts",
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"
