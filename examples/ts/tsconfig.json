@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.json",
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
+  "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+
+    "outDir": "./dist",
+
+    "paths": {
+      "@hive/wax": [
+        "../.."
+      ]
+    }
+  },
+  "include": [
+    "./*.ts"
+  ]
+}
