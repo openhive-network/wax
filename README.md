@@ -21,7 +21,8 @@ sh scripts/scripts/compile_proto_ts.sh
 Install dependencies:
 
 ```bash
-npm install
+npm i -g yarn
+yarn install
 ```
 
 Build WASM wax:
