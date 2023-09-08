@@ -1,9 +1,4 @@
 {
-  "ts-node": {
-    "require": [
-      "tsconfig-paths/register"
-    ]
-  },
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
@@ -35,18 +30,12 @@
 
     "outDir": "./wasm/dist",
 
-    "paths": {
-      "@hive/wax": [
-        "./wasm/dist/wax.js"
-      ]
-    },
-
     "removeComments": true,
     "checkJs": false,
     "strict": true,
     "alwaysStrict": true,
 
-    "allowJs": true,
+    "allowJs": false,
 
     "target": "ES6",
     "lib": [
@@ -63,7 +52,6 @@
     "verbose": true
   },
   "include": [
-    "build_wasm/*.{wasm,cjs,mjs,d.ts}",
     "wasm/lib"
   ]
 }
