@@ -1,4 +1,4 @@
-import { operation, limit_order_cancel, vote, comment } from "./protocol";
+import { operation, limit_order_cancel, vote, comment } from "./protocol.js";
 
 export type TOperationVisitor<R = void> = {
   [K in keyof Required<operation>]?: (op: Required<operation>[K]) => R;

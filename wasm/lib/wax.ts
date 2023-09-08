@@ -1,15 +1,23 @@
-// Wax definitions
-export * from '../../build_wasm/wax';
+// Wax wasm definitions
+import type { MainModule } from '../../build_wasm/wax';
+export type {
+  MainModule,
+  error_code,
+  json_asset,
+  protocol,
+  protocol_base,
+  result
+} from '../../build_wasm/wax';
 
 // Protobuf definitions
-export * from './protocol';
+export * from './protocol.js';
 
 // Helper definitions
-export * from './visitor';
+export * from './visitor.js';
 
 // Parse the main module
-import { MainModule } from '../../build_wasm/wax';
+import MainModuleFunction from '../../build_wasm/wax_wasm.js';
 
 declare function waxmodule(): Promise<MainModule>;
 
-export default waxmodule;
+export default MainModuleFunction as unknown as typeof waxmodule;
