@@ -1,0 +1,69 @@
+{
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+
+    "incremental": false,
+    "noEmit": false,
+
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
+
+    "noImplicitAny": false,
+    "noLib": false,
+
+    "allowUnreachableCode": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUnusedLabels": false,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "rootDir": "./wasm/lib",
+    "baseUrl": ".",
+
+    "outDir": "./wasm/dist",
+
+    "paths": {
+      "@hive/wax": [
+        "./wasm/dist/wax.js"
+      ]
+    },
+
+    "removeComments": true,
+    "checkJs": false,
+    "strict": true,
+    "alwaysStrict": true,
+
+    "allowJs": true,
+
+    "target": "ES6",
+    "lib": [
+      "ES2017"
+    ],
+    "module": "ES6",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+
+    "noErrorTruncation": true
+  },
+  "buildOptions": {
+    "force": true,
+    "verbose": true
+  },
+  "include": [
+    "build_wasm/*.{wasm,cjs,mjs,d.ts}",
+    "wasm/lib"
+  ]
+}
