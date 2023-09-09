@@ -16,7 +16,6 @@ variables:
   TXT_CLEAR: "\e[0m"
   NPM_TOKEN: $CI_JOB_TOKEN
 
-
 include:
   - project: 'hive/common-ci-configuration'
     ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
@@ -62,6 +61,11 @@ wax_wasm_build:
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/wasm/src/"
     BINARIES_DIR: "${CI_PROJECT_DIR}/build_wasm"
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/build_wasm/wax_wasm.js"
+      - "$CI_PROJECT_DIR/build_wasm/wax_wasm.wasm"
+      - "$CI_PROJECT_DIR/build_wasm/wax.d.ts"
 
   tags:
     - public-runner-docker
@@ -95,6 +99,28 @@ wax_proto_python_generation:
     paths:
       - "wax/proto"
     when: always
+  tags:
+    - public-runner-docker
+
+wax_wasm_proto_tsc_generation:
+  stage: build
+  # emscripten image can be used as it contains all needed tools.
+  image: ${EMSCRIPTEN_IMAGE}
+  script:
+    - npm install # we actually want to move to yarn
+    - npm run build
+  needs:
+    - job: wax_wasm_build
+      artifacts: true
+    - job: wax_wasm_package_generation
+      artifacts: true
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/wasm/dist"
+
+    when: always
+    expire_in: 1 week
+
   tags:
     - public-runner-docker
 
@@ -141,6 +167,26 @@ test_wax_wasm:
 
   script:
     - npm run test
+
+test_wax_wasm_examples:
+  stage: test
+  # emscripten image can be used as it contains all needed tools (node and npm).
+  image: ${EMSCRIPTEN_IMAGE}
+
+  interruptible: true
+  needs:
+    - job: wax_wasm_build
+      artifacts: true
+    - job: wax_wasm_package_generation
+      artifacts: true
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  tags:
+    - public-runner-docker
+
+  script:
+    - npm install
+    - npm run examples
 
 tag_production:
   stage: tag
@@ -218,7 +264,10 @@ deploy_wax_wasm_dev_package:
     - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$NPM_REGISTRY"
     - npm publish --access=public
   needs:
+    - job: test_wax_wasm_examples
     - job: test_wax_wasm
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
     - job: wax_wasm_build
       artifacts: true
   tags: *shared_tags
@@ -236,6 +285,8 @@ deploy_wax_wasm_production_public_npm:
     - npm publish --access=public
   needs:
     - job: wax_wasm_build
+      artifacts: true
+    - job: wax_wasm_proto_tsc_generation
       artifacts: true
   tags: *shared_tags
   rules:
