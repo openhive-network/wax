@@ -203,3 +203,6 @@ build_wasm
 # Generated files
 package.json
 .npmrc
+
+# Generater protobuf 
+wax/proto
