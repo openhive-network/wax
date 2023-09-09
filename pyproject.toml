@@ -24,6 +24,7 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
+proto = { path}
 
 [tool.poetry.dev-dependencies]
 types-setuptools = ">=67.8.0"
