@@ -208,5 +208,6 @@ build_wasm
 proto
 dist
 node_modules
+/package-lock.json
 /examples/ts/package-lock.json
 wax/proto
