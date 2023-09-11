@@ -15,7 +15,7 @@ fi
 
 mkdir -p "${OUTPUT_DIR}"
 
-python3 -m grpc_tools.protoc --python_out="${OUTPUT_DIR}" --mypy_out="${OUTPUT_DIR}" -I="${PROTO_DIR}" "$PROTO_DIR"/*.proto
+poetry protoc --python_out="${OUTPUT_DIR}" --mypy_out="${OUTPUT_DIR}" --proto_path="${PROTO_DIR}" 
 
 echo "Files generated into the '${OUTPUT_DIR}' folder."
 

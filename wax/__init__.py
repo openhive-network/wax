@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-
 from .wax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
@@ -19,7 +18,7 @@ from .wax import (
     vests,
 )
 from .wax_result import python_error_code, python_json_asset, python_result
-from . import visitor
+from .wax_visitor import OperationVisitor
 
 __version__ = "0.0.0"
 
@@ -42,5 +41,5 @@ __all__ = [
     "hive",
     "hbd",
     "vests",
-    "visitor"
+    "OperationVisitor",
 ]
