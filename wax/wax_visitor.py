@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 
-from wax.proto import comment_pb2, limit_order_cancel_pb2, vote_pb2
-from wax.proto.transaction_pb2 import operation
+from wax.proto import comment_pb2, limit_order_cancel_pb2, transaction_pb2, vote_pb2
 
 
 class OperationVisitor(ABC):
-    def accept(self, operation: operation):
+    def accept(self, operation: transaction_pb2.operation):
         target_operation_name = operation.WhichOneof("value")
         if hasattr(self, target_operation_name):
             method = getattr(self, target_operation_name)
@@ -21,6 +20,5 @@ class OperationVisitor(ABC):
         pass
 
     @abstractmethod
-    def comment(self, op: comment_pb2):
-        pass
+    def comment(self, op: comment_pb2.comment):
         pass
