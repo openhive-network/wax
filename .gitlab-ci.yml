@@ -93,6 +93,8 @@ wax_proto_python_generation:
     paths:
       - "wax/proto"
     when: always
+  tags:
+    - public-runner-docker
 
 test_importing_wax:
   stage: test
