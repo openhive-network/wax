@@ -28,6 +28,15 @@ default:
   tags:
     - public-runner-docker
 
+.configuration:
+  before_script:
+    - python3 -V
+    - poetry self add poetry-grpc-plugin@0.1.7
+    - poetry self add "poetry-dynamic-versioning[plugin]"
+    - poetry self update
+    - pip list
+  tags: *shared_tags
+
 build_wheel:
   extends: .build_wheel_template
   before_script:
