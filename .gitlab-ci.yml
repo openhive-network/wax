@@ -41,6 +41,9 @@ include:
     - rm -rf dist/
     - poetry build --format wheel
     - ls -al dist/
+  needs:
+    - job: wax_proto_python_generation
+      artifacts: true
   artifacts:
     when: always
     paths:
@@ -81,6 +84,15 @@ wax_wasm_package_generation:
 
   tags:
     - public-runner-docker
+
+wax_proto_python_generation:
+  stage: build
+  script:
+    - scripts/compile_proto_python.sh
+  artifacts:
+    paths:
+      - "wax/proto"
+    when: always
 
 test_importing_wax:
   stage: test
