@@ -82,7 +82,9 @@ wax_wasm_package_generation:
 
 wax_proto_python_generation:
   stage: build
+  extends: .configuration
   script:
+    - poetry install
     - scripts/compile_proto_python.sh
   artifacts:
     paths:
