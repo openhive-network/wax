@@ -34,6 +34,11 @@ build_wheel:
     - !reference [.build_wheel_template, before_script]
     - git fetch --tags --force
     - rm -rf dist/
+    - poetry build --format wheel
+    - ls -al dist/
+  needs:
+    - job: wax_proto_python_generation
+      artifacts: true
   artifacts:
     when: always
     paths:
@@ -65,7 +70,22 @@ wax_wasm_package_generation:
     when: always
     expire_in: 1 week
 
-test_wax_python_wheel:
+  tags:
+    - public-runner-docker
+
+wax_proto_python_generation:
+  stage: build
+  extends: .configuration
+  script:
+    - scripts/compile_proto_python.sh
+  artifacts:
+    paths:
+      - "wax/proto"
+    when: always
+  tags:
+    - public-runner-docker
+
+test_importing_wax:
   stage: test
   extends: .configuration_template
   needs:
