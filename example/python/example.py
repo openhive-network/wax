@@ -1,6 +1,6 @@
 from google.protobuf.json_format import ParseDict
 from wax.proto import transaction_pb2
-from wax.visitor import MyOperationVisitor
+from wax.wax_visitor import MyOperationVisitor
 
 tx_json = {
     "operations": [
