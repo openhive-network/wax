@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from setuptools import setup
 
-packages = ["wax"]
+packages = ["wax", "wax/proto"]
 
 package_data = {"": ["*"]}
 
