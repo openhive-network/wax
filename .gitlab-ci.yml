@@ -110,11 +110,6 @@ wax_proto_python_generation:
     - pip install dist/*.whl
     - pip list
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
-    - ls -al $(poetry env info --path)/lib/python3.10/site-packages/wax
-    - ls -al $(poetry env info --path)/lib/python3.10/site-packages/wax/proto
-    - cat $(poetry env info --path)/lib/python3.10/site-packages/wax/proto/transaction_pb2.py
-    - cat $(poetry env info --path)/lib/python3.10/site-packages/wax/proto/transaction_pb2.pyi
-
 
 test_importing_wax:
   extends: .test_python_env
@@ -128,7 +123,7 @@ test_wax_protobuf_python:
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - cd ..  # needed to import installed package instead of local one
-    - python3 /builds/hive/wax/example/python/example.py
+    - python3 /builds/hive/wax/example/python/visitor_example.py
 
 test_wax_wasm:
   stage: test
