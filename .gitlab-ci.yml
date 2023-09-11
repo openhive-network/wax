@@ -110,6 +110,11 @@ wax_proto_python_generation:
     - pip install dist/*.whl
     - pip list
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
+    - ls -al $(poetry env info --path)/lib/python3.10/site-packages/wax
+    - ls -al $(poetry env info --path)/lib/python3.10/site-packages/wax/proto
+    - cat $(poetry env info --path)/lib/python3.10/site-packages/wax/proto/transaction_pb2.py
+    - cat $(poetry env info --path)/lib/python3.10/site-packages/wax/proto/transaction_pb2.pyi
+
 
 test_importing_wax:
   extends: .test_python_env
