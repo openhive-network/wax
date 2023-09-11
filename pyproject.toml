@@ -15,7 +15,8 @@ description = ""
 repository = "https://gitlab.syncad.com/hive/clive"
 authors = []
 packages = [
-    { include = "wax" },
+    { include = "wax"},
+    { include = "wax/proto" }
 ]
 
 [tool.poetry.build]
@@ -24,7 +25,7 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
-proto = { path}
+protobuf = "4.24.2"
 
 [tool.poetry.dev-dependencies]
 types-setuptools = ">=67.8.0"
