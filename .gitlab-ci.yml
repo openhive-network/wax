@@ -138,7 +138,8 @@ test_wax_wasm:
 
 .deploy_wheel_needs: &deploy_wheel_needs
   needs:
-    - job: test_wax_python_wheel
+    - job: test_importing_wax
+    - job: test_wax_protobuf_python
     - job: build_wheel
       artifacts: true
 
