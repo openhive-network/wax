@@ -123,7 +123,7 @@ test_wax_protobuf_python:
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - cd ..  # needed to import installed package instead of local one
-    - python3 /builds/hive/wax/example/python/visitor_example.py
+    - python3 /builds/hive/wax/examples/python/visitor_example.py
 
 test_wax_wasm:
   stage: test
