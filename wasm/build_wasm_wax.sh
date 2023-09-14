@@ -1,12 +1,15 @@
 #! /bin/bash
 
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+PROJECT_DIR="${SCRIPTPATH}/.."
+
 set -xeuo pipefail
 
 if [ $# -eq 0 ]; then
   echo "Performing a docker run"
 docker run \
   -it --rm \
-  -v $(pwd)/../:/src \
+  -v "$PROJECT_DIR/":/src \
   -u $(id -u):$(id -g) \
   registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43 \
   /bin/bash /src/wasm/build_wasm_wax.sh 1
