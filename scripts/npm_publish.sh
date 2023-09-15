@@ -11,7 +11,8 @@ if [ "${CURRENT_BRANCH_IMPL}" = "" ]; then
 else
   CURRENT_BRANCH="${CURRENT_BRANCH_IMPL#*/}"
 fi
-NAME=$(jq -r '.version' package.json)
+
+NAME=$(jq -r '.name' package.json)
 TAG=$(jq -r '.version' package.json)
 
 if [ "${TAG}" = "" ]; then
