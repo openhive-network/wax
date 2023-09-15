@@ -15,7 +15,7 @@ fi
 
 mkdir -p "${OUTPUT_DIR}"
 
-poetry protoc --python_out="${OUTPUT_DIR}" --mypy_out="${OUTPUT_DIR}" --proto_path="${PROTO_DIR}" 
+poetry -C ${PROJECT_DIR} protoc --python_out="${OUTPUT_DIR}" --mypy_out="${OUTPUT_DIR}" --proto_path="${PROTO_DIR}" 
 
 echo "Files generated into the '${OUTPUT_DIR}' folder."
 
