@@ -10,6 +10,29 @@ You need to install protobuf compiler first:
 apt install protobuf-compiler
 ```
 
+### Python Building
+
+In order to build wax python package, one need to simply type from root project directory:
+
+```bash
+./scripts/build_wax_python.sh
+```
+
+This script will generate wheel file which will be saved in ./dist directory.
+
+It is recomended to create python virtual env, and install wax package it there, for example:
+
+```bash
+python3 -m venv venv
+source ./venv/bin/activate
+```
+
+Now in order to install wax module to python, one need to type.
+
+```bash
+python3 -m pip install ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
+```
+
 ### TypeScript Building
 
 Generate `package.json`:
@@ -38,6 +61,14 @@ npm run build
 ```
 
 ## Testing
+
+### Python Testing
+
+Run [examples](examples/python/README.md):
+
+```bash
+python3 ./examples/python/visitor_example.py
+```
 
 ### TypeScript Testing
 
