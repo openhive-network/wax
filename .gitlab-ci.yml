@@ -134,19 +134,35 @@ wax_wasm_proto_tsc_generation:
     - pip install dist/*.whl
     - pip list
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
+    - cd ..  # needed to import installed package instead of local one
 
 test_importing_wax:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
-    - cd ..  # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__)"
 
 test_wax_protobuf_python:
   extends: .test_python_env
   script:
+    - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
+    - python3 /builds/hive/wax/wax/tests/transaction_test.py
+
+test_wax_protobuf_python_pattern:
+  extends: .test_python_env
+  needs:
+    - job: build_wheel
+      artifacts: true
+    - job: wax_proto_python_generation
+      artifacts: true
+  script:
+    - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  /builds/hive/wax/samples/python/proto/ /builds/hive/wax/wax/proto/
+
+test_wax_protobuf_python_examples:
+  extends: .test_python_env
+  script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
-    - cd ..  # needed to import installed package instead of local one
     - python3 /builds/hive/wax/examples/python/visitor_example.py
 
 test_wax_wasm:
