@@ -5,30 +5,29 @@ PROJECT_DIR="${SCRIPTPATH}/.."
 
 set -xeuo pipefail
 
-if [ $# -eq 0 ]; then
+DIRECT_EXECUTION=${1:-0}
+EXECUTION_PATH=${2:-"/src"}
+
+if [ ${DIRECT_EXECUTION} -eq 0 ]; then
   echo "Performing a docker run"
-docker run \
-  -it --rm \
-  -v "$PROJECT_DIR/":/src \
-  -u $(id -u):$(id -g) \
-  registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43 \
-  /bin/bash /src/wasm/build_wasm_wax.sh 1
+  docker run \
+    -it --rm \
+    -v "${PROJECT_DIR}/":"${EXECUTION_PATH}" \
+    -u $(id -u):$(id -g) \
+    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43 \
+    /bin/bash "${EXECUTION_PATH}/wasm/build_wasm_wax.sh" 1 "${EXECUTION_PATH}"
 else
   echo "Performing a build"
-  cd /src
-  mkdir -vp build_wasm
-  rm -rf ./build_wasm/*
-  cd build_wasm
+  cd "${EXECUTION_PATH}"
+  BUILD_DIR="${EXECUTION_PATH}/build_wasm"
+  mkdir -vp "${BUILD_DIR}"
+  cd "${BUILD_DIR}"
 
   #-DBoost_DEBUG=TRUE -DBoost_VERBOSE=TRUE -DCMAKE_STATIC_LIBRARY_SUFFIX=".a;.bc"
   cmake \
     -DBoost_NO_WARN_NEW_VERSIONS=1 \
     -DBoost_USE_STATIC_RUNTIME=ON \
-    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" -S /src/wasm/src -B /src/build_wasm/
+    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" \
+    -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}"
   make -j8
 fi
-
-#  emcc -sFORCE_FILESYSTEM test.cpp -o test.js -lembind -lidbfs.js --emrun 
-
-# execute on host machine
-#node helloworld.js
