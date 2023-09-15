@@ -162,6 +162,9 @@ test_wax_protobuf_python_pattern:
 
 test_wax_protobuf_python_examples:
   extends: .test_python_env
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - python3 /builds/hive/wax/examples/python/visitor_example.py
@@ -188,7 +191,7 @@ test_wax_wasm_proto_pattern:
 
   interruptible: true
   needs:
-    - job: wax_wasm_proto_tsc_generation
+    - job: wax_proto_python_generation
       artifacts: true
   tags:
     - public-runner-docker
