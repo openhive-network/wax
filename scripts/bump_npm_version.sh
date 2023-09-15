@@ -29,6 +29,7 @@ if [ "${TAG}" = "" ]; then
   exit 1
 fi
 
+PACKAGE_NAME=wax
 NEW_VERSION=""
 
 if [ "$CURRENT_BRANCH" = "master" ]; then
@@ -36,7 +37,8 @@ if [ "$CURRENT_BRANCH" = "master" ]; then
 elif [ "$CURRENT_BRANCH" = "develop" ]; then
   NEW_VERSION="${TAG}-stable.${SHORT_HASH}"
 else
-  NEW_VERSION="${TAG}-dev.${SHORT_HASH}"
+  PACKAGE_NAME=wax-dev
+  NEW_VERSION="${TAG}-${SHORT_HASH}"
 fi
 
 echo> "${PROJECT_DIR}/.npmrc"
@@ -47,4 +49,4 @@ fi
 
 echo "//${REGISTRY_URL}:_authToken=\"${PUBLISH_TOKEN}\"" >> "${PROJECT_DIR}/.npmrc"
 
-jq ".name = \"${SCOPE}/wax\" | .version = \"$NEW_VERSION\"" "${PROJECT_DIR}/package.json.template" > "${PROJECT_DIR}/package.json"
+jq ".name = \"${SCOPE}/${PACKAGE_NAME}\" | .version = \"$NEW_VERSION\"" "${PROJECT_DIR}/package.json.template" > "${PROJECT_DIR}/package.json"
