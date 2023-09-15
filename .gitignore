@@ -204,7 +204,7 @@ build_wasm
 # Generated files
 /package.json
 .npmrc
-proto
+wasm/lib/proto
 dist
 node_modules
 /package-lock.json
