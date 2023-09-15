@@ -29,11 +29,7 @@ if [ "${TAG}" = "" ]; then
   exit 1
 fi
 
-<<<<<<< HEAD
 DIST_TAG=""
-=======
-PACKAGE_NAME=wax
->>>>>>> 9d54ad7 (Fix npm publishing conflicts)
 NEW_VERSION=""
 
 if [ "$CURRENT_BRANCH" = "master" ]; then
@@ -43,11 +39,7 @@ elif [ "$CURRENT_BRANCH" = "develop" ]; then
   DIST_TAG="stable"
   NEW_VERSION="${TAG}-stable.${SHORT_HASH}"
 else
-<<<<<<< HEAD
   DIST_TAG="dev"
-=======
-  PACKAGE_NAME=wax-dev
->>>>>>> 9d54ad7 (Fix npm publishing conflicts)
   NEW_VERSION="${TAG}-${SHORT_HASH}"
 fi
 
@@ -59,11 +51,7 @@ fi
 
 echo "//${REGISTRY_URL}:_authToken=\"${PUBLISH_TOKEN}\"" >> "${PROJECT_DIR}/.npmrc"
 
-<<<<<<< HEAD
 jq ".name = \"${SCOPE}/wax\" | .version = \"$NEW_VERSION\" | .publishConfig.registry = \"https://${REGISTRY_URL}\" | .publishConfig.tag = \"${DIST_TAG}\"" "${PROJECT_DIR}/package.json.template" > "${PROJECT_DIR}/package.json"
 
 # Display detailed publish config data
 jq -r '.name + "@" + .version + " (" + .publishConfig.tag + ") " + .publishConfig.registry' "package.json"
-=======
-jq ".name = \"${SCOPE}/${PACKAGE_NAME}\" | .version = \"$NEW_VERSION\"" "${PROJECT_DIR}/package.json.template" > "${PROJECT_DIR}/package.json"
->>>>>>> 9d54ad7 (Fix npm publishing conflicts)
