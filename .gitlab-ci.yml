@@ -164,6 +164,21 @@ test_wax_wasm:
     - npm run test
   allow_failure: true # Temporary - until actual set of tests will be adjusted to web environment
 
+test_wax_wasm_proto_pattern:
+  stage: test
+  # emscripten image can be used as it contains all needed tools (node and npm).
+  image: ${EMSCRIPTEN_IMAGE}
+
+  interruptible: true
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  tags:
+    - public-runner-docker
+
+  script:
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference samples/ts/proto wasm/dist/proto
+
 test_wax_wasm_examples:
   stage: test
   # emscripten image can be used as it contains all needed tools (node and npm).
@@ -216,6 +231,7 @@ deploy_wax_wasm_dev_package:
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
+    - job: test_wax_wasm_proto_pattern
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
     - job: wax_wasm_build
