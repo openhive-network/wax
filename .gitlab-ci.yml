@@ -152,22 +152,19 @@ test_wax_protobuf_python:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - cd ..  
-    - python3 wax/tests/transaction_test.py
+    - python3 /hive/wax/wax/tests/transaction_test.py
 
 test_wax_protobuf_python_pattern:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - cd ..  
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference samples/python/proto/ wax/proto/
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  /hive/wax/samples/python/proto/ /hive/wax/wax/proto/
 
 test_wax_protobuf_python_examples:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
-    - cd ..  # needed to import installed package instead of local one
-    - python3 /builds/hive/wax/examples/python/visitor_example.py
+    - python3 /hive/wax/examples/python/visitor_example.py
 
 test_wax_wasm:
   stage: test
