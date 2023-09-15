@@ -157,6 +157,8 @@ test_wax_protobuf_python:
 test_wax_protobuf_python_pattern:
   extends: .test_python_env
   needs:
+    - job: build_wheel
+      artifacts: true
     - job: wax_proto_python_generation
       artifacts: true
   script:
