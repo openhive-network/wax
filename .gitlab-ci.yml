@@ -157,7 +157,13 @@ test_wax_protobuf_python_pattern:
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  /builds/hive/wax/samples/python/proto/ /builds/hive/wax/wax/proto/
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/samples/python/proto/ $CI_PROJECT_DIR/wax/proto/
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/wax/proto/
+ 
+    when: always
+    expire_in: 1 week
 
 test_wax_protobuf_python_examples:
   extends: .test_python_env
@@ -193,7 +199,13 @@ test_wax_wasm_proto_pattern:
     - public-runner-docker
 
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference samples/ts/proto wasm/dist/proto
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference $CI_PROJECT_DIR/samples/ts/proto $CI_PROJECT_DIR/wasm/dist/proto
+  artifacts:
+    paths:
+      - "$CI_PROJECT_DIR/wasm/dist"
+ 
+    when: always
+    expire_in: 1 week
 
 test_wax_wasm_examples:
   stage: test
