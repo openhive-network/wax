@@ -26,7 +26,7 @@ namespace cpp
 
   class protocol
   {
-    private:
+    protected:
 
       using callback = std::function<void(result&)>;
 
@@ -36,8 +36,6 @@ namespace cpp
 
       result cpp_validate_operation( const std::string& operation );
       result cpp_validate_transaction( const std::string& transaction );
-      result cpp_validate_proto_operation( const std::string& operation );
-      result cpp_validate_proto_transaction( const std::string& transaction );
       result cpp_calculate_transaction_id( const std::string& transaction );
       result cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id );
       result cpp_serialize_transaction( const std::string& transaction );
@@ -49,5 +47,19 @@ namespace cpp
       json_asset cpp_hive(const int64_t amount)const;
       json_asset cpp_hbd(const int64_t amount)const;
       json_asset cpp_vests(const int64_t amount)const;
+  };
+
+  class proto_protocol : public protocol
+  {
+    public:
+      result cpp_validate_operation( const std::string& operation );
+      result cpp_validate_transaction( const std::string& transaction );
+      result cpp_calculate_transaction_id( const std::string& transaction );
+      result cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id );
+      result cpp_serialize_transaction( const std::string& transaction );
+
+      // TODO: Implement block bi-directional protobuf JSON conversion
+      result cpp_proto_to_api( const std::string& operation_or_tx );
+      result cpp_api_to_proto( const std::string& operation_or_tx );
   };
 }

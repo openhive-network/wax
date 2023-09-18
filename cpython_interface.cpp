@@ -4,6 +4,9 @@
 #include <hive/protocol/types.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
+#include <boost/preprocessor/variadic/to_seq.hpp>
+#include <boost/preprocessor/seq/enum.hpp>
+#include <boost/preprocessor/seq/transform.hpp>
 
 #include <fc/io/json.hpp>
 
@@ -58,6 +61,8 @@ namespace cpp
     return fc::json::from_string( trx ).as<hive::protocol::transaction>();
   }
 
+  // PROTO TO API --------------------------------
+
   fc::mutable_variant_object parse_proto_operation( const fc::variant& op )
   {
     FC_ASSERT(op.is_object() && op.get_object().size(), "Operation cannot be empty");
@@ -67,24 +72,59 @@ namespace cpp
     FC_ASSERT(op.get_object()[key].is_object(), "Operation should contain the body");
 
     return fc::mutable_variant_object{"type", key + "_operation"}
-      ("value", fc::variant_object{std::move(op.get_object()[key].get_object())});
+      ("value", op.get_object()[key].get_object());
   }
 
-  hive::protocol::transaction get_proto_transaction(const std::string& trx)
+  fc::mutable_variant_object parse_proto_transaction( const fc::variant& trx )
   {
-    fc::variant var = fc::json::from_string( trx );
-    FC_ASSERT(var.is_object() && var.get_object().contains("operations") && var.get_object()["operations"].is_array(), "Transaction cannot be empty");
+    FC_ASSERT(trx.is_object() && trx.get_object().contains("operations") && trx.get_object()["operations"].is_array(), "Transaction cannot be empty");
 
-    const fc::variants& ops = var.get_object()["operations"].get_array();
+    // Proto operations are not the same as hive api operations - they look like this:
+    // { vote: { author: "", ... } }
+    // instead of our api like:
+    // { type: "vote_operation", value: { author: "",... } }
+    // So we have to extract the key here and convert to fc-reflect-readable format
+    // Same applies to every static_variant in our implementation of hive protocol
+    const fc::variants& ops = trx.get_object()["operations"].get_array();
     fc::variants result;
 
     for(const auto& op : ops)
       result.emplace_back(std::move( parse_proto_operation(op) ));
 
-    var = fc::mutable_variant_object{ std::move(var) }( "operations", result );
-
-    return var.as<hive::protocol::transaction>();
+    return fc::mutable_variant_object{ trx }( "operations", result );
   }
+
+  // API TO PROTO --------------------------------
+
+  fc::mutable_variant_object parse_api_operation( const fc::variant& op )
+  {
+    FC_ASSERT(
+      op.is_object() &&
+      op.get_object().contains("type") &&
+      op.get_object()["type"].is_string() &&
+      op.get_object().contains("value") &&
+      op.get_object()["value"].is_object(), "Not a valid api operation");
+
+    std::string key = op.get_object()["type"].get_string();
+    key.resize(key.size() - 10 /*strlen("_operation")*/);
+
+    return fc::mutable_variant_object{key, op.get_object()["value"].get_object()};
+  }
+
+  fc::mutable_variant_object parse_api_transaction( const fc::variant& trx )
+  {
+    FC_ASSERT(trx.is_object() && trx.get_object().contains("operations") && trx.get_object()["operations"].is_array(), "Transaction cannot be empty");
+
+    const fc::variants& ops = trx.get_object()["operations"].get_array();
+    fc::variants result;
+
+    for(const auto& op : ops)
+      result.emplace_back(std::move( parse_api_operation(op) ));
+
+    return fc::mutable_variant_object{ trx }( "operations", result );
+  }
+
+  // PROTOCOL FUNCTIONS --------------------------------
 
   result protocol::cpp_validate_operation( const std::string& operation )
   {
@@ -103,28 +143,6 @@ namespace cpp
     return method_wrapper([&]( result& )
     {
       get_transaction(transaction).validate();
-    });
-  }
-
-  result protocol::cpp_validate_proto_operation( const std::string& operation )
-  {
-    return method_wrapper([&]( result& )
-    {
-      fc::variant op = fc::json::from_string( operation );
-
-      op = parse_proto_operation(op);
-      hive::protocol::operation _operation = op.as<hive::protocol::operation>();
-
-      validate_visitor _visitor;
-      _operation.visit( _visitor );
-    });
-  }
-
-  result protocol::cpp_validate_proto_transaction( const std::string& transaction )
-  {
-    return method_wrapper([&]( result& )
-    {
-      get_proto_transaction(transaction).validate();
     });
   }
 
@@ -248,4 +266,93 @@ namespace cpp
     });
   }
 
+  std::string cpp_api_to_proto_impl( const std::string& operation_or_tx )
+  {
+    fc::variant var = fc::json::from_string( operation_or_tx );
+    FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
+
+    if(var.get_object().contains("operations"))
+      return fc::json::to_string(parse_api_transaction(var));
+
+    return fc::json::to_string(parse_api_operation(var));
+  }
+
+  std::string cpp_proto_to_api_impl( const std::string& operation_or_tx )
+  {
+    fc::variant var = fc::json::from_string( operation_or_tx );
+    FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
+
+    if(var.get_object().contains("operations"))
+      return fc::json::to_string(parse_proto_transaction(var));
+
+    return fc::json::to_string(parse_proto_operation(var));
+  }
+
+  result proto_protocol::cpp_proto_to_api( const std::string& operation_or_tx )
+  {
+    return method_wrapper([&]( result& _result )
+    {
+      _result.content = cpp_proto_to_api_impl(operation_or_tx);
+    });
+  }
+
+  result proto_protocol::cpp_api_to_proto( const std::string& operation_or_tx )
+  {
+    return method_wrapper([&]( result& _result )
+    {
+      _result.content = cpp_api_to_proto_impl(operation_or_tx);
+    });
+  }
+
+  result proto_protocol::cpp_validate_operation( const std::string& operation )
+  {
+    return method_wrapper([&](result& _result)
+    {
+      _result = protocol::cpp_validate_operation(
+          cpp_proto_to_api_impl(operation)
+        );
+    });
+  }
+
+  result proto_protocol::cpp_validate_transaction( const std::string& transaction )
+  {
+    return method_wrapper([&](result& _result)
+    {
+      // XXX: We can optimize it by using the sharing the same logic via variant_objects
+      _result = protocol::cpp_validate_transaction(
+          cpp_proto_to_api_impl(transaction)
+        );
+    });
+  }
+
+  result proto_protocol::cpp_calculate_transaction_id( const std::string& transaction )
+  {
+    return method_wrapper([&](result& _result)
+    {
+      _result = protocol::cpp_calculate_transaction_id(
+          cpp_proto_to_api_impl(transaction)
+        );
+    });
+  }
+
+  result proto_protocol::cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id )
+  {
+    return method_wrapper([&](result& _result)
+    {
+      _result = protocol::cpp_calculate_sig_digest(
+          cpp_proto_to_api_impl(transaction),
+          chain_id
+        );
+    });
+  }
+
+  result proto_protocol::cpp_serialize_transaction( const std::string& transaction )
+  {
+    return method_wrapper([&](result& _result)
+    {
+      _result = protocol::cpp_serialize_transaction(
+          cpp_proto_to_api_impl(transaction)
+        );
+    });
+  }
 } // namespace cpp
