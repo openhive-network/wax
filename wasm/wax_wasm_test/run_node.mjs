@@ -24,27 +24,21 @@ const transaction = JSON.stringify({
 
 const protoOps = [
   {
-    comment: {
-      parent_permlink: "/",
-      author: "alice",
-      permlink: "/",
-      title: "Best comment",
-      body: "<span>comment</span>",
-      json_metadata: "{}"
-    }
-  },
-  {
     vote: {
-      voter: "bob",
-      author: "alice",
-      permlink: "/",
-      weight: 1
+      voter: "otom",
+      author: "c0ff33a",
+      permlink: "ewxhnjbj",
+      weight: 2200
     }
   }
 ];
 
 const protoTx = JSON.stringify({
-  operations: protoOps
+  ref_block_num: 34559,
+  ref_block_prefix: 1271006404,
+  expiration: "2021-12-13T11:31:33",
+  operations: protoOps,
+  extensions: []
 });
 
 const negate = (value) => {
@@ -87,51 +81,46 @@ const numToHighLow = (value) => {
 
 const my_entrypoint = async() => {
   const provider = await Module();
+  /** @type {import("../../build_wasm/wax.d.ts").protocol} */
   const instance = new provider.protocol();
 
-  const testLib = (name, ...args) => {
-    console.debug(`\nTesting protocol::${name}`);
+  const testLib = (instance_, name, ...args) => {
+    console.debug(`\nTesting ${instance_.constructor.name}::${name}`);
 
-    const result = instance[name](...args);
+    const result = instance_[name](...args);
 
     if(result.value !== provider.error_code.ok) {
       console.error(`Failed. Error message: "${result.exception_message}"`);
-      assert.equal(false);
+      console.log('Data:', ...args);
+      assert.ok(false);
     }
 
     console.info(`>> ${result.content}`);
     return result.content;
   };
 
-  const privateKey = testLib("cpp_generate_private_key");
+  const privateKey = testLib(instance, "cpp_generate_private_key");
   assert.ok(privateKey); // Test if string is valid
 
-  const publicKey = testLib("cpp_calculate_public_key", privateKey);
+  const publicKey = testLib(instance, "cpp_calculate_public_key", privateKey);
   assert.match(publicKey, /^[1-9A-HJ-NP-Za-km-z]+$/m); // test base58 string
 
-  const txId = testLib("cpp_calculate_transaction_id", transaction);
+  const txId = testLib(instance, "cpp_calculate_transaction_id", transaction);
   assert.equal(txId, "da8ca54c9c3acad06915ae9d93988c367f5cd164"); // Check if transaction ids match
 
-  const serialized = testLib("cpp_serialize_transaction", transaction);
+  const serialized = testLib(instance, "cpp_serialize_transaction", transaction);
   assert.equal(serialized, "ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a980800"); // check serialized hex
 
-  const sigDigest = testLib("cpp_calculate_sig_digest", transaction, "beeab0de00000000000000000000000000000000000000000000000000000000");
+  const sigDigest = testLib(instance, "cpp_calculate_sig_digest", transaction, "beeab0de00000000000000000000000000000000000000000000000000000000");
   assert.equal(sigDigest, "1394412814ea3e444f65c46f075e15b9b82e6bea9241319b02743a8e593219e1");
 
-  testLib("cpp_validate_operation", JSON.stringify(vote_operation)); // validate single operation in json format
+  testLib(instance, "cpp_validate_operation", JSON.stringify(vote_operation)); // validate single operation in json format
 
-  testLib("cpp_validate_transaction", transaction); // validate entire transaction
+  testLib(instance, "cpp_validate_transaction", transaction); // validate entire transaction
 
-  testLib("cpp_calculate_manabar_full_regeneration_time", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
+  testLib(instance, "cpp_calculate_manabar_full_regeneration_time", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
-  testLib("cpp_calculate_current_manabar_value", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
-
-  protoOps.forEach(op => void testLib("cpp_validate_proto_operation", JSON.stringify(op)));
-
-  testLib("cpp_validate_proto_transaction", protoTx);
-
-  instance.cpp_validate_proto_operation("{}"); // Test if no segfault occurs
-  instance.cpp_validate_proto_transaction("{}"); // Test if no segfault occurs
+  testLib(instance, "cpp_calculate_current_manabar_value", 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
   assert.deepEqual(
     instance.cpp_general_asset(3200000035, ...numToHighLow(10)),
@@ -177,6 +166,35 @@ const my_entrypoint = async() => {
       amount: `${Number.MIN_SAFE_INTEGER}`
     }
   );
+
+  /** @type {import("../../build_wasm/wax.d.ts").proto_protocol} */
+  const protoInstance = new provider.proto_protocol();
+
+  protoOps.forEach(op => void testLib(protoInstance, "cpp_validate_operation", JSON.stringify(op)));
+
+  testLib(protoInstance, "cpp_validate_transaction", protoTx);
+
+  protoInstance.cpp_validate_operation("{}"); // Test if no segfault occurs
+  protoInstance.cpp_validate_transaction("{}"); // Test if no segfault occurs
+
+  const txIdProto = testLib(protoInstance, "cpp_calculate_transaction_id", protoTx);
+  assert.equal(txId, txIdProto);
+
+  const serializedProto = testLib(protoInstance, "cpp_serialize_transaction", protoTx);
+  assert.equal(serialized, serializedProto);
+
+  const sigDigestProto = testLib(protoInstance, "cpp_calculate_sig_digest", protoTx, "beeab0de00000000000000000000000000000000000000000000000000000000");
+  assert.equal(sigDigest, sigDigestProto);
+
+  const parsedProtoTx = testLib(protoInstance, "cpp_api_to_proto", transaction);
+  const parsedProtoOp = testLib(protoInstance, "cpp_api_to_proto", JSON.stringify(vote_operation));
+  assert.equal(parsedProtoTx, protoTx);
+  assert.equal(parsedProtoOp, JSON.stringify(protoOps[0]));
+
+  const parsedApiTx = testLib(protoInstance, "cpp_proto_to_api", protoTx);
+  const parsedApiOp = testLib(protoInstance, "cpp_proto_to_api", JSON.stringify(protoOps[0]));
+  assert.equal(parsedApiTx, transaction);
+  assert.equal(parsedApiOp, JSON.stringify(vote_operation));
 };
 
 my_entrypoint()
