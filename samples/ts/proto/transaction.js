@@ -1,6 +1,7 @@
 import * as _m0 from "protobufjs/minimal.js";
 import { comment } from "./comment.js";
 import { limit_order_cancel } from "./limit_order_cancel.js";
+import { recurrent_transfer } from "./recurrent_transfer.js";
 import { vote } from "./vote.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseoperation() {
@@ -16,6 +17,9 @@ export const operation = {
         }
         if (message.limit_order_cancel !== undefined) {
             limit_order_cancel.encode(message.limit_order_cancel, writer.uint32(138).fork()).ldelim();
+        }
+        if (message.recurrent_transfer !== undefined) {
+            recurrent_transfer.encode(message.recurrent_transfer, writer.uint32(146).fork()).ldelim();
         }
         return writer;
     },
@@ -44,6 +48,12 @@ export const operation = {
                     }
                     message.limit_order_cancel = limit_order_cancel.decode(reader, reader.uint32());
                     continue;
+                case 18:
+                    if (tag !== 146) {
+                        break;
+                    }
+                    message.recurrent_transfer = recurrent_transfer.decode(reader, reader.uint32());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -59,6 +69,9 @@ export const operation = {
             limit_order_cancel: isSet(object.limit_order_cancel)
                 ? limit_order_cancel.fromJSON(object.limit_order_cancel)
                 : undefined,
+            recurrent_transfer: isSet(object.recurrent_transfer)
+                ? recurrent_transfer.fromJSON(object.recurrent_transfer)
+                : undefined,
         };
     },
     toJSON(message) {
@@ -71,6 +84,9 @@ export const operation = {
         }
         if (message.limit_order_cancel !== undefined) {
             obj.limit_order_cancel = limit_order_cancel.toJSON(message.limit_order_cancel);
+        }
+        if (message.recurrent_transfer !== undefined) {
+            obj.recurrent_transfer = recurrent_transfer.toJSON(message.recurrent_transfer);
         }
         return obj;
     },
@@ -85,6 +101,9 @@ export const operation = {
         message.vote = (object.vote !== undefined && object.vote !== null) ? vote.fromPartial(object.vote) : undefined;
         message.limit_order_cancel = (object.limit_order_cancel !== undefined && object.limit_order_cancel !== null)
             ? limit_order_cancel.fromPartial(object.limit_order_cancel)
+            : undefined;
+        message.recurrent_transfer = (object.recurrent_transfer !== undefined && object.recurrent_transfer !== null)
+            ? recurrent_transfer.fromPartial(object.recurrent_transfer)
             : undefined;
         return message;
     },
