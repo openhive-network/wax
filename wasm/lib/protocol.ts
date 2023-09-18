@@ -11,3 +11,4 @@ export { authority } from "./proto/authority.js";
 export { comment } from "./proto/comment.js";
 export { vote } from "./proto/vote.js";
 export { limit_order_cancel } from "./proto/limit_order_cancel.js";
+export { recurrent_transfer } from "./proto/recurrent_transfer.js";

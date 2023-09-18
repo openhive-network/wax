@@ -9,6 +9,7 @@ import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
 import limit_order_cancel_pb2
+import recurrent_transfer_pb2
 import sys
 import vote_pb2
 
@@ -21,36 +22,40 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class operation(google.protobuf.message.Message):
+    """NOTE: do not change the order of any operations prior to the virtual operations
+    or it will trigger a hardfork.
+    """
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     COMMENT_FIELD_NUMBER: builtins.int
     VOTE_FIELD_NUMBER: builtins.int
     LIMIT_ORDER_CANCEL_FIELD_NUMBER: builtins.int
+    RECURRENT_TRANSFER_FIELD_NUMBER: builtins.int
     @property
     def comment(self) -> comment_pb2.comment: ...
     @property
     def vote(self) -> vote_pb2.vote: ...
     @property
     def limit_order_cancel(self) -> limit_order_cancel_pb2.limit_order_cancel: ...
+    @property
+    def recurrent_transfer(self) -> recurrent_transfer_pb2.recurrent_transfer: ...
     def __init__(
         self,
         *,
         comment: comment_pb2.comment | None = ...,
         vote: vote_pb2.vote | None = ...,
         limit_order_cancel: limit_order_cancel_pb2.limit_order_cancel | None = ...,
+        recurrent_transfer: recurrent_transfer_pb2.recurrent_transfer | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "value", b"value", "vote", b"vote"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "value", b"value", "vote", b"vote"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["comment", "vote", "limit_order_cancel"] | None: ...
+    def HasField(self, field_name: typing_extensions.Literal["comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "recurrent_transfer", b"recurrent_transfer", "value", b"value", "vote", b"vote"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "recurrent_transfer", b"recurrent_transfer", "value", b"value", "vote", b"vote"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["comment", "vote", "limit_order_cancel", "recurrent_transfer"] | None: ...
 
 global___operation = operation
 
 @typing_extensions.final
 class transaction(google.protobuf.message.Message):
-    """*
-    Example jsdoc
-    """
-
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     OPERATIONS_FIELD_NUMBER: builtins.int
