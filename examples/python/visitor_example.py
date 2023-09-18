@@ -18,6 +18,17 @@ tx_json = {
                 "json_metadata": "{}",
             }
         },
+        {
+            "recurrent_transfer": {
+                "from": "alice",
+                "to": "harry",
+                "amount": { "nai": "@@000000021", "precision": 3, "amount": "10" },
+                "memo": "it is only memo",
+                "recurrence": 1,
+                "executions": 3,
+                "extensions": [ { "recurrent_transfer_pair_id": { "pair_id" = 0 } } ]
+            }
+        }
     ]
 }
 
@@ -44,6 +55,18 @@ class MyOperationVisitor(OperationVisitor):
         assert op.title == "Best comment"
         assert op.body == "<span>comment</span>"
         assert op.json_metadata == "{}"
+
+    def recurrent_transfer(self, op: recurrent_transfer_pb2.recurrent_transfer) -> None:
+        print(f"Handling recurrent_transfer operation:\n{op}")
+        assert op.from == "alice"
+        assert op.to == "harry"
+        assert op.amount.nai == "@@000000021"
+        assert op.amount.precision == 3
+        assert op.amount.amount == "10"
+        assert op.memo == "it is only memo"
+        assert op.recurrence = 1
+        assert op.executions = 3
+        assert op.extensions[0].recurrent_transfer_pair_id.pair_id == 0
 
 
 if __name__ == "__main__":

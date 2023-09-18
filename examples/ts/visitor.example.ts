@@ -1,4 +1,4 @@
-import { OperationVisitor, transaction, comment, vote, limit_order_cancel } from "@hive/wax";
+import { OperationVisitor, transaction, comment, vote, limit_order_cancel, recurrent_transfer } from "@hive/wax";
 
 class MyVisitor extends OperationVisitor {
   public comment(op: comment): void {
@@ -8,6 +8,9 @@ class MyVisitor extends OperationVisitor {
     console.log('This should not be called on undefined op:', op.order);
   }
   public vote(op: vote): void {
+    console.log(op);
+  }
+  public recurrent_transfer(op: recurrent_transfer): void {
     console.log(op);
   }
 }
@@ -43,6 +46,17 @@ const tx = transaction.create({
     },
     {
       limit_order_cancel: undefined
+    },
+    {
+      recurrent_transfer: {
+        from: "alice",
+        to: "harry",
+        amount: { nai: "@@000000021", precision: 3, amount: "10" },
+        memo: "it is only memo",
+        recurrence: 1,
+        executions: 3,
+        extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } } ]
+      }
     }
   ]
 } as transaction);
