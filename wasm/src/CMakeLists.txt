@@ -45,7 +45,7 @@ target_include_directories( wax_wasm PUBLIC ${INCLUDES} )
 target_compile_options( wax_wasm PUBLIC -fexceptions )
 target_link_libraries( wax_wasm PUBLIC embind hive_protocol idbfs.js )
 # -sFORCE_FILESYSTEM=1 -sMODULARIZE=1 -sFILESYSTEM=1
-target_link_options( wax_wasm PUBLIC -fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1 )
+target_link_options( wax_wasm PUBLIC -fexceptions -sINITIAL_MEMORY=134217728 -sMODULARIZE=1 -sEXPORT_ES6=1 )
 set_target_properties( wax_wasm PROPERTIES OUTPUT_NAME wax_wasm.js )
 
 # Helper target, just to perform TypeScript wrapper generation
