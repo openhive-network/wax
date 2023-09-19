@@ -1,6 +1,12 @@
 from abc import ABC, abstractmethod
 
-from wax.proto import comment_pb2, limit_order_cancel_pb2, transaction_pb2, vote_pb2, recurrent_transfer_pb2
+from wax.proto import (
+    comment_pb2,
+    limit_order_cancel_pb2,
+    recurrent_transfer_pb2,
+    transaction_pb2,
+    vote_pb2,
+)
 
 
 class OperationVisitor(ABC):
