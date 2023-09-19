@@ -41,18 +41,6 @@ def validate_transaction(transaction: bytes) -> python_result:
     return response.value, response.content, response.exception_message
 
 @return_python_result
-def validate_proto_operation(operation: bytes) -> python_result:
-    cdef protocol obj
-    response = obj.cpp_validate_proto_operation(operation)
-    return response.value, response.content, response.exception_message
-
-@return_python_result
-def validate_proto_transaction(transaction: bytes) -> python_result:
-    cdef protocol obj
-    response = obj.cpp_validate_proto_transaction(transaction)
-    return response.value, response.content, response.exception_message
-
-@return_python_result
 def calculate_transaction_id(transaction: bytes) -> python_result:
     cdef protocol obj
     response = obj.cpp_calculate_transaction_id(transaction)
