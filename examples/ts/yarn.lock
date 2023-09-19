@@ -11,7 +11,7 @@
 
 "@hive/wax@file:../..":
   "resolved" "file:../.."
-  "version" "0.0.2-ef4e7ec"
+  "version" "0.0.2-be7b6d5"
   dependencies:
     "protobufjs" "^7.2.5"
 
