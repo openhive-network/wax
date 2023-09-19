@@ -18,6 +18,22 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class account_create(google.protobuf.message.Message):
+    """A new account may be created only by an existing account.
+    The account that creates a new account pays a fee.
+    The fee amount is set by the witnesses.
+
+    @param {asset} fee - Paid by creator. The witnesses decide the amount of the fee. Now, it is 3 HIVE.
+    @param {string} creator - An account that creates a new account.
+    @param {string} new_account_name - Valid account name may consist of many parts separated by a dot,
+                                       total may have up to 16 characters, parts have to start from a letter,
+                                       may be followed by numbers, or '-'.
+    @param {authority} owner
+    @param {authority} active
+    @param {authority} posting
+    @param {string} memo_key - Not authority, public memo key.
+    @param {string} json_metadata
+    """
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     FEE_FIELD_NUMBER: builtins.int
