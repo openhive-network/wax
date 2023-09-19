@@ -26,7 +26,7 @@ tx_json = {
         },
         {
             "recurrent_transfer": {
-                # "from": "alice", there is no from
+                "from": "alice", there is no from
                 "to": "harry",
                 "amount": {"nai": "@@000000021", "precision": 3, "amount": "10"},
                 "memo": "it is only memo",
@@ -64,7 +64,7 @@ class MyOperationVisitor(OperationVisitor):
 
     def recurrent_transfer(self, op: recurrent_transfer_pb2.recurrent_transfer) -> None:
         print(f"Handling recurrent_transfer operation:\n{op}")
-        # assert op._from == "alice" there is no from
+        assert op._from == "alice"
         assert op.to == "harry"
         assert op.amount.nai == "@@000000021"
         assert op.amount.precision == 3
