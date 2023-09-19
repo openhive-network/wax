@@ -10,7 +10,7 @@ export interface recurrent_transfer_extension {
     recurrent_transfer_pair_id?: recurrent_transfer_pair_id | undefined;
 }
 export interface recurrent_transfer {
-    from: string;
+    _from: string;
     to: string;
     amount: asset | undefined;
     memo: string;
@@ -72,7 +72,7 @@ export declare const recurrent_transfer: {
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;
     create<I extends {
-        from?: string | undefined;
+        _from?: string | undefined;
         to?: string | undefined;
         amount?: {
             amount?: string | undefined;
@@ -89,7 +89,7 @@ export declare const recurrent_transfer: {
             } | undefined;
         }[] | undefined;
     } & {
-        from?: string | undefined;
+        _from?: string | undefined;
         to?: string | undefined;
         amount?: ({
             amount?: string | undefined;
@@ -128,7 +128,7 @@ export declare const recurrent_transfer: {
         }[]>]: never; }) | undefined;
     } & { [K_5 in Exclude<keyof I, keyof recurrent_transfer>]: never; }>(base?: I | undefined): recurrent_transfer;
     fromPartial<I_1 extends {
-        from?: string | undefined;
+        _from?: string | undefined;
         to?: string | undefined;
         amount?: {
             amount?: string | undefined;
@@ -145,7 +145,7 @@ export declare const recurrent_transfer: {
             } | undefined;
         }[] | undefined;
     } & {
-        from?: string | undefined;
+        _from?: string | undefined;
         to?: string | undefined;
         amount?: ({
             amount?: string | undefined;

@@ -91,13 +91,14 @@ class recurrent_transfer(google.protobuf.message.Message):
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    FROM_FIELD_NUMBER: builtins.int
+    _FROM_FIELD_NUMBER: builtins.int
     TO_FIELD_NUMBER: builtins.int
     AMOUNT_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     RECURRENCE_FIELD_NUMBER: builtins.int
     EXECUTIONS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
+    _from: builtins.str
     to: builtins.str
     @property
     def amount(self) -> asset_pb2.asset: ...
@@ -109,6 +110,7 @@ class recurrent_transfer(google.protobuf.message.Message):
     def __init__(
         self,
         *,
+        _from: builtins.str | None = ...,
         to: builtins.str | None = ...,
         amount: asset_pb2.asset | None = ...,
         memo: builtins.str | None = ...,
@@ -116,7 +118,7 @@ class recurrent_transfer(google.protobuf.message.Message):
         executions: builtins.int | None = ...,
         extensions: collections.abc.Iterable[global___recurrent_transfer_extension] | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "from", b"from", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "extensions", b"extensions", "from", b"from", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["_from", b"_from", "amount", b"amount", "executions", b"executions", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["_from", b"_from", "amount", b"amount", "executions", b"executions", "extensions", b"extensions", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> None: ...
 
 global___recurrent_transfer = recurrent_transfer
