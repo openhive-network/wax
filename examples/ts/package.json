@@ -2,7 +2,8 @@
   "name": "examples",
   "scripts": {
     "examples": "npm-run-all -s example:*",
-    "example:visitor": "ts-node visitor.example.ts"
+    "example:visitor": "ts-node visitor.example.ts",
+    "example:proto_validate_api_response": "ts-node proto_validate_api_response.example.ts"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",
