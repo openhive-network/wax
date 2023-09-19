@@ -26,7 +26,7 @@ tx_json = {
         },
         {
             "recurrent_transfer": {
-                "from": "alice", there is no from
+                "from": "alice",
                 "to": "harry",
                 "amount": {"nai": "@@000000021", "precision": 3, "amount": "10"},
                 "memo": "it is only memo",
