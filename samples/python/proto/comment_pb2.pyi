@@ -16,6 +16,38 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class comment(google.protobuf.message.Message):
+    """Using comment operation a user may create a post or a comment.
+    From the blockchain point of view, it is the same operation – always comment.
+    If a comment has no parent, it is a post.
+    The parent of the comment may be a post or a comment.
+    Users may comment their own comments.
+
+    @param {string} parent_author - Account name, the author of the commented post or comment. 
+                                    If the operation creates a post, it is empty.
+                                    It cannot be modified.
+    @param {string} parent_permlink - The identifier of the commented post or comment.
+                                      When a user creates a post, it may contain the identifier of the community
+                                      (e.g. hive-174695) or main tag (e.g. travel).
+                                      It cannot be modified.
+    @param {string} author - Account name, the author of the post or the comment.
+                             It cannot be modified.
+    @param {string} permlink - Unique to the author, the identifier of the post or comment.
+                               It cannot be modified.
+    @param {string} title - The title of the submitted post, in case of the comment, is often empty.
+                            It may be modified.
+    @param {string} body - The content of the post or the comment.
+                           It may be modified.
+    @param {string} json_metadata - There is no blockchain validation on json_metadata,
+                                    but the structure has been established by the community.
+                                    From the blockchain point of view it is a json file.
+                                    For the second layer, the following keys may be used:
+                                    - app, e.g. peakd/2023.2.3
+                                    - format, e.g. markdown
+                                    - tags, e.g. photography
+                                    - users
+                                    - images
+    """
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     PARENT_AUTHOR_FIELD_NUMBER: builtins.int

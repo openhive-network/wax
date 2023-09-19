@@ -16,6 +16,14 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class limit_order_cancel(google.protobuf.message.Message):
+    """Cancels an order (limit_order_create_operation or limit_order_create2_operation)
+    and returns the balance to the owner.
+
+    @param {string} order
+    @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
+                              or limit_order_create2_operation.
+    """
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     ORDER_FIELD_NUMBER: builtins.int
