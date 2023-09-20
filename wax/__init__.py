@@ -3,6 +3,8 @@ from __future__ import annotations
 from .wax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
+    calculate_proto_sig_digest,
+    calculate_proto_transaction_id,
     calculate_public_key,
     calculate_sig_digest,
     calculate_transaction_id,
@@ -10,8 +12,11 @@ from .wax import (
     generate_private_key,
     hbd,
     hive,
+    serialize_proto_transaction,
     serialize_transaction,
     validate_operation,
+    validate_proto_operation,
+    validate_proto_transaction,
     validate_transaction,
     vests,
 )
@@ -36,4 +41,9 @@ __all__ = [
     "hive",
     "hbd",
     "vests",
+    "validate_proto_operation",
+    "validate_proto_transaction",
+    "calculate_proto_transaction_id",
+    "calculate_proto_sig_digest",
+    "serialize_proto_transaction",
 ]
