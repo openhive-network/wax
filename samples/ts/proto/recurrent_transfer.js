@@ -127,12 +127,12 @@ export const recurrent_transfer_extension = {
     },
 };
 function createBaserecurrent_transfer() {
-    return { _from: "", to: "", amount: undefined, memo: "", recurrence: 0, executions: 0, extensions: [] };
+    return { from_: "", to: "", amount: undefined, memo: "", recurrence: 0, executions: 0, extensions: [] };
 }
 export const recurrent_transfer = {
     encode(message, writer = _m0.Writer.create()) {
-        if (message._from !== "") {
-            writer.uint32(10).string(message._from);
+        if (message.from_ !== "") {
+            writer.uint32(10).string(message.from_);
         }
         if (message.to !== "") {
             writer.uint32(18).string(message.to);
@@ -165,7 +165,7 @@ export const recurrent_transfer = {
                     if (tag !== 10) {
                         break;
                     }
-                    message._from = reader.string();
+                    message.from_ = reader.string();
                     continue;
                 case 2:
                     if (tag !== 18) {
@@ -213,7 +213,7 @@ export const recurrent_transfer = {
     },
     fromJSON(object) {
         return {
-            _from: isSet(object.from) ? String(object.from) : "",
+            from_: isSet(object.from_) ? String(object.from_) : "",
             to: isSet(object.to) ? String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
             memo: isSet(object.memo) ? String(object.memo) : "",
@@ -227,8 +227,8 @@ export const recurrent_transfer = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message._from !== "") {
-            obj.from = message._from;
+        if (message.from_ !== "") {
+            obj.from_ = message.from_;
         }
         if (message.to !== "") {
             obj.to = message.to;
@@ -256,7 +256,7 @@ export const recurrent_transfer = {
     fromPartial(object) {
         var _a, _b, _c, _d, _e, _f;
         const message = createBaserecurrent_transfer();
-        message._from = (_a = object._from) !== null && _a !== void 0 ? _a : "";
+        message.from_ = (_a = object.from_) !== null && _a !== void 0 ? _a : "";
         message.to = (_b = object.to) !== null && _b !== void 0 ? _b : "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
