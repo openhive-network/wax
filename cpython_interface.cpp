@@ -69,6 +69,8 @@ namespace cpp
 
     std::string key = op.get_object().begin()->key();
 
+    // TODO: Add map operation type key check here
+
     FC_ASSERT(op.get_object()[key].is_object(), "Operation should contain the body");
 
     return fc::mutable_variant_object{"type", key + "_operation"}
