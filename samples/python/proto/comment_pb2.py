@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcomment.proto\x12\x15hive.protocol.buffers\"\x8f\x01\n\x07\x63omment\x12\x15\n\rparent_author\x18\x01 \x02(\t\x12\x17\n\x0fparent_permlink\x18\x02 \x02(\t\x12\x0e\n\x06\x61uthor\x18\x03 \x02(\t\x12\x10\n\x08permlink\x18\x04 \x02(\t\x12\r\n\x05title\x18\x05 \x02(\t\x12\x0c\n\x04\x62ody\x18\x06 \x02(\t\x12\x15\n\rjson_metadata\x18\x07 \x02(\t')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rcomment.proto\x12\x15hive.protocol.buffers\"\xbe\x01\n\x07\x63omment\x12$\n\rparent_author\x18\x01 \x02(\tR\rparent_author\x12(\n\x0fparent_permlink\x18\x02 \x02(\tR\x0fparent_permlink\x12\x0e\n\x06\x61uthor\x18\x03 \x02(\t\x12\x10\n\x08permlink\x18\x04 \x02(\t\x12\r\n\x05title\x18\x05 \x02(\t\x12\x0c\n\x04\x62ody\x18\x06 \x02(\t\x12$\n\rjson_metadata\x18\x07 \x02(\tR\rjson_metadata')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -22,5 +22,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _globals['_COMMENT']._serialized_start=41
-  _globals['_COMMENT']._serialized_end=184
+  _globals['_COMMENT']._serialized_end=231
 # @@protoc_insertion_point(module_scope)
