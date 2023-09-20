@@ -199,17 +199,22 @@ test_wax_wasm_proto_pattern:
 
   interruptible: true
   needs:
+    - job: wax_wasm_build
+      artifacts: true
+    - job: wax_wasm_package_generation
+      artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   tags:
     - public-runner-docker
 
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference $CI_PROJECT_DIR/samples/ts/proto $CI_PROJECT_DIR/wasm/dist/proto
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/wasm/dist/proto"
+    - npm pack --dry-run --json | jq -r '.[0]["files"][]["path"]' | diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/samples/ts/npm-pack.out" -
   artifacts:
     paths:
       - "$CI_PROJECT_DIR/wasm/dist"
- 
+
     when: always
     expire_in: 1 week
 
