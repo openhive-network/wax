@@ -72,7 +72,7 @@ class recurrent_transfer(google.protobuf.message.Message):
     - The one account may define up to 255 recurrent transfers to other accounts. 
     - The execution date of the last transfer should be no more than 730 days in the future.
 
-    @param {string} from
+    @param {string} from_
     @param {string} to - Account to transfer asset to. Cannot set a transfer to yourself.
     @param {asset} amount - The amount of asset to transfer from @ref from to @ref to.
                             If the recurrent transfer failed 10 (HIVE_MAX_CONSECUTIVE_RECURRENT_TRANSFER_FAILURES)
@@ -91,14 +91,14 @@ class recurrent_transfer(google.protobuf.message.Message):
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    _FROM_FIELD_NUMBER: builtins.int
+    FROM__FIELD_NUMBER: builtins.int
     TO_FIELD_NUMBER: builtins.int
     AMOUNT_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     RECURRENCE_FIELD_NUMBER: builtins.int
     EXECUTIONS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
-    _from: builtins.str
+    from_: builtins.str
     to: builtins.str
     @property
     def amount(self) -> asset_pb2.asset: ...
@@ -110,7 +110,7 @@ class recurrent_transfer(google.protobuf.message.Message):
     def __init__(
         self,
         *,
-        _from: builtins.str | None = ...,
+        from_: builtins.str | None = ...,
         to: builtins.str | None = ...,
         amount: asset_pb2.asset | None = ...,
         memo: builtins.str | None = ...,
@@ -118,7 +118,7 @@ class recurrent_transfer(google.protobuf.message.Message):
         executions: builtins.int | None = ...,
         extensions: collections.abc.Iterable[global___recurrent_transfer_extension] | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["_from", b"_from", "amount", b"amount", "executions", b"executions", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["_from", b"_from", "amount", b"amount", "executions", b"executions", "extensions", b"extensions", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "from_", b"from_", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "extensions", b"extensions", "from_", b"from_", "memo", b"memo", "recurrence", b"recurrence", "to", b"to"]) -> None: ...
 
 global___recurrent_transfer = recurrent_transfer
