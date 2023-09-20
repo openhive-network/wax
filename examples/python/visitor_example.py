@@ -64,7 +64,7 @@ class MyOperationVisitor(OperationVisitor):
 
     def recurrent_transfer(self, op: recurrent_transfer_pb2.recurrent_transfer) -> None:
         print(f"Handling recurrent_transfer operation:\n{op}")
-        assert op._from == "alice"
+        assert op.from_ == "alice"
         assert op.to == "harry"
         assert op.amount.nai == "@@000000021"
         assert op.amount.precision == 3
