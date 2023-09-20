@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x66uture_extensions.proto\x12\x15hive.protocol.buffers\"\x08\n\x06void_t\"Q\n\x11\x66uture_extensions\x12/\n\x06void_t\x18\x01 \x01(\x0b\x32\x1d.hive.protocol.buffers.void_tH\x00\x42\x0b\n\textension')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x66uture_extensions.proto\x12\x15hive.protocol.buffers\"\x08\n\x06void_t\"Y\n\x11\x66uture_extensions\x12\x37\n\x06void_t\x18\x01 \x01(\x0b\x32\x1d.hive.protocol.buffers.void_tH\x00R\x06void_tB\x0b\n\textension')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,5 +24,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_VOID_T']._serialized_start=50
   _globals['_VOID_T']._serialized_end=58
   _globals['_FUTURE_EXTENSIONS']._serialized_start=60
-  _globals['_FUTURE_EXTENSIONS']._serialized_end=141
+  _globals['_FUTURE_EXTENSIONS']._serialized_end=149
 # @@protoc_insertion_point(module_scope)
