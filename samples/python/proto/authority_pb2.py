@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x61uthority.proto\x12\x15hive.protocol.buffers\"\x99\x02\n\tauthority\x12\x18\n\x10weight_threshold\x18\x01 \x02(\r\x12I\n\raccount_auths\x18\x02 \x03(\x0b\x32\x32.hive.protocol.buffers.authority.AccountAuthsEntry\x12\x41\n\tkey_auths\x18\x03 \x03(\x0b\x32..hive.protocol.buffers.authority.KeyAuthsEntry\x1a\x33\n\x11\x41\x63\x63ountAuthsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\r:\x02\x38\x01\x1a/\n\rKeyAuthsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\r:\x02\x38\x01')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0f\x61uthority.proto\x12\x15hive.protocol.buffers\"\xb3\x02\n\tauthority\x12\x18\n\x10weight_threshold\x18\x01 \x02(\r\x12X\n\raccount_auths\x18\x02 \x03(\x0b\x32\x32.hive.protocol.buffers.authority.AccountAuthsEntryR\raccount_auths\x12L\n\tkey_auths\x18\x03 \x03(\x0b\x32..hive.protocol.buffers.authority.KeyAuthsEntryR\tkey_auths\x1a\x33\n\x11\x41\x63\x63ountAuthsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\r:\x02\x38\x01\x1a/\n\rKeyAuthsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\r:\x02\x38\x01')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -26,9 +26,9 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _AUTHORITY_KEYAUTHSENTRY._options = None
   _AUTHORITY_KEYAUTHSENTRY._serialized_options = b'8\001'
   _globals['_AUTHORITY']._serialized_start=43
-  _globals['_AUTHORITY']._serialized_end=324
-  _globals['_AUTHORITY_ACCOUNTAUTHSENTRY']._serialized_start=224
-  _globals['_AUTHORITY_ACCOUNTAUTHSENTRY']._serialized_end=275
-  _globals['_AUTHORITY_KEYAUTHSENTRY']._serialized_start=277
-  _globals['_AUTHORITY_KEYAUTHSENTRY']._serialized_end=324
+  _globals['_AUTHORITY']._serialized_end=350
+  _globals['_AUTHORITY_ACCOUNTAUTHSENTRY']._serialized_start=250
+  _globals['_AUTHORITY_ACCOUNTAUTHSENTRY']._serialized_end=301
+  _globals['_AUTHORITY_KEYAUTHSENTRY']._serialized_start=303
+  _globals['_AUTHORITY_KEYAUTHSENTRY']._serialized_end=350
 # @@protoc_insertion_point(module_scope)

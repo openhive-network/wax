@@ -15,7 +15,7 @@ import asset_pb2 as asset__pb2
 import authority_pb2 as authority__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\raccount.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\x1a\x0f\x61uthority.proto\"\xc0\x01\n\x0e\x61\x63\x63ount_create\x12)\n\x03\x66\x65\x65\x18\x01 \x02(\x0b\x32\x1c.hive.protocol.buffers.asset\x12\x0f\n\x07\x63reator\x18\x02 \x02(\t\x12\x18\n\x10new_account_name\x18\x03 \x02(\t\x12/\n\x05owner\x18\x04 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x10\n\x08memo_key\x18\x05 \x02(\t\x12\x15\n\rjson_metadata\x18\x06 \x02(\t')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\raccount.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\x1a\x0f\x61uthority.proto\"\xeb\x01\n\x0e\x61\x63\x63ount_create\x12)\n\x03\x66\x65\x65\x18\x01 \x02(\x0b\x32\x1c.hive.protocol.buffers.asset\x12\x0f\n\x07\x63reator\x18\x02 \x02(\t\x12*\n\x10new_account_name\x18\x03 \x02(\tR\x10new_account_name\x12/\n\x05owner\x18\x04 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x1a\n\x08memo_key\x18\x05 \x02(\tR\x08memo_key\x12$\n\rjson_metadata\x18\x06 \x02(\tR\rjson_metadata')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,5 +24,5 @@ if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
   _globals['_ACCOUNT_CREATE']._serialized_start=71
-  _globals['_ACCOUNT_CREATE']._serialized_end=263
+  _globals['_ACCOUNT_CREATE']._serialized_end=306
 # @@protoc_insertion_point(module_scope)
