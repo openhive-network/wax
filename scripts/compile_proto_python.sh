@@ -10,7 +10,7 @@ OUTPUT_DIR="${PROJECT_DIR}/wax/proto"
 INIT_FILE_PATH="${OUTPUT_DIR}/__init__.py"
 
 if [ -d "${OUTPUT_DIR}" ]; then
-  rm -r "${OUTPUT_DIR}"
+  rm -rf "${OUTPUT_DIR}"
 fi
 
 mkdir -p "${OUTPUT_DIR}"
