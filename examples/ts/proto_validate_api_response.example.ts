@@ -1,5 +1,7 @@
 import MainModule from "@hive/wax";
 
+import assert from "assert";
+
 const apiData = JSON.stringify({
   "ref_block_num": 19260,
   "ref_block_prefix": 2140466769,
@@ -25,5 +27,11 @@ const apiData = JSON.stringify({
   const provider = await MainModule();
   const protoInstance = new provider.proto_protocol();
 
-  protoInstance.cpp_validate_transaction(apiData);
+  {
+    const protoData = protoInstance.cpp_api_to_proto(apiData);
+    assert.equal(protoData.value, provider.error_code.ok);
+
+    const result = protoInstance.cpp_validate_transaction(protoData.content);
+    assert.equal(result.value, provider.error_code.ok);
+  }
 })();
