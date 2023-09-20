@@ -34,3 +34,10 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_hive( long amount )
         json_asset cpp_hbd( long amount )
         json_asset cpp_vests( long amount )
+    
+    cdef cppclass proto_protocol:
+        result cpp_validate_operation( string operation )
+        result cpp_validate_transaction( string transaction )
+        result cpp_calculate_transaction_id( string transaction )
+        result cpp_calculate_sig_digest( string transaction, string chain_id )
+        result cpp_serialize_transaction( string transaction )

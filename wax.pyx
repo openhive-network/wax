@@ -3,7 +3,7 @@ from functools import wraps
 
 from libcpp.string cimport string
 
-from wax cimport error_code, result, protocol
+from wax cimport error_code, result, protocol, proto_protocol
 from .wax_result import python_result, python_error_code, python_json_asset
 
 def return_python_result(foo):
@@ -105,3 +105,33 @@ def vests(amount: int) -> python_json_asset:
     cdef protocol obj
     response = obj.cpp_vests(amount)
     return response.amount, response.precision, response.nai
+
+@return_python_result
+def validate_proto_operation(operation: bytes) -> python_result:
+    cdef proto_protocol obj
+    response = obj.cpp_validate_operation(operation)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
+def validate_proto_transaction(transaction: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_validate_transaction( transaction )
+  return response.value, response.content, response.exception_message
+
+@return_python_result
+def calculate_proto_transaction_id(transaction: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_calculate_transaction_id( transaction )
+  return response.value, response.content, response.exception_message
+
+@return_python_result
+def calculate_proto_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_calculate_sig_digest( transaction, chain_id )
+  return response.value, response.content, response.exception_message
+
+@return_python_result
+def serialize_proto_transaction(transaction: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_serialize_transaction( transaction )
+  return response.value, response.content, response.exception_message
