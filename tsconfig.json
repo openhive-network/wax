@@ -37,7 +37,7 @@
 
     "allowJs": false,
 
-    "target": "ES6",
+    "target": "commonjs",
     "lib": [
       "ES2017"
     ],
