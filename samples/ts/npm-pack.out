@@ -3,8 +3,9 @@ build_wasm/wax_wasm.js
 build_wasm/wax_wasm.wasm
 build_wasm/wax.d.ts
 package.json
-wasm/dist/proto/account.d.ts
-wasm/dist/proto/account.js
+wasm/dist/npm-pack.gen
+wasm/dist/proto/account_create.d.ts
+wasm/dist/proto/account_create.js
 wasm/dist/proto/asset.d.ts
 wasm/dist/proto/asset.js
 wasm/dist/proto/authority.d.ts
@@ -19,6 +20,8 @@ wasm/dist/proto/recurrent_transfer.d.ts
 wasm/dist/proto/recurrent_transfer.js
 wasm/dist/proto/transaction.d.ts
 wasm/dist/proto/transaction.js
+wasm/dist/proto/transfer.d.ts
+wasm/dist/proto/transfer.js
 wasm/dist/proto/vote.d.ts
 wasm/dist/proto/vote.js
 wasm/dist/protocol.d.ts
