@@ -13,10 +13,12 @@ class MyVisitor extends OperationVisitor {
     console.log(op);
   }
   public recurrent_transfer(op: recurrent_transfer): void {
-    const jsonData = recurrent_transfer.toJSON(op) as { from?: string };
+    // Example json API transforming
+    const jsonData = recurrent_transfer.toJSON(op) as { from?: string; to?: string; };
 
-    assert.equal(jsonData.from, op.from_account); // XXX: This field should have a different name
-	assert.equal(jsonData.to, op.to_account);
+    assert.equal(jsonData.from, op.from_account);
+    assert.equal(jsonData.to, op.to_account);
+
     console.log(op);
   }
 }
