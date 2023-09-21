@@ -208,7 +208,8 @@ test_wax_wasm_proto_pattern:
 
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/wasm/dist/proto"
-    - npm pack --dry-run --json | jq -r '.[0]["files"][]["path"]' | diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/samples/ts/npm-pack.out" -
+    - npm pack --dry-run --json | jq -r '.[0]["files"][]["path"]' > $CI_PROJECT_DIR/wasm/dist/npm-pack.gen
+    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
   artifacts:
     paths:
       - "$CI_PROJECT_DIR/wasm/dist"
