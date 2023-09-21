@@ -40,6 +40,8 @@ class account_create(google.protobuf.message.Message):
     CREATOR_FIELD_NUMBER: builtins.int
     NEW_ACCOUNT_NAME_FIELD_NUMBER: builtins.int
     OWNER_FIELD_NUMBER: builtins.int
+    ACTIVE_FIELD_NUMBER: builtins.int
+    POSTING_FIELD_NUMBER: builtins.int
     MEMO_KEY_FIELD_NUMBER: builtins.int
     JSON_METADATA_FIELD_NUMBER: builtins.int
     @property
@@ -48,6 +50,10 @@ class account_create(google.protobuf.message.Message):
     new_account_name: builtins.str
     @property
     def owner(self) -> authority_pb2.authority: ...
+    @property
+    def active(self) -> authority_pb2.authority: ...
+    @property
+    def posting(self) -> authority_pb2.authority: ...
     memo_key: builtins.str
     json_metadata: builtins.str
     def __init__(
@@ -57,10 +63,12 @@ class account_create(google.protobuf.message.Message):
         creator: builtins.str | None = ...,
         new_account_name: builtins.str | None = ...,
         owner: authority_pb2.authority | None = ...,
+        active: authority_pb2.authority | None = ...,
+        posting: authority_pb2.authority | None = ...,
         memo_key: builtins.str | None = ...,
         json_metadata: builtins.str | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["creator", b"creator", "fee", b"fee", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["creator", b"creator", "fee", b"fee", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["active", b"active", "creator", b"creator", "fee", b"fee", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner", "posting", b"posting"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["active", b"active", "creator", b"creator", "fee", b"fee", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner", "posting", b"posting"]) -> None: ...
 
 global___account_create = account_create
