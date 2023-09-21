@@ -83,6 +83,8 @@ namespace cpp
 
     std::string key = op.get_object().begin()->key();
 
+    // TODO: Add map operation type key check here
+
     FC_ASSERT(op.get_object()[key].is_object(), "Operation should contain the body");
     
     if(op.get_object()[key].get_object().contains("extensions")) {

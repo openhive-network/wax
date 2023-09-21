@@ -1,5 +1,7 @@
 import { OperationVisitor, transaction, comment, vote, limit_order_cancel, recurrent_transfer } from "@hive/wax";
 
+import assert from "assert";
+
 class MyVisitor extends OperationVisitor {
   public comment(op: comment): void {
     console.log('Got comment operation:', op.title);
@@ -11,6 +13,9 @@ class MyVisitor extends OperationVisitor {
     console.log(op);
   }
   public recurrent_transfer(op: recurrent_transfer): void {
+    const jsonData = recurrent_transfer.toJSON(op) as { from?: string };
+
+    assert.equal(jsonData.from, op.from_); // XXX: This field should have a different name
     console.log(op);
   }
 }
@@ -49,7 +54,7 @@ const tx = transaction.create({
     },
     {
       recurrent_transfer: {
-        from: "alice",
+        from_: "alice",
         to: "harry",
         amount: { nai: "@@000000021", precision: 3, amount: "10" },
         memo: "it is only memo",
