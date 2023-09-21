@@ -152,9 +152,7 @@ test_wax_protobuf_python:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - poetry install 
-    - cd /builds/hive/wax/wax
-    - pytest ./tests/
+    - pytest /builds/hive/wax/wax/tests/
 
 test_wax_protobuf_python_pattern:
   extends: .test_python_env
