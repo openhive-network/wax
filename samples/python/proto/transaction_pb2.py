@@ -11,13 +11,16 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-import comment_pb2 as comment__pb2
+import future_extensions_pb2 as future__extensions__pb2
 import vote_pb2 as vote__pb2
+import comment_pb2 as comment__pb2
+import transfer_pb2 as transfer__pb2
 import limit_order_cancel_pb2 as limit__order__cancel__pb2
+import account_create_pb2 as account__create__pb2
 import recurrent_transfer_pb2 as recurrent__transfer__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\rcomment.proto\x1a\nvote.proto\x1a\x18limit_order_cancel.proto\x1a\x18recurrent_transfer.proto\"\xae\x02\n\toperation\x12\x31\n\x07\x63omment\x18\x0f \x01(\x0b\x32\x1e.hive.protocol.buffers.commentH\x00\x12+\n\x04vote\x18\x10 \x01(\x0b\x32\x1b.hive.protocol.buffers.voteH\x00\x12[\n\x12limit_order_cancel\x18\x11 \x01(\x0b\x32).hive.protocol.buffers.limit_order_cancelH\x00R\x12limit_order_cancel\x12[\n\x12recurrent_transfer\x18\x12 \x01(\x0b\x32).hive.protocol.buffers.recurrent_transferH\x00R\x12recurrent_transferB\x07\n\x05value\"C\n\x0btransaction\x12\x34\n\noperations\x18\x12 \x03(\x0b\x32 .hive.protocol.buffers.operation')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\x17\x66uture_extensions.proto\x1a\nvote.proto\x1a\rcomment.proto\x1a\x0etransfer.proto\x1a\x18limit_order_cancel.proto\x1a\x14\x61\x63\x63ount_create.proto\x1a\x18recurrent_transfer.proto\"\xb4\x03\n\toperation\x12+\n\x04vote\x18\x01 \x01(\x0b\x32\x1b.hive.protocol.buffers.voteH\x00\x12\x31\n\x07\x63omment\x18\x02 \x01(\x0b\x32\x1e.hive.protocol.buffers.commentH\x00\x12\x33\n\x08transfer\x18\x03 \x01(\x0b\x32\x1f.hive.protocol.buffers.transferH\x00\x12[\n\x12limit_order_cancel\x18\x07 \x01(\x0b\x32).hive.protocol.buffers.limit_order_cancelH\x00R\x12limit_order_cancel\x12O\n\x0e\x61\x63\x63ount_create\x18\n \x01(\x0b\x32%.hive.protocol.buffers.account_createH\x00R\x0e\x61\x63\x63ount_create\x12[\n\x12recurrent_transfer\x18\x32 \x01(\x0b\x32).hive.protocol.buffers.recurrent_transferH\x00R\x12recurrent_transferB\x07\n\x05value\"\xe7\x01\n\x0btransaction\x12$\n\rref_block_num\x18\x01 \x02(\rR\rref_block_num\x12*\n\x10ref_block_prefix\x18\x02 \x02(\rR\x10ref_block_prefix\x12\x12\n\nexpiration\x18\x03 \x02(\t\x12\x34\n\noperations\x18\x04 \x03(\x0b\x32 .hive.protocol.buffers.operation\x12<\n\nextensions\x18\x05 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -25,8 +28,8 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transaction_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _globals['_OPERATION']._serialized_start=124
-  _globals['_OPERATION']._serialized_end=426
-  _globals['_TRANSACTION']._serialized_start=428
-  _globals['_TRANSACTION']._serialized_end=495
+  _globals['_OPERATION']._serialized_start=187
+  _globals['_OPERATION']._serialized_end=623
+  _globals['_TRANSACTION']._serialized_start=626
+  _globals['_TRANSACTION']._serialized_end=857
 # @@protoc_insertion_point(module_scope)
