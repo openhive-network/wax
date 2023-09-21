@@ -30,7 +30,7 @@
 
     "outDir": "./wasm/dist",
 
-    "removeComments": true,
+    "removeComments": false,
     "checkJs": false,
     "strict": true,
     "alwaysStrict": true,
