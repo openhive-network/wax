@@ -63,6 +63,20 @@ namespace cpp
 
   // PROTO TO API --------------------------------
 
+  fc::variants parse_proto_extensions( const fc::variant& ex ) 
+  {
+    fc::variants result;
+    const fc::variants& extensions = ex.get_array();
+    std::string key;
+    for(const auto& extension : extensions) {
+      key = extension.get_object().begin()->key();
+      FC_ASSERT(extension.get_object()[key].is_object(), "Extension should contain the body");
+      result.emplace_back(std::move(fc::mutable_variant_object{"type", key}("value", extension.get_object()[key].get_object())));
+    }
+    return result;
+  }
+  
+
   fc::mutable_variant_object parse_proto_operation( const fc::variant& op )
   {
     FC_ASSERT(op.is_object() && op.get_object().size(), "Operation cannot be empty");
@@ -70,9 +84,17 @@ namespace cpp
     std::string key = op.get_object().begin()->key();
 
     FC_ASSERT(op.get_object()[key].is_object(), "Operation should contain the body");
-
-    return fc::mutable_variant_object{"type", key + "_operation"}
-      ("value", op.get_object()[key].get_object());
+    
+    if(op.get_object()[key].get_object().contains("extensions")) {
+      fc::variants result = parse_proto_extensions(op.get_object()[key].get_object()["extensions"]);
+      auto operation_with_extensions = fc::mutable_variant_object{op.get_object()[key].get_object()}("extensions", result);
+      return fc::mutable_variant_object{"type", key + "_operation"}
+        ("value", operation_with_extensions);
+    }
+    else {
+      return fc::mutable_variant_object{"type", key + "_operation"}
+        ("value", op.get_object()[key].get_object());
+    }
   }
 
   fc::mutable_variant_object parse_proto_transaction( const fc::variant& trx )
