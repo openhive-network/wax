@@ -39,8 +39,8 @@ export declare const operation: {
             orderid?: number | undefined;
         } | undefined;
         recurrent_transfer?: {
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -93,8 +93,8 @@ export declare const operation: {
             orderid?: number | undefined;
         } & { [K_2 in Exclude<keyof I["limit_order_cancel"], keyof limit_order_cancel>]: never; }) | undefined;
         recurrent_transfer?: ({
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -110,8 +110,8 @@ export declare const operation: {
                 } | undefined;
             }[] | undefined;
         } & {
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -170,8 +170,8 @@ export declare const operation: {
             orderid?: number | undefined;
         } | undefined;
         recurrent_transfer?: {
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -224,8 +224,8 @@ export declare const operation: {
             orderid?: number | undefined;
         } & { [K_12 in Exclude<keyof I_1["limit_order_cancel"], keyof limit_order_cancel>]: never; }) | undefined;
         recurrent_transfer?: ({
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -241,8 +241,8 @@ export declare const operation: {
                 } | undefined;
             }[] | undefined;
         } & {
-            from_?: string | undefined;
-            to?: string | undefined;
+            from_account?: string | undefined;
+            to_account?: string | undefined;
             amount?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -308,8 +308,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -348,8 +348,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -386,8 +386,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -440,8 +440,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } & { [K_2 in Exclude<keyof I["operations"][number]["limit_order_cancel"], keyof limit_order_cancel>]: never; }) | undefined;
             recurrent_transfer?: ({
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -457,8 +457,8 @@ export declare const transaction: {
                     } | undefined;
                 }[] | undefined;
             } & {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: ({
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -516,8 +516,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -557,8 +557,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -597,8 +597,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -635,8 +635,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -689,8 +689,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } & { [K_14 in Exclude<keyof I_1["operations"][number]["limit_order_cancel"], keyof limit_order_cancel>]: never; }) | undefined;
             recurrent_transfer?: ({
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -706,8 +706,8 @@ export declare const transaction: {
                     } | undefined;
                 }[] | undefined;
             } & {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: ({
                     amount?: string | undefined;
                     precision?: number | undefined;
@@ -765,8 +765,8 @@ export declare const transaction: {
                 orderid?: number | undefined;
             } | undefined;
             recurrent_transfer?: {
-                from_?: string | undefined;
-                to?: string | undefined;
+                from_account?: string | undefined;
+                to_account?: string | undefined;
                 amount?: {
                     amount?: string | undefined;
                     precision?: number | undefined;
