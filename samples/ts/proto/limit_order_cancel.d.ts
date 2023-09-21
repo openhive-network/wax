@@ -1,5 +1,13 @@
 import * as _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
+/**
+ * Cancels an order (limit_order_create_operation or limit_order_create2_operation)
+ * and returns the balance to the owner.
+ *
+ * @param {string} order
+ * @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
+ *                           or limit_order_create2_operation.
+ */
 export interface limit_order_cancel {
     order: string;
     orderid: number;
