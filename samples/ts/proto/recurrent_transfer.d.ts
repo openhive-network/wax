@@ -10,8 +10,8 @@ export interface recurrent_transfer_extension {
     recurrent_transfer_pair_id?: recurrent_transfer_pair_id | undefined;
 }
 export interface recurrent_transfer {
-    from_: string;
-    to: string;
+    from_account: string;
+    to_account: string;
     amount: asset | undefined;
     memo: string;
     recurrence: number;
@@ -72,8 +72,8 @@ export declare const recurrent_transfer: {
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;
     create<I extends {
-        from_?: string | undefined;
-        to?: string | undefined;
+        from_account?: string | undefined;
+        to_account?: string | undefined;
         amount?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -89,8 +89,8 @@ export declare const recurrent_transfer: {
             } | undefined;
         }[] | undefined;
     } & {
-        from_?: string | undefined;
-        to?: string | undefined;
+        from_account?: string | undefined;
+        to_account?: string | undefined;
         amount?: ({
             amount?: string | undefined;
             precision?: number | undefined;
@@ -128,8 +128,8 @@ export declare const recurrent_transfer: {
         }[]>]: never; }) | undefined;
     } & { [K_5 in Exclude<keyof I, keyof recurrent_transfer>]: never; }>(base?: I | undefined): recurrent_transfer;
     fromPartial<I_1 extends {
-        from_?: string | undefined;
-        to?: string | undefined;
+        from_account?: string | undefined;
+        to_account?: string | undefined;
         amount?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -145,8 +145,8 @@ export declare const recurrent_transfer: {
             } | undefined;
         }[] | undefined;
     } & {
-        from_?: string | undefined;
-        to?: string | undefined;
+        from_account?: string | undefined;
+        to_account?: string | undefined;
         amount?: ({
             amount?: string | undefined;
             precision?: number | undefined;

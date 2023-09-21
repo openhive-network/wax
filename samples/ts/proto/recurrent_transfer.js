@@ -127,15 +127,23 @@ export const recurrent_transfer_extension = {
     },
 };
 function createBaserecurrent_transfer() {
-    return { from_: "", to: "", amount: undefined, memo: "", recurrence: 0, executions: 0, extensions: [] };
+    return {
+        from_account: "",
+        to_account: "",
+        amount: undefined,
+        memo: "",
+        recurrence: 0,
+        executions: 0,
+        extensions: [],
+    };
 }
 export const recurrent_transfer = {
     encode(message, writer = _m0.Writer.create()) {
-        if (message.from_ !== "") {
-            writer.uint32(10).string(message.from_);
+        if (message.from_account !== "") {
+            writer.uint32(10).string(message.from_account);
         }
-        if (message.to !== "") {
-            writer.uint32(18).string(message.to);
+        if (message.to_account !== "") {
+            writer.uint32(18).string(message.to_account);
         }
         if (message.amount !== undefined) {
             asset.encode(message.amount, writer.uint32(26).fork()).ldelim();
@@ -165,13 +173,13 @@ export const recurrent_transfer = {
                     if (tag !== 10) {
                         break;
                     }
-                    message.from_ = reader.string();
+                    message.from_account = reader.string();
                     continue;
                 case 2:
                     if (tag !== 18) {
                         break;
                     }
-                    message.to = reader.string();
+                    message.to_account = reader.string();
                     continue;
                 case 3:
                     if (tag !== 26) {
@@ -213,8 +221,8 @@ export const recurrent_transfer = {
     },
     fromJSON(object) {
         return {
-            from_: isSet(object.from_) ? String(object.from_) : "",
-            to: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? String(object.from) : "",
+            to_account: isSet(object.to) ? String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
             memo: isSet(object.memo) ? String(object.memo) : "",
             recurrence: isSet(object.recurrence) ? Number(object.recurrence) : 0,
@@ -227,11 +235,11 @@ export const recurrent_transfer = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.from_ !== "") {
-            obj.from_ = message.from_;
+        if (message.from_account !== "") {
+            obj.from = message.from_account;
         }
-        if (message.to !== "") {
-            obj.to = message.to;
+        if (message.to_account !== "") {
+            obj.to = message.to_account;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
@@ -256,8 +264,8 @@ export const recurrent_transfer = {
     fromPartial(object) {
         var _a, _b, _c, _d, _e, _f;
         const message = createBaserecurrent_transfer();
-        message.from_ = (_a = object.from_) !== null && _a !== void 0 ? _a : "";
-        message.to = (_b = object.to) !== null && _b !== void 0 ? _b : "";
+        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
+        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;
