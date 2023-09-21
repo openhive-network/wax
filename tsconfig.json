@@ -37,11 +37,11 @@
 
     "allowJs": false,
 
-    "target": "commonjs",
+    "target": "ES6",
     "lib": [
       "ES2017"
     ],
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "Node",
     "esModuleInterop": true,
 
