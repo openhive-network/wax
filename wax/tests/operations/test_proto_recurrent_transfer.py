@@ -17,8 +17,8 @@ def test_recurrent_transfer():
     )
     recurrent_transfer: recurrent_transfer_pb2.recurrent_transfer = (
         recurrent_transfer_pb2.recurrent_transfer(
-            from_="alice",
-            to="harry",
+            from_account="alice",
+            to_account="harry",
             amount=amount,
             memo="it is only memo",
             recurrence=1,
