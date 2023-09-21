@@ -203,6 +203,7 @@ build_wasm
 
 # Generated files
 /package.json
+/examples/ts/yarn.lock
 .npmrc
 wasm/lib/proto
 dist
