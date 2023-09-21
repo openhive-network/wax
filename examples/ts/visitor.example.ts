@@ -15,7 +15,8 @@ class MyVisitor extends OperationVisitor {
   public recurrent_transfer(op: recurrent_transfer): void {
     const jsonData = recurrent_transfer.toJSON(op) as { from?: string };
 
-    assert.equal(jsonData.from, op.from_); // XXX: This field should have a different name
+    assert.equal(jsonData.from, op.from_account); // XXX: This field should have a different name
+	assert.equal(jsonData.to, op.to_account);
     console.log(op);
   }
 }
@@ -54,8 +55,8 @@ const tx = transaction.create({
     },
     {
       recurrent_transfer: {
-        from_: "alice",
-        to: "harry",
+        from_account: "alice",
+        to_account: "harry",
         amount: { nai: "@@000000021", precision: 3, amount: "10" },
         memo: "it is only memo",
         recurrence: 1,
