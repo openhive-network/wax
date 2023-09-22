@@ -63,7 +63,7 @@ const tx = transaction.create({
         memo: "it is only memo",
         recurrence: 1,
         executions: 3,
-        extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } } ]
+        extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } }, { void_t: {} } ]
       }
     }
   ]
