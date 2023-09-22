@@ -41,6 +41,20 @@ const protoTx = JSON.stringify({
   extensions: []
 });
 
+const protoRecurrentTransferOperation = JSON.stringify({
+  recurrent_transfer: {
+    // Note: Those values are named from and to in proto definitions, but are later transformed. We do not have access to the proto transformers here, so we have to hardcode it.
+    // If you want to test how the transformers work, please see our examples
+    from: "alice",
+    to: "harry",
+    amount: { nai: "@@000000021", precision: 3, amount: "10" },
+    memo: "it is only memo",
+    recurrence: 3 * 24 * 60 * 60,
+    executions: 3,
+    extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } }, { void_t: {} } ]
+  }
+});
+
 const negate = (value) => {
   const low = ~((value % (2**32)) | 0);
   const high = ~((value / (2**32)) | 0);
@@ -89,7 +103,7 @@ const my_entrypoint = async() => {
 
     const result = instance_[name](...args);
 
-    if(result.value !== provider.error_code.ok) {
+    if(result.value !== provider.error_code.ok || result.exception_message.length > 0) {
       console.error(`Failed. Error message: "${result.exception_message}"`);
       console.log('Data:', ...args);
       assert.ok(false);
@@ -188,17 +202,22 @@ const my_entrypoint = async() => {
 
   const parsedProtoTx = testLib(protoInstance, "cpp_api_to_proto", transaction);
   const parsedProtoOp = testLib(protoInstance, "cpp_api_to_proto", JSON.stringify(vote_operation));
-  assert.equal(parsedProtoTx, protoTx);
-  assert.equal(parsedProtoOp, JSON.stringify(protoOps[0]));
+  assert.deepEqual(JSON.parse(parsedProtoTx), JSON.parse(protoTx));
+  assert.deepEqual(JSON.parse(parsedProtoOp), protoOps[0]);
 
   const parsedApiTx = testLib(protoInstance, "cpp_proto_to_api", protoTx);
   const parsedApiOp = testLib(protoInstance, "cpp_proto_to_api", JSON.stringify(protoOps[0]));
-  assert.equal(parsedApiTx, transaction);
-  assert.equal(parsedApiOp, JSON.stringify(vote_operation));
+  assert.deepEqual(JSON.parse(parsedApiTx), JSON.parse(transaction));
+  assert.deepEqual(JSON.parse(parsedApiOp), vote_operation);
+
+  const extensionOperationTest = testLib(protoInstance, "cpp_proto_to_api", protoRecurrentTransferOperation);
+  testLib(instance, "cpp_validate_operation", extensionOperationTest);
+
+  const bidirectionalExtensionsTest = testLib(protoInstance, "cpp_api_to_proto", testLib(protoInstance, "cpp_proto_to_api", protoRecurrentTransferOperation));
+  assert.deepEqual(JSON.parse(bidirectionalExtensionsTest), JSON.parse(protoRecurrentTransferOperation));
 };
 
 my_entrypoint()
-  .then(() => process.exit(0))
   .catch(err => {
     console.error(err);
     process.exit(1);
