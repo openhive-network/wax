@@ -22,7 +22,7 @@ include:
     file: '/templates/wasm_build.gitlab-ci.yml'
 
 .shared_tags: &shared_tags
-  - hived-for-tests
+  - public-runner-docker
 
 .configuration:
   before_script:
