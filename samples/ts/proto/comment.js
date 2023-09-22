@@ -1,5 +1,5 @@
 /* eslint-disable */
-import * as _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasecomment() {
     return { parent_author: "", parent_permlink: "", author: "", permlink: "", title: "", body: "", json_metadata: "" };

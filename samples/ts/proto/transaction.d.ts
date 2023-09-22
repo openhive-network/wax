@@ -1,4 +1,4 @@
-import * as _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal.js";
 import { account_create } from "./account_create.js";
 import { comment } from "./comment.js";
 import { future_extensions } from "./future_extensions.js";

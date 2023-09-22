@@ -1,4 +1,4 @@
-import * as _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { void_t } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";

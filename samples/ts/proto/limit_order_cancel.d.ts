@@ -1,4 +1,4 @@
-import * as _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Cancels an order (limit_order_create_operation or limit_order_create2_operation)
