@@ -1,4 +1,4 @@
-import * as _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Using comment operation a user may create a post or a comment.
