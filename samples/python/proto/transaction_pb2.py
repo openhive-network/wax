@@ -15,12 +15,22 @@ import future_extensions_pb2 as future__extensions__pb2
 import vote_pb2 as vote__pb2
 import comment_pb2 as comment__pb2
 import transfer_pb2 as transfer__pb2
+import transfer_to_vesting_pb2 as transfer__to__vesting__pb2
+import withdraw_vesting_pb2 as withdraw__vesting__pb2
+import limit_order_create_pb2 as limit__order__create__pb2
 import limit_order_cancel_pb2 as limit__order__cancel__pb2
+import feed_publish_pb2 as feed__publish__pb2
+import convert_pb2 as convert__pb2
 import account_create_pb2 as account__create__pb2
+import account_update_pb2 as account__update__pb2
+import account_witness_vote_pb2 as account__witness__vote__pb2
+import account_witness_proxy_pb2 as account__witness__proxy__pb2
+import custom_pb2 as custom__pb2
+import witness_block_approve_pb2 as witness__block__approve__pb2
 import recurrent_transfer_pb2 as recurrent__transfer__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\x17\x66uture_extensions.proto\x1a\nvote.proto\x1a\rcomment.proto\x1a\x0etransfer.proto\x1a\x18limit_order_cancel.proto\x1a\x14\x61\x63\x63ount_create.proto\x1a\x18recurrent_transfer.proto\"\xb4\x03\n\toperation\x12+\n\x04vote\x18\x01 \x01(\x0b\x32\x1b.hive.protocol.buffers.voteH\x00\x12\x31\n\x07\x63omment\x18\x02 \x01(\x0b\x32\x1e.hive.protocol.buffers.commentH\x00\x12\x33\n\x08transfer\x18\x03 \x01(\x0b\x32\x1f.hive.protocol.buffers.transferH\x00\x12[\n\x12limit_order_cancel\x18\x07 \x01(\x0b\x32).hive.protocol.buffers.limit_order_cancelH\x00R\x12limit_order_cancel\x12O\n\x0e\x61\x63\x63ount_create\x18\n \x01(\x0b\x32%.hive.protocol.buffers.account_createH\x00R\x0e\x61\x63\x63ount_create\x12[\n\x12recurrent_transfer\x18\x32 \x01(\x0b\x32).hive.protocol.buffers.recurrent_transferH\x00R\x12recurrent_transferB\x07\n\x05value\"\xe7\x01\n\x0btransaction\x12$\n\rref_block_num\x18\x01 \x02(\rR\rref_block_num\x12*\n\x10ref_block_prefix\x18\x02 \x02(\rR\x10ref_block_prefix\x12\x12\n\nexpiration\x18\x03 \x02(\t\x12\x34\n\noperations\x18\x04 \x03(\x0b\x32 .hive.protocol.buffers.operation\x12<\n\nextensions\x18\x05 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\x17\x66uture_extensions.proto\x1a\nvote.proto\x1a\rcomment.proto\x1a\x0etransfer.proto\x1a\x19transfer_to_vesting.proto\x1a\x16withdraw_vesting.proto\x1a\x18limit_order_create.proto\x1a\x18limit_order_cancel.proto\x1a\x12\x66\x65\x65\x64_publish.proto\x1a\rconvert.proto\x1a\x14\x61\x63\x63ount_create.proto\x1a\x14\x61\x63\x63ount_update.proto\x1a\x1a\x61\x63\x63ount_witness_vote.proto\x1a\x1b\x61\x63\x63ount_witness_proxy.proto\x1a\x0c\x63ustom.proto\x1a\x1bwitness_block_approve.proto\x1a\x18recurrent_transfer.proto\"\xf7\t\n\toperation\x12+\n\x04vote\x18\x01 \x01(\x0b\x32\x1b.hive.protocol.buffers.voteH\x00\x12\x31\n\x07\x63omment\x18\x02 \x01(\x0b\x32\x1e.hive.protocol.buffers.commentH\x00\x12\x33\n\x08transfer\x18\x03 \x01(\x0b\x32\x1f.hive.protocol.buffers.transferH\x00\x12^\n\x13transfer_to_vesting\x18\x04 \x01(\x0b\x32*.hive.protocol.buffers.transfer_to_vestingH\x00R\x13transfer_to_vesting\x12U\n\x10withdraw_vesting\x18\x05 \x01(\x0b\x32\'.hive.protocol.buffers.withdraw_vestingH\x00R\x10withdraw_vesting\x12[\n\x12limit_order_create\x18\x06 \x01(\x0b\x32).hive.protocol.buffers.limit_order_createH\x00R\x12limit_order_create\x12[\n\x12limit_order_cancel\x18\x07 \x01(\x0b\x32).hive.protocol.buffers.limit_order_cancelH\x00R\x12limit_order_cancel\x12I\n\x0c\x66\x65\x65\x64_publish\x18\x08 \x01(\x0b\x32#.hive.protocol.buffers.feed_publishH\x00R\x0c\x66\x65\x65\x64_publish\x12\x31\n\x07\x63onvert\x18\t \x01(\x0b\x32\x1e.hive.protocol.buffers.convertH\x00\x12O\n\x0e\x61\x63\x63ount_create\x18\n \x01(\x0b\x32%.hive.protocol.buffers.account_createH\x00R\x0e\x61\x63\x63ount_create\x12O\n\x0e\x61\x63\x63ount_update\x18\x0b \x01(\x0b\x32%.hive.protocol.buffers.account_updateH\x00R\x0e\x61\x63\x63ount_update\x12\x61\n\x14\x61\x63\x63ount_witness_vote\x18\r \x01(\x0b\x32+.hive.protocol.buffers.account_witness_voteH\x00R\x14\x61\x63\x63ount_witness_vote\x12\x64\n\x15\x61\x63\x63ount_witness_proxy\x18\x0e \x01(\x0b\x32,.hive.protocol.buffers.account_witness_proxyH\x00R\x15\x61\x63\x63ount_witness_proxy\x12/\n\x06\x63ustom\x18\x10 \x01(\x0b\x32\x1d.hive.protocol.buffers.customH\x00\x12\x64\n\x15witness_block_approve\x18\x11 \x01(\x0b\x32,.hive.protocol.buffers.witness_block_approveH\x00R\x15witness_block_approve\x12[\n\x12recurrent_transfer\x18\x32 \x01(\x0b\x32).hive.protocol.buffers.recurrent_transferH\x00R\x12recurrent_transferB\x07\n\x05value\"\xe7\x01\n\x0btransaction\x12$\n\rref_block_num\x18\x01 \x02(\rR\rref_block_num\x12*\n\x10ref_block_prefix\x18\x02 \x02(\rR\x10ref_block_prefix\x12\x12\n\nexpiration\x18\x03 \x02(\t\x12\x34\n\noperations\x18\x04 \x03(\x0b\x32 .hive.protocol.buffers.operation\x12<\n\nextensions\x18\x05 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -28,8 +38,8 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transaction_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
-  _globals['_OPERATION']._serialized_start=187
-  _globals['_OPERATION']._serialized_end=623
-  _globals['_TRANSACTION']._serialized_start=626
-  _globals['_TRANSACTION']._serialized_end=857
+  _globals['_OPERATION']._serialized_start=421
+  _globals['_OPERATION']._serialized_end=1692
+  _globals['_TRANSACTION']._serialized_start=1695
+  _globals['_TRANSACTION']._serialized_end=1926
 # @@protoc_insertion_point(module_scope)
