@@ -3,18 +3,28 @@
 isort:skip_file
 """
 import account_create_pb2
+import account_update_pb2
+import account_witness_proxy_pb2
+import account_witness_vote_pb2
 import builtins
 import collections.abc
 import comment_pb2
+import convert_pb2
+import custom_pb2
+import feed_publish_pb2
 import future_extensions_pb2
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
 import limit_order_cancel_pb2
+import limit_order_create_pb2
 import recurrent_transfer_pb2
 import sys
 import transfer_pb2
+import transfer_to_vesting_pb2
 import vote_pb2
+import withdraw_vesting_pb2
+import witness_block_approve_pb2
 
 if sys.version_info >= (3, 8):
     import typing as typing_extensions
@@ -34,8 +44,18 @@ class operation(google.protobuf.message.Message):
     VOTE_FIELD_NUMBER: builtins.int
     COMMENT_FIELD_NUMBER: builtins.int
     TRANSFER_FIELD_NUMBER: builtins.int
+    TRANSFER_TO_VESTING_FIELD_NUMBER: builtins.int
+    WITHDRAW_VESTING_FIELD_NUMBER: builtins.int
+    LIMIT_ORDER_CREATE_FIELD_NUMBER: builtins.int
     LIMIT_ORDER_CANCEL_FIELD_NUMBER: builtins.int
+    FEED_PUBLISH_FIELD_NUMBER: builtins.int
+    CONVERT_FIELD_NUMBER: builtins.int
     ACCOUNT_CREATE_FIELD_NUMBER: builtins.int
+    ACCOUNT_UPDATE_FIELD_NUMBER: builtins.int
+    ACCOUNT_WITNESS_VOTE_FIELD_NUMBER: builtins.int
+    ACCOUNT_WITNESS_PROXY_FIELD_NUMBER: builtins.int
+    CUSTOM_FIELD_NUMBER: builtins.int
+    WITNESS_BLOCK_APPROVE_FIELD_NUMBER: builtins.int
     RECURRENT_TRANSFER_FIELD_NUMBER: builtins.int
     @property
     def vote(self) -> vote_pb2.vote: ...
@@ -44,9 +64,29 @@ class operation(google.protobuf.message.Message):
     @property
     def transfer(self) -> transfer_pb2.transfer: ...
     @property
+    def transfer_to_vesting(self) -> transfer_to_vesting_pb2.transfer_to_vesting: ...
+    @property
+    def withdraw_vesting(self) -> withdraw_vesting_pb2.withdraw_vesting: ...
+    @property
+    def limit_order_create(self) -> limit_order_create_pb2.limit_order_create: ...
+    @property
     def limit_order_cancel(self) -> limit_order_cancel_pb2.limit_order_cancel: ...
     @property
+    def feed_publish(self) -> feed_publish_pb2.feed_publish: ...
+    @property
+    def convert(self) -> convert_pb2.convert: ...
+    @property
     def account_create(self) -> account_create_pb2.account_create: ...
+    @property
+    def account_update(self) -> account_update_pb2.account_update: ...
+    @property
+    def account_witness_vote(self) -> account_witness_vote_pb2.account_witness_vote: ...
+    @property
+    def account_witness_proxy(self) -> account_witness_proxy_pb2.account_witness_proxy: ...
+    @property
+    def custom(self) -> custom_pb2.custom: ...
+    @property
+    def witness_block_approve(self) -> witness_block_approve_pb2.witness_block_approve: ...
     @property
     def recurrent_transfer(self) -> recurrent_transfer_pb2.recurrent_transfer: ...
     def __init__(
@@ -55,13 +95,23 @@ class operation(google.protobuf.message.Message):
         vote: vote_pb2.vote | None = ...,
         comment: comment_pb2.comment | None = ...,
         transfer: transfer_pb2.transfer | None = ...,
+        transfer_to_vesting: transfer_to_vesting_pb2.transfer_to_vesting | None = ...,
+        withdraw_vesting: withdraw_vesting_pb2.withdraw_vesting | None = ...,
+        limit_order_create: limit_order_create_pb2.limit_order_create | None = ...,
         limit_order_cancel: limit_order_cancel_pb2.limit_order_cancel | None = ...,
+        feed_publish: feed_publish_pb2.feed_publish | None = ...,
+        convert: convert_pb2.convert | None = ...,
         account_create: account_create_pb2.account_create | None = ...,
+        account_update: account_update_pb2.account_update | None = ...,
+        account_witness_vote: account_witness_vote_pb2.account_witness_vote | None = ...,
+        account_witness_proxy: account_witness_proxy_pb2.account_witness_proxy | None = ...,
+        custom: custom_pb2.custom | None = ...,
+        witness_block_approve: witness_block_approve_pb2.witness_block_approve | None = ...,
         recurrent_transfer: recurrent_transfer_pb2.recurrent_transfer | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "value", b"value", "vote", b"vote"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "comment", b"comment", "limit_order_cancel", b"limit_order_cancel", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "value", b"value", "vote", b"vote"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["vote", "comment", "transfer", "limit_order_cancel", "account_create", "recurrent_transfer"] | None: ...
+    def HasField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "comment", b"comment", "convert", b"convert", "custom", b"custom", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "comment", b"comment", "convert", b"convert", "custom", b"custom", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["vote", "comment", "transfer", "transfer_to_vesting", "withdraw_vesting", "limit_order_create", "limit_order_cancel", "feed_publish", "convert", "account_create", "account_update", "account_witness_vote", "account_witness_proxy", "custom", "witness_block_approve", "recurrent_transfer"] | None: ...
 
 global___operation = operation
 
