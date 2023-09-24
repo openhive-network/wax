@@ -5,8 +5,19 @@ PROJECT_DIR="${SCRIPTPATH}/.."
 
 set -xeuo pipefail
 
-DIRECT_EXECUTION=${1:-0}
-EXECUTION_PATH=${2:-"/src"}
+
+# Check for usage inside dev container providing all tools (emscripten image)
+EXECUTOR=$(whoami)
+if [ "${EXECUTOR}" = "emscripten" ]; then
+  DIRECT_EXECUTION_DEFAULT=1
+  EXECUTION_PATH_DEFAULT="${PROJECT_DIR}"
+else
+  DIRECT_EXECUTION_DEFAULT=0
+  EXECUTION_PATH_DEFAULT="/src/"
+fi
+
+DIRECT_EXECUTION=${1:-${DIRECT_EXECUTION_DEFAULT}}
+EXECUTION_PATH=${2:-"${EXECUTION_PATH_DEFAULT}"}
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
   echo "Performing a docker run"
