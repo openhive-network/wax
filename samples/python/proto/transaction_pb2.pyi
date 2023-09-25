@@ -7,20 +7,38 @@ import account_update_pb2
 import account_witness_proxy_pb2
 import account_witness_vote_pb2
 import builtins
+import cancel_transfer_from_savings_pb2
+import change_recovery_account_pb2
+import claim_account_pb2
 import collections.abc
+import comment_options_pb2
 import comment_pb2
 import convert_pb2
+import create_claimed_account_pb2
+import custom_json_pb2
 import custom_pb2
+import decline_voting_rights_pb2
+import delete_comment_pb2
+import escrow_approve_pb2
+import escrow_dispute_pb2
+import escrow_release_pb2
+import escrow_transfer_pb2
 import feed_publish_pb2
 import future_extensions_pb2
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
 import limit_order_cancel_pb2
+import limit_order_create2_pb2
 import limit_order_create_pb2
+import recover_account_pb2
 import recurrent_transfer_pb2
+import request_account_recovery_pb2
+import set_withdraw_vesting_route_pb2
 import sys
+import transfer_from_savings_pb2
 import transfer_pb2
+import transfer_to_savings_pb2
 import transfer_to_vesting_pb2
 import vote_pb2
 import withdraw_vesting_pb2
@@ -56,6 +74,24 @@ class operation(google.protobuf.message.Message):
     ACCOUNT_WITNESS_PROXY_FIELD_NUMBER: builtins.int
     CUSTOM_FIELD_NUMBER: builtins.int
     WITNESS_BLOCK_APPROVE_FIELD_NUMBER: builtins.int
+    DELETE_COMMENT_FIELD_NUMBER: builtins.int
+    CUSTOM_JSON_FIELD_NUMBER: builtins.int
+    COMMENT_OPTIONS_FIELD_NUMBER: builtins.int
+    SET_WITHDRAW_VESTING_ROUTE_FIELD_NUMBER: builtins.int
+    LIMIT_ORDER_CREATE2_FIELD_NUMBER: builtins.int
+    CLAIM_ACCOUNT_FIELD_NUMBER: builtins.int
+    CREATE_CLAIMED_ACCOUNT_FIELD_NUMBER: builtins.int
+    REQUEST_ACCOUNT_RECOVERY_FIELD_NUMBER: builtins.int
+    RECOVER_ACCOUNT_FIELD_NUMBER: builtins.int
+    CHANGE_RECOVERY_ACCOUNT_FIELD_NUMBER: builtins.int
+    ESCROW_TRANSFER_FIELD_NUMBER: builtins.int
+    ESCROW_DISPUTE_FIELD_NUMBER: builtins.int
+    ESCROW_RELEASE_FIELD_NUMBER: builtins.int
+    ESCROW_APPROVE_FIELD_NUMBER: builtins.int
+    TRANSFER_TO_SAVINGS_FIELD_NUMBER: builtins.int
+    TRANSFER_FROM_SAVINGS_FIELD_NUMBER: builtins.int
+    CANCEL_TRANSFER_FROM_SAVINGS_FIELD_NUMBER: builtins.int
+    DECLINE_VOTING_RIGHTS_FIELD_NUMBER: builtins.int
     RECURRENT_TRANSFER_FIELD_NUMBER: builtins.int
     @property
     def vote(self) -> vote_pb2.vote: ...
@@ -88,6 +124,42 @@ class operation(google.protobuf.message.Message):
     @property
     def witness_block_approve(self) -> witness_block_approve_pb2.witness_block_approve: ...
     @property
+    def delete_comment(self) -> delete_comment_pb2.delete_comment: ...
+    @property
+    def custom_json(self) -> custom_json_pb2.custom_json: ...
+    @property
+    def comment_options(self) -> comment_options_pb2.comment_options: ...
+    @property
+    def set_withdraw_vesting_route(self) -> set_withdraw_vesting_route_pb2.set_withdraw_vesting_route: ...
+    @property
+    def limit_order_create2(self) -> limit_order_create2_pb2.limit_order_create2: ...
+    @property
+    def claim_account(self) -> claim_account_pb2.claim_account: ...
+    @property
+    def create_claimed_account(self) -> create_claimed_account_pb2.create_claimed_account: ...
+    @property
+    def request_account_recovery(self) -> request_account_recovery_pb2.request_account_recovery: ...
+    @property
+    def recover_account(self) -> recover_account_pb2.recover_account: ...
+    @property
+    def change_recovery_account(self) -> change_recovery_account_pb2.change_recovery_account: ...
+    @property
+    def escrow_transfer(self) -> escrow_transfer_pb2.escrow_transfer: ...
+    @property
+    def escrow_dispute(self) -> escrow_dispute_pb2.escrow_dispute: ...
+    @property
+    def escrow_release(self) -> escrow_release_pb2.escrow_release: ...
+    @property
+    def escrow_approve(self) -> escrow_approve_pb2.escrow_approve: ...
+    @property
+    def transfer_to_savings(self) -> transfer_to_savings_pb2.transfer_to_savings: ...
+    @property
+    def transfer_from_savings(self) -> transfer_from_savings_pb2.transfer_from_savings: ...
+    @property
+    def cancel_transfer_from_savings(self) -> cancel_transfer_from_savings_pb2.cancel_transfer_from_savings: ...
+    @property
+    def decline_voting_rights(self) -> decline_voting_rights_pb2.decline_voting_rights: ...
+    @property
     def recurrent_transfer(self) -> recurrent_transfer_pb2.recurrent_transfer: ...
     def __init__(
         self,
@@ -107,11 +179,29 @@ class operation(google.protobuf.message.Message):
         account_witness_proxy: account_witness_proxy_pb2.account_witness_proxy | None = ...,
         custom: custom_pb2.custom | None = ...,
         witness_block_approve: witness_block_approve_pb2.witness_block_approve | None = ...,
+        delete_comment: delete_comment_pb2.delete_comment | None = ...,
+        custom_json: custom_json_pb2.custom_json | None = ...,
+        comment_options: comment_options_pb2.comment_options | None = ...,
+        set_withdraw_vesting_route: set_withdraw_vesting_route_pb2.set_withdraw_vesting_route | None = ...,
+        limit_order_create2: limit_order_create2_pb2.limit_order_create2 | None = ...,
+        claim_account: claim_account_pb2.claim_account | None = ...,
+        create_claimed_account: create_claimed_account_pb2.create_claimed_account | None = ...,
+        request_account_recovery: request_account_recovery_pb2.request_account_recovery | None = ...,
+        recover_account: recover_account_pb2.recover_account | None = ...,
+        change_recovery_account: change_recovery_account_pb2.change_recovery_account | None = ...,
+        escrow_transfer: escrow_transfer_pb2.escrow_transfer | None = ...,
+        escrow_dispute: escrow_dispute_pb2.escrow_dispute | None = ...,
+        escrow_release: escrow_release_pb2.escrow_release | None = ...,
+        escrow_approve: escrow_approve_pb2.escrow_approve | None = ...,
+        transfer_to_savings: transfer_to_savings_pb2.transfer_to_savings | None = ...,
+        transfer_from_savings: transfer_from_savings_pb2.transfer_from_savings | None = ...,
+        cancel_transfer_from_savings: cancel_transfer_from_savings_pb2.cancel_transfer_from_savings | None = ...,
+        decline_voting_rights: decline_voting_rights_pb2.decline_voting_rights | None = ...,
         recurrent_transfer: recurrent_transfer_pb2.recurrent_transfer | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "comment", b"comment", "convert", b"convert", "custom", b"custom", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "comment", b"comment", "convert", b"convert", "custom", b"custom", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "recurrent_transfer", b"recurrent_transfer", "transfer", b"transfer", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["vote", "comment", "transfer", "transfer_to_vesting", "withdraw_vesting", "limit_order_create", "limit_order_cancel", "feed_publish", "convert", "account_create", "account_update", "account_witness_vote", "account_witness_proxy", "custom", "witness_block_approve", "recurrent_transfer"] | None: ...
+    def HasField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "cancel_transfer_from_savings", b"cancel_transfer_from_savings", "change_recovery_account", b"change_recovery_account", "claim_account", b"claim_account", "comment", b"comment", "comment_options", b"comment_options", "convert", b"convert", "create_claimed_account", b"create_claimed_account", "custom", b"custom", "custom_json", b"custom_json", "decline_voting_rights", b"decline_voting_rights", "delete_comment", b"delete_comment", "escrow_approve", b"escrow_approve", "escrow_dispute", b"escrow_dispute", "escrow_release", b"escrow_release", "escrow_transfer", b"escrow_transfer", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "limit_order_create2", b"limit_order_create2", "recover_account", b"recover_account", "recurrent_transfer", b"recurrent_transfer", "request_account_recovery", b"request_account_recovery", "set_withdraw_vesting_route", b"set_withdraw_vesting_route", "transfer", b"transfer", "transfer_from_savings", b"transfer_from_savings", "transfer_to_savings", b"transfer_to_savings", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["account_create", b"account_create", "account_update", b"account_update", "account_witness_proxy", b"account_witness_proxy", "account_witness_vote", b"account_witness_vote", "cancel_transfer_from_savings", b"cancel_transfer_from_savings", "change_recovery_account", b"change_recovery_account", "claim_account", b"claim_account", "comment", b"comment", "comment_options", b"comment_options", "convert", b"convert", "create_claimed_account", b"create_claimed_account", "custom", b"custom", "custom_json", b"custom_json", "decline_voting_rights", b"decline_voting_rights", "delete_comment", b"delete_comment", "escrow_approve", b"escrow_approve", "escrow_dispute", b"escrow_dispute", "escrow_release", b"escrow_release", "escrow_transfer", b"escrow_transfer", "feed_publish", b"feed_publish", "limit_order_cancel", b"limit_order_cancel", "limit_order_create", b"limit_order_create", "limit_order_create2", b"limit_order_create2", "recover_account", b"recover_account", "recurrent_transfer", b"recurrent_transfer", "request_account_recovery", b"request_account_recovery", "set_withdraw_vesting_route", b"set_withdraw_vesting_route", "transfer", b"transfer", "transfer_from_savings", b"transfer_from_savings", "transfer_to_savings", b"transfer_to_savings", "transfer_to_vesting", b"transfer_to_vesting", "value", b"value", "vote", b"vote", "withdraw_vesting", b"withdraw_vesting", "witness_block_approve", b"witness_block_approve"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["value", b"value"]) -> typing_extensions.Literal["vote", "comment", "transfer", "transfer_to_vesting", "withdraw_vesting", "limit_order_create", "limit_order_cancel", "feed_publish", "convert", "account_create", "account_update", "account_witness_vote", "account_witness_proxy", "custom", "witness_block_approve", "delete_comment", "custom_json", "comment_options", "set_withdraw_vesting_route", "limit_order_create2", "claim_account", "create_claimed_account", "request_account_recovery", "recover_account", "change_recovery_account", "escrow_transfer", "escrow_dispute", "escrow_release", "escrow_approve", "transfer_to_savings", "transfer_from_savings", "cancel_transfer_from_savings", "decline_voting_rights", "recurrent_transfer"] | None: ...
 
 global___operation = operation
 
