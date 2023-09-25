@@ -1,5 +1,3 @@
-image: registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-7
-
 stages:
   - build
   - test
@@ -11,16 +9,20 @@ variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-7
+  CI_BASE_IMAGE_TAG: "@sha256:8f68baf07c6e581e1e8034a1447c4ff1268239fc886bfe4b02aa3f4182bf78bb"
+  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   NPM_TOKEN: $CI_JOB_TOKEN
 
-
 include:
   - project: 'hive/common-ci-configuration'
     ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
     file: '/templates/wasm_build.gitlab-ci.yml'
+
+image: "${CI_BASE_IMAGE}"
 
 .shared_tags: &shared_tags
   - hived-for-tests
