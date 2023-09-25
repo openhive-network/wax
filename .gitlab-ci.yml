@@ -72,7 +72,7 @@ wax_wasm_package_generation:
     when: always
     expire_in: 1 week
 
-test_importing_wax:
+test_wax_python_wheel:
   stage: test
   extends: .configuration_template
   needs:
@@ -138,7 +138,7 @@ build_wheel_production:
 deploy_feature_branch:
   extends: .deploy_base
   needs:
-    - job: test_importing_wax
+    - job: test_wax_python_wheel
     - job: build_wheel
       artifacts: true
   when: manual
@@ -150,7 +150,7 @@ deploy_feature_branch:
 deploy_production:
   extends: .deploy_base
   needs:
-    - job: test_importing_wax
+    - job: test_wax_python_wheel
     - job: build_wheel_production
       artifacts: true
   only:
