@@ -1,4 +1,4 @@
-image: registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
+image: registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-7
 
 stages:
   - build
@@ -29,7 +29,6 @@ include:
   before_script:
     - python3 -V
     - poetry self update
-    - poetry self add "poetry-dynamic-versioning[plugin]"
     - pip list
   tags: *shared_tags
 
