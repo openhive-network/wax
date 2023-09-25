@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from .wax import (
+    api_to_proto,
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
     calculate_proto_sig_digest,
@@ -12,6 +13,7 @@ from .wax import (
     generate_private_key,
     hbd,
     hive,
+    proto_to_api,
     serialize_proto_transaction,
     serialize_transaction,
     validate_operation,
@@ -46,4 +48,6 @@ __all__ = [
     "calculate_proto_transaction_id",
     "calculate_proto_sig_digest",
     "serialize_proto_transaction",
+    "proto_to_api",
+    "api_to_proto",
 ]
