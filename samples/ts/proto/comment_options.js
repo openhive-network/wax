@@ -1,0 +1,280 @@
+/* eslint-disable */
+import _m0 from "protobufjs/minimal.js";
+import { asset } from "./asset.js";
+export const protobufPackage = "hive.protocol.buffers";
+function createBasebeneficiary_route_type() {
+    return { account: "", weight: 0 };
+}
+export const beneficiary_route_type = {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.account !== "") {
+            writer.uint32(10).string(message.account);
+        }
+        if (message.weight !== 0) {
+            writer.uint32(16).uint32(message.weight);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasebeneficiary_route_type();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.account = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 16) {
+                        break;
+                    }
+                    message.weight = reader.uint32();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            account: isSet(object.account) ? String(object.account) : "",
+            weight: isSet(object.weight) ? Number(object.weight) : 0,
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        if (message.account !== "") {
+            obj.account = message.account;
+        }
+        if (message.weight !== 0) {
+            obj.weight = Math.round(message.weight);
+        }
+        return obj;
+    },
+    create(base) {
+        return beneficiary_route_type.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a, _b;
+        const message = createBasebeneficiary_route_type();
+        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.weight = (_b = object.weight) !== null && _b !== void 0 ? _b : 0;
+        return message;
+    },
+};
+function createBasecomment_payout_beneficiaries() {
+    return { beneficiaries: [] };
+}
+export const comment_payout_beneficiaries = {
+    encode(message, writer = _m0.Writer.create()) {
+        for (const v of message.beneficiaries) {
+            beneficiary_route_type.encode(v, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasecomment_payout_beneficiaries();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.beneficiaries.push(beneficiary_route_type.decode(reader, reader.uint32()));
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            beneficiaries: Array.isArray(object === null || object === void 0 ? void 0 : object.beneficiaries)
+                ? object.beneficiaries.map((e) => beneficiary_route_type.fromJSON(e))
+                : [],
+        };
+    },
+    toJSON(message) {
+        var _a;
+        const obj = {};
+        if ((_a = message.beneficiaries) === null || _a === void 0 ? void 0 : _a.length) {
+            obj.beneficiaries = message.beneficiaries.map((e) => beneficiary_route_type.toJSON(e));
+        }
+        return obj;
+    },
+    create(base) {
+        return comment_payout_beneficiaries.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a;
+        const message = createBasecomment_payout_beneficiaries();
+        message.beneficiaries = ((_a = object.beneficiaries) === null || _a === void 0 ? void 0 : _a.map((e) => beneficiary_route_type.fromPartial(e))) || [];
+        return message;
+    },
+};
+function createBasecomment_options() {
+    return {
+        author: "",
+        permlink: "",
+        max_accepted_payout: undefined,
+        percent_hbd: 0,
+        allow_votes: false,
+        allow_curation_rewards: false,
+        extensions: [],
+    };
+}
+export const comment_options = {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.author !== "") {
+            writer.uint32(10).string(message.author);
+        }
+        if (message.permlink !== "") {
+            writer.uint32(18).string(message.permlink);
+        }
+        if (message.max_accepted_payout !== undefined) {
+            asset.encode(message.max_accepted_payout, writer.uint32(26).fork()).ldelim();
+        }
+        if (message.percent_hbd !== 0) {
+            writer.uint32(32).uint32(message.percent_hbd);
+        }
+        if (message.allow_votes === true) {
+            writer.uint32(40).bool(message.allow_votes);
+        }
+        if (message.allow_curation_rewards === true) {
+            writer.uint32(48).bool(message.allow_curation_rewards);
+        }
+        for (const v of message.extensions) {
+            comment_payout_beneficiaries.encode(v, writer.uint32(58).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasecomment_options();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.author = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+                    message.permlink = reader.string();
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+                    message.max_accepted_payout = asset.decode(reader, reader.uint32());
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+                    message.percent_hbd = reader.uint32();
+                    continue;
+                case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+                    message.allow_votes = reader.bool();
+                    continue;
+                case 6:
+                    if (tag !== 48) {
+                        break;
+                    }
+                    message.allow_curation_rewards = reader.bool();
+                    continue;
+                case 7:
+                    if (tag !== 58) {
+                        break;
+                    }
+                    message.extensions.push(comment_payout_beneficiaries.decode(reader, reader.uint32()));
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            author: isSet(object.author) ? String(object.author) : "",
+            permlink: isSet(object.permlink) ? String(object.permlink) : "",
+            max_accepted_payout: isSet(object.max_accepted_payout) ? asset.fromJSON(object.max_accepted_payout) : undefined,
+            percent_hbd: isSet(object.percent_hbd) ? Number(object.percent_hbd) : 0,
+            allow_votes: isSet(object.allow_votes) ? Boolean(object.allow_votes) : false,
+            allow_curation_rewards: isSet(object.allow_curation_rewards) ? Boolean(object.allow_curation_rewards) : false,
+            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+                ? object.extensions.map((e) => comment_payout_beneficiaries.fromJSON(e))
+                : [],
+        };
+    },
+    toJSON(message) {
+        var _a;
+        const obj = {};
+        if (message.author !== "") {
+            obj.author = message.author;
+        }
+        if (message.permlink !== "") {
+            obj.permlink = message.permlink;
+        }
+        if (message.max_accepted_payout !== undefined) {
+            obj.max_accepted_payout = asset.toJSON(message.max_accepted_payout);
+        }
+        if (message.percent_hbd !== 0) {
+            obj.percent_hbd = Math.round(message.percent_hbd);
+        }
+        if (message.allow_votes === true) {
+            obj.allow_votes = message.allow_votes;
+        }
+        if (message.allow_curation_rewards === true) {
+            obj.allow_curation_rewards = message.allow_curation_rewards;
+        }
+        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+            obj.extensions = message.extensions.map((e) => comment_payout_beneficiaries.toJSON(e));
+        }
+        return obj;
+    },
+    create(base) {
+        return comment_options.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a, _b, _c, _d, _e, _f;
+        const message = createBasecomment_options();
+        message.author = (_a = object.author) !== null && _a !== void 0 ? _a : "";
+        message.permlink = (_b = object.permlink) !== null && _b !== void 0 ? _b : "";
+        message.max_accepted_payout = (object.max_accepted_payout !== undefined && object.max_accepted_payout !== null)
+            ? asset.fromPartial(object.max_accepted_payout)
+            : undefined;
+        message.percent_hbd = (_c = object.percent_hbd) !== null && _c !== void 0 ? _c : 0;
+        message.allow_votes = (_d = object.allow_votes) !== null && _d !== void 0 ? _d : false;
+        message.allow_curation_rewards = (_e = object.allow_curation_rewards) !== null && _e !== void 0 ? _e : false;
+        message.extensions = ((_f = object.extensions) === null || _f === void 0 ? void 0 : _f.map((e) => comment_payout_beneficiaries.fromPartial(e))) || [];
+        return message;
+    },
+};
+function isSet(value) {
+    return value !== null && value !== undefined;
+}
