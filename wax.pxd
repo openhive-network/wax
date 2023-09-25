@@ -41,3 +41,5 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_calculate_transaction_id( string transaction )
         result cpp_calculate_sig_digest( string transaction, string chain_id )
         result cpp_serialize_transaction( string transaction )
+        result cpp_proto_to_api( string operation_or_tx )
+        result cpp_api_to_proto( string operation_or_tx )
