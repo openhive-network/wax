@@ -21,33 +21,28 @@ include:
   - project: 'hive/common-ci-configuration'
     ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
     file: '/templates/wasm_build.gitlab-ci.yml'
+  - project: 'hive/common-ci-configuration'
+    ref: 59a5f33316f766153a38181ef1a38f1096465871  # mzebrak/python-template
+    file: '/templates/python_projects.gitlab-ci.yml'
 
 image: "${CI_BASE_IMAGE}"
 
 .shared_tags: &shared_tags
   - hived-for-tests
 
-.configuration:
-  before_script:
-    - python3 -V
-    - poetry self update
-    - pip list
-  tags: *shared_tags
-
 .build_wheel_base:
-  extends: .configuration
-  script:
-    - echo -e "${TXT_BLUE}Building wheel...${TXT_CLEAR}"
+  extends: .build_wheel_template
+  before_script:
+    - !reference [.build_wheel_template, before_script]
     - git fetch --tags --force
     - rm -rf dist/
-    - poetry build --format wheel
-    - ls -al dist/
   artifacts:
     when: always
     paths:
       - "dist/"
       - ".build/logs/"
       - ".build/*.so"
+  tags: *shared_tags
 
 build_wheel:
   stage: build
@@ -85,7 +80,7 @@ wax_wasm_package_generation:
 
 test_importing_wax:
   stage: test
-  extends: .configuration
+  extends: .configuration_template
   needs:
     - job: build_wheel
       artifacts: true
@@ -98,6 +93,7 @@ test_importing_wax:
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
     - cd ..  # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__)"
+  tags: *shared_tags
 
 test_wax_wasm:
   stage: test
@@ -118,7 +114,7 @@ test_wax_wasm:
 
 tag_production:
   stage: tag
-  extends: .configuration
+  extends: .configuration_template
   only:
     - master
     - develop
@@ -135,6 +131,7 @@ tag_production:
     - echo -e "${TXT_BLUE}New tag will be '${VERSION_TAG}'${TXT_CLEAR}"
     - git tag "${VERSION_TAG}"
     - git push -o ci.skip origin "${VERSION_TAG}"
+  tags: *shared_tags
 
 build_wheel_production:
   stage: build_production
@@ -147,13 +144,8 @@ build_wheel_production:
 
 .deploy_base:
   stage: deploy
-  extends: .configuration
-  script:
-    - echo -e "${TXT_BLUE}Deploying...${TXT_CLEAR}"
-    - ls -al dist/
-    - poetry config repositories.gitlab "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
-    - poetry config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
-    - poetry publish --repository gitlab
+  extends: .deploy_wheel_template
+  tags: *shared_tags
 
 deploy_feature_branch:
   extends: .deploy_base
