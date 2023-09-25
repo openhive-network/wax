@@ -18,6 +18,7 @@ protoc --plugin="${PROJECT_DIR}/node_modules/.bin/protoc-gen-ts_proto" \
   --ts_proto_opt=useOptional=all \
   --ts_proto_opt=esModuleInterop=true \
   --ts_proto_opt=initializeFieldsAsUndefined=false \
+  --ts_proto_opt=forceLong=string \
   --ts_proto_out="${OUTPUT_DIR}" \
   -I="${PROTO_DIR}" "$PROTO_DIR"/*.proto
 
