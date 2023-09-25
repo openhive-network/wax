@@ -15,7 +15,7 @@ mkdir -p "${OUTPUT_DIR}"
 
 protoc --plugin="${PROJECT_DIR}/node_modules/.bin/protoc-gen-ts_proto" \
   --ts_proto_opt=snakeToCamel=false \
-  --ts_proto_opt=useOptional=all \
+  --ts_proto_opt=useOptional=none \
   --ts_proto_opt=esModuleInterop=true \
   --ts_proto_opt=initializeFieldsAsUndefined=false \
   --ts_proto_opt=forceLong=string \
