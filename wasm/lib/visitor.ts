@@ -1,5 +1,33 @@
 import { operation, limit_order_cancel, vote, comment, recurrent_transfer } from "./protocol.js";
 
+type UnionAsReturnTypes<T> = T extends never ? never : () => T;
+
+type UnionToIntersection<U> = 
+(
+  U extends never ? never : (arg: U) => never
+) extends (arg: infer I) => void ? I : never;
+
+
+type Transform<T> = Omit<T, "$case"> [ keyof Omit<T, "$case"> ];
+
+type GetLastOfUnion<T> =
+  UnionToIntersection<UnionAsReturnTypes<T>> extends () => infer W
+    ? W
+    : never
+    ;
+
+    type TransformUnionRecursive<T, R = Transform<GetLastOfUnion<T>> > =
+    UnionToIntersection<UnionAsReturnTypes<T>> extends () => infer W
+      ? TransformUnionRecursive<Exclude<T, W>, Transform<W> | R>
+      : R;
+  
+type HiveOperation = TransformUnionRecursive<Required<operation>["value"]>;
+
+let v : vote = vote.create({voter: "AAA"});
+let any_op : HiveOperation;
+
+any_op=v;
+
 export type TOperationVisitor<R = void> = {
   [K in keyof Required<operation>]?: (op: Required<operation>[K]) => R;
 };
