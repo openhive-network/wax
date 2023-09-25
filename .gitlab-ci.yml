@@ -80,8 +80,6 @@ test_wax_python_wheel:
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
-    - poetry env use python3
-    - source $(poetry env info --path)/bin/activate
     - pip install dist/*.whl
     - pip list
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
