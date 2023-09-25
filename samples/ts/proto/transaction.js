@@ -4,15 +4,33 @@ import { account_create } from "./account_create.js";
 import { account_update } from "./account_update.js";
 import { account_witness_proxy } from "./account_witness_proxy.js";
 import { account_witness_vote } from "./account_witness_vote.js";
+import { cancel_transfer_from_savings } from "./cancel_transfer_from_savings.js";
+import { change_recovery_account } from "./change_recovery_account.js";
+import { claim_account } from "./claim_account.js";
 import { comment } from "./comment.js";
+import { comment_options } from "./comment_options.js";
 import { convert } from "./convert.js";
+import { create_claimed_account } from "./create_claimed_account.js";
 import { custom } from "./custom.js";
+import { custom_json } from "./custom_json.js";
+import { decline_voting_rights } from "./decline_voting_rights.js";
+import { delete_comment } from "./delete_comment.js";
+import { escrow_approve } from "./escrow_approve.js";
+import { escrow_dispute } from "./escrow_dispute.js";
+import { escrow_release } from "./escrow_release.js";
+import { escrow_transfer } from "./escrow_transfer.js";
 import { feed_publish } from "./feed_publish.js";
 import { future_extensions } from "./future_extensions.js";
 import { limit_order_cancel } from "./limit_order_cancel.js";
 import { limit_order_create } from "./limit_order_create.js";
+import { limit_order_create2 } from "./limit_order_create2.js";
+import { recover_account } from "./recover_account.js";
 import { recurrent_transfer } from "./recurrent_transfer.js";
+import { request_account_recovery } from "./request_account_recovery.js";
+import { set_withdraw_vesting_route } from "./set_withdraw_vesting_route.js";
 import { transfer } from "./transfer.js";
+import { transfer_from_savings } from "./transfer_from_savings.js";
+import { transfer_to_savings } from "./transfer_to_savings.js";
 import { transfer_to_vesting } from "./transfer_to_vesting.js";
 import { vote } from "./vote.js";
 import { withdraw_vesting } from "./withdraw_vesting.js";
@@ -67,6 +85,60 @@ export const operation = {
         }
         if (message.witness_block_approve !== undefined) {
             witness_block_approve.encode(message.witness_block_approve, writer.uint32(138).fork()).ldelim();
+        }
+        if (message.delete_comment !== undefined) {
+            delete_comment.encode(message.delete_comment, writer.uint32(146).fork()).ldelim();
+        }
+        if (message.custom_json !== undefined) {
+            custom_json.encode(message.custom_json, writer.uint32(154).fork()).ldelim();
+        }
+        if (message.comment_options !== undefined) {
+            comment_options.encode(message.comment_options, writer.uint32(162).fork()).ldelim();
+        }
+        if (message.set_withdraw_vesting_route !== undefined) {
+            set_withdraw_vesting_route.encode(message.set_withdraw_vesting_route, writer.uint32(170).fork()).ldelim();
+        }
+        if (message.limit_order_create2 !== undefined) {
+            limit_order_create2.encode(message.limit_order_create2, writer.uint32(178).fork()).ldelim();
+        }
+        if (message.claim_account !== undefined) {
+            claim_account.encode(message.claim_account, writer.uint32(186).fork()).ldelim();
+        }
+        if (message.create_claimed_account !== undefined) {
+            create_claimed_account.encode(message.create_claimed_account, writer.uint32(194).fork()).ldelim();
+        }
+        if (message.request_account_recovery !== undefined) {
+            request_account_recovery.encode(message.request_account_recovery, writer.uint32(202).fork()).ldelim();
+        }
+        if (message.recover_account !== undefined) {
+            recover_account.encode(message.recover_account, writer.uint32(210).fork()).ldelim();
+        }
+        if (message.change_recovery_account !== undefined) {
+            change_recovery_account.encode(message.change_recovery_account, writer.uint32(218).fork()).ldelim();
+        }
+        if (message.escrow_transfer !== undefined) {
+            escrow_transfer.encode(message.escrow_transfer, writer.uint32(226).fork()).ldelim();
+        }
+        if (message.escrow_dispute !== undefined) {
+            escrow_dispute.encode(message.escrow_dispute, writer.uint32(234).fork()).ldelim();
+        }
+        if (message.escrow_release !== undefined) {
+            escrow_release.encode(message.escrow_release, writer.uint32(242).fork()).ldelim();
+        }
+        if (message.escrow_approve !== undefined) {
+            escrow_approve.encode(message.escrow_approve, writer.uint32(258).fork()).ldelim();
+        }
+        if (message.transfer_to_savings !== undefined) {
+            transfer_to_savings.encode(message.transfer_to_savings, writer.uint32(266).fork()).ldelim();
+        }
+        if (message.transfer_from_savings !== undefined) {
+            transfer_from_savings.encode(message.transfer_from_savings, writer.uint32(274).fork()).ldelim();
+        }
+        if (message.cancel_transfer_from_savings !== undefined) {
+            cancel_transfer_from_savings.encode(message.cancel_transfer_from_savings, writer.uint32(282).fork()).ldelim();
+        }
+        if (message.decline_voting_rights !== undefined) {
+            decline_voting_rights.encode(message.decline_voting_rights, writer.uint32(298).fork()).ldelim();
         }
         if (message.recurrent_transfer !== undefined) {
             recurrent_transfer.encode(message.recurrent_transfer, writer.uint32(402).fork()).ldelim();
@@ -170,6 +242,114 @@ export const operation = {
                     }
                     message.witness_block_approve = witness_block_approve.decode(reader, reader.uint32());
                     continue;
+                case 18:
+                    if (tag !== 146) {
+                        break;
+                    }
+                    message.delete_comment = delete_comment.decode(reader, reader.uint32());
+                    continue;
+                case 19:
+                    if (tag !== 154) {
+                        break;
+                    }
+                    message.custom_json = custom_json.decode(reader, reader.uint32());
+                    continue;
+                case 20:
+                    if (tag !== 162) {
+                        break;
+                    }
+                    message.comment_options = comment_options.decode(reader, reader.uint32());
+                    continue;
+                case 21:
+                    if (tag !== 170) {
+                        break;
+                    }
+                    message.set_withdraw_vesting_route = set_withdraw_vesting_route.decode(reader, reader.uint32());
+                    continue;
+                case 22:
+                    if (tag !== 178) {
+                        break;
+                    }
+                    message.limit_order_create2 = limit_order_create2.decode(reader, reader.uint32());
+                    continue;
+                case 23:
+                    if (tag !== 186) {
+                        break;
+                    }
+                    message.claim_account = claim_account.decode(reader, reader.uint32());
+                    continue;
+                case 24:
+                    if (tag !== 194) {
+                        break;
+                    }
+                    message.create_claimed_account = create_claimed_account.decode(reader, reader.uint32());
+                    continue;
+                case 25:
+                    if (tag !== 202) {
+                        break;
+                    }
+                    message.request_account_recovery = request_account_recovery.decode(reader, reader.uint32());
+                    continue;
+                case 26:
+                    if (tag !== 210) {
+                        break;
+                    }
+                    message.recover_account = recover_account.decode(reader, reader.uint32());
+                    continue;
+                case 27:
+                    if (tag !== 218) {
+                        break;
+                    }
+                    message.change_recovery_account = change_recovery_account.decode(reader, reader.uint32());
+                    continue;
+                case 28:
+                    if (tag !== 226) {
+                        break;
+                    }
+                    message.escrow_transfer = escrow_transfer.decode(reader, reader.uint32());
+                    continue;
+                case 29:
+                    if (tag !== 234) {
+                        break;
+                    }
+                    message.escrow_dispute = escrow_dispute.decode(reader, reader.uint32());
+                    continue;
+                case 30:
+                    if (tag !== 242) {
+                        break;
+                    }
+                    message.escrow_release = escrow_release.decode(reader, reader.uint32());
+                    continue;
+                case 32:
+                    if (tag !== 258) {
+                        break;
+                    }
+                    message.escrow_approve = escrow_approve.decode(reader, reader.uint32());
+                    continue;
+                case 33:
+                    if (tag !== 266) {
+                        break;
+                    }
+                    message.transfer_to_savings = transfer_to_savings.decode(reader, reader.uint32());
+                    continue;
+                case 34:
+                    if (tag !== 274) {
+                        break;
+                    }
+                    message.transfer_from_savings = transfer_from_savings.decode(reader, reader.uint32());
+                    continue;
+                case 35:
+                    if (tag !== 282) {
+                        break;
+                    }
+                    message.cancel_transfer_from_savings = cancel_transfer_from_savings.decode(reader, reader.uint32());
+                    continue;
+                case 37:
+                    if (tag !== 298) {
+                        break;
+                    }
+                    message.decline_voting_rights = decline_voting_rights.decode(reader, reader.uint32());
+                    continue;
                 case 50:
                     if (tag !== 402) {
                         break;
@@ -212,6 +392,42 @@ export const operation = {
             custom: isSet(object.custom) ? custom.fromJSON(object.custom) : undefined,
             witness_block_approve: isSet(object.witness_block_approve)
                 ? witness_block_approve.fromJSON(object.witness_block_approve)
+                : undefined,
+            delete_comment: isSet(object.delete_comment) ? delete_comment.fromJSON(object.delete_comment) : undefined,
+            custom_json: isSet(object.custom_json) ? custom_json.fromJSON(object.custom_json) : undefined,
+            comment_options: isSet(object.comment_options) ? comment_options.fromJSON(object.comment_options) : undefined,
+            set_withdraw_vesting_route: isSet(object.set_withdraw_vesting_route)
+                ? set_withdraw_vesting_route.fromJSON(object.set_withdraw_vesting_route)
+                : undefined,
+            limit_order_create2: isSet(object.limit_order_create2)
+                ? limit_order_create2.fromJSON(object.limit_order_create2)
+                : undefined,
+            claim_account: isSet(object.claim_account) ? claim_account.fromJSON(object.claim_account) : undefined,
+            create_claimed_account: isSet(object.create_claimed_account)
+                ? create_claimed_account.fromJSON(object.create_claimed_account)
+                : undefined,
+            request_account_recovery: isSet(object.request_account_recovery)
+                ? request_account_recovery.fromJSON(object.request_account_recovery)
+                : undefined,
+            recover_account: isSet(object.recover_account) ? recover_account.fromJSON(object.recover_account) : undefined,
+            change_recovery_account: isSet(object.change_recovery_account)
+                ? change_recovery_account.fromJSON(object.change_recovery_account)
+                : undefined,
+            escrow_transfer: isSet(object.escrow_transfer) ? escrow_transfer.fromJSON(object.escrow_transfer) : undefined,
+            escrow_dispute: isSet(object.escrow_dispute) ? escrow_dispute.fromJSON(object.escrow_dispute) : undefined,
+            escrow_release: isSet(object.escrow_release) ? escrow_release.fromJSON(object.escrow_release) : undefined,
+            escrow_approve: isSet(object.escrow_approve) ? escrow_approve.fromJSON(object.escrow_approve) : undefined,
+            transfer_to_savings: isSet(object.transfer_to_savings)
+                ? transfer_to_savings.fromJSON(object.transfer_to_savings)
+                : undefined,
+            transfer_from_savings: isSet(object.transfer_from_savings)
+                ? transfer_from_savings.fromJSON(object.transfer_from_savings)
+                : undefined,
+            cancel_transfer_from_savings: isSet(object.cancel_transfer_from_savings)
+                ? cancel_transfer_from_savings.fromJSON(object.cancel_transfer_from_savings)
+                : undefined,
+            decline_voting_rights: isSet(object.decline_voting_rights)
+                ? decline_voting_rights.fromJSON(object.decline_voting_rights)
                 : undefined,
             recurrent_transfer: isSet(object.recurrent_transfer)
                 ? recurrent_transfer.fromJSON(object.recurrent_transfer)
@@ -264,6 +480,60 @@ export const operation = {
         }
         if (message.witness_block_approve !== undefined) {
             obj.witness_block_approve = witness_block_approve.toJSON(message.witness_block_approve);
+        }
+        if (message.delete_comment !== undefined) {
+            obj.delete_comment = delete_comment.toJSON(message.delete_comment);
+        }
+        if (message.custom_json !== undefined) {
+            obj.custom_json = custom_json.toJSON(message.custom_json);
+        }
+        if (message.comment_options !== undefined) {
+            obj.comment_options = comment_options.toJSON(message.comment_options);
+        }
+        if (message.set_withdraw_vesting_route !== undefined) {
+            obj.set_withdraw_vesting_route = set_withdraw_vesting_route.toJSON(message.set_withdraw_vesting_route);
+        }
+        if (message.limit_order_create2 !== undefined) {
+            obj.limit_order_create2 = limit_order_create2.toJSON(message.limit_order_create2);
+        }
+        if (message.claim_account !== undefined) {
+            obj.claim_account = claim_account.toJSON(message.claim_account);
+        }
+        if (message.create_claimed_account !== undefined) {
+            obj.create_claimed_account = create_claimed_account.toJSON(message.create_claimed_account);
+        }
+        if (message.request_account_recovery !== undefined) {
+            obj.request_account_recovery = request_account_recovery.toJSON(message.request_account_recovery);
+        }
+        if (message.recover_account !== undefined) {
+            obj.recover_account = recover_account.toJSON(message.recover_account);
+        }
+        if (message.change_recovery_account !== undefined) {
+            obj.change_recovery_account = change_recovery_account.toJSON(message.change_recovery_account);
+        }
+        if (message.escrow_transfer !== undefined) {
+            obj.escrow_transfer = escrow_transfer.toJSON(message.escrow_transfer);
+        }
+        if (message.escrow_dispute !== undefined) {
+            obj.escrow_dispute = escrow_dispute.toJSON(message.escrow_dispute);
+        }
+        if (message.escrow_release !== undefined) {
+            obj.escrow_release = escrow_release.toJSON(message.escrow_release);
+        }
+        if (message.escrow_approve !== undefined) {
+            obj.escrow_approve = escrow_approve.toJSON(message.escrow_approve);
+        }
+        if (message.transfer_to_savings !== undefined) {
+            obj.transfer_to_savings = transfer_to_savings.toJSON(message.transfer_to_savings);
+        }
+        if (message.transfer_from_savings !== undefined) {
+            obj.transfer_from_savings = transfer_from_savings.toJSON(message.transfer_from_savings);
+        }
+        if (message.cancel_transfer_from_savings !== undefined) {
+            obj.cancel_transfer_from_savings = cancel_transfer_from_savings.toJSON(message.cancel_transfer_from_savings);
+        }
+        if (message.decline_voting_rights !== undefined) {
+            obj.decline_voting_rights = decline_voting_rights.toJSON(message.decline_voting_rights);
         }
         if (message.recurrent_transfer !== undefined) {
             obj.recurrent_transfer = recurrent_transfer.toJSON(message.recurrent_transfer);
@@ -319,6 +589,67 @@ export const operation = {
         message.witness_block_approve =
             (object.witness_block_approve !== undefined && object.witness_block_approve !== null)
                 ? witness_block_approve.fromPartial(object.witness_block_approve)
+                : undefined;
+        message.delete_comment = (object.delete_comment !== undefined && object.delete_comment !== null)
+            ? delete_comment.fromPartial(object.delete_comment)
+            : undefined;
+        message.custom_json = (object.custom_json !== undefined && object.custom_json !== null)
+            ? custom_json.fromPartial(object.custom_json)
+            : undefined;
+        message.comment_options = (object.comment_options !== undefined && object.comment_options !== null)
+            ? comment_options.fromPartial(object.comment_options)
+            : undefined;
+        message.set_withdraw_vesting_route =
+            (object.set_withdraw_vesting_route !== undefined && object.set_withdraw_vesting_route !== null)
+                ? set_withdraw_vesting_route.fromPartial(object.set_withdraw_vesting_route)
+                : undefined;
+        message.limit_order_create2 = (object.limit_order_create2 !== undefined && object.limit_order_create2 !== null)
+            ? limit_order_create2.fromPartial(object.limit_order_create2)
+            : undefined;
+        message.claim_account = (object.claim_account !== undefined && object.claim_account !== null)
+            ? claim_account.fromPartial(object.claim_account)
+            : undefined;
+        message.create_claimed_account =
+            (object.create_claimed_account !== undefined && object.create_claimed_account !== null)
+                ? create_claimed_account.fromPartial(object.create_claimed_account)
+                : undefined;
+        message.request_account_recovery =
+            (object.request_account_recovery !== undefined && object.request_account_recovery !== null)
+                ? request_account_recovery.fromPartial(object.request_account_recovery)
+                : undefined;
+        message.recover_account = (object.recover_account !== undefined && object.recover_account !== null)
+            ? recover_account.fromPartial(object.recover_account)
+            : undefined;
+        message.change_recovery_account =
+            (object.change_recovery_account !== undefined && object.change_recovery_account !== null)
+                ? change_recovery_account.fromPartial(object.change_recovery_account)
+                : undefined;
+        message.escrow_transfer = (object.escrow_transfer !== undefined && object.escrow_transfer !== null)
+            ? escrow_transfer.fromPartial(object.escrow_transfer)
+            : undefined;
+        message.escrow_dispute = (object.escrow_dispute !== undefined && object.escrow_dispute !== null)
+            ? escrow_dispute.fromPartial(object.escrow_dispute)
+            : undefined;
+        message.escrow_release = (object.escrow_release !== undefined && object.escrow_release !== null)
+            ? escrow_release.fromPartial(object.escrow_release)
+            : undefined;
+        message.escrow_approve = (object.escrow_approve !== undefined && object.escrow_approve !== null)
+            ? escrow_approve.fromPartial(object.escrow_approve)
+            : undefined;
+        message.transfer_to_savings = (object.transfer_to_savings !== undefined && object.transfer_to_savings !== null)
+            ? transfer_to_savings.fromPartial(object.transfer_to_savings)
+            : undefined;
+        message.transfer_from_savings =
+            (object.transfer_from_savings !== undefined && object.transfer_from_savings !== null)
+                ? transfer_from_savings.fromPartial(object.transfer_from_savings)
+                : undefined;
+        message.cancel_transfer_from_savings =
+            (object.cancel_transfer_from_savings !== undefined && object.cancel_transfer_from_savings !== null)
+                ? cancel_transfer_from_savings.fromPartial(object.cancel_transfer_from_savings)
+                : undefined;
+        message.decline_voting_rights =
+            (object.decline_voting_rights !== undefined && object.decline_voting_rights !== null)
+                ? decline_voting_rights.fromPartial(object.decline_voting_rights)
                 : undefined;
         message.recurrent_transfer = (object.recurrent_transfer !== undefined && object.recurrent_transfer !== null)
             ? recurrent_transfer.fromPartial(object.recurrent_transfer)
