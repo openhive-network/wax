@@ -6,7 +6,7 @@
   "type": "module",
   "private": false,
   "scripts": {
-    "prebuild": "sh scripts/compile_proto_ts.sh",
+    "prebuild": "husky install && sh scripts/compile_proto_ts.sh",
     "build": "rimraf wasm/dist && tsc",
     "postinstall": "playwright install",
     "postbuild": "fix-esm-import-path wasm/dist/proto",
