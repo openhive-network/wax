@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wax Test</title>
+</head>
+<body id="waxbody">
+  <script type="importmap">
+    {
+      "imports": {
+        "@hive/wax": "/build_wasm/wax_wasm.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import WaxModule from '@hive/wax';
+
+    Object.defineProperties(window, {
+      wax: {
+        get() {
+          return WaxModule;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

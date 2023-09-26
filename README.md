@@ -43,6 +43,8 @@ sh scripts/bump_npm_version.sh
 
 Install dependencies:
 
+(Remember that our project requires Node.js version >= 12. You can install it using your distribution binaries, compile from source or use [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script))
+
 ```bash
 npm install
 ```
