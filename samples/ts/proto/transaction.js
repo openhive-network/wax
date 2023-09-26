@@ -2,18 +2,23 @@
 import _m0 from "protobufjs/minimal.js";
 import { account_create } from "./account_create.js";
 import { account_update } from "./account_update.js";
+import { account_update2 } from "./account_update2.js";
 import { account_witness_proxy } from "./account_witness_proxy.js";
 import { account_witness_vote } from "./account_witness_vote.js";
 import { cancel_transfer_from_savings } from "./cancel_transfer_from_savings.js";
 import { change_recovery_account } from "./change_recovery_account.js";
 import { claim_account } from "./claim_account.js";
+import { claim_reward_balance } from "./claim_reward_balance.js";
+import { collateralized_convert } from "./collateralized_convert.js";
 import { comment } from "./comment.js";
 import { comment_options } from "./comment_options.js";
 import { convert } from "./convert.js";
 import { create_claimed_account } from "./create_claimed_account.js";
+import { create_proposal } from "./create_proposal.js";
 import { custom } from "./custom.js";
 import { custom_json } from "./custom_json.js";
 import { decline_voting_rights } from "./decline_voting_rights.js";
+import { delegate_vesting_shares } from "./delegate_vesting_shares.js";
 import { delete_comment } from "./delete_comment.js";
 import { escrow_approve } from "./escrow_approve.js";
 import { escrow_dispute } from "./escrow_dispute.js";
@@ -26,15 +31,20 @@ import { limit_order_create } from "./limit_order_create.js";
 import { limit_order_create2 } from "./limit_order_create2.js";
 import { recover_account } from "./recover_account.js";
 import { recurrent_transfer } from "./recurrent_transfer.js";
+import { remove_proposal } from "./remove_proposal.js";
 import { request_account_recovery } from "./request_account_recovery.js";
 import { set_withdraw_vesting_route } from "./set_withdraw_vesting_route.js";
 import { transfer } from "./transfer.js";
 import { transfer_from_savings } from "./transfer_from_savings.js";
 import { transfer_to_savings } from "./transfer_to_savings.js";
 import { transfer_to_vesting } from "./transfer_to_vesting.js";
+import { update_proposal } from "./update_proposal.js";
+import { update_proposal_votes } from "./update_proposal_votes.js";
 import { vote } from "./vote.js";
 import { withdraw_vesting } from "./withdraw_vesting.js";
 import { witness_block_approve } from "./witness_block_approve.js";
+import { witness_set_properties } from "./witness_set_properties.js";
+import { witness_update } from "./witness_update.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseoperation() {
     return {};
@@ -73,6 +83,9 @@ export const operation = {
         }
         if (message.account_update !== undefined) {
             account_update.encode(message.account_update, writer.uint32(90).fork()).ldelim();
+        }
+        if (message.witness_update !== undefined) {
+            witness_update.encode(message.witness_update, writer.uint32(98).fork()).ldelim();
         }
         if (message.account_witness_vote !== undefined) {
             account_witness_vote.encode(message.account_witness_vote, writer.uint32(106).fork()).ldelim();
@@ -139,6 +152,33 @@ export const operation = {
         }
         if (message.decline_voting_rights !== undefined) {
             decline_voting_rights.encode(message.decline_voting_rights, writer.uint32(298).fork()).ldelim();
+        }
+        if (message.claim_reward_balance !== undefined) {
+            claim_reward_balance.encode(message.claim_reward_balance, writer.uint32(322).fork()).ldelim();
+        }
+        if (message.delegate_vesting_shares !== undefined) {
+            delegate_vesting_shares.encode(message.delegate_vesting_shares, writer.uint32(330).fork()).ldelim();
+        }
+        if (message.witness_set_properties !== undefined) {
+            witness_set_properties.encode(message.witness_set_properties, writer.uint32(346).fork()).ldelim();
+        }
+        if (message.account_update2 !== undefined) {
+            account_update2.encode(message.account_update2, writer.uint32(354).fork()).ldelim();
+        }
+        if (message.create_proposal !== undefined) {
+            create_proposal.encode(message.create_proposal, writer.uint32(362).fork()).ldelim();
+        }
+        if (message.update_proposal_votes !== undefined) {
+            update_proposal_votes.encode(message.update_proposal_votes, writer.uint32(370).fork()).ldelim();
+        }
+        if (message.remove_proposal !== undefined) {
+            remove_proposal.encode(message.remove_proposal, writer.uint32(378).fork()).ldelim();
+        }
+        if (message.update_proposal !== undefined) {
+            update_proposal.encode(message.update_proposal, writer.uint32(386).fork()).ldelim();
+        }
+        if (message.collateralized_convert !== undefined) {
+            collateralized_convert.encode(message.collateralized_convert, writer.uint32(394).fork()).ldelim();
         }
         if (message.recurrent_transfer !== undefined) {
             recurrent_transfer.encode(message.recurrent_transfer, writer.uint32(402).fork()).ldelim();
@@ -217,6 +257,12 @@ export const operation = {
                         break;
                     }
                     message.account_update = account_update.decode(reader, reader.uint32());
+                    continue;
+                case 12:
+                    if (tag !== 98) {
+                        break;
+                    }
+                    message.witness_update = witness_update.decode(reader, reader.uint32());
                     continue;
                 case 13:
                     if (tag !== 106) {
@@ -350,6 +396,60 @@ export const operation = {
                     }
                     message.decline_voting_rights = decline_voting_rights.decode(reader, reader.uint32());
                     continue;
+                case 40:
+                    if (tag !== 322) {
+                        break;
+                    }
+                    message.claim_reward_balance = claim_reward_balance.decode(reader, reader.uint32());
+                    continue;
+                case 41:
+                    if (tag !== 330) {
+                        break;
+                    }
+                    message.delegate_vesting_shares = delegate_vesting_shares.decode(reader, reader.uint32());
+                    continue;
+                case 43:
+                    if (tag !== 346) {
+                        break;
+                    }
+                    message.witness_set_properties = witness_set_properties.decode(reader, reader.uint32());
+                    continue;
+                case 44:
+                    if (tag !== 354) {
+                        break;
+                    }
+                    message.account_update2 = account_update2.decode(reader, reader.uint32());
+                    continue;
+                case 45:
+                    if (tag !== 362) {
+                        break;
+                    }
+                    message.create_proposal = create_proposal.decode(reader, reader.uint32());
+                    continue;
+                case 46:
+                    if (tag !== 370) {
+                        break;
+                    }
+                    message.update_proposal_votes = update_proposal_votes.decode(reader, reader.uint32());
+                    continue;
+                case 47:
+                    if (tag !== 378) {
+                        break;
+                    }
+                    message.remove_proposal = remove_proposal.decode(reader, reader.uint32());
+                    continue;
+                case 48:
+                    if (tag !== 386) {
+                        break;
+                    }
+                    message.update_proposal = update_proposal.decode(reader, reader.uint32());
+                    continue;
+                case 49:
+                    if (tag !== 394) {
+                        break;
+                    }
+                    message.collateralized_convert = collateralized_convert.decode(reader, reader.uint32());
+                    continue;
                 case 50:
                     if (tag !== 402) {
                         break;
@@ -383,6 +483,7 @@ export const operation = {
             convert: isSet(object.convert) ? convert.fromJSON(object.convert) : undefined,
             account_create: isSet(object.account_create) ? account_create.fromJSON(object.account_create) : undefined,
             account_update: isSet(object.account_update) ? account_update.fromJSON(object.account_update) : undefined,
+            witness_update: isSet(object.witness_update) ? witness_update.fromJSON(object.witness_update) : undefined,
             account_witness_vote: isSet(object.account_witness_vote)
                 ? account_witness_vote.fromJSON(object.account_witness_vote)
                 : undefined,
@@ -429,6 +530,25 @@ export const operation = {
             decline_voting_rights: isSet(object.decline_voting_rights)
                 ? decline_voting_rights.fromJSON(object.decline_voting_rights)
                 : undefined,
+            claim_reward_balance: isSet(object.claim_reward_balance)
+                ? claim_reward_balance.fromJSON(object.claim_reward_balance)
+                : undefined,
+            delegate_vesting_shares: isSet(object.delegate_vesting_shares)
+                ? delegate_vesting_shares.fromJSON(object.delegate_vesting_shares)
+                : undefined,
+            witness_set_properties: isSet(object.witness_set_properties)
+                ? witness_set_properties.fromJSON(object.witness_set_properties)
+                : undefined,
+            account_update2: isSet(object.account_update2) ? account_update2.fromJSON(object.account_update2) : undefined,
+            create_proposal: isSet(object.create_proposal) ? create_proposal.fromJSON(object.create_proposal) : undefined,
+            update_proposal_votes: isSet(object.update_proposal_votes)
+                ? update_proposal_votes.fromJSON(object.update_proposal_votes)
+                : undefined,
+            remove_proposal: isSet(object.remove_proposal) ? remove_proposal.fromJSON(object.remove_proposal) : undefined,
+            update_proposal: isSet(object.update_proposal) ? update_proposal.fromJSON(object.update_proposal) : undefined,
+            collateralized_convert: isSet(object.collateralized_convert)
+                ? collateralized_convert.fromJSON(object.collateralized_convert)
+                : undefined,
             recurrent_transfer: isSet(object.recurrent_transfer)
                 ? recurrent_transfer.fromJSON(object.recurrent_transfer)
                 : undefined,
@@ -468,6 +588,9 @@ export const operation = {
         }
         if (message.account_update !== undefined) {
             obj.account_update = account_update.toJSON(message.account_update);
+        }
+        if (message.witness_update !== undefined) {
+            obj.witness_update = witness_update.toJSON(message.witness_update);
         }
         if (message.account_witness_vote !== undefined) {
             obj.account_witness_vote = account_witness_vote.toJSON(message.account_witness_vote);
@@ -535,6 +658,33 @@ export const operation = {
         if (message.decline_voting_rights !== undefined) {
             obj.decline_voting_rights = decline_voting_rights.toJSON(message.decline_voting_rights);
         }
+        if (message.claim_reward_balance !== undefined) {
+            obj.claim_reward_balance = claim_reward_balance.toJSON(message.claim_reward_balance);
+        }
+        if (message.delegate_vesting_shares !== undefined) {
+            obj.delegate_vesting_shares = delegate_vesting_shares.toJSON(message.delegate_vesting_shares);
+        }
+        if (message.witness_set_properties !== undefined) {
+            obj.witness_set_properties = witness_set_properties.toJSON(message.witness_set_properties);
+        }
+        if (message.account_update2 !== undefined) {
+            obj.account_update2 = account_update2.toJSON(message.account_update2);
+        }
+        if (message.create_proposal !== undefined) {
+            obj.create_proposal = create_proposal.toJSON(message.create_proposal);
+        }
+        if (message.update_proposal_votes !== undefined) {
+            obj.update_proposal_votes = update_proposal_votes.toJSON(message.update_proposal_votes);
+        }
+        if (message.remove_proposal !== undefined) {
+            obj.remove_proposal = remove_proposal.toJSON(message.remove_proposal);
+        }
+        if (message.update_proposal !== undefined) {
+            obj.update_proposal = update_proposal.toJSON(message.update_proposal);
+        }
+        if (message.collateralized_convert !== undefined) {
+            obj.collateralized_convert = collateralized_convert.toJSON(message.collateralized_convert);
+        }
         if (message.recurrent_transfer !== undefined) {
             obj.recurrent_transfer = recurrent_transfer.toJSON(message.recurrent_transfer);
         }
@@ -575,6 +725,9 @@ export const operation = {
             : undefined;
         message.account_update = (object.account_update !== undefined && object.account_update !== null)
             ? account_update.fromPartial(object.account_update)
+            : undefined;
+        message.witness_update = (object.witness_update !== undefined && object.witness_update !== null)
+            ? witness_update.fromPartial(object.witness_update)
             : undefined;
         message.account_witness_vote = (object.account_witness_vote !== undefined && object.account_witness_vote !== null)
             ? account_witness_vote.fromPartial(object.account_witness_vote)
@@ -650,6 +803,37 @@ export const operation = {
         message.decline_voting_rights =
             (object.decline_voting_rights !== undefined && object.decline_voting_rights !== null)
                 ? decline_voting_rights.fromPartial(object.decline_voting_rights)
+                : undefined;
+        message.claim_reward_balance = (object.claim_reward_balance !== undefined && object.claim_reward_balance !== null)
+            ? claim_reward_balance.fromPartial(object.claim_reward_balance)
+            : undefined;
+        message.delegate_vesting_shares =
+            (object.delegate_vesting_shares !== undefined && object.delegate_vesting_shares !== null)
+                ? delegate_vesting_shares.fromPartial(object.delegate_vesting_shares)
+                : undefined;
+        message.witness_set_properties =
+            (object.witness_set_properties !== undefined && object.witness_set_properties !== null)
+                ? witness_set_properties.fromPartial(object.witness_set_properties)
+                : undefined;
+        message.account_update2 = (object.account_update2 !== undefined && object.account_update2 !== null)
+            ? account_update2.fromPartial(object.account_update2)
+            : undefined;
+        message.create_proposal = (object.create_proposal !== undefined && object.create_proposal !== null)
+            ? create_proposal.fromPartial(object.create_proposal)
+            : undefined;
+        message.update_proposal_votes =
+            (object.update_proposal_votes !== undefined && object.update_proposal_votes !== null)
+                ? update_proposal_votes.fromPartial(object.update_proposal_votes)
+                : undefined;
+        message.remove_proposal = (object.remove_proposal !== undefined && object.remove_proposal !== null)
+            ? remove_proposal.fromPartial(object.remove_proposal)
+            : undefined;
+        message.update_proposal = (object.update_proposal !== undefined && object.update_proposal !== null)
+            ? update_proposal.fromPartial(object.update_proposal)
+            : undefined;
+        message.collateralized_convert =
+            (object.collateralized_convert !== undefined && object.collateralized_convert !== null)
+                ? collateralized_convert.fromPartial(object.collateralized_convert)
                 : undefined;
         message.recurrent_transfer = (object.recurrent_transfer !== undefined && object.recurrent_transfer !== null)
             ? recurrent_transfer.fromPartial(object.recurrent_transfer)
