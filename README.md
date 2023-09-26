@@ -35,12 +35,6 @@ python3 -m pip install ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310
 
 ### TypeScript Building
 
-Generate `package.json`:
-
-```bash
-sh scripts/bump_npm_version.sh
-```
-
 Install dependencies:
 
 (Remember that our project requires Node.js version >= 12. You can install it using your distribution binaries, compile from source or use [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script))
@@ -61,6 +55,13 @@ Build TypeScript files:
 ```bash
 npm run build
 ```
+
+### Publishing a NPM package
+
+Predefined package.json file has specified some dedicated placeholders to be replaced with actual informations before building a final form of a package and publishing it.
+To replace such placeholders with actual values please use `script/bump_npm_version.sh`.
+
+Warning: Commiting a package.json file without such placeholder definitions is disallowed. See scripts/precommit_hook.sh for placeholder verification details.
 
 ## Testing
 
