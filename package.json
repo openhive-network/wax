@@ -1,7 +1,7 @@
 {
-  "name": "",
-  "version": "",
-  "description": "call hived functions from JavaScript",
+  "name": "@hive/wax",
+  "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
+  "description": "Provides Hive Protocol features to JavaScript",
   "main": "wasm/dist/wax.js",
   "type": "module",
   "private": false,
@@ -43,7 +43,7 @@
     "node": ">= 12"
   },
   "publishConfig": {
-    "registry": "",
-    "tag": ""
+    "registry": "https://RegistryPlaceholder",
+    "tag": "DistTagPlaceholder"
   }
 }
