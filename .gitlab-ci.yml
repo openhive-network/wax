@@ -38,7 +38,8 @@ default:
     - poetry self add "poetry-dynamic-versioning[plugin]"
     - poetry self update
     - pip list
-  tags: *shared_tags
+  tags:
+    - public-runner-docker
 
 .build_wheel_base:
   extends: .build_wheel_template
