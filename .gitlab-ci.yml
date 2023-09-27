@@ -192,7 +192,6 @@ test_wax_wasm:
       artifacts: true
   script:
     - npm run test
-  allow_failure: true # Temporary - until actual set of tests will be adjusted to web environment
 
 test_wax_wasm_proto_pattern:
   stage: test
