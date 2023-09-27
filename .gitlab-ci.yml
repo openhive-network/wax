@@ -19,7 +19,7 @@ variables:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 4b62d20dfebebacf51ca8795f3d7c4df2d9b8565 # develop
+    ref: ba9d240a5d338120d3ad537d14f22c65f43a7103 # develop
     file: '/templates/wasm_build.gitlab-ci.yml'
   - project: 'hive/common-ci-configuration'
     ref: 59a5f33316f766153a38181ef1a38f1096465871  # mzebrak/python-template
