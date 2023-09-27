@@ -179,12 +179,23 @@ test_wax_protobuf_python_examples:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - python3 /builds/hive/wax/examples/python/visitor_example.py
 
-test_wax_wasm:
+.wasm_wax_test_base:
   stage: test
   # emscripten image can be used as it contains all needed tools (node and npm).
   image: ${EMSCRIPTEN_IMAGE}
+  variables:
+    FF_NETWORK_PER_BUILD: 1
 
   interruptible: true
+
+  before_script:
+    - pnpm install
+
+  tags:
+    - public-runner-docker
+
+test_wax_wasm:
+  extends: .wasm_wax_test_base
   needs:
     - job: wax_wasm_build
       artifacts: true
@@ -194,11 +205,7 @@ test_wax_wasm:
     - npm run test
 
 test_wax_wasm_proto_pattern:
-  stage: test
-  # emscripten image can be used as it contains all needed tools (node and npm).
-  image: ${EMSCRIPTEN_IMAGE}
-
-  interruptible: true
+  extends: .wasm_wax_test_base
   needs:
     - job: wax_wasm_build
       artifacts: true
@@ -206,8 +213,6 @@ test_wax_wasm_proto_pattern:
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-  tags:
-    - public-runner-docker
 
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/build_wasm/proto"
@@ -221,11 +226,7 @@ test_wax_wasm_proto_pattern:
     expire_in: 1 week
 
 test_wax_wasm_examples:
-  stage: test
-  # emscripten image can be used as it contains all needed tools (node and npm).
-  image: ${EMSCRIPTEN_IMAGE}
-
-  interruptible: true
+  extends: .wasm_wax_test_base
   needs:
     - job: wax_wasm_build
       artifacts: true
@@ -233,11 +234,8 @@ test_wax_wasm_examples:
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-  tags:
-    - public-runner-docker
 
   script:
-    - pnpm install
     - npm run examples
 
 tag_production:
