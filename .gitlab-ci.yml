@@ -215,12 +215,13 @@ test_wax_wasm_proto_pattern:
       artifacts: true
 
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/build_wasm/proto"
-    - npm pack --dry-run --json | jq -r '.[0]["files"][]["path"]' > $CI_PROJECT_DIR/build_wasm/npm-pack.gen
-    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/build_wasm/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/wasm/dist/proto"
+    - npm pack --dry-run --json | jq -r '.[0]["files"][]["path"]' > $CI_PROJECT_DIR/wasm/dist/npm-pack.gen
+    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/build_wasm/npm-pack.gen"
+      # we want here all generated files (which were a subject of comparison) in artifacts, to simplify diff analysis at job failure
+      - "$CI_PROJECT_DIR/wasm/dist"
 
     when: always
     expire_in: 1 week
