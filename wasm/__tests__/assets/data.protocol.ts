@@ -4,6 +4,15 @@
 
 import "./data";
 
+import Long from "long";
+
+/// Converts given number to the array of low and high number parts
+export const numToHighLow = (value: number) => {
+  const long = Long.fromNumber(value);
+
+  return [ long.low, long.high ];
+};
+
 export enum ErrorCodes {
   FAIL = 0,
   OK = 1
