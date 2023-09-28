@@ -1,0 +1,73 @@
+/* eslint-disable */
+import _m0 from "protobufjs/minimal.js";
+export const protobufPackage = "hive.protocol.buffers";
+function createBaseproxy_cleared() {
+    return { account: "", proxy: "" };
+}
+export const proxy_cleared = {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.account !== "") {
+            writer.uint32(10).string(message.account);
+        }
+        if (message.proxy !== "") {
+            writer.uint32(18).string(message.proxy);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseproxy_cleared();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.account = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+                    message.proxy = reader.string();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            account: isSet(object.account) ? String(object.account) : "",
+            proxy: isSet(object.proxy) ? String(object.proxy) : "",
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        if (message.account !== "") {
+            obj.account = message.account;
+        }
+        if (message.proxy !== "") {
+            obj.proxy = message.proxy;
+        }
+        return obj;
+    },
+    create(base) {
+        return proxy_cleared.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a, _b;
+        const message = createBaseproxy_cleared();
+        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.proxy = (_b = object.proxy) !== null && _b !== void 0 ? _b : "";
+        return message;
+    },
+};
+function isSet(value) {
+    return value !== null && value !== undefined;
+}
