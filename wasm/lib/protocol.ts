@@ -1,7 +1,8 @@
 // Exports only the prootbuf definitions
 
 // Transaction types
-export { operation, transaction } from "./proto/transaction.js";
+export { transaction } from "./proto/transaction.js";
+export { operation } from "./proto/operation.js";
 
 // Other types
 export { asset } from "./proto/asset.js";
