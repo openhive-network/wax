@@ -31,6 +31,7 @@ else
 fi
 
 # Check if package with given version has been already published
+# Yes, we want to use `npm` here, not `pnpm` as it does not has a dry-run option
 npm install "${NAME}@${TAG}" --tag="$NEW_VERSION" --dry-run --no-fund --omit=optional --omit=dev --no-audit --no-package-lock
 
 if [ $? -eq 0 ]; then

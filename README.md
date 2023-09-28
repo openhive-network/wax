@@ -46,7 +46,8 @@ Install dependencies:
 (Remember that our project requires Node.js version >= 12. You can install it using your distribution binaries, compile from source or use [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script))
 
 ```bash
-npm install
+npm i -g pnpm
+pnpm install
 ```
 
 Build WASM wax:
@@ -94,7 +95,7 @@ npm run examples
 rm -rf examples/ts/node_modules examples/ts/package-lock.json node_modules/ build_wasm wasm/dist wasm/lib/proto .npmrc package.json
 
 # Run oneliner all-tester
-sh scripts/bump_npm_version.sh && yarn install && ./wasm/build_wasm_wax.sh && npm run build && npm run test && npm run examples
+sh scripts/bump_npm_version.sh && pnpm install && ./wasm/build_wasm_wax.sh && npm run build && npm run test && npm run examples
 ```
 
 ## License

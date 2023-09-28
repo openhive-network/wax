@@ -106,7 +106,7 @@ wax_wasm_proto_tsc_generation:
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
   script:
-    - npm install # we actually want to move to yarn
+    - pnpm install # we actually want to move to yarn
     - npm run build
   needs:
     - job: wax_wasm_build
@@ -230,7 +230,7 @@ test_wax_wasm_examples:
     - public-runner-docker
 
   script:
-    - npm install
+    - pnpm install
     - npm run examples
 
 .deploy_wheel_needs: &deploy_wheel_needs
