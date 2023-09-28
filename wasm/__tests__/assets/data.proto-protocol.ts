@@ -4,22 +4,22 @@
 
 export * from "./data.protocol";
 
-export const protoOps = [
-  {
-    vote: {
-      voter: "otom",
-      author: "c0ff33a",
-      permlink: "ewxhnjbj",
-      weight: 2200
-    }
+export const protoVoteOp = {
+  vote: {
+    voter: "otom",
+    author: "c0ff33a",
+    permlink: "ewxhnjbj",
+    weight: 2200
   }
-];
+};
 
 export const protoTx = JSON.stringify({
   ref_block_num: 34559,
   ref_block_prefix: 1271006404,
   expiration: "2021-12-13T11:31:33",
-  operations: protoOps,
+  operations: [
+    protoVoteOp
+  ],
   extensions: []
 });
 
