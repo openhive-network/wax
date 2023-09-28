@@ -2,3 +2,4 @@
 
 import "./detailed/base";
 import "./detailed/protocol";
+import "./detailed/proto-protocol";

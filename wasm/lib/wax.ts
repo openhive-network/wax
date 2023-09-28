@@ -4,6 +4,8 @@ export type {
   MainModule,
   error_code,
   json_asset,
+  proto_protocol,
+  proto_protocol_base,
   protocol,
   protocol_base,
   result
