@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const STORAGE_ROOT = path.join(__dirname, 'storage_root');
-const WALLET_OPTIONS = ['--wallet-dir', `${STORAGE_ROOT}/.beekeeper`, '--salt', 'avocado'];
+const WALLET_OPTIONS = ['--wallet-dir', `${STORAGE_ROOT}/.beekeeper`];
 
 const protoTx = transaction.create({
   ref_block_num: 19260,
