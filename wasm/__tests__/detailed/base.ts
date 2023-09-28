@@ -1,12 +1,12 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
-import type WaxModule from '../lib/wax';
+import type WaxModule from '../../lib/wax';
 declare var wax: typeof WaxModule;
 
 let browser!: ChromiumBrowser;
 
-test.describe('WASM Protocol', () => {
+test.describe('WASM Base tests', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch({
       headless: true
@@ -18,7 +18,7 @@ test.describe('WASM Protocol', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/test.html`);
+    await page.goto(`http://localhost:8080/wasm/__tests__/assets/test.html`);
     await page.waitForURL('**/test.html', { waitUntil: 'load' });
   });
 
@@ -47,8 +47,14 @@ test.describe('WASM Protocol', () => {
   test('Should be able to create instance of protocol', async ({ page }) => {
     await page.evaluate(async () => {
       const provider = await wax();
-
       new provider.protocol();
+    });
+  });
+
+  test('Should be able to create instance of proto protocol', async ({ page }) => {
+    await page.evaluate(async () => {
+      const provider = await wax();
+      new provider.proto_protocol();
     });
   });
 

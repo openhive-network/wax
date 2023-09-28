@@ -16,7 +16,13 @@
   <script type="module">
     import WaxModule from '@hive/wax';
 
-    window.wax = WaxModule;
+    Object.defineProperties(window, {
+      wax: {
+        get() {
+          return WaxModule;
+        }
+      }
+    });
   </script>
 </body>
 </html>
