@@ -11,7 +11,7 @@
     "postinstall": "playwright install",
     "postbuild": "fix-esm-import-path wasm/dist/proto",
     "test": "playwright test --max-failures 1 wasm/__tests__",
-    "examples": "cd examples/ts && npm install && npm run examples && cd ../.."
+    "examples": "cd examples/ts && pnpm install && pnpm run examples && cd ../.."
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",
@@ -24,6 +24,7 @@
     "typescript": "4.4.4"
   },
   "dependencies": {
+    "long": "^5.2.3",
     "protobufjs": "^7.2.5"
   },
   "license": "SEE LICENSE IN LICENSE.md",
