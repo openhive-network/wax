@@ -30,6 +30,12 @@ using namespace emscripten;
                                                                \
     json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const \
     { return cpp::base_class_name::cpp_vests(join_lh(amount_low, amount_high)); } \
+                                                               \
+    result cpp_generate_private_key() \
+    { return cpp::base_class_name::cpp_generate_private_key(); } \
+                                                               \
+    result cpp_calculate_public_key(const std::string& wif) \
+    { return cpp::base_class_name::cpp_calculate_public_key(wif); } \
 
 class protocol_wasm : public protocol
 {
@@ -96,6 +102,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_hive))
     .function("cpp_hbd", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_hbd))
     .function("cpp_vests", select_overload<ext_json_asset_fn_t>(&protocol_wasm::cpp_vests))
+    .function("cpp_calculate_public_key", select_overload<result(const std::string&)>(&protocol_wasm::cpp_calculate_public_key))
+    .function("cpp_generate_private_key", select_overload<result()>(&protocol_wasm::cpp_generate_private_key))
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
@@ -107,6 +115,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive", select_overload<ext_json_asset_fn_t>(&proto_protocol_wasm::cpp_hive))
     .function("cpp_hbd", select_overload<ext_json_asset_fn_t>(&proto_protocol_wasm::cpp_hbd))
     .function("cpp_vests", select_overload<ext_json_asset_fn_t>(&proto_protocol_wasm::cpp_vests))
+    .function("cpp_calculate_public_key", select_overload<result(const std::string&)>(&proto_protocol_wasm::cpp_calculate_public_key))
+    .function("cpp_generate_private_key", select_overload<result()>(&proto_protocol_wasm::cpp_generate_private_key))
   ;
 }
 
