@@ -196,6 +196,11 @@ test_wax_wasm:
       artifacts: true
   script:
     - npm run test
+  artifacts:
+    reports:
+      junit: results.xml
+    paths:
+      - "$CI_PROJECT_DIR/results.json"
 
 test_wax_wasm_proto_pattern:
   extends: .wasm_wax_test_base
