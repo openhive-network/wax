@@ -95,13 +95,21 @@ test_wax_wasm:
     - npm run test
   allow_failure: true # Temporary - until actual set of tests will be adjusted to web environment
 
-deploy_wheel_to_gitlab:
-  stage: deploy
-  extends: .deploy_wheel_to_gitlab_template
+.deploy_wheel_needs: &deploy_wheel_needs
   needs:
     - job: test_wax_python_wheel
     - job: build_wheel
       artifacts: true
+
+deploy_wheel_to_gitlab:
+  stage: deploy
+  extends: .deploy_wheel_to_gitlab_template
+  <<: *deploy_wheel_needs
+
+deploy_wheel_to_pypi:
+  extends: .deploy_wheel_to_pypi_template
+  stage: deploy
+  <<: *deploy_wheel_needs
 
 deploy_wax_wasm_dev_package:
   stage: deploy
