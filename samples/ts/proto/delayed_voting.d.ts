@@ -11,7 +11,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface delayed_voting {
     voter: string;
-    votes: number;
+    votes: string;
 }
 export declare const delayed_voting: {
     encode(message: delayed_voting, writer?: _m0.Writer): _m0.Writer;
@@ -20,17 +20,17 @@ export declare const delayed_voting: {
     toJSON(message: delayed_voting): unknown;
     create<I extends {
         voter?: string | undefined;
-        votes?: number | undefined;
+        votes?: string | undefined;
     } & {
         voter?: string | undefined;
-        votes?: number | undefined;
+        votes?: string | undefined;
     } & { [K in Exclude<keyof I, keyof delayed_voting>]: never; }>(base?: I | undefined): delayed_voting;
     fromPartial<I_1 extends {
         voter?: string | undefined;
-        votes?: number | undefined;
+        votes?: string | undefined;
     } & {
         voter?: string | undefined;
-        votes?: number | undefined;
+        votes?: string | undefined;
     } & { [K_1 in Exclude<keyof I_1, keyof delayed_voting>]: never; }>(object: I_1): delayed_voting;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

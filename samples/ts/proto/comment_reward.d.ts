@@ -21,7 +21,7 @@ export interface comment_reward {
     author: string;
     permlink: string;
     payout: asset | undefined;
-    author_rewards: number;
+    author_rewards: string;
     total_payout_value: asset | undefined;
     curator_payout_value: asset | undefined;
     beneficiary_payout_value: asset | undefined;
@@ -39,7 +39,7 @@ export declare const comment_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } | undefined;
-        author_rewards?: number | undefined;
+        author_rewards?: string | undefined;
         total_payout_value?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -67,7 +67,7 @@ export declare const comment_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } & { [K in Exclude<keyof I["payout"], keyof asset>]: never; }) | undefined;
-        author_rewards?: number | undefined;
+        author_rewards?: string | undefined;
         total_payout_value?: ({
             amount?: string | undefined;
             precision?: number | undefined;
@@ -104,7 +104,7 @@ export declare const comment_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } | undefined;
-        author_rewards?: number | undefined;
+        author_rewards?: string | undefined;
         total_payout_value?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -132,7 +132,7 @@ export declare const comment_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } & { [K_5 in Exclude<keyof I_1["payout"], keyof asset>]: never; }) | undefined;
-        author_rewards?: number | undefined;
+        author_rewards?: string | undefined;
         total_payout_value?: ({
             amount?: string | undefined;
             precision?: number | undefined;

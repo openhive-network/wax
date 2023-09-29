@@ -8,9 +8,9 @@ function createBaseeffective_comment_vote() {
         voter: "",
         author: "",
         permlink: "",
-        weight: 0,
-        rshares: 0,
-        total_vote_weight: 0,
+        weight: "0",
+        rshares: "0",
+        total_vote_weight: "0",
         pending_payout: undefined,
     };
 }
@@ -25,13 +25,13 @@ export const effective_comment_vote = {
         if (message.permlink !== "") {
             writer.uint32(26).string(message.permlink);
         }
-        if (message.weight !== 0) {
+        if (message.weight !== "0") {
             writer.uint32(32).uint64(message.weight);
         }
-        if (message.rshares !== 0) {
+        if (message.rshares !== "0") {
             writer.uint32(40).int64(message.rshares);
         }
-        if (message.total_vote_weight !== 0) {
+        if (message.total_vote_weight !== "0") {
             writer.uint32(48).uint64(message.total_vote_weight);
         }
         if (message.pending_payout !== undefined) {
@@ -68,19 +68,19 @@ export const effective_comment_vote = {
                     if (tag !== 32) {
                         break;
                     }
-                    message.weight = longToNumber(reader.uint64());
+                    message.weight = longToString(reader.uint64());
                     continue;
                 case 5:
                     if (tag !== 40) {
                         break;
                     }
-                    message.rshares = longToNumber(reader.int64());
+                    message.rshares = longToString(reader.int64());
                     continue;
                 case 6:
                     if (tag !== 48) {
                         break;
                     }
-                    message.total_vote_weight = longToNumber(reader.uint64());
+                    message.total_vote_weight = longToString(reader.uint64());
                     continue;
                 case 7:
                     if (tag !== 58) {
@@ -101,9 +101,9 @@ export const effective_comment_vote = {
             voter: isSet(object.voter) ? String(object.voter) : "",
             author: isSet(object.author) ? String(object.author) : "",
             permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            weight: isSet(object.weight) ? Number(object.weight) : 0,
-            rshares: isSet(object.rshares) ? Number(object.rshares) : 0,
-            total_vote_weight: isSet(object.total_vote_weight) ? Number(object.total_vote_weight) : 0,
+            weight: isSet(object.weight) ? String(object.weight) : "0",
+            rshares: isSet(object.rshares) ? String(object.rshares) : "0",
+            total_vote_weight: isSet(object.total_vote_weight) ? String(object.total_vote_weight) : "0",
             pending_payout: isSet(object.pending_payout) ? asset.fromJSON(object.pending_payout) : undefined,
         };
     },
@@ -118,14 +118,14 @@ export const effective_comment_vote = {
         if (message.permlink !== "") {
             obj.permlink = message.permlink;
         }
-        if (message.weight !== 0) {
-            obj.weight = Math.round(message.weight);
+        if (message.weight !== "0") {
+            obj.weight = message.weight;
         }
-        if (message.rshares !== 0) {
-            obj.rshares = Math.round(message.rshares);
+        if (message.rshares !== "0") {
+            obj.rshares = message.rshares;
         }
-        if (message.total_vote_weight !== 0) {
-            obj.total_vote_weight = Math.round(message.total_vote_weight);
+        if (message.total_vote_weight !== "0") {
+            obj.total_vote_weight = message.total_vote_weight;
         }
         if (message.pending_payout !== undefined) {
             obj.pending_payout = asset.toJSON(message.pending_payout);
@@ -141,35 +141,17 @@ export const effective_comment_vote = {
         message.voter = (_a = object.voter) !== null && _a !== void 0 ? _a : "";
         message.author = (_b = object.author) !== null && _b !== void 0 ? _b : "";
         message.permlink = (_c = object.permlink) !== null && _c !== void 0 ? _c : "";
-        message.weight = (_d = object.weight) !== null && _d !== void 0 ? _d : 0;
-        message.rshares = (_e = object.rshares) !== null && _e !== void 0 ? _e : 0;
-        message.total_vote_weight = (_f = object.total_vote_weight) !== null && _f !== void 0 ? _f : 0;
+        message.weight = (_d = object.weight) !== null && _d !== void 0 ? _d : "0";
+        message.rshares = (_e = object.rshares) !== null && _e !== void 0 ? _e : "0";
+        message.total_vote_weight = (_f = object.total_vote_weight) !== null && _f !== void 0 ? _f : "0";
         message.pending_payout = (object.pending_payout !== undefined && object.pending_payout !== null)
             ? asset.fromPartial(object.pending_payout)
             : undefined;
         return message;
     },
 };
-const tsProtoGlobalThis = (() => {
-    if (typeof globalThis !== "undefined") {
-        return globalThis;
-    }
-    if (typeof self !== "undefined") {
-        return self;
-    }
-    if (typeof window !== "undefined") {
-        return window;
-    }
-    if (typeof global !== "undefined") {
-        return global;
-    }
-    throw "Unable to locate global object";
-})();
-function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
+function longToString(long) {
+    return long.toString();
 }
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long;

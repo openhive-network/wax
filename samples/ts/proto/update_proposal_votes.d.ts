@@ -21,7 +21,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface update_proposal_votes {
     voter: string;
-    proposal_ids: number[];
+    proposal_ids: string[];
     approve: boolean;
     extensions: future_extensions[];
 }
@@ -32,14 +32,14 @@ export declare const update_proposal_votes: {
     toJSON(message: update_proposal_votes): unknown;
     create<I extends {
         voter?: string | undefined;
-        proposal_ids?: number[] | undefined;
+        proposal_ids?: string[] | undefined;
         approve?: boolean | undefined;
         extensions?: {
             void_t?: {} | undefined;
         }[] | undefined;
     } & {
         voter?: string | undefined;
-        proposal_ids?: (number[] & number[] & { [K in Exclude<keyof I["proposal_ids"], keyof number[]>]: never; }) | undefined;
+        proposal_ids?: (string[] & string[] & { [K in Exclude<keyof I["proposal_ids"], keyof string[]>]: never; }) | undefined;
         approve?: boolean | undefined;
         extensions?: ({
             void_t?: {} | undefined;
@@ -53,14 +53,14 @@ export declare const update_proposal_votes: {
     } & { [K_4 in Exclude<keyof I, keyof update_proposal_votes>]: never; }>(base?: I | undefined): update_proposal_votes;
     fromPartial<I_1 extends {
         voter?: string | undefined;
-        proposal_ids?: number[] | undefined;
+        proposal_ids?: string[] | undefined;
         approve?: boolean | undefined;
         extensions?: {
             void_t?: {} | undefined;
         }[] | undefined;
     } & {
         voter?: string | undefined;
-        proposal_ids?: (number[] & number[] & { [K_5 in Exclude<keyof I_1["proposal_ids"], keyof number[]>]: never; }) | undefined;
+        proposal_ids?: (string[] & string[] & { [K_5 in Exclude<keyof I_1["proposal_ids"], keyof string[]>]: never; }) | undefined;
         approve?: boolean | undefined;
         extensions?: ({
             void_t?: {} | undefined;

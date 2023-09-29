@@ -129,11 +129,11 @@ export const update_proposal_extension = {
     },
 };
 function createBaseupdate_proposal() {
-    return { proposal_id: 0, creator: "", daily_pay: undefined, subject: "", permlink: "", extensions: [] };
+    return { proposal_id: "0", creator: "", daily_pay: undefined, subject: "", permlink: "", extensions: [] };
 }
 export const update_proposal = {
     encode(message, writer = _m0.Writer.create()) {
-        if (message.proposal_id !== 0) {
+        if (message.proposal_id !== "0") {
             writer.uint32(8).int64(message.proposal_id);
         }
         if (message.creator !== "") {
@@ -164,7 +164,7 @@ export const update_proposal = {
                     if (tag !== 8) {
                         break;
                     }
-                    message.proposal_id = longToNumber(reader.int64());
+                    message.proposal_id = longToString(reader.int64());
                     continue;
                 case 2:
                     if (tag !== 18) {
@@ -206,7 +206,7 @@ export const update_proposal = {
     },
     fromJSON(object) {
         return {
-            proposal_id: isSet(object.proposal_id) ? Number(object.proposal_id) : 0,
+            proposal_id: isSet(object.proposal_id) ? String(object.proposal_id) : "0",
             creator: isSet(object.creator) ? String(object.creator) : "",
             daily_pay: isSet(object.daily_pay) ? asset.fromJSON(object.daily_pay) : undefined,
             subject: isSet(object.subject) ? String(object.subject) : "",
@@ -219,8 +219,8 @@ export const update_proposal = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.proposal_id !== 0) {
-            obj.proposal_id = Math.round(message.proposal_id);
+        if (message.proposal_id !== "0") {
+            obj.proposal_id = message.proposal_id;
         }
         if (message.creator !== "") {
             obj.creator = message.creator;
@@ -245,7 +245,7 @@ export const update_proposal = {
     fromPartial(object) {
         var _a, _b, _c, _d, _e;
         const message = createBaseupdate_proposal();
-        message.proposal_id = (_a = object.proposal_id) !== null && _a !== void 0 ? _a : 0;
+        message.proposal_id = (_a = object.proposal_id) !== null && _a !== void 0 ? _a : "0";
         message.creator = (_b = object.creator) !== null && _b !== void 0 ? _b : "";
         message.daily_pay = (object.daily_pay !== undefined && object.daily_pay !== null)
             ? asset.fromPartial(object.daily_pay)
@@ -256,26 +256,8 @@ export const update_proposal = {
         return message;
     },
 };
-const tsProtoGlobalThis = (() => {
-    if (typeof globalThis !== "undefined") {
-        return globalThis;
-    }
-    if (typeof self !== "undefined") {
-        return self;
-    }
-    if (typeof window !== "undefined") {
-        return window;
-    }
-    if (typeof global !== "undefined") {
-        return global;
-    }
-    throw "Unable to locate global object";
-})();
-function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
+function longToString(long) {
+    return long.toString();
 }
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long;
