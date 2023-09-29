@@ -1,13 +1,17 @@
 from utils.checkers import check_transaction
 
-from wax.proto import comment_pb2, transaction_pb2, vote_pb2
-
+from wax.proto import (
+    comment_pb2,
+    operation_pb2,
+    transaction_pb2,
+    vote_pb2
+)
 
 def test_transaction():
     vote: vote_pb2.vote = vote_pb2.vote(
         voter="alice", author="author", permlink="/", weight=11
     )
-    vote_operation: transaction_pb2.operation = transaction_pb2.operation(vote=vote)
+    vote_operation: operation_pb2.operation = operation_pb2.operation(vote=vote)
 
     comment: comment_pb2.comment = comment_pb2.comment(
         parent_permlink="/",
@@ -18,7 +22,7 @@ def test_transaction():
         body="<span>comment</span>",
         json_metadata="{}",
     )
-    comment_operation: transaction_pb2.operation = transaction_pb2.operation(
+    comment_operation: operation_pb2.operation = operation_pb2.operation(
         comment=comment
     )
 
