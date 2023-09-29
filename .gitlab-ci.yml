@@ -20,7 +20,7 @@ include:
     ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
     file: '/templates/wasm_build.gitlab-ci.yml'
   - project: 'hive/common-ci-configuration'
-    ref: 59a5f33316f766153a38181ef1a38f1096465871  # mzebrak/python-template
+    ref: b5202fecccf40845099da351cbc0c38a6205339c
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: "${CI_BASE_IMAGE}"
@@ -95,9 +95,9 @@ test_wax_wasm:
     - npm run test
   allow_failure: true # Temporary - until actual set of tests will be adjusted to web environment
 
-deploy_wheel:
+deploy_wheel_to_gitlab:
   stage: deploy
-  extends: .deploy_wheel_template
+  extends: .deploy_wheel_to_gitlab_template
   needs:
     - job: test_wax_python_wheel
     - job: build_wheel
