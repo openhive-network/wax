@@ -8,7 +8,7 @@ function createBasecomment_reward() {
         author: "",
         permlink: "",
         payout: undefined,
-        author_rewards: 0,
+        author_rewards: "0",
         total_payout_value: undefined,
         curator_payout_value: undefined,
         beneficiary_payout_value: undefined,
@@ -25,7 +25,7 @@ export const comment_reward = {
         if (message.payout !== undefined) {
             asset.encode(message.payout, writer.uint32(26).fork()).ldelim();
         }
-        if (message.author_rewards !== 0) {
+        if (message.author_rewards !== "0") {
             writer.uint32(32).int64(message.author_rewards);
         }
         if (message.total_payout_value !== undefined) {
@@ -68,7 +68,7 @@ export const comment_reward = {
                     if (tag !== 32) {
                         break;
                     }
-                    message.author_rewards = longToNumber(reader.int64());
+                    message.author_rewards = longToString(reader.int64());
                     continue;
                 case 5:
                     if (tag !== 42) {
@@ -101,7 +101,7 @@ export const comment_reward = {
             author: isSet(object.author) ? String(object.author) : "",
             permlink: isSet(object.permlink) ? String(object.permlink) : "",
             payout: isSet(object.payout) ? asset.fromJSON(object.payout) : undefined,
-            author_rewards: isSet(object.author_rewards) ? Number(object.author_rewards) : 0,
+            author_rewards: isSet(object.author_rewards) ? String(object.author_rewards) : "0",
             total_payout_value: isSet(object.total_payout_value) ? asset.fromJSON(object.total_payout_value) : undefined,
             curator_payout_value: isSet(object.curator_payout_value)
                 ? asset.fromJSON(object.curator_payout_value)
@@ -122,8 +122,8 @@ export const comment_reward = {
         if (message.payout !== undefined) {
             obj.payout = asset.toJSON(message.payout);
         }
-        if (message.author_rewards !== 0) {
-            obj.author_rewards = Math.round(message.author_rewards);
+        if (message.author_rewards !== "0") {
+            obj.author_rewards = message.author_rewards;
         }
         if (message.total_payout_value !== undefined) {
             obj.total_payout_value = asset.toJSON(message.total_payout_value);
@@ -147,7 +147,7 @@ export const comment_reward = {
         message.payout = (object.payout !== undefined && object.payout !== null)
             ? asset.fromPartial(object.payout)
             : undefined;
-        message.author_rewards = (_c = object.author_rewards) !== null && _c !== void 0 ? _c : 0;
+        message.author_rewards = (_c = object.author_rewards) !== null && _c !== void 0 ? _c : "0";
         message.total_payout_value = (object.total_payout_value !== undefined && object.total_payout_value !== null)
             ? asset.fromPartial(object.total_payout_value)
             : undefined;
@@ -161,26 +161,8 @@ export const comment_reward = {
         return message;
     },
 };
-const tsProtoGlobalThis = (() => {
-    if (typeof globalThis !== "undefined") {
-        return globalThis;
-    }
-    if (typeof self !== "undefined") {
-        return self;
-    }
-    if (typeof window !== "undefined") {
-        return window;
-    }
-    if (typeof global !== "undefined") {
-        return global;
-    }
-    throw "Unable to locate global object";
-})();
-function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
+function longToString(long) {
+    return long.toString();
 }
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long;

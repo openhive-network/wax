@@ -3,14 +3,14 @@ import Long from "long";
 import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasedelayed_voting() {
-    return { voter: "", votes: 0 };
+    return { voter: "", votes: "0" };
 }
 export const delayed_voting = {
     encode(message, writer = _m0.Writer.create()) {
         if (message.voter !== "") {
             writer.uint32(10).string(message.voter);
         }
-        if (message.votes !== 0) {
+        if (message.votes !== "0") {
             writer.uint32(16).uint64(message.votes);
         }
         return writer;
@@ -32,7 +32,7 @@ export const delayed_voting = {
                     if (tag !== 16) {
                         break;
                     }
-                    message.votes = longToNumber(reader.uint64());
+                    message.votes = longToString(reader.uint64());
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -45,7 +45,7 @@ export const delayed_voting = {
     fromJSON(object) {
         return {
             voter: isSet(object.voter) ? String(object.voter) : "",
-            votes: isSet(object.votes) ? Number(object.votes) : 0,
+            votes: isSet(object.votes) ? String(object.votes) : "0",
         };
     },
     toJSON(message) {
@@ -53,8 +53,8 @@ export const delayed_voting = {
         if (message.voter !== "") {
             obj.voter = message.voter;
         }
-        if (message.votes !== 0) {
-            obj.votes = Math.round(message.votes);
+        if (message.votes !== "0") {
+            obj.votes = message.votes;
         }
         return obj;
     },
@@ -65,30 +65,12 @@ export const delayed_voting = {
         var _a, _b;
         const message = createBasedelayed_voting();
         message.voter = (_a = object.voter) !== null && _a !== void 0 ? _a : "";
-        message.votes = (_b = object.votes) !== null && _b !== void 0 ? _b : 0;
+        message.votes = (_b = object.votes) !== null && _b !== void 0 ? _b : "0";
         return message;
     },
 };
-const tsProtoGlobalThis = (() => {
-    if (typeof globalThis !== "undefined") {
-        return globalThis;
-    }
-    if (typeof self !== "undefined") {
-        return self;
-    }
-    if (typeof window !== "undefined") {
-        return window;
-    }
-    if (typeof global !== "undefined") {
-        return global;
-    }
-    throw "Unable to locate global object";
-})();
-function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
+function longToString(long) {
+    return long.toString();
 }
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long;

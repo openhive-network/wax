@@ -39,13 +39,13 @@ export const update_proposal_votes = {
                     continue;
                 case 2:
                     if (tag === 16) {
-                        message.proposal_ids.push(longToNumber(reader.int64()));
+                        message.proposal_ids.push(longToString(reader.int64()));
                         continue;
                     }
                     if (tag === 18) {
                         const end2 = reader.uint32() + reader.pos;
                         while (reader.pos < end2) {
-                            message.proposal_ids.push(longToNumber(reader.int64()));
+                            message.proposal_ids.push(longToString(reader.int64()));
                         }
                         continue;
                     }
@@ -73,7 +73,7 @@ export const update_proposal_votes = {
     fromJSON(object) {
         return {
             voter: isSet(object.voter) ? String(object.voter) : "",
-            proposal_ids: Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids) ? object.proposal_ids.map((e) => Number(e)) : [],
+            proposal_ids: Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids) ? object.proposal_ids.map((e) => String(e)) : [],
             approve: isSet(object.approve) ? Boolean(object.approve) : false,
             extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
@@ -87,7 +87,7 @@ export const update_proposal_votes = {
             obj.voter = message.voter;
         }
         if ((_a = message.proposal_ids) === null || _a === void 0 ? void 0 : _a.length) {
-            obj.proposal_ids = message.proposal_ids.map((e) => Math.round(e));
+            obj.proposal_ids = message.proposal_ids;
         }
         if (message.approve === true) {
             obj.approve = message.approve;
@@ -110,26 +110,8 @@ export const update_proposal_votes = {
         return message;
     },
 };
-const tsProtoGlobalThis = (() => {
-    if (typeof globalThis !== "undefined") {
-        return globalThis;
-    }
-    if (typeof self !== "undefined") {
-        return self;
-    }
-    if (typeof window !== "undefined") {
-        return window;
-    }
-    if (typeof global !== "undefined") {
-        return global;
-    }
-    throw "Unable to locate global object";
-})();
-function longToNumber(long) {
-    if (long.gt(Number.MAX_SAFE_INTEGER)) {
-        throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
-    }
-    return long.toNumber();
+function longToString(long) {
+    return long.toString();
 }
 if (_m0.util.Long !== Long) {
     _m0.util.Long = Long;

@@ -707,7 +707,7 @@ export declare const operation: {
         } | undefined;
         update_proposal_votes?: {
             voter?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             approve?: boolean | undefined;
             extensions?: {
                 void_t?: {} | undefined;
@@ -715,13 +715,13 @@ export declare const operation: {
         } | undefined;
         remove_proposal?: {
             proposal_owner?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } | undefined;
         update_proposal?: {
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: {
                 amount?: string | undefined;
@@ -822,7 +822,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -1010,7 +1010,7 @@ export declare const operation: {
         } | undefined;
         delayed_voting?: {
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } | undefined;
         consolidate_treasury_balance?: {
             total_moved?: {
@@ -1023,9 +1023,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -2614,14 +2614,14 @@ export declare const operation: {
         } & { [K_145 in Exclude<keyof I["create_proposal"], keyof create_proposal>]: never; }) | undefined;
         update_proposal_votes?: ({
             voter?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             approve?: boolean | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } & {
             voter?: string | undefined;
-            proposal_ids?: (number[] & number[] & { [K_146 in Exclude<keyof I["update_proposal_votes"]["proposal_ids"], keyof number[]>]: never; }) | undefined;
+            proposal_ids?: (string[] & string[] & { [K_146 in Exclude<keyof I["update_proposal_votes"]["proposal_ids"], keyof string[]>]: never; }) | undefined;
             approve?: boolean | undefined;
             extensions?: ({
                 void_t?: {} | undefined;
@@ -2635,13 +2635,13 @@ export declare const operation: {
         } & { [K_150 in Exclude<keyof I["update_proposal_votes"], keyof update_proposal_votes>]: never; }) | undefined;
         remove_proposal?: ({
             proposal_owner?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } & {
             proposal_owner?: string | undefined;
-            proposal_ids?: (number[] & number[] & { [K_151 in Exclude<keyof I["remove_proposal"]["proposal_ids"], keyof number[]>]: never; }) | undefined;
+            proposal_ids?: (string[] & string[] & { [K_151 in Exclude<keyof I["remove_proposal"]["proposal_ids"], keyof string[]>]: never; }) | undefined;
             extensions?: ({
                 void_t?: {} | undefined;
             }[] & ({
@@ -2653,7 +2653,7 @@ export declare const operation: {
             }[]>]: never; }) | undefined;
         } & { [K_155 in Exclude<keyof I["remove_proposal"], keyof remove_proposal>]: never; }) | undefined;
         update_proposal?: ({
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: {
                 amount?: string | undefined;
@@ -2669,7 +2669,7 @@ export declare const operation: {
                 } | undefined;
             }[] | undefined;
         } & {
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: ({
                 amount?: string | undefined;
@@ -2916,7 +2916,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -2944,7 +2944,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } & { [K_180 in Exclude<keyof I["comment_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -3389,10 +3389,10 @@ export declare const operation: {
         } & { [K_223 in Exclude<keyof I["hardfork_hive_restore"], keyof hardfork_hive_restore>]: never; }) | undefined;
         delayed_voting?: ({
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } & {
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } & { [K_224 in Exclude<keyof I["delayed_voting"], keyof delayed_voting>]: never; }) | undefined;
         consolidate_treasury_balance?: ({
             total_moved?: {
@@ -3423,9 +3423,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -3435,9 +3435,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -4414,7 +4414,7 @@ export declare const operation: {
         } | undefined;
         update_proposal_votes?: {
             voter?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             approve?: boolean | undefined;
             extensions?: {
                 void_t?: {} | undefined;
@@ -4422,13 +4422,13 @@ export declare const operation: {
         } | undefined;
         remove_proposal?: {
             proposal_owner?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } | undefined;
         update_proposal?: {
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: {
                 amount?: string | undefined;
@@ -4529,7 +4529,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -4717,7 +4717,7 @@ export declare const operation: {
         } | undefined;
         delayed_voting?: {
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } | undefined;
         consolidate_treasury_balance?: {
             total_moved?: {
@@ -4730,9 +4730,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -6321,14 +6321,14 @@ export declare const operation: {
         } & { [K_417 in Exclude<keyof I_1["create_proposal"], keyof create_proposal>]: never; }) | undefined;
         update_proposal_votes?: ({
             voter?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             approve?: boolean | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } & {
             voter?: string | undefined;
-            proposal_ids?: (number[] & number[] & { [K_418 in Exclude<keyof I_1["update_proposal_votes"]["proposal_ids"], keyof number[]>]: never; }) | undefined;
+            proposal_ids?: (string[] & string[] & { [K_418 in Exclude<keyof I_1["update_proposal_votes"]["proposal_ids"], keyof string[]>]: never; }) | undefined;
             approve?: boolean | undefined;
             extensions?: ({
                 void_t?: {} | undefined;
@@ -6342,13 +6342,13 @@ export declare const operation: {
         } & { [K_422 in Exclude<keyof I_1["update_proposal_votes"], keyof update_proposal_votes>]: never; }) | undefined;
         remove_proposal?: ({
             proposal_owner?: string | undefined;
-            proposal_ids?: number[] | undefined;
+            proposal_ids?: string[] | undefined;
             extensions?: {
                 void_t?: {} | undefined;
             }[] | undefined;
         } & {
             proposal_owner?: string | undefined;
-            proposal_ids?: (number[] & number[] & { [K_423 in Exclude<keyof I_1["remove_proposal"]["proposal_ids"], keyof number[]>]: never; }) | undefined;
+            proposal_ids?: (string[] & string[] & { [K_423 in Exclude<keyof I_1["remove_proposal"]["proposal_ids"], keyof string[]>]: never; }) | undefined;
             extensions?: ({
                 void_t?: {} | undefined;
             }[] & ({
@@ -6360,7 +6360,7 @@ export declare const operation: {
             }[]>]: never; }) | undefined;
         } & { [K_427 in Exclude<keyof I_1["remove_proposal"], keyof remove_proposal>]: never; }) | undefined;
         update_proposal?: ({
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: {
                 amount?: string | undefined;
@@ -6376,7 +6376,7 @@ export declare const operation: {
                 } | undefined;
             }[] | undefined;
         } & {
-            proposal_id?: number | undefined;
+            proposal_id?: string | undefined;
             creator?: string | undefined;
             daily_pay?: ({
                 amount?: string | undefined;
@@ -6623,7 +6623,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -6651,7 +6651,7 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } & { [K_452 in Exclude<keyof I_1["comment_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
-            author_rewards?: number | undefined;
+            author_rewards?: string | undefined;
             total_payout_value?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -7096,10 +7096,10 @@ export declare const operation: {
         } & { [K_495 in Exclude<keyof I_1["hardfork_hive_restore"], keyof hardfork_hive_restore>]: never; }) | undefined;
         delayed_voting?: ({
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } & {
             voter?: string | undefined;
-            votes?: number | undefined;
+            votes?: string | undefined;
         } & { [K_496 in Exclude<keyof I_1["delayed_voting"], keyof delayed_voting>]: never; }) | undefined;
         consolidate_treasury_balance?: ({
             total_moved?: {
@@ -7130,9 +7130,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: {
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -7142,9 +7142,9 @@ export declare const operation: {
             voter?: string | undefined;
             author?: string | undefined;
             permlink?: string | undefined;
-            weight?: number | undefined;
-            rshares?: number | undefined;
-            total_vote_weight?: number | undefined;
+            weight?: string | undefined;
+            rshares?: string | undefined;
+            total_vote_weight?: string | undefined;
             pending_payout?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;

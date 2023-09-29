@@ -22,7 +22,7 @@ export interface update_proposal_extension {
  * @param {update_proposal_extension} extensions
  */
 export interface update_proposal {
-    proposal_id: number;
+    proposal_id: string;
     creator: string;
     daily_pay: asset | undefined;
     subject: string;
@@ -83,7 +83,7 @@ export declare const update_proposal: {
     fromJSON(object: any): update_proposal;
     toJSON(message: update_proposal): unknown;
     create<I extends {
-        proposal_id?: number | undefined;
+        proposal_id?: string | undefined;
         creator?: string | undefined;
         daily_pay?: {
             amount?: string | undefined;
@@ -99,7 +99,7 @@ export declare const update_proposal: {
             } | undefined;
         }[] | undefined;
     } & {
-        proposal_id?: number | undefined;
+        proposal_id?: string | undefined;
         creator?: string | undefined;
         daily_pay?: ({
             amount?: string | undefined;
@@ -137,7 +137,7 @@ export declare const update_proposal: {
         }[]>]: never; }) | undefined;
     } & { [K_5 in Exclude<keyof I, keyof update_proposal>]: never; }>(base?: I | undefined): update_proposal;
     fromPartial<I_1 extends {
-        proposal_id?: number | undefined;
+        proposal_id?: string | undefined;
         creator?: string | undefined;
         daily_pay?: {
             amount?: string | undefined;
@@ -153,7 +153,7 @@ export declare const update_proposal: {
             } | undefined;
         }[] | undefined;
     } & {
-        proposal_id?: number | undefined;
+        proposal_id?: string | undefined;
         creator?: string | undefined;
         daily_pay?: ({
             amount?: string | undefined;

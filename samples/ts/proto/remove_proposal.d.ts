@@ -10,7 +10,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface remove_proposal {
     proposal_owner: string;
-    proposal_ids: number[];
+    proposal_ids: string[];
     extensions: future_extensions[];
 }
 export declare const remove_proposal: {
@@ -20,13 +20,13 @@ export declare const remove_proposal: {
     toJSON(message: remove_proposal): unknown;
     create<I extends {
         proposal_owner?: string | undefined;
-        proposal_ids?: number[] | undefined;
+        proposal_ids?: string[] | undefined;
         extensions?: {
             void_t?: {} | undefined;
         }[] | undefined;
     } & {
         proposal_owner?: string | undefined;
-        proposal_ids?: (number[] & number[] & { [K in Exclude<keyof I["proposal_ids"], keyof number[]>]: never; }) | undefined;
+        proposal_ids?: (string[] & string[] & { [K in Exclude<keyof I["proposal_ids"], keyof string[]>]: never; }) | undefined;
         extensions?: ({
             void_t?: {} | undefined;
         }[] & ({
@@ -39,13 +39,13 @@ export declare const remove_proposal: {
     } & { [K_4 in Exclude<keyof I, keyof remove_proposal>]: never; }>(base?: I | undefined): remove_proposal;
     fromPartial<I_1 extends {
         proposal_owner?: string | undefined;
-        proposal_ids?: number[] | undefined;
+        proposal_ids?: string[] | undefined;
         extensions?: {
             void_t?: {} | undefined;
         }[] | undefined;
     } & {
         proposal_owner?: string | undefined;
-        proposal_ids?: (number[] & number[] & { [K_5 in Exclude<keyof I_1["proposal_ids"], keyof number[]>]: never; }) | undefined;
+        proposal_ids?: (string[] & string[] & { [K_5 in Exclude<keyof I_1["proposal_ids"], keyof string[]>]: never; }) | undefined;
         extensions?: ({
             void_t?: {} | undefined;
         }[] & ({

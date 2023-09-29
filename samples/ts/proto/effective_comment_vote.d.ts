@@ -18,9 +18,9 @@ export interface effective_comment_vote {
     voter: string;
     author: string;
     permlink: string;
-    weight: number;
-    rshares: number;
-    total_vote_weight: number;
+    weight: string;
+    rshares: string;
+    total_vote_weight: string;
     pending_payout: asset | undefined;
 }
 export declare const effective_comment_vote: {
@@ -32,9 +32,9 @@ export declare const effective_comment_vote: {
         voter?: string | undefined;
         author?: string | undefined;
         permlink?: string | undefined;
-        weight?: number | undefined;
-        rshares?: number | undefined;
-        total_vote_weight?: number | undefined;
+        weight?: string | undefined;
+        rshares?: string | undefined;
+        total_vote_weight?: string | undefined;
         pending_payout?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -44,9 +44,9 @@ export declare const effective_comment_vote: {
         voter?: string | undefined;
         author?: string | undefined;
         permlink?: string | undefined;
-        weight?: number | undefined;
-        rshares?: number | undefined;
-        total_vote_weight?: number | undefined;
+        weight?: string | undefined;
+        rshares?: string | undefined;
+        total_vote_weight?: string | undefined;
         pending_payout?: ({
             amount?: string | undefined;
             precision?: number | undefined;
@@ -61,9 +61,9 @@ export declare const effective_comment_vote: {
         voter?: string | undefined;
         author?: string | undefined;
         permlink?: string | undefined;
-        weight?: number | undefined;
-        rshares?: number | undefined;
-        total_vote_weight?: number | undefined;
+        weight?: string | undefined;
+        rshares?: string | undefined;
+        total_vote_weight?: string | undefined;
         pending_payout?: {
             amount?: string | undefined;
             precision?: number | undefined;
@@ -73,9 +73,9 @@ export declare const effective_comment_vote: {
         voter?: string | undefined;
         author?: string | undefined;
         permlink?: string | undefined;
-        weight?: number | undefined;
-        rshares?: number | undefined;
-        total_vote_weight?: number | undefined;
+        weight?: string | undefined;
+        rshares?: string | undefined;
+        total_vote_weight?: string | undefined;
         pending_payout?: ({
             amount?: string | undefined;
             precision?: number | undefined;
