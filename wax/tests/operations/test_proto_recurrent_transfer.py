@@ -1,7 +1,11 @@
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, recurrent_transfer_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    recurrent_transfer_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_recurrent_transfer():
     amount: asset_pb2.asset = asset_pb2.asset(
@@ -26,7 +30,7 @@ def test_recurrent_transfer():
             extensions=[extensions],
         )
     )
-    recurrent_transfer_operation: transaction_pb2.operation = transaction_pb2.operation(
+    recurrent_transfer_operation: operation_pb2.operation = operation_pb2.operation(
         recurrent_transfer=recurrent_transfer
     )
 

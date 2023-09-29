@@ -22,8 +22,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, claim_reward_balance_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    claim_reward_balance_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_claim_reward_balance():
     reward_hive: asset_pb2.asset = asset_pb2.asset(
@@ -45,8 +49,8 @@ def test_claim_reward_balance():
         )
     )
 
-    claim_reward_balance_operation: transaction_pb2.operation = (
-        transaction_pb2.operation(claim_reward_balance=claim_reward_balance)
+    claim_reward_balance_operation: operation_pb2.operation = (
+        operation_pb2.operation(claim_reward_balance=claim_reward_balance)
     )
 
     check_operations(claim_reward_balance_operation)

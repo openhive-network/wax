@@ -1,7 +1,10 @@
 from utils.checkers import check_operations
 
-from wax.proto import transaction_pb2, witness_block_approve_pb2
-
+from wax.proto import (
+    operation_pb2,
+    transaction_pb2,
+    witness_block_approve_pb2
+)
 
 def test_witness_block_approve():
     witness_block_approve: witness_block_approve_pb2.witness_block_approve = (
@@ -10,8 +13,8 @@ def test_witness_block_approve():
         )
     )
 
-    witness_block_approve_operation: transaction_pb2.operation = (
-        transaction_pb2.operation(witness_block_approve=witness_block_approve)
+    witness_block_approve_operation: operation_pb2.operation = (
+        operation_pb2.operation(witness_block_approve=witness_block_approve)
     )
 
     check_operations(witness_block_approve_operation)

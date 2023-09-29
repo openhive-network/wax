@@ -5,8 +5,11 @@ remove_proposal_operation = {
 
 from utils.checkers import check_operations
 
-from wax.proto import remove_proposal_pb2, transaction_pb2
-
+from wax.proto import (
+    remove_proposal_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_remove_proposal():
     remove_proposal: remove_proposal_pb2.remove_proposal = (
@@ -15,7 +18,7 @@ def test_remove_proposal():
         )
     )
 
-    remove_proposal_operation: transaction_pb2.operation = transaction_pb2.operation(
+    remove_proposal_operation: operation_pb2.operation = operation_pb2.operation(
         remove_proposal=remove_proposal
     )
 

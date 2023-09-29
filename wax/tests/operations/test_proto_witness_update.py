@@ -26,6 +26,7 @@ from utils.checkers import check_operations
 from wax.proto import (
     asset_pb2,
     legacy_chain_properties_pb2,
+    operation_pb2,
     transaction_pb2,
     witness_update_pb2,
 )
@@ -57,7 +58,7 @@ def test_witness_update():
         )
     )
 
-    witness_update_operation: transaction_pb2.operation = transaction_pb2.operation(
+    witness_update_operation: operation_pb2.operation = operation_pb2.operation(
         witness_update=witness_update
     )
 

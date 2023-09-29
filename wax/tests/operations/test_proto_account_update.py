@@ -23,7 +23,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import account_update_pb2, authority_pb2, transaction_pb2
+from wax.proto import (
+    account_update_pb2,
+    authority_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 
 def test_account_update():
@@ -41,7 +46,7 @@ def test_account_update():
         )
     )
 
-    account_update_operation: transaction_pb2.operation = transaction_pb2.operation(
+    account_update_operation: operation_pb2.operation = operation_pb2.operation(
         account_update=account_update
     )
 

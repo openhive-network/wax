@@ -19,8 +19,13 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, feed_publish_pb2, price_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    feed_publish_pb2,
+    price_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_feed_publish():
     base: asset_pb2.asset = asset_pb2.asset(
@@ -38,7 +43,7 @@ def test_feed_publish():
         exchange_rate=price,
     )
 
-    feed_publish_operation: transaction_pb2.operation = transaction_pb2.operation(
+    feed_publish_operation: operation_pb2.operation = operation_pb2.operation(
         feed_publish=feed_publish
     )
 

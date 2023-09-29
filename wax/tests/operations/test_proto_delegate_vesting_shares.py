@@ -13,8 +13,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, delegate_vesting_shares_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    delegate_vesting_shares_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_delegate_vesting_shares():
     vesting_shares: asset_pb2.asset = asset_pb2.asset(
@@ -26,8 +30,8 @@ def test_delegate_vesting_shares():
         )
     )
 
-    delegate_vesting_shares_operation: transaction_pb2.operation = (
-        transaction_pb2.operation(delegate_vesting_shares=delegate_vesting_shares)
+    delegate_vesting_shares_operation: operation_pb2.operation = (
+        operation_pb2.operation(delegate_vesting_shares=delegate_vesting_shares)
     )
 
     check_operations(delegate_vesting_shares_operation)

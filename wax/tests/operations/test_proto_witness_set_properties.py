@@ -18,7 +18,11 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import transaction_pb2, witness_set_properties_pb2
+from wax.proto import (
+    operation_pb2,
+    transaction_pb2,
+    witness_set_properties_pb2
+)
 
 
 def test_witness_set_properties():
@@ -37,8 +41,8 @@ def test_witness_set_properties():
         extensions=[],
     )
 
-    witness_set_properties_operations: transaction_pb2.operation = (
-        transaction_pb2.operation(witness_set_properties=witness_set_properties)
+    witness_set_properties_operations: operation_pb2.operation = (
+        operation_pb2.operation(witness_set_properties=witness_set_properties)
     )
 
     check_operations(witness_set_properties_operations)
