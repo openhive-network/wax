@@ -4,6 +4,7 @@ from wax.proto import (
     comment_pb2,
     limit_order_cancel_pb2,
     recurrent_transfer_pb2,
+    operation_pb2,
     transaction_pb2,
     vote_pb2,
 )
