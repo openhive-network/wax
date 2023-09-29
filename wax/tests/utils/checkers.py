@@ -1,10 +1,10 @@
 from google.protobuf.json_format import MessageToJson
 
 from wax import validate_proto_operation, validate_proto_transaction
-from wax.proto import transaction_pb2
+from wax.proto import operation_pb2, transaction_pb2
 
 
-def check_operations(operation: transaction_pb2.operation):
+def check_operations(operation: operation_pb2.operation):
     operation_json = MessageToJson(operation)
     result = validate_proto_operation(operation_json.encode())
     print(result)
