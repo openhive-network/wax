@@ -1,8 +1,6 @@
 stages:
   - build
   - test
-  - tag
-  - build_production
   - deploy
 
 variables:
@@ -31,7 +29,7 @@ default:
   tags:
     - public-runner-docker
 
-.build_wheel_base:
+build_wheel:
   extends: .build_wheel_template
   before_script:
     - !reference [.build_wheel_template, before_script]
@@ -43,10 +41,6 @@ default:
       - "dist/"
       - ".build/logs/"
       - ".build/*.so"
-
-build_wheel:
-  stage: build
-  extends: .build_wheel_base
 
 wax_wasm_build:
   extends: .wasm_build_job_template
@@ -101,60 +95,13 @@ test_wax_wasm:
     - npm run test
   allow_failure: true # Temporary - until actual set of tests will be adjusted to web environment
 
-tag_production:
-  stage: tag
-  extends: .configuration_template
-  only:
-    - master
-    - develop
-  script:
-    - echo -e "${TXT_BLUE}Tagging job starting...${TXT_CLEAR}"
-    - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_REPOSITORY_URL#*@}"
-    - echo -e "${TXT_BLUE}Raw version from 'poetry version' is...${TXT_CLEAR}" && poetry version
-    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
-        VERSION_TAG="v$(poetry version patch -s)";
-      else
-        VERSION_TAG="v$(poetry version prerelease -s)";
-      fi
-    - echo -e "${TXT_BLUE}Current tags are...${TXT_CLEAR}" && git show-ref --tags
-    - echo -e "${TXT_BLUE}New tag will be '${VERSION_TAG}'${TXT_CLEAR}"
-    - git tag "${VERSION_TAG}"
-    - git push -o ci.skip origin "${VERSION_TAG}"
-
-build_wheel_production:
-  stage: build_production
-  extends: .build_wheel_base
-  only:
-    - master
-    - develop
-  variables:
-    WAX_SKIP_BUILD: 1
-
-.deploy_base:
+deploy_wheel:
   stage: deploy
   extends: .deploy_wheel_template
-
-deploy_feature_branch:
-  extends: .deploy_base
   needs:
     - job: test_wax_python_wheel
     - job: build_wheel
       artifacts: true
-  when: manual
-  allow_failure: true
-  except:
-    - master
-    - develop
-
-deploy_production:
-  extends: .deploy_base
-  needs:
-    - job: test_wax_python_wheel
-    - job: build_wheel_production
-      artifacts: true
-  only:
-    - master
-    - develop
 
 deploy_wax_wasm_dev_package:
   stage: deploy
