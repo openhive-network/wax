@@ -1,6 +1,9 @@
-import MainModule from "@hive/wax";
+import { fileURLToPath } from 'url';
+import process from 'process';
 
-import assert from "assert";
+export const evaluate = async() => {
+
+const { default: MainModule } = await import("@hive/wax");
 
 const apiData = JSON.stringify({
   "ref_block_num": 19260,
@@ -23,15 +26,16 @@ const apiData = JSON.stringify({
   ]
 });
 
-(async () => {
-  const provider = await MainModule();
-  const protoInstance = new provider.proto_protocol();
+const provider = await MainModule();
+const protoInstance = new provider.proto_protocol();
 
-  {
-    const protoData = protoInstance.cpp_api_to_proto(apiData);
-    assert.equal(protoData.value, provider.error_code.ok);
+const protoData = protoInstance.cpp_api_to_proto(apiData);
+console.assert(protoData.value === provider.error_code.ok);
 
-    const result = protoInstance.cpp_validate_transaction(protoData.content);
-    assert.equal(result.value, provider.error_code.ok);
-  }
-})();
+const result = protoInstance.cpp_validate_transaction(protoData.content);
+console.assert(result.value === provider.error_code.ok);
+};
+
+// Run evaluate function when running from the console, instead of importing a module
+if(process.argv[1] === fileURLToPath(import.meta.url))
+  evaluate();

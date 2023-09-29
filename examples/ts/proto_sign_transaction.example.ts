@@ -1,8 +1,11 @@
-import WaxModule, { transaction } from "@hive/wax";
-import BeekeeperModule from "@hive/beekeeper";
-
 import path from "path";
 import { fileURLToPath } from 'url';
+import process from 'process';
+
+export const evaluate = async() => {
+
+const { default: BeekeeperModule } = await import("@hive/beekeeper");
+const { default: WaxModule, transaction } = await import("@hive/wax");
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,27 +38,30 @@ const handleBeekeeperJsonResult = (value: string) => {
   return JSON.parse(result);
 };
 
-(async () => {
-  const waxProvider = await WaxModule();
-  const beekeeperProvider = await BeekeeperModule();
-  const beekeeperOptions = new beekeeperProvider.StringList();
-  WALLET_OPTIONS.forEach((opt: string) => void beekeeperOptions.push_back(opt));
+const waxProvider = await WaxModule();
+const beekeeperProvider = await BeekeeperModule();
+const beekeeperOptions = new beekeeperProvider.StringList();
+WALLET_OPTIONS.forEach((opt: string) => void beekeeperOptions.push_back(opt));
 
-  const wax = new waxProvider.proto_protocol();
-  const beekeeper  = new beekeeperProvider.beekeeper_api(beekeeperOptions);
-  beekeeper.init();
+const wax = new waxProvider.proto_protocol();
+const beekeeper  = new beekeeperProvider.beekeeper_api(beekeeperOptions);
+beekeeper.init();
 
-  // We have to transform our API to the plain object first and then stringify it so it can be sent to wasm
-  const { content: sigDigest } = wax.cpp_calculate_sig_digest(JSON.stringify(transaction.toJSON(protoTx)), "42");
+// We have to transform our API to the plain object first and then stringify it so it can be sent to wasm
+const { content: sigDigest } = wax.cpp_calculate_sig_digest(JSON.stringify(transaction.toJSON(protoTx)), "42");
 
-  const { token } = handleBeekeeperJsonResult(beekeeper.create_session('pear') as string);
+const { token } = handleBeekeeperJsonResult(beekeeper.create_session('pear') as string);
 
-  beekeeper.create(token, walletName)
-  beekeeper.import_key(token, walletName, OUR_MAINNET_INITMINER_PRIVATE_KEY_DO_NOT_SHARE);
+beekeeper.create(token, walletName)
+beekeeper.import_key(token, walletName, OUR_MAINNET_INITMINER_PRIVATE_KEY_DO_NOT_SHARE);
 
-  const { keys: [ { public_key: publicKey } ] } = handleBeekeeperJsonResult(beekeeper.get_public_keys(token) as string);
+const { keys: [ { public_key: publicKey } ] } = handleBeekeeperJsonResult(beekeeper.get_public_keys(token) as string);
 
-  const { signature } = handleBeekeeperJsonResult(beekeeper.sign_digest(token, sigDigest, publicKey) as string);
+const { signature } = handleBeekeeperJsonResult(beekeeper.sign_digest(token, sigDigest, publicKey) as string);
 
-  console.log(`Your signature for transmitting: "${signature}"`);
-})();
+console.log(`Your signature for transmitting: "${signature}"`);
+};
+
+// Run evaluate function when running from the console, instead of importing a module
+if(process.argv[1] === fileURLToPath(import.meta.url))
+  evaluate();

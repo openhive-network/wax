@@ -202,15 +202,15 @@ wax.cpp
 build_wasm
 
 # Generated files
-/package.json
 .npmrc
 !examples/ts/.npmrc
 wasm/lib/proto
 dist
 node_modules
+wax/proto
+
+# We use pnpm
 /package-lock.json
 /yarn.lock
 /examples/ts/package-lock.json
 /examples/ts/yarn.lock
-/examples/ts/pnpm-lock.yaml
-wax/proto

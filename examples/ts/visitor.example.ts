@@ -1,25 +1,27 @@
-import { OperationVisitor, transaction, comment, vote, limit_order_cancel, recurrent_transfer } from "@hive/wax";
+import type { comment, vote, transaction, limit_order_cancel, recurrent_transfer } from "@hive/wax";
+import { fileURLToPath } from 'url';
+import process from 'process';
 
-import assert from "assert";
+export const evaluate = async() => {
 
-class MyVisitor extends OperationVisitor {
-  public comment(op: comment): void {
-    console.log('Got comment operation:', op.title);
+const { OperationVisitor, transaction, recurrent_transfer } = await import ("@hive/wax");
+
+class MyVisitor extends OperationVisitor<boolean> {
+  public comment(op: comment): boolean {
+    return op.author === "alice";
   }
-  public limit_order_cancel(op: limit_order_cancel): void {
-    console.log('This should not be called on undefined op:', op.order);
+  // This should be never visited in our example
+  public limit_order_cancel(op: limit_order_cancel): boolean {
+    return op.orderid === Number.POSITIVE_INFINITY;
   }
-  public vote(op: vote): void {
-    console.log(op);
+  public vote(op: vote): boolean {
+    return op.voter === "bob";
   }
-  public recurrent_transfer(op: recurrent_transfer): void {
+  public recurrent_transfer(op: recurrent_transfer): boolean {
     // Example json API transforming
     const jsonData = recurrent_transfer.toJSON(op) as { from?: string; to?: string; };
 
-    assert.equal(jsonData.from, op.from_account);
-    assert.equal(jsonData.to, op.to_account);
-
-    console.log(op);
+    return jsonData.to === op.to_account && jsonData.from === op.from_account;
   }
 }
 
@@ -71,6 +73,16 @@ const tx = transaction.create({
 
 const visitor = new MyVisitor();
 
-for(const op of tx.operations)
-  visitor.accept(op);
+for(const op of tx.operations) {
+  // Undefined on no supported visitor or given operation is undefined
+  const returnData = visitor.accept(op);
 
+  if(typeof returnData !== "undefined")
+  console.assert( returnData === true, "Visitor should return true for supported operations" );
+}
+
+};
+
+// Run evaluate function when running from the console, instead of importing a module
+if(process.argv[1] === fileURLToPath(import.meta.url))
+  evaluate();
