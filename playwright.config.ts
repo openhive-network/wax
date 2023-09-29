@@ -2,6 +2,10 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  reporter: [
+    ['junit', { outputFile: 'results.xml' }],
+    ['json',  { outputFile: 'results.json' }]
+  ],
   // Run your local dev server before starting the tests
   webServer: {
     command: 'npx http-server'
