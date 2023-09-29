@@ -20,8 +20,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, limit_order_create_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    limit_order_create_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_limit_order_create():
     amount_to_sell: asset_pb2.asset = asset_pb2.asset(
@@ -42,7 +46,7 @@ def test_limit_order_create():
         )
     )
 
-    limit_order_create_operation: transaction_pb2.operation = transaction_pb2.operation(
+    limit_order_create_operation: operation_pb2.operation = operation_pb2.operation(
         limit_order_create=limit_order_create
     )
 

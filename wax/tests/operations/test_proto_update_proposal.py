@@ -16,8 +16,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, transaction_pb2, update_proposal_pb2
-
+from wax.proto import (
+    asset_pb2,
+    operation_pb2,
+    transaction_pb2,
+    update_proposal_pb2
+)
 
 def test_update_proposal():
     daily_pay: asset_pb2.asset = asset_pb2.asset(
@@ -35,7 +39,7 @@ def test_update_proposal():
         )
     )
 
-    update_proposal_operation: transaction_pb2.operation = transaction_pb2.operation(
+    update_proposal_operation: operation_pb2.operation = operation_pb2.operation(
         update_proposal=update_proposal
     )
 

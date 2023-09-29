@@ -13,8 +13,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, convert_pb2, transaction_pb2
-
+from wax.proto import (
+    asset_pb2,
+    convert_pb2,
+    operation_pb2,
+    transaction_pb2
+)
 
 def test_convert():
     amount: asset_pb2.asset = asset_pb2.asset(
@@ -25,7 +29,7 @@ def test_convert():
         owner="summon", requestid=1467592156, amount=amount
     )
 
-    conver_operation: transaction_pb2.operation = transaction_pb2.operation(
+    conver_operation: operation_pb2.operation = operation_pb2.operation(
         convert=conver
     )
     check_operations(conver_operation)

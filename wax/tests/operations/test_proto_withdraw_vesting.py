@@ -12,8 +12,12 @@
 
 from utils.checkers import check_operations
 
-from wax.proto import asset_pb2, transaction_pb2, withdraw_vesting_pb2
-
+from wax.proto import (
+    asset_pb2,
+    operation_pb2,
+    transaction_pb2,
+    withdraw_vesting_pb2
+)
 
 def test_withdraw_vesting():
     vesting_shares: asset_pb2.asset = asset_pb2.asset(
@@ -26,7 +30,7 @@ def test_withdraw_vesting():
         )
     )
 
-    withdraw_vesting_operation: transaction_pb2.operation = transaction_pb2.operation(
+    withdraw_vesting_operation: operation_pb2.operation = operation_pb2.operation(
         withdraw_vesting=withdraw_vesting
     )
 
