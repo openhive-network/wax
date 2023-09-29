@@ -31,10 +31,16 @@ types-setuptools = ">=67.8.0"
 
 [tool.poetry-dynamic-versioning]
 enable = true
-metadata = true
-tagged-metadata = true
-dirty = true
-style = "semver"
+format-jinja = """
+    {%- set dirty_postfix = '.dirty' if dirty else '' -%}
+    {%- if distance == 0 and not dirty -%}
+        {{ serialize_pep440(base, stage, revision) }}
+    {%- elif revision is not none -%}
+        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=[commit]) }}{{ dirty_postfix }}
+    {%- else -%}
+        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=[commit]) }}{{ dirty_postfix }}
+    {%- endif -%}
+"""
 
 [tool.poetry-dynamic-versioning.substitution]
 files = [
