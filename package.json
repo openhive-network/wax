@@ -10,7 +10,7 @@
     "build": "rimraf wasm/dist && tsc",
     "postinstall": "playwright install",
     "postbuild": "fix-esm-import-path wasm/dist/proto",
-    "test": "playwright test --workers 1 --max-failures 1 wasm/__tests__",
+    "test": "unset CI && playwright test --workers 1 --max-failures 1 wasm/__tests__",
     "examples": "cd examples/ts && pnpm install && pnpm run examples && cd ../.."
   },
   "devDependencies": {
