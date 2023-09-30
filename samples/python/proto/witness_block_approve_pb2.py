@@ -19,7 +19,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'witness_block_approve_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_WITNESS_BLOCK_APPROVE']._serialized_start=54
   _globals['_WITNESS_BLOCK_APPROVE']._serialized_end=122

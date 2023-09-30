@@ -19,7 +19,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'set_withdraw_vesting_route_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_SET_WITHDRAW_VESTING_ROUTE']._serialized_start=60
   _globals['_SET_WITHDRAW_VESTING_ROUTE']._serialized_end=203

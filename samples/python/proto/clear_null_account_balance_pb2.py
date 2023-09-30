@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'clear_null_account_balance_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_CLEAR_NULL_ACCOUNT_BALANCE']._serialized_start=72
   _globals['_CLEAR_NULL_ACCOUNT_BALANCE']._serialized_end=168

@@ -21,7 +21,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'create_claimed_account_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_CREATE_CLAIMED_ACCOUNT']._serialized_start=98
   _globals['_CREATE_CLAIMED_ACCOUNT']._serialized_end=461

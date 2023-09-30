@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'comment_options_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_BENEFICIARY_ROUTE_TYPE']._serialized_start=61
   _globals['_BENEFICIARY_ROUTE_TYPE']._serialized_end=118

@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transfer_to_vesting_completed_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_TRANSFER_TO_VESTING_COMPLETED']._serialized_start=76
   _globals['_TRANSFER_TO_VESTING_COMPLETED']._serialized_end=327

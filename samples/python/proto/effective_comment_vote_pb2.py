@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'effective_comment_vote_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_EFFECTIVE_COMMENT_VOTE']._serialized_start=69
   _globals['_EFFECTIVE_COMMENT_VOTE']._serialized_end=291
