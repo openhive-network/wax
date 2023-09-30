@@ -21,7 +21,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'request_account_recovery_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_REQUEST_ACCOUNT_RECOVERY']._serialized_start=100
   _globals['_REQUEST_ACCOUNT_RECOVERY']._serialized_end=364

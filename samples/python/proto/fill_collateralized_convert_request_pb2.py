@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'fill_collateralized_convert_request_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_FILL_COLLATERALIZED_CONVERT_REQUEST']._serialized_start=82
   _globals['_FILL_COLLATERALIZED_CONVERT_REQUEST']._serialized_end=351

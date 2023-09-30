@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transfer_from_savings_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_TRANSFER_FROM_SAVINGS']._serialized_start=68
   _globals['_TRANSFER_FROM_SAVINGS']._serialized_end=235

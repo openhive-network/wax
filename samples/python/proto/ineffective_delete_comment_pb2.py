@@ -19,7 +19,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ineffective_delete_comment_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_INEFFECTIVE_DELETE_COMMENT']._serialized_start=59
   _globals['_INEFFECTIVE_DELETE_COMMENT']._serialized_end=121

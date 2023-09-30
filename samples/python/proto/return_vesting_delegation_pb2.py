@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'return_vesting_delegation_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_RETURN_VESTING_DELEGATION']._serialized_start=71
   _globals['_RETURN_VESTING_DELEGATION']._serialized_end=185

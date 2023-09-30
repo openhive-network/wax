@@ -19,7 +19,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'decline_voting_rights_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_DECLINE_VOTING_RIGHTS']._serialized_start=54
   _globals['_DECLINE_VOTING_RIGHTS']._serialized_end=111

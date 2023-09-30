@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'comment_benefactor_reward_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_COMMENT_BENEFACTOR_REWARD']._serialized_start=72
   _globals['_COMMENT_BENEFACTOR_REWARD']._serialized_end=405

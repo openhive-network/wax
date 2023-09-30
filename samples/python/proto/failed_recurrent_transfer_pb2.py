@@ -20,7 +20,6 @@ _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'failed_recurrent_transfer_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-
   DESCRIPTOR._options = None
   _globals['_FAILED_RECURRENT_TRANSFER']._serialized_start=72
   _globals['_FAILED_RECURRENT_TRANSFER']._serialized_end=332
