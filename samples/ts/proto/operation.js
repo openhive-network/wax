@@ -1,6 +1,7 @@
 /* eslint-disable */
 import _m0 from "protobufjs/minimal.js";
 import { account_create } from "./account_create.js";
+import { account_create_with_delegation } from "./account_create_with_delegation.js";
 import { account_created } from "./account_created.js";
 import { account_update } from "./account_update.js";
 import { account_update2 } from "./account_update2.js";
@@ -60,6 +61,8 @@ import { limit_order_cancelled } from "./limit_order_cancelled.js";
 import { limit_order_create } from "./limit_order_create.js";
 import { limit_order_create2 } from "./limit_order_create2.js";
 import { liquidity_reward } from "./liquidity_reward.js";
+import { pow } from "./pow.js";
+import { pow2 } from "./pow2.js";
 import { pow_reward } from "./pow_reward.js";
 import { producer_missed } from "./producer_missed.js";
 import { producer_reward } from "./producer_reward.js";
@@ -135,6 +138,9 @@ export const operation = {
         if (message.account_witness_proxy !== undefined) {
             account_witness_proxy.encode(message.account_witness_proxy, writer.uint32(114).fork()).ldelim();
         }
+        if (message.pow !== undefined) {
+            pow.encode(message.pow, writer.uint32(122).fork()).ldelim();
+        }
         if (message.custom !== undefined) {
             custom.encode(message.custom, writer.uint32(130).fork()).ldelim();
         }
@@ -180,6 +186,9 @@ export const operation = {
         if (message.escrow_release !== undefined) {
             escrow_release.encode(message.escrow_release, writer.uint32(242).fork()).ldelim();
         }
+        if (message.pow2 !== undefined) {
+            pow2.encode(message.pow2, writer.uint32(250).fork()).ldelim();
+        }
         if (message.escrow_approve !== undefined) {
             escrow_approve.encode(message.escrow_approve, writer.uint32(258).fork()).ldelim();
         }
@@ -200,6 +209,9 @@ export const operation = {
         }
         if (message.delegate_vesting_shares !== undefined) {
             delegate_vesting_shares.encode(message.delegate_vesting_shares, writer.uint32(330).fork()).ldelim();
+        }
+        if (message.account_create_with_delegation !== undefined) {
+            account_create_with_delegation.encode(message.account_create_with_delegation, writer.uint32(338).fork()).ldelim();
         }
         if (message.witness_set_properties !== undefined) {
             witness_set_properties.encode(message.witness_set_properties, writer.uint32(346).fork()).ldelim();
@@ -447,6 +459,12 @@ export const operation = {
                     }
                     message.account_witness_proxy = account_witness_proxy.decode(reader, reader.uint32());
                     continue;
+                case 15:
+                    if (tag !== 122) {
+                        break;
+                    }
+                    message.pow = pow.decode(reader, reader.uint32());
+                    continue;
                 case 16:
                     if (tag !== 130) {
                         break;
@@ -537,6 +555,12 @@ export const operation = {
                     }
                     message.escrow_release = escrow_release.decode(reader, reader.uint32());
                     continue;
+                case 31:
+                    if (tag !== 250) {
+                        break;
+                    }
+                    message.pow2 = pow2.decode(reader, reader.uint32());
+                    continue;
                 case 32:
                     if (tag !== 258) {
                         break;
@@ -578,6 +602,12 @@ export const operation = {
                         break;
                     }
                     message.delegate_vesting_shares = delegate_vesting_shares.decode(reader, reader.uint32());
+                    continue;
+                case 42:
+                    if (tag !== 338) {
+                        break;
+                    }
+                    message.account_create_with_delegation = account_create_with_delegation.decode(reader, reader.uint32());
                     continue;
                 case 43:
                     if (tag !== 346) {
@@ -919,6 +949,7 @@ export const operation = {
             account_witness_proxy: isSet(object.account_witness_proxy)
                 ? account_witness_proxy.fromJSON(object.account_witness_proxy)
                 : undefined,
+            pow: isSet(object.pow) ? pow.fromJSON(object.pow) : undefined,
             custom: isSet(object.custom) ? custom.fromJSON(object.custom) : undefined,
             witness_block_approve: isSet(object.witness_block_approve)
                 ? witness_block_approve.fromJSON(object.witness_block_approve)
@@ -946,6 +977,7 @@ export const operation = {
             escrow_transfer: isSet(object.escrow_transfer) ? escrow_transfer.fromJSON(object.escrow_transfer) : undefined,
             escrow_dispute: isSet(object.escrow_dispute) ? escrow_dispute.fromJSON(object.escrow_dispute) : undefined,
             escrow_release: isSet(object.escrow_release) ? escrow_release.fromJSON(object.escrow_release) : undefined,
+            pow2: isSet(object.pow2) ? pow2.fromJSON(object.pow2) : undefined,
             escrow_approve: isSet(object.escrow_approve) ? escrow_approve.fromJSON(object.escrow_approve) : undefined,
             transfer_to_savings: isSet(object.transfer_to_savings)
                 ? transfer_to_savings.fromJSON(object.transfer_to_savings)
@@ -964,6 +996,9 @@ export const operation = {
                 : undefined,
             delegate_vesting_shares: isSet(object.delegate_vesting_shares)
                 ? delegate_vesting_shares.fromJSON(object.delegate_vesting_shares)
+                : undefined,
+            account_create_with_delegation: isSet(object.account_create_with_delegation)
+                ? account_create_with_delegation.fromJSON(object.account_create_with_delegation)
                 : undefined,
             witness_set_properties: isSet(object.witness_set_properties)
                 ? witness_set_properties.fromJSON(object.witness_set_properties)
@@ -1112,6 +1147,9 @@ export const operation = {
         if (message.account_witness_proxy !== undefined) {
             obj.account_witness_proxy = account_witness_proxy.toJSON(message.account_witness_proxy);
         }
+        if (message.pow !== undefined) {
+            obj.pow = pow.toJSON(message.pow);
+        }
         if (message.custom !== undefined) {
             obj.custom = custom.toJSON(message.custom);
         }
@@ -1157,6 +1195,9 @@ export const operation = {
         if (message.escrow_release !== undefined) {
             obj.escrow_release = escrow_release.toJSON(message.escrow_release);
         }
+        if (message.pow2 !== undefined) {
+            obj.pow2 = pow2.toJSON(message.pow2);
+        }
         if (message.escrow_approve !== undefined) {
             obj.escrow_approve = escrow_approve.toJSON(message.escrow_approve);
         }
@@ -1177,6 +1218,9 @@ export const operation = {
         }
         if (message.delegate_vesting_shares !== undefined) {
             obj.delegate_vesting_shares = delegate_vesting_shares.toJSON(message.delegate_vesting_shares);
+        }
+        if (message.account_create_with_delegation !== undefined) {
+            obj.account_create_with_delegation = account_create_with_delegation.toJSON(message.account_create_with_delegation);
         }
         if (message.witness_set_properties !== undefined) {
             obj.witness_set_properties = witness_set_properties.toJSON(message.witness_set_properties);
@@ -1379,6 +1423,7 @@ export const operation = {
             (object.account_witness_proxy !== undefined && object.account_witness_proxy !== null)
                 ? account_witness_proxy.fromPartial(object.account_witness_proxy)
                 : undefined;
+        message.pow = (object.pow !== undefined && object.pow !== null) ? pow.fromPartial(object.pow) : undefined;
         message.custom = (object.custom !== undefined && object.custom !== null)
             ? custom.fromPartial(object.custom)
             : undefined;
@@ -1429,6 +1474,7 @@ export const operation = {
         message.escrow_release = (object.escrow_release !== undefined && object.escrow_release !== null)
             ? escrow_release.fromPartial(object.escrow_release)
             : undefined;
+        message.pow2 = (object.pow2 !== undefined && object.pow2 !== null) ? pow2.fromPartial(object.pow2) : undefined;
         message.escrow_approve = (object.escrow_approve !== undefined && object.escrow_approve !== null)
             ? escrow_approve.fromPartial(object.escrow_approve)
             : undefined;
@@ -1453,6 +1499,10 @@ export const operation = {
         message.delegate_vesting_shares =
             (object.delegate_vesting_shares !== undefined && object.delegate_vesting_shares !== null)
                 ? delegate_vesting_shares.fromPartial(object.delegate_vesting_shares)
+                : undefined;
+        message.account_create_with_delegation =
+            (object.account_create_with_delegation !== undefined && object.account_create_with_delegation !== null)
+                ? account_create_with_delegation.fromPartial(object.account_create_with_delegation)
                 : undefined;
         message.witness_set_properties =
             (object.witness_set_properties !== undefined && object.witness_set_properties !== null)
