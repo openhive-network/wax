@@ -3,6 +3,8 @@ build_wasm/wax_wasm.js
 build_wasm/wax.d.ts
 package.json
 wasm/dist/npm-pack.gen
+wasm/dist/proto/account_create_with_delegation.d.ts
+wasm/dist/proto/account_create_with_delegation.js
 wasm/dist/proto/account_create.d.ts
 wasm/dist/proto/account_create.js
 wasm/dist/proto/account_created.d.ts
@@ -135,6 +137,10 @@ wasm/dist/proto/operation.d.ts
 wasm/dist/proto/operation.js
 wasm/dist/proto/pow_reward.d.ts
 wasm/dist/proto/pow_reward.js
+wasm/dist/proto/pow.d.ts
+wasm/dist/proto/pow.js
+wasm/dist/proto/pow2.d.ts
+wasm/dist/proto/pow2.js
 wasm/dist/proto/price.d.ts
 wasm/dist/proto/price.js
 wasm/dist/proto/producer_missed.d.ts
