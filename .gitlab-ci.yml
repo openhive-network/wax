@@ -17,11 +17,10 @@ variables:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: ac35c204e1b836c9be2ad4cd59aaa89f4ee48c3f # develop
-    file: '/templates/wasm_build.gitlab-ci.yml'
-  - project: 'hive/common-ci-configuration'
     ref: b5202fecccf40845099da351cbc0c38a6205339c
-    file: '/templates/python_projects.gitlab-ci.yml'
+    file:
+      - '/templates/wasm_build.gitlab-ci.yml'
+      - '/templates/python_projects.gitlab-ci.yml'
 
 image: "${CI_BASE_IMAGE}"
 
