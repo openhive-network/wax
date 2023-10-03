@@ -10,9 +10,6 @@ RUN sudo groupadd -g $GROUP_ID usergroup && \
     sudo useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
     sudo usermod -a -G $(id -g hived_admin) ${USER_NAME}
 
-# Install protoc poetry plugin
-RUN poetry self add poetry-grpc-plugin@0.1.7
-
 # Switch to created user
 USER ${USER_NAME}
 WORKDIR /home/${USER_NAME}
