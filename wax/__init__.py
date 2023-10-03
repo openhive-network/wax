@@ -12,8 +12,6 @@ from .wax import (
     hive,
     serialize_transaction,
     validate_operation,
-    validate_proto_operation,
-    validate_proto_transaction,
     validate_transaction,
     vests,
 )
@@ -30,8 +28,6 @@ __all__ = [
     "serialize_transaction",
     "validate_operation",
     "validate_transaction",
-    "validate_proto_operation",
-    "validate_proto_transaction",
     "generate_private_key",
     "calculate_public_key",
     "calculate_manabar_full_regeneration_time",

@@ -1,6 +1,12 @@
 from google.protobuf.json_format import ParseDict
 
-from wax.proto import comment_pb2, limit_order_cancel_pb2, transaction_pb2, vote_pb2
+from wax.proto import (
+    comment_pb2,
+    limit_order_cancel_pb2,
+    recurrent_transfer_pb2,
+    transaction_pb2,
+    vote_pb2,
+)
 from wax.wax_visitor import OperationVisitor
 
 tx_json = {
@@ -20,15 +26,15 @@ tx_json = {
         },
         {
             "recurrent_transfer": {
-                "from": "alice",
+                # "from": "alice", there is no from
                 "to": "harry",
-                "amount": { "nai": "@@000000021", "precision": 3, "amount": "10" },
+                "amount": {"nai": "@@000000021", "precision": 3, "amount": "10"},
                 "memo": "it is only memo",
                 "recurrence": 1,
                 "executions": 3,
-                "extensions": [ { "recurrent_transfer_pair_id": { "pair_id" = 0 } } ]
+                "extensions": [{"recurrent_transfer_pair_id": {"pair_id": 0}}],
             }
-        }
+        },
     ]
 }
 
@@ -58,14 +64,14 @@ class MyOperationVisitor(OperationVisitor):
 
     def recurrent_transfer(self, op: recurrent_transfer_pb2.recurrent_transfer) -> None:
         print(f"Handling recurrent_transfer operation:\n{op}")
-        assert op.from == "alice"
+        # assert op._from == "alice" there is no from
         assert op.to == "harry"
         assert op.amount.nai == "@@000000021"
         assert op.amount.precision == 3
         assert op.amount.amount == "10"
         assert op.memo == "it is only memo"
-        assert op.recurrence = 1
-        assert op.executions = 3
+        assert op.recurrence == 1
+        assert op.executions == 3
         assert op.extensions[0].recurrent_transfer_pair_id.pair_id == 0
 
 
