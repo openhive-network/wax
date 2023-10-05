@@ -20,18 +20,6 @@ namespace cpp
     std::cout<< message << std::endl;
   }
 
-  struct validate_visitor
-  {
-    typedef void result_type;
-
-    template< typename T >
-    void operator()( const T& x )
-    {
-      x.validate();
-    }
-  };
-
-
   hive::protocol::transaction get_transaction(const std::string& trx)
   {
     return fc::json::from_string( trx ).as<hive::protocol::transaction>();
@@ -159,18 +147,6 @@ namespace cpp
   }
 
   // PROTOCOL FUNCTIONS --------------------------------
-
-  result protocol::cpp_validate_operation( const std::string& operation )
-  {
-    return method_wrapper([&]( result& )
-    {
-      fc::variant _v = fc::json::from_string( operation );
-      hive::protocol::operation _operation = _v.as<hive::protocol::operation>();
-
-      validate_visitor _visitor;
-      _operation.visit( _visitor );
-    });
-  };
 
   result protocol::cpp_validate_transaction( const std::string& transaction )
   {
