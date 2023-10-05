@@ -19,14 +19,6 @@ namespace cpp
     std::cout<< message << std::endl;
   }
 
-  result proto_protocol::cpp_proto_to_api( const std::string& operation_or_tx )
-  {
-    return method_wrapper([&]( result& _result )
-    {
-      _result.content = cpp_proto_to_api_impl(operation_or_tx);
-    });
-  }
-
   result proto_protocol::cpp_api_to_proto( const std::string& operation_or_tx )
   {
     return method_wrapper([&]( result& _result )
