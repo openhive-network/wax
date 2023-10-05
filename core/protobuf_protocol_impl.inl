@@ -170,7 +170,18 @@ result proto_protocol_impl<FoundationProvider>::cpp_validate_transaction(const s
         cpp_proto_to_api_impl(transaction)
       );
     });
+}
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      _result = provider.cpp_calculate_transaction_id(
+        cpp_proto_to_api_impl(transaction)
+      );
+    });
 }
 
 } /// namespace cpp 
