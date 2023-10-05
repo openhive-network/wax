@@ -1,8 +1,7 @@
 #include "cpython_interface.hpp"
 
 #include <hive/protocol/types.hpp>
-#include <hive/protocol/operations.hpp>
-#include <hive/protocol/transaction.hpp>
+
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <boost/preprocessor/seq/enum.hpp>
 #include <boost/preprocessor/seq/transform.hpp>
@@ -19,10 +18,6 @@ namespace cpp
     std::cout<< message << std::endl;
   }
 
-  hive::protocol::transaction get_transaction(const std::string& trx)
-  {
-    return fc::json::from_string( trx ).as<hive::protocol::transaction>();
-  }
 
   // PROTO TO API --------------------------------
 
@@ -146,14 +141,6 @@ namespace cpp
   }
 
   // PROTOCOL FUNCTIONS --------------------------------
-
-  result protocol::cpp_validate_transaction( const std::string& transaction )
-  {
-    return method_wrapper([&]( result& )
-    {
-      get_transaction(transaction).validate();
-    });
-  }
 
   result protocol::cpp_calculate_transaction_id( const std::string& transaction )
   {

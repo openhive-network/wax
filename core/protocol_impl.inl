@@ -5,6 +5,8 @@
 #include "core/utils.hpp"
 
 #include <hive/protocol/operations.hpp>
+#include <hive/protocol/transaction.hpp>
+
 #include <fc/io/json.hpp>
 
 namespace cpp {
@@ -20,6 +22,11 @@ struct validate_visitor
   }
 };
 
+hive::protocol::transaction get_transaction(const std::string& trx)
+{
+  return fc::json::from_string(trx).as<hive::protocol::transaction>();
+}
+
 template <class FoundationProvider>
 inline
 result protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
@@ -34,6 +41,14 @@ result protocol_impl<FoundationProvider>::cpp_validate_operation(const std::stri
     });
 }
 
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_validate_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result&)
+    {
+      get_transaction(transaction).validate();
+    });
+}
 
 } /// namespace cpp
-
