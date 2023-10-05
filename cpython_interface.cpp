@@ -143,17 +143,6 @@ namespace cpp
 
   // PROTOCOL FUNCTIONS --------------------------------
 
-  result protocol::cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id )
-  {
-    return method_wrapper([&]( result& _result )
-    {
-      const auto _transaction = get_transaction(transaction);
-      const auto _digest = _transaction.sig_digest( hive::protocol::chain_id_type( chain_id ), hive::protocol::pack_type::hf26 );
-
-      _result.content = _digest.str();
-    });
-  }
-
   result protocol::cpp_serialize_transaction( const std::string& transaction )
   {
     return method_wrapper([&]( result& _result )
