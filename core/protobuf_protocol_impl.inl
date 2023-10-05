@@ -209,5 +209,15 @@ result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const 
     });
 }
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_proto_to_api(const std::string& operation_or_tx)
+{
+  return method_wrapper([&](result& _result)
+    {
+      _result.content = cpp_proto_to_api_impl(operation_or_tx);
+    });
+}
+
+
 } /// namespace cpp 
 
