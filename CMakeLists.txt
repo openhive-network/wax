@@ -44,7 +44,14 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_D
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)
 
-add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} cpython_interface.cpp LINK_LIBRARIES hive_protocol)
+file(GLOB HEADERS "core/*.hpp" "cpython_interface.hpp")
+
+add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} core/foundation.cpp cpython_interface.cpp ${HEADERS} LINK_LIBRARIES hive_protocol)
+
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
+                                                   "${CMAKE_CURRENT_SOURCE_DIR}/core"
+                                                   "${HIVE_ROOT_PATH}/libraries/chain/include"
+)
 
 python_extension_module(${PROJECT_NAME})
 
