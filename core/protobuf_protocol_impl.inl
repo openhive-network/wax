@@ -147,6 +147,17 @@ std::string cpp_proto_to_api_impl(const std::string& operation_or_tx)
   return fc::json::to_string(parse_proto_operation(var));
 }
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      _result = provider.cpp_validate_operation(
+        cpp_proto_to_api_impl(operation)
+      );
+    });
+}
 
-} /// namespace cpp {
+} /// namespace cpp 
 

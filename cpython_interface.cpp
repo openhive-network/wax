@@ -35,17 +35,6 @@ namespace cpp
     });
   }
 
-  result proto_protocol::cpp_validate_operation( const std::string& operation )
-  {
-    return method_wrapper([&](result& _result)
-    {
-      protocol provider;
-      _result = provider.cpp_validate_operation(
-          cpp_proto_to_api_impl(operation)
-        );
-    });
-  }
-
   result proto_protocol::cpp_validate_transaction( const std::string& transaction )
   {
     return method_wrapper([&](result& _result)
