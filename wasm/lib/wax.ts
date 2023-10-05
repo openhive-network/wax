@@ -5,9 +5,8 @@ export type {
   error_code,
   json_asset,
   proto_protocol,
-  proto_protocol_base,
   protocol,
-  protocol_base,
+  protocol_foundation,
   result
 } from '../../build_wasm/wax';
 
