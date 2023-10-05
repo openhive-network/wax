@@ -184,5 +184,18 @@ result proto_protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(con
     });
 }
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      _result = provider.cpp_calculate_sig_digest(
+        cpp_proto_to_api_impl(transaction),
+        chain_id
+      );
+    });
+}
+
 } /// namespace cpp 
 

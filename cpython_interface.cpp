@@ -35,18 +35,6 @@ namespace cpp
     });
   }
 
-  result proto_protocol::cpp_calculate_sig_digest( const std::string& transaction, const std::string& chain_id )
-  {
-    return method_wrapper([&](result& _result)
-    {
-      protocol provider;
-      _result = provider.cpp_calculate_sig_digest(
-          cpp_proto_to_api_impl(transaction),
-          chain_id
-        );
-    });
-  }
-
   result proto_protocol::cpp_serialize_transaction( const std::string& transaction )
   {
     return method_wrapper([&](result& _result)
