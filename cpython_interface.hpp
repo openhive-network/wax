@@ -14,4 +14,9 @@ namespace cpp
 
   ///  Interface providing Hive protocol functionality operating on Protobuf specific JSON format.
   class proto_protocol : public proto_protocol_impl<foundation> {};
-}
+
+  extern template class protocol_impl<foundation>;
+  extern template class proto_protocol_impl<foundation>;
+
+} /// namespace cpp
+
