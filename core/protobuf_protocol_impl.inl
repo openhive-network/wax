@@ -159,5 +159,19 @@ result proto_protocol_impl<FoundationProvider>::cpp_validate_operation(const std
     });
 }
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_validate_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      // XXX: We can optimize it by using the sharing the same logic via variant_objects
+      _result = provider.cpp_validate_transaction(
+        cpp_proto_to_api_impl(transaction)
+      );
+    });
+
+}
+
 } /// namespace cpp 
 

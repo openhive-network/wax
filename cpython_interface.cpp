@@ -35,18 +35,6 @@ namespace cpp
     });
   }
 
-  result proto_protocol::cpp_validate_transaction( const std::string& transaction )
-  {
-    return method_wrapper([&](result& _result)
-    {
-      protocol provider;
-      // XXX: We can optimize it by using the sharing the same logic via variant_objects
-      _result = provider.cpp_validate_transaction(
-          cpp_proto_to_api_impl(transaction)
-        );
-    });
-  }
-
   result proto_protocol::cpp_calculate_transaction_id( const std::string& transaction )
   {
     return method_wrapper([&](result& _result)
