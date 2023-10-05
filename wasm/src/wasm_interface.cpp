@@ -1,4 +1,9 @@
-#include <cpython_interface.hpp>
+#include "core/foundation.hpp"
+#include "core/protocol_impl.hpp"
+#include "core/protobuf_protocol_impl.hpp"
+
+#include "core/protocol_impl.inl"
+#include "core/protobuf_protocol_impl.inl"
 
 #include <iostream>
 
@@ -42,86 +47,8 @@ result cpp_calculate_public_key(const std::string& wif)
 { return foundation::cpp_calculate_public_key(wif); }
 };
 
-class protocol_wasm : public foundation_wasm
-{
-public:
-  result cpp_validate_operation(const std::string& operation)
-  {
-    protocol p;
-    return p.cpp_validate_operation(operation);
-  }
-  result cpp_validate_transaction(const std::string& transaction)
-  {
-    protocol p;
-    return p.cpp_validate_transaction(transaction);
-  }
-
-  result cpp_calculate_transaction_id(const std::string& transaction)
-  {
-    protocol p;
-    return p.cpp_calculate_transaction_id(transaction);
-  }
-  result cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id)
-  {
-    protocol p;
-    return p.cpp_calculate_sig_digest(transaction, chain_id);
-  }
-  result cpp_serialize_transaction(const std::string& transaction)
-  {
-    protocol p;
-    return p.cpp_serialize_transaction(transaction);
-  }
-
-};
-
-class proto_protocol_wasm : public foundation_wasm
-{
-public:
-  result cpp_validate_operation(const std::string& operation)
-  {
-    proto_protocol p;
-    return p.cpp_validate_operation(operation);
-  }
-
-  result cpp_validate_transaction(const std::string& transaction)
-  {
-    proto_protocol p;
-    return p.cpp_validate_transaction(transaction);
-  }
-
-  result cpp_calculate_transaction_id(const std::string& transaction)
-  {
-    proto_protocol p;
-    return p.cpp_calculate_transaction_id(transaction);
-  }
-
-  result cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id)
-  {
-    proto_protocol p;
-    return p.cpp_calculate_sig_digest(transaction, chain_id);
-  }
-
-  result cpp_serialize_transaction(const std::string& transaction)
-  {
-    proto_protocol p;
-    return p.cpp_serialize_transaction(transaction);
-  }
-
-
-  // TODO: Implement block bi-directional protobuf JSON conversion
-  result cpp_proto_to_api(const std::string& operation_or_tx)
-  {
-    proto_protocol p;
-    return p.cpp_proto_to_api(operation_or_tx);
-  }
-
-  result cpp_api_to_proto(const std::string& operation_or_tx)
-  {
-    proto_protocol p;
-    return p.cpp_api_to_proto(operation_or_tx);
-  }
-
-};
+using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
+using proto_protocol_wasm = cpp::proto_protocol_impl<foundation_wasm>;
 
 EMSCRIPTEN_BINDINGS(wax_api_instance) {
   enum_<error_code>("error_code")
