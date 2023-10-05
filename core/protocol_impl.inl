@@ -51,4 +51,14 @@ result protocol_impl<FoundationProvider>::cpp_validate_transaction(const std::st
     });
 }
 
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      _result.content = get_transaction(transaction).id().str();
+    });
+}
+
 } /// namespace cpp
