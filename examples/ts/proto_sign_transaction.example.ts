@@ -1,15 +1,48 @@
-import path from "path";
-import { fileURLToPath } from 'url';
-import process from 'process';
+declare var wax: typeof import("@hive/wax");
+declare var beekeeper: typeof import("@hive/beekeeper");
+
+// XXX: We use TS 4.4.4, but it Awaited has been introduced in TS 4.5.
+// Usage of awaited will not be required after we improve our types in beekeeper
+type PolyAwaited<T> =
+  T extends null | undefined ? T : // special case for `null | undefined` when not in `--strictNullChecks` mode
+      T extends object & { then(onfulfilled: infer F, ...args: infer _): any } ? // `await` only unwraps object types with a callable `then`. Non-object types are not unwrapped
+          F extends ((value: infer V, ...args: infer _) => any) ? // if the argument to `then` is callable, extracts the first argument
+          PolyAwaited<V> : // recursively unwrap the value
+              never : // the argument to `then` was not callable
+      T; // non-object or non-thenable
 
 export const evaluate = async() => {
 
-const { default: BeekeeperModule } = await import("@hive/beekeeper");
-const { default: WaxModule, transaction } = await import("@hive/wax");
+const { default: BeekeeperModule } = beekeeper;
+const { default: WaxModule, transaction } = wax;
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const initWasmModule = async(): ReturnType<typeof BeekeeperModule> => {
+  const module = await BeekeeperModule();
+  const FS = module.FS;
+  FS.mkdir(STORAGE_ROOT);
+  // XXX: We should not conver it to any
+  FS.mount(FS.filesystems.IDBFS as any, {}, STORAGE_ROOT);
+  return await new Promise((resolve, reject) => {
+    FS.syncfs(true, (err: any) => {
+      if (err)
+        reject(err);
 
-const STORAGE_ROOT = path.join(__dirname, 'storage_root');
+      resolve(module);
+    });
+  });
+}
+
+// XXX: This should be easier to type
+const sync = (fs: PolyAwaited<ReturnType<typeof BeekeeperModule>>['FS']) =>
+  new Promise((resolve, reject) => {
+    fs.syncfs((err: any) => {
+      if (err) reject(err);
+
+      resolve(null);
+    });
+  });
+
+const STORAGE_ROOT = '/storage_root';
 const WALLET_OPTIONS = ['--wallet-dir', `${STORAGE_ROOT}/.beekeeper`];
 
 const protoTx = transaction.create({
@@ -39,29 +72,27 @@ const handleBeekeeperJsonResult = (value: string) => {
 };
 
 const waxProvider = await WaxModule();
-const beekeeperProvider = await BeekeeperModule();
+const beekeeperProvider = await initWasmModule();
 const beekeeperOptions = new beekeeperProvider.StringList();
 WALLET_OPTIONS.forEach((opt: string) => void beekeeperOptions.push_back(opt));
 
-const wax = new waxProvider.proto_protocol();
-const beekeeper  = new beekeeperProvider.beekeeper_api(beekeeperOptions);
-beekeeper.init();
+const proto = new waxProvider.proto_protocol();
+const keeper  = new beekeeperProvider.beekeeper_api(beekeeperOptions);
+keeper.init();
 
 // We have to transform our API to the plain object first and then stringify it so it can be sent to wasm
-const { content: sigDigest } = wax.cpp_calculate_sig_digest(JSON.stringify(transaction.toJSON(protoTx)), "42");
+const { content: sigDigest } = proto.cpp_calculate_sig_digest(JSON.stringify(transaction.toJSON(protoTx)), "42");
 
-const { token } = handleBeekeeperJsonResult(beekeeper.create_session('pear') as string);
+const { token } = handleBeekeeperJsonResult(keeper.create_session('pear') as string);
 
-beekeeper.create(token, walletName)
-beekeeper.import_key(token, walletName, OUR_MAINNET_INITMINER_PRIVATE_KEY_DO_NOT_SHARE);
+keeper.create(token, walletName)
+keeper.import_key(token, walletName, OUR_MAINNET_INITMINER_PRIVATE_KEY_DO_NOT_SHARE);
 
-const { keys: [ { public_key: publicKey } ] } = handleBeekeeperJsonResult(beekeeper.get_public_keys(token) as string);
+const { keys: [ { public_key: publicKey } ] } = handleBeekeeperJsonResult(keeper.get_public_keys(token) as string);
 
-const { signature } = handleBeekeeperJsonResult(beekeeper.sign_digest(token, sigDigest, publicKey) as string);
+const { signature } = handleBeekeeperJsonResult(keeper.sign_digest(token, sigDigest, publicKey) as string);
 
 console.log(`Your signature for transmitting: "${signature}"`);
-};
 
-// Run evaluate function when running from the console, instead of importing a module
-if(process.argv[1] === fileURLToPath(import.meta.url))
-  evaluate();
+await sync(beekeeperProvider.FS);
+};

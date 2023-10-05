@@ -208,6 +208,9 @@ wasm/lib/proto
 dist
 node_modules
 wax/proto
+.parcel-cache
+results.json
+results.xml
 
 # We use pnpm
 /package-lock.json

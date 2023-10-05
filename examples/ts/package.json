@@ -1,19 +1,17 @@
 {
   "name": "examples",
   "scripts": {
-    "examples": "npm-run-all -s example:*",
-    "example:visitor": "ts-node visitor.example.ts",
-    "example:proto_validate_api_response": "ts-node proto_validate_api_response.example.ts",
-    "example:proto_sign_transaction": "ts-node proto_sign_transaction.example.ts"
+    "examples": "ts-node index.ts"
   },
   "devDependencies": {
+    "@parcel/config-default": "^2.9.3",
+    "@parcel/core": "^2.9.3",
     "@types/node": "^20.6.0",
-    "npm-run-all": "^4.1.5",
     "ts-node": "^10.9.1",
     "typescript": "4.4.4"
   },
   "dependencies": {
-    "@hive/beekeeper": "~1.27.5-rc0-stable.b2fca4dac",
+    "@hive/beekeeper": "~1.27.5-rc0-stable.33795ec23",
     "@hive/wax": "file:../.."
   },
   "type": "module"

@@ -93,7 +93,7 @@ npm run examples
 
 ```bash
 # Cleanup
-rm -rf examples/ts/node_modules examples/ts/package-lock.json node_modules/ build_wasm wasm/dist wasm/lib/proto .npmrc package.json
+rm -rf examples/ts/node_modules examples/ts/package-lock.json node_modules/ build_wasm wasm/dist wasm/lib/proto .npmrc
 
 # Run oneliner all-tester
 sh scripts/bump_npm_version.sh && pnpm install && ./wasm/build_wasm_wax.sh && npm run build && npm run test && npm run examples

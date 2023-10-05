@@ -1,10 +1,10 @@
 import type { comment, vote, transaction, limit_order_cancel, recurrent_transfer } from "@hive/wax";
-import { fileURLToPath } from 'url';
-import process from 'process';
+
+declare var wax: typeof import("@hive/wax");
 
 export const evaluate = async() => {
 
-const { OperationVisitor, transaction, recurrent_transfer } = await import ("@hive/wax");
+const { OperationVisitor, comment, vote, transaction, recurrent_transfer } = wax;
 
 class MyVisitor extends OperationVisitor<boolean> {
   public comment(op: comment): boolean {
@@ -26,17 +26,21 @@ class MyVisitor extends OperationVisitor<boolean> {
 }
 
 const tx = transaction.create({
+  ref_block_num: 0,
+  ref_block_prefix: 0,
+  expiration: "1970-01-01T01:00:00",
+  extensions: [],
   operations: [
     {
-      vote: {
+      vote: vote.create({
         author: "alice",
         voter: "bob",
         permlink: "/",
         weight: 1,
-      },
+      }  as vote),
     },
     {
-      comment: {
+      comment: comment.create({
         parent_permlink: "/",
         parent_author: "",
         author: "alice",
@@ -44,21 +48,21 @@ const tx = transaction.create({
         title: "Best comment",
         body: "<span>comment</span>",
         json_metadata: "{}"
-      }
+      }  as comment)
     },
     {
-      vote: {
+      vote: vote.create({
         voter: "bob",
         author: "alice",
         permlink: "/",
         weight: 1
-      }
+      }  as vote)
     },
     {
       limit_order_cancel: undefined
     },
     {
-      recurrent_transfer: {
+      recurrent_transfer: recurrent_transfer.create({
         from_account: "alice",
         to_account: "harry",
         amount: { nai: "@@000000021", precision: 3, amount: "10" },
@@ -66,10 +70,10 @@ const tx = transaction.create({
         recurrence: 1,
         executions: 3,
         extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } }, { void_t: {} } ]
-      }
+      }  as recurrent_transfer)
     }
   ]
-} as transaction);
+}  as transaction);
 
 const visitor = new MyVisitor();
 
@@ -77,12 +81,8 @@ for(const op of tx.operations) {
   // Undefined on no supported visitor or given operation is undefined
   const returnData = visitor.accept(op);
 
-  if(typeof returnData !== "undefined")
-  console.assert( returnData === true, "Visitor should return true for supported operations" );
+  if(returnData === false)
+    throw new Error( "Visitor should return true for supported operations" );
 }
 
 };
-
-// Run evaluate function when running from the console, instead of importing a module
-if(process.argv[1] === fileURLToPath(import.meta.url))
-  evaluate();
