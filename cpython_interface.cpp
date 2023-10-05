@@ -140,23 +140,6 @@ namespace cpp
     return fc::mutable_variant_object{ std::move(tx_body) }( "operations", std::move(operations) );
   }
 
-  // PROTOCOL FUNCTIONS --------------------------------
-
-  result protocol::cpp_serialize_transaction( const std::string& transaction )
-  {
-    return method_wrapper([&]( result& _result )
-    {
-      hive::protocol::serialization_mode_controller::mode_guard guard( hive::protocol::transaction_serialization_type::hf26 );
-      hive::protocol::serialization_mode_controller::set_pack( hive::protocol::transaction_serialization_type::hf26 );
-
-      const auto _transaction = get_transaction(transaction);
-      const auto _packed = fc::to_hex( fc::raw::pack_to_vector( _transaction ) );
-      _result.content = std::string( _packed.data(), _packed.size() );
-    });
-  }
-
-
-  
 
   std::string cpp_api_to_proto_impl( const std::string& operation_or_tx )
   {

@@ -75,4 +75,19 @@ result protocol_impl<FoundationProvider>::cpp_calculate_sig_digest(const std::st
     });
 }
 
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+      const auto _transaction = get_transaction(transaction);
+      const auto _packed = fc::to_hex(fc::raw::pack_to_vector(_transaction));
+      _result.content = std::string(_packed.data(), _packed.size());
+    });
+}
+
 } /// namespace cpp
