@@ -14,8 +14,9 @@ set( CMAKE_EXECUTABLE_SUFFIX "" )
 cmake_policy(SET CMP0057 NEW)
 
 set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
-include( ${WAX_ROOT_PATH}/hive/cmake/hive_targets.cmake )
+include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
 
 set(BOOST_COMPONENTS)
 LIST(APPEND BOOST_COMPONENTS
@@ -28,18 +29,23 @@ LIST(APPEND BOOST_COMPONENTS
 
 set(HIVE_BUILD_ON_MINIMAL_FC ON)
 
-add_subdirectory( ${WAX_ROOT_PATH}/hive/libraries/fc build_fc_minimal )
-add_subdirectory( ${WAX_ROOT_PATH}/hive/libraries/schema build_schema_minimal )
-add_subdirectory( ${WAX_ROOT_PATH}/hive/libraries/protocol build_protocol_minimal )
+add_subdirectory( ${HIVE_ROOT_PATH}/libraries/fc build_fc_minimal )
+add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
+add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
+
+file(GLOB HEADERS "core/*.hpp")
 
 set( SOURCES
-      ${WAX_ROOT_PATH}/cpython_interface.cpp
+      ${WAX_ROOT_PATH}/core/foundation.cpp
       wasm_interface.cpp
 )
 
-ADD_EXECUTABLE( wax_wasm ${SOURCES} )
+ADD_EXECUTABLE( wax_wasm ${SOURCES} ${HEADERS} )
 
-set( INCLUDES ${WAX_ROOT_PATH} )
+set( INCLUDES "${WAX_ROOT_PATH}"
+              "${WAX_ROOT_PATH}/core"
+              "${HIVE_ROOT_PATH}/libraries/chain/include"
+)
 
 target_include_directories( wax_wasm PUBLIC ${INCLUDES} )
 target_compile_options( wax_wasm PUBLIC -fexceptions )
