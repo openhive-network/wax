@@ -34,14 +34,4 @@ namespace cpp
     });
   }
 
-  result proto_protocol::cpp_serialize_transaction( const std::string& transaction )
-  {
-    return method_wrapper([&](result& _result)
-    {
-        protocol provider;
-      _result = provider.cpp_serialize_transaction(
-          cpp_proto_to_api_impl(transaction)
-        );
-    });
-  }
 } // namespace cpp

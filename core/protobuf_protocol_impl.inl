@@ -197,5 +197,17 @@ result proto_protocol_impl<FoundationProvider>::cpp_calculate_sig_digest(const s
     });
 }
 
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      _result = provider.cpp_serialize_transaction(
+        cpp_proto_to_api_impl(transaction)
+      );
+    });
+}
+
 } /// namespace cpp 
 
