@@ -6,6 +6,7 @@
 
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
+#include <hive/protocol/types.hpp>
 
 #include <fc/io/json.hpp>
 
@@ -58,6 +59,19 @@ result protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std
   return method_wrapper([&](result& _result)
     {
       _result.content = get_transaction(transaction).id().str();
+    });
+}
+
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id)
+{
+  return method_wrapper([&](result& _result)
+    {
+      const auto _transaction = get_transaction(transaction);
+      const auto _digest = _transaction.sig_digest(hive::protocol::chain_id_type(chain_id), hive::protocol::pack_type::hf26);
+
+      _result.content = _digest.str();
     });
 }
 
