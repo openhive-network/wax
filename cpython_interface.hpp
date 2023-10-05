@@ -1,7 +1,7 @@
 #pragma once
 
 #include<string>
-#include<functional>
+
 
 #include "core/foundation.hpp"
 
@@ -25,7 +25,6 @@ namespace cpp
     uint32_t precision; // XXX: is uint64_t actually
     std::string nai;
   };
-
  
  ///  Interface providing Hive protocol functionality operating on Hive native JSON format.
   class protocol : public foundation
