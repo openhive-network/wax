@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proto Validate API Response</title>
+</head>
+<body>
+  <script type="module">
+    // If you are not using any bundler in your project define the source map before importing @hive/wax (We use `parcel`. See index.ts#open)
+    import WaxModule from '@hive/wax';
+
+    const apiData = JSON.stringify({
+      "ref_block_num": 19260,
+      "ref_block_prefix": 2140466769,
+      "expiration": "2016-09-15T19:47:33",
+      "operations": [
+        {
+          "type": "vote_operation",
+          "value": {
+            "voter": "taoteh1221",
+            "author": "ozchartart",
+            "permlink": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+            "weight": 10000
+          }
+        }
+      ],
+      "extensions": [],
+      "signatures": [
+        "202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3"
+      ]
+    });
+
+    (async () => {
+      const provider = await WaxModule();
+      const protoInstance = new provider.proto_protocol();
+
+      const protoData = protoInstance.cpp_api_to_proto(apiData);
+      if(protoData.value !== provider.error_code.ok)
+        throw new Error("Could not convert api to proto");
+
+      const result = protoInstance.cpp_validate_transaction(protoData.content);
+      if(result.value !== provider.error_code.ok)
+        throw new Error("Could not convert api to proto");
+
+      window.exampleFinished = true; // Optional - just for our test purposes
+    })();
+  </script>
+</body>
+</html>

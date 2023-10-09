@@ -1,7 +1,8 @@
 {
   "name": "examples",
   "scripts": {
-    "examples": "ts-node index.ts"
+    "examples": "ts-node index.ts",
+    "postinstall": "playwright install"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.9.3",
@@ -12,7 +13,8 @@
   },
   "dependencies": {
     "@hive/beekeeper": "~1.27.5-rc0-stable.33795ec23",
-    "@hive/wax": "file:../.."
+    "@hive/wax": "file:../..",
+    "playwright": "^1.38.1"
   },
   "type": "module"
 }

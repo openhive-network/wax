@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitor Example</title>
+</head>
+<body>
+  <script type="module">
+    import { OperationVisitor, comment, vote, transaction, recurrent_transfer } from '@hive/wax';
+
+    class MyVisitor extends OperationVisitor {
+      comment(op) {
+        return op.author === "alice";
+      }
+      // This should be never visited in our example
+      limit_order_cancel(op) {
+        return op.orderid === Number.POSITIVE_INFINITY;
+      }
+      vote(op) {
+        return op.voter === "bob";
+      }
+      recurrent_transfer(op) {
+        // Example json API transforming
+        const jsonData = recurrent_transfer.toJSON(op);
+
+        return jsonData.to === op.to_account && jsonData.from === op.from_account;
+      }
+    }
+
+    const tx = transaction.create({
+      ref_block_num: 0,
+      ref_block_prefix: 0,
+      expiration: "1970-01-01T01:00:00",
+      extensions: [],
+      operations: [
+        {
+          vote: vote.create({
+            author: "alice",
+            voter: "bob",
+            permlink: "/",
+            weight: 1,
+          }),
+        },
+        {
+          comment: comment.create({
+            parent_permlink: "/",
+            parent_author: "",
+            author: "alice",
+            permlink: "/",
+            title: "Best comment",
+            body: "<span>comment</span>",
+            json_metadata: "{}"
+          })
+        },
+        {
+          vote: vote.create({
+            voter: "bob",
+            author: "alice",
+            permlink: "/",
+            weight: 1
+          })
+        },
+        {
+          limit_order_cancel: undefined
+        },
+        {
+          recurrent_transfer: recurrent_transfer.create({
+            from_account: "alice",
+            to_account: "harry",
+            amount: { nai: "@@000000021", precision: 3, amount: "10" },
+            memo: "it is only memo",
+            recurrence: 1,
+            executions: 3,
+            extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } }, { void_t: {} } ]
+          })
+        }
+      ]
+    });
+
+    const visitor = new MyVisitor();
+
+    for(const op of tx.operations) {
+      // Undefined on no supported visitor or given operation is undefined
+      const returnData = visitor.accept(op);
+
+      if(returnData === false)
+        throw new Error( "Visitor should return true for supported operations" );
+    }
+
+    window.exampleFinished = true; // Optional - just for our test purposes
+  </script>
+</body>
+</html>
