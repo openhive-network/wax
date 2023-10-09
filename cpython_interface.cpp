@@ -367,7 +367,8 @@ namespace cpp
   {
     return method_wrapper([&](result& _result)
     {
-      _result = protocol::cpp_validate_operation(
+      protocol provider;
+      _result = provider.cpp_validate_operation(
           cpp_proto_to_api_impl(operation)
         );
     });
@@ -377,8 +378,9 @@ namespace cpp
   {
     return method_wrapper([&](result& _result)
     {
+      protocol provider;
       // XXX: We can optimize it by using the sharing the same logic via variant_objects
-      _result = protocol::cpp_validate_transaction(
+      _result = provider.cpp_validate_transaction(
           cpp_proto_to_api_impl(transaction)
         );
     });
@@ -388,7 +390,8 @@ namespace cpp
   {
     return method_wrapper([&](result& _result)
     {
-      _result = protocol::cpp_calculate_transaction_id(
+      protocol provider;
+      _result = provider.cpp_calculate_transaction_id(
           cpp_proto_to_api_impl(transaction)
         );
     });
@@ -398,7 +401,8 @@ namespace cpp
   {
     return method_wrapper([&](result& _result)
     {
-      _result = protocol::cpp_calculate_sig_digest(
+      protocol provider;
+      _result = provider.cpp_calculate_sig_digest(
           cpp_proto_to_api_impl(transaction),
           chain_id
         );
@@ -409,7 +413,8 @@ namespace cpp
   {
     return method_wrapper([&](result& _result)
     {
-      _result = protocol::cpp_serialize_transaction(
+        protocol provider;
+      _result = provider.cpp_serialize_transaction(
           cpp_proto_to_api_impl(transaction)
         );
     });
