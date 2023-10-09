@@ -11,7 +11,7 @@
 #     },
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     asset_pb2,
@@ -35,3 +35,9 @@ def test_delegate_vesting_shares():
     )
 
     check_operations(delegate_vesting_shares_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[delegate_vesting_shares_operation]
+    )
+
+    check_transaction(transaction)

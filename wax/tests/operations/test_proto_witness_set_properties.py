@@ -16,7 +16,7 @@
 #   }
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     operation_pb2,
@@ -46,3 +46,9 @@ def test_witness_set_properties():
     )
 
     check_operations(witness_set_properties_operations)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[witness_set_properties_operations]
+    )
+
+    check_transaction(transaction)

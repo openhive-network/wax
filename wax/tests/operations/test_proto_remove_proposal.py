@@ -3,7 +3,7 @@ remove_proposal_operation = {
     "value": {"proposal_owner": "doze", "proposal_ids": [225], "extensions": []},
 }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     remove_proposal_pb2,
@@ -23,3 +23,9 @@ def test_remove_proposal():
     )
 
     check_operations(remove_proposal_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[remove_proposal_operation]
+    )
+
+    check_transaction(transaction)

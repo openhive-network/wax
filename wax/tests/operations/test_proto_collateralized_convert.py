@@ -11,7 +11,7 @@
 #   }
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     asset_pb2,
@@ -36,3 +36,9 @@ def test_collateralized_convert():
     )
 
     check_operations(collateralized_convert_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[collateralized_convert_operation]
+    )
+
+    check_transaction(transaction)

@@ -18,7 +18,7 @@
 # }
 
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     asset_pb2,
@@ -49,3 +49,9 @@ def test_create_proposal():
     )
 
     check_operations(create_proposal_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[create_proposal_operation]
+    )
+
+    check_transaction(transaction)

@@ -9,7 +9,7 @@
 #   }
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     custom_pb2,
@@ -28,3 +28,9 @@ def test_custom():
         custom=custom
     )
     check_operations(custom_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[custom_operation]
+    )
+
+    check_transaction(transaction)

@@ -21,7 +21,7 @@
 #   }
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     account_update_pb2,
@@ -51,3 +51,9 @@ def test_account_update():
     )
 
     check_operations(account_update_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[account_update_operation]
+    )
+
+    check_transaction(transaction)

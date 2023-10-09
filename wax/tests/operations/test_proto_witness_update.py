@@ -21,7 +21,7 @@
 #   }
 # }
 
-from utils.checkers import check_operations
+from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     asset_pb2,
@@ -63,3 +63,9 @@ def test_witness_update():
     )
 
     check_operations(witness_update_operation)
+
+    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+        operations=[witness_update_operation]
+    )
+
+    check_transaction(transaction)
