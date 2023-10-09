@@ -30,8 +30,9 @@ namespace cpp
       x.validate();
     }
   };
+  using callback = std::function<void(result&)>;
 
-  result protocol::method_wrapper( callback&& method )
+  result method_wrapper(callback&& method)
   {
     result _result;
 
@@ -256,22 +257,22 @@ namespace cpp
     }
   }
 
-  json_asset protocol::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
+  json_asset foundation::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::asset{ amount, hive::protocol::asset_symbol_type::from_asset_num(asset_num) });
   }
 
-  json_asset protocol::cpp_hive(const int64_t amount)const
+  json_asset foundation::cpp_hive(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::HIVE_asset{amount});
   }
 
-  json_asset protocol::cpp_hbd(const int64_t amount)const
+  json_asset foundation::cpp_hbd(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::HBD_asset{amount});
   }
 
-  json_asset protocol::cpp_vests(const int64_t amount)const
+  json_asset foundation::cpp_vests(const int64_t amount)const
   {
     return cpp_generate_nai(hive::protocol::VEST_asset{amount});
   }
@@ -283,7 +284,7 @@ namespace cpp
     });
   }
 
-  result protocol::cpp_calculate_public_key( const std::string& wif )
+  result foundation::cpp_calculate_public_key( const std::string& wif )
   {
     return method_wrapper([&](result& _result){
       const auto private_key = fc::ecc::private_key::wif_to_key(wif);
@@ -301,7 +302,7 @@ namespace cpp
     return manabar.current_mana;
   }
 
-  result protocol::cpp_calculate_manabar_full_regeneration_time( const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time )
+  result foundation::cpp_calculate_manabar_full_regeneration_time( const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time )
   {
     // safe is used because of detected issue with overflow
     using safe_uint128_t = fc::safe<fc::uint128_t>;
@@ -318,7 +319,7 @@ namespace cpp
     });
   }
 
-  result protocol::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
+  result foundation::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
     return method_wrapper([&](result &_result) {
       _result.content = std::to_string(__current_manabar(now, max_mana, current_mana, last_update_time));
     });
