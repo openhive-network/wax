@@ -277,7 +277,7 @@ namespace cpp
     return cpp_generate_nai(hive::protocol::VEST_asset{amount});
   }
 
-  result protocol::cpp_generate_private_key()
+  result foundation::cpp_generate_private_key()
   {
     return method_wrapper([&](result& _result){
       _result.content = fc::ecc::private_key::generate().key_to_wif();
