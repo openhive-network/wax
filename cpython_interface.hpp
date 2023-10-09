@@ -54,7 +54,8 @@ namespace cpp
       result cpp_serialize_transaction( const std::string& transaction );
   };
 
-  class proto_protocol : public protocol
+  ///  Interface providing Hive protocol functionality operating on Protobuf specific JSON format.
+  class proto_protocol : public foundation
   {
     public:
       result cpp_validate_operation( const std::string& operation );
