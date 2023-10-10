@@ -6,7 +6,7 @@ from wax.proto import (
     transaction_pb2
 )
 
-def test_limit_order_cancel_operation():
+def test_limit_order_cancel():
     limit_order_cancel: limit_order_cancel_pb2.limit_order_cancel = (
         limit_order_cancel_pb2.limit_order_cancel(orderid=1, order="adm")
     )

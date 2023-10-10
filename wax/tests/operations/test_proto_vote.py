@@ -6,7 +6,7 @@ from wax.proto import (
     vote_pb2
 )
 
-def test_vote_operation():
+def test_vote():
     vote: vote_pb2.vote = vote_pb2.vote(
         voter="alice", author="author", permlink="/", weight=11
     )

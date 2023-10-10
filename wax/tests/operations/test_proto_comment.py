@@ -7,7 +7,7 @@ from wax.proto import (
 )
 
 
-def test_comment_operation():
+def test_comment():
     comment: comment_pb2.comment = comment_pb2.comment(
         parent_permlink="/",
         parent_author="",
