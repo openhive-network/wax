@@ -31,14 +31,14 @@ def test_transfer_to_vesting():
         )
     )
 
-    transfer_to_vesting_opertaion: operation_pb2.operation = (
+    transfer_to_vesting_operation: operation_pb2.operation = (
         operation_pb2.operation(transfer_to_vesting=transfer_to_vesting)
     )
 
-    check_operations(transfer_to_vesting_opertaion)
+    check_operations(transfer_to_vesting_operation)
 
     transaction: transaction_pb2.transaction = transaction_pb2.transaction(
-        operations=[transfer_to_vesting_opertaion]
+        operations=[transfer_to_vesting_operation]
     )
 
     check_transaction(transaction)
