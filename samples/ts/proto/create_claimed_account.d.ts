@@ -27,7 +27,7 @@ export interface create_claimed_account {
     posting: authority | undefined;
     memo_key: string;
     json_metadata: string;
-    extensions: future_extensions | undefined;
+    extensions: future_extensions[];
 }
 export declare const create_claimed_account: {
     encode(message: create_claimed_account, writer?: _m0.Writer): _m0.Writer;
@@ -68,7 +68,7 @@ export declare const create_claimed_account: {
         json_metadata?: string | undefined;
         extensions?: {
             void_t?: {} | undefined;
-        } | undefined;
+        }[] | undefined;
     } & {
         creator?: string | undefined;
         new_account_name?: string | undefined;
@@ -139,10 +139,14 @@ export declare const create_claimed_account: {
         json_metadata?: string | undefined;
         extensions?: ({
             void_t?: {} | undefined;
+        }[] & ({
+            void_t?: {} | undefined;
         } & {
-            void_t?: ({} & {} & { [K_9 in Exclude<keyof I["extensions"]["void_t"], never>]: never; }) | undefined;
-        } & { [K_10 in Exclude<keyof I["extensions"], "void_t">]: never; }) | undefined;
-    } & { [K_11 in Exclude<keyof I, keyof create_claimed_account>]: never; }>(base?: I | undefined): create_claimed_account;
+            void_t?: ({} & {} & { [K_9 in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
+        } & { [K_10 in Exclude<keyof I["extensions"][number], "void_t">]: never; })[] & { [K_11 in Exclude<keyof I["extensions"], keyof {
+            void_t?: {} | undefined;
+        }[]>]: never; }) | undefined;
+    } & { [K_12 in Exclude<keyof I, keyof create_claimed_account>]: never; }>(base?: I | undefined): create_claimed_account;
     fromPartial<I_1 extends {
         creator?: string | undefined;
         new_account_name?: string | undefined;
@@ -177,7 +181,7 @@ export declare const create_claimed_account: {
         json_metadata?: string | undefined;
         extensions?: {
             void_t?: {} | undefined;
-        } | undefined;
+        }[] | undefined;
     } & {
         creator?: string | undefined;
         new_account_name?: string | undefined;
@@ -195,13 +199,13 @@ export declare const create_claimed_account: {
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_12 in Exclude<keyof I_1["owner"]["account_auths"], string | number>]: never; }) | undefined;
+            } & { [K_13 in Exclude<keyof I_1["owner"]["account_auths"], string | number>]: never; }) | undefined;
             key_auths?: ({
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_13 in Exclude<keyof I_1["owner"]["key_auths"], string | number>]: never; }) | undefined;
-        } & { [K_14 in Exclude<keyof I_1["owner"], keyof authority>]: never; }) | undefined;
+            } & { [K_14 in Exclude<keyof I_1["owner"]["key_auths"], string | number>]: never; }) | undefined;
+        } & { [K_15 in Exclude<keyof I_1["owner"], keyof authority>]: never; }) | undefined;
         active?: ({
             weight_threshold?: number | undefined;
             account_auths?: {
@@ -216,13 +220,13 @@ export declare const create_claimed_account: {
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_15 in Exclude<keyof I_1["active"]["account_auths"], string | number>]: never; }) | undefined;
+            } & { [K_16 in Exclude<keyof I_1["active"]["account_auths"], string | number>]: never; }) | undefined;
             key_auths?: ({
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_16 in Exclude<keyof I_1["active"]["key_auths"], string | number>]: never; }) | undefined;
-        } & { [K_17 in Exclude<keyof I_1["active"], keyof authority>]: never; }) | undefined;
+            } & { [K_17 in Exclude<keyof I_1["active"]["key_auths"], string | number>]: never; }) | undefined;
+        } & { [K_18 in Exclude<keyof I_1["active"], keyof authority>]: never; }) | undefined;
         posting?: ({
             weight_threshold?: number | undefined;
             account_auths?: {
@@ -237,21 +241,25 @@ export declare const create_claimed_account: {
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_18 in Exclude<keyof I_1["posting"]["account_auths"], string | number>]: never; }) | undefined;
+            } & { [K_19 in Exclude<keyof I_1["posting"]["account_auths"], string | number>]: never; }) | undefined;
             key_auths?: ({
                 [x: string]: number | undefined;
             } & {
                 [x: string]: number | undefined;
-            } & { [K_19 in Exclude<keyof I_1["posting"]["key_auths"], string | number>]: never; }) | undefined;
-        } & { [K_20 in Exclude<keyof I_1["posting"], keyof authority>]: never; }) | undefined;
+            } & { [K_20 in Exclude<keyof I_1["posting"]["key_auths"], string | number>]: never; }) | undefined;
+        } & { [K_21 in Exclude<keyof I_1["posting"], keyof authority>]: never; }) | undefined;
         memo_key?: string | undefined;
         json_metadata?: string | undefined;
         extensions?: ({
             void_t?: {} | undefined;
+        }[] & ({
+            void_t?: {} | undefined;
         } & {
-            void_t?: ({} & {} & { [K_21 in Exclude<keyof I_1["extensions"]["void_t"], never>]: never; }) | undefined;
-        } & { [K_22 in Exclude<keyof I_1["extensions"], "void_t">]: never; }) | undefined;
-    } & { [K_23 in Exclude<keyof I_1, keyof create_claimed_account>]: never; }>(object: I_1): create_claimed_account;
+            void_t?: ({} & {} & { [K_22 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
+        } & { [K_23 in Exclude<keyof I_1["extensions"][number], "void_t">]: never; })[] & { [K_24 in Exclude<keyof I_1["extensions"], keyof {
+            void_t?: {} | undefined;
+        }[]>]: never; }) | undefined;
+    } & { [K_25 in Exclude<keyof I_1, keyof create_claimed_account>]: never; }>(object: I_1): create_claimed_account;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

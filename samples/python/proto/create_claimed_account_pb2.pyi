@@ -4,8 +4,10 @@ isort:skip_file
 """
 import authority_pb2
 import builtins
+import collections.abc
 import future_extensions_pb2
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.message
 import sys
 
@@ -56,7 +58,7 @@ class create_claimed_account(google.protobuf.message.Message):
     memo_key: builtins.str
     json_metadata: builtins.str
     @property
-    def extensions(self) -> future_extensions_pb2.future_extensions: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
     def __init__(
         self,
         *,
@@ -67,9 +69,9 @@ class create_claimed_account(google.protobuf.message.Message):
         posting: authority_pb2.authority | None = ...,
         memo_key: builtins.str | None = ...,
         json_metadata: builtins.str | None = ...,
-        extensions: future_extensions_pb2.future_extensions | None = ...,
+        extensions: collections.abc.Iterable[future_extensions_pb2.future_extensions] | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["active", b"active", "creator", b"creator", "extensions", b"extensions", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner", "posting", b"posting"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing_extensions.Literal["active", b"active", "creator", b"creator", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner", "posting", b"posting"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["active", b"active", "creator", b"creator", "extensions", b"extensions", "json_metadata", b"json_metadata", "memo_key", b"memo_key", "new_account_name", b"new_account_name", "owner", b"owner", "posting", b"posting"]) -> None: ...
 
 global___create_claimed_account = create_claimed_account

@@ -5,7 +5,7 @@ export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_transfer() {
     return {
         from_account: "",
-        to: "",
+        to_account: "",
         agent: "",
         escrow_id: 0,
         hbd_amount: undefined,
@@ -21,8 +21,8 @@ export const escrow_transfer = {
         if (message.from_account !== "") {
             writer.uint32(10).string(message.from_account);
         }
-        if (message.to !== "") {
-            writer.uint32(18).string(message.to);
+        if (message.to_account !== "") {
+            writer.uint32(18).string(message.to_account);
         }
         if (message.agent !== "") {
             writer.uint32(26).string(message.agent);
@@ -67,7 +67,7 @@ export const escrow_transfer = {
                     if (tag !== 18) {
                         break;
                     }
-                    message.to = reader.string();
+                    message.to_account = reader.string();
                     continue;
                 case 3:
                     if (tag !== 26) {
@@ -128,7 +128,7 @@ export const escrow_transfer = {
     fromJSON(object) {
         return {
             from_account: isSet(object.from) ? String(object.from) : "",
-            to: isSet(object.to) ? String(object.to) : "",
+            to_account: isSet(object.to) ? String(object.to) : "",
             agent: isSet(object.agent) ? String(object.agent) : "",
             escrow_id: isSet(object.escrow_id) ? Number(object.escrow_id) : 0,
             hbd_amount: isSet(object.hbd_amount) ? asset.fromJSON(object.hbd_amount) : undefined,
@@ -144,8 +144,8 @@ export const escrow_transfer = {
         if (message.from_account !== "") {
             obj.from = message.from_account;
         }
-        if (message.to !== "") {
-            obj.to = message.to;
+        if (message.to_account !== "") {
+            obj.to = message.to_account;
         }
         if (message.agent !== "") {
             obj.agent = message.agent;
@@ -180,7 +180,7 @@ export const escrow_transfer = {
         var _a, _b, _c, _d, _e, _f, _g;
         const message = createBaseescrow_transfer();
         message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to = (_b = object.to) !== null && _b !== void 0 ? _b : "";
+        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
         message.agent = (_c = object.agent) !== null && _c !== void 0 ? _c : "";
         message.escrow_id = (_d = object.escrow_id) !== null && _d !== void 0 ? _d : 0;
         message.hbd_amount = (object.hbd_amount !== undefined && object.hbd_amount !== null)

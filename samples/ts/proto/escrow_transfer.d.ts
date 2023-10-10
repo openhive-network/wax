@@ -28,7 +28,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface escrow_transfer {
     from_account: string;
-    to: string;
+    to_account: string;
     agent: string;
     escrow_id: number;
     hbd_amount: asset | undefined;
@@ -45,7 +45,7 @@ export declare const escrow_transfer: {
     toJSON(message: escrow_transfer): unknown;
     create<I extends {
         from_account?: string | undefined;
-        to?: string | undefined;
+        to_account?: string | undefined;
         agent?: string | undefined;
         escrow_id?: number | undefined;
         hbd_amount?: {
@@ -68,7 +68,7 @@ export declare const escrow_transfer: {
         json_meta?: string | undefined;
     } & {
         from_account?: string | undefined;
-        to?: string | undefined;
+        to_account?: string | undefined;
         agent?: string | undefined;
         escrow_id?: number | undefined;
         hbd_amount?: ({
@@ -104,7 +104,7 @@ export declare const escrow_transfer: {
     } & { [K_3 in Exclude<keyof I, keyof escrow_transfer>]: never; }>(base?: I | undefined): escrow_transfer;
     fromPartial<I_1 extends {
         from_account?: string | undefined;
-        to?: string | undefined;
+        to_account?: string | undefined;
         agent?: string | undefined;
         escrow_id?: number | undefined;
         hbd_amount?: {
@@ -127,7 +127,7 @@ export declare const escrow_transfer: {
         json_meta?: string | undefined;
     } & {
         from_account?: string | undefined;
-        to?: string | undefined;
+        to_account?: string | undefined;
         agent?: string | undefined;
         escrow_id?: number | undefined;
         hbd_amount?: ({

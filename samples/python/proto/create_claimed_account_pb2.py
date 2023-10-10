@@ -15,7 +15,7 @@ import authority_pb2 as authority__pb2
 import future_extensions_pb2 as future__extensions__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1c\x63reate_claimed_account.proto\x12\x15hive.protocol.buffers\x1a\x0f\x61uthority.proto\x1a\x17\x66uture_extensions.proto\"\xeb\x02\n\x16\x63reate_claimed_account\x12\x0f\n\x07\x63reator\x18\x01 \x02(\t\x12*\n\x10new_account_name\x18\x02 \x02(\tR\x10new_account_name\x12/\n\x05owner\x18\x03 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x30\n\x06\x61\x63tive\x18\x04 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x31\n\x07posting\x18\x05 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x1a\n\x08memo_key\x18\x06 \x02(\tR\x08memo_key\x12$\n\rjson_metadata\x18\x07 \x02(\tR\rjson_metadata\x12<\n\nextensions\x18\x08 \x02(\x0b\x32(.hive.protocol.buffers.future_extensions')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1c\x63reate_claimed_account.proto\x12\x15hive.protocol.buffers\x1a\x0f\x61uthority.proto\x1a\x17\x66uture_extensions.proto\"\xeb\x02\n\x16\x63reate_claimed_account\x12\x0f\n\x07\x63reator\x18\x01 \x02(\t\x12*\n\x10new_account_name\x18\x02 \x02(\tR\x10new_account_name\x12/\n\x05owner\x18\x03 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x30\n\x06\x61\x63tive\x18\x04 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x31\n\x07posting\x18\x05 \x02(\x0b\x32 .hive.protocol.buffers.authority\x12\x1a\n\x08memo_key\x18\x06 \x02(\tR\x08memo_key\x12$\n\rjson_metadata\x18\x07 \x02(\tR\rjson_metadata\x12<\n\nextensions\x18\x08 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)

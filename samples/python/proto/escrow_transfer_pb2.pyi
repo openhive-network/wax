@@ -45,7 +45,7 @@ class escrow_transfer(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     FROM_ACCOUNT_FIELD_NUMBER: builtins.int
-    TO_FIELD_NUMBER: builtins.int
+    TO_ACCOUNT_FIELD_NUMBER: builtins.int
     AGENT_FIELD_NUMBER: builtins.int
     ESCROW_ID_FIELD_NUMBER: builtins.int
     HBD_AMOUNT_FIELD_NUMBER: builtins.int
@@ -55,7 +55,7 @@ class escrow_transfer(google.protobuf.message.Message):
     ESCROW_EXPIRATION_FIELD_NUMBER: builtins.int
     JSON_META_FIELD_NUMBER: builtins.int
     from_account: builtins.str
-    to: builtins.str
+    to_account: builtins.str
     agent: builtins.str
     escrow_id: builtins.int
     @property
@@ -71,7 +71,7 @@ class escrow_transfer(google.protobuf.message.Message):
         self,
         *,
         from_account: builtins.str | None = ...,
-        to: builtins.str | None = ...,
+        to_account: builtins.str | None = ...,
         agent: builtins.str | None = ...,
         escrow_id: builtins.int | None = ...,
         hbd_amount: asset_pb2.asset | None = ...,
@@ -81,7 +81,7 @@ class escrow_transfer(google.protobuf.message.Message):
         escrow_expiration: builtins.str | None = ...,
         json_meta: builtins.str | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["agent", b"agent", "escrow_expiration", b"escrow_expiration", "escrow_id", b"escrow_id", "fee", b"fee", "from_account", b"from_account", "hbd_amount", b"hbd_amount", "hive_amount", b"hive_amount", "json_meta", b"json_meta", "ratification_deadline", b"ratification_deadline", "to", b"to"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["agent", b"agent", "escrow_expiration", b"escrow_expiration", "escrow_id", b"escrow_id", "fee", b"fee", "from_account", b"from_account", "hbd_amount", b"hbd_amount", "hive_amount", b"hive_amount", "json_meta", b"json_meta", "ratification_deadline", b"ratification_deadline", "to", b"to"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["agent", b"agent", "escrow_expiration", b"escrow_expiration", "escrow_id", b"escrow_id", "fee", b"fee", "from_account", b"from_account", "hbd_amount", b"hbd_amount", "hive_amount", b"hive_amount", "json_meta", b"json_meta", "ratification_deadline", b"ratification_deadline", "to_account", b"to_account"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["agent", b"agent", "escrow_expiration", b"escrow_expiration", "escrow_id", b"escrow_id", "fee", b"fee", "from_account", b"from_account", "hbd_amount", b"hbd_amount", "hive_amount", b"hive_amount", "json_meta", b"json_meta", "ratification_deadline", b"ratification_deadline", "to_account", b"to_account"]) -> None: ...
 
 global___escrow_transfer = escrow_transfer
