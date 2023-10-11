@@ -23,4 +23,4 @@ def test_serialize_proto_transaction():
     assert result.status == result.status.fail
     assert result.exception_message == (
         b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:34 parse_proto_operation')
+        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:37 parse_proto_operation')

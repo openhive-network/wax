@@ -8,14 +8,8 @@ from wax.proto import (
     asset_pb2
 )
 
-"""
-    account_name_type creator;
-    asset             fee;
-    extensions_type   extensions;
-"""
-
 def test_claim_account():
-    extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions()
+    extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions(void_t=future_extensions_pb2.void_t())
     fee: asset_pb2.asset = asset_pb2.asset(
         nai="@@000000021", precision=3, amount="10"
     )
