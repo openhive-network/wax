@@ -19,4 +19,4 @@ def test_proto_to_api():
     print(api.exception_message)
     assert api.exception_message == (
         b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:37 parse_proto_operation')
+        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:49 parse_proto_operation')

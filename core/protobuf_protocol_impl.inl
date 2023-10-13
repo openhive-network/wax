@@ -19,8 +19,20 @@ fc::variants parse_proto_extensions(const fc::variant& ex)
     const auto& obj = extension.get_object();
     FC_ASSERT(obj.size() != 0, "Each extension should be a nonempty object");
     const std::string& key = obj.begin()->key();
-    FC_ASSERT(obj[key].is_object(), "Extension should contain the body");
-    result.emplace_back(std::move(fc::mutable_variant_object{ "type", key }("value", obj[key].get_object())));
+    FC_ASSERT(obj[key].is_object() || obj[key].is_array() || obj[key].is_string(), "Extension should contain the body");
+    if (obj[key].is_object())
+    {
+      result.emplace_back(std::move(fc::mutable_variant_object{ "type", key }("value", obj[key].get_object())));
+    }
+    else if (obj[key].is_array())
+    {
+      auto arr = parse_proto_extensions(obj[key].get_array());
+      result.emplace_back(std::move(fc::mutable_variant_object{ "type", key }("value", std::move(arr))));
+    }
+    else // if (obj[key].is_string())
+    {
+      result.emplace_back(std::move(fc::mutable_variant_object{ "type", key }("value", obj[key].get_string())));
+    }
   }
 
   return result;
