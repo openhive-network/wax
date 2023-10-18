@@ -8,7 +8,7 @@ enum error_code { fail = 0, ok = 1 };
 
 struct result
 {
-  error_code value = error_code::fail;
+  error_code value = error_code::ok;
 
   std::string content;
   std::string exception_message;

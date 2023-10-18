@@ -17,19 +17,21 @@ static result method_wrapper(callback&& method)
   try
   {
     method(_result);
-    _result.value = ok;
   }
   catch (fc::exception& e)
   {
     _result.exception_message = e.to_detail_string();
+    _result.value = fail;
   }
   catch (const std::exception& e)
   {
     _result.exception_message = e.what();
+    _result.value = fail;
   }
   catch (...)
   {
     _result.exception_message = "Unknown exception.";
+    _result.value = fail;
   }
 
   return _result;
