@@ -17,7 +17,7 @@ variables:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: b5202fecccf40845099da351cbc0c38a6205339c
+    ref: ae2ec71af47184cdd9567ae85ff821d133c3343f
     file:
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
