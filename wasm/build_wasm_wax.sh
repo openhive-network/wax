@@ -1,19 +1,20 @@
 #! /bin/bash
 
+set -xeuo pipefail
+
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT_DIR="${SCRIPTPATH}/.."
 
-set -xeuo pipefail
-
+DIRECT_EXECUTION_DEFAULT=0
+EXECUTION_PATH_DEFAULT="/src/"
 
 # Check for usage inside dev container providing all tools (emscripten image)
+if [ $# -eq 0 ]; then
 EXECUTOR=$(whoami)
-if [ "${EXECUTOR}" = "emscripten" ]; then
-  DIRECT_EXECUTION_DEFAULT=1
-  EXECUTION_PATH_DEFAULT="${PROJECT_DIR}"
-else
-  DIRECT_EXECUTION_DEFAULT=0
-  EXECUTION_PATH_DEFAULT="/src/"
+  if [ "${EXECUTOR}" = "emscripten" ]; then
+    DIRECT_EXECUTION_DEFAULT=1
+    EXECUTION_PATH_DEFAULT="${PROJECT_DIR}"
+  fi
 fi
 
 DIRECT_EXECUTION=${1:-${DIRECT_EXECUTION_DEFAULT}}
@@ -25,7 +26,7 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
     -it --rm \
     -v "${PROJECT_DIR}/":"${EXECUTION_PATH}" \
     -u $(id -u):$(id -g) \
-    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.43 \
+    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:3.1.47@sha256:c5587bd4e05922c264cfdfb2aa8db5ad819667007d73d0149346ee95e6409193 \
     /bin/bash "${EXECUTION_PATH}/wasm/build_wasm_wax.sh" 1 "${EXECUTION_PATH}"
 else
   echo "Performing a build"
@@ -38,7 +39,7 @@ else
   cmake \
     -DBoost_NO_WARN_NEW_VERSIONS=1 \
     -DBoost_USE_STATIC_RUNTIME=ON \
-    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles" \
+    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Ninja" \
     -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}"
-  make -j8
+  ninja -j8
 fi
