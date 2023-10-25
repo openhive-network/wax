@@ -32,7 +32,6 @@ default:
 .configuration:
   before_script:
     - python3 -V
-    - poetry self add poetry-grpc-plugin@0.1.7
     - poetry self add "poetry-dynamic-versioning[plugin]"
     - poetry self update
     - pip list
@@ -41,9 +40,8 @@ default:
 
 build_wheel:
   extends: .build_wheel_template
-  needs:
-    - job: wax_proto_python_generation
-      artifacts: true
+  script:
+    - ./scripts/build_wax_python.sh 1
   artifacts:
     when: always
     paths:
@@ -51,6 +49,7 @@ build_wheel:
       - ".build/logs/"
       - ".build/*.so"
       - "build_wheel.env"
+      - "wax/proto"
     reports:
       dotenv: "build_wheel.env"
 
@@ -92,18 +91,6 @@ wax_wasm_package_generation:
     when: always
     expire_in: 1 week
 
-  tags:
-    - public-runner-docker
-
-wax_proto_python_generation:
-  stage: build
-  extends: .configuration
-  script:
-    - scripts/compile_proto_python.sh
-  artifacts:
-    paths:
-      - "wax/proto"
-    when: always
   tags:
     - public-runner-docker
 
@@ -168,8 +155,6 @@ test_wax_protobuf_python_pattern:
   extends: .test_python_env
   needs:
     - job: build_wheel
-      artifacts: true
-    - job: wax_proto_python_generation
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
