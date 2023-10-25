@@ -13,7 +13,7 @@ from wax.wax_visitor import OperationVisitor
 tx_json = {
     "operations": [
         {"vote": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
-        {"limit_order_cancel": {"order": "orderabc", "orderid": 5}},
+        {"limit_order_cancel": {"owner": "orderabc", "orderid": 5}},
         {
             "comment": {
                 "parent_permlink": "/",
@@ -43,7 +43,7 @@ tx_json = {
 class MyOperationVisitor(OperationVisitor):
     def limit_order_cancel(self, op: limit_order_cancel_pb2.limit_order_cancel):
         print(f"Handling limit_order_cancel operation:\n{op}")
-        assert op.order == "orderabc"
+        assert op.owner == "orderabc"
         assert op.orderid == 5
 
     def vote(self, op: vote_pb2.vote) -> None:

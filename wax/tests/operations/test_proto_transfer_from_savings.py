@@ -14,9 +14,9 @@ def test_transfer_from_savings():
 
     transfer_from_savings: transfer_from_savings_pb2.transfer_from_savings = (
         transfer_from_savings_pb2.transfer_from_savings(
-            from_account="from_account",
+            from_account="abcde",
             request_id=3,
-            to_account="to_account",
+            to_account="abcdef",
             amount=amount,
             memo="memo"
         )

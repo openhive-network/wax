@@ -8,7 +8,10 @@ from wax.proto import (
 )
 
 def test_escrow_release():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    hbd_amount: asset_pb2.asset = asset_pb2.asset(
+        nai="@@000000013", precision=3, amount="357000"
+    )
+    hive_amount: asset_pb2.asset = asset_pb2.asset(
         nai="@@000000021", precision=3, amount="357000"
     )
 
@@ -16,11 +19,11 @@ def test_escrow_release():
         from_account="faddy",
         to_account="daddy",
         agent="agent",
-        who="who",
-        receiver="receiver",
+        who="daddy",
+        receiver="faddy",
         escrow_id=1,
-        hbd_amount=amount,
-        hive_amount=amount
+        hbd_amount=hbd_amount,
+        hive_amount=hive_amount
     )
 
     escrow_release_operation: operation_pb2.operation = (

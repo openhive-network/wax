@@ -41,14 +41,14 @@ def test_witness_set_properties():
         extensions=[],
     )
 
-    witness_set_properties_operations: operation_pb2.operation = (
+    witness_set_properties_operation: operation_pb2.operation = (
         operation_pb2.operation(witness_set_properties=witness_set_properties)
     )
 
-    check_operations(witness_set_properties_operations)
+    check_operations(witness_set_properties_operation)
 
     transaction: transaction_pb2.transaction = transaction_pb2.transaction(
-        operations=[witness_set_properties_operations]
+        operations=[witness_set_properties_operation]
     )
 
     check_transaction(transaction)

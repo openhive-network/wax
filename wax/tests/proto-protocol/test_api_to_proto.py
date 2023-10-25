@@ -20,4 +20,4 @@ def test_api_to_proto():
         b'10 assert_exception: Assert Exception\nop.is_object() && '
         b'op.get_object().contains("type") && op.get_object()["type"].is_string() '
         b'&& op.get_object().contains("value") && op.get_object()["value"].is_object()'
-        b'\nNot a valid api operation\n    {}\n    protobuf_protocol_impl.inl:108 parse_api_operation')
+        b'\nNot a valid api operation\n    {}\n    protobuf_protocol_impl.inl:382 parse_api_operation')

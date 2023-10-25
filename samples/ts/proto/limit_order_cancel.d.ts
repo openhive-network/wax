@@ -4,12 +4,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Cancels an order (limit_order_create_operation or limit_order_create2_operation)
  * and returns the balance to the owner.
  *
- * @param {string} order
+ * @param {string} owner
  * @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
  *                           or limit_order_create2_operation.
  */
 export interface limit_order_cancel {
-    order: string;
+    owner: string;
     orderid: number;
 }
 export declare const limit_order_cancel: {
@@ -18,17 +18,17 @@ export declare const limit_order_cancel: {
     fromJSON(object: any): limit_order_cancel;
     toJSON(message: limit_order_cancel): unknown;
     create<I extends {
-        order?: string | undefined;
+        owner?: string | undefined;
         orderid?: number | undefined;
     } & {
-        order?: string | undefined;
+        owner?: string | undefined;
         orderid?: number | undefined;
     } & { [K in Exclude<keyof I, keyof limit_order_cancel>]: never; }>(base?: I | undefined): limit_order_cancel;
     fromPartial<I_1 extends {
-        order?: string | undefined;
+        owner?: string | undefined;
         orderid?: number | undefined;
     } & {
-        order?: string | undefined;
+        owner?: string | undefined;
         orderid?: number | undefined;
     } & { [K_1 in Exclude<keyof I_1, keyof limit_order_cancel>]: never; }>(object: I_1): limit_order_cancel;
 };

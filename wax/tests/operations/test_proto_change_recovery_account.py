@@ -7,17 +7,11 @@ from wax.proto import (
     future_extensions_pb2
 )
 
-'''
-        account_to_recover: builtins.str | None = ...,
-        new_recovery_account: builtins.str | None = ...,
-        extensions: collections.abc.Iterable[future_extensions_pb2.future_extensions] | None = ...,
-'''
-
 def test_change_recovery_account():
     extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions()
     change_recovery_account: change_recovery_account_pb2.change_recovery_account = change_recovery_account_pb2.change_recovery_account(
         account_to_recover="account",
-        new_recovery_account="new_account",
+        new_recovery_account="account1",
         extensions=[]
     )
 

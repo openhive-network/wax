@@ -125,6 +125,63 @@ export const comment_payout_beneficiaries = {
         return message;
     },
 };
+function createBasecomment_options_extension() {
+    return {};
+}
+export const comment_options_extension = {
+    encode(message, writer = _m0.Writer.create()) {
+        if (message.comment_payout_beneficiaries !== undefined) {
+            comment_payout_beneficiaries.encode(message.comment_payout_beneficiaries, writer.uint32(10).fork()).ldelim();
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBasecomment_options_extension();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.comment_payout_beneficiaries = comment_payout_beneficiaries.decode(reader, reader.uint32());
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            comment_payout_beneficiaries: isSet(object.comment_payout_beneficiaries)
+                ? comment_payout_beneficiaries.fromJSON(object.comment_payout_beneficiaries)
+                : undefined,
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        if (message.comment_payout_beneficiaries !== undefined) {
+            obj.comment_payout_beneficiaries = comment_payout_beneficiaries.toJSON(message.comment_payout_beneficiaries);
+        }
+        return obj;
+    },
+    create(base) {
+        return comment_options_extension.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        const message = createBasecomment_options_extension();
+        message.comment_payout_beneficiaries =
+            (object.comment_payout_beneficiaries !== undefined && object.comment_payout_beneficiaries !== null)
+                ? comment_payout_beneficiaries.fromPartial(object.comment_payout_beneficiaries)
+                : undefined;
+        return message;
+    },
+};
 function createBasecomment_options() {
     return {
         author: "",
@@ -157,7 +214,7 @@ export const comment_options = {
             writer.uint32(48).bool(message.allow_curation_rewards);
         }
         for (const v of message.extensions) {
-            comment_payout_beneficiaries.encode(v, writer.uint32(58).fork()).ldelim();
+            comment_options_extension.encode(v, writer.uint32(58).fork()).ldelim();
         }
         return writer;
     },
@@ -208,7 +265,7 @@ export const comment_options = {
                     if (tag !== 58) {
                         break;
                     }
-                    message.extensions.push(comment_payout_beneficiaries.decode(reader, reader.uint32()));
+                    message.extensions.push(comment_options_extension.decode(reader, reader.uint32()));
                     continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
@@ -227,7 +284,7 @@ export const comment_options = {
             allow_votes: isSet(object.allow_votes) ? Boolean(object.allow_votes) : false,
             allow_curation_rewards: isSet(object.allow_curation_rewards) ? Boolean(object.allow_curation_rewards) : false,
             extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
-                ? object.extensions.map((e) => comment_payout_beneficiaries.fromJSON(e))
+                ? object.extensions.map((e) => comment_options_extension.fromJSON(e))
                 : [],
         };
     },
@@ -253,7 +310,7 @@ export const comment_options = {
             obj.allow_curation_rewards = message.allow_curation_rewards;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
-            obj.extensions = message.extensions.map((e) => comment_payout_beneficiaries.toJSON(e));
+            obj.extensions = message.extensions.map((e) => comment_options_extension.toJSON(e));
         }
         return obj;
     },
@@ -271,7 +328,7 @@ export const comment_options = {
         message.percent_hbd = (_c = object.percent_hbd) !== null && _c !== void 0 ? _c : 0;
         message.allow_votes = (_d = object.allow_votes) !== null && _d !== void 0 ? _d : false;
         message.allow_curation_rewards = (_e = object.allow_curation_rewards) !== null && _e !== void 0 ? _e : false;
-        message.extensions = ((_f = object.extensions) === null || _f === void 0 ? void 0 : _f.map((e) => comment_payout_beneficiaries.fromPartial(e))) || [];
+        message.extensions = ((_f = object.extensions) === null || _f === void 0 ? void 0 : _f.map((e) => comment_options_extension.fromPartial(e))) || [];
         return message;
     },
 };

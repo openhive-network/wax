@@ -10,7 +10,7 @@ def test_set_withdraw_vesting_route():
     set_withdraw_vesting_route: set_withdraw_vesting_route_pb2.set_withdraw_vesting_route = (
         set_withdraw_vesting_route_pb2.set_withdraw_vesting_route(
             from_account="faddy",
-            to_account="",
+            to_account="faddy",
             percent=10,
             auto_vest=True
         )

@@ -8,7 +8,7 @@ from wax.proto import (
 
 def test_limit_order_cancel():
     limit_order_cancel: limit_order_cancel_pb2.limit_order_cancel = (
-        limit_order_cancel_pb2.limit_order_cancel(orderid=1, order="adm")
+        limit_order_cancel_pb2.limit_order_cancel(owner="adm", orderid=1)
     )
 
     limit_order_cancel_operation: operation_pb2.operation = operation_pb2.operation(

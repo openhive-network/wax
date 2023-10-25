@@ -53,6 +53,24 @@ class comment_payout_beneficiaries(google.protobuf.message.Message):
 global___comment_payout_beneficiaries = comment_payout_beneficiaries
 
 @typing_extensions.final
+class comment_options_extension(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    COMMENT_PAYOUT_BENEFICIARIES_FIELD_NUMBER: builtins.int
+    @property
+    def comment_payout_beneficiaries(self) -> global___comment_payout_beneficiaries: ...
+    def __init__(
+        self,
+        *,
+        comment_payout_beneficiaries: global___comment_payout_beneficiaries | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["comment_payout_beneficiaries", b"comment_payout_beneficiaries", "extension", b"extension"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["comment_payout_beneficiaries", b"comment_payout_beneficiaries", "extension", b"extension"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["extension", b"extension"]) -> typing_extensions.Literal["comment_payout_beneficiaries"] | None: ...
+
+global___comment_options_extension = comment_options_extension
+
+@typing_extensions.final
 class comment_options(google.protobuf.message.Message):
     """The operation comment_options_operation allows to set properties regarding payouts,
     rewards or beneficiaries (using {extensions}) for comments.
@@ -79,14 +97,14 @@ class comment_options(google.protobuf.message.Message):
     @param {bool} allow_curation_rewards - The flag that allows to decide whether the voters for the comment should
                                            receive the curation rewards. Rewards return to the reward fund.
                                            Default value: allow_curation_rewards = true.
-    @param {comment_payout_beneficiaries} extensions - It may contain the list of the beneficiaries,
-                                                       the accounts that should receive the author reward.
-                                                       The list consists of the account name and the weight of the shares in the author reward.
-                                                       If the sum of the weights is less than 100%,
-                                                       the rest of the reward is received by the author.
-                                                       It should be defined less than 128 accounts.
-                                                       The allowed range of the weight is from 0 to 10000 (0 – 100%).
-                                                       The beneficiaries should be listed in alphabetical order, no duplicates.
+    @param {comment_options_extension} extensions - It may contain the list of the beneficiaries,
+                                                    the accounts that should receive the author reward.
+                                                    The list consists of the account name and the weight of the shares in the author reward.
+                                                    If the sum of the weights is less than 100%,
+                                                    the rest of the reward is received by the author.
+                                                    It should be defined less than 128 accounts.
+                                                    The allowed range of the weight is from 0 to 10000 (0 – 100%).
+                                                    The beneficiaries should be listed in alphabetical order, no duplicates.
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -106,7 +124,7 @@ class comment_options(google.protobuf.message.Message):
     allow_votes: builtins.bool
     allow_curation_rewards: builtins.bool
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___comment_payout_beneficiaries]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___comment_options_extension]: ...
     def __init__(
         self,
         *,
@@ -116,7 +134,7 @@ class comment_options(google.protobuf.message.Message):
         percent_hbd: builtins.int | None = ...,
         allow_votes: builtins.bool | None = ...,
         allow_curation_rewards: builtins.bool | None = ...,
-        extensions: collections.abc.Iterable[global___comment_payout_beneficiaries] | None = ...,
+        extensions: collections.abc.Iterable[global___comment_options_extension] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["allow_curation_rewards", b"allow_curation_rewards", "allow_votes", b"allow_votes", "author", b"author", "max_accepted_payout", b"max_accepted_payout", "percent_hbd", b"percent_hbd", "permlink", b"permlink"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["allow_curation_rewards", b"allow_curation_rewards", "allow_votes", b"allow_votes", "author", b"author", "extensions", b"extensions", "max_accepted_payout", b"max_accepted_payout", "percent_hbd", b"percent_hbd", "permlink", b"permlink"]) -> None: ...

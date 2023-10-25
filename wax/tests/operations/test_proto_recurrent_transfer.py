@@ -25,7 +25,7 @@ def test_recurrent_transfer():
             to_account="harry",
             amount=amount,
             memo="it is only memo",
-            recurrence=1,
+            recurrence=30,
             executions=3,
             extensions=[extensions],
         )

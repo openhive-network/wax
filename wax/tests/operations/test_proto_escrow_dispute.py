@@ -11,7 +11,7 @@ def test_escrow_dispute():
         from_account="faddy",
         to_account="daddy",
         agent="agent",
-        who="who",
+        who="daddy",
         escrow_id=1
     )
 

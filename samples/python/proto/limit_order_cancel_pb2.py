@@ -13,7 +13,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18limit_order_cancel.proto\x12\x15hive.protocol.buffers\"4\n\x12limit_order_cancel\x12\r\n\x05order\x18\x08 \x02(\t\x12\x0f\n\x07orderid\x18\t \x02(\r')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18limit_order_cancel.proto\x12\x15hive.protocol.buffers\"4\n\x12limit_order_cancel\x12\r\n\x05owner\x18\x01 \x02(\t\x12\x0f\n\x07orderid\x18\x02 \x02(\r')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)

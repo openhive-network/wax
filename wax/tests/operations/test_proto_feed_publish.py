@@ -1,22 +1,3 @@
-# feed_publish_operation={
-#   "type": "feed_publish_operation",
-#   "value": {
-#     "publisher": "abit",
-#     "exchange_rate": {
-#       "base": {
-#         "amount": "1000",
-#         "precision": 3,
-#         "nai": "@@000000013"
-#       },
-#       "quote": {
-#         "amount": "1000000",
-#         "precision": 3,
-#         "nai": "@@000000021"
-#       }
-#     }
-#   }
-# }
-
 from utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
@@ -29,7 +10,7 @@ from wax.proto import (
 
 def test_feed_publish():
     base: asset_pb2.asset = asset_pb2.asset(
-        nai="@@000000013", precision=3, amount="1000"
+        nai="@@000000021", precision=3, amount="1000"
     )
 
     quote: asset_pb2.asset = asset_pb2.asset(

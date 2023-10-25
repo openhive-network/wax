@@ -8,16 +8,17 @@ from wax.proto import (
     authority_pb2
 )
 
+
 def test_request_account_recovery():
     extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions()
     authority: authority_pb2.authority = authority_pb2.authority(
         weight_threshold=1,
-        account_auths={"STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo": 1},
+        account_auths={"account": 1, "account1": 2},
         key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1}
     )
     request_account_recovery: request_account_recovery_pb2.request_account_recovery = request_account_recovery_pb2.request_account_recovery(
-        recovery_account="rec_account",
-        account_to_recover="account",
+        recovery_account="account",
+        account_to_recover="account1",
         new_owner_authority=authority,
         extensions=[]
     )

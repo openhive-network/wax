@@ -27,7 +27,7 @@ def test_update_proposal():
     daily_pay: asset_pb2.asset = asset_pb2.asset(
         amount="135000", precision=3, nai="@@000000013"
     )
-    update_proposal_end_date: update_proposal_pb2.update_proposal_end_date = update_proposal_pb2.update_proposal_end_date(end_date="")
+    update_proposal_end_date: update_proposal_pb2.update_proposal_end_date = update_proposal_pb2.update_proposal_end_date(end_date="2035-10-29T06:32:22")
     extension: update_proposal_pb2.update_proposal_extension = update_proposal_pb2.update_proposal_extension(update_proposal_end_date=update_proposal_end_date)
 
     update_proposal: update_proposal_pb2.update_proposal = (

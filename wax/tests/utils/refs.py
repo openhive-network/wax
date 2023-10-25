@@ -32,11 +32,17 @@ PROTO_REF_TRANSACTION = {
     ],
 }
 
-PROTO_REF_TRANSACTION_NO_OPERATIONS = {
+PROTO_REF_TRANSACTION_EMPTY_OPERATIONS = {
     "ref_block_num": 19260,
     "ref_block_prefix": 2140466769,
     "expiration": "2016-09-15T19:47:33",
     "operations": []
+}
+
+PROTO_REF_TRANSACTION_NO_OPERATIONS = {
+    "ref_block_num": 19260,
+    "ref_block_prefix": 2140466769,
+    "expiration": "2016-09-15T19:47:33"
 }
 
 API_REF_VOTE_OP = {
@@ -76,9 +82,15 @@ API_REF_TRANSACTION = {
     ],
 }
 
-API_REF_TRANSACTION_NO_OPERATIONS = {
+API_REF_TRANSACTION_EMPTY_OPERATIONS = {
     "ref_block_num": 19260,
     "ref_block_prefix": 2140466769,
     "expiration": "2016-09-15T19:47:33",
     "operations": []
+}
+
+API_REF_TRANSACTION_NO_OPERATIONS = {
+    "ref_block_num": 19260,
+    "ref_block_prefix": 2140466769,
+    "expiration": "2016-09-15T19:47:33"
 }

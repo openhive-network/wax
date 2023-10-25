@@ -8,6 +8,9 @@ export interface beneficiary_route_type {
 export interface comment_payout_beneficiaries {
     beneficiaries: beneficiary_route_type[];
 }
+export interface comment_options_extension {
+    comment_payout_beneficiaries?: comment_payout_beneficiaries | undefined;
+}
 /**
  * The operation comment_options_operation allows to set properties regarding payouts,
  * rewards or beneficiaries (using {extensions}) for comments.
@@ -34,14 +37,14 @@ export interface comment_payout_beneficiaries {
  * @param {bool} allow_curation_rewards - The flag that allows to decide whether the voters for the comment should
  *                                        receive the curation rewards. Rewards return to the reward fund.
  *                                        Default value: allow_curation_rewards = true.
- * @param {comment_payout_beneficiaries} extensions - It may contain the list of the beneficiaries,
- *                                                    the accounts that should receive the author reward.
- *                                                    The list consists of the account name and the weight of the shares in the author reward.
- *                                                    If the sum of the weights is less than 100%,
- *                                                    the rest of the reward is received by the author.
- *                                                    It should be defined less than 128 accounts.
- *                                                    The allowed range of the weight is from 0 to 10000 (0 – 100%).
- *                                                    The beneficiaries should be listed in alphabetical order, no duplicates.
+ * @param {comment_options_extension} extensions - It may contain the list of the beneficiaries,
+ *                                                 the accounts that should receive the author reward.
+ *                                                 The list consists of the account name and the weight of the shares in the author reward.
+ *                                                 If the sum of the weights is less than 100%,
+ *                                                 the rest of the reward is received by the author.
+ *                                                 It should be defined less than 128 accounts.
+ *                                                 The allowed range of the weight is from 0 to 10000 (0 – 100%).
+ *                                                 The beneficiaries should be listed in alphabetical order, no duplicates.
  */
 export interface comment_options {
     author: string;
@@ -50,7 +53,7 @@ export interface comment_options {
     percent_hbd: number;
     allow_votes: boolean;
     allow_curation_rewards: boolean;
-    extensions: comment_payout_beneficiaries[];
+    extensions: comment_options_extension[];
 }
 export declare const beneficiary_route_type: {
     encode(message: beneficiary_route_type, writer?: _m0.Writer): _m0.Writer;
@@ -118,6 +121,70 @@ export declare const comment_payout_beneficiaries: {
         }[]>]: never; }) | undefined;
     } & { [K_5 in Exclude<keyof I_1, "beneficiaries">]: never; }>(object: I_1): comment_payout_beneficiaries;
 };
+export declare const comment_options_extension: {
+    encode(message: comment_options_extension, writer?: _m0.Writer): _m0.Writer;
+    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): comment_options_extension;
+    fromJSON(object: any): comment_options_extension;
+    toJSON(message: comment_options_extension): unknown;
+    create<I extends {
+        comment_payout_beneficiaries?: {
+            beneficiaries?: {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] | undefined;
+        } | undefined;
+    } & {
+        comment_payout_beneficiaries?: ({
+            beneficiaries?: {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] | undefined;
+        } & {
+            beneficiaries?: ({
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] & ({
+                account?: string | undefined;
+                weight?: number | undefined;
+            } & {
+                account?: string | undefined;
+                weight?: number | undefined;
+            } & { [K in Exclude<keyof I["comment_payout_beneficiaries"]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_1 in Exclude<keyof I["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[]>]: never; }) | undefined;
+        } & { [K_2 in Exclude<keyof I["comment_payout_beneficiaries"], "beneficiaries">]: never; }) | undefined;
+    } & { [K_3 in Exclude<keyof I, "comment_payout_beneficiaries">]: never; }>(base?: I | undefined): comment_options_extension;
+    fromPartial<I_1 extends {
+        comment_payout_beneficiaries?: {
+            beneficiaries?: {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] | undefined;
+        } | undefined;
+    } & {
+        comment_payout_beneficiaries?: ({
+            beneficiaries?: {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] | undefined;
+        } & {
+            beneficiaries?: ({
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[] & ({
+                account?: string | undefined;
+                weight?: number | undefined;
+            } & {
+                account?: string | undefined;
+                weight?: number | undefined;
+            } & { [K_4 in Exclude<keyof I_1["comment_payout_beneficiaries"]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_5 in Exclude<keyof I_1["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                account?: string | undefined;
+                weight?: number | undefined;
+            }[]>]: never; }) | undefined;
+        } & { [K_6 in Exclude<keyof I_1["comment_payout_beneficiaries"], "beneficiaries">]: never; }) | undefined;
+    } & { [K_7 in Exclude<keyof I_1, "comment_payout_beneficiaries">]: never; }>(object: I_1): comment_options_extension;
+};
 export declare const comment_options: {
     encode(message: comment_options, writer?: _m0.Writer): _m0.Writer;
     decode(input: _m0.Reader | Uint8Array, length?: number | undefined): comment_options;
@@ -135,10 +202,12 @@ export declare const comment_options: {
         allow_votes?: boolean | undefined;
         allow_curation_rewards?: boolean | undefined;
         extensions?: {
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[] | undefined;
     } & {
         author?: string | undefined;
@@ -156,36 +225,49 @@ export declare const comment_options: {
         allow_votes?: boolean | undefined;
         allow_curation_rewards?: boolean | undefined;
         extensions?: ({
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[] & ({
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         } & {
-            beneficiaries?: ({
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] & ({
-                account?: string | undefined;
-                weight?: number | undefined;
+            comment_payout_beneficiaries?: ({
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
             } & {
-                account?: string | undefined;
-                weight?: number | undefined;
-            } & { [K_1 in Exclude<keyof I["extensions"][number]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_2 in Exclude<keyof I["extensions"][number]["beneficiaries"], keyof {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[]>]: never; }) | undefined;
-        } & { [K_3 in Exclude<keyof I["extensions"][number], "beneficiaries">]: never; })[] & { [K_4 in Exclude<keyof I["extensions"], keyof {
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+                beneficiaries?: ({
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] & ({
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                } & {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                } & { [K_1 in Exclude<keyof I["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_2 in Exclude<keyof I["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[]>]: never; }) | undefined;
+            } & { [K_3 in Exclude<keyof I["extensions"][number]["comment_payout_beneficiaries"], "beneficiaries">]: never; }) | undefined;
+        } & { [K_4 in Exclude<keyof I["extensions"][number], "comment_payout_beneficiaries">]: never; })[] & { [K_5 in Exclude<keyof I["extensions"], keyof {
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I, keyof comment_options>]: never; }>(base?: I | undefined): comment_options;
+    } & { [K_6 in Exclude<keyof I, keyof comment_options>]: never; }>(base?: I | undefined): comment_options;
     fromPartial<I_1 extends {
         author?: string | undefined;
         permlink?: string | undefined;
@@ -198,10 +280,12 @@ export declare const comment_options: {
         allow_votes?: boolean | undefined;
         allow_curation_rewards?: boolean | undefined;
         extensions?: {
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[] | undefined;
     } & {
         author?: string | undefined;
@@ -214,41 +298,54 @@ export declare const comment_options: {
             amount?: string | undefined;
             precision?: number | undefined;
             nai?: string | undefined;
-        } & { [K_6 in Exclude<keyof I_1["max_accepted_payout"], keyof asset>]: never; }) | undefined;
+        } & { [K_7 in Exclude<keyof I_1["max_accepted_payout"], keyof asset>]: never; }) | undefined;
         percent_hbd?: number | undefined;
         allow_votes?: boolean | undefined;
         allow_curation_rewards?: boolean | undefined;
         extensions?: ({
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[] & ({
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         } & {
-            beneficiaries?: ({
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] & ({
-                account?: string | undefined;
-                weight?: number | undefined;
+            comment_payout_beneficiaries?: ({
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
             } & {
-                account?: string | undefined;
-                weight?: number | undefined;
-            } & { [K_7 in Exclude<keyof I_1["extensions"][number]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_8 in Exclude<keyof I_1["extensions"][number]["beneficiaries"], keyof {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[]>]: never; }) | undefined;
-        } & { [K_9 in Exclude<keyof I_1["extensions"][number], "beneficiaries">]: never; })[] & { [K_10 in Exclude<keyof I_1["extensions"], keyof {
-            beneficiaries?: {
-                account?: string | undefined;
-                weight?: number | undefined;
-            }[] | undefined;
+                beneficiaries?: ({
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] & ({
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                } & {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                } & { [K_8 in Exclude<keyof I_1["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof beneficiary_route_type>]: never; })[] & { [K_9 in Exclude<keyof I_1["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[]>]: never; }) | undefined;
+            } & { [K_10 in Exclude<keyof I_1["extensions"][number]["comment_payout_beneficiaries"], "beneficiaries">]: never; }) | undefined;
+        } & { [K_11 in Exclude<keyof I_1["extensions"][number], "comment_payout_beneficiaries">]: never; })[] & { [K_12 in Exclude<keyof I_1["extensions"], keyof {
+            comment_payout_beneficiaries?: {
+                beneficiaries?: {
+                    account?: string | undefined;
+                    weight?: number | undefined;
+                }[] | undefined;
+            } | undefined;
         }[]>]: never; }) | undefined;
-    } & { [K_11 in Exclude<keyof I_1, keyof comment_options>]: never; }>(object: I_1): comment_options;
+    } & { [K_13 in Exclude<keyof I_1, keyof comment_options>]: never; }>(object: I_1): comment_options;
 };
 declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

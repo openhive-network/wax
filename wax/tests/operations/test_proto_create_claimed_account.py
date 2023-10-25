@@ -16,12 +16,12 @@ def test_create_claimed_account():
     )
     authority: authority_pb2.authority = authority_pb2.authority(
         weight_threshold=1,
-        account_auths={"STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo": 1},
+        account_auths={"account": 1, "account1": 2},
         key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1}
     )
     create_claimed_account: create_claimed_account_pb2.create_claimed_account = create_claimed_account_pb2.create_claimed_account(
         creator="creator",
-        new_account_name="new_name",
+        new_account_name="account",
         owner=authority,
         active=authority,
         posting=authority,

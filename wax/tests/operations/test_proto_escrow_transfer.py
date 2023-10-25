@@ -8,7 +8,10 @@ from wax.proto import (
 )
 
 def test_escrow_transfer():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    hbd_amount: asset_pb2.asset = asset_pb2.asset(
+        nai="@@000000013", precision=3, amount="357000"
+    )
+    hive_amount: asset_pb2.asset = asset_pb2.asset(
         nai="@@000000021", precision=3, amount="357000"
     )
 
@@ -17,11 +20,11 @@ def test_escrow_transfer():
         to_account="daddy",
         agent="agent",
         escrow_id=1,
-        hbd_amount=amount,
-        hive_amount=amount,
-        fee=amount,
-        ratification_deadline="2023-12-30T00:00:00",
-        escrow_expiration="2023-11-30T00:00:00",
+        hbd_amount=hbd_amount,
+        hive_amount=hive_amount,
+        fee=hive_amount,
+        ratification_deadline="2023-11-30T00:00:00",
+        escrow_expiration="2023-12-30T00:00:00",
         json_meta="{}"
     )
 

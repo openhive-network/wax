@@ -11,7 +11,7 @@ def test_escrow_approve():
         from_account="faddy",
         to_account="daddy",
         agent="agent",
-        who="who",
+        who="daddy",
         escrow_id=1,
         approve=True
     )

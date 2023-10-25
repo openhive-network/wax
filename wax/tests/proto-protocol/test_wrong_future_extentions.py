@@ -13,5 +13,5 @@ def test_wrong_future_extensions():
     assert result.status == result.status.fail
     assert result.exception_message == (
         b'10 assert_exception: Assert Exception\nobj.size() != 0\nEach extension should '
-        b'be a nonempty object\n    {}\n    protobuf_protocol_impl.inl:20 parse_proto_extensions'
+        b'be a nonempty object\n    {}\n    protobuf_protocol_impl.inl:27 parse_proto_extensions'
     )
