@@ -42,12 +42,15 @@ else
       mkdir "$dir_path"
   done
 
+  echo "Install poetry dependencies."
+  poetry -C ${PROJECT_DIR} install --no-root
+
   cd ${PROJECT_DIR}/wax
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto_python.sh
 
   echo "Build wax wheel package."
-  poetry build
+  poetry -C ${PROJECT_DIR} build
 
   echo "List dist directory."
   ls ${PROJECT_DIR}/dist

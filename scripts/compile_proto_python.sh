@@ -15,7 +15,16 @@ fi
 
 mkdir -p "${OUTPUT_DIR}"
 
-poetry -C ${PROJECT_DIR} protoc --python_out="${OUTPUT_DIR}" --mypy_out="${OUTPUT_DIR}" --proto_path="${PROTO_DIR}" 
+echo "Install poetry dependencies."
+poetry -C ${PROJECT_DIR} install --no-root
+
+poetry -C ${PROJECT_DIR} run python3 -m grpc_tools.protoc \
+--python_out="${OUTPUT_DIR}"  \
+--mypy_out="${OUTPUT_DIR}" \
+--mypy_grpc_out="${OUTPUT_DIR}" \
+--grpc_python_out="${OUTPUT_DIR}" \
+--proto_path="${PROTO_DIR}" \
+-I="${PROTO_DIR}" "${PROTO_DIR}"/*.proto
 
 echo "Files generated into the '${OUTPUT_DIR}' folder."
 
