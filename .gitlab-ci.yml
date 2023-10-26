@@ -146,7 +146,7 @@ test_wax_protobuf_python:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - pytest --junitxml="$CI_PROJECT_DIR/wax/tests/report.xml" "$CI_PROJECT_DIR/wax/tests/"
+    - ./wax/tests/run_tests.sh
   artifacts:
     reports:
       junit: wax/tests/report.xml
@@ -162,7 +162,7 @@ test_wax_protobuf_python_pattern:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/wax/proto/
- 
+
     when: always
     expire_in: 1 week
 
