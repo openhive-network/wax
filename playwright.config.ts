@@ -6,6 +6,12 @@ export default defineConfig({
     ['junit', { outputFile: 'results.xml' }],
     ['json',  { outputFile: 'results.json' }]
   ],
+  projects: [
+    {
+      name: "wax_testsuite",
+      testDir: "./wasm/__tests__/"
+    }
+  ],
   // Run your local dev server before starting the tests
   webServer: {
     command: 'npx http-server'
