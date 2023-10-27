@@ -23,9 +23,9 @@ struct validate_visitor
   }
 };
 
-hive::protocol::transaction get_transaction(const std::string& trx)
+hive::protocol::signed_transaction get_transaction(const std::string& trx)
 {
-  return fc::json::from_string(trx).as<hive::protocol::transaction>();
+  return fc::json::from_string(trx).as<hive::protocol::signed_transaction>();
 }
 
 template <class FoundationProvider>

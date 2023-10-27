@@ -99,7 +99,7 @@ test.describe('WASM Proto Protocol', () => {
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.value).toBe(ErrorCodes.OK);
-    expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a980800");
+    expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000");
   });
 
   test('Should be able to calculate sig digest of the transaction', async ({ page }) => {
