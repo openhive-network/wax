@@ -10,7 +10,15 @@ You need to install protobuf compiler first:
 apt install protobuf-compiler
 ```
 
-### Python Building
+### Python building and instaling
+
+First, we need to have installed `poetry`. To do that, simply type:
+
+```bash
+curl -sSL https://install.python-poetry.org | python3 - --version 1.6.1
+```
+
+#### Building
 
 In order to build wax python package, one need to simply type from root project directory:
 
@@ -18,7 +26,9 @@ In order to build wax python package, one need to simply type from root project 
 ./scripts/build_wax_python.sh
 ```
 
-This script will generate wheel file which will be saved in ./dist directory.
+This script will generate wheel file using virtual enviorement of poetry  which will be saved in ./dist directory.
+
+#### Instaling
 
 It is recomended to create python virtual env, and install wax package it there, for example:
 
@@ -48,10 +58,12 @@ Warning: Commiting a package.json file without such placeholder definitions is d
 
 ### Python Testing
 
-Run [examples](examples/python/README.md):
+For more info about examples, please check [examples](examples/python/README.md).
+
+In order to run examples, just type:
 
 ```bash
-python3 ./examples/python/visitor_example.py
+./examples/python/run_example.sh 
 ```
 
 ## License
