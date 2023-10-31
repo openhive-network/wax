@@ -4,7 +4,7 @@ import { future_extensions } from "./future_extensions.js";
 import { operation } from "./operation.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasetransaction() {
-    return { ref_block_num: 0, ref_block_prefix: 0, expiration: "", operations: [], extensions: [] };
+    return { ref_block_num: 0, ref_block_prefix: 0, expiration: "", operations: [], extensions: [], signatures: [] };
 }
 export const transaction = {
     encode(message, writer = _m0.Writer.create()) {
@@ -22,6 +22,9 @@ export const transaction = {
         }
         for (const v of message.extensions) {
             future_extensions.encode(v, writer.uint32(42).fork()).ldelim();
+        }
+        for (const v of message.signatures) {
+            writer.uint32(50).string(v);
         }
         return writer;
     },
@@ -62,6 +65,12 @@ export const transaction = {
                     }
                     message.extensions.push(future_extensions.decode(reader, reader.uint32()));
                     continue;
+                case 6:
+                    if (tag !== 50) {
+                        break;
+                    }
+                    message.signatures.push(reader.string());
+                    continue;
             }
             if ((tag & 7) === 4 || tag === 0) {
                 break;
@@ -79,10 +88,11 @@ export const transaction = {
             extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
+            signatures: Array.isArray(object === null || object === void 0 ? void 0 : object.signatures) ? object.signatures.map((e) => String(e)) : [],
         };
     },
     toJSON(message) {
-        var _a, _b;
+        var _a, _b, _c;
         const obj = {};
         if (message.ref_block_num !== 0) {
             obj.ref_block_num = Math.round(message.ref_block_num);
@@ -99,19 +109,23 @@ export const transaction = {
         if ((_b = message.extensions) === null || _b === void 0 ? void 0 : _b.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
+        if ((_c = message.signatures) === null || _c === void 0 ? void 0 : _c.length) {
+            obj.signatures = message.signatures;
+        }
         return obj;
     },
     create(base) {
         return transaction.fromPartial(base !== null && base !== void 0 ? base : {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d, _e, _f;
         const message = createBasetransaction();
         message.ref_block_num = (_a = object.ref_block_num) !== null && _a !== void 0 ? _a : 0;
         message.ref_block_prefix = (_b = object.ref_block_prefix) !== null && _b !== void 0 ? _b : 0;
         message.expiration = (_c = object.expiration) !== null && _c !== void 0 ? _c : "";
         message.operations = ((_d = object.operations) === null || _d === void 0 ? void 0 : _d.map((e) => operation.fromPartial(e))) || [];
         message.extensions = ((_e = object.extensions) === null || _e === void 0 ? void 0 : _e.map((e) => future_extensions.fromPartial(e))) || [];
+        message.signatures = ((_f = object.signatures) === null || _f === void 0 ? void 0 : _f.map((e) => e)) || [];
         return message;
     },
 };

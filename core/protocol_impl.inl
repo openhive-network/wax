@@ -90,4 +90,24 @@ result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::s
     });
 }
 
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_deserialize_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+      //std::string raw_data(transaction);
+      std::vector<char> raw_data(transaction.size());
+      fc::from_hex(transaction, raw_data.data(), raw_data.size());
+
+      hive::protocol::signed_transaction _transaction;
+      fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), _transaction, 0);
+
+      _result.content = fc::json::to_string(_transaction);
+    });
+}
+
 } /// namespace cpp

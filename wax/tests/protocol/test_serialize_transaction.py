@@ -2,7 +2,7 @@ import json
 
 from utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
-from wax import serialize_transaction
+from wax import serialize_transaction, deserialize_transaction
 
 def test_serialize_transaction():
     tx_str = json.dumps(API_REF_TRANSACTION)
@@ -19,6 +19,11 @@ def test_serialize_transaction():
         b'b37d3fb3'
         ) 
 
+    result = deserialize_transaction(result.result)
+    assert result.status == result.status.ok
+    assert result.exception_message == b''
+    assert result.result.decode() == tx_str.replace(" ", "").replace("\n","")
+    
     # Negative test
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
     result = serialize_transaction(tx_str.encode())

@@ -59,6 +59,12 @@ def serialize_transaction(transaction: bytes) -> python_result:
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def deserialize_transaction(transaction: bytes)  -> python_result:
+    cdef protocol obj
+    response = obj.cpp_deserialize_transaction(transaction)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def generate_private_key() -> python_result:
     cdef protocol obj
     response =  obj.cpp_generate_private_key()
@@ -135,6 +141,12 @@ def serialize_proto_transaction(transaction: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_serialize_transaction( transaction )
   return response.value, response.content, response.exception_message
+
+@return_python_result
+def deserialize_proto_transaction(transaction: bytes)  -> python_result:
+    cdef proto_protocol obj
+    response = obj.cpp_deserialize_transaction(transaction)
+    return response.value, response.content, response.exception_message
 
 @return_python_result
 def proto_to_api(operation_or_tx: bytes) -> python_result:

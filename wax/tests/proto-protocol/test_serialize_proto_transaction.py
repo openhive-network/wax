@@ -1,8 +1,13 @@
 import json
 
+from google.protobuf.json_format import ParseDict
+
 from utils.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
 
-from wax import serialize_proto_transaction
+from wax import serialize_proto_transaction, deserialize_proto_transaction
+
+from wax.proto import transaction_pb2
+
 
 def test_serialize_proto_transaction():
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
@@ -18,6 +23,15 @@ def test_serialize_proto_transaction():
         b'49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8'
         b'b37d3fb3'
         ) 
+
+    result = deserialize_proto_transaction(result.result)
+    assert result.status == result.status.ok
+    assert result.exception_message == b''
+    assert result.result.decode() == tx_str.replace(" ", "").replace("\n","")
+
+    tx_ref = ParseDict(PROTO_REF_TRANSACTION, transaction_pb2.transaction())
+    tx = ParseDict(json.loads(result.result.decode()), transaction_pb2.transaction())
+    assert(tx_ref == tx)
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION)
