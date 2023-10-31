@@ -27,6 +27,7 @@ class transaction(google.protobuf.message.Message):
     EXPIRATION_FIELD_NUMBER: builtins.int
     OPERATIONS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
+    SIGNATURES_FIELD_NUMBER: builtins.int
     ref_block_num: builtins.int
     ref_block_prefix: builtins.int
     expiration: builtins.str
@@ -34,6 +35,9 @@ class transaction(google.protobuf.message.Message):
     def operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[operation_pb2.operation]: ...
     @property
     def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    @property
+    def signatures(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """for signed_transaction"""
     def __init__(
         self,
         *,
@@ -42,8 +46,9 @@ class transaction(google.protobuf.message.Message):
         expiration: builtins.str | None = ...,
         operations: collections.abc.Iterable[operation_pb2.operation] | None = ...,
         extensions: collections.abc.Iterable[future_extensions_pb2.future_extensions] | None = ...,
+        signatures: collections.abc.Iterable[builtins.str] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["expiration", b"expiration", "ref_block_num", b"ref_block_num", "ref_block_prefix", b"ref_block_prefix"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["expiration", b"expiration", "extensions", b"extensions", "operations", b"operations", "ref_block_num", b"ref_block_num", "ref_block_prefix", b"ref_block_prefix"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["expiration", b"expiration", "extensions", b"extensions", "operations", b"operations", "ref_block_num", b"ref_block_num", "ref_block_prefix", b"ref_block_prefix", "signatures", b"signatures"]) -> None: ...
 
 global___transaction = transaction

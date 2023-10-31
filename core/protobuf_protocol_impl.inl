@@ -500,6 +500,17 @@ result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const 
 }
 
 template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_deserialize_transaction(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      protocol_impl<FoundationProvider> provider;
+      _result = provider.cpp_deserialize_transaction(transaction);
+      _result.content = cpp_api_to_proto_impl(_result.content);
+    });
+}
+
+template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_proto_to_api(const std::string& operation_or_tx)
 {
   return method_wrapper([&](result& _result)

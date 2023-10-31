@@ -18,6 +18,7 @@ public:
   result cpp_calculate_transaction_id(const std::string& transaction);
   result cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id);
   result cpp_serialize_transaction(const std::string& transaction);
+  result cpp_deserialize_transaction(const std::string& transaction);
 
   // TODO: Implement block bi-directional protobuf JSON conversion
   result cpp_proto_to_api(const std::string& operation_or_tx);
