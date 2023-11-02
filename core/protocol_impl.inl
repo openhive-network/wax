@@ -9,6 +9,7 @@
 #include <hive/protocol/types.hpp>
 
 #include <fc/io/json.hpp>
+#include <fc/bitutil.hpp>
 
 namespace cpp {
 
@@ -97,6 +98,25 @@ result protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(const 
       _result.content = _digest.str();
     });
   }
+
+template <class FoundationProvider>
+inline
+ref_block_data protocol_impl<FoundationProvider>::cpp_get_tapos_data(const std::string& transaction_id)
+{
+  try
+  {
+    const hive::protocol::block_id_type id{ transaction_id };
+    hive::protocol::transaction tx;
+
+    tx.set_reference_block(id);
+
+    return { tx.ref_block_num, tx.ref_block_prefix };
+  }
+  catch(...)
+  {
+    return { 0, 0 };
+  }
+}
 
 template <class FoundationProvider>
 inline

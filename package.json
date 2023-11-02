@@ -2,7 +2,7 @@
   "name": "@hive/wax",
   "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
   "description": "Provides Hive Protocol features to JavaScript",
-  "main": "wasm/dist/wax.js",
+  "main": "wasm/dist/index.js",
   "type": "module",
   "private": false,
   "scripts": {
@@ -25,6 +25,7 @@
     "typescript": "4.4.4"
   },
   "dependencies": {
+    "@hive/beekeeper": "1.27.5-rc0-1728a9433",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5"
   },
@@ -35,7 +36,7 @@
     "build_wasm/wax.d.ts",
     "wasm/dist"
   ],
-  "types": "wasm/dist/wax.d.ts",
+  "types": "wasm/dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"

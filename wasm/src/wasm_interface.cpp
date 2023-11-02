@@ -68,6 +68,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("nai", &json_asset::nai)
       ;
 
+  value_object<ref_block_data>("ref_block_data")
+      .field("ref_block_num", &ref_block_data::ref_block_num)
+      .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
+      ;
+
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
@@ -91,6 +96,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
     .function("cpp_calculate_legacy_transaction_id", &protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
+    .function("cpp_get_tapos_data", &protocol_wasm::cpp_get_tapos_data)
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
   ;
 
@@ -102,6 +108,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)
     .function("cpp_calculate_legacy_transaction_id", &proto_protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &proto_protocol_wasm::cpp_calculate_sig_digest)
+    .function("cpp_get_tapos_data", &proto_protocol_wasm::cpp_get_tapos_data)
     .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
     .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)

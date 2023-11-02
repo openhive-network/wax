@@ -1,5 +1,8 @@
-// Wax wasm definitions
 import type { MainModule } from '../../build_wasm/wax';
+
+// Parse the main module
+import MainModuleFunction from '../../build_wasm/wax_wasm.js';
+
 export type {
   MainModule,
   error_code,
@@ -9,15 +12,6 @@ export type {
   protocol_foundation,
   result
 } from '../../build_wasm/wax';
-
-// Protobuf definitions
-export * from './protocol.js';
-
-// Helper definitions
-export * from './visitor.js';
-
-// Parse the main module
-import MainModuleFunction from '../../build_wasm/wax_wasm.js';
 
 declare function waxmodule(): Promise<MainModule>;
 

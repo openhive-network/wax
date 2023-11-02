@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@hive/beekeeper':
+    specifier: 1.27.5-rc0-1728a9433
+    version: 1.27.5-rc0-1728a9433
   long:
     specifier: ^5.2.3
     version: 5.2.3
@@ -42,6 +45,12 @@ devDependencies:
     version: 4.4.4
 
 packages:
+
+  /@hive/beekeeper@1.27.5-rc0-1728a9433:
+    resolution: {integrity: sha1-sRh4bKf0MiJUVfOOZN1ffciwLnQ=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-1728a9433.tgz}
+    engines: {node: '>= 12'}
+    requiresBuild: true
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}

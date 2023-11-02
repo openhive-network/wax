@@ -23,4 +23,10 @@ struct json_asset
   std::string nai;
 };
 
+struct ref_block_data
+{
+  uint16_t ref_block_num;
+  uint32_t ref_block_prefix;
+};
+
 } /// namespace cpp
