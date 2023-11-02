@@ -23,6 +23,8 @@ wasm/dist/proto/author_reward.d.ts
 wasm/dist/proto/author_reward.js
 wasm/dist/proto/authority.d.ts
 wasm/dist/proto/authority.js
+wasm/dist/proto/block.d.ts
+wasm/dist/proto/block.js
 wasm/dist/proto/cancel_transfer_from_savings.d.ts
 wasm/dist/proto/cancel_transfer_from_savings.js
 wasm/dist/proto/change_recovery_account.d.ts

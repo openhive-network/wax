@@ -228,10 +228,10 @@ fc::variants parse_api_extensions(const fc::variant& ex)
       extension.get_object().contains("type") &&
       extension.get_object()["type"].is_string() &&
       extension.get_object().contains("value") &&
-      extension.get_object()["value"].is_object(), "Not a valid api operation extension");
+      (extension.get_object()["value"].is_object() || extension.get_object()["value"].is_string()), "Not a valid api operation extension");
 
     std::string key = extension.get_object()["type"].get_string();
-    result.emplace_back(std::move(fc::mutable_variant_object{ key, extension.get_object()["value"].get_object() }));
+    result.emplace_back(std::move(fc::mutable_variant_object{ key, extension.get_object()["value"] }));
   }
 
   return result;
@@ -414,11 +414,28 @@ fc::mutable_variant_object parse_api_transaction(const fc::variant& trx)
   return fc::mutable_variant_object{ std::move(tx_body) }("operations", std::move(operations));
 }
 
-
-std::string cpp_api_to_proto_impl(const std::string& operation_or_tx)
+fc::mutable_variant_object parse_api_block(const fc::variant& block)
 {
-  fc::variant var = fc::json::from_string(operation_or_tx);
+  FC_ASSERT(block.is_object() && block.get_object().contains("transactions") && block.get_object()["transactions"].is_array(), "Block should have an array of transactions");
+
+  fc::variants transactions;
+  fc::mutable_variant_object block_body = block.get_object();
+
+  for (const auto& trx : block_body["transactions"].get_array())
+    transactions.emplace_back(std::move(parse_api_transaction(trx)));
+
+  try_parse_api_extensions(block_body);
+
+  return fc::mutable_variant_object{ std::move(block_body) }("transactions", std::move(transactions));
+}
+
+std::string cpp_api_to_proto_impl(const std::string& operation_or_tx_or_block)
+{
+  fc::variant var = fc::json::from_string(operation_or_tx_or_block);
   FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
+
+  if (var.get_object().contains("transactions"))
+    return fc::json::to_string(parse_api_block(var));
 
   if (var.get_object().contains("operations"))
     return fc::json::to_string(parse_api_transaction(var));
@@ -520,11 +537,11 @@ result proto_protocol_impl<FoundationProvider>::cpp_proto_to_api(const std::stri
 }
 
 template <class FoundationProvider>
-result proto_protocol_impl<FoundationProvider>::cpp_api_to_proto(const std::string& operation_or_tx)
+result proto_protocol_impl<FoundationProvider>::cpp_api_to_proto(const std::string& operation_or_tx_or_block)
 {
   return method_wrapper([&](result& _result)
     {
-      _result.content = cpp_api_to_proto_impl(operation_or_tx);
+      _result.content = cpp_api_to_proto_impl(operation_or_tx_or_block);
     });
 }
 
