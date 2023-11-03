@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wax Test</title>
+</head>
+<body id="waxbody">
+  <script type="importmap">
+    {
+      "imports": {
+        "@hive/wax": "/build_wasm/wax_wasm.js",
+        "@hive/beekeeper": "/node_modules/@hive/beekeeper/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import { createWaxFoundation } from '@hive/wax';
+    import beekeeperFactory from '@hive/beekeeper';
+
+    Object.defineProperties(window, {
+      createWaxFoundation: {
+        get() {
+          return createWaxFoundation;
+        }
+      },
+      beekeeperFactory: {
+        get() {
+          return beekeeperFactory;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

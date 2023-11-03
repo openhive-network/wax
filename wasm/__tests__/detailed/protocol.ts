@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import { ErrorCodes, numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
-import { result as resultT } from '../../lib/wax';
+import { result as resultT } from '../../lib';
 
 let browser!: ChromiumBrowser;
 
