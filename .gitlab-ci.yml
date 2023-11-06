@@ -40,12 +40,6 @@ default:
 
 build_wheel:
   extends: .build_wheel_template
-  before_script:
-    - !reference [.build_wheel_template, before_script]
-    - git fetch --tags --force
-    - rm -rf dist/
-    - poetry build --format wheel
-    - ls -al dist/
   needs:
     - job: wax_proto_python_generation
       artifacts: true
