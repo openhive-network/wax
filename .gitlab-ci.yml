@@ -121,22 +121,27 @@ wax_wasm_proto_tsc_generation:
   tags:
     - public-runner-docker
 
-.test_python_env:
+.runtime_like_python_env:
   stage: test
   extends: .configuration_template
   needs:
     - job: build_wheel
       artifacts: true
   before_script:
-    - poetry env use python3
-    - source $(poetry env info --path)/bin/activate
+    - !reference [.configuration_template, before_script]
     - pip install dist/*.whl
-    - poetry install --no-root  # install dependencies for tests
     - pip list
     - ls -al $(poetry env info --path)/lib/python3.10/site-packages/
 
+.test_python_env:
+  extends: .runtime_like_python_env
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry install --no-root  # install dependencies for tests
+    - pip list
+
 test_importing_wax:
-  extends: .test_python_env
+  extends: .runtime_like_python_env
   script:
     - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
     - cd ..  # needed to import installed package instead of local one
@@ -166,7 +171,7 @@ test_wax_protobuf_python_pattern:
     expire_in: 1 week
 
 test_wax_protobuf_python_examples:
-  extends: .test_python_env
+  extends: .runtime_like_python_env
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - python3 /builds/hive/wax/examples/python/visitor_example.py
