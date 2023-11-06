@@ -251,6 +251,7 @@ deploy_wheel_to_gitlab:
   stage: deploy
   extends: .deploy_wheel_to_gitlab_template
   <<: *deploy_wheel_needs
+  when: on_success
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
