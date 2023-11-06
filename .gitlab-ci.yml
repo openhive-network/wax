@@ -55,6 +55,10 @@ build_wheel:
       - "dist/"
       - ".build/logs/"
       - ".build/*.so"
+      - "build_wheel.env"
+    reports:
+      dotenv: "build_wheel.env"
+
 
 wax_wasm_build:
   extends: .wasm_build_job_template
