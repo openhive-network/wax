@@ -55,7 +55,7 @@ export declare const feed_publish: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K in Exclude<keyof I["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K in Exclude<keyof I["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
             quote?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -64,7 +64,7 @@ export declare const feed_publish: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K_1 in Exclude<keyof I["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K_1 in Exclude<keyof I["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
         } & { [K_2 in Exclude<keyof I["exchange_rate"], keyof price>]: never; }) | undefined;
     } & { [K_3 in Exclude<keyof I, keyof feed_publish>]: never; }>(base?: I | undefined): feed_publish;
     fromPartial<I_1 extends {
@@ -103,7 +103,7 @@ export declare const feed_publish: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K_4 in Exclude<keyof I_1["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K_4 in Exclude<keyof I_1["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
             quote?: ({
                 amount?: string | undefined;
                 precision?: number | undefined;
@@ -112,7 +112,7 @@ export declare const feed_publish: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K_5 in Exclude<keyof I_1["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K_5 in Exclude<keyof I_1["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
         } & { [K_6 in Exclude<keyof I_1["exchange_rate"], keyof price>]: never; }) | undefined;
     } & { [K_7 in Exclude<keyof I_1, keyof feed_publish>]: never; }>(object: I_1): feed_publish;
 };

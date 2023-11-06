@@ -98,7 +98,7 @@ export declare const pow: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K_1 in Exclude<keyof I["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K_1 in Exclude<keyof I["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
             maximum_block_size?: number | undefined;
             hbd_interest_rate?: number | undefined;
         } & { [K_2 in Exclude<keyof I["props"], keyof legacy_chain_properties>]: never; }) | undefined;
@@ -154,7 +154,7 @@ export declare const pow: {
                 amount?: string | undefined;
                 precision?: number | undefined;
                 nai?: string | undefined;
-            } & { [K_5 in Exclude<keyof I_1["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+            } & { [K_5 in Exclude<keyof I_1["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
             maximum_block_size?: number | undefined;
             hbd_interest_rate?: number | undefined;
         } & { [K_6 in Exclude<keyof I_1["props"], keyof legacy_chain_properties>]: never; }) | undefined;

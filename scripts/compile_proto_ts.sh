@@ -20,6 +20,7 @@ protoc --plugin="${PROJECT_DIR}/node_modules/.bin/protoc-gen-ts_proto" \
   --ts_proto_opt=forceLong=string \
   --ts_proto_opt=initializeFieldsAsUndefined=false \
   --ts_proto_out="${OUTPUT_DIR}" \
+  --ts_proto_opt=importSuffix=.js \
   -I="${PROTO_DIR}" "$PROTO_DIR"/*.proto
 
 echo "Files generated into the '${OUTPUT_DIR}' folder."

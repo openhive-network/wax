@@ -5893,7 +5893,7 @@ export declare const block: {
                     author?: string | undefined;
                     permlink?: string | undefined;
                     weight?: number | undefined;
-                } & { [K_4 in Exclude<keyof I["transactions"][number]["operations"][number]["vote"], keyof import("./vote").vote>]: never; }) | undefined;
+                } & { [K_4 in Exclude<keyof I["transactions"][number]["operations"][number]["vote"], keyof import("./vote.js").vote>]: never; }) | undefined;
                 comment?: ({
                     parent_author?: string | undefined;
                     parent_permlink?: string | undefined;
@@ -5910,7 +5910,7 @@ export declare const block: {
                     title?: string | undefined;
                     body?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_5 in Exclude<keyof I["transactions"][number]["operations"][number]["comment"], keyof import("./comment").comment>]: never; }) | undefined;
+                } & { [K_5 in Exclude<keyof I["transactions"][number]["operations"][number]["comment"], keyof import("./comment.js").comment>]: never; }) | undefined;
                 transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -5931,9 +5931,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_6 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_6 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_7 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer"], keyof import("./transfer").transfer>]: never; }) | undefined;
+                } & { [K_7 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer"], keyof import("./transfer.js").transfer>]: never; }) | undefined;
                 transfer_to_vesting?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -5953,8 +5953,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_8 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_9 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting"], keyof import("./transfer_to_vesting").transfer_to_vesting>]: never; }) | undefined;
+                    } & { [K_8 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_9 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting"], keyof import("./transfer_to_vesting.js").transfer_to_vesting>]: never; }) | undefined;
                 withdraw_vesting?: ({
                     account?: string | undefined;
                     vesting_shares?: {
@@ -5972,8 +5972,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_10 in Exclude<keyof I["transactions"][number]["operations"][number]["withdraw_vesting"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_11 in Exclude<keyof I["transactions"][number]["operations"][number]["withdraw_vesting"], keyof import("./withdraw_vesting").withdraw_vesting>]: never; }) | undefined;
+                    } & { [K_10 in Exclude<keyof I["transactions"][number]["operations"][number]["withdraw_vesting"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_11 in Exclude<keyof I["transactions"][number]["operations"][number]["withdraw_vesting"], keyof import("./withdraw_vesting.js").withdraw_vesting>]: never; }) | undefined;
                 limit_order_create?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
@@ -6000,7 +6000,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_12 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"]["amount_to_sell"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_12 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"]["amount_to_sell"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     min_to_receive?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -6009,17 +6009,17 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_13 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"]["min_to_receive"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_13 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"]["min_to_receive"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fill_or_kill?: boolean | undefined;
                     expiration?: string | undefined;
-                } & { [K_14 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"], keyof import("./limit_order_create").limit_order_create>]: never; }) | undefined;
+                } & { [K_14 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create"], keyof import("./limit_order_create.js").limit_order_create>]: never; }) | undefined;
                 limit_order_cancel?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
                 } & {
                     owner?: string | undefined;
                     orderid?: number | undefined;
-                } & { [K_15 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancel"], keyof import("./limit_order_cancel").limit_order_cancel>]: never; }) | undefined;
+                } & { [K_15 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancel"], keyof import("./limit_order_cancel.js").limit_order_cancel>]: never; }) | undefined;
                 feed_publish?: ({
                     publisher?: string | undefined;
                     exchange_rate?: {
@@ -6056,7 +6056,7 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_16 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_16 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         quote?: ({
                             amount?: string | undefined;
                             precision?: number | undefined;
@@ -6065,9 +6065,9 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_17 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
-                    } & { [K_18 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"], keyof import("./price").price>]: never; }) | undefined;
-                } & { [K_19 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"], keyof import("./feed_publish").feed_publish>]: never; }) | undefined;
+                        } & { [K_17 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                    } & { [K_18 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"], keyof import("./price.js").price>]: never; }) | undefined;
+                } & { [K_19 in Exclude<keyof I["transactions"][number]["operations"][number]["feed_publish"], keyof import("./feed_publish.js").feed_publish>]: never; }) | undefined;
                 convert?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -6087,8 +6087,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_20 in Exclude<keyof I["transactions"][number]["operations"][number]["convert"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_21 in Exclude<keyof I["transactions"][number]["operations"][number]["convert"], keyof import("./convert").convert>]: never; }) | undefined;
+                    } & { [K_20 in Exclude<keyof I["transactions"][number]["operations"][number]["convert"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_21 in Exclude<keyof I["transactions"][number]["operations"][number]["convert"], keyof import("./convert.js").convert>]: never; }) | undefined;
                 account_create?: ({
                     fee?: {
                         amount?: string | undefined;
@@ -6135,7 +6135,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_22 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_22 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
                     owner?: ({
@@ -6158,7 +6158,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_24 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_25 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_25 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6179,7 +6179,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_27 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_28 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_28 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6200,10 +6200,10 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_30 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_31 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_31 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_32 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"], keyof import("./account_create").account_create>]: never; }) | undefined;
+                } & { [K_32 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create"], keyof import("./account_create.js").account_create>]: never; }) | undefined;
                 account_update?: ({
                     account?: string | undefined;
                     owner?: {
@@ -6257,7 +6257,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_34 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_35 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_35 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6278,7 +6278,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_37 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_38 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_38 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6299,10 +6299,10 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_40 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_41 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_41 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_42 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"], keyof import("./account_update").account_update>]: never; }) | undefined;
+                } & { [K_42 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update"], keyof import("./account_update.js").account_update>]: never; }) | undefined;
                 witness_update?: ({
                     owner?: string | undefined;
                     url?: string | undefined;
@@ -6342,10 +6342,10 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_43 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_43 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_44 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
+                    } & { [K_44 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -6354,8 +6354,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_45 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_46 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"], keyof import("./witness_update").witness_update>]: never; }) | undefined;
+                    } & { [K_45 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_46 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_update"], keyof import("./witness_update.js").witness_update>]: never; }) | undefined;
                 account_witness_vote?: ({
                     account?: string | undefined;
                     witness?: string | undefined;
@@ -6364,14 +6364,14 @@ export declare const block: {
                     account?: string | undefined;
                     witness?: string | undefined;
                     approve?: boolean | undefined;
-                } & { [K_47 in Exclude<keyof I["transactions"][number]["operations"][number]["account_witness_vote"], keyof import("./account_witness_vote").account_witness_vote>]: never; }) | undefined;
+                } & { [K_47 in Exclude<keyof I["transactions"][number]["operations"][number]["account_witness_vote"], keyof import("./account_witness_vote.js").account_witness_vote>]: never; }) | undefined;
                 account_witness_proxy?: ({
                     account?: string | undefined;
                     proxy?: string | undefined;
                 } & {
                     account?: string | undefined;
                     proxy?: string | undefined;
-                } & { [K_48 in Exclude<keyof I["transactions"][number]["operations"][number]["account_witness_proxy"], keyof import("./account_witness_proxy").account_witness_proxy>]: never; }) | undefined;
+                } & { [K_48 in Exclude<keyof I["transactions"][number]["operations"][number]["account_witness_proxy"], keyof import("./account_witness_proxy.js").account_witness_proxy>]: never; }) | undefined;
                 pow?: ({
                     worker_account?: string | undefined;
                     block_id?: string | undefined;
@@ -6405,7 +6405,7 @@ export declare const block: {
                         input?: string | undefined;
                         signature?: string | undefined;
                         work?: string | undefined;
-                    } & { [K_49 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["work"], keyof import("./pow").pow_work>]: never; }) | undefined;
+                    } & { [K_49 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["work"], keyof import("./pow.js").pow_work>]: never; }) | undefined;
                     props?: ({
                         account_creation_fee?: {
                             amount?: string | undefined;
@@ -6423,11 +6423,11 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_50 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_50 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_51 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
-                } & { [K_52 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"], keyof import("./pow").pow>]: never; }) | undefined;
+                    } & { [K_51 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
+                } & { [K_52 in Exclude<keyof I["transactions"][number]["operations"][number]["pow"], keyof import("./pow.js").pow>]: never; }) | undefined;
                 custom?: ({
                     required_auths?: string[] | undefined;
                     id?: number | undefined;
@@ -6436,21 +6436,21 @@ export declare const block: {
                     required_auths?: (string[] & string[] & { [K_53 in Exclude<keyof I["transactions"][number]["operations"][number]["custom"]["required_auths"], keyof string[]>]: never; }) | undefined;
                     id?: number | undefined;
                     data?: string | undefined;
-                } & { [K_54 in Exclude<keyof I["transactions"][number]["operations"][number]["custom"], keyof import("./custom").custom>]: never; }) | undefined;
+                } & { [K_54 in Exclude<keyof I["transactions"][number]["operations"][number]["custom"], keyof import("./custom.js").custom>]: never; }) | undefined;
                 witness_block_approve?: ({
                     witness?: string | undefined;
                     block_id?: string | undefined;
                 } & {
                     witness?: string | undefined;
                     block_id?: string | undefined;
-                } & { [K_55 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_block_approve"], keyof import("./witness_block_approve").witness_block_approve>]: never; }) | undefined;
+                } & { [K_55 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_block_approve"], keyof import("./witness_block_approve.js").witness_block_approve>]: never; }) | undefined;
                 delete_comment?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_56 in Exclude<keyof I["transactions"][number]["operations"][number]["delete_comment"], keyof import("./delete_comment").delete_comment>]: never; }) | undefined;
+                } & { [K_56 in Exclude<keyof I["transactions"][number]["operations"][number]["delete_comment"], keyof import("./delete_comment.js").delete_comment>]: never; }) | undefined;
                 custom_json?: ({
                     required_auths?: string[] | undefined;
                     required_posting_auths?: string[] | undefined;
@@ -6461,7 +6461,7 @@ export declare const block: {
                     required_posting_auths?: (string[] & string[] & { [K_58 in Exclude<keyof I["transactions"][number]["operations"][number]["custom_json"]["required_posting_auths"], keyof string[]>]: never; }) | undefined;
                     id?: string | undefined;
                     json?: string | undefined;
-                } & { [K_59 in Exclude<keyof I["transactions"][number]["operations"][number]["custom_json"], keyof import("./custom_json").custom_json>]: never; }) | undefined;
+                } & { [K_59 in Exclude<keyof I["transactions"][number]["operations"][number]["custom_json"], keyof import("./custom_json.js").custom_json>]: never; }) | undefined;
                 comment_options?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -6492,7 +6492,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_60 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["max_accepted_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_60 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["max_accepted_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     percent_hbd?: number | undefined;
                     allow_votes?: boolean | undefined;
                     allow_curation_rewards?: boolean | undefined;
@@ -6526,7 +6526,7 @@ export declare const block: {
                             } & {
                                 account?: string | undefined;
                                 weight?: number | undefined;
-                            } & { [K_61 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof import("./comment_options").beneficiary_route_type>]: never; })[] & { [K_62 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                            } & { [K_61 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof import("./comment_options.js").beneficiary_route_type>]: never; })[] & { [K_62 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
                                 account?: string | undefined;
                                 weight?: number | undefined;
                             }[]>]: never; }) | undefined;
@@ -6539,7 +6539,7 @@ export declare const block: {
                             }[] | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_66 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"], keyof import("./comment_options").comment_options>]: never; }) | undefined;
+                } & { [K_66 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_options"], keyof import("./comment_options.js").comment_options>]: never; }) | undefined;
                 set_withdraw_vesting_route?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -6550,7 +6550,7 @@ export declare const block: {
                     to_account?: string | undefined;
                     percent?: number | undefined;
                     auto_vest?: boolean | undefined;
-                } & { [K_67 in Exclude<keyof I["transactions"][number]["operations"][number]["set_withdraw_vesting_route"], keyof import("./set_withdraw_vesting_route").set_withdraw_vesting_route>]: never; }) | undefined;
+                } & { [K_67 in Exclude<keyof I["transactions"][number]["operations"][number]["set_withdraw_vesting_route"], keyof import("./set_withdraw_vesting_route.js").set_withdraw_vesting_route>]: never; }) | undefined;
                 limit_order_create2?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
@@ -6584,7 +6584,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_68 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["amount_to_sell"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_68 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["amount_to_sell"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fill_or_kill?: boolean | undefined;
                     exchange_rate?: ({
                         base?: {
@@ -6606,7 +6606,7 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_69 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_69 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         quote?: ({
                             amount?: string | undefined;
                             precision?: number | undefined;
@@ -6615,10 +6615,10 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_70 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
-                    } & { [K_71 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"], keyof import("./price").price>]: never; }) | undefined;
+                        } & { [K_70 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                    } & { [K_71 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"], keyof import("./price.js").price>]: never; }) | undefined;
                     expiration?: string | undefined;
-                } & { [K_72 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"], keyof import("./limit_order_create2").limit_order_create2>]: never; }) | undefined;
+                } & { [K_72 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_create2"], keyof import("./limit_order_create2.js").limit_order_create2>]: never; }) | undefined;
                 claim_account?: ({
                     creator?: string | undefined;
                     fee?: {
@@ -6639,7 +6639,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_73 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_73 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -6649,7 +6649,7 @@ export declare const block: {
                     } & { [K_75 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"]["extensions"][number], "void_t">]: never; })[] & { [K_76 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_77 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"], keyof import("./claim_account").claim_account>]: never; }) | undefined;
+                } & { [K_77 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_account"], keyof import("./claim_account.js").claim_account>]: never; }) | undefined;
                 create_claimed_account?: ({
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
@@ -6708,7 +6708,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_79 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_80 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_80 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6729,7 +6729,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_82 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_83 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_83 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6750,7 +6750,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_85 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_86 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_86 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     extensions?: ({
@@ -6762,7 +6762,7 @@ export declare const block: {
                     } & { [K_88 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["extensions"][number], "void_t">]: never; })[] & { [K_89 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_90 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"], keyof import("./create_claimed_account").create_claimed_account>]: never; }) | undefined;
+                } & { [K_90 in Exclude<keyof I["transactions"][number]["operations"][number]["create_claimed_account"], keyof import("./create_claimed_account.js").create_claimed_account>]: never; }) | undefined;
                 request_account_recovery?: ({
                     recovery_account?: string | undefined;
                     account_to_recover?: string | undefined;
@@ -6801,7 +6801,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_92 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_93 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_93 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -6811,7 +6811,7 @@ export declare const block: {
                     } & { [K_95 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"]["extensions"][number], "void_t">]: never; })[] & { [K_96 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_97 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"], keyof import("./request_account_recovery").request_account_recovery>]: never; }) | undefined;
+                } & { [K_97 in Exclude<keyof I["transactions"][number]["operations"][number]["request_account_recovery"], keyof import("./request_account_recovery.js").request_account_recovery>]: never; }) | undefined;
                 recover_account?: ({
                     account_to_recover?: string | undefined;
                     new_owner_authority?: {
@@ -6857,7 +6857,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_99 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_100 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_100 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     recent_owner_authority?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -6878,7 +6878,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_102 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_103 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_103 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -6888,7 +6888,7 @@ export declare const block: {
                     } & { [K_105 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["extensions"][number], "void_t">]: never; })[] & { [K_106 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_107 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"], keyof import("./recover_account").recover_account>]: never; }) | undefined;
+                } & { [K_107 in Exclude<keyof I["transactions"][number]["operations"][number]["recover_account"], keyof import("./recover_account.js").recover_account>]: never; }) | undefined;
                 change_recovery_account?: ({
                     account_to_recover?: string | undefined;
                     new_recovery_account?: string | undefined;
@@ -6907,7 +6907,7 @@ export declare const block: {
                     } & { [K_109 in Exclude<keyof I["transactions"][number]["operations"][number]["change_recovery_account"]["extensions"][number], "void_t">]: never; })[] & { [K_110 in Exclude<keyof I["transactions"][number]["operations"][number]["change_recovery_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_111 in Exclude<keyof I["transactions"][number]["operations"][number]["change_recovery_account"], keyof import("./change_recovery_account").change_recovery_account>]: never; }) | undefined;
+                } & { [K_111 in Exclude<keyof I["transactions"][number]["operations"][number]["change_recovery_account"], keyof import("./change_recovery_account.js").change_recovery_account>]: never; }) | undefined;
                 escrow_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -6944,7 +6944,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_112 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_112 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -6953,7 +6953,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_113 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_113 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -6962,11 +6962,11 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_114 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_114 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     ratification_deadline?: string | undefined;
                     escrow_expiration?: string | undefined;
                     json_meta?: string | undefined;
-                } & { [K_115 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"], keyof import("./escrow_transfer").escrow_transfer>]: never; }) | undefined;
+                } & { [K_115 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_transfer"], keyof import("./escrow_transfer.js").escrow_transfer>]: never; }) | undefined;
                 escrow_dispute?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -6979,7 +6979,7 @@ export declare const block: {
                     agent?: string | undefined;
                     who?: string | undefined;
                     escrow_id?: number | undefined;
-                } & { [K_116 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_dispute"], keyof import("./escrow_dispute").escrow_dispute>]: never; }) | undefined;
+                } & { [K_116 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_dispute"], keyof import("./escrow_dispute.js").escrow_dispute>]: never; }) | undefined;
                 escrow_release?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -7012,7 +7012,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_117 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_117 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7021,8 +7021,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_118 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_119 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"], keyof import("./escrow_release").escrow_release>]: never; }) | undefined;
+                    } & { [K_118 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_119 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_release"], keyof import("./escrow_release.js").escrow_release>]: never; }) | undefined;
                 pow2?: ({
                     work?: {
                         pow2?: {
@@ -7101,9 +7101,9 @@ export declare const block: {
                                 worker_account?: string | undefined;
                                 prev_block?: string | undefined;
                                 nonce?: string | undefined;
-                            } & { [K_120 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"]["input"], keyof import("./pow2").pow2_input>]: never; }) | undefined;
+                            } & { [K_120 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"]["input"], keyof import("./pow2.js").pow2_input>]: never; }) | undefined;
                             pow_summary?: number | undefined;
-                        } & { [K_121 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"], keyof import("./pow2").pow2_pow>]: never; }) | undefined;
+                        } & { [K_121 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"], keyof import("./pow2.js").pow2_pow>]: never; }) | undefined;
                         equihash_pow?: ({
                             input?: {
                                 worker_account?: string | undefined;
@@ -7127,7 +7127,7 @@ export declare const block: {
                                 worker_account?: string | undefined;
                                 prev_block?: string | undefined;
                                 nonce?: string | undefined;
-                            } & { [K_122 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["input"], keyof import("./pow2").pow2_input>]: never; }) | undefined;
+                            } & { [K_122 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["input"], keyof import("./pow2.js").pow2_input>]: never; }) | undefined;
                             proof?: ({
                                 n?: number | undefined;
                                 k?: number | undefined;
@@ -7138,11 +7138,11 @@ export declare const block: {
                                 k?: number | undefined;
                                 seed?: string | undefined;
                                 inputs?: (number[] & number[] & { [K_123 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"]["inputs"], keyof number[]>]: never; }) | undefined;
-                            } & { [K_124 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"], keyof import("./pow2").equihash_proof>]: never; }) | undefined;
+                            } & { [K_124 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"], keyof import("./pow2.js").equihash_proof>]: never; }) | undefined;
                             prev_block?: string | undefined;
                             pow_summary?: number | undefined;
-                        } & { [K_125 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"], keyof import("./pow2").equihash_pow>]: never; }) | undefined;
-                    } & { [K_126 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"], keyof import("./pow2").pow2_work>]: never; }) | undefined;
+                        } & { [K_125 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"], keyof import("./pow2.js").equihash_pow>]: never; }) | undefined;
+                    } & { [K_126 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["work"], keyof import("./pow2.js").pow2_work>]: never; }) | undefined;
                     new_owner_key?: string | undefined;
                     props?: ({
                         account_creation_fee?: {
@@ -7161,11 +7161,11 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_127 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_127 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_128 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
-                } & { [K_129 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"], keyof import("./pow2").pow2>]: never; }) | undefined;
+                    } & { [K_128 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
+                } & { [K_129 in Exclude<keyof I["transactions"][number]["operations"][number]["pow2"], keyof import("./pow2.js").pow2>]: never; }) | undefined;
                 escrow_approve?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -7180,7 +7180,7 @@ export declare const block: {
                     who?: string | undefined;
                     escrow_id?: number | undefined;
                     approve?: boolean | undefined;
-                } & { [K_130 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approve"], keyof import("./escrow_approve").escrow_approve>]: never; }) | undefined;
+                } & { [K_130 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approve"], keyof import("./escrow_approve.js").escrow_approve>]: never; }) | undefined;
                 transfer_to_savings?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -7201,9 +7201,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_131 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_131 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_132 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_savings"], keyof import("./transfer_to_savings").transfer_to_savings>]: never; }) | undefined;
+                } & { [K_132 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_savings"], keyof import("./transfer_to_savings.js").transfer_to_savings>]: never; }) | undefined;
                 transfer_from_savings?: ({
                     from_account?: string | undefined;
                     request_id?: number | undefined;
@@ -7226,23 +7226,23 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_133 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_from_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_133 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_from_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_134 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_from_savings"], keyof import("./transfer_from_savings").transfer_from_savings>]: never; }) | undefined;
+                } & { [K_134 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_from_savings"], keyof import("./transfer_from_savings.js").transfer_from_savings>]: never; }) | undefined;
                 cancel_transfer_from_savings?: ({
                     from_account?: string | undefined;
                     request_id?: number | undefined;
                 } & {
                     from_account?: string | undefined;
                     request_id?: number | undefined;
-                } & { [K_135 in Exclude<keyof I["transactions"][number]["operations"][number]["cancel_transfer_from_savings"], keyof import("./cancel_transfer_from_savings").cancel_transfer_from_savings>]: never; }) | undefined;
+                } & { [K_135 in Exclude<keyof I["transactions"][number]["operations"][number]["cancel_transfer_from_savings"], keyof import("./cancel_transfer_from_savings.js").cancel_transfer_from_savings>]: never; }) | undefined;
                 decline_voting_rights?: ({
                     account?: string | undefined;
                     decline?: boolean | undefined;
                 } & {
                     account?: string | undefined;
                     decline?: boolean | undefined;
-                } & { [K_136 in Exclude<keyof I["transactions"][number]["operations"][number]["decline_voting_rights"], keyof import("./decline_voting_rights").decline_voting_rights>]: never; }) | undefined;
+                } & { [K_136 in Exclude<keyof I["transactions"][number]["operations"][number]["decline_voting_rights"], keyof import("./decline_voting_rights.js").decline_voting_rights>]: never; }) | undefined;
                 claim_reward_balance?: ({
                     account?: string | undefined;
                     reward_hive?: {
@@ -7270,7 +7270,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_137 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hive"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_137 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hive"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     reward_hbd?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7279,7 +7279,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_138 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hbd"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_138 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hbd"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     reward_vests?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7288,8 +7288,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_139 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_vests"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_140 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"], keyof import("./claim_reward_balance").claim_reward_balance>]: never; }) | undefined;
+                    } & { [K_139 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_vests"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_140 in Exclude<keyof I["transactions"][number]["operations"][number]["claim_reward_balance"], keyof import("./claim_reward_balance.js").claim_reward_balance>]: never; }) | undefined;
                 delegate_vesting_shares?: ({
                     delegator?: string | undefined;
                     delegatee?: string | undefined;
@@ -7309,8 +7309,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_141 in Exclude<keyof I["transactions"][number]["operations"][number]["delegate_vesting_shares"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_142 in Exclude<keyof I["transactions"][number]["operations"][number]["delegate_vesting_shares"], keyof import("./delegate_vesting_shares").delegate_vesting_shares>]: never; }) | undefined;
+                    } & { [K_141 in Exclude<keyof I["transactions"][number]["operations"][number]["delegate_vesting_shares"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_142 in Exclude<keyof I["transactions"][number]["operations"][number]["delegate_vesting_shares"], keyof import("./delegate_vesting_shares.js").delegate_vesting_shares>]: never; }) | undefined;
                 account_create_with_delegation?: ({
                     fee?: {
                         amount?: string | undefined;
@@ -7365,7 +7365,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_143 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_143 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     delegation?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7374,7 +7374,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_144 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["delegation"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_144 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["delegation"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
                     owner?: ({
@@ -7397,7 +7397,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_146 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_147 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_147 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -7418,7 +7418,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_149 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_150 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_150 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -7439,7 +7439,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_152 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_153 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_153 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     extensions?: ({
@@ -7451,7 +7451,7 @@ export declare const block: {
                     } & { [K_155 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["extensions"][number], "void_t">]: never; })[] & { [K_156 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_157 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"], keyof import("./account_create_with_delegation").account_create_with_delegation>]: never; }) | undefined;
+                } & { [K_157 in Exclude<keyof I["transactions"][number]["operations"][number]["account_create_with_delegation"], keyof import("./account_create_with_delegation.js").account_create_with_delegation>]: never; }) | undefined;
                 witness_set_properties?: ({
                     owner?: string | undefined;
                     props?: {
@@ -7476,7 +7476,7 @@ export declare const block: {
                     } & { [K_160 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_set_properties"]["extensions"][number], "void_t">]: never; })[] & { [K_161 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_set_properties"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_162 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_set_properties"], keyof import("./witness_set_properties").witness_set_properties>]: never; }) | undefined;
+                } & { [K_162 in Exclude<keyof I["transactions"][number]["operations"][number]["witness_set_properties"], keyof import("./witness_set_properties.js").witness_set_properties>]: never; }) | undefined;
                 account_update2?: ({
                     account?: string | undefined;
                     owner?: {
@@ -7534,7 +7534,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_164 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_165 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_165 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -7555,7 +7555,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_167 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_168 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_168 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -7576,7 +7576,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_170 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_171 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_171 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     posting_json_metadata?: string | undefined;
@@ -7589,7 +7589,7 @@ export declare const block: {
                     } & { [K_173 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["extensions"][number], "void_t">]: never; })[] & { [K_174 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_175 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"], keyof import("./account_update2").account_update2>]: never; }) | undefined;
+                } & { [K_175 in Exclude<keyof I["transactions"][number]["operations"][number]["account_update2"], keyof import("./account_update2.js").account_update2>]: never; }) | undefined;
                 create_proposal?: ({
                     creator?: string | undefined;
                     receiver?: string | undefined;
@@ -7618,7 +7618,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_176 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"]["daily_pay"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_176 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"]["daily_pay"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     subject?: string | undefined;
                     permlink?: string | undefined;
                     extensions?: ({
@@ -7630,7 +7630,7 @@ export declare const block: {
                     } & { [K_178 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"]["extensions"][number], "void_t">]: never; })[] & { [K_179 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_180 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"], keyof import("./create_proposal").create_proposal>]: never; }) | undefined;
+                } & { [K_180 in Exclude<keyof I["transactions"][number]["operations"][number]["create_proposal"], keyof import("./create_proposal.js").create_proposal>]: never; }) | undefined;
                 update_proposal_votes?: ({
                     voter?: string | undefined;
                     proposal_ids?: string[] | undefined;
@@ -7651,7 +7651,7 @@ export declare const block: {
                     } & { [K_183 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal_votes"]["extensions"][number], "void_t">]: never; })[] & { [K_184 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal_votes"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_185 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal_votes"], keyof import("./update_proposal_votes").update_proposal_votes>]: never; }) | undefined;
+                } & { [K_185 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal_votes"], keyof import("./update_proposal_votes.js").update_proposal_votes>]: never; }) | undefined;
                 remove_proposal?: ({
                     proposal_owner?: string | undefined;
                     proposal_ids?: string[] | undefined;
@@ -7670,7 +7670,7 @@ export declare const block: {
                     } & { [K_188 in Exclude<keyof I["transactions"][number]["operations"][number]["remove_proposal"]["extensions"][number], "void_t">]: never; })[] & { [K_189 in Exclude<keyof I["transactions"][number]["operations"][number]["remove_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_190 in Exclude<keyof I["transactions"][number]["operations"][number]["remove_proposal"], keyof import("./remove_proposal").remove_proposal>]: never; }) | undefined;
+                } & { [K_190 in Exclude<keyof I["transactions"][number]["operations"][number]["remove_proposal"], keyof import("./remove_proposal.js").remove_proposal>]: never; }) | undefined;
                 update_proposal?: ({
                     proposal_id?: string | undefined;
                     creator?: string | undefined;
@@ -7698,7 +7698,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_191 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["daily_pay"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_191 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["daily_pay"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     subject?: string | undefined;
                     permlink?: string | undefined;
                     extensions?: ({
@@ -7718,13 +7718,13 @@ export declare const block: {
                         } & {
                             end_date?: string | undefined;
                         } & { [K_193 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number]["update_proposal_end_date"], "end_date">]: never; }) | undefined;
-                    } & { [K_194 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number], keyof import("./update_proposal").update_proposal_extension>]: never; })[] & { [K_195 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["extensions"], keyof {
+                    } & { [K_194 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number], keyof import("./update_proposal.js").update_proposal_extension>]: never; })[] & { [K_195 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                         update_proposal_end_date?: {
                             end_date?: string | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_196 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"], keyof import("./update_proposal").update_proposal>]: never; }) | undefined;
+                } & { [K_196 in Exclude<keyof I["transactions"][number]["operations"][number]["update_proposal"], keyof import("./update_proposal.js").update_proposal>]: never; }) | undefined;
                 collateralized_convert?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -7744,8 +7744,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_197 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_198 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert"], keyof import("./collateralized_convert").collateralized_convert>]: never; }) | undefined;
+                    } & { [K_197 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_198 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert"], keyof import("./collateralized_convert.js").collateralized_convert>]: never; }) | undefined;
                 recurrent_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -7774,7 +7774,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_199 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_199 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     recurrence?: number | undefined;
                     executions?: number | undefined;
@@ -7795,13 +7795,13 @@ export declare const block: {
                         } & {
                             pair_id?: number | undefined;
                         } & { [K_201 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number]["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-                    } & { [K_202 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number], keyof import("./recurrent_transfer").recurrent_transfer_extension>]: never; })[] & { [K_203 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"], keyof {
+                    } & { [K_202 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number], keyof import("./recurrent_transfer.js").recurrent_transfer_extension>]: never; })[] & { [K_203 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"], keyof {
                         void_t?: {} | undefined;
                         recurrent_transfer_pair_id?: {
                             pair_id?: number | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_204 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"], keyof import("./recurrent_transfer").recurrent_transfer>]: never; }) | undefined;
+                } & { [K_204 in Exclude<keyof I["transactions"][number]["operations"][number]["recurrent_transfer"], keyof import("./recurrent_transfer.js").recurrent_transfer>]: never; }) | undefined;
                 fill_convert_request?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -7826,7 +7826,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_205 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"]["amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_205 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"]["amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7835,8 +7835,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_206 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"]["amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_207 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"], keyof import("./fill_convert_request").fill_convert_request>]: never; }) | undefined;
+                    } & { [K_206 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"]["amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_207 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_convert_request"], keyof import("./fill_convert_request.js").fill_convert_request>]: never; }) | undefined;
                 author_reward?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -7872,7 +7872,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_208 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["hbd_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_208 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["hbd_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7881,7 +7881,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_209 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["hive_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_209 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["hive_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7890,7 +7890,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_210 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_210 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     curators_vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7899,9 +7899,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_211 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["curators_vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_211 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"]["curators_vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_212 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"], keyof import("./author_reward").author_reward>]: never; }) | undefined;
+                } & { [K_212 in Exclude<keyof I["transactions"][number]["operations"][number]["author_reward"], keyof import("./author_reward.js").author_reward>]: never; }) | undefined;
                 curation_reward?: ({
                     curator?: string | undefined;
                     reward?: {
@@ -7922,11 +7922,11 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_213 in Exclude<keyof I["transactions"][number]["operations"][number]["curation_reward"]["reward"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_213 in Exclude<keyof I["transactions"][number]["operations"][number]["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     comment_author?: string | undefined;
                     comment_permlink?: string | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_214 in Exclude<keyof I["transactions"][number]["operations"][number]["curation_reward"], keyof import("./curation_reward").curation_reward>]: never; }) | undefined;
+                } & { [K_214 in Exclude<keyof I["transactions"][number]["operations"][number]["curation_reward"], keyof import("./curation_reward.js").curation_reward>]: never; }) | undefined;
                 comment_reward?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -7962,7 +7962,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_215 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_215 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     author_rewards?: string | undefined;
                     total_payout_value?: ({
                         amount?: string | undefined;
@@ -7972,7 +7972,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_216 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["total_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_216 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["total_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     curator_payout_value?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7981,7 +7981,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_217 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["curator_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_217 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["curator_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     beneficiary_payout_value?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -7990,8 +7990,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_218 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["beneficiary_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_219 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"], keyof import("./comment_reward").comment_reward>]: never; }) | undefined;
+                    } & { [K_218 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"]["beneficiary_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_219 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_reward"], keyof import("./comment_reward.js").comment_reward>]: never; }) | undefined;
                 liquidity_reward?: ({
                     owner?: string | undefined;
                     payout?: {
@@ -8009,8 +8009,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_220 in Exclude<keyof I["transactions"][number]["operations"][number]["liquidity_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_221 in Exclude<keyof I["transactions"][number]["operations"][number]["liquidity_reward"], keyof import("./liquidity_reward").liquidity_reward>]: never; }) | undefined;
+                    } & { [K_220 in Exclude<keyof I["transactions"][number]["operations"][number]["liquidity_reward"]["payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_221 in Exclude<keyof I["transactions"][number]["operations"][number]["liquidity_reward"], keyof import("./liquidity_reward.js").liquidity_reward>]: never; }) | undefined;
                 interest?: ({
                     owner?: string | undefined;
                     interest?: {
@@ -8029,9 +8029,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_222 in Exclude<keyof I["transactions"][number]["operations"][number]["interest"]["interest"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_222 in Exclude<keyof I["transactions"][number]["operations"][number]["interest"]["interest"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     is_saved_into_hbd_balance?: boolean | undefined;
-                } & { [K_223 in Exclude<keyof I["transactions"][number]["operations"][number]["interest"], keyof import("./interest").interest>]: never; }) | undefined;
+                } & { [K_223 in Exclude<keyof I["transactions"][number]["operations"][number]["interest"], keyof import("./interest.js").interest>]: never; }) | undefined;
                 fill_vesting_withdraw?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -8056,7 +8056,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_224 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["withdrawn"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_224 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["withdrawn"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     deposited?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8065,8 +8065,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_225 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["deposited"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_226 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"], keyof import("./fill_vesting_withdraw").fill_vesting_withdraw>]: never; }) | undefined;
+                    } & { [K_225 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["deposited"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_226 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_vesting_withdraw"], keyof import("./fill_vesting_withdraw.js").fill_vesting_withdraw>]: never; }) | undefined;
                 fill_order?: ({
                     current_owner?: string | undefined;
                     current_orderid?: number | undefined;
@@ -8093,7 +8093,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_227 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"]["current_pays"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_227 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"]["current_pays"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     open_owner?: string | undefined;
                     open_orderid?: number | undefined;
                     open_pays?: ({
@@ -8104,8 +8104,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_228 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"]["open_pays"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_229 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"], keyof import("./fill_order").fill_order>]: never; }) | undefined;
+                    } & { [K_228 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"]["open_pays"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_229 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_order"], keyof import("./fill_order.js").fill_order>]: never; }) | undefined;
                 shutdown_witness?: ({
                     owner?: string | undefined;
                 } & {
@@ -8132,10 +8132,10 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_231 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_transfer_from_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_231 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_transfer_from_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     request_id?: number | undefined;
                     memo?: string | undefined;
-                } & { [K_232 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_transfer_from_savings"], keyof import("./fill_transfer_from_savings").fill_transfer_from_savings>]: never; }) | undefined;
+                } & { [K_232 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_transfer_from_savings"], keyof import("./fill_transfer_from_savings.js").fill_transfer_from_savings>]: never; }) | undefined;
                 hardfork?: ({
                     hardfork_id?: number | undefined;
                 } & {
@@ -8147,7 +8147,7 @@ export declare const block: {
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_234 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_payout_update"], keyof import("./comment_payout_update").comment_payout_update>]: never; }) | undefined;
+                } & { [K_234 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_payout_update"], keyof import("./comment_payout_update.js").comment_payout_update>]: never; }) | undefined;
                 return_vesting_delegation?: ({
                     account?: string | undefined;
                     vesting_shares?: {
@@ -8165,8 +8165,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_235 in Exclude<keyof I["transactions"][number]["operations"][number]["return_vesting_delegation"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_236 in Exclude<keyof I["transactions"][number]["operations"][number]["return_vesting_delegation"], keyof import("./return_vesting_delegation").return_vesting_delegation>]: never; }) | undefined;
+                    } & { [K_235 in Exclude<keyof I["transactions"][number]["operations"][number]["return_vesting_delegation"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_236 in Exclude<keyof I["transactions"][number]["operations"][number]["return_vesting_delegation"], keyof import("./return_vesting_delegation.js").return_vesting_delegation>]: never; }) | undefined;
                 comment_benefactor_reward?: ({
                     benefactor?: string | undefined;
                     author?: string | undefined;
@@ -8199,7 +8199,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_237 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hbd_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_237 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hbd_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8208,7 +8208,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_238 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hive_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_238 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hive_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8217,9 +8217,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_239 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_239 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"]["vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_240 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"], keyof import("./comment_benefactor_reward").comment_benefactor_reward>]: never; }) | undefined;
+                } & { [K_240 in Exclude<keyof I["transactions"][number]["operations"][number]["comment_benefactor_reward"], keyof import("./comment_benefactor_reward.js").comment_benefactor_reward>]: never; }) | undefined;
                 producer_reward?: ({
                     producer?: string | undefined;
                     vesting_shares?: {
@@ -8237,8 +8237,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_241 in Exclude<keyof I["transactions"][number]["operations"][number]["producer_reward"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_242 in Exclude<keyof I["transactions"][number]["operations"][number]["producer_reward"], keyof import("./producer_reward").producer_reward>]: never; }) | undefined;
+                    } & { [K_241 in Exclude<keyof I["transactions"][number]["operations"][number]["producer_reward"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_242 in Exclude<keyof I["transactions"][number]["operations"][number]["producer_reward"], keyof import("./producer_reward.js").producer_reward>]: never; }) | undefined;
                 clear_null_account_balance?: ({
                     total_cleared?: {
                         amount?: string | undefined;
@@ -8258,7 +8258,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_243 in Exclude<keyof I["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"][number], keyof import("./asset").asset>]: never; })[] & { [K_244 in Exclude<keyof I["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"], keyof {
+                    } & { [K_243 in Exclude<keyof I["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"][number], keyof import("./asset.js").asset>]: never; })[] & { [K_244 in Exclude<keyof I["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"], keyof {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
@@ -8285,8 +8285,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_246 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_pay"]["payment"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_247 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_pay"], keyof import("./proposal_pay").proposal_pay>]: never; }) | undefined;
+                    } & { [K_246 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_pay"]["payment"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_247 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_pay"], keyof import("./proposal_pay.js").proposal_pay>]: never; }) | undefined;
                 dhf_funding?: ({
                     treasury?: string | undefined;
                     additional_funds?: {
@@ -8304,8 +8304,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_248 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_funding"]["additional_funds"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_249 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_funding"], keyof import("./dhf_funding").dhf_funding>]: never; }) | undefined;
+                    } & { [K_248 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_funding"]["additional_funds"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_249 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_funding"], keyof import("./dhf_funding.js").dhf_funding>]: never; }) | undefined;
                 hardfork_hive?: ({
                     account?: string | undefined;
                     treasury?: string | undefined;
@@ -8342,7 +8342,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_251 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["hbd_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_251 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["hbd_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_transferred?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8351,7 +8351,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_252 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["hive_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_252 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["hive_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vests_converted?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8360,7 +8360,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_253 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["vests_converted"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_253 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["vests_converted"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     total_hive_from_vests?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8369,8 +8369,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_254 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["total_hive_from_vests"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_255 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"], keyof import("./hardfork_hive").hardfork_hive>]: never; }) | undefined;
+                    } & { [K_254 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"]["total_hive_from_vests"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_255 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive"], keyof import("./hardfork_hive.js").hardfork_hive>]: never; }) | undefined;
                 hardfork_hive_restore?: ({
                     account?: string | undefined;
                     treasury?: string | undefined;
@@ -8395,7 +8395,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_256 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hbd_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_256 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hbd_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_transferred?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8404,15 +8404,15 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_257 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hive_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_258 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"], keyof import("./hardfork_hive_restore").hardfork_hive_restore>]: never; }) | undefined;
+                    } & { [K_257 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hive_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_258 in Exclude<keyof I["transactions"][number]["operations"][number]["hardfork_hive_restore"], keyof import("./hardfork_hive_restore.js").hardfork_hive_restore>]: never; }) | undefined;
                 delayed_voting?: ({
                     voter?: string | undefined;
                     votes?: string | undefined;
                 } & {
                     voter?: string | undefined;
                     votes?: string | undefined;
-                } & { [K_259 in Exclude<keyof I["transactions"][number]["operations"][number]["delayed_voting"], keyof import("./delayed_voting").delayed_voting>]: never; }) | undefined;
+                } & { [K_259 in Exclude<keyof I["transactions"][number]["operations"][number]["delayed_voting"], keyof import("./delayed_voting.js").delayed_voting>]: never; }) | undefined;
                 consolidate_treasury_balance?: ({
                     total_moved?: {
                         amount?: string | undefined;
@@ -8432,7 +8432,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_260 in Exclude<keyof I["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"][number], keyof import("./asset").asset>]: never; })[] & { [K_261 in Exclude<keyof I["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"], keyof {
+                    } & { [K_260 in Exclude<keyof I["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"][number], keyof import("./asset.js").asset>]: never; })[] & { [K_261 in Exclude<keyof I["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"], keyof {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
@@ -8465,15 +8465,15 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_263 in Exclude<keyof I["transactions"][number]["operations"][number]["effective_comment_vote"]["pending_payout"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_264 in Exclude<keyof I["transactions"][number]["operations"][number]["effective_comment_vote"], keyof import("./effective_comment_vote").effective_comment_vote>]: never; }) | undefined;
+                    } & { [K_263 in Exclude<keyof I["transactions"][number]["operations"][number]["effective_comment_vote"]["pending_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_264 in Exclude<keyof I["transactions"][number]["operations"][number]["effective_comment_vote"], keyof import("./effective_comment_vote.js").effective_comment_vote>]: never; }) | undefined;
                 ineffective_delete_comment?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_265 in Exclude<keyof I["transactions"][number]["operations"][number]["ineffective_delete_comment"], keyof import("./ineffective_delete_comment").ineffective_delete_comment>]: never; }) | undefined;
+                } & { [K_265 in Exclude<keyof I["transactions"][number]["operations"][number]["ineffective_delete_comment"], keyof import("./ineffective_delete_comment.js").ineffective_delete_comment>]: never; }) | undefined;
                 dhf_conversion?: ({
                     treasury?: string | undefined;
                     hive_amount_in?: {
@@ -8496,7 +8496,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_266 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"]["hive_amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_266 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"]["hive_amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hbd_amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8505,8 +8505,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_267 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"]["hbd_amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_268 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"], keyof import("./dhf_conversion").dhf_conversion>]: never; }) | undefined;
+                    } & { [K_267 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"]["hbd_amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_268 in Exclude<keyof I["transactions"][number]["operations"][number]["dhf_conversion"], keyof import("./dhf_conversion.js").dhf_conversion>]: never; }) | undefined;
                 expired_account_notification?: ({
                     account?: string | undefined;
                 } & {
@@ -8520,7 +8520,7 @@ export declare const block: {
                     account?: string | undefined;
                     old_recovery_account?: string | undefined;
                     new_recovery_account?: string | undefined;
-                } & { [K_270 in Exclude<keyof I["transactions"][number]["operations"][number]["changed_recovery_account"], keyof import("./changed_recovery_account").changed_recovery_account>]: never; }) | undefined;
+                } & { [K_270 in Exclude<keyof I["transactions"][number]["operations"][number]["changed_recovery_account"], keyof import("./changed_recovery_account.js").changed_recovery_account>]: never; }) | undefined;
                 transfer_to_vesting_completed?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -8545,7 +8545,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_271 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["hive_vested"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_271 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["hive_vested"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_shares_received?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8554,8 +8554,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_272 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["vesting_shares_received"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_273 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"], keyof import("./transfer_to_vesting_completed").transfer_to_vesting_completed>]: never; }) | undefined;
+                    } & { [K_272 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["vesting_shares_received"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_273 in Exclude<keyof I["transactions"][number]["operations"][number]["transfer_to_vesting_completed"], keyof import("./transfer_to_vesting_completed.js").transfer_to_vesting_completed>]: never; }) | undefined;
                 pow_reward?: ({
                     worker?: string | undefined;
                     reward?: {
@@ -8573,8 +8573,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_274 in Exclude<keyof I["transactions"][number]["operations"][number]["pow_reward"]["reward"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_275 in Exclude<keyof I["transactions"][number]["operations"][number]["pow_reward"], keyof import("./pow_reward").pow_reward>]: never; }) | undefined;
+                    } & { [K_274 in Exclude<keyof I["transactions"][number]["operations"][number]["pow_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_275 in Exclude<keyof I["transactions"][number]["operations"][number]["pow_reward"], keyof import("./pow_reward.js").pow_reward>]: never; }) | undefined;
                 vesting_shares_split?: ({
                     owner?: string | undefined;
                     vesting_shares_before_split?: {
@@ -8597,7 +8597,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_276 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_before_split"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_276 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_before_split"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_shares_after_split?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8606,8 +8606,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_277 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_after_split"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_278 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"], keyof import("./vesting_shares_split").vesting_shares_split>]: never; }) | undefined;
+                    } & { [K_277 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_after_split"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_278 in Exclude<keyof I["transactions"][number]["operations"][number]["vesting_shares_split"], keyof import("./vesting_shares_split.js").vesting_shares_split>]: never; }) | undefined;
                 account_created?: ({
                     new_account_name?: string | undefined;
                     creator?: string | undefined;
@@ -8632,7 +8632,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_279 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"]["initial_vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_279 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"]["initial_vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     initial_delegation?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8641,8 +8641,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_280 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"]["initial_delegation"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_281 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"], keyof import("./account_created").account_created>]: never; }) | undefined;
+                    } & { [K_280 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"]["initial_delegation"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_281 in Exclude<keyof I["transactions"][number]["operations"][number]["account_created"], keyof import("./account_created.js").account_created>]: never; }) | undefined;
                 fill_collateralized_convert_request?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -8672,7 +8672,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_282 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_282 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8681,7 +8681,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_283 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_283 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     excess_collateral?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8690,8 +8690,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_284 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["excess_collateral"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_285 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"], keyof import("./fill_collateralized_convert_request").fill_collateralized_convert_request>]: never; }) | undefined;
+                    } & { [K_284 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["excess_collateral"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_285 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_collateralized_convert_request"], keyof import("./fill_collateralized_convert_request.js").fill_collateralized_convert_request>]: never; }) | undefined;
                 system_warning?: ({
                     message?: string | undefined;
                 } & {
@@ -8718,10 +8718,10 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_287 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_287 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     remaining_executions?: number | undefined;
-                } & { [K_288 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_recurrent_transfer"], keyof import("./fill_recurrent_transfer").fill_recurrent_transfer>]: never; }) | undefined;
+                } & { [K_288 in Exclude<keyof I["transactions"][number]["operations"][number]["fill_recurrent_transfer"], keyof import("./fill_recurrent_transfer.js").fill_recurrent_transfer>]: never; }) | undefined;
                 failed_recurrent_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -8745,12 +8745,12 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_289 in Exclude<keyof I["transactions"][number]["operations"][number]["failed_recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_289 in Exclude<keyof I["transactions"][number]["operations"][number]["failed_recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     consecutive_failures?: number | undefined;
                     remaining_executions?: number | undefined;
                     deleted?: boolean | undefined;
-                } & { [K_290 in Exclude<keyof I["transactions"][number]["operations"][number]["failed_recurrent_transfer"], keyof import("./failed_recurrent_transfer").failed_recurrent_transfer>]: never; }) | undefined;
+                } & { [K_290 in Exclude<keyof I["transactions"][number]["operations"][number]["failed_recurrent_transfer"], keyof import("./failed_recurrent_transfer.js").failed_recurrent_transfer>]: never; }) | undefined;
                 limit_order_cancelled?: ({
                     seller?: string | undefined;
                     orderid?: number | undefined;
@@ -8770,8 +8770,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_291 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancelled"]["amount_back"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_292 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancelled"], keyof import("./limit_order_cancelled").limit_order_cancelled>]: never; }) | undefined;
+                    } & { [K_291 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancelled"]["amount_back"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_292 in Exclude<keyof I["transactions"][number]["operations"][number]["limit_order_cancelled"], keyof import("./limit_order_cancelled.js").limit_order_cancelled>]: never; }) | undefined;
                 producer_missed?: ({
                     producer?: string | undefined;
                 } & {
@@ -8798,8 +8798,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_294 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_fee"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_295 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_fee"], keyof import("./proposal_fee").proposal_fee>]: never; }) | undefined;
+                    } & { [K_294 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_fee"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_295 in Exclude<keyof I["transactions"][number]["operations"][number]["proposal_fee"], keyof import("./proposal_fee.js").proposal_fee>]: never; }) | undefined;
                 collateralized_convert_immediate_conversion?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -8819,8 +8819,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_296 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"]["hbd_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_297 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"], keyof import("./collateralized_convert_immediate_conversion").collateralized_convert_immediate_conversion>]: never; }) | undefined;
+                    } & { [K_296 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"]["hbd_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_297 in Exclude<keyof I["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"], keyof import("./collateralized_convert_immediate_conversion.js").collateralized_convert_immediate_conversion>]: never; }) | undefined;
                 escrow_approved?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -8844,8 +8844,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_298 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approved"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_299 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approved"], keyof import("./escrow_approved").escrow_approved>]: never; }) | undefined;
+                    } & { [K_298 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approved"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_299 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_approved"], keyof import("./escrow_approved.js").escrow_approved>]: never; }) | undefined;
                 escrow_rejected?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -8879,7 +8879,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_300 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_300 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8888,7 +8888,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_301 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_301 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -8897,21 +8897,21 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_302 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_303 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"], keyof import("./escrow_rejected").escrow_rejected>]: never; }) | undefined;
+                    } & { [K_302 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_303 in Exclude<keyof I["transactions"][number]["operations"][number]["escrow_rejected"], keyof import("./escrow_rejected.js").escrow_rejected>]: never; }) | undefined;
                 proxy_cleared?: ({
                     account?: string | undefined;
                     proxy?: string | undefined;
                 } & {
                     account?: string | undefined;
                     proxy?: string | undefined;
-                } & { [K_304 in Exclude<keyof I["transactions"][number]["operations"][number]["proxy_cleared"], keyof import("./proxy_cleared").proxy_cleared>]: never; }) | undefined;
+                } & { [K_304 in Exclude<keyof I["transactions"][number]["operations"][number]["proxy_cleared"], keyof import("./proxy_cleared.js").proxy_cleared>]: never; }) | undefined;
                 declined_voting_rights?: ({
                     account?: string | undefined;
                 } & {
                     account?: string | undefined;
                 } & { [K_305 in Exclude<keyof I["transactions"][number]["operations"][number]["declined_voting_rights"], "account">]: never; }) | undefined;
-            } & { [K_306 in Exclude<keyof I["transactions"][number]["operations"][number], keyof import("./operation").operation>]: never; })[] & { [K_307 in Exclude<keyof I["transactions"][number]["operations"], keyof {
+            } & { [K_306 in Exclude<keyof I["transactions"][number]["operations"][number], keyof import("./operation.js").operation>]: never; })[] & { [K_307 in Exclude<keyof I["transactions"][number]["operations"], keyof {
                 vote?: {
                     voter?: string | undefined;
                     author?: string | undefined;
@@ -17021,7 +17021,7 @@ export declare const block: {
                     author?: string | undefined;
                     permlink?: string | undefined;
                     weight?: number | undefined;
-                } & { [K_320 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vote"], keyof import("./vote").vote>]: never; }) | undefined;
+                } & { [K_320 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vote"], keyof import("./vote.js").vote>]: never; }) | undefined;
                 comment?: ({
                     parent_author?: string | undefined;
                     parent_permlink?: string | undefined;
@@ -17038,7 +17038,7 @@ export declare const block: {
                     title?: string | undefined;
                     body?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_321 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment"], keyof import("./comment").comment>]: never; }) | undefined;
+                } & { [K_321 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment"], keyof import("./comment.js").comment>]: never; }) | undefined;
                 transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -17059,9 +17059,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_322 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_322 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_323 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer"], keyof import("./transfer").transfer>]: never; }) | undefined;
+                } & { [K_323 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer"], keyof import("./transfer.js").transfer>]: never; }) | undefined;
                 transfer_to_vesting?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -17081,8 +17081,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_324 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_325 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting"], keyof import("./transfer_to_vesting").transfer_to_vesting>]: never; }) | undefined;
+                    } & { [K_324 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_325 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting"], keyof import("./transfer_to_vesting.js").transfer_to_vesting>]: never; }) | undefined;
                 withdraw_vesting?: ({
                     account?: string | undefined;
                     vesting_shares?: {
@@ -17100,8 +17100,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_326 in Exclude<keyof I_1["transactions"][number]["operations"][number]["withdraw_vesting"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_327 in Exclude<keyof I_1["transactions"][number]["operations"][number]["withdraw_vesting"], keyof import("./withdraw_vesting").withdraw_vesting>]: never; }) | undefined;
+                    } & { [K_326 in Exclude<keyof I_1["transactions"][number]["operations"][number]["withdraw_vesting"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_327 in Exclude<keyof I_1["transactions"][number]["operations"][number]["withdraw_vesting"], keyof import("./withdraw_vesting.js").withdraw_vesting>]: never; }) | undefined;
                 limit_order_create?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
@@ -17128,7 +17128,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_328 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"]["amount_to_sell"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_328 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"]["amount_to_sell"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     min_to_receive?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -17137,17 +17137,17 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_329 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"]["min_to_receive"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_329 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"]["min_to_receive"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fill_or_kill?: boolean | undefined;
                     expiration?: string | undefined;
-                } & { [K_330 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"], keyof import("./limit_order_create").limit_order_create>]: never; }) | undefined;
+                } & { [K_330 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create"], keyof import("./limit_order_create.js").limit_order_create>]: never; }) | undefined;
                 limit_order_cancel?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
                 } & {
                     owner?: string | undefined;
                     orderid?: number | undefined;
-                } & { [K_331 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancel"], keyof import("./limit_order_cancel").limit_order_cancel>]: never; }) | undefined;
+                } & { [K_331 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancel"], keyof import("./limit_order_cancel.js").limit_order_cancel>]: never; }) | undefined;
                 feed_publish?: ({
                     publisher?: string | undefined;
                     exchange_rate?: {
@@ -17184,7 +17184,7 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_332 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_332 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         quote?: ({
                             amount?: string | undefined;
                             precision?: number | undefined;
@@ -17193,9 +17193,9 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_333 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
-                    } & { [K_334 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"], keyof import("./price").price>]: never; }) | undefined;
-                } & { [K_335 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"], keyof import("./feed_publish").feed_publish>]: never; }) | undefined;
+                        } & { [K_333 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                    } & { [K_334 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"]["exchange_rate"], keyof import("./price.js").price>]: never; }) | undefined;
+                } & { [K_335 in Exclude<keyof I_1["transactions"][number]["operations"][number]["feed_publish"], keyof import("./feed_publish.js").feed_publish>]: never; }) | undefined;
                 convert?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -17215,8 +17215,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_336 in Exclude<keyof I_1["transactions"][number]["operations"][number]["convert"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_337 in Exclude<keyof I_1["transactions"][number]["operations"][number]["convert"], keyof import("./convert").convert>]: never; }) | undefined;
+                    } & { [K_336 in Exclude<keyof I_1["transactions"][number]["operations"][number]["convert"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_337 in Exclude<keyof I_1["transactions"][number]["operations"][number]["convert"], keyof import("./convert.js").convert>]: never; }) | undefined;
                 account_create?: ({
                     fee?: {
                         amount?: string | undefined;
@@ -17263,7 +17263,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_338 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_338 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
                     owner?: ({
@@ -17286,7 +17286,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_340 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_341 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_341 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17307,7 +17307,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_343 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_344 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_344 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17328,10 +17328,10 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_346 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_347 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_347 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_348 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"], keyof import("./account_create").account_create>]: never; }) | undefined;
+                } & { [K_348 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create"], keyof import("./account_create.js").account_create>]: never; }) | undefined;
                 account_update?: ({
                     account?: string | undefined;
                     owner?: {
@@ -17385,7 +17385,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_350 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_351 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_351 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17406,7 +17406,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_353 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_354 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_354 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17427,10 +17427,10 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_356 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_357 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_357 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
-                } & { [K_358 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"], keyof import("./account_update").account_update>]: never; }) | undefined;
+                } & { [K_358 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update"], keyof import("./account_update.js").account_update>]: never; }) | undefined;
                 witness_update?: ({
                     owner?: string | undefined;
                     url?: string | undefined;
@@ -17470,10 +17470,10 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_359 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_359 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_360 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
+                    } & { [K_360 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -17482,8 +17482,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_361 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_362 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"], keyof import("./witness_update").witness_update>]: never; }) | undefined;
+                    } & { [K_361 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_362 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_update"], keyof import("./witness_update.js").witness_update>]: never; }) | undefined;
                 account_witness_vote?: ({
                     account?: string | undefined;
                     witness?: string | undefined;
@@ -17492,14 +17492,14 @@ export declare const block: {
                     account?: string | undefined;
                     witness?: string | undefined;
                     approve?: boolean | undefined;
-                } & { [K_363 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_witness_vote"], keyof import("./account_witness_vote").account_witness_vote>]: never; }) | undefined;
+                } & { [K_363 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_witness_vote"], keyof import("./account_witness_vote.js").account_witness_vote>]: never; }) | undefined;
                 account_witness_proxy?: ({
                     account?: string | undefined;
                     proxy?: string | undefined;
                 } & {
                     account?: string | undefined;
                     proxy?: string | undefined;
-                } & { [K_364 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_witness_proxy"], keyof import("./account_witness_proxy").account_witness_proxy>]: never; }) | undefined;
+                } & { [K_364 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_witness_proxy"], keyof import("./account_witness_proxy.js").account_witness_proxy>]: never; }) | undefined;
                 pow?: ({
                     worker_account?: string | undefined;
                     block_id?: string | undefined;
@@ -17533,7 +17533,7 @@ export declare const block: {
                         input?: string | undefined;
                         signature?: string | undefined;
                         work?: string | undefined;
-                    } & { [K_365 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["work"], keyof import("./pow").pow_work>]: never; }) | undefined;
+                    } & { [K_365 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["work"], keyof import("./pow.js").pow_work>]: never; }) | undefined;
                     props?: ({
                         account_creation_fee?: {
                             amount?: string | undefined;
@@ -17551,11 +17551,11 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_366 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_366 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_367 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
-                } & { [K_368 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"], keyof import("./pow").pow>]: never; }) | undefined;
+                    } & { [K_367 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
+                } & { [K_368 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow"], keyof import("./pow.js").pow>]: never; }) | undefined;
                 custom?: ({
                     required_auths?: string[] | undefined;
                     id?: number | undefined;
@@ -17564,21 +17564,21 @@ export declare const block: {
                     required_auths?: (string[] & string[] & { [K_369 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom"]["required_auths"], keyof string[]>]: never; }) | undefined;
                     id?: number | undefined;
                     data?: string | undefined;
-                } & { [K_370 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom"], keyof import("./custom").custom>]: never; }) | undefined;
+                } & { [K_370 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom"], keyof import("./custom.js").custom>]: never; }) | undefined;
                 witness_block_approve?: ({
                     witness?: string | undefined;
                     block_id?: string | undefined;
                 } & {
                     witness?: string | undefined;
                     block_id?: string | undefined;
-                } & { [K_371 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_block_approve"], keyof import("./witness_block_approve").witness_block_approve>]: never; }) | undefined;
+                } & { [K_371 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_block_approve"], keyof import("./witness_block_approve.js").witness_block_approve>]: never; }) | undefined;
                 delete_comment?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_372 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delete_comment"], keyof import("./delete_comment").delete_comment>]: never; }) | undefined;
+                } & { [K_372 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delete_comment"], keyof import("./delete_comment.js").delete_comment>]: never; }) | undefined;
                 custom_json?: ({
                     required_auths?: string[] | undefined;
                     required_posting_auths?: string[] | undefined;
@@ -17589,7 +17589,7 @@ export declare const block: {
                     required_posting_auths?: (string[] & string[] & { [K_374 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom_json"]["required_posting_auths"], keyof string[]>]: never; }) | undefined;
                     id?: string | undefined;
                     json?: string | undefined;
-                } & { [K_375 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom_json"], keyof import("./custom_json").custom_json>]: never; }) | undefined;
+                } & { [K_375 in Exclude<keyof I_1["transactions"][number]["operations"][number]["custom_json"], keyof import("./custom_json.js").custom_json>]: never; }) | undefined;
                 comment_options?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -17620,7 +17620,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_376 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["max_accepted_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_376 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["max_accepted_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     percent_hbd?: number | undefined;
                     allow_votes?: boolean | undefined;
                     allow_curation_rewards?: boolean | undefined;
@@ -17654,7 +17654,7 @@ export declare const block: {
                             } & {
                                 account?: string | undefined;
                                 weight?: number | undefined;
-                            } & { [K_377 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof import("./comment_options").beneficiary_route_type>]: never; })[] & { [K_378 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
+                            } & { [K_377 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"][number], keyof import("./comment_options.js").beneficiary_route_type>]: never; })[] & { [K_378 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"]["extensions"][number]["comment_payout_beneficiaries"]["beneficiaries"], keyof {
                                 account?: string | undefined;
                                 weight?: number | undefined;
                             }[]>]: never; }) | undefined;
@@ -17667,7 +17667,7 @@ export declare const block: {
                             }[] | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_382 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"], keyof import("./comment_options").comment_options>]: never; }) | undefined;
+                } & { [K_382 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_options"], keyof import("./comment_options.js").comment_options>]: never; }) | undefined;
                 set_withdraw_vesting_route?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -17678,7 +17678,7 @@ export declare const block: {
                     to_account?: string | undefined;
                     percent?: number | undefined;
                     auto_vest?: boolean | undefined;
-                } & { [K_383 in Exclude<keyof I_1["transactions"][number]["operations"][number]["set_withdraw_vesting_route"], keyof import("./set_withdraw_vesting_route").set_withdraw_vesting_route>]: never; }) | undefined;
+                } & { [K_383 in Exclude<keyof I_1["transactions"][number]["operations"][number]["set_withdraw_vesting_route"], keyof import("./set_withdraw_vesting_route.js").set_withdraw_vesting_route>]: never; }) | undefined;
                 limit_order_create2?: ({
                     owner?: string | undefined;
                     orderid?: number | undefined;
@@ -17712,7 +17712,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_384 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["amount_to_sell"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_384 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["amount_to_sell"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fill_or_kill?: boolean | undefined;
                     exchange_rate?: ({
                         base?: {
@@ -17734,7 +17734,7 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_385 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["base"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_385 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["base"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         quote?: ({
                             amount?: string | undefined;
                             precision?: number | undefined;
@@ -17743,10 +17743,10 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_386 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["quote"], keyof import("./asset").asset>]: never; }) | undefined;
-                    } & { [K_387 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"], keyof import("./price").price>]: never; }) | undefined;
+                        } & { [K_386 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"]["quote"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                    } & { [K_387 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"]["exchange_rate"], keyof import("./price.js").price>]: never; }) | undefined;
                     expiration?: string | undefined;
-                } & { [K_388 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"], keyof import("./limit_order_create2").limit_order_create2>]: never; }) | undefined;
+                } & { [K_388 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_create2"], keyof import("./limit_order_create2.js").limit_order_create2>]: never; }) | undefined;
                 claim_account?: ({
                     creator?: string | undefined;
                     fee?: {
@@ -17767,7 +17767,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_389 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_389 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -17777,7 +17777,7 @@ export declare const block: {
                     } & { [K_391 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"]["extensions"][number], "void_t">]: never; })[] & { [K_392 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_393 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"], keyof import("./claim_account").claim_account>]: never; }) | undefined;
+                } & { [K_393 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_account"], keyof import("./claim_account.js").claim_account>]: never; }) | undefined;
                 create_claimed_account?: ({
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
@@ -17836,7 +17836,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_395 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_396 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_396 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17857,7 +17857,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_398 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_399 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_399 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -17878,7 +17878,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_401 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_402 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_402 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     extensions?: ({
@@ -17890,7 +17890,7 @@ export declare const block: {
                     } & { [K_404 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["extensions"][number], "void_t">]: never; })[] & { [K_405 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_406 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"], keyof import("./create_claimed_account").create_claimed_account>]: never; }) | undefined;
+                } & { [K_406 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_claimed_account"], keyof import("./create_claimed_account.js").create_claimed_account>]: never; }) | undefined;
                 request_account_recovery?: ({
                     recovery_account?: string | undefined;
                     account_to_recover?: string | undefined;
@@ -17929,7 +17929,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_408 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_409 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_409 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"]["new_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -17939,7 +17939,7 @@ export declare const block: {
                     } & { [K_411 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"]["extensions"][number], "void_t">]: never; })[] & { [K_412 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_413 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"], keyof import("./request_account_recovery").request_account_recovery>]: never; }) | undefined;
+                } & { [K_413 in Exclude<keyof I_1["transactions"][number]["operations"][number]["request_account_recovery"], keyof import("./request_account_recovery.js").request_account_recovery>]: never; }) | undefined;
                 recover_account?: ({
                     account_to_recover?: string | undefined;
                     new_owner_authority?: {
@@ -17985,7 +17985,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_415 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_416 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_416 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["new_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     recent_owner_authority?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -18006,7 +18006,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_418 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_419 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_419 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["recent_owner_authority"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     extensions?: ({
                         void_t?: {} | undefined;
                     }[] & ({
@@ -18016,7 +18016,7 @@ export declare const block: {
                     } & { [K_421 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["extensions"][number], "void_t">]: never; })[] & { [K_422 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_423 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"], keyof import("./recover_account").recover_account>]: never; }) | undefined;
+                } & { [K_423 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recover_account"], keyof import("./recover_account.js").recover_account>]: never; }) | undefined;
                 change_recovery_account?: ({
                     account_to_recover?: string | undefined;
                     new_recovery_account?: string | undefined;
@@ -18035,7 +18035,7 @@ export declare const block: {
                     } & { [K_425 in Exclude<keyof I_1["transactions"][number]["operations"][number]["change_recovery_account"]["extensions"][number], "void_t">]: never; })[] & { [K_426 in Exclude<keyof I_1["transactions"][number]["operations"][number]["change_recovery_account"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_427 in Exclude<keyof I_1["transactions"][number]["operations"][number]["change_recovery_account"], keyof import("./change_recovery_account").change_recovery_account>]: never; }) | undefined;
+                } & { [K_427 in Exclude<keyof I_1["transactions"][number]["operations"][number]["change_recovery_account"], keyof import("./change_recovery_account.js").change_recovery_account>]: never; }) | undefined;
                 escrow_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18072,7 +18072,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_428 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_428 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18081,7 +18081,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_429 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_429 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18090,11 +18090,11 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_430 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_430 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     ratification_deadline?: string | undefined;
                     escrow_expiration?: string | undefined;
                     json_meta?: string | undefined;
-                } & { [K_431 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"], keyof import("./escrow_transfer").escrow_transfer>]: never; }) | undefined;
+                } & { [K_431 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_transfer"], keyof import("./escrow_transfer.js").escrow_transfer>]: never; }) | undefined;
                 escrow_dispute?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18107,7 +18107,7 @@ export declare const block: {
                     agent?: string | undefined;
                     who?: string | undefined;
                     escrow_id?: number | undefined;
-                } & { [K_432 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_dispute"], keyof import("./escrow_dispute").escrow_dispute>]: never; }) | undefined;
+                } & { [K_432 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_dispute"], keyof import("./escrow_dispute.js").escrow_dispute>]: never; }) | undefined;
                 escrow_release?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18140,7 +18140,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_433 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_433 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18149,8 +18149,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_434 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_435 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"], keyof import("./escrow_release").escrow_release>]: never; }) | undefined;
+                    } & { [K_434 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_435 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_release"], keyof import("./escrow_release.js").escrow_release>]: never; }) | undefined;
                 pow2?: ({
                     work?: {
                         pow2?: {
@@ -18229,9 +18229,9 @@ export declare const block: {
                                 worker_account?: string | undefined;
                                 prev_block?: string | undefined;
                                 nonce?: string | undefined;
-                            } & { [K_436 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"]["input"], keyof import("./pow2").pow2_input>]: never; }) | undefined;
+                            } & { [K_436 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"]["input"], keyof import("./pow2.js").pow2_input>]: never; }) | undefined;
                             pow_summary?: number | undefined;
-                        } & { [K_437 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"], keyof import("./pow2").pow2_pow>]: never; }) | undefined;
+                        } & { [K_437 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["pow2"], keyof import("./pow2.js").pow2_pow>]: never; }) | undefined;
                         equihash_pow?: ({
                             input?: {
                                 worker_account?: string | undefined;
@@ -18255,7 +18255,7 @@ export declare const block: {
                                 worker_account?: string | undefined;
                                 prev_block?: string | undefined;
                                 nonce?: string | undefined;
-                            } & { [K_438 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["input"], keyof import("./pow2").pow2_input>]: never; }) | undefined;
+                            } & { [K_438 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["input"], keyof import("./pow2.js").pow2_input>]: never; }) | undefined;
                             proof?: ({
                                 n?: number | undefined;
                                 k?: number | undefined;
@@ -18266,11 +18266,11 @@ export declare const block: {
                                 k?: number | undefined;
                                 seed?: string | undefined;
                                 inputs?: (number[] & number[] & { [K_439 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"]["inputs"], keyof number[]>]: never; }) | undefined;
-                            } & { [K_440 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"], keyof import("./pow2").equihash_proof>]: never; }) | undefined;
+                            } & { [K_440 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"]["proof"], keyof import("./pow2.js").equihash_proof>]: never; }) | undefined;
                             prev_block?: string | undefined;
                             pow_summary?: number | undefined;
-                        } & { [K_441 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"], keyof import("./pow2").equihash_pow>]: never; }) | undefined;
-                    } & { [K_442 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"], keyof import("./pow2").pow2_work>]: never; }) | undefined;
+                        } & { [K_441 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"]["equihash_pow"], keyof import("./pow2.js").equihash_pow>]: never; }) | undefined;
+                    } & { [K_442 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["work"], keyof import("./pow2.js").pow2_work>]: never; }) | undefined;
                     new_owner_key?: string | undefined;
                     props?: ({
                         account_creation_fee?: {
@@ -18289,11 +18289,11 @@ export declare const block: {
                             amount?: string | undefined;
                             precision?: number | undefined;
                             nai?: string | undefined;
-                        } & { [K_443 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["props"]["account_creation_fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                        } & { [K_443 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["props"]["account_creation_fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                         maximum_block_size?: number | undefined;
                         hbd_interest_rate?: number | undefined;
-                    } & { [K_444 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["props"], keyof import("./legacy_chain_properties").legacy_chain_properties>]: never; }) | undefined;
-                } & { [K_445 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"], keyof import("./pow2").pow2>]: never; }) | undefined;
+                    } & { [K_444 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"]["props"], keyof import("./legacy_chain_properties.js").legacy_chain_properties>]: never; }) | undefined;
+                } & { [K_445 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow2"], keyof import("./pow2.js").pow2>]: never; }) | undefined;
                 escrow_approve?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18308,7 +18308,7 @@ export declare const block: {
                     who?: string | undefined;
                     escrow_id?: number | undefined;
                     approve?: boolean | undefined;
-                } & { [K_446 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approve"], keyof import("./escrow_approve").escrow_approve>]: never; }) | undefined;
+                } & { [K_446 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approve"], keyof import("./escrow_approve.js").escrow_approve>]: never; }) | undefined;
                 transfer_to_savings?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18329,9 +18329,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_447 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_447 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_448 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_savings"], keyof import("./transfer_to_savings").transfer_to_savings>]: never; }) | undefined;
+                } & { [K_448 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_savings"], keyof import("./transfer_to_savings.js").transfer_to_savings>]: never; }) | undefined;
                 transfer_from_savings?: ({
                     from_account?: string | undefined;
                     request_id?: number | undefined;
@@ -18354,23 +18354,23 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_449 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_from_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_449 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_from_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
-                } & { [K_450 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_from_savings"], keyof import("./transfer_from_savings").transfer_from_savings>]: never; }) | undefined;
+                } & { [K_450 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_from_savings"], keyof import("./transfer_from_savings.js").transfer_from_savings>]: never; }) | undefined;
                 cancel_transfer_from_savings?: ({
                     from_account?: string | undefined;
                     request_id?: number | undefined;
                 } & {
                     from_account?: string | undefined;
                     request_id?: number | undefined;
-                } & { [K_451 in Exclude<keyof I_1["transactions"][number]["operations"][number]["cancel_transfer_from_savings"], keyof import("./cancel_transfer_from_savings").cancel_transfer_from_savings>]: never; }) | undefined;
+                } & { [K_451 in Exclude<keyof I_1["transactions"][number]["operations"][number]["cancel_transfer_from_savings"], keyof import("./cancel_transfer_from_savings.js").cancel_transfer_from_savings>]: never; }) | undefined;
                 decline_voting_rights?: ({
                     account?: string | undefined;
                     decline?: boolean | undefined;
                 } & {
                     account?: string | undefined;
                     decline?: boolean | undefined;
-                } & { [K_452 in Exclude<keyof I_1["transactions"][number]["operations"][number]["decline_voting_rights"], keyof import("./decline_voting_rights").decline_voting_rights>]: never; }) | undefined;
+                } & { [K_452 in Exclude<keyof I_1["transactions"][number]["operations"][number]["decline_voting_rights"], keyof import("./decline_voting_rights.js").decline_voting_rights>]: never; }) | undefined;
                 claim_reward_balance?: ({
                     account?: string | undefined;
                     reward_hive?: {
@@ -18398,7 +18398,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_453 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hive"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_453 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hive"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     reward_hbd?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18407,7 +18407,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_454 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hbd"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_454 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_hbd"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     reward_vests?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18416,8 +18416,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_455 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_vests"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_456 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"], keyof import("./claim_reward_balance").claim_reward_balance>]: never; }) | undefined;
+                    } & { [K_455 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"]["reward_vests"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_456 in Exclude<keyof I_1["transactions"][number]["operations"][number]["claim_reward_balance"], keyof import("./claim_reward_balance.js").claim_reward_balance>]: never; }) | undefined;
                 delegate_vesting_shares?: ({
                     delegator?: string | undefined;
                     delegatee?: string | undefined;
@@ -18437,8 +18437,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_457 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delegate_vesting_shares"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_458 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delegate_vesting_shares"], keyof import("./delegate_vesting_shares").delegate_vesting_shares>]: never; }) | undefined;
+                    } & { [K_457 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delegate_vesting_shares"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_458 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delegate_vesting_shares"], keyof import("./delegate_vesting_shares.js").delegate_vesting_shares>]: never; }) | undefined;
                 account_create_with_delegation?: ({
                     fee?: {
                         amount?: string | undefined;
@@ -18493,7 +18493,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_459 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_459 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     delegation?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18502,7 +18502,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_460 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["delegation"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_460 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["delegation"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     creator?: string | undefined;
                     new_account_name?: string | undefined;
                     owner?: ({
@@ -18525,7 +18525,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_462 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_463 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_463 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -18546,7 +18546,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_465 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_466 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_466 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -18567,7 +18567,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_468 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_469 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_469 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     extensions?: ({
@@ -18579,7 +18579,7 @@ export declare const block: {
                     } & { [K_471 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["extensions"][number], "void_t">]: never; })[] & { [K_472 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_473 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"], keyof import("./account_create_with_delegation").account_create_with_delegation>]: never; }) | undefined;
+                } & { [K_473 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_create_with_delegation"], keyof import("./account_create_with_delegation.js").account_create_with_delegation>]: never; }) | undefined;
                 witness_set_properties?: ({
                     owner?: string | undefined;
                     props?: {
@@ -18604,7 +18604,7 @@ export declare const block: {
                     } & { [K_476 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_set_properties"]["extensions"][number], "void_t">]: never; })[] & { [K_477 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_set_properties"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_478 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_set_properties"], keyof import("./witness_set_properties").witness_set_properties>]: never; }) | undefined;
+                } & { [K_478 in Exclude<keyof I_1["transactions"][number]["operations"][number]["witness_set_properties"], keyof import("./witness_set_properties.js").witness_set_properties>]: never; }) | undefined;
                 account_update2?: ({
                     account?: string | undefined;
                     owner?: {
@@ -18662,7 +18662,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_480 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["owner"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_481 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["owner"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_481 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["owner"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     active?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -18683,7 +18683,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_483 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["active"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_484 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["active"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_484 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["active"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     posting?: ({
                         weight_threshold?: number | undefined;
                         account_auths?: {
@@ -18704,7 +18704,7 @@ export declare const block: {
                         } & {
                             [x: string]: number | undefined;
                         } & { [K_486 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["posting"]["key_auths"], string | number>]: never; }) | undefined;
-                    } & { [K_487 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["posting"], keyof import("./authority").authority>]: never; }) | undefined;
+                    } & { [K_487 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["posting"], keyof import("./authority.js").authority>]: never; }) | undefined;
                     memo_key?: string | undefined;
                     json_metadata?: string | undefined;
                     posting_json_metadata?: string | undefined;
@@ -18717,7 +18717,7 @@ export declare const block: {
                     } & { [K_489 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["extensions"][number], "void_t">]: never; })[] & { [K_490 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_491 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"], keyof import("./account_update2").account_update2>]: never; }) | undefined;
+                } & { [K_491 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_update2"], keyof import("./account_update2.js").account_update2>]: never; }) | undefined;
                 create_proposal?: ({
                     creator?: string | undefined;
                     receiver?: string | undefined;
@@ -18746,7 +18746,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_492 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"]["daily_pay"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_492 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"]["daily_pay"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     subject?: string | undefined;
                     permlink?: string | undefined;
                     extensions?: ({
@@ -18758,7 +18758,7 @@ export declare const block: {
                     } & { [K_494 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"]["extensions"][number], "void_t">]: never; })[] & { [K_495 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_496 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"], keyof import("./create_proposal").create_proposal>]: never; }) | undefined;
+                } & { [K_496 in Exclude<keyof I_1["transactions"][number]["operations"][number]["create_proposal"], keyof import("./create_proposal.js").create_proposal>]: never; }) | undefined;
                 update_proposal_votes?: ({
                     voter?: string | undefined;
                     proposal_ids?: string[] | undefined;
@@ -18779,7 +18779,7 @@ export declare const block: {
                     } & { [K_499 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal_votes"]["extensions"][number], "void_t">]: never; })[] & { [K_500 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal_votes"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_501 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal_votes"], keyof import("./update_proposal_votes").update_proposal_votes>]: never; }) | undefined;
+                } & { [K_501 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal_votes"], keyof import("./update_proposal_votes.js").update_proposal_votes>]: never; }) | undefined;
                 remove_proposal?: ({
                     proposal_owner?: string | undefined;
                     proposal_ids?: string[] | undefined;
@@ -18798,7 +18798,7 @@ export declare const block: {
                     } & { [K_504 in Exclude<keyof I_1["transactions"][number]["operations"][number]["remove_proposal"]["extensions"][number], "void_t">]: never; })[] & { [K_505 in Exclude<keyof I_1["transactions"][number]["operations"][number]["remove_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_506 in Exclude<keyof I_1["transactions"][number]["operations"][number]["remove_proposal"], keyof import("./remove_proposal").remove_proposal>]: never; }) | undefined;
+                } & { [K_506 in Exclude<keyof I_1["transactions"][number]["operations"][number]["remove_proposal"], keyof import("./remove_proposal.js").remove_proposal>]: never; }) | undefined;
                 update_proposal?: ({
                     proposal_id?: string | undefined;
                     creator?: string | undefined;
@@ -18826,7 +18826,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_507 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["daily_pay"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_507 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["daily_pay"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     subject?: string | undefined;
                     permlink?: string | undefined;
                     extensions?: ({
@@ -18846,13 +18846,13 @@ export declare const block: {
                         } & {
                             end_date?: string | undefined;
                         } & { [K_509 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number]["update_proposal_end_date"], "end_date">]: never; }) | undefined;
-                    } & { [K_510 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number], keyof import("./update_proposal").update_proposal_extension>]: never; })[] & { [K_511 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["extensions"], keyof {
+                    } & { [K_510 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["extensions"][number], keyof import("./update_proposal.js").update_proposal_extension>]: never; })[] & { [K_511 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"]["extensions"], keyof {
                         void_t?: {} | undefined;
                         update_proposal_end_date?: {
                             end_date?: string | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_512 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"], keyof import("./update_proposal").update_proposal>]: never; }) | undefined;
+                } & { [K_512 in Exclude<keyof I_1["transactions"][number]["operations"][number]["update_proposal"], keyof import("./update_proposal.js").update_proposal>]: never; }) | undefined;
                 collateralized_convert?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -18872,8 +18872,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_513 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_514 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert"], keyof import("./collateralized_convert").collateralized_convert>]: never; }) | undefined;
+                    } & { [K_513 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_514 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert"], keyof import("./collateralized_convert.js").collateralized_convert>]: never; }) | undefined;
                 recurrent_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -18902,7 +18902,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_515 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_515 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     recurrence?: number | undefined;
                     executions?: number | undefined;
@@ -18923,13 +18923,13 @@ export declare const block: {
                         } & {
                             pair_id?: number | undefined;
                         } & { [K_517 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number]["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-                    } & { [K_518 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number], keyof import("./recurrent_transfer").recurrent_transfer_extension>]: never; })[] & { [K_519 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"], keyof {
+                    } & { [K_518 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"][number], keyof import("./recurrent_transfer.js").recurrent_transfer_extension>]: never; })[] & { [K_519 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"]["extensions"], keyof {
                         void_t?: {} | undefined;
                         recurrent_transfer_pair_id?: {
                             pair_id?: number | undefined;
                         } | undefined;
                     }[]>]: never; }) | undefined;
-                } & { [K_520 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"], keyof import("./recurrent_transfer").recurrent_transfer>]: never; }) | undefined;
+                } & { [K_520 in Exclude<keyof I_1["transactions"][number]["operations"][number]["recurrent_transfer"], keyof import("./recurrent_transfer.js").recurrent_transfer>]: never; }) | undefined;
                 fill_convert_request?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -18954,7 +18954,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_521 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"]["amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_521 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"]["amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -18963,8 +18963,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_522 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"]["amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_523 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"], keyof import("./fill_convert_request").fill_convert_request>]: never; }) | undefined;
+                    } & { [K_522 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"]["amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_523 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_convert_request"], keyof import("./fill_convert_request.js").fill_convert_request>]: never; }) | undefined;
                 author_reward?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -19000,7 +19000,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_524 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["hbd_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_524 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["hbd_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19009,7 +19009,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_525 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["hive_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_525 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["hive_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19018,7 +19018,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_526 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_526 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     curators_vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19027,9 +19027,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_527 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["curators_vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_527 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"]["curators_vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_528 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"], keyof import("./author_reward").author_reward>]: never; }) | undefined;
+                } & { [K_528 in Exclude<keyof I_1["transactions"][number]["operations"][number]["author_reward"], keyof import("./author_reward.js").author_reward>]: never; }) | undefined;
                 curation_reward?: ({
                     curator?: string | undefined;
                     reward?: {
@@ -19050,11 +19050,11 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_529 in Exclude<keyof I_1["transactions"][number]["operations"][number]["curation_reward"]["reward"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_529 in Exclude<keyof I_1["transactions"][number]["operations"][number]["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     comment_author?: string | undefined;
                     comment_permlink?: string | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_530 in Exclude<keyof I_1["transactions"][number]["operations"][number]["curation_reward"], keyof import("./curation_reward").curation_reward>]: never; }) | undefined;
+                } & { [K_530 in Exclude<keyof I_1["transactions"][number]["operations"][number]["curation_reward"], keyof import("./curation_reward.js").curation_reward>]: never; }) | undefined;
                 comment_reward?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
@@ -19090,7 +19090,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_531 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_531 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     author_rewards?: string | undefined;
                     total_payout_value?: ({
                         amount?: string | undefined;
@@ -19100,7 +19100,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_532 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["total_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_532 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["total_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     curator_payout_value?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19109,7 +19109,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_533 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["curator_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_533 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["curator_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     beneficiary_payout_value?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19118,8 +19118,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_534 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["beneficiary_payout_value"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_535 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"], keyof import("./comment_reward").comment_reward>]: never; }) | undefined;
+                    } & { [K_534 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"]["beneficiary_payout_value"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_535 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_reward"], keyof import("./comment_reward.js").comment_reward>]: never; }) | undefined;
                 liquidity_reward?: ({
                     owner?: string | undefined;
                     payout?: {
@@ -19137,8 +19137,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_536 in Exclude<keyof I_1["transactions"][number]["operations"][number]["liquidity_reward"]["payout"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_537 in Exclude<keyof I_1["transactions"][number]["operations"][number]["liquidity_reward"], keyof import("./liquidity_reward").liquidity_reward>]: never; }) | undefined;
+                    } & { [K_536 in Exclude<keyof I_1["transactions"][number]["operations"][number]["liquidity_reward"]["payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_537 in Exclude<keyof I_1["transactions"][number]["operations"][number]["liquidity_reward"], keyof import("./liquidity_reward.js").liquidity_reward>]: never; }) | undefined;
                 interest?: ({
                     owner?: string | undefined;
                     interest?: {
@@ -19157,9 +19157,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_538 in Exclude<keyof I_1["transactions"][number]["operations"][number]["interest"]["interest"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_538 in Exclude<keyof I_1["transactions"][number]["operations"][number]["interest"]["interest"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     is_saved_into_hbd_balance?: boolean | undefined;
-                } & { [K_539 in Exclude<keyof I_1["transactions"][number]["operations"][number]["interest"], keyof import("./interest").interest>]: never; }) | undefined;
+                } & { [K_539 in Exclude<keyof I_1["transactions"][number]["operations"][number]["interest"], keyof import("./interest.js").interest>]: never; }) | undefined;
                 fill_vesting_withdraw?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -19184,7 +19184,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_540 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["withdrawn"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_540 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["withdrawn"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     deposited?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19193,8 +19193,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_541 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["deposited"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_542 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"], keyof import("./fill_vesting_withdraw").fill_vesting_withdraw>]: never; }) | undefined;
+                    } & { [K_541 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"]["deposited"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_542 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_vesting_withdraw"], keyof import("./fill_vesting_withdraw.js").fill_vesting_withdraw>]: never; }) | undefined;
                 fill_order?: ({
                     current_owner?: string | undefined;
                     current_orderid?: number | undefined;
@@ -19221,7 +19221,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_543 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"]["current_pays"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_543 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"]["current_pays"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     open_owner?: string | undefined;
                     open_orderid?: number | undefined;
                     open_pays?: ({
@@ -19232,8 +19232,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_544 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"]["open_pays"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_545 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"], keyof import("./fill_order").fill_order>]: never; }) | undefined;
+                    } & { [K_544 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"]["open_pays"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_545 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_order"], keyof import("./fill_order.js").fill_order>]: never; }) | undefined;
                 shutdown_witness?: ({
                     owner?: string | undefined;
                 } & {
@@ -19260,10 +19260,10 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_547 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_transfer_from_savings"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_547 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_transfer_from_savings"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     request_id?: number | undefined;
                     memo?: string | undefined;
-                } & { [K_548 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_transfer_from_savings"], keyof import("./fill_transfer_from_savings").fill_transfer_from_savings>]: never; }) | undefined;
+                } & { [K_548 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_transfer_from_savings"], keyof import("./fill_transfer_from_savings.js").fill_transfer_from_savings>]: never; }) | undefined;
                 hardfork?: ({
                     hardfork_id?: number | undefined;
                 } & {
@@ -19275,7 +19275,7 @@ export declare const block: {
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_550 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_payout_update"], keyof import("./comment_payout_update").comment_payout_update>]: never; }) | undefined;
+                } & { [K_550 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_payout_update"], keyof import("./comment_payout_update.js").comment_payout_update>]: never; }) | undefined;
                 return_vesting_delegation?: ({
                     account?: string | undefined;
                     vesting_shares?: {
@@ -19293,8 +19293,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_551 in Exclude<keyof I_1["transactions"][number]["operations"][number]["return_vesting_delegation"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_552 in Exclude<keyof I_1["transactions"][number]["operations"][number]["return_vesting_delegation"], keyof import("./return_vesting_delegation").return_vesting_delegation>]: never; }) | undefined;
+                    } & { [K_551 in Exclude<keyof I_1["transactions"][number]["operations"][number]["return_vesting_delegation"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_552 in Exclude<keyof I_1["transactions"][number]["operations"][number]["return_vesting_delegation"], keyof import("./return_vesting_delegation.js").return_vesting_delegation>]: never; }) | undefined;
                 comment_benefactor_reward?: ({
                     benefactor?: string | undefined;
                     author?: string | undefined;
@@ -19327,7 +19327,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_553 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hbd_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_553 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hbd_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19336,7 +19336,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_554 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hive_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_554 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["hive_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_payout?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19345,9 +19345,9 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_555 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["vesting_payout"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_555 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"]["vesting_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     payout_must_be_claimed?: boolean | undefined;
-                } & { [K_556 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"], keyof import("./comment_benefactor_reward").comment_benefactor_reward>]: never; }) | undefined;
+                } & { [K_556 in Exclude<keyof I_1["transactions"][number]["operations"][number]["comment_benefactor_reward"], keyof import("./comment_benefactor_reward.js").comment_benefactor_reward>]: never; }) | undefined;
                 producer_reward?: ({
                     producer?: string | undefined;
                     vesting_shares?: {
@@ -19365,8 +19365,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_557 in Exclude<keyof I_1["transactions"][number]["operations"][number]["producer_reward"]["vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_558 in Exclude<keyof I_1["transactions"][number]["operations"][number]["producer_reward"], keyof import("./producer_reward").producer_reward>]: never; }) | undefined;
+                    } & { [K_557 in Exclude<keyof I_1["transactions"][number]["operations"][number]["producer_reward"]["vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_558 in Exclude<keyof I_1["transactions"][number]["operations"][number]["producer_reward"], keyof import("./producer_reward.js").producer_reward>]: never; }) | undefined;
                 clear_null_account_balance?: ({
                     total_cleared?: {
                         amount?: string | undefined;
@@ -19386,7 +19386,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_559 in Exclude<keyof I_1["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"][number], keyof import("./asset").asset>]: never; })[] & { [K_560 in Exclude<keyof I_1["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"], keyof {
+                    } & { [K_559 in Exclude<keyof I_1["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"][number], keyof import("./asset.js").asset>]: never; })[] & { [K_560 in Exclude<keyof I_1["transactions"][number]["operations"][number]["clear_null_account_balance"]["total_cleared"], keyof {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
@@ -19413,8 +19413,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_562 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_pay"]["payment"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_563 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_pay"], keyof import("./proposal_pay").proposal_pay>]: never; }) | undefined;
+                    } & { [K_562 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_pay"]["payment"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_563 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_pay"], keyof import("./proposal_pay.js").proposal_pay>]: never; }) | undefined;
                 dhf_funding?: ({
                     treasury?: string | undefined;
                     additional_funds?: {
@@ -19432,8 +19432,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_564 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_funding"]["additional_funds"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_565 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_funding"], keyof import("./dhf_funding").dhf_funding>]: never; }) | undefined;
+                    } & { [K_564 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_funding"]["additional_funds"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_565 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_funding"], keyof import("./dhf_funding.js").dhf_funding>]: never; }) | undefined;
                 hardfork_hive?: ({
                     account?: string | undefined;
                     treasury?: string | undefined;
@@ -19470,7 +19470,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_567 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["hbd_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_567 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["hbd_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_transferred?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19479,7 +19479,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_568 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["hive_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_568 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["hive_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vests_converted?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19488,7 +19488,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_569 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["vests_converted"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_569 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["vests_converted"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     total_hive_from_vests?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19497,8 +19497,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_570 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["total_hive_from_vests"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_571 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"], keyof import("./hardfork_hive").hardfork_hive>]: never; }) | undefined;
+                    } & { [K_570 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"]["total_hive_from_vests"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_571 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive"], keyof import("./hardfork_hive.js").hardfork_hive>]: never; }) | undefined;
                 hardfork_hive_restore?: ({
                     account?: string | undefined;
                     treasury?: string | undefined;
@@ -19523,7 +19523,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_572 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hbd_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_572 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hbd_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_transferred?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19532,15 +19532,15 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_573 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hive_transferred"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_574 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"], keyof import("./hardfork_hive_restore").hardfork_hive_restore>]: never; }) | undefined;
+                    } & { [K_573 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"]["hive_transferred"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_574 in Exclude<keyof I_1["transactions"][number]["operations"][number]["hardfork_hive_restore"], keyof import("./hardfork_hive_restore.js").hardfork_hive_restore>]: never; }) | undefined;
                 delayed_voting?: ({
                     voter?: string | undefined;
                     votes?: string | undefined;
                 } & {
                     voter?: string | undefined;
                     votes?: string | undefined;
-                } & { [K_575 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delayed_voting"], keyof import("./delayed_voting").delayed_voting>]: never; }) | undefined;
+                } & { [K_575 in Exclude<keyof I_1["transactions"][number]["operations"][number]["delayed_voting"], keyof import("./delayed_voting.js").delayed_voting>]: never; }) | undefined;
                 consolidate_treasury_balance?: ({
                     total_moved?: {
                         amount?: string | undefined;
@@ -19560,7 +19560,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_576 in Exclude<keyof I_1["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"][number], keyof import("./asset").asset>]: never; })[] & { [K_577 in Exclude<keyof I_1["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"], keyof {
+                    } & { [K_576 in Exclude<keyof I_1["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"][number], keyof import("./asset.js").asset>]: never; })[] & { [K_577 in Exclude<keyof I_1["transactions"][number]["operations"][number]["consolidate_treasury_balance"]["total_moved"], keyof {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
@@ -19593,15 +19593,15 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_579 in Exclude<keyof I_1["transactions"][number]["operations"][number]["effective_comment_vote"]["pending_payout"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_580 in Exclude<keyof I_1["transactions"][number]["operations"][number]["effective_comment_vote"], keyof import("./effective_comment_vote").effective_comment_vote>]: never; }) | undefined;
+                    } & { [K_579 in Exclude<keyof I_1["transactions"][number]["operations"][number]["effective_comment_vote"]["pending_payout"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_580 in Exclude<keyof I_1["transactions"][number]["operations"][number]["effective_comment_vote"], keyof import("./effective_comment_vote.js").effective_comment_vote>]: never; }) | undefined;
                 ineffective_delete_comment?: ({
                     author?: string | undefined;
                     permlink?: string | undefined;
                 } & {
                     author?: string | undefined;
                     permlink?: string | undefined;
-                } & { [K_581 in Exclude<keyof I_1["transactions"][number]["operations"][number]["ineffective_delete_comment"], keyof import("./ineffective_delete_comment").ineffective_delete_comment>]: never; }) | undefined;
+                } & { [K_581 in Exclude<keyof I_1["transactions"][number]["operations"][number]["ineffective_delete_comment"], keyof import("./ineffective_delete_comment.js").ineffective_delete_comment>]: never; }) | undefined;
                 dhf_conversion?: ({
                     treasury?: string | undefined;
                     hive_amount_in?: {
@@ -19624,7 +19624,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_582 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"]["hive_amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_582 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"]["hive_amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hbd_amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19633,8 +19633,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_583 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"]["hbd_amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_584 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"], keyof import("./dhf_conversion").dhf_conversion>]: never; }) | undefined;
+                    } & { [K_583 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"]["hbd_amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_584 in Exclude<keyof I_1["transactions"][number]["operations"][number]["dhf_conversion"], keyof import("./dhf_conversion.js").dhf_conversion>]: never; }) | undefined;
                 expired_account_notification?: ({
                     account?: string | undefined;
                 } & {
@@ -19648,7 +19648,7 @@ export declare const block: {
                     account?: string | undefined;
                     old_recovery_account?: string | undefined;
                     new_recovery_account?: string | undefined;
-                } & { [K_586 in Exclude<keyof I_1["transactions"][number]["operations"][number]["changed_recovery_account"], keyof import("./changed_recovery_account").changed_recovery_account>]: never; }) | undefined;
+                } & { [K_586 in Exclude<keyof I_1["transactions"][number]["operations"][number]["changed_recovery_account"], keyof import("./changed_recovery_account.js").changed_recovery_account>]: never; }) | undefined;
                 transfer_to_vesting_completed?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -19673,7 +19673,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_587 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["hive_vested"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_587 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["hive_vested"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_shares_received?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19682,8 +19682,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_588 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["vesting_shares_received"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_589 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"], keyof import("./transfer_to_vesting_completed").transfer_to_vesting_completed>]: never; }) | undefined;
+                    } & { [K_588 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"]["vesting_shares_received"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_589 in Exclude<keyof I_1["transactions"][number]["operations"][number]["transfer_to_vesting_completed"], keyof import("./transfer_to_vesting_completed.js").transfer_to_vesting_completed>]: never; }) | undefined;
                 pow_reward?: ({
                     worker?: string | undefined;
                     reward?: {
@@ -19701,8 +19701,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_590 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow_reward"]["reward"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_591 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow_reward"], keyof import("./pow_reward").pow_reward>]: never; }) | undefined;
+                    } & { [K_590 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_591 in Exclude<keyof I_1["transactions"][number]["operations"][number]["pow_reward"], keyof import("./pow_reward.js").pow_reward>]: never; }) | undefined;
                 vesting_shares_split?: ({
                     owner?: string | undefined;
                     vesting_shares_before_split?: {
@@ -19725,7 +19725,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_592 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_before_split"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_592 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_before_split"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     vesting_shares_after_split?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19734,8 +19734,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_593 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_after_split"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_594 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"], keyof import("./vesting_shares_split").vesting_shares_split>]: never; }) | undefined;
+                    } & { [K_593 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"]["vesting_shares_after_split"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_594 in Exclude<keyof I_1["transactions"][number]["operations"][number]["vesting_shares_split"], keyof import("./vesting_shares_split.js").vesting_shares_split>]: never; }) | undefined;
                 account_created?: ({
                     new_account_name?: string | undefined;
                     creator?: string | undefined;
@@ -19760,7 +19760,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_595 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"]["initial_vesting_shares"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_595 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"]["initial_vesting_shares"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     initial_delegation?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19769,8 +19769,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_596 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"]["initial_delegation"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_597 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"], keyof import("./account_created").account_created>]: never; }) | undefined;
+                    } & { [K_596 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"]["initial_delegation"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_597 in Exclude<keyof I_1["transactions"][number]["operations"][number]["account_created"], keyof import("./account_created.js").account_created>]: never; }) | undefined;
                 fill_collateralized_convert_request?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -19800,7 +19800,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_598 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_in"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_598 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_in"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     amount_out?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19809,7 +19809,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_599 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_out"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_599 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["amount_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     excess_collateral?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -19818,8 +19818,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_600 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["excess_collateral"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_601 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"], keyof import("./fill_collateralized_convert_request").fill_collateralized_convert_request>]: never; }) | undefined;
+                    } & { [K_600 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"]["excess_collateral"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_601 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_collateralized_convert_request"], keyof import("./fill_collateralized_convert_request.js").fill_collateralized_convert_request>]: never; }) | undefined;
                 system_warning?: ({
                     message?: string | undefined;
                 } & {
@@ -19846,10 +19846,10 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_603 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_603 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     remaining_executions?: number | undefined;
-                } & { [K_604 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_recurrent_transfer"], keyof import("./fill_recurrent_transfer").fill_recurrent_transfer>]: never; }) | undefined;
+                } & { [K_604 in Exclude<keyof I_1["transactions"][number]["operations"][number]["fill_recurrent_transfer"], keyof import("./fill_recurrent_transfer.js").fill_recurrent_transfer>]: never; }) | undefined;
                 failed_recurrent_transfer?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -19873,12 +19873,12 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_605 in Exclude<keyof I_1["transactions"][number]["operations"][number]["failed_recurrent_transfer"]["amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_605 in Exclude<keyof I_1["transactions"][number]["operations"][number]["failed_recurrent_transfer"]["amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     memo?: string | undefined;
                     consecutive_failures?: number | undefined;
                     remaining_executions?: number | undefined;
                     deleted?: boolean | undefined;
-                } & { [K_606 in Exclude<keyof I_1["transactions"][number]["operations"][number]["failed_recurrent_transfer"], keyof import("./failed_recurrent_transfer").failed_recurrent_transfer>]: never; }) | undefined;
+                } & { [K_606 in Exclude<keyof I_1["transactions"][number]["operations"][number]["failed_recurrent_transfer"], keyof import("./failed_recurrent_transfer.js").failed_recurrent_transfer>]: never; }) | undefined;
                 limit_order_cancelled?: ({
                     seller?: string | undefined;
                     orderid?: number | undefined;
@@ -19898,8 +19898,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_607 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancelled"]["amount_back"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_608 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancelled"], keyof import("./limit_order_cancelled").limit_order_cancelled>]: never; }) | undefined;
+                    } & { [K_607 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancelled"]["amount_back"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_608 in Exclude<keyof I_1["transactions"][number]["operations"][number]["limit_order_cancelled"], keyof import("./limit_order_cancelled.js").limit_order_cancelled>]: never; }) | undefined;
                 producer_missed?: ({
                     producer?: string | undefined;
                 } & {
@@ -19926,8 +19926,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_610 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_fee"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_611 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_fee"], keyof import("./proposal_fee").proposal_fee>]: never; }) | undefined;
+                    } & { [K_610 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_fee"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_611 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proposal_fee"], keyof import("./proposal_fee.js").proposal_fee>]: never; }) | undefined;
                 collateralized_convert_immediate_conversion?: ({
                     owner?: string | undefined;
                     requestid?: number | undefined;
@@ -19947,8 +19947,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_612 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"]["hbd_out"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_613 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"], keyof import("./collateralized_convert_immediate_conversion").collateralized_convert_immediate_conversion>]: never; }) | undefined;
+                    } & { [K_612 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"]["hbd_out"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_613 in Exclude<keyof I_1["transactions"][number]["operations"][number]["collateralized_convert_immediate_conversion"], keyof import("./collateralized_convert_immediate_conversion.js").collateralized_convert_immediate_conversion>]: never; }) | undefined;
                 escrow_approved?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -19972,8 +19972,8 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_614 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approved"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_615 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approved"], keyof import("./escrow_approved").escrow_approved>]: never; }) | undefined;
+                    } & { [K_614 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approved"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_615 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_approved"], keyof import("./escrow_approved.js").escrow_approved>]: never; }) | undefined;
                 escrow_rejected?: ({
                     from_account?: string | undefined;
                     to_account?: string | undefined;
@@ -20007,7 +20007,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_616 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["hbd_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_616 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["hbd_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     hive_amount?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -20016,7 +20016,7 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_617 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["hive_amount"], keyof import("./asset").asset>]: never; }) | undefined;
+                    } & { [K_617 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["hive_amount"], keyof import("./asset.js").asset>]: never; }) | undefined;
                     fee?: ({
                         amount?: string | undefined;
                         precision?: number | undefined;
@@ -20025,21 +20025,21 @@ export declare const block: {
                         amount?: string | undefined;
                         precision?: number | undefined;
                         nai?: string | undefined;
-                    } & { [K_618 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["fee"], keyof import("./asset").asset>]: never; }) | undefined;
-                } & { [K_619 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"], keyof import("./escrow_rejected").escrow_rejected>]: never; }) | undefined;
+                    } & { [K_618 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"]["fee"], keyof import("./asset.js").asset>]: never; }) | undefined;
+                } & { [K_619 in Exclude<keyof I_1["transactions"][number]["operations"][number]["escrow_rejected"], keyof import("./escrow_rejected.js").escrow_rejected>]: never; }) | undefined;
                 proxy_cleared?: ({
                     account?: string | undefined;
                     proxy?: string | undefined;
                 } & {
                     account?: string | undefined;
                     proxy?: string | undefined;
-                } & { [K_620 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proxy_cleared"], keyof import("./proxy_cleared").proxy_cleared>]: never; }) | undefined;
+                } & { [K_620 in Exclude<keyof I_1["transactions"][number]["operations"][number]["proxy_cleared"], keyof import("./proxy_cleared.js").proxy_cleared>]: never; }) | undefined;
                 declined_voting_rights?: ({
                     account?: string | undefined;
                 } & {
                     account?: string | undefined;
                 } & { [K_621 in Exclude<keyof I_1["transactions"][number]["operations"][number]["declined_voting_rights"], "account">]: never; }) | undefined;
-            } & { [K_622 in Exclude<keyof I_1["transactions"][number]["operations"][number], keyof import("./operation").operation>]: never; })[] & { [K_623 in Exclude<keyof I_1["transactions"][number]["operations"], keyof {
+            } & { [K_622 in Exclude<keyof I_1["transactions"][number]["operations"][number], keyof import("./operation.js").operation>]: never; })[] & { [K_623 in Exclude<keyof I_1["transactions"][number]["operations"], keyof {
                 vote?: {
                     voter?: string | undefined;
                     author?: string | undefined;
