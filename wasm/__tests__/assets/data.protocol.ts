@@ -34,8 +34,7 @@ export const transaction = JSON.stringify({
   expiration: "2021-12-13T11:31:33",
   operations: [
     vote_operation
-  ],
-  extensions: []
+  ]
 });
 
 /// See Hive mainnet block 80021416, trx_id: 7f34699e9eea49d1bcc10c88f96e38897839ece3

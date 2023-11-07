@@ -23,7 +23,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   get TransactionBuilder(): ITransactionBuilderConstructor {
-    return TransactionBuilder.bind(undefined, this);
+    return Object.assign(
+      TransactionBuilder.bind(undefined, this),
+      {
+        fromApi: TransactionBuilder.fromApi.bind(undefined, this)
+      }
+    );
   }
 
   delete(): void {

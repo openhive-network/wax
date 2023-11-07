@@ -104,6 +104,15 @@ export interface ITransactionBuilder {
    * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
   build(): transaction;
+
+  /**
+   * Converts the created transaction into the Hive API-form string
+   *
+   * @returns {string} transaction in Hive API-form
+   *
+   * @throws {import("./errors").WaxError} on any Wax API-related error
+   */
+  toApi(): string;
 }
 
 export interface ITransactionBuilderConstructor {
@@ -114,6 +123,24 @@ export interface ITransactionBuilderConstructor {
    * @param {TTimestamp} expirationTime expiration time for the transaction
    */
   new(taposBlockId: TBlockHash, expirationTime: TTimestamp): ITransactionBuilder;
+
+  /**
+   * Constructs a new Transaction Builder object with ready protobuf transaction
+   *
+   * @param {transaction} protoTransaction protobuf transaction
+   */
+  new(protoTransaction: transaction): ITransactionBuilder;
+
+  /**
+   * Converts Hive API-form transaction in JSON form to our transaction builder
+   *
+   * @param {string|object} transactionObject transaction object to be converted
+   *
+   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using ITransactionBuilder#build)
+   *
+   * @throws {import("./errors").WaxError} on any Wax API-related error
+   */
+  fromApi(transactionObject: string | object): ITransactionBuilder;
 }
 
 export interface IWaxBaseInterface {

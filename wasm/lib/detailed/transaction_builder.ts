@@ -13,19 +13,47 @@ export class TransactionBuilder implements ITransactionBuilder {
 
   public constructor(
     public readonly api: WaxBaseApi,
-    taposBlockId: TBlockHash,
-    expirationTime: TTimestamp
+    taposBlockId: TBlockHash | string | transaction,
+    expirationTime?: TTimestamp
   ) {
+    // Allow creating transaction from raw proto JSON string
+    if(typeof expirationTime === 'undefined' && typeof taposBlockId === 'string') {
+      this.target = transaction.fromJSON(JSON.parse(taposBlockId as string));
+
+      return;
+    }
+
+    if(typeof taposBlockId === 'object') {
+      this.target = structuredClone(taposBlockId as transaction);
+
+      return;
+    }
+
     const tapos = this.taposRefer(taposBlockId);
 
     this.target = {
       ref_block_num: tapos.ref_block_num,
       ref_block_prefix: tapos.ref_block_prefix,
-      expiration: new Date(expirationTime).toISOString().slice(0, -5),
+      expiration: new Date(expirationTime as TTimestamp).toISOString().slice(0, -5),
       extensions: [],
       operations: [],
       signatures: []
     };
+  }
+
+  public static fromApi(api: WaxBaseApi, transactionObject: string | object): ITransactionBuilder {
+    if(typeof transactionObject === 'object')
+      transactionObject = JSON.stringify(transactionObject);
+
+    const serialized = api.extract(api.proto.cpp_api_to_proto(transactionObject));
+
+    return new TransactionBuilder(api, serialized);
+  }
+
+  public toApi(): string {
+    const serialized = this.api.extract(this.api.proto.cpp_proto_to_api(this.toString()));
+
+    return serialized;
   }
 
   public toString(): string {

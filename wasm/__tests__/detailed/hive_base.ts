@@ -1,7 +1,8 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { protoVoteOp, protoTx } from "../assets/data.proto-protocol";
+import { transaction } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -37,6 +38,16 @@ test.describe('WASM Protocol', () => {
         }
       });
     });
+  });
+
+  test('Should be able to bidirectional convert api to proto using object interface', async ({ page }) => {
+    const retVal = await page.evaluate(async(transaction) => {
+      const tx = wx.TransactionBuilder.fromApi(transaction);
+
+      return tx.toApi();
+    }, transaction);
+
+    expect(retVal).toBe(transaction);
   });
 
   test('Should be able to create and sign transaction using object interface', async ({ page }) => {

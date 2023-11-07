@@ -19,8 +19,7 @@ export const protoTx = JSON.stringify({
   expiration: "2021-12-13T11:31:33",
   operations: [
     protoVoteOp
-  ],
-  extensions: []
+  ]
 });
 
 export const protoRecurrentTransferOperation = JSON.stringify({
