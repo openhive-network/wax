@@ -8,7 +8,7 @@
 <body>
   <script type="module">
     // If you are not using any bundler in your project define the source map before importing @hive/wax (We use `parcel`. See index.ts#open)
-    import WaxModule from '@hive/wax';
+    import { createWaxFoundation } from '@hive/wax';
 
     const apiData = JSON.stringify({
       "ref_block_num": 19260,
@@ -32,16 +32,10 @@
     });
 
     (async () => {
-      const provider = await WaxModule();
-      const protoInstance = new provider.proto_protocol();
+      const wax = await createWaxFoundation();
 
-      const protoData = protoInstance.cpp_api_to_proto(apiData);
-      if(protoData.value !== provider.error_code.ok)
-        throw new Error("Could not convert api to proto");
-
-      const result = protoInstance.cpp_validate_transaction(protoData.content);
-      if(result.value !== provider.error_code.ok)
-        throw new Error("Could not convert api to proto");
+      const transaction = wax.TransactionBuilder.fromApi(apiData);
+      transaction.validate();
 
       window.exampleFinished = true; // Optional - just for our test purposes
     })();

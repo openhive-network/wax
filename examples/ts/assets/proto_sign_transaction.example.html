@@ -8,10 +8,11 @@
 <body>
   <script type="module">
     // If you are not using any bundler in your project define the source map before importing @hive/wax or @hive/beekeeper (We use `parcel`. See index.ts#open)
-    import * as WaxModule from '@hive/wax';
+    import { createWaxFoundation, transaction } from '@hive/wax';
     import beekeeperFactory from '@hive/beekeeper';
 
-    const protoTx = WaxModule.transaction.create({
+    const txId = '8e78947614be92e77f7db82237e523bdbd7a907b';
+    const protoTx = transaction.create({
       ref_block_num: 19260,
       ref_block_prefix: 2140466769,
       expiration: "2016-09-15T19:47:33",
@@ -32,26 +33,27 @@
     const walletName = "pear";
 
     (async() => {
-      const waxProvider = await WaxModule.default();
+      // Initialize beekeeper wallet and get public key for signing
       const beekeeper = await beekeeperFactory();
-
-      const proto = new waxProvider.proto_protocol();
-
-      // We have to transform our API to the plain object first and then stringify it so it can be sent to wasm
-      const { content: sigDigest } = proto.cpp_calculate_sig_digest(JSON.stringify(WaxModule.transaction.toJSON(protoTx)), "42");
-
-      const session = await beekeeper.createSession('pear');
+      const session = beekeeper.createSession('pear');
 
       const { wallet } = await session.createWallet(walletName);
       await wallet.importKey(OUR_MAINNET_INITMINER_PRIVATE_KEY_DO_NOT_SHARE);
 
-      const [ publicKey ] = await wallet.getPublicKeys();
+      const [ publicKey ] = wallet.getPublicKeys();
 
-      const signature = await wallet.signDigest(publicKey, sigDigest);
+      // Create wax base
+      const wax = await createWaxFoundation();
 
-      console.log(`Your signature for transmitting: "${signature}"`);
+      const tx = new wax.TransactionBuilder(protoTx);
+
+      const signed = tx.build(wallet, publicKey);
+
+      console.log(`Your signature for transmitting: "${signed.signatures[0]}"`);
+      console.log(`Transaction id: ${tx.id} (matches the real one: ${String(tx.id === txId)})`);
 
       await beekeeper.delete();
+      wax.delete();
 
       window.exampleFinished = true; // Optional - just for our test purposes
     })();
