@@ -90,7 +90,7 @@ export interface ITransactionBuilder {
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet passed using IWaxBaseInterface#useWallet or #useWallet)
    *
-   * @returns {transaction} signed transaction
+   * @returns {transaction} signed protobuf transaction object
    *
    * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */

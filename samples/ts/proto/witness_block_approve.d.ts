@@ -14,7 +14,7 @@ export interface witness_block_approve {
 }
 export declare const witness_block_approve: {
     encode(message: witness_block_approve, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): witness_block_approve;
+    decode(input: _m0.Reader | Uint8Array, length?: number): witness_block_approve;
     fromJSON(object: any): witness_block_approve;
     toJSON(message: witness_block_approve): unknown;
     create<I extends {
@@ -32,12 +32,12 @@ export declare const witness_block_approve: {
         block_id?: string | undefined;
     } & { [K_1 in Exclude<keyof I_1, keyof witness_block_approve>]: never; }>(object: I_1): witness_block_approve;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

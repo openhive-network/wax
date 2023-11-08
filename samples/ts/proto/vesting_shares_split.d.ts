@@ -18,7 +18,7 @@ export interface vesting_shares_split {
 }
 export declare const vesting_shares_split: {
     encode(message: vesting_shares_split, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): vesting_shares_split;
+    decode(input: _m0.Reader | Uint8Array, length?: number): vesting_shares_split;
     fromJSON(object: any): vesting_shares_split;
     toJSON(message: vesting_shares_split): unknown;
     create<I extends {
@@ -88,12 +88,12 @@ export declare const vesting_shares_split: {
         } & { [K_4 in Exclude<keyof I_1["vesting_shares_after_split"], keyof asset>]: never; }) | undefined;
     } & { [K_5 in Exclude<keyof I_1, keyof vesting_shares_split>]: never; }>(object: I_1): vesting_shares_split;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

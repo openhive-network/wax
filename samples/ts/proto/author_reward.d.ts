@@ -27,7 +27,7 @@ export interface author_reward {
 }
 export declare const author_reward: {
     encode(message: author_reward, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): author_reward;
+    decode(input: _m0.Reader | Uint8Array, length?: number): author_reward;
     fromJSON(object: any): author_reward;
     toJSON(message: author_reward): unknown;
     create<I extends {
@@ -161,12 +161,12 @@ export declare const author_reward: {
         payout_must_be_claimed?: boolean | undefined;
     } & { [K_9 in Exclude<keyof I_1, keyof author_reward>]: never; }>(object: I_1): author_reward;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

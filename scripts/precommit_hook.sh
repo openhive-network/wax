@@ -6,14 +6,14 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT_DIR="${SCRIPTPATH}/.."
 
 VERSION_PLACEHOLDER=$(jq -r ".version" "${PROJECT_DIR}/package.json")
-REGISTRY_PLACEHOLDER=$(jq -r ".publishConfig.registry" "${PROJECT_DIR}/package.json") 
-DISTTAG_PLACEHOLDER=$(jq -r ".publishConfig.tag" "${PROJECT_DIR}/package.json") 
+REGISTRY_PLACEHOLDER=$(jq -r ".publishConfig.registry" "${PROJECT_DIR}/package.json")
+DISTTAG_PLACEHOLDER=$(jq -r ".publishConfig.tag" "${PROJECT_DIR}/package.json")
 
 STAGED_FILES=($(git diff --name-only --cached))
 
-if [[ ! " ${STAGED_FILES[*]} " =~ " package.json " ]];
+if [[ ! " ${STAGED_FILES[*]} " =~ " package.json " ]] && [[ ! " ${STAGED_FILES[*]} " =~ " npm.ts.md " ]];
 then
-  echo "package.json file is not staged for commit - skipping further checks..."
+  echo "Placeholder files is not staged for commit - skipping further checks..."
   exit 0
 fi
 
@@ -36,3 +36,4 @@ then
   exit 3
 fi
 
+(grep "\${CommitSHA}" npm.ts.md 1>/dev/null) || (echo "Commit sha placeholder in npm.ts.md is broken - preventing commit." && exit 4)

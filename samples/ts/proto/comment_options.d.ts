@@ -57,7 +57,7 @@ export interface comment_options {
 }
 export declare const beneficiary_route_type: {
     encode(message: beneficiary_route_type, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): beneficiary_route_type;
+    decode(input: _m0.Reader | Uint8Array, length?: number): beneficiary_route_type;
     fromJSON(object: any): beneficiary_route_type;
     toJSON(message: beneficiary_route_type): unknown;
     create<I extends {
@@ -77,7 +77,7 @@ export declare const beneficiary_route_type: {
 };
 export declare const comment_payout_beneficiaries: {
     encode(message: comment_payout_beneficiaries, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): comment_payout_beneficiaries;
+    decode(input: _m0.Reader | Uint8Array, length?: number): comment_payout_beneficiaries;
     fromJSON(object: any): comment_payout_beneficiaries;
     toJSON(message: comment_payout_beneficiaries): unknown;
     create<I extends {
@@ -123,7 +123,7 @@ export declare const comment_payout_beneficiaries: {
 };
 export declare const comment_options_extension: {
     encode(message: comment_options_extension, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): comment_options_extension;
+    decode(input: _m0.Reader | Uint8Array, length?: number): comment_options_extension;
     fromJSON(object: any): comment_options_extension;
     toJSON(message: comment_options_extension): unknown;
     create<I extends {
@@ -187,7 +187,7 @@ export declare const comment_options_extension: {
 };
 export declare const comment_options: {
     encode(message: comment_options, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): comment_options;
+    decode(input: _m0.Reader | Uint8Array, length?: number): comment_options;
     fromJSON(object: any): comment_options;
     toJSON(message: comment_options): unknown;
     create<I extends {
@@ -347,12 +347,12 @@ export declare const comment_options: {
         }[]>]: never; }) | undefined;
     } & { [K_13 in Exclude<keyof I_1, keyof comment_options>]: never; }>(object: I_1): comment_options;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

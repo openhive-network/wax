@@ -51,7 +51,7 @@ export interface recurrent_transfer {
 }
 export declare const recurrent_transfer_pair_id: {
     encode(message: recurrent_transfer_pair_id, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): recurrent_transfer_pair_id;
+    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer_pair_id;
     fromJSON(object: any): recurrent_transfer_pair_id;
     toJSON(message: recurrent_transfer_pair_id): unknown;
     create<I extends {
@@ -67,7 +67,7 @@ export declare const recurrent_transfer_pair_id: {
 };
 export declare const recurrent_transfer_extension: {
     encode(message: recurrent_transfer_extension, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): recurrent_transfer_extension;
+    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer_extension;
     fromJSON(object: any): recurrent_transfer_extension;
     toJSON(message: recurrent_transfer_extension): unknown;
     create<I extends {
@@ -99,7 +99,7 @@ export declare const recurrent_transfer_extension: {
 };
 export declare const recurrent_transfer: {
     encode(message: recurrent_transfer, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): recurrent_transfer;
+    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer;
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;
     create<I extends {
@@ -215,12 +215,12 @@ export declare const recurrent_transfer: {
         }[]>]: never; }) | undefined;
     } & { [K_11 in Exclude<keyof I_1, keyof recurrent_transfer>]: never; }>(object: I_1): recurrent_transfer;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

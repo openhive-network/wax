@@ -16,6 +16,7 @@ git config --global --add safe.directory '*'
 git fetch --tags
 
 SHORT_HASH=$(git rev-parse --short HEAD)
+REV_HASH=$(git rev-parse HEAD)
 CURRENT_BRANCH_IMPL=$(git branch -r --contains "${SHORT_HASH}")
 if [ "${CURRENT_BRANCH_IMPL}" = "" ]; then
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -61,3 +62,5 @@ mv "${PROJECT_DIR}/package.json.tmp" "${PROJECT_DIR}/package.json"
 
 # Display detailed publish config data
 jq -r '.name + "@" + .version + " (" + .publishConfig.tag + ") " + .publishConfig.registry' "package.json"
+
+sed -i "s/\${CommitSHA}/${REV_HASH}/g" npm.ts.md

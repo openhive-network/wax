@@ -19,7 +19,7 @@ export interface limit_order_cancelled {
 }
 export declare const limit_order_cancelled: {
     encode(message: limit_order_cancelled, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): limit_order_cancelled;
+    decode(input: _m0.Reader | Uint8Array, length?: number): limit_order_cancelled;
     fromJSON(object: any): limit_order_cancelled;
     toJSON(message: limit_order_cancelled): unknown;
     create<I extends {
@@ -65,12 +65,12 @@ export declare const limit_order_cancelled: {
         } & { [K_2 in Exclude<keyof I_1["amount_back"], keyof asset>]: never; }) | undefined;
     } & { [K_3 in Exclude<keyof I_1, keyof limit_order_cancelled>]: never; }>(object: I_1): limit_order_cancelled;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

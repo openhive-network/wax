@@ -1,4 +1,6 @@
+LICENSE.md
 README.md
+api.md
 build_wasm/wax_wasm.js
 build_wasm/wax.d.ts
 package.json

@@ -21,7 +21,7 @@ export interface fill_transfer_from_savings {
 }
 export declare const fill_transfer_from_savings: {
     encode(message: fill_transfer_from_savings, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number | undefined): fill_transfer_from_savings;
+    decode(input: _m0.Reader | Uint8Array, length?: number): fill_transfer_from_savings;
     fromJSON(object: any): fill_transfer_from_savings;
     toJSON(message: fill_transfer_from_savings): unknown;
     create<I extends {
@@ -75,12 +75,12 @@ export declare const fill_transfer_from_savings: {
         memo?: string | undefined;
     } & { [K_3 in Exclude<keyof I_1, keyof fill_transfer_from_savings>]: never; }>(object: I_1): fill_transfer_from_savings;
 };
-declare type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export declare type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
-declare type KeysOfUnion<T> = T extends T ? keyof T : never;
-export declare type Exact<P, I extends P> = P extends Builtin ? P : P & {
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P : P & {
     [K in keyof P]: Exact<P[K], I[K]>;
 } & {
     [K in Exclude<keyof I, KeysOfUnion<P>>]: never;

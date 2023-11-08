@@ -35,26 +35,7 @@ python3 -m pip install ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310
 
 ### TypeScript Building
 
-Install dependencies:
-
-(Remember that our project requires Node.js version >= 12. You can install it using your distribution binaries, compile from source or use [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#install--update-script))
-
-```bash
-npm i -g pnpm
-pnpm install
-```
-
-Build WASM wax:
-
-```bash
-cd wasm && ./build_wasm_wax.sh
-```
-
-Build TypeScript files:
-
-```bash
-npm run build
-```
+All of the required TypeScript-related information is available in the [npm.ts.md](npm.ts.md) file
 
 ### Publishing a NPM package
 
@@ -73,30 +54,6 @@ Run [examples](examples/python/README.md):
 python3 ./examples/python/visitor_example.py
 ```
 
-### TypeScript Testing
-
-Run tests:
-
-```bash
-npm run test
-```
-
-Run [examples](examples/ts/README.md):
-
-```bash
-npm run examples
-```
-
-#### TypeScript oneliner
-
-(pre-release documentation)
-
-```bash
-# Cleanup
-rm -rf examples/ts/node_modules examples/ts/package-lock.json node_modules/ build_wasm wasm/dist wasm/lib/proto .npmrc
-
-# Run oneliner all-tester
-sh scripts/bump_npm_version.sh && pnpm install && ./wasm/build_wasm_wax.sh && npm run build && npm run test && npm run examples
-```
-
 ## License
+
+See license in the [LICENSE.md](LICENSE.md) file
