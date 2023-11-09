@@ -89,6 +89,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_validate_operation", &protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
+    .function("cpp_calculate_legacy_transaction_id", &protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
   ;
@@ -99,6 +100,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_validate_operation", &proto_protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &proto_protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)
+    .function("cpp_calculate_legacy_transaction_id", &proto_protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &proto_protocol_wasm::cpp_calculate_sig_digest)
     .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
