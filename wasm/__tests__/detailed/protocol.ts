@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
-import { ErrorCodes, numToHighLow, transaction, vote_operation } from "../assets/data.protocol";
+import { ErrorCodes, numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
 import { result as resultT } from '../../lib/wax';
 
 let browser!: ChromiumBrowser;
@@ -84,6 +84,26 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.value).toBe(ErrorCodes.OK);
     expect(retVal.content).toBe("da8ca54c9c3acad06915ae9d93988c367f5cd164");
+  });
+
+  test('Should be able to calculate the legacy transaction id of the serialization sensitive transaction', async ({ page }) => {
+    const retVal = await page.evaluate((serialization_sensitive_transaction) => {
+      return transform(protocol.cpp_calculate_legacy_transaction_id(serialization_sensitive_transaction));
+    }, serialization_sensitive_transaction);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.value).toBe(ErrorCodes.OK);
+    expect(retVal.content).toBe("7f34699e9eea49d1bcc10c88f96e38897839ece3"); /// See Hive mainnet block 80021416
+  });
+
+  test('Should be able to calculate the HF26 transaction id of the serialization sensitive transaction', async ({ page }) => {
+    const retVal = await page.evaluate((serialization_sensitive_transaction) => {
+      return transform(protocol.cpp_calculate_transaction_id(serialization_sensitive_transaction));
+    }, serialization_sensitive_transaction);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.value).toBe(ErrorCodes.OK);
+    expect(retVal.content).toBe("3725c81634f152011e2043eb7119911b953d4267"); /// See Hive mainnet block 80021416
   });
 
   test('Should be able to serialize the transaction', async ({ page }) => {
