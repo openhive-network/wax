@@ -151,7 +151,10 @@ test_wax_protobuf_python:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - pytest /builds/hive/wax/wax/tests/
+    - pytest --junitxml="$CI_PROJECT_DIR/wax/tests/report.xml" "$CI_PROJECT_DIR/wax/tests/"
+  artifacts:
+    reports:
+      junit: wax/tests/report.xml
 
 test_wax_protobuf_python_pattern:
   extends: .test_python_env
