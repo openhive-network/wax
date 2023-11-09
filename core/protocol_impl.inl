@@ -58,7 +58,17 @@ result protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std
 {
   return method_wrapper([&](result& _result)
     {
-      _result.content = get_transaction(transaction).id().str();
+      _result.content = get_transaction(transaction).id(hive::protocol::transaction_serialization_type::hf26).str();
+    });
+}
+
+template <class FoundationProvider>
+inline
+result protocol_impl<FoundationProvider>::cpp_calculate_legacy_transaction_id(const std::string& transaction)
+{
+  return method_wrapper([&](result& _result)
+    {
+      _result.content = get_transaction(transaction).id(hive::protocol::transaction_serialization_type::legacy).str();
     });
 }
 
