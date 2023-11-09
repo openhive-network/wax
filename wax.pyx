@@ -47,6 +47,12 @@ def calculate_transaction_id(transaction: bytes) -> python_result:
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def calculate_legacy_transaction_id(transaction: bytes) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_legacy_transaction_id(transaction)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def calculate_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
     cdef protocol obj
     response = obj.cpp_calculate_sig_digest(transaction, chain_id)
@@ -128,6 +134,12 @@ def validate_proto_transaction(transaction: bytes) -> python_result:
 def calculate_proto_transaction_id(transaction: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_calculate_transaction_id( transaction )
+  return response.value, response.content, response.exception_message
+
+@return_python_result
+def calculate_proto_legacy_transaction_id(transaction: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_calculate_legacy_transaction_id( transaction )
   return response.value, response.content, response.exception_message
 
 @return_python_result
