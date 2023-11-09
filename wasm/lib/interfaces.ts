@@ -73,10 +73,12 @@ export interface ITransactionBuilder {
   toString(): string;
 
   /**
-   * Signs the transaction using given public key
+   * Signs the transaction using given public key. Applies the transaction expiration time
+   *
+   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet passed using IWaxBaseInterface#useWallet or #useWallet)
+   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
    * @returns {THexString} transaction signature signed using given key
    *
@@ -85,10 +87,12 @@ export interface ITransactionBuilder {
   sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
 
   /**
-   * Signs the transaction using given public key and returns the proto transaction
+   * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
+   *
+   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet passed using IWaxBaseInterface#useWallet or #useWallet)
+   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
    * @returns {transaction} signed protobuf transaction object
    *
@@ -97,7 +101,9 @@ export interface ITransactionBuilder {
   build(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): transaction;
 
   /**
-   * Returns the proto transaction
+   * Returns the proto transaction. Applies the transaction expiration time.
+   *
+   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @returns {transaction} transaction
    *
@@ -120,7 +126,10 @@ export interface ITransactionBuilderConstructor {
    * Constructs a new Transaction Builder object with given data
    *
    * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
-   * @param {TTimestamp} expirationTime expiration time for the transaction
+   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder#build} call.
+   *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
+   *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
+   *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`
    */
   new(taposBlockId: TBlockHash, expirationTime: TTimestamp): ITransactionBuilder;
 
@@ -136,7 +145,7 @@ export interface ITransactionBuilderConstructor {
    *
    * @param {string|object} transactionObject transaction object to be converted
    *
-   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using ITransactionBuilder#build)
+   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder#build})
    *
    * @throws {import("./errors").WaxError} on any Wax API-related error
    */

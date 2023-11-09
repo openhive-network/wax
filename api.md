@@ -3736,14 +3736,16 @@ wasm/lib/interfaces.ts:48
 
 ▸ **build**(`wallet`, `publicKey`): [`transaction`](#transaction)
 
-Signs the transaction using given public key and returns the proto transaction
+Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
+
+Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
-| `publicKey` | `string` | publicKey for signing (should be available in the wallet passed using IWaxBaseInterface#useWallet or #useWallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
 
 #### Returns
 
@@ -3757,11 +3759,13 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:97
+wasm/lib/interfaces.ts:101
 
 ▸ **build**(): [`transaction`](#transaction)
 
-Returns the proto transaction
+Returns the proto transaction. Applies the transaction expiration time.
+
+Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Returns
 
@@ -3775,7 +3779,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:106
+wasm/lib/interfaces.ts:112
 
 ___
 
@@ -3811,14 +3815,16 @@ ___
 
 ▸ **sign**(`wallet`, `publicKey`): `string`
 
-Signs the transaction using given public key
+Signs the transaction using given public key. Applies the transaction expiration time
+
+Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
-| `publicKey` | `string` | publicKey for signing (should be available in the wallet passed using IWaxBaseInterface#useWallet or #useWallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
 
 #### Returns
 
@@ -3832,7 +3838,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:85
+wasm/lib/interfaces.ts:87
 
 ___
 
@@ -3854,7 +3860,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:115
+wasm/lib/interfaces.ts:121
 
 ___
 
@@ -3916,7 +3922,7 @@ Constructs a new Transaction Builder object with given data
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `taposBlockId` | [`TBlockHash`](#tblockhash) | reference block id (can be head block id) for TaPoS |
-| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction |
+| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder#build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h` |
 
 #### Returns
 
@@ -3924,7 +3930,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:125
+wasm/lib/interfaces.ts:134
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -3942,7 +3948,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:132
+wasm/lib/interfaces.ts:141
 
 ## Methods
 
@@ -3962,7 +3968,7 @@ Converts Hive API-form transaction in JSON form to our transaction builder
 
 [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
-transaction builder containing ready to sign transaction (or to convert to protobuf structure using ITransactionBuilder#build)
+transaction builder containing ready to sign transaction (or to convert to protobuf structure using [ITransactionBuilder#build](#build))
 
 **`Throws`**
 
@@ -3970,7 +3976,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:143
+wasm/lib/interfaces.ts:152
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -3989,7 +3995,7 @@ wasm/lib/interfaces.ts:143
 
 #### Defined in
 
-wasm/lib/interfaces.ts:147
+wasm/lib/interfaces.ts:156
 
 ## Methods
 
@@ -4005,7 +4011,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:152
+wasm/lib/interfaces.ts:161
 
 
 <a name="interfacesiwaxoptionsmd"></a>
