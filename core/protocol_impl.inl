@@ -87,6 +87,19 @@ result protocol_impl<FoundationProvider>::cpp_calculate_sig_digest(const std::st
 
 template <class FoundationProvider>
 inline
+result protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(const std::string& transaction, const std::string& chain_id)
+  {
+  return method_wrapper([&](result& _result)
+    {
+      const auto _transaction = get_transaction(transaction);
+      const auto _digest = _transaction.sig_digest(hive::protocol::chain_id_type(chain_id), hive::protocol::pack_type::legacy);
+
+      _result.content = _digest.str();
+    });
+  }
+
+template <class FoundationProvider>
+inline
 result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
 {
   return method_wrapper([&](result& _result)

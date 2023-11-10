@@ -23,7 +23,11 @@ public:
   */
   result cpp_calculate_legacy_transaction_id(const std::string& transaction);
 
+  ///  Allows to calculate hf26 compliant sig-digest (serialized using hf26 form)
   result cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id);
+
+  ///  Allows to calculate legacy sig-digest (serialized using pre-hf26 form)
+  result cpp_calculate_legacy_sig_digest(const std::string& transaction, const std::string& chain_id);
 
   /** Allows to perform binary serialization of specified transaction.
   *   Uses HF26 serialization form.

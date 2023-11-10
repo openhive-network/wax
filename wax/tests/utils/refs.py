@@ -32,6 +32,28 @@ PROTO_REF_TRANSACTION = {
     ],
 }
 
+# See Hive mainnet block 80021416, trx_id: 7f34699e9eea49d1bcc10c88f96e38897839ece3
+PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
+    "ref_block_num": 1959,
+    "ref_block_prefix": 3625727107,
+    "expiration": "2023-11-09T22:01:24",
+    "operations": [
+        {
+            "transfer": {
+                "from": "oneplus7",
+                "to": "kryptogames",
+                "amount": {
+                    "amount": "300000",
+                    "precision": 3,
+                    "nai": "@@000000021"
+                },
+                "memo": "Roll under 50 4d434bd943616"
+            }
+        }
+    ],
+    "extensions": []
+}
+
 PROTO_REF_TRANSACTION_EMPTY_OPERATIONS = {
     "ref_block_num": 19260,
     "ref_block_prefix": 2140466769,
