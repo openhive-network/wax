@@ -209,6 +209,8 @@ test_wax_wasm:
       artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
   script:
     - npm run test
   artifacts:
