@@ -1,4 +1,5 @@
 stages:
+  - static_code_analysis
   - build
   - test
   - deploy
@@ -53,6 +54,13 @@ build_wheel:
     reports:
       dotenv: "build_wheel.env"
 
+verify_poetry_lock_sanity:
+  extends: .verify_poetry_lock_sanity_template
+  stage: static_code_analysis
+  variables:
+    PYPROJECT_DIR: "$CI_PROJECT_DIR"
+  tags:
+    - public-runner-docker
 
 wax_wasm_build:
   extends: .wasm_build_job_template
