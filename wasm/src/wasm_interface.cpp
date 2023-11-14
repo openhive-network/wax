@@ -118,7 +118,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
 int main() {
   // Main should not be run during TypeScript generation.
-  //abort();
-  std::cout << "This function does nothing... You have to instantiate wax_api on JS side to play with..." << std::endl;
+  // abort();
+  // std::cout << "This function does nothing... You have to instantiate wax_api on JS side to play with..." << std::endl;
   return 0;
 }
