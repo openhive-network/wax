@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@hive/beekeeper':
-    specifier: 1.27.5-rc0-1728a9433
-    version: 1.27.5-rc0-1728a9433
+    specifier: 1.27.5-rc0-stable.610e7072c
+    version: 1.27.5-rc0-stable.610e7072c
   long:
     specifier: ^5.2.3
     version: 5.2.3
@@ -26,7 +26,7 @@ devDependencies:
     specifier: ^15.2.3
     version: 15.2.3(rollup@4.3.0)
   '@types/node':
-    specifier: ^20.6.0
+    specifier: ^20.7.1
     version: 20.7.1
   concat-md:
     specifier: ^0.5.1
@@ -50,7 +50,7 @@ devDependencies:
     specifier: ^0.36.0
     version: 0.36.0(rollup@4.3.0)(typescript@5.2.2)
   ts-proto:
-    specifier: ^1.156.7
+    specifier: ^1.158.0
     version: 1.158.0
   tslib:
     specifier: ^2.6.2
@@ -89,8 +89,8 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@hive/beekeeper@1.27.5-rc0-1728a9433:
-    resolution: {integrity: sha1-sRh4bKf0MiJUVfOOZN1ffciwLnQ=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-1728a9433.tgz}
+  /@hive/beekeeper@1.27.5-rc0-stable.610e7072c:
+    resolution: {integrity: sha1-a5xXPXd3orjdNelDy7zhy8AWbB0=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-stable.610e7072c.tgz}
     engines: {node: '>= 12'}
     requiresBuild: true
     dev: false

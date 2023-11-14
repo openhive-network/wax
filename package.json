@@ -34,7 +34,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "1.27.5-rc0-1728a9433",
+    "@hive/beekeeper": "1.27.5-rc0-stable.610e7072c",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5"
   },

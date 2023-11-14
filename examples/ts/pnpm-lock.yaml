@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@hive/beekeeper':
-    specifier: ~1.27.5-rc0-1728a9433
-    version: 1.27.5-rc0-1728a9433
+    specifier: ~1.27.5-rc0-stable.610e7072c
+    version: 1.27.5-rc0-stable.610e7072c
   '@hive/wax':
     specifier: file:../..
     version: file:../..
