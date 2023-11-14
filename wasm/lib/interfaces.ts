@@ -75,7 +75,8 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
    *
-   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
@@ -89,7 +90,8 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
    *
-   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
@@ -103,7 +105,8 @@ export interface ITransactionBuilder {
   /**
    * Returns the proto transaction. Applies the transaction expiration time.
    *
-   * Note: Only the first call to either {@link build} or {@link sign} will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @returns {transaction} transaction
    *

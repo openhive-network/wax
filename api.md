@@ -3738,7 +3738,8 @@ wasm/lib/interfaces.ts:48
 
 Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
 
-Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
 
@@ -3759,13 +3760,14 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:101
+wasm/lib/interfaces.ts:103
 
 ▸ **build**(): [`transaction`](#transaction)
 
 Returns the proto transaction. Applies the transaction expiration time.
 
-Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Returns
 
@@ -3779,7 +3781,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:112
+wasm/lib/interfaces.ts:115
 
 ___
 
@@ -3817,7 +3819,8 @@ ___
 
 Signs the transaction using given public key. Applies the transaction expiration time
 
-Note: Only the first call to either [build](#build) or [sign](#sign) will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
 
@@ -3838,7 +3841,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:87
+wasm/lib/interfaces.ts:88
 
 ___
 
@@ -3860,7 +3863,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:121
+wasm/lib/interfaces.ts:124
 
 ___
 
@@ -3930,7 +3933,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:134
+wasm/lib/interfaces.ts:137
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -3948,7 +3951,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:141
+wasm/lib/interfaces.ts:144
 
 ## Methods
 
@@ -3976,7 +3979,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:152
+wasm/lib/interfaces.ts:155
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -3995,7 +3998,7 @@ wasm/lib/interfaces.ts:152
 
 #### Defined in
 
-wasm/lib/interfaces.ts:156
+wasm/lib/interfaces.ts:159
 
 ## Methods
 
@@ -4011,7 +4014,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:161
+wasm/lib/interfaces.ts:164
 
 
 <a name="interfacesiwaxoptionsmd"></a>
