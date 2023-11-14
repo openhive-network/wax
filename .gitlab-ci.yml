@@ -188,13 +188,12 @@ test_wax_protobuf_python_examples:
     - python3 /builds/hive/wax/examples/python/visitor_example.py
 
 .wasm_wax_test_base:
+  extends: .job-defaults
   stage: test
   # emscripten image can be used as it contains all needed tools (node and npm).
   image: ${EMSCRIPTEN_IMAGE}
   variables:
     FF_NETWORK_PER_BUILD: 1
-
-  interruptible: true
 
   before_script:
     - pnpm install
