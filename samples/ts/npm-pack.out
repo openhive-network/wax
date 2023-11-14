@@ -6,6 +6,8 @@ build_wasm/wax.d.ts
 package.json
 wasm/dist/bundle/detailed/base_api.d.ts
 wasm/dist/bundle/detailed/base.d.ts
+wasm/dist/bundle/detailed/chain_api.d.ts
+wasm/dist/bundle/detailed/chain.d.ts
 wasm/dist/bundle/detailed/index.d.ts
 wasm/dist/bundle/detailed/transaction_builder.d.ts
 wasm/dist/bundle/errors.d.ts

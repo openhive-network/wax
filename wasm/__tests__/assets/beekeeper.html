@@ -15,13 +15,18 @@
     }
   </script>
   <script type="module">
-    import { createWaxFoundation } from '@hive/wax';
+    import { createWaxFoundation, createHiveChain } from '@hive/wax';
     import beekeeperFactory from '@hive/beekeeper';
 
     Object.defineProperties(window, {
       createWaxFoundation: {
         get() {
           return createWaxFoundation;
+        }
+      },
+      createHiveChain: {
+        get() {
+          return createHiveChain;
         }
       },
       beekeeperFactory: {

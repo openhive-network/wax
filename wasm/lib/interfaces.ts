@@ -163,3 +163,5 @@ export interface IWaxBaseInterface {
    */
   delete(): void;
 }
+
+export interface IHiveChainInterface extends IWaxBaseInterface {}

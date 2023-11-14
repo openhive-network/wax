@@ -9,6 +9,7 @@
 
 ## Interfaces
 
+- [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
@@ -2460,6 +2461,34 @@ wasm/lib/proto/witness_update.ts:36
 
 ## Functions
 
+### createHiveChain
+
+▸ **createHiveChain**(`options?`): `Promise`\<[`IHiveChainInterface`](#interfacesihivechaininterfacemd)\>
+
+Creates a Wax Hive chain instance
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `options` | `Partial`\<[`IWaxOptions`](#interfacesiwaxoptionsmd)\> | wax options |
+
+#### Returns
+
+`Promise`\<[`IHiveChainInterface`](#interfacesihivechaininterfacemd)\>
+
+Wax Hive chain API Instance
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/detailed/chain.ts:16
+
+___
+
 ### createWaxFoundation
 
 ▸ **createWaxFoundation**(`options?`): `Promise`\<[`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)\>
@@ -3686,6 +3715,55 @@ TOperationVisitor.witness\_update
 wasm/lib/visitor.ts:44
 
 
+<a name="interfacesihivechaininterfacemd"></a>
+
+# Interface: IHiveChainInterface
+
+## Hierarchy
+
+- [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+  ↳ **`IHiveChainInterface`**
+
+## Accessors
+
+### TransactionBuilder
+
+• `get` **TransactionBuilder**(): [`ITransactionBuilderConstructor`](#interfacesitransactionbuilderconstructormd)
+
+#### Returns
+
+[`ITransactionBuilderConstructor`](#interfacesitransactionbuilderconstructormd)
+
+#### Inherited from
+
+IWaxBaseInterface.TransactionBuilder
+
+#### Defined in
+
+wasm/lib/interfaces.ts:159
+
+## Methods
+
+### delete
+
+▸ **delete**(): `void`
+
+Deletes the created wax proto_protocol instance
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[delete](#delete)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:164
+
+
 <a name="interfacesitransactionbuildermd"></a>
 
 # Interface: ITransactionBuilder
@@ -3985,6 +4063,12 @@ wasm/lib/interfaces.ts:155
 <a name="interfacesiwaxbaseinterfacemd"></a>
 
 # Interface: IWaxBaseInterface
+
+## Hierarchy
+
+- **`IWaxBaseInterface`**
+
+  ↳ [`IHiveChainInterface`](#interfacesihivechaininterfacemd)
 
 ## Accessors
 

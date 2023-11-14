@@ -2,11 +2,10 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { transaction } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
-test.describe('Wax object interface foundation tests', () => {
+test.describe('Wax object interface chain tests', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch({
       headless: true
@@ -23,12 +22,12 @@ test.describe('Wax object interface foundation tests', () => {
 
     await page.evaluate(async () => {
       const bk = await beekeeperFactory();
-      const wx = await createWaxFoundation();
+      const chain = await createHiveChain();
 
       Object.defineProperties(window, {
-        wx: {
+        chain: {
           get() {
-            return wx;
+            return chain;
           }
         },
         bk: {
@@ -40,17 +39,7 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
-  test('Should be able to bidirectional convert api to proto using object interface', async ({ page }) => {
-    const retVal = await page.evaluate(async(transaction) => {
-      const tx = wx.TransactionBuilder.fromApi(transaction);
-
-      return tx.toApi();
-    }, transaction);
-
-    expect(retVal).toBe(transaction);
-  });
-
-  test('Should be able to create and sign transaction using object interface', async ({ page }) => {
+  test('Should be able to create and sign transaction using object interface from', async ({ page }) => {
     const retVal = await page.evaluate(async(protoVoteOp) => {
       // Create wallet:
       const session = bk.createSession("salt");
@@ -58,7 +47,7 @@ test.describe('Wax object interface foundation tests', () => {
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
       // Create transaction
-      const tx = new wx.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
       tx.push(protoVoteOp).validate();
