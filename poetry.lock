@@ -321,8 +321,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-<<<<<<< HEAD
 content-hash = "ca80f962d68ccf1bd2c8cb93f52ac579e08b109d9f5eef6ae6a5de8c1a4aabff"
-=======
-content-hash = "992f0e11ba82334eba16c9021d38b44b0d82677b99746c68906becfa5ffd42b6"
->>>>>>> 29dbe21 (Remove usage of poetry-grpc-plugin in dockerfile.)
