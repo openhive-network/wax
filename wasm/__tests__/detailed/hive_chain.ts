@@ -39,7 +39,7 @@ test.describe('Wax object interface chain tests', () => {
     });
   });
 
-  test('Should be able to create and sign transaction using object interface from', async ({ page }) => {
+  test('Should be able to create and sign transaction using object interface', async ({ page }) => {
     const retVal = await page.evaluate(async(protoVoteOp) => {
       // Create wallet:
       const session = bk.createSession("salt");
@@ -75,9 +75,32 @@ test.describe('Wax object interface chain tests', () => {
 
        return result;
      });
- 
+
      expect(retVal).toStrictEqual({ accounts: [["hiveio"]] });
     });
+
+    test('Should be able to create and sign transaction using hive chain dynamic data', async ({ page }) => {
+      const retVal = await page.evaluate(async(protoVoteOp) => {
+        // Create wallet:
+        const session = bk.createSession("salt");
+        const { wallet } = await session.createWallet("w0");
+        await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+        // Create transaction
+        const tx = await chain.getTransactionBuilder();
+
+        // Create signed transaction
+        tx.push(protoVoteOp).validate();
+
+        const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+
+        return stx;
+      }, protoVoteOp);
+
+      expect(retVal.signatures.length).toBe(1);
+      expect(retVal.ref_block_num).toBeGreaterThan(0);
+      expect(retVal.ref_block_prefix).toBeGreaterThan(0);
+     });
 
   test.afterAll(async () => {
     await browser.close();

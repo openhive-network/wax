@@ -26,7 +26,7 @@ export const IsPublicKey = () => {
       target: object.constructor,
       propertyName: propertyName,
       constraints: [],
-      validator: IsPublicKeyValidator,
+      validator: IsPublicKeyValidator
     });
   };
 }

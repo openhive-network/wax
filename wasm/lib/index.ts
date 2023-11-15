@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 // Wax wasm definitions
 import MainModuleFunction from './wax_module.js';
 export * from './wax_module.js';

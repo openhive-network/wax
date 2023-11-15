@@ -184,8 +184,24 @@ export type ApiData<T extends keyof typeof HiveApiTypes> = {
 
 export interface IHiveApi {
   account_by_key_api: ApiData<'account_by_key_api'>;
+  database_api: ApiData<'database_api'>;
 }
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
+  /**
+   * Same as {@link IWaxBaseInterface#TransactionBuilder}, but pulls the reference block data from the remote
+   *
+   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder#build} call.
+   *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
+   *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
+   *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`
+   *
+   * @returns {ITransactionBuilder} ready to use transaction builder interface
+   *
+   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {import("./errors").WaxChainApiError} on any Hive API-related error
+   */
+  getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
+
   api: IHiveApi;
 }

@@ -3747,6 +3747,16 @@ wasm/lib/visitor.ts:44
 
 wasm/lib/interfaces.ts:186
 
+___
+
+### database\_api
+
+• **database\_api**: [`ApiData`](#apidata)\<``"database_api"``\>
+
+#### Defined in
+
+wasm/lib/interfaces.ts:187
+
 
 <a name="interfacesihivechaininterfacemd"></a>
 
@@ -3766,7 +3776,7 @@ wasm/lib/interfaces.ts:186
 
 #### Defined in
 
-wasm/lib/interfaces.ts:190
+wasm/lib/interfaces.ts:206
 
 ## Accessors
 
@@ -3805,6 +3815,38 @@ Deletes the created wax proto_protocol instance
 #### Defined in
 
 wasm/lib/interfaces.ts:176
+
+___
+
+### getTransactionBuilder
+
+▸ **getTransactionBuilder**(`expirationTime?`): `Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
+
+Same as [IWaxBaseInterface#TransactionBuilder](#transactionbuilder), but pulls the reference block data from the remote
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `expirationTime?` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder#build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m` |
+
+#### Returns
+
+`Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
+
+ready to use transaction builder interface
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Throws`**
+
+on any Hive API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:204
 
 
 <a name="interfacesitransactionbuildermd"></a>

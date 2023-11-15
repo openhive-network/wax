@@ -19,13 +19,6 @@ export class TransactionBuilder implements ITransactionBuilder {
     taposBlockId: TBlockHash | string | transaction,
     expirationTime?: TTimestamp
   ) {
-    // Allow creating transaction from raw proto JSON string
-    if(typeof expirationTime === 'undefined' && typeof taposBlockId === 'string') {
-      this.target = transaction.fromJSON(JSON.parse(taposBlockId as string));
-
-      return;
-    }
-
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
 
@@ -52,7 +45,9 @@ export class TransactionBuilder implements ITransactionBuilder {
 
     const serialized = api.extract(api.proto.cpp_api_to_proto(transactionObject));
 
-    return new TransactionBuilder(api, serialized);
+    const tx = transaction.fromJSON(JSON.parse(serialized));
+
+    return new TransactionBuilder(api, tx);
   }
 
   public toApi(): string {

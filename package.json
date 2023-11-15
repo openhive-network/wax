@@ -39,7 +39,8 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",
-    "protobufjs": "^7.2.5"
+    "protobufjs": "^7.2.5",
+    "reflect-metadata": "^0.1.13"
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "files": [

@@ -1,4 +1,4 @@
-import type { IHiveApi, IHiveChainInterface } from "../interfaces";
+import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp } from "../interfaces";
 import type { MainModule } from "../index";
 
 import axios, { Axios } from "axios";
@@ -67,5 +67,13 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   private createAxios(): Axios {
     return axios.create({ baseURL: this.apiEndpoint, responseType: "json" });
+  }
+
+  public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
+    const { head_block_id } = await this.api.database_api.get_dynamic_global_properties({});
+
+    const builder = new super.TransactionBuilder(head_block_id, expirationTime ?? "+1m");
+
+    return builder;
   }
 }
