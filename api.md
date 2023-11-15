@@ -9,11 +9,13 @@
 
 ## Interfaces
 
+- [IHiveApi](#interfacesihiveapimd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
 - [IWaxOptions](#interfacesiwaxoptionsmd)
+- [IWaxOptionsChain](#interfacesiwaxoptionschainmd)
 - [MainModule](#interfacesmainmodulemd)
 - [account\_create](#interfacesaccount_createmd)
 - [account\_create\_with\_delegation](#interfacesaccount_create_with_delegationmd)
@@ -118,6 +120,22 @@
 
 ## Type Aliases
 
+### ApiData
+
+Ƭ **ApiData**\<`T`\>: \{ [P in keyof typeof HiveApiTypes[T]]: typeof HiveApiTypes[T][P] extends Object ? Function : never }
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `T` | extends keyof typeof `HiveApiTypes` |
+
+#### Defined in
+
+wasm/lib/interfaces.ts:179
+
+___
+
 ### TBlockHash
 
 Ƭ **TBlockHash**: `ArrayBuffer` \| `Uint8Array` \| `Uint8ClampedArray` \| `Int8Array` \| `string`
@@ -128,7 +146,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:16
+wasm/lib/interfaces.ts:18
 
 ___
 
@@ -140,7 +158,7 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:9
+wasm/lib/interfaces.ts:11
 
 ___
 
@@ -166,7 +184,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:4
+wasm/lib/interfaces.ts:6
 
 ___
 
@@ -180,7 +198,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:23
+wasm/lib/interfaces.ts:25
 
 ___
 
@@ -2471,7 +2489,7 @@ Creates a Wax Hive chain instance
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `options` | `Partial`\<[`IWaxOptions`](#interfacesiwaxoptionsmd)\> | wax options |
+| `options` | `Partial`\<[`IWaxOptionsChain`](#interfacesiwaxoptionschainmd)\> | wax options |
 
 #### Returns
 
@@ -2485,7 +2503,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/detailed/chain.ts:16
+wasm/lib/detailed/chain.ts:21
 
 ___
 
@@ -3715,6 +3733,21 @@ TOperationVisitor.witness\_update
 wasm/lib/visitor.ts:44
 
 
+<a name="interfacesihiveapimd"></a>
+
+# Interface: IHiveApi
+
+## Properties
+
+### account\_by\_key\_api
+
+• **account\_by\_key\_api**: [`ApiData`](#apidata)\<``"account_by_key_api"``\>
+
+#### Defined in
+
+wasm/lib/interfaces.ts:186
+
+
 <a name="interfacesihivechaininterfacemd"></a>
 
 # Interface: IHiveChainInterface
@@ -3724,6 +3757,16 @@ wasm/lib/visitor.ts:44
 - [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
 
   ↳ **`IHiveChainInterface`**
+
+## Properties
+
+### api
+
+• **api**: [`IHiveApi`](#interfacesihiveapimd)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:190
 
 ## Accessors
 
@@ -3741,7 +3784,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:159
+wasm/lib/interfaces.ts:171
 
 ## Methods
 
@@ -3761,7 +3804,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:164
+wasm/lib/interfaces.ts:176
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -3786,7 +3829,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:57
+wasm/lib/interfaces.ts:69
 
 ___
 
@@ -3806,7 +3849,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:48
+wasm/lib/interfaces.ts:60
 
 ## Methods
 
@@ -3838,7 +3881,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:103
+wasm/lib/interfaces.ts:115
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -3859,7 +3902,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:115
+wasm/lib/interfaces.ts:127
 
 ___
 
@@ -3887,7 +3930,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:39
+wasm/lib/interfaces.ts:51
 
 ___
 
@@ -3919,7 +3962,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:88
+wasm/lib/interfaces.ts:100
 
 ___
 
@@ -3941,7 +3984,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:124
+wasm/lib/interfaces.ts:136
 
 ___
 
@@ -3963,7 +4006,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:73
+wasm/lib/interfaces.ts:85
 
 ___
 
@@ -3983,7 +4026,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:64
+wasm/lib/interfaces.ts:76
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -4011,7 +4054,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:137
+wasm/lib/interfaces.ts:149
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -4029,7 +4072,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:144
+wasm/lib/interfaces.ts:156
 
 ## Methods
 
@@ -4057,7 +4100,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:155
+wasm/lib/interfaces.ts:167
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -4082,7 +4125,7 @@ wasm/lib/interfaces.ts:155
 
 #### Defined in
 
-wasm/lib/interfaces.ts:159
+wasm/lib/interfaces.ts:171
 
 ## Methods
 
@@ -4098,12 +4141,18 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:164
+wasm/lib/interfaces.ts:176
 
 
 <a name="interfacesiwaxoptionsmd"></a>
 
 # Interface: IWaxOptions
+
+## Hierarchy
+
+- **`IWaxOptions`**
+
+  ↳ [`IWaxOptionsChain`](#interfacesiwaxoptionschainmd)
 
 ## Properties
 
@@ -4113,7 +4162,50 @@ wasm/lib/interfaces.ts:164
 
 #### Defined in
 
-wasm/lib/interfaces.ts:26
+wasm/lib/interfaces.ts:28
+
+
+<a name="interfacesiwaxoptionschainmd"></a>
+
+# Interface: IWaxOptionsChain
+
+## Hierarchy
+
+- [`IWaxOptions`](#interfacesiwaxoptionsmd)
+
+  ↳ **`IWaxOptionsChain`**
+
+## Properties
+
+### apiEndpoint
+
+• **apiEndpoint**: `string`
+
+Endpoint for all of the API requests
+
+**`Default`**
+
+```ts
+"https://api.hive.blog/"
+```
+
+#### Defined in
+
+wasm/lib/interfaces.ts:38
+
+___
+
+### chainId
+
+• **chainId**: `string`
+
+#### Inherited from
+
+[IWaxOptions](#interfacesiwaxoptionsmd).[chainId](#chainid)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:28
 
 
 <a name="interfacesmainmodulemd"></a>

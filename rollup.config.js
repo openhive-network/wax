@@ -10,7 +10,7 @@ export default {
     name: 'wax'
   },
   plugins: [
-    nodeResolve({ preferBuiltins: false }),
+    nodeResolve({ preferBuiltins: false, browser: true }),
     typescript({
       rollupCommonJSResolveHack: false,
       clean: true

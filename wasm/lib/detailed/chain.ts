@@ -1,26 +1,31 @@
-import type { IHiveChainInterface, IWaxOptions } from "../interfaces.js";
+import type { IHiveChainInterface, IWaxOptionsChain } from "../interfaces";
 
 import { HiveChainApi } from "./chain_api.js";
 import MainModuleFunction from "../wax_module.js";
 import { DEFAULT_WAX_OPTIONS } from "./base.js";
 
+export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
+  ...DEFAULT_WAX_OPTIONS,
+  apiEndpoint: "https://api.hive.blog"
+}
+
 /**
  * Creates a Wax Hive chain instance
  *
- * @param {?Partial<IWaxOptions>} options wax options
+ * @param {?Partial<IWaxOptionsChain>} options wax options
  *
  * @returns {Promise<IHiveChainInterface>} Wax Hive chain API Instance
  *
  * @throws {import("../errors").WaxError} on any Wax API-related error
  */
 export const createHiveChain = async(
-  options: Partial<IWaxOptions> = {}
+  options: Partial<IWaxOptionsChain> = {}
 ): Promise<IHiveChainInterface> => {
   const waxProvider = await MainModuleFunction();
 
-  const apiOptions: IWaxOptions = { ...DEFAULT_WAX_OPTIONS, ...options };
+  const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
 
-  const api = new HiveChainApi(waxProvider, apiOptions.chainId);
+  const api = new HiveChainApi(waxProvider, apiOptions.chainId, apiOptions.apiEndpoint);
 
   return api;
 };

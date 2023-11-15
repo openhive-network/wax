@@ -1,5 +1,7 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { operation, transaction } from ".";
+
+import type { operation, transaction } from "./protocol";
+import type { HiveApiTypes } from "./detailed/chain_api_data";
 
 export type TTimestamp = Date | number | string;
 
@@ -24,6 +26,16 @@ export type TTransactionId = string;
 
 export interface IWaxOptions {
   chainId: string;
+}
+
+export interface IWaxOptionsChain extends IWaxOptions {
+  /**
+   * Endpoint for all of the API requests
+   *
+   * @default "https://api.hive.blog/"
+   * @type {string}
+   */
+  apiEndpoint: string;
 }
 
 export interface ITransactionBuilder {
@@ -164,4 +176,16 @@ export interface IWaxBaseInterface {
   delete(): void;
 }
 
-export interface IHiveChainInterface extends IWaxBaseInterface {}
+export type ApiData<T extends keyof typeof HiveApiTypes> = {
+  [P in keyof typeof HiveApiTypes[T]]: typeof HiveApiTypes[T][P] extends { params: new () => infer ParamsType; result: new () => infer ResultType; }
+    ? (params: ParamsType) => Promise<ResultType>
+    : never;
+};
+
+export interface IHiveApi {
+  account_by_key_api: ApiData<'account_by_key_api'>;
+}
+
+export interface IHiveChainInterface extends IWaxBaseInterface {
+  api: IHiveApi;
+}

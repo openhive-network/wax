@@ -210,6 +210,7 @@ dist
 node_modules
 wax/proto
 .parcel-cache
+.pnpm-store
 results.json
 results.xml
 

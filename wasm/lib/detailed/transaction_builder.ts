@@ -3,7 +3,7 @@ import type { ITransactionBuilder, TBlockHash, TTimestamp, TTransactionId } from
 
 import { transaction, operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
-import { WaxError } from "../errors";
+import { WaxError } from "../errors.js";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;

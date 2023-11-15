@@ -4,10 +4,13 @@ api.md
 build_wasm/wax_wasm.js
 build_wasm/wax.d.ts
 package.json
+wasm/dist/bundle/detailed/api/account_by_key_api/get_key_references.d.ts
 wasm/dist/bundle/detailed/base_api.d.ts
 wasm/dist/bundle/detailed/base.d.ts
+wasm/dist/bundle/detailed/chain_api_data.d.ts
 wasm/dist/bundle/detailed/chain_api.d.ts
 wasm/dist/bundle/detailed/chain.d.ts
+wasm/dist/bundle/detailed/decorators/is_public_key.d.ts
 wasm/dist/bundle/detailed/index.d.ts
 wasm/dist/bundle/detailed/transaction_builder.d.ts
 wasm/dist/bundle/errors.d.ts

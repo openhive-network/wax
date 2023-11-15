@@ -1,5 +1,5 @@
 import type { ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
-import type { MainModule, result } from "..";
+import type { MainModule, result } from "../wax_module";
 
 import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";

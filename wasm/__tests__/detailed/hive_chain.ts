@@ -64,6 +64,21 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
 
+   test('Should be able to perform example API call', async ({ page }) => {
+     const retVal = await page.evaluate(async() => {
+      // https://developers.hive.io/apidefinitions/#account_by_key_api.get_key_references
+      const result = await chain.api.account_by_key_api.get_key_references({
+        keys: [
+          "STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9"
+        ]
+      });
+
+       return result;
+     });
+ 
+     expect(retVal).toStrictEqual({ accounts: [["hiveio"]] });
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });
