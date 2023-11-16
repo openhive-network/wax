@@ -30,6 +30,7 @@ default:
     - public-runner-docker
 
 .configuration:
+  extends: .job-defaults
   before_script:
     - python3 -V
     - poetry self update
@@ -74,6 +75,7 @@ wax_wasm_build:
       - "$CI_PROJECT_DIR/build_wasm/wax.d.ts"
 
 wax_wasm_package_generation:
+  extends: .job-defaults
   stage: build
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
@@ -95,6 +97,7 @@ wax_wasm_package_generation:
     - public-runner-docker
 
 wax_wasm_proto_tsc_generation:
+  extends: .job-defaults
   stage: build
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
@@ -257,6 +260,7 @@ deploy_wheel_to_pypi:
   <<: *deploy_wheel_needs
 
 deploy_wax_wasm_dev_package:
+  extends: .job-defaults
   stage: deploy
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
@@ -278,6 +282,7 @@ deploy_wax_wasm_dev_package:
       artifacts: true
 
 deploy_wax_wasm_production_public_npm:
+  extends: .job-defaults
   stage: deploy
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
