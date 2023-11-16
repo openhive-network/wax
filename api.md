@@ -2852,7 +2852,7 @@ wasm/lib/detailed/api/types/transaction.ts:24
 
 | Name | Type |
 | :------ | :------ |
-| `trx?` | [`transaction`](#transaction) \| [`ITransactionBuilder`](#interfacesitransactionbuildermd) |
+| `trx?` | [`ITransactionBuilder`](#interfacesitransactionbuildermd) |
 
 #### Returns
 
@@ -4796,7 +4796,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:228
+wasm/lib/interfaces.ts:235
 
 ## Accessors
 
@@ -4814,7 +4814,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:171
+wasm/lib/interfaces.ts:178
 
 ## Methods
 
@@ -4834,7 +4834,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:176
+wasm/lib/interfaces.ts:183
 
 ___
 
@@ -4865,7 +4865,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:226
+wasm/lib/interfaces.ts:233
 
 ___
 
@@ -4897,7 +4897,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:217
+wasm/lib/interfaces.ts:224
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -4974,7 +4974,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:115
+wasm/lib/interfaces.ts:122
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -4995,7 +4995,25 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:127
+wasm/lib/interfaces.ts:134
+
+___
+
+### isSigned
+
+▸ **isSigned**(): `boolean`
+
+Checks if underlying transaction has been already signed at least one time (after [sign](#sign) or [build](#build))
+
+#### Returns
+
+`boolean`
+
+either true or false based on the signatures amount
+
+#### Defined in
+
+wasm/lib/interfaces.ts:107
 
 ___
 
@@ -5077,7 +5095,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:136
+wasm/lib/interfaces.ts:143
 
 ___
 
@@ -5147,7 +5165,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:149
+wasm/lib/interfaces.ts:156
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -5165,7 +5183,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:156
+wasm/lib/interfaces.ts:163
 
 ## Methods
 
@@ -5193,7 +5211,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:167
+wasm/lib/interfaces.ts:174
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -5218,7 +5236,7 @@ wasm/lib/interfaces.ts:167
 
 #### Defined in
 
-wasm/lib/interfaces.ts:171
+wasm/lib/interfaces.ts:178
 
 ## Methods
 
@@ -5234,7 +5252,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:176
+wasm/lib/interfaces.ts:183
 
 
 <a name="interfacesiwaxoptionsmd"></a>

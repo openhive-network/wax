@@ -129,6 +129,58 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
+    test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ page }) => {
+      const retVal = await page.evaluate(async(protoVoteOp) => {
+        const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+        tx.push(protoVoteOp).build();
+
+        try {
+          new BroadcastTransactionRequest(tx);
+          return false;
+        } catch {
+          return true;
+        }
+      }, protoVoteOp);
+
+      expect(retVal).toBeTruthy();
+    });
+
+    test('Should be able to transmit protobuf transaction using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async(protoVoteOp) => {
+        // Create wallet:
+        const session = bk.createSession("salt");
+        const { wallet } = await session.createWallet("w0");
+        await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+        const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+        tx.push(protoVoteOp).build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+
+        return new BroadcastTransactionRequest(tx);
+      }, protoVoteOp);
+
+      expect(retVal).toStrictEqual({
+        max_block_age: -1,
+        trx: {
+          operations: [ {
+            type: "vote_operation",
+            value: {
+              author: "c0ff33a",
+              permlink: "ewxhnjbj",
+              voter: "otom",
+              weight: 2200,
+            }
+          } ],
+          extensions: [],
+          signatures: [
+            "1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707"
+          ],
+          ref_block_num: 51109,
+          ref_block_prefix: 2785934438,
+          expiration: '2023-08-01T15:38:48'
+        }
+      });
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });

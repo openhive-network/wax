@@ -4,7 +4,7 @@ import type WaxModule from '../../lib';
 import type {
   MainModule, proto_protocol, protocol as protocolT, result as resultT,
   createWaxFoundation as createBaseT, createHiveChain as createHiveChainT,
-  IWaxBaseInterface, IHiveChainInterface
+  IWaxBaseInterface, IHiveChainInterface, BroadcastTransactionRequest as BroadcastTransactionRequestT
 } from '../../lib';
 
 declare global {
@@ -15,6 +15,7 @@ declare global {
   var createWaxFoundation: typeof createBaseT;
   var beekeeperFactory: typeof beekeeperFactoryT;
   var createHiveChain: typeof createHiveChainT;
+  var BroadcastTransactionRequest: typeof BroadcastTransactionRequestT;
   var provider: MainModule;
   var protocol: protocolT;
   var proto_protocol: proto_protocol;

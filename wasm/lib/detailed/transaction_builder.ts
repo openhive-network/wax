@@ -135,6 +135,10 @@ export class TransactionBuilder implements ITransactionBuilder {
     return signed;
   }
 
+  public isSigned(): boolean {
+    return this.target.signatures.length > 0;
+  }
+
   public build(wallet?: IBeekeeperUnlockedWallet, publicKey?: TPublicKey): transaction {
     if(typeof wallet !== 'undefined' && typeof publicKey !== 'undefined')
       this.sign(wallet, publicKey);

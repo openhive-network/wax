@@ -100,6 +100,13 @@ export interface ITransactionBuilder {
   sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
 
   /**
+   * Checks if underlying transaction has been already signed at least one time (after {@link sign} or {@link build})
+   *
+   * @returns {boolean} either true or false based on the signatures amount
+   */
+  isSigned(): boolean;
+
+  /**
    * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
    *
    * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
