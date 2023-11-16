@@ -4,6 +4,13 @@ stages:
   - test
   - deploy
 
+include:
+  - project: 'hive/common-ci-configuration'
+    ref: 7c58303ffb61d91ef9662ec20e7b498bc6f62b8f
+    file:
+      - '/templates/wasm_build.gitlab-ci.yml'
+      - '/templates/python_projects.gitlab-ci.yml'
+
 variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
@@ -11,17 +18,15 @@ variables:
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-1
   CI_BASE_IMAGE_TAG: "@sha256:822454ce40edd3f10c506246dc4e8ec46b714e4ff8b35220e4456f29612e51f4"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
+
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-1
+  PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
+  PYTHON_IMAGE: "${CI_BASE_IMAGE}"
+
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   NPM_TOKEN: $CI_JOB_TOKEN
-
-include:
-  - project: 'hive/common-ci-configuration'
-    ref: 7c58303ffb61d91ef9662ec20e7b498bc6f62b8f
-    file:
-      - '/templates/wasm_build.gitlab-ci.yml'
-      - '/templates/python_projects.gitlab-ci.yml'
 
 image: "${CI_BASE_IMAGE}"
 
