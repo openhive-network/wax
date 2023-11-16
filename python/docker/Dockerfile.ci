@@ -1,0 +1,42 @@
+ARG BASE_IMAGE
+FROM $BASE_IMAGE AS base_builder
+
+USER hived_admin
+WORKDIR /home/hived_admin
+SHELL ["/bin/bash", "-c"]
+
+FROM base_builder AS boost_lib_source
+
+ARG BOOST_VERSION_TAG=boost-1.74.0
+ENV BOOST_VERSION_TAG=${BOOST_VERSION_TAG}
+
+ENV TMP_SRC=/home/hived_admin/tmp_src
+
+RUN <<-EOF
+  set -e
+
+  mkdir -vp "${TMP_SRC}"
+  cd "${TMP_SRC}"
+
+  git clone --recurse-submodules --shallow-submodules --single-branch --depth=1 --branch ${BOOST_VERSION_TAG} https://github.com/boostorg/boost.git
+EOF
+
+FROM boost_lib_source as boost_lib_builder
+
+ENV WAX_BOOST_ROOT=/wax_boost_root/
+
+ADD ./python/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
+
+RUN sudo -n mkdir -vp "${WAX_BOOST_ROOT}" && \
+    sudo -n chmod -R a+w "${WAX_BOOST_ROOT}" && \
+    /home/hived_admin/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}"
+
+FROM base_builder AS ci-base-image
+
+USER hived_admin
+WORKDIR /home/hived_admin
+SHELL ["/bin/bash", "-c"]
+
+ENV WAX_BOOST_ROOT=/wax_boost_root/
+
+COPY --chown=hived_admin --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
