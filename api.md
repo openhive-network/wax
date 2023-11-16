@@ -3734,7 +3734,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:226
+wasm/lib/interfaces.ts:227
 
 ## Accessors
 
@@ -3803,7 +3803,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:224
+wasm/lib/interfaces.ts:225
 
 ___
 
@@ -3835,7 +3835,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:215
+wasm/lib/interfaces.ts:216
 
 
 <a name="interfacesitransactionbuildermd"></a>
