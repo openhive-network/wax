@@ -42,7 +42,7 @@ build_wheel:
   extends: .build_wheel_template
   stage: build
   script:
-    - ./scripts/build_wax_python.sh 1
+    - ./python/scripts/build_wax.sh 1
   artifacts:
     when: always
     paths:
