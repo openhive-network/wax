@@ -76,6 +76,31 @@ const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh
 console.log(stx);
 ```
 
+#### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
+
+```js
+import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
+
+const chain = await createHiveChain();
+
+const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+// Add operations
+tx.push({
+  vote: {
+    voter: "otom",
+    author: "c0ff33a",
+    permlink: "ewxhnjbj",
+    weight: 2200
+  }
+});
+
+const request = new BroadcastTransactionRequest(tx);
+
+// Transmit
+await chain.api.network_broadcast_api.broadcast_transaction(request);
+```
+
 #### Advanced usage - extend hive chain interface and call custom API endpoints
 
 ```ts

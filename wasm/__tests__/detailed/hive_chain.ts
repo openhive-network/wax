@@ -129,6 +129,35 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
+    test('Should be able to transmit protobuf transaction using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async(protoVoteOp) => {
+        const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+        tx.push(protoVoteOp).build();
+
+        return new BroadcastTransactionRequest(tx);
+      }, protoVoteOp);
+
+      expect(retVal).toStrictEqual({
+        max_block_age: -1,
+        trx: {
+          operations: [ {
+            type: "vote_operation",
+            value: {
+              author: "c0ff33a",
+              permlink: "ewxhnjbj",
+              voter: "otom",
+              weight: 2200,
+            }
+          } ],
+          extensions: [],
+          signatures: [],
+          ref_block_num: 51109,
+          ref_block_prefix: 2785934438,
+          expiration: '2023-08-01T15:38:48'
+        }
+      });
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });
