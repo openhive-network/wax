@@ -1,4 +1,4 @@
-import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp } from "../interfaces";
+import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp, YourApiData } from "../interfaces";
 import type { MainModule } from "../index";
 
 import axios, { Axios } from "axios";
@@ -11,6 +11,8 @@ import { HiveApiTypes } from "./chain_api_data.js";
 
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: IHiveApi;
+
+  private localTypes = HiveApiTypes;
 
   public constructor(
     public readonly wax: MainModule,
@@ -26,19 +28,19 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     const axios = this.createAxios();
 
     this.api = new Proxy({} as IHiveApi, {
-      get(_target: any, propertyParent: string, _receiver: any) {
+      get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
-          get(_target: any, property: string, _receiver: any) {
-            if(typeof HiveApiTypes[propertyParent] !== 'object')
+          get: (_target: any, property: string, _receiver: any) => {
+            if(typeof this.localTypes[propertyParent] !== 'object')
               throw new WaxError(`Api "${propertyParent}" has not been implemented yet or does not exist`);
 
             return async(params: object) => {
               const method = `${propertyParent}.${property}`;
 
-              if(typeof HiveApiTypes[propertyParent][property] !== 'object')
+              if(typeof this.localTypes[propertyParent][property] !== 'object')
                 throw new WaxError(`Method "${method}" has not been implemented yet or does not exist`);
 
-              await validateOrReject(instanceToPlain(HiveApiTypes[propertyParent][property].params, params));
+              await validateOrReject(instanceToPlain(this.localTypes[propertyParent][property].params, params));
 
               const { data } = await axios.post('/', {
                 jsonrpc: "2.0",
@@ -53,7 +55,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               if(typeof data.result !== 'object')
                 throw new WaxChainApiError('No result found in the Hive API response', data);
 
-              const result = plainToInstance(HiveApiTypes[propertyParent][property].result, data.result) as object;
+              const result = plainToInstance(this.localTypes[propertyParent][property].result, data.result) as object;
 
               await validateOrReject(result);
 
@@ -67,6 +69,14 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   private createAxios(): Axios {
     return axios.create({ baseURL: this.apiEndpoint, responseType: "json" });
+  }
+
+  public extend<YourApi, YourData extends { [k in keyof YourApi]: YourApiData<YourApi[k]> }>(extendedHiveApiData: YourApi): (IHiveChainInterface & { api: IHiveApi & YourData }) {
+    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint);
+
+    newApi.localTypes = { ...newApi.localTypes, ...extendedHiveApiData };
+
+    return newApi as unknown as IHiveChainInterface & { api: IHiveApi & YourData };
   }
 
   public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {

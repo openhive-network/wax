@@ -9,7 +9,6 @@
 
 ## Interfaces
 
-- [IHiveApi](#interfacesihiveapimd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
@@ -119,22 +118,6 @@
 - [witness\_update](#interfaceswitness_updatemd)
 
 ## Type Aliases
-
-### ApiData
-
-Ƭ **ApiData**\<`T`\>: \{ [P in keyof typeof HiveApiTypes[T]]: typeof HiveApiTypes[T][P] extends Object ? Function : never }
-
-#### Type parameters
-
-| Name | Type |
-| :------ | :------ |
-| `T` | extends keyof typeof `HiveApiTypes` |
-
-#### Defined in
-
-wasm/lib/interfaces.ts:179
-
-___
 
 ### TBlockHash
 
@@ -3733,31 +3716,6 @@ TOperationVisitor.witness\_update
 wasm/lib/visitor.ts:44
 
 
-<a name="interfacesihiveapimd"></a>
-
-# Interface: IHiveApi
-
-## Properties
-
-### account\_by\_key\_api
-
-• **account\_by\_key\_api**: [`ApiData`](#apidata)\<``"account_by_key_api"``\>
-
-#### Defined in
-
-wasm/lib/interfaces.ts:186
-
-___
-
-### database\_api
-
-• **database\_api**: [`ApiData`](#apidata)\<``"database_api"``\>
-
-#### Defined in
-
-wasm/lib/interfaces.ts:187
-
-
 <a name="interfacesihivechaininterfacemd"></a>
 
 # Interface: IHiveChainInterface
@@ -3772,11 +3730,11 @@ wasm/lib/interfaces.ts:187
 
 ### api
 
-• **api**: [`IHiveApi`](#interfacesihiveapimd)
+• **api**: `IHiveApi`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:206
+wasm/lib/interfaces.ts:226
 
 ## Accessors
 
@@ -3818,6 +3776,37 @@ wasm/lib/interfaces.ts:176
 
 ___
 
+### extend
+
+▸ **extend**\<`YourApi`, `YourData`\>(`extendedHiveApiData`): [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & `YourData`  }
+
+Extends hive chain interface with your custom API definitions
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `YourApi` | `YourApi` |
+| `YourData` | extends \{ [k in string \| number \| symbol]: YourApiData\<YourApi[k]\> } |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `extendedHiveApiData` | `YourApi` | your custom api definitions |
+
+#### Returns
+
+[`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & `YourData`  }
+
+Wax Hive chain instance containing extended api
+
+#### Defined in
+
+wasm/lib/interfaces.ts:224
+
+___
+
 ### getTransactionBuilder
 
 ▸ **getTransactionBuilder**(`expirationTime?`): `Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
@@ -3846,7 +3835,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:204
+wasm/lib/interfaces.ts:215
 
 
 <a name="interfacesitransactionbuildermd"></a>

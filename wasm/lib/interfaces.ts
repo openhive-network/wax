@@ -176,12 +176,23 @@ export interface IWaxBaseInterface {
   delete(): void;
 }
 
-export type ApiData<T extends keyof typeof HiveApiTypes> = {
-  [P in keyof typeof HiveApiTypes[T]]: typeof HiveApiTypes[T][P] extends { params: new () => infer ParamsType; result: new () => infer ResultType; }
+/**
+ * @internal
+ */
+export type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
+
+/**
+ * @internal
+ */
+export type YourApiData<YourTypes> = {
+  [P in keyof YourTypes]: YourTypes[P] extends { params: new () => infer ParamsType; result: new () => infer ResultType; }
     ? (params: ParamsType) => Promise<ResultType>
     : never;
 };
 
+/**
+ * @internal
+ */
 export interface IHiveApi {
   account_by_key_api: ApiData<'account_by_key_api'>;
   database_api: ApiData<'database_api'>;
@@ -202,6 +213,15 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @throws {import("./errors").WaxChainApiError} on any Hive API-related error
    */
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
+
+  /**
+   * Extends hive chain interface with your custom API definitions
+   *
+   * @param extendedHiveApiData your custom api definitions
+   *
+   * @returns Wax Hive chain instance containing extended api
+   */
+  extend<YourApi, YourData extends { [k in keyof YourApi]: YourApiData<YourApi[k]> }>(extendedHiveApiData: YourApi): (IHiveChainInterface & { api: IHiveApi & YourData });
 
   api: IHiveApi;
 }

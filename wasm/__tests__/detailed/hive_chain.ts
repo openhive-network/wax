@@ -100,7 +100,34 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal.signatures.length).toBe(1);
       expect(retVal.ref_block_num).toBeGreaterThan(0);
       expect(retVal.ref_block_prefix).toBeGreaterThan(0);
-     });
+    });
+
+    test('Should be able to extend hive chain interface by custom definitions', async ({ page }) => {
+      const retVal = await page.evaluate(async() => {
+        class MyRequest {
+          method!: string;
+        }
+        class MyResponse {
+          args!: {};
+          ret!: [];
+        }
+
+        const extended = chain.extend({
+          jsonrpc: {
+            get_signature: {
+              params: MyRequest,
+              result: MyResponse
+            }
+          }
+        });
+
+        const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+
+        return result;
+      });
+
+      expect(retVal).toStrictEqual({ args: {}, ret: [] });
+    });
 
   test.afterAll(async () => {
     await browser.close();
