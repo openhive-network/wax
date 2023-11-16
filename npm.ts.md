@@ -19,13 +19,89 @@ npm install @hiveio/wax
 
 ## Usage
 
+#### Simple wax foundation usage
+
 ```js
 import { createWaxFoundation } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
-const transaction = wax.TransactionBuilder.fromApi('...');
-console.log(transaction.id);
+const transaction = wax.TransactionBuilder.fromApi(`{
+  "ref_block_num": 19260,
+  "ref_block_prefix": 2140466769,
+  "expiration": "2016-09-15T19:47:33",
+  "operations": [ {
+    "value": {
+      "voter": "taoteh1221",
+      "author": "ozchartart",
+      "permlink": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+      "weight": 10000
+    },
+    "type": "vote_operation"
+  } ],
+  "extensions": []
+}`);
+console.log(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
+```
+
+#### Use hive chain interface to create a signed transaction
+
+```js
+import { createHiveChain } from '@hiveio/wax';
+import beekeeperFactory from '@hiveio/beekeeper';
+const bk = await beekeeperFactory();
+const chain = await createHiveChain();
+
+// Initialize the wallet
+const session = bk.createSession("salt");
+const { wallet } = await session.createWallet("w0");
+await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+// Create transaction
+const tx = await chain.getTransactionBuilder();
+
+// Add operations and validate
+tx.push({
+  vote: {
+    voter: "otom",
+    author: "c0ff33a",
+    permlink: "ewxhnjbj",
+    weight: 2200
+  }
+}).validate();
+
+// Build and sign the transaction object
+const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+
+console.log(stx);
+```
+
+#### Advanced usage - extend hive chain interface and call custom API endpoints
+
+```ts
+import { createHiveChain } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+class MyRequest {
+  method!: string;
+}
+class MyResponse {
+  args!: {};
+  ret!: [];
+}
+
+const extended = chain.extend({
+  jsonrpc: {
+    get_signature: {
+      params: MyRequest,
+      result: MyResponse
+    }
+  }
+});
+
+const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+
+console.log(result); // { args: {}, ret: [] }
 ```
 
 ## API
