@@ -5,6 +5,22 @@
 
 ## Classes
 
+- [ApiBlock](#classesapiblockmd)
+- [ApiBlockHeader](#classesapiblockheadermd)
+- [ApiTransaction](#classesapitransactionmd)
+- [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
+- [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
+- [GetBlockHeaderRequest](#classesgetblockheaderrequestmd)
+- [GetBlockHeaderResponse](#classesgetblockheaderresponsemd)
+- [GetBlockRangeRequest](#classesgetblockrangerequestmd)
+- [GetBlockRangeResponse](#classesgetblockrangeresponsemd)
+- [GetBlockRequest](#classesgetblockrequestmd)
+- [GetBlockResponse](#classesgetblockresponsemd)
+- [GetDynamicGlobalPropertiesRequest](#classesgetdynamicglobalpropertiesrequestmd)
+- [GetDynamicGlobalPropertiesResponse](#classesgetdynamicglobalpropertiesresponsemd)
+- [GetKeyReferencesRequest](#classesgetkeyreferencesrequestmd)
+- [GetKeyReferencesResponse](#classesgetkeyreferencesresponsemd)
+- [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 
 ## Interfaces
@@ -2531,6 +2547,1052 @@ ___
 wasm/lib/wax_module.ts:16
 
 
+<a name="classesapiblockmd"></a>
+
+# Class: ApiBlock
+
+## Hierarchy
+
+- [`ApiBlockHeader`](#classesapiblockheadermd)
+
+  ↳ **`ApiBlock`**
+
+## Constructors
+
+### constructor
+
+• **new ApiBlock**(): [`ApiBlock`](#classesapiblockmd)
+
+#### Returns
+
+[`ApiBlock`](#classesapiblockmd)
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[constructor](#constructor)
+
+## Properties
+
+### block\_id
+
+• **block\_id**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:32
+
+___
+
+### extensions
+
+• **extensions**: `object`[] = `[]`
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[extensions](#extensions)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:20
+
+___
+
+### previous
+
+• **previous**: `string`
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[previous](#previous)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:8
+
+___
+
+### signing\_key
+
+• **signing\_key**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:35
+
+___
+
+### timestamp
+
+• **timestamp**: `string`
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[timestamp](#timestamp)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:11
+
+___
+
+### transaction\_ids
+
+• **transaction\_ids**: `string`[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:38
+
+___
+
+### transaction\_merkle\_root
+
+• **transaction\_merkle\_root**: `string`
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[transaction_merkle_root](#transaction_merkle_root)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:17
+
+___
+
+### transactions
+
+• **transactions**: [`ApiTransaction`](#classesapitransactionmd)[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:29
+
+___
+
+### witness
+
+• **witness**: `string`
+
+#### Inherited from
+
+[ApiBlockHeader](#classesapiblockheadermd).[witness](#witness)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:14
+
+___
+
+### witness\_signature
+
+• **witness\_signature**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:25
+
+
+<a name="classesapiblockheadermd"></a>
+
+# Class: ApiBlockHeader
+
+## Hierarchy
+
+- **`ApiBlockHeader`**
+
+  ↳ [`ApiBlock`](#classesapiblockmd)
+
+## Constructors
+
+### constructor
+
+• **new ApiBlockHeader**(): [`ApiBlockHeader`](#classesapiblockheadermd)
+
+#### Returns
+
+[`ApiBlockHeader`](#classesapiblockheadermd)
+
+## Properties
+
+### extensions
+
+• **extensions**: `object`[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:20
+
+___
+
+### previous
+
+• **previous**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:8
+
+___
+
+### timestamp
+
+• **timestamp**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:11
+
+___
+
+### transaction\_merkle\_root
+
+• **transaction\_merkle\_root**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:17
+
+___
+
+### witness
+
+• **witness**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/block.ts:14
+
+
+<a name="classesapitransactionmd"></a>
+
+# Class: ApiTransaction
+
+## Constructors
+
+### constructor
+
+• **new ApiTransaction**(): [`ApiTransaction`](#classesapitransactionmd)
+
+#### Returns
+
+[`ApiTransaction`](#classesapitransactionmd)
+
+## Properties
+
+### expiration
+
+• **expiration**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:13
+
+___
+
+### extensions
+
+• **extensions**: `object`[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:20
+
+___
+
+### operations
+
+• **operations**: `object`[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:17
+
+___
+
+### ref\_block\_num
+
+• **ref\_block\_num**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:6
+
+___
+
+### ref\_block\_prefix
+
+• **ref\_block\_prefix**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:10
+
+___
+
+### signatures
+
+• **signatures**: `string`[] = `[]`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:24
+
+
+<a name="classesbroadcasttransactionrequestmd"></a>
+
+# Class: BroadcastTransactionRequest
+
+## Constructors
+
+### constructor
+
+• **new BroadcastTransactionRequest**(`trx?`): [`BroadcastTransactionRequest`](#classesbroadcasttransactionrequestmd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `trx?` | [`transaction`](#transaction) \| [`ITransactionBuilder`](#interfacesitransactionbuildermd) |
+
+#### Returns
+
+[`BroadcastTransactionRequest`](#classesbroadcasttransactionrequestmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:10
+
+## Properties
+
+### max\_block\_age
+
+• **max\_block\_age**: `number` = `-1`
+
+#### Defined in
+
+wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:25
+
+___
+
+### trx
+
+• **trx**: [`ApiTransaction`](#classesapitransactionmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
+
+
+<a name="classesbroadcasttransactionresponsemd"></a>
+
+# Class: BroadcastTransactionResponse
+
+## Constructors
+
+### constructor
+
+• **new BroadcastTransactionResponse**(): [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
+
+#### Returns
+
+[`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
+
+
+<a name="classesgetblockheaderrequestmd"></a>
+
+# Class: GetBlockHeaderRequest
+
+## Constructors
+
+### constructor
+
+• **new GetBlockHeaderRequest**(): [`GetBlockHeaderRequest`](#classesgetblockheaderrequestmd)
+
+#### Returns
+
+[`GetBlockHeaderRequest`](#classesgetblockheaderrequestmd)
+
+## Properties
+
+### block\_num
+
+• **block\_num**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block_header.ts:9
+
+
+<a name="classesgetblockheaderresponsemd"></a>
+
+# Class: GetBlockHeaderResponse
+
+## Constructors
+
+### constructor
+
+• **new GetBlockHeaderResponse**(): [`GetBlockHeaderResponse`](#classesgetblockheaderresponsemd)
+
+#### Returns
+
+[`GetBlockHeaderResponse`](#classesgetblockheaderresponsemd)
+
+## Properties
+
+### header
+
+• **header**: [`ApiBlockHeader`](#classesapiblockheadermd)
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block_header.ts:15
+
+
+<a name="classesgetblockrangerequestmd"></a>
+
+# Class: GetBlockRangeRequest
+
+## Constructors
+
+### constructor
+
+• **new GetBlockRangeRequest**(): [`GetBlockRangeRequest`](#classesgetblockrangerequestmd)
+
+#### Returns
+
+[`GetBlockRangeRequest`](#classesgetblockrangerequestmd)
+
+## Properties
+
+### count
+
+• **count**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block_range.ts:14
+
+___
+
+### starting\_block\_num
+
+• **starting\_block\_num**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block_range.ts:9
+
+
+<a name="classesgetblockrangeresponsemd"></a>
+
+# Class: GetBlockRangeResponse
+
+## Constructors
+
+### constructor
+
+• **new GetBlockRangeResponse**(): [`GetBlockRangeResponse`](#classesgetblockrangeresponsemd)
+
+#### Returns
+
+[`GetBlockRangeResponse`](#classesgetblockrangeresponsemd)
+
+## Properties
+
+### blocks
+
+• **blocks**: [`ApiBlock`](#classesapiblockmd)[]
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block_range.ts:20
+
+
+<a name="classesgetblockrequestmd"></a>
+
+# Class: GetBlockRequest
+
+## Constructors
+
+### constructor
+
+• **new GetBlockRequest**(): [`GetBlockRequest`](#classesgetblockrequestmd)
+
+#### Returns
+
+[`GetBlockRequest`](#classesgetblockrequestmd)
+
+## Properties
+
+### block\_num
+
+• **block\_num**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block.ts:9
+
+
+<a name="classesgetblockresponsemd"></a>
+
+# Class: GetBlockResponse
+
+## Constructors
+
+### constructor
+
+• **new GetBlockResponse**(): [`GetBlockResponse`](#classesgetblockresponsemd)
+
+#### Returns
+
+[`GetBlockResponse`](#classesgetblockresponsemd)
+
+## Properties
+
+### block
+
+• **block**: [`ApiBlock`](#classesapiblockmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/block_api/get_block.ts:15
+
+
+<a name="classesgetdynamicglobalpropertiesrequestmd"></a>
+
+# Class: GetDynamicGlobalPropertiesRequest
+
+## Constructors
+
+### constructor
+
+• **new GetDynamicGlobalPropertiesRequest**(): [`GetDynamicGlobalPropertiesRequest`](#classesgetdynamicglobalpropertiesrequestmd)
+
+#### Returns
+
+[`GetDynamicGlobalPropertiesRequest`](#classesgetdynamicglobalpropertiesrequestmd)
+
+
+<a name="classesgetdynamicglobalpropertiesresponsemd"></a>
+
+# Class: GetDynamicGlobalPropertiesResponse
+
+## Constructors
+
+### constructor
+
+• **new GetDynamicGlobalPropertiesResponse**(): [`GetDynamicGlobalPropertiesResponse`](#classesgetdynamicglobalpropertiesresponsemd)
+
+#### Returns
+
+[`GetDynamicGlobalPropertiesResponse`](#classesgetdynamicglobalpropertiesresponsemd)
+
+## Properties
+
+### available\_account\_subsidies
+
+• **available\_account\_subsidies**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:113
+
+___
+
+### confidential\_hbd\_supply
+
+• **confidential\_hbd\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:53
+
+___
+
+### confidential\_supply
+
+• **confidential\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:41
+
+___
+
+### content\_reward\_percent
+
+• **content\_reward\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:128
+
+___
+
+### current\_aslot
+
+• **current\_aslot**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:91
+
+___
+
+### current\_hbd\_supply
+
+• **current\_hbd\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:49
+
+___
+
+### current\_supply
+
+• **current\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:37
+
+___
+
+### current\_witness
+
+• **current\_witness**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:23
+
+___
+
+### delegation\_return\_period
+
+• **delegation\_return\_period**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:107
+
+___
+
+### downvote\_pool\_percent
+
+• **downvote\_pool\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:142
+
+___
+
+### hbd\_interest\_rate
+
+• **hbd\_interest\_rate**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:79
+
+___
+
+### hbd\_print\_rate
+
+• **hbd\_print\_rate**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:82
+
+___
+
+### hbd\_start\_percent
+
+• **hbd\_start\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:119
+
+___
+
+### hbd\_stop\_percent
+
+• **hbd\_stop\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:116
+
+___
+
+### head\_block\_id
+
+• **head\_block\_id**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:17
+
+___
+
+### head\_block\_number
+
+• **head\_block\_number**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:14
+
+___
+
+### id
+
+• **id**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:11
+
+___
+
+### init\_hbd\_supply
+
+• **init\_hbd\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:45
+
+___
+
+### last\_budget\_time
+
+• **last\_budget\_time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:125
+
+___
+
+### last\_irreversible\_block\_num
+
+• **last\_irreversible\_block\_num**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:100
+
+___
+
+### maximum\_block\_size
+
+• **maximum\_block\_size**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:85
+
+___
+
+### next\_maintenance\_time
+
+• **next\_maintenance\_time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:122
+
+___
+
+### num\_pow\_witnesses
+
+• **num\_pow\_witnesses**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:29
+
+___
+
+### participation\_count
+
+• **participation\_count**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:97
+
+___
+
+### pending\_rewarded\_vesting\_hive
+
+• **pending\_rewarded\_vesting\_hive**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:76
+
+___
+
+### pending\_rewarded\_vesting\_shares
+
+• **pending\_rewarded\_vesting\_shares**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:72
+
+___
+
+### recent\_slots\_filled
+
+• **recent\_slots\_filled**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:94
+
+___
+
+### required\_actions\_partition\_percent
+
+• **required\_actions\_partition\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:88
+
+___
+
+### reverse\_auction\_seconds
+
+• **reverse\_auction\_seconds**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:110
+
+___
+
+### smt\_creation\_fee
+
+• **smt\_creation\_fee**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:146
+
+___
+
+### sps\_fund\_percent
+
+• `Optional` **sps\_fund\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:135
+
+___
+
+### sps\_interval\_ledger
+
+• **sps\_interval\_ledger**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:139
+
+___
+
+### target\_votes\_per\_period
+
+• `Optional` **target\_votes\_per\_period**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:104
+
+___
+
+### time
+
+• **time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:20
+
+___
+
+### total\_pow
+
+• **total\_pow**: `string` \| `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:26
+
+___
+
+### total\_reward\_fund\_hive
+
+• **total\_reward\_fund\_hive**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:65
+
+___
+
+### total\_reward\_shares2
+
+• **total\_reward\_shares2**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:68
+
+___
+
+### total\_vesting\_fund\_hive
+
+• **total\_vesting\_fund\_hive**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:57
+
+___
+
+### total\_vesting\_shares
+
+• **total\_vesting\_shares**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:61
+
+___
+
+### vesting\_reward\_percent
+
+• **vesting\_reward\_percent**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:131
+
+___
+
+### virtual\_supply
+
+• **virtual\_supply**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:33
+
+
+<a name="classesgetkeyreferencesrequestmd"></a>
+
+# Class: GetKeyReferencesRequest
+
+## Constructors
+
+### constructor
+
+• **new GetKeyReferencesRequest**(): [`GetKeyReferencesRequest`](#classesgetkeyreferencesrequestmd)
+
+#### Returns
+
+[`GetKeyReferencesRequest`](#classesgetkeyreferencesrequestmd)
+
+## Properties
+
+### keys
+
+• **keys**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:8
+
+
+<a name="classesgetkeyreferencesresponsemd"></a>
+
+# Class: GetKeyReferencesResponse
+
+## Constructors
+
+### constructor
+
+• **new GetKeyReferencesResponse**(): [`GetKeyReferencesResponse`](#classesgetkeyreferencesresponsemd)
+
+#### Returns
+
+[`GetKeyReferencesResponse`](#classesgetkeyreferencesresponsemd)
+
+## Properties
+
+### accounts
+
+• **accounts**: `string`[][]
+
+#### Defined in
+
+wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:13
+
+
+<a name="classesnaiassetmd"></a>
+
+# Class: NaiAsset
+
+## Constructors
+
+### constructor
+
+• **new NaiAsset**(): [`NaiAsset`](#classesnaiassetmd)
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+## Properties
+
+### amount
+
+• **amount**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/asset.ts:7
+
+___
+
+### nai
+
+• **nai**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/asset.ts:13
+
+___
+
+### precision
+
+• **precision**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/asset.ts:10
+
+
 <a name="classesoperationvisitormd"></a>
 
 # Class: OperationVisitor\<R\>
@@ -3734,7 +4796,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:227
+wasm/lib/interfaces.ts:228
 
 ## Accessors
 
@@ -3803,7 +4865,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:225
+wasm/lib/interfaces.ts:226
 
 ___
 
@@ -3835,7 +4897,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:216
+wasm/lib/interfaces.ts:217
 
 
 <a name="interfacesitransactionbuildermd"></a>

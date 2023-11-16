@@ -10,5 +10,5 @@ export class GetKeyReferencesRequest {
 
 export class GetKeyReferencesResponse {
   @Validate(IsString.bind({ each: true }), { each: true })
-  public accounts!: Array<Array<string>>;
+  public accounts!: string[][];
 }

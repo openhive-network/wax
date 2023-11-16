@@ -195,6 +195,7 @@ export type YourApiData<YourTypes> = {
  */
 export interface IHiveApi {
   account_by_key_api: ApiData<'account_by_key_api'>;
+  block_api: ApiData<'block_api'>;
   database_api: ApiData<'database_api'>;
   network_broadcast_api: ApiData<'network_broadcast_api'>;
 }

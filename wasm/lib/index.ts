@@ -10,7 +10,7 @@ export * from './protocol.js';
 // Helper definitions
 export * from './visitor.js';
 
-export { createWaxFoundation, createHiveChain } from "./detailed/index.js";
+export * from "./detailed/index.js";
 
 export * from "./interfaces.js";
 export * from "./errors.js";
