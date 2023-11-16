@@ -57,6 +57,8 @@ python_extension_module(${PROJECT_NAME})
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpython_interface.hpp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+
 INSTALL(TARGETS
   ${PROJECT_NAME}
 
