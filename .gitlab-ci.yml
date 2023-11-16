@@ -32,7 +32,6 @@ default:
 .configuration:
   before_script:
     - python3 -V
-    - poetry self add "poetry-dynamic-versioning[plugin]"
     - poetry self update
     - pip list
   tags:
