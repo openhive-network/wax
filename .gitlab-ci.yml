@@ -8,9 +8,9 @@ variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-8
-  CI_BASE_IMAGE_TAG: "@sha256:e9f16040010ad24fffeabec66abca109b24baa79d912eba3118da58e8130fb26"
-  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-1
+  CI_BASE_IMAGE_TAG: "@sha256:822454ce40edd3f10c506246dc4e8ec46b714e4ff8b35220e4456f29612e51f4"
+  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
