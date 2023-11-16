@@ -42,6 +42,9 @@ class CustomBuild(build_ext):
         if "BUILD_HIVE_TESTNET" in os.environ:
             configure_args.append("-DBUILD_HIVE_TESTNET=ON")
 
+        assert "WAX_BOOST_ROOT" in os.environ, "Invalid build environment - consider using preconfigured wax/ci-base-image"
+        configure_args.append("-DBOOST_ROOT={}".format(os.getenv("WAX_BOOST_ROOT")))
+
         if self.cpp_build_dir.exists():
             shutil.rmtree(self.cpp_build_dir)
 
