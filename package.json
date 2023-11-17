@@ -9,9 +9,9 @@
     "prebuild": "husky install && sh scripts/compile_proto_ts.sh",
     "build": "rimraf wasm/dist && tsc",
     "postbuild": "rollup -c && scripts/generate_api_docs.sh",
-    "postinstall": "playwright install",
+    "pretest": "playwright install",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite",
-    "examples": "cd examples/ts && pnpm install && pnpm run examples && cd ../..",
+    "examples": "cd examples/ts && pnpm install && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
     "postpack": "mv _README.md README.md"
   },
