@@ -1,8 +1,8 @@
 {
   "name": "examples",
   "scripts": {
-    "examples": "ts-node index.ts",
-    "postinstall": "playwright install"
+    "pretest": "playwright install",
+    "test": "ts-node index.ts"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.9.3",
