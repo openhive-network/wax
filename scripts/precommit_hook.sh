@@ -11,11 +11,8 @@ DISTTAG_PLACEHOLDER=$(jq -r ".publishConfig.tag" "${PROJECT_DIR}/package.json")
 
 STAGED_FILES=($(git diff --name-only --cached))
 
-if [[ ! " ${STAGED_FILES[*]} " =~ " package.json " ]] && [[ ! " ${STAGED_FILES[*]} " =~ " npm.ts.md " ]];
+if [[ " ${STAGED_FILES[*]} " =~ " package.json " ]];
 then
-  echo "Placeholder files is not staged for commit - skipping further checks..."
-  exit 0
-fi
 
 # Verify each placeholder in the package.json file to block commits holding i.e. effective version (hash)
 if [[ "${VERSION_PLACEHOLDER}" != "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder" ]];
@@ -36,4 +33,9 @@ then
   exit 3
 fi
 
-(grep "\${CommitSHA}" npm.ts.md 1>/dev/null) || (echo "Commit sha placeholder in npm.ts.md is broken - preventing commit." && exit 4)
+fi
+
+if [[ " ${STAGED_FILES[*]} " =~ " npm.ts.md " ]];
+then
+  (grep "\${CommitSHA}" npm.ts.md 1>/dev/null) || (echo "Commit sha placeholder in npm.ts.md is broken - preventing commit." && exit 4)
+fi
