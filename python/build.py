@@ -31,7 +31,7 @@ class CustomBuild(build_ext):
     build_info = package_dir / "info.json"
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
-        configure_args = ["-GNinja"]
+        configure_args = ["-GNinja", "-DCMAKE_BUILD_TYPE=RelWithDebInfo"]
         build_command = ninja_command
         if build_command is None:
             assert make_command is not None, "cannot find neither ninja nor make"
@@ -149,7 +149,8 @@ def build(setup_kwargs: dict[str, Any]) -> None:
             "ext_modules": cythonize(
                 [
                     Extension(
-                        "wax", ["wax.pyx"]
+                        "wax", ["wax.pyx"],
+                        include_dirs=['.', './..'],
                     ),  # There has to be at least one extension, instead CustomBuild.run won't be called
                 ]
             ),
