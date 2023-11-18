@@ -63,7 +63,7 @@ verify_poetry_lock_sanity:
   extends: .verify_poetry_lock_sanity_template
   stage: static_code_analysis
   variables:
-    PYPROJECT_DIR: "$CI_PROJECT_DIR"
+    PYPROJECT_DIR: "$CI_PROJECT_DIR/python"
   tags:
     - public-runner-docker
 
