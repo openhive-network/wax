@@ -1,4 +1,5 @@
-SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/hive")
+SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hive")
+# this file is generated while performing a cythonize'ing process of the Python extension
 SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/wax.cpp")
 
 LIST(APPEND CMAKE_MODULE_PATH
@@ -44,13 +45,16 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_D
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)
 
-file(GLOB HEADERS "core/*.hpp" "cpython_interface.hpp")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
-add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} core/foundation.cpp cpython_interface.cpp ${HEADERS} LINK_LIBRARIES hive_protocol)
+add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp cpython_interface.cpp ${HEADERS}
+  LINK_LIBRARIES hive_protocol)
 
-target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}"
-                                                   "${CMAKE_CURRENT_SOURCE_DIR}/core"
-                                                   "${HIVE_ROOT_PATH}/libraries/chain/include"
+target_include_directories(${PROJECT_NAME} PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../core"
+  "${HIVE_ROOT_PATH}/libraries/chain/include"
 )
 
 python_extension_module(${PROJECT_NAME})
