@@ -3,8 +3,8 @@
 set -e
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-PROJECT_DIR="${SCRIPTPATH}/../.."
-PROTO_DIR="${PROJECT_DIR}/hive/libraries/protocol/proto"
+PROJECT_DIR="${SCRIPTPATH}/.."
+PROTO_DIR="${PROJECT_DIR}/../hive/libraries/protocol/proto"
 
 OUTPUT_DIR="${PROJECT_DIR}/wax/proto"
 INIT_FILE_PATH="${OUTPUT_DIR}/__init__.py"
@@ -13,7 +13,7 @@ if [ -d "${OUTPUT_DIR}" ]; then
   rm -rf "${OUTPUT_DIR}"
 fi
 
-mkdir -p "${OUTPUT_DIR}"
+mkdir -vp "${OUTPUT_DIR}"
 
 echo "Install poetry dependencies."
 poetry -C ${PROJECT_DIR} install --no-root
