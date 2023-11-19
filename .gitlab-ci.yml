@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 7c58303ffb61d91ef9662ec20e7b498bc6f62b8f
+    ref: 9fa33bb79897140891a724422c3507a523cd3e34
     file:
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
@@ -34,21 +34,13 @@ default:
   tags:
     - public-runner-docker
 
-.configuration:
-  extends: .job-defaults
-  before_script:
-    - python3 -V
-    - poetry self update
-    - pip list
-  tags:
-    - public-runner-docker
-
 build_wheel:
   extends: .build_wheel_template
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   stage: build
   script:
-    - cd "${CI_PROJECT_DIR}/python"
-    - ./scripts/build_wax.sh 1
+    - ./python/scripts/build_wax.sh 1
   artifacts:
     when: always
     paths:
@@ -57,7 +49,6 @@ build_wheel:
       - "${PYPROJECT_DIR}/.build/*.so"
       - "build_wheel.env"
       - "${PYPROJECT_DIR}/wax/proto"
-
     reports:
       dotenv: "build_wheel.env"
 
