@@ -149,7 +149,7 @@ test_wax_protobuf_python:
   extends: .test_python_env
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - ./python/wax/tests/run_tests.sh
+    - ${PYPROJECT_DIR}/wax/tests/run_tests.sh
   artifacts:
     reports:
       junit: python/wax/tests/report.xml
