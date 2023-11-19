@@ -18,9 +18,10 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+python/build/
+python/.build/
 develop-eggs/
-dist/
+python/dist/
 downloads/
 eggs/
 .eggs/
@@ -199,7 +200,6 @@ pyrightconfig.json
 
 # Custom
 .build/
-wax.cpp
 build_wasm
 
 # Generated files
@@ -208,7 +208,8 @@ build_wasm
 wasm/lib/proto
 dist
 node_modules
-wax/proto
+python/wax/proto
+python/wax.cpp
 .parcel-cache
 .pnpm-store
 results.json
