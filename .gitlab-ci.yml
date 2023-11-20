@@ -161,7 +161,7 @@ test_wax_protobuf_python_pattern:
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/samples/python/proto/ $CI_PROJECT_DIR/python/wax/proto/
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/python/protobuf_patterns/ $CI_PROJECT_DIR/python/wax/proto/
   artifacts:
     paths:
       - $CI_PROJECT_DIR/python/wax/proto/
