@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@hive/beekeeper':
-    specifier: ~1.27.5-rc0-stable.610e7072c
-    version: 1.27.5-rc0-stable.610e7072c
+    specifier: ~1.27.5-rc0-stable.766d1d7bd
+    version: 1.27.5-rc0-stable.766d1d7bd
   '@hive/wax':
     specifier: file:../..
     version: file:../..
@@ -25,6 +25,9 @@ devDependencies:
   '@types/node':
     specifier: ^20.8.2
     version: 20.8.2
+  buffer:
+    specifier: ^5.5.0||^6.0.0
+    version: 6.0.3
   process:
     specifier: ^0.11.10
     version: 0.11.10
@@ -66,8 +69,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@hive/beekeeper@1.27.5-rc0-stable.610e7072c:
-    resolution: {integrity: sha1-a5xXPXd3orjdNelDy7zhy8AWbB0=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-stable.610e7072c.tgz}
+  /@hive/beekeeper@1.27.5-rc0-stable.766d1d7bd:
+    resolution: {integrity: sha1-xM1bqNHtxT3rELVhT0qBBZ/9XPg=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-stable.766d1d7bd.tgz}
     engines: {node: '>= 12'}
     requiresBuild: true
     dev: false
@@ -1246,7 +1249,6 @@ packages:
 
   /base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-    dev: false
 
   /boolbase@1.0.0:
     resolution: {integrity: sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==}
@@ -1275,7 +1277,6 @@ packages:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
-    dev: false
 
   /callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
@@ -1588,7 +1589,6 @@ packages:
 
   /ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
-    dev: false
 
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -2164,13 +2164,14 @@ packages:
     engines: {node: '>= 12'}
     requiresBuild: true
     dependencies:
-      '@hive/beekeeper': 1.27.5-rc0-stable.610e7072c
+      '@hive/beekeeper': 1.27.5-rc0-stable.766d1d7bd
       axios: 1.6.2
       buffer: 6.0.3
       class-transformer: 0.5.1
       class-validator: 0.14.0
       long: 5.2.3
       protobufjs: 7.2.5
+      reflect-metadata: 0.1.13
     transitivePeerDependencies:
       - debug
     dev: false
