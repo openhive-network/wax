@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@hive/beekeeper':
-    specifier: 1.27.5-rc0-stable.610e7072c
-    version: 1.27.5-rc0-stable.610e7072c
+    specifier: 1.27.5-rc0-stable.766d1d7bd
+    version: 1.27.5-rc0-stable.766d1d7bd
   axios:
     specifier: ^1.6.2
     version: 1.6.2
@@ -101,10 +101,9 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@hive/beekeeper@1.27.5-rc0-stable.610e7072c:
-    resolution: {integrity: sha1-a5xXPXd3orjdNelDy7zhy8AWbB0=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-stable.610e7072c.tgz}
+  /@hive/beekeeper@1.27.5-rc0-stable.766d1d7bd:
+    resolution: {integrity: sha1-xM1bqNHtxT3rELVhT0qBBZ/9XPg=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc0-stable.766d1d7bd.tgz}
     engines: {node: '>= 12'}
-    requiresBuild: true
     dev: false
 
   /@isaacs/cliui@8.0.2:
