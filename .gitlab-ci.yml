@@ -129,7 +129,6 @@ wax_wasm_proto_tsc_generation:
     - !reference [.configuration_template, before_script]
     - pip install ${PYPROJECT_DIR}/dist/*.whl
     - pip list
-    - ls -al $(poetry -C "${PYPROJECT_DIR}" env info --path)/lib/python3.10/site-packages/
 
 .test_python_env:
   extends: .runtime_like_python_env
