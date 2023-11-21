@@ -15,11 +15,11 @@ variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-1
-  CI_BASE_IMAGE_TAG: "@sha256:822454ce40edd3f10c506246dc4e8ec46b714e4ff8b35220e4456f29612e51f4"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu23.10-1
+  CI_BASE_IMAGE_TAG: "@sha256:606ec874d8486fd510aca975c03dc2d8c97208c580a855138b306e0520767d32"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
 
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-1
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu23.10-1
   PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
   PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
