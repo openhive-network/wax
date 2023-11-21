@@ -21,7 +21,7 @@ log("Build file loaded...")
 
 
 class CustomBuild(build_ext):
-    output_binary_name = "wax.cpython-310-x86_64-linux-gnu.so"
+    output_binary_name = "wax.cpython-311-x86_64-linux-gnu.so"
     root_dir = Path(__file__).parent.absolute()
     package_dir = root_dir / "wax"
     wax_package_shared_lib = package_dir / output_binary_name
