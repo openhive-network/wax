@@ -65,12 +65,11 @@ wax_wasm_build:
   stage: build
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/wasm/src/"
-    BINARIES_DIR: "${CI_PROJECT_DIR}/build_wasm"
+    BINARIES_DIR: "${CI_PROJECT_DIR}/wasm/lib/build_wasm"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/build_wasm/wax_wasm.js"
-      - "$CI_PROJECT_DIR/build_wasm/wax_wasm.wasm"
-      - "$CI_PROJECT_DIR/build_wasm/wax.d.ts"
+      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.js"
+      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.d.ts"
 
 wax_wasm_package_generation:
   extends: .job-defaults

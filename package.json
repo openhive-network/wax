@@ -47,9 +47,6 @@
     "LICENSE.md",
     "README.md",
     "api.md",
-    "build_wasm/wax_wasm.js",
-    "build_wasm/wax_wasm.wasm",
-    "build_wasm/wax.d.ts",
     "wasm/dist/bundle"
   ],
   "types": "wasm/dist/bundle/index.d.ts",

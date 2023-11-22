@@ -31,7 +31,7 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
 else
   echo "Performing a build"
   cd "${EXECUTION_PATH}"
-  BUILD_DIR="${EXECUTION_PATH}/build_wasm"
+  BUILD_DIR="${EXECUTION_PATH}/wasm/lib/build_wasm"
   mkdir -vp "${BUILD_DIR}"
   cd "${BUILD_DIR}"
 

@@ -1,9 +1,8 @@
 LICENSE.md
 README.md
 api.md
-build_wasm/wax_wasm.js
-build_wasm/wax.d.ts
 package.json
+wasm/dist/bundle/build_wasm/wax.d.ts
 wasm/dist/bundle/detailed/api/account_by_key_api/get_key_references.d.ts
 wasm/dist/bundle/detailed/api/account_by_key_api/index.d.ts
 wasm/dist/bundle/detailed/api/block_api/get_block_header.d.ts

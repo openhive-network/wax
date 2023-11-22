@@ -207,7 +207,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:4
+wasm/lib/build_wasm/wax.d.ts:4
 
 ___
 
@@ -225,7 +225,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:53
+wasm/lib/build_wasm/wax.d.ts:53
 
 ___
 
@@ -243,7 +243,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:47
+wasm/lib/build_wasm/wax.d.ts:47
 
 ## Variables
 
@@ -3051,11 +3051,11 @@ wasm/lib/detailed/api/block_api/get_block.ts:9
 
 ### block
 
-• **block**: [`ApiBlock`](#classesapiblockmd)
+• `Optional` **block**: [`ApiBlock`](#classesapiblockmd)
 
 #### Defined in
 
-wasm/lib/detailed/api/block_api/get_block.ts:15
+wasm/lib/detailed/api/block_api/get_block.ts:16
 
 
 <a name="classesgetdynamicglobalpropertiesrequestmd"></a>
@@ -5338,7 +5338,7 @@ wasm/lib/interfaces.ts:28
 
 #### Defined in
 
-build_wasm/wax.d.ts:60
+wasm/lib/build_wasm/wax.d.ts:60
 
 ___
 
@@ -5356,7 +5356,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:63
+wasm/lib/build_wasm/wax.d.ts:63
 
 ___
 
@@ -5374,7 +5374,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:62
+wasm/lib/build_wasm/wax.d.ts:62
 
 ___
 
@@ -5392,7 +5392,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:61
+wasm/lib/build_wasm/wax.d.ts:61
 
 
 <a name="interfacesaccount_createmd"></a>
@@ -11270,7 +11270,7 @@ wasm/lib/proto/proposal_pay.ts:19
 
 #### Defined in
 
-build_wasm/wax.d.ts:38
+wasm/lib/build_wasm/wax.d.ts:38
 
 ___
 
@@ -11299,7 +11299,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:9
+wasm/lib/build_wasm/wax.d.ts:9
 
 ___
 
@@ -11319,7 +11319,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:33
+wasm/lib/build_wasm/wax.d.ts:33
 
 ___
 
@@ -11348,7 +11348,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:8
+wasm/lib/build_wasm/wax.d.ts:8
 
 ___
 
@@ -11372,7 +11372,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:14
+wasm/lib/build_wasm/wax.d.ts:14
 
 ___
 
@@ -11393,7 +11393,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:34
+wasm/lib/build_wasm/wax.d.ts:34
 
 ___
 
@@ -11413,7 +11413,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:32
+wasm/lib/build_wasm/wax.d.ts:32
 
 ___
 
@@ -11439,7 +11439,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:10
+wasm/lib/build_wasm/wax.d.ts:10
 
 ___
 
@@ -11457,7 +11457,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:7
+wasm/lib/build_wasm/wax.d.ts:7
 
 ___
 
@@ -11477,7 +11477,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:35
+wasm/lib/build_wasm/wax.d.ts:35
 
 ___
 
@@ -11502,7 +11502,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:12
+wasm/lib/build_wasm/wax.d.ts:12
 
 ___
 
@@ -11527,7 +11527,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:11
+wasm/lib/build_wasm/wax.d.ts:11
 
 ___
 
@@ -11547,7 +11547,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:37
+wasm/lib/build_wasm/wax.d.ts:37
 
 ___
 
@@ -11567,7 +11567,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:36
+wasm/lib/build_wasm/wax.d.ts:36
 
 ___
 
@@ -11587,7 +11587,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:30
+wasm/lib/build_wasm/wax.d.ts:30
 
 ___
 
@@ -11607,7 +11607,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:31
+wasm/lib/build_wasm/wax.d.ts:31
 
 ___
 
@@ -11632,7 +11632,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:13
+wasm/lib/build_wasm/wax.d.ts:13
 
 ___
 
@@ -11650,7 +11650,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:39
+wasm/lib/build_wasm/wax.d.ts:39
 
 
 <a name="interfacesprotocolmd"></a>
@@ -11690,7 +11690,7 @@ build_wasm/wax.d.ts:39
 
 #### Defined in
 
-build_wasm/wax.d.ts:9
+wasm/lib/build_wasm/wax.d.ts:9
 
 ___
 
@@ -11710,7 +11710,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:22
+wasm/lib/build_wasm/wax.d.ts:22
 
 ___
 
@@ -11739,7 +11739,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:8
+wasm/lib/build_wasm/wax.d.ts:8
 
 ___
 
@@ -11763,7 +11763,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:14
+wasm/lib/build_wasm/wax.d.ts:14
 
 ___
 
@@ -11784,7 +11784,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:23
+wasm/lib/build_wasm/wax.d.ts:23
 
 ___
 
@@ -11804,7 +11804,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:21
+wasm/lib/build_wasm/wax.d.ts:21
 
 ___
 
@@ -11830,7 +11830,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:10
+wasm/lib/build_wasm/wax.d.ts:10
 
 ___
 
@@ -11848,7 +11848,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:7
+wasm/lib/build_wasm/wax.d.ts:7
 
 ___
 
@@ -11868,7 +11868,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:24
+wasm/lib/build_wasm/wax.d.ts:24
 
 ___
 
@@ -11893,7 +11893,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:12
+wasm/lib/build_wasm/wax.d.ts:12
 
 ___
 
@@ -11918,7 +11918,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:11
+wasm/lib/build_wasm/wax.d.ts:11
 
 ___
 
@@ -11938,7 +11938,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:25
+wasm/lib/build_wasm/wax.d.ts:25
 
 ___
 
@@ -11958,7 +11958,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:19
+wasm/lib/build_wasm/wax.d.ts:19
 
 ___
 
@@ -11978,7 +11978,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:20
+wasm/lib/build_wasm/wax.d.ts:20
 
 ___
 
@@ -12003,7 +12003,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:13
+wasm/lib/build_wasm/wax.d.ts:13
 
 ___
 
@@ -12021,7 +12021,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:26
+wasm/lib/build_wasm/wax.d.ts:26
 
 
 <a name="interfacesprotocol_foundationmd"></a>
@@ -12059,7 +12059,7 @@ build_wasm/wax.d.ts:26
 
 #### Defined in
 
-build_wasm/wax.d.ts:9
+wasm/lib/build_wasm/wax.d.ts:9
 
 ___
 
@@ -12084,7 +12084,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:8
+wasm/lib/build_wasm/wax.d.ts:8
 
 ___
 
@@ -12104,7 +12104,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:14
+wasm/lib/build_wasm/wax.d.ts:14
 
 ___
 
@@ -12126,7 +12126,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:10
+wasm/lib/build_wasm/wax.d.ts:10
 
 ___
 
@@ -12140,7 +12140,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:7
+wasm/lib/build_wasm/wax.d.ts:7
 
 ___
 
@@ -12161,7 +12161,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:12
+wasm/lib/build_wasm/wax.d.ts:12
 
 ___
 
@@ -12182,7 +12182,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:11
+wasm/lib/build_wasm/wax.d.ts:11
 
 ___
 
@@ -12203,7 +12203,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:13
+wasm/lib/build_wasm/wax.d.ts:13
 
 ___
 
@@ -12217,7 +12217,7 @@ ___
 
 #### Defined in
 
-build_wasm/wax.d.ts:15
+wasm/lib/build_wasm/wax.d.ts:15
 
 
 <a name="interfacesproxy_clearedmd"></a>
