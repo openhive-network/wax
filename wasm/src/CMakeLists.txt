@@ -57,6 +57,12 @@ target_link_options( wax_wasm PUBLIC -fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1
 
 set_target_properties( wax_wasm PROPERTIES OUTPUT_NAME wax.js )
 
+INSTALL( TARGETS wax_wasm
+  COMPONENT wax_wasm_runtime
+  RUNTIME DESTINATION .
+  )
+
+
 # Helper target, just to perform TypeScript wrapper generation
 ADD_EXECUTABLE( wax_ts_gen ${SOURCES} )
 
@@ -66,3 +72,8 @@ target_link_libraries( wax_ts_gen PUBLIC embind hive_protocol idbfs.js )
 
 target_link_options( wax_ts_gen PUBLIC -fexceptions --embind-emit-tsd ${CMAKE_CURRENT_BINARY_DIR}/wax.d.ts )
 set_target_properties( wax_ts_gen PROPERTIES OUTPUT_NAME wax_ts_gen.cjs )
+
+INSTALL( FILES "${CMAKE_CURRENT_BINARY_DIR}/wax.d.ts"
+  COMPONENT wax_wasm_dts
+  DESTINATION .
+  )
