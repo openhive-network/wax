@@ -60,17 +60,6 @@ verify_poetry_lock_sanity:
   tags:
     - public-runner-docker
 
-wax_wasm_build:
-  extends: .wasm_build_job_template
-  stage: build
-  variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/wasm/src/"
-    BINARIES_DIR: "${CI_PROJECT_DIR}/wasm/lib/build_wasm"
-  artifacts:
-    paths:
-      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.js"
-      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.d.ts"
-
 wax_wasm_package_generation:
   extends: .job-defaults
   stage: build
@@ -102,8 +91,6 @@ wax_wasm_proto_tsc_generation:
     - pnpm install # we actually want to move to yarn
     - npm run build
   needs:
-    - job: wax_wasm_build
-      artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
   artifacts:
@@ -192,8 +179,6 @@ test_wax_protobuf_python_examples:
 test_wax_wasm:
   extends: .wasm_wax_test_base
   needs:
-    - job: wax_wasm_build
-      artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
@@ -209,8 +194,6 @@ test_wax_wasm:
 test_wax_wasm_proto_pattern:
   extends: .wasm_wax_test_base
   needs:
-    - job: wax_wasm_build
-      artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
@@ -230,8 +213,6 @@ test_wax_wasm_proto_pattern:
 test_wax_wasm_examples:
   extends: .wasm_wax_test_base
   needs:
-    - job: wax_wasm_build
-      artifacts: true
     - job: wax_wasm_package_generation
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
@@ -281,8 +262,6 @@ deploy_wax_wasm_dev_package:
     - job: test_wax_wasm_proto_pattern
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-    - job: wax_wasm_build
-      artifacts: true
 
 deploy_wax_wasm_production_public_npm:
   extends: .job-defaults
@@ -297,8 +276,6 @@ deploy_wax_wasm_production_public_npm:
     - scripts/bump_npm_version.sh "$PUBLISH_TOKEN" "$NPM_SCOPE" "$NPM_REGISTRY"
     - scripts/npm_publish.sh
   needs:
-    - job: wax_wasm_build
-      artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   rules:
