@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { IsDateString, IsHexadecimal, IsObject, IsString, ValidateNested } from "class-validator";
+import { IsDateString, IsHexadecimal, IsObject, IsString, Validate, ValidateNested } from "class-validator";
 
 import { ApiTransaction } from "./transaction.js";
+import { IsPublicKey } from "../../decorators/is_public_key.js";
 
 export class ApiBlockHeader {
   @IsHexadecimal()
@@ -31,7 +32,7 @@ export class ApiBlock extends ApiBlockHeader {
   @IsHexadecimal()
   public block_id!: string;
 
-  @IsHexadecimal()
+  @Validate(IsPublicKey)
   public signing_key!: string;
 
   @IsHexadecimal({ each: true })

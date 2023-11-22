@@ -1,4 +1,4 @@
-import { IsNumber, Min, ValidateNested } from "class-validator";
+import { IsNumber, IsOptional, Min, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 import { ApiBlock } from "../types/block.js";
@@ -11,6 +11,7 @@ export class GetBlockRequest {
 
 export class GetBlockResponse {
   @ValidateNested()
+  @IsOptional()
   @Type(() => ApiBlock)
-  public block!: ApiBlock;
+  public block?: ApiBlock;
 }
