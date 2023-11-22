@@ -88,13 +88,14 @@ wax_wasm_proto_tsc_generation:
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
   script:
-    - pnpm install # we actually want to move to yarn
+    - pnpm install
     - npm run build
   needs:
     - job: wax_wasm_package_generation
       artifacts: true
   artifacts:
     paths:
+      - "$CI_PROJECT_DIR/wasm/lib/build_wasm"
       - "$CI_PROJECT_DIR/wasm/dist"
 
     when: always
