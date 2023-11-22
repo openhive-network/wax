@@ -10,7 +10,7 @@ EXECUTION_PATH_DEFAULT="/src/"
 
 # Check for usage inside dev container providing all tools (emscripten image)
 if [ $# -eq 0 ]; then
-EXECUTOR=$(whoami)
+  EXECUTOR=$(whoami)
   if [ "${EXECUTOR}" = "emscripten" ]; then
     DIRECT_EXECUTION_DEFAULT=1
     EXECUTION_PATH_DEFAULT="${PROJECT_DIR}"
@@ -31,7 +31,7 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
 else
   echo "Performing a build"
   cd "${EXECUTION_PATH}"
-  BUILD_DIR="${EXECUTION_PATH}/wasm/lib/build_wasm"
+  BUILD_DIR="${EXECUTION_PATH}/wasm/build_wasm"
   mkdir -vp "${BUILD_DIR}"
   cd "${BUILD_DIR}"
 
@@ -42,4 +42,13 @@ else
     -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Ninja" \
     -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}"
   ninja -j8
+
+  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+
+  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+
+  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
+
 fi
