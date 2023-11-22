@@ -6,8 +6,8 @@
   "type": "module",
   "private": false,
   "scripts": {
-    "prebuild": "husky install && sh scripts/compile_proto_ts.sh",
-    "build": "rimraf wasm/dist && tsc",
+    "prebuild": "husky install && sh scripts/compile_proto_ts.sh && rimraf wasm/dist",
+    "build": "wasm/build_wasm_wax.sh && tsc",
     "postbuild": "rollup -c && scripts/generate_api_docs.sh",
     "pretest": "playwright install",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite",
