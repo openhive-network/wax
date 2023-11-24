@@ -20,6 +20,5 @@ export class ApiTransaction {
   public extensions: object[] = [];
 
   @IsString({ each: true })
-  @ArrayNotEmpty() // Api requires at least one signature
   public signatures: string[] = [];
 }

@@ -2579,7 +2579,7 @@ wasm/lib/wax_module.ts:16
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:32
+wasm/lib/detailed/api/types/block.ts:33
 
 ___
 
@@ -2593,7 +2593,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:20
+wasm/lib/detailed/api/types/block.ts:21
 
 ___
 
@@ -2607,7 +2607,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:8
+wasm/lib/detailed/api/types/block.ts:9
 
 ___
 
@@ -2617,7 +2617,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:35
+wasm/lib/detailed/api/types/block.ts:36
 
 ___
 
@@ -2631,7 +2631,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:11
+wasm/lib/detailed/api/types/block.ts:12
 
 ___
 
@@ -2641,7 +2641,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:38
+wasm/lib/detailed/api/types/block.ts:39
 
 ___
 
@@ -2655,7 +2655,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:17
+wasm/lib/detailed/api/types/block.ts:18
 
 ___
 
@@ -2665,7 +2665,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:29
+wasm/lib/detailed/api/types/block.ts:30
 
 ___
 
@@ -2679,7 +2679,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:14
+wasm/lib/detailed/api/types/block.ts:15
 
 ___
 
@@ -2689,7 +2689,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:25
+wasm/lib/detailed/api/types/block.ts:26
 
 
 <a name="classesapiblockheadermd"></a>
@@ -2720,7 +2720,7 @@ wasm/lib/detailed/api/types/block.ts:25
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:20
+wasm/lib/detailed/api/types/block.ts:21
 
 ___
 
@@ -2730,7 +2730,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:8
+wasm/lib/detailed/api/types/block.ts:9
 
 ___
 
@@ -2740,7 +2740,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:11
+wasm/lib/detailed/api/types/block.ts:12
 
 ___
 
@@ -2750,7 +2750,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:17
+wasm/lib/detailed/api/types/block.ts:18
 
 ___
 
@@ -2760,7 +2760,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/block.ts:14
+wasm/lib/detailed/api/types/block.ts:15
 
 
 <a name="classesapitransactionmd"></a>
@@ -2835,7 +2835,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:24
+wasm/lib/detailed/api/types/transaction.ts:23
 
 
 <a name="classesbroadcasttransactionrequestmd"></a>
