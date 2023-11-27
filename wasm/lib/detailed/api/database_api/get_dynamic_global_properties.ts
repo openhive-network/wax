@@ -2,7 +2,7 @@ import { IsDateString, IsHexadecimal, IsNumber, IsOptional, IsString, Validate, 
 import { Type } from "class-transformer";
 
 import { NaiAsset } from "../types/asset.js";
-import { IsNumberOrStringNumberValidator } from "../../decorators/is_number_or_number_string.js";
+import { IsNumberOrStringNumber } from "../../decorators/is_number_or_number_string.js";
 
 export class GetDynamicGlobalPropertiesRequest {}
 
@@ -22,7 +22,7 @@ export class GetDynamicGlobalPropertiesResponse {
   @IsString()
   public current_witness!: string;
 
-  @Validate(IsNumberOrStringNumberValidator)
+  @Validate(IsNumberOrStringNumber)
   public total_pow!: string | number;
 
   @IsNumber()

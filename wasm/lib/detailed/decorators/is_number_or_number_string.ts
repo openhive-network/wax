@@ -11,7 +11,7 @@ export class IsNumberOrStringNumberValidator implements ValidatorConstraintInter
   }
 }
 
-export const isNumberOrStringNumber = () => {
+export const IsNumberOrStringNumber = () => {
   return (object: Record<string, any>, propertyName: string) => {
     registerDecorator({
       name: 'isNumberOrNumberString',
