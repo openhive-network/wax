@@ -145,7 +145,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:18
+wasm/lib/interfaces.ts:19
 
 ___
 
@@ -157,7 +157,7 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:11
+wasm/lib/interfaces.ts:12
 
 ___
 
@@ -183,7 +183,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:6
+wasm/lib/interfaces.ts:7
 
 ___
 
@@ -197,7 +197,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:25
+wasm/lib/interfaces.ts:26
 
 ___
 
@@ -3095,7 +3095,7 @@ wasm/lib/detailed/api/block_api/get_block.ts:16
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:113
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:114
 
 ___
 
@@ -3125,7 +3125,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:128
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:129
 
 ___
 
@@ -3135,7 +3135,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:91
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:92
 
 ___
 
@@ -3175,7 +3175,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:107
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:108
 
 ___
 
@@ -3185,7 +3185,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:142
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:143
 
 ___
 
@@ -3215,7 +3215,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:119
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:120
 
 ___
 
@@ -3225,7 +3225,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:116
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:117
 
 ___
 
@@ -3275,7 +3275,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:125
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:126
 
 ___
 
@@ -3285,7 +3285,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:100
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:101
 
 ___
 
@@ -3305,7 +3305,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:122
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:123
 
 ___
 
@@ -3325,7 +3325,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:97
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:98
 
 ___
 
@@ -3355,17 +3355,17 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:94
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:95
 
 ___
 
 ### required\_actions\_partition\_percent
 
-• **required\_actions\_partition\_percent**: `number`
+• `Optional` **required\_actions\_partition\_percent**: `number`
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:88
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:89
 
 ___
 
@@ -3375,7 +3375,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:110
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:111
 
 ___
 
@@ -3385,7 +3385,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:146
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:147
 
 ___
 
@@ -3395,7 +3395,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:135
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:136
 
 ___
 
@@ -3405,7 +3405,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:139
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:140
 
 ___
 
@@ -3415,7 +3415,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:104
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:105
 
 ___
 
@@ -3485,7 +3485,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:131
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:132
 
 ___
 
@@ -4796,7 +4796,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:235
+wasm/lib/interfaces.ts:240
 
 ## Accessors
 
@@ -4814,9 +4814,63 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:178
+wasm/lib/interfaces.ts:179
 
 ## Methods
+
+### calculateCurrentManabarValue
+
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `now` | `number` |
+| `maxManaLH` | `string` \| `number` \| `Long` |
+| `currentManaLH` | `string` \| `number` \| `Long` |
+| `lastUpdateTime` | `number` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[calculateCurrentManabarValue](#calculatecurrentmanabarvalue)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:181
+
+___
+
+### calculateManabarFullRegenerationTime
+
+▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `now` | `number` |
+| `maxManaLH` | `string` \| `number` \| `Long` |
+| `currentManaLH` | `string` \| `number` \| `Long` |
+| `lastUpdateTime` | `number` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[calculateManabarFullRegenerationTime](#calculatemanabarfullregenerationtime)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:183
+
+___
 
 ### delete
 
@@ -4834,7 +4888,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:183
+wasm/lib/interfaces.ts:188
 
 ___
 
@@ -4865,7 +4919,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:233
+wasm/lib/interfaces.ts:238
 
 ___
 
@@ -4897,7 +4951,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:224
+wasm/lib/interfaces.ts:229
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -4922,7 +4976,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:69
+wasm/lib/interfaces.ts:70
 
 ___
 
@@ -4942,7 +4996,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:60
+wasm/lib/interfaces.ts:61
 
 ## Methods
 
@@ -4974,7 +5028,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:122
+wasm/lib/interfaces.ts:123
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -4995,7 +5049,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:134
+wasm/lib/interfaces.ts:135
 
 ___
 
@@ -5013,7 +5067,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:107
+wasm/lib/interfaces.ts:108
 
 ___
 
@@ -5041,7 +5095,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:51
+wasm/lib/interfaces.ts:52
 
 ___
 
@@ -5073,7 +5127,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:100
+wasm/lib/interfaces.ts:101
 
 ___
 
@@ -5095,7 +5149,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:143
+wasm/lib/interfaces.ts:144
 
 ___
 
@@ -5117,7 +5171,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:85
+wasm/lib/interfaces.ts:86
 
 ___
 
@@ -5137,7 +5191,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:76
+wasm/lib/interfaces.ts:77
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -5165,7 +5219,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:156
+wasm/lib/interfaces.ts:157
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -5183,7 +5237,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:163
+wasm/lib/interfaces.ts:164
 
 ## Methods
 
@@ -5211,7 +5265,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:174
+wasm/lib/interfaces.ts:175
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -5236,9 +5290,55 @@ wasm/lib/interfaces.ts:174
 
 #### Defined in
 
-wasm/lib/interfaces.ts:178
+wasm/lib/interfaces.ts:179
 
 ## Methods
+
+### calculateCurrentManabarValue
+
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `now` | `number` |
+| `maxManaLH` | `string` \| `number` \| `Long` |
+| `currentManaLH` | `string` \| `number` \| `Long` |
+| `lastUpdateTime` | `number` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+wasm/lib/interfaces.ts:181
+
+___
+
+### calculateManabarFullRegenerationTime
+
+▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `now` | `number` |
+| `maxManaLH` | `string` \| `number` \| `Long` |
+| `currentManaLH` | `string` \| `number` \| `Long` |
+| `lastUpdateTime` | `number` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+wasm/lib/interfaces.ts:183
+
+___
 
 ### delete
 
@@ -5252,7 +5352,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:183
+wasm/lib/interfaces.ts:188
 
 
 <a name="interfacesiwaxoptionsmd"></a>
@@ -5273,7 +5373,7 @@ wasm/lib/interfaces.ts:183
 
 #### Defined in
 
-wasm/lib/interfaces.ts:28
+wasm/lib/interfaces.ts:29
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -5302,7 +5402,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:38
+wasm/lib/interfaces.ts:39
 
 ___
 
@@ -5316,7 +5416,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:28
+wasm/lib/interfaces.ts:29
 
 
 <a name="interfacesmainmodulemd"></a>

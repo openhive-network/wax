@@ -2,6 +2,7 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
 import type { operation, transaction } from "./protocol";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
+import type Long from "long";
 
 export type TTimestamp = Date | number | string;
 
@@ -176,6 +177,10 @@ export interface ITransactionBuilderConstructor {
 
 export interface IWaxBaseInterface {
   get TransactionBuilder(): ITransactionBuilderConstructor;
+
+  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string;
+
+  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string;
 
   /**
    * Deletes the created wax proto_protocol instance
