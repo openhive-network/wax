@@ -85,7 +85,8 @@ export class GetDynamicGlobalPropertiesResponse {
   public maximum_block_size!: number;
 
   @IsNumber()
-  public required_actions_partition_percent!: number;
+  @IsOptional()
+  public required_actions_partition_percent?: number;
 
   @IsNumber()
   public current_aslot!: number;
