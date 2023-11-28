@@ -212,6 +212,8 @@ export interface IHiveApi {
   network_broadcast_api: ApiData<'network_broadcast_api'>;
 }
 
+export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k in keyof YourApi]: YourApiData<YourApi[k]> } };
+
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Same as {@link IWaxBaseInterface#TransactionBuilder}, but pulls the reference block data from the remote
@@ -235,7 +237,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended api
    */
-  extend<YourApi, YourData extends { [k in keyof YourApi]: YourApiData<YourApi[k]> }>(extendedHiveApiData: YourApi): (IHiveChainInterface & { api: IHiveApi & YourData });
+  extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi>;
 
   api: IHiveApi;
 }

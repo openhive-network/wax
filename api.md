@@ -201,6 +201,22 @@ wasm/lib/interfaces.ts:26
 
 ___
 
+### TWaxExtended
+
+Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & \{ [k in keyof YourApi]: YourApiData\<YourApi[k]\> }  }
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `YourApi` |
+
+#### Defined in
+
+wasm/lib/interfaces.ts:215
+
+___
+
 ### error\_code
 
 Ƭ **error\_code**: `error_codeValue`\<``0``\> \| `error_codeValue`\<``1``\>
@@ -4796,7 +4812,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:240
+wasm/lib/interfaces.ts:242
 
 ## Accessors
 
@@ -4894,16 +4910,15 @@ ___
 
 ### extend
 
-▸ **extend**\<`YourApi`, `YourData`\>(`extendedHiveApiData`): [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & `YourData`  }
+▸ **extend**\<`YourApi`\>(`extendedHiveApiData`): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
 Extends hive chain interface with your custom API definitions
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `YourApi` | `YourApi` |
-| `YourData` | extends \{ [k in string \| number \| symbol]: YourApiData\<YourApi[k]\> } |
+| Name |
+| :------ |
+| `YourApi` |
 
 #### Parameters
 
@@ -4913,13 +4928,13 @@ Extends hive chain interface with your custom API definitions
 
 #### Returns
 
-[`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & `YourData`  }
+[`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
 Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:238
+wasm/lib/interfaces.ts:240
 
 ___
 
@@ -4951,7 +4966,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:229
+wasm/lib/interfaces.ts:231
 
 
 <a name="interfacesitransactionbuildermd"></a>

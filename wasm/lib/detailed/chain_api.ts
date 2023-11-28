@@ -1,4 +1,4 @@
-import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp, YourApiData } from "../interfaces";
+import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { MainModule } from "../index";
 
 import axios, { Axios } from "axios";
@@ -71,12 +71,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return axios.create({ baseURL: this.apiEndpoint, responseType: "json" });
   }
 
-  public extend<YourApi, YourData extends { [k in keyof YourApi]: YourApiData<YourApi[k]> }>(extendedHiveApiData: YourApi): (IHiveChainInterface & { api: IHiveApi & YourData }) {
+  public extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint);
 
     newApi.localTypes = { ...newApi.localTypes, ...extendedHiveApiData };
 
-    return newApi as unknown as IHiveChainInterface & { api: IHiveApi & YourData };
+    return newApi as unknown as TWaxExtended<YourApi>;
   }
 
   public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
