@@ -107,29 +107,15 @@ const request = new BroadcastTransactionRequest(tx);
 await chain.api.network_broadcast_api.broadcast_transaction(request);
 ```
 
-#### Calculate user manabar from API data
+#### Calculate user manabar regeneration time
 
 ```ts
 import { createHiveChain } from '@hiveio/wax';
 const chain = await createHiveChain();
 
-// Get account info
-const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
-  accounts: [ "initminer" ]
-});
-// Get dynamic global properties object
-const dgpo = await chain.api.database_api.get_dynamic_global_properties({});
+const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
 
-// Calculate current manabar value based on the API values we just parsed
-const mana = await chain.calculateCurrentManabarValue(
-  // First argument must be in seconds, not milliseconds!:
-  Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds (dgpo.time is a date string)
-  account.post_voting_power.amount,
-  account.voting_manabar.current_mana,
-  account.voting_manabar.last_update_time
-);
-
-console.info(mana); // "..."
+console.info(manaTime); // Date
 ```
 
 #### Advanced usage - extend hive chain interface and call custom API endpoints

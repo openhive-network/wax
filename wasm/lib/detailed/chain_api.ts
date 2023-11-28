@@ -86,4 +86,34 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     return builder;
   }
+
+  async calculateCurrentManabarValueForAccount(accountName: string): Promise<string> {
+    const { accounts: [ account ] } = await this.api.database_api.find_accounts({
+      accounts: [ accountName ]
+    });
+    const dgpo = await this.api.database_api.get_dynamic_global_properties({});
+
+    return super.calculateCurrentManabarValue(
+      Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds
+      account.post_voting_power.amount,
+      account.voting_manabar.current_mana,
+      account.voting_manabar.last_update_time
+    );
+  }
+
+  async calculateManabarFullRegenerationTimeForAccount(accountName: string): Promise<Date> {
+    const { accounts: [ account ] } = await this.api.database_api.find_accounts({
+      accounts: [ accountName ]
+    });
+    const dgpo = await this.api.database_api.get_dynamic_global_properties({});
+
+    const time = super.calculateManabarFullRegenerationTime(
+      Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds
+      account.post_voting_power.amount,
+      account.voting_manabar.current_mana,
+      account.voting_manabar.last_update_time
+    );
+
+    return new Date(time * 1000);
+  }
 }

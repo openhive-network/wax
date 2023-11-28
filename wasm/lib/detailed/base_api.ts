@@ -42,14 +42,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime));
   }
 
-  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string {
+  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number {
     if(typeof maxManaLH !== "object")
       maxManaLH = Long.fromString(maxManaLH.toString(), true);
 
     if(typeof currentManaLH !== "object")
       currentManaLH = Long.fromString(currentManaLH.toString(), true);
 
-    return this.extract(this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime));
+    return Number.parseInt(this.extract(this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)));
   }
 
   delete(): void {

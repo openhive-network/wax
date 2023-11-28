@@ -221,7 +221,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:215
+wasm/lib/interfaces.ts:235
 
 ___
 
@@ -5700,7 +5700,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:242
+wasm/lib/interfaces.ts:280
 
 ## Accessors
 
@@ -5726,18 +5726,22 @@ wasm/lib/interfaces.ts:179
 
 ▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
 
+Calculates current manabar value for Hive account based on given arguments
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `now` | `number` |
-| `maxManaLH` | `string` \| `number` \| `Long` |
-| `currentManaLH` | `string` \| `number` \| `Long` |
-| `lastUpdateTime` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
 
 #### Returns
 
 `string`
+
+Current manabar value (as number string)
 
 #### Inherited from
 
@@ -5745,26 +5749,54 @@ wasm/lib/interfaces.ts:179
 
 #### Defined in
 
-wasm/lib/interfaces.ts:181
+wasm/lib/interfaces.ts:191
+
+___
+
+### calculateCurrentManabarValueForAccount
+
+▸ **calculateCurrentManabarValueForAccount**(`account`): `Promise`\<`string`\>
+
+Calculates current manabar value for Hive account based on given arguments
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `account` | `string` | account for which we want to calculate current manabar value |
+
+#### Returns
+
+`Promise`\<`string`\>
+
+Current manabar value (as number string)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:269
 
 ___
 
 ### calculateManabarFullRegenerationTime
 
-▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `number`
+
+Calculates full regeneration time of the manabar value for Hive account based on given arguments
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `now` | `number` |
-| `maxManaLH` | `string` \| `number` \| `Long` |
-| `currentManaLH` | `string` \| `number` \| `Long` |
-| `lastUpdateTime` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
 
 #### Returns
 
-`string`
+`number`
+
+Full regeneration timestamp (in seconds)
 
 #### Inherited from
 
@@ -5772,7 +5804,31 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:183
+wasm/lib/interfaces.ts:203
+
+___
+
+### calculateManabarFullRegenerationTimeForAccount
+
+▸ **calculateManabarFullRegenerationTimeForAccount**(`account`): `Promise`\<`Date`\>
+
+Calculates full regeneration time of the manabar value for Hive account based on given arguments
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `account` | `string` | account for which we want to calculate manabar full regeneration time |
+
+#### Returns
+
+`Promise`\<`Date`\>
+
+Full regeneration time
+
+#### Defined in
+
+wasm/lib/interfaces.ts:278
 
 ___
 
@@ -5792,7 +5848,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:188
+wasm/lib/interfaces.ts:208
 
 ___
 
@@ -5822,7 +5878,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:240
+wasm/lib/interfaces.ts:260
 
 ___
 
@@ -5854,7 +5910,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:231
+wasm/lib/interfaces.ts:251
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -6201,45 +6257,53 @@ wasm/lib/interfaces.ts:179
 
 ▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
 
+Calculates current manabar value for Hive account based on given arguments
+
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `now` | `number` |
-| `maxManaLH` | `string` \| `number` \| `Long` |
-| `currentManaLH` | `string` \| `number` \| `Long` |
-| `lastUpdateTime` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
 
 #### Returns
 
 `string`
 
+Current manabar value (as number string)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:181
+wasm/lib/interfaces.ts:191
 
 ___
 
 ### calculateManabarFullRegenerationTime
 
-▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+▸ **calculateManabarFullRegenerationTime**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `number`
+
+Calculates full regeneration time of the manabar value for Hive account based on given arguments
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `now` | `number` |
-| `maxManaLH` | `string` \| `number` \| `Long` |
-| `currentManaLH` | `string` \| `number` \| `Long` |
-| `lastUpdateTime` | `number` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
 
 #### Returns
 
-`string`
+`number`
+
+Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:183
+wasm/lib/interfaces.ts:203
 
 ___
 
@@ -6255,7 +6319,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:188
+wasm/lib/interfaces.ts:208
 
 
 <a name="interfacesiwaxoptionsmd"></a>

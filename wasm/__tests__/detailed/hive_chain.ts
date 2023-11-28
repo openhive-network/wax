@@ -5,6 +5,8 @@ import { protoVoteOp } from "../assets/data.proto-protocol";
 
 let browser!: ChromiumBrowser;
 
+const HIVE_BLOCK_INTERVAL = 3 * 1000; // 3 seconds
+
 test.describe('Wax object interface chain tests', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch({
@@ -197,6 +199,16 @@ test.describe('Wax object interface chain tests', () => {
       });
 
       expect(retVal).toBe("1000000000000");
+    });
+
+    test('Should be able to calculate full manabar regeneration time from API using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async() => {
+        const time = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
+
+        return time.getTime(); // Should be close to Date.now() when fully regenerated
+      });
+
+      expect(Date.now() - retVal).toBeLessThanOrEqual( HIVE_BLOCK_INTERVAL * 2 ); // Manabar of the initminer should not be used
     });
 
   test.afterAll(async () => {

@@ -178,9 +178,29 @@ export interface ITransactionBuilderConstructor {
 export interface IWaxBaseInterface {
   get TransactionBuilder(): ITransactionBuilderConstructor;
 
+  /**
+   * Calculates current manabar value for Hive account based on given arguments
+   *
+   * @param {number} now head block time. Can be obtained using time property from dynamic global properties
+   * @param {number | string | Long} maxManaLH maximum account mana. Should equal post_voting_power.amount from the find_account API call
+   * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call
+   * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call
+   *
+   * @returns {string} Current manabar value (as number string)
+   */
   calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string;
 
-  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string;
+  /**
+   * Calculates full regeneration time of the manabar value for Hive account based on given arguments
+   *
+   * @param {number} now head block time. Can be obtained using time property from dynamic global properties
+   * @param {number | string | Long} maxManaLH maximum account mana. Should equal post_voting_power.amount from the find_account API call
+   * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call
+   * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call
+   *
+   * @returns {number} Full regeneration timestamp (in seconds)
+   */
+  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number;
 
   /**
    * Deletes the created wax proto_protocol instance
@@ -238,6 +258,24 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @returns Wax Hive chain instance containing extended api
    */
   extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi>;
+
+  /**
+   * Calculates current manabar value for Hive account based on given arguments
+   *
+   * @param {string} account account for which we want to calculate current manabar value
+   *
+   * @returns {Promise<string>} Current manabar value (as number string)
+   */
+  calculateCurrentManabarValueForAccount(account: string): Promise<string>;
+
+  /**
+   * Calculates full regeneration time of the manabar value for Hive account based on given arguments
+   *
+   * @param {string} account account for which we want to calculate manabar full regeneration time
+   *
+   * @returns {Promise<Date>} Full regeneration time
+   */
+  calculateManabarFullRegenerationTimeForAccount(account: string): Promise<Date>;
 
   api: IHiveApi;
 }
