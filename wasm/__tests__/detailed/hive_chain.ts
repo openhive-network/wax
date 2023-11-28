@@ -181,6 +181,24 @@ test.describe('Wax object interface chain tests', () => {
       });
     });
 
+    test('Should be able to parse user manabar from API using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async() => {
+        const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
+          accounts: [ "initminer" ]
+        });
+        const dgpo = await chain.api.database_api.get_dynamic_global_properties({});
+
+        return chain.calculateCurrentManabarValue(
+          Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds
+          account.post_voting_power.amount,
+          account.voting_manabar.current_mana,
+          account.voting_manabar.last_update_time
+        );
+      });
+
+      expect(retVal).toBe("1000000000000");
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });

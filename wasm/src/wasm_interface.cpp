@@ -12,20 +12,22 @@
 using namespace cpp;
 using namespace emscripten;
 
-using manabar_fn_t = result(const int32_t, const int32_t, const int32_t, const int32_t, const int32_t, const uint32_t);
+using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t);
 using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
 
 class foundation_wasm : public foundation
 {
 private:
-  unsigned long long join_lh(int32_t low, int32_t high)const 
+  long long join_lh(int32_t low, int32_t high)const
+{ return (long long) high << 32 | low; }
+  unsigned long long join_lh(uint32_t low, uint32_t high)const
 { return (unsigned long long) high << 32 | low; }
 
 public:
-  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const int32_t max_mana_low, const int32_t max_mana_high, const int32_t current_mana_low, const int32_t current_mana_high, const uint32_t last_update_time) 
+  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const uint32_t max_mana_low, const uint32_t max_mana_high, const uint32_t current_mana_low, const uint32_t current_mana_high, const uint32_t last_update_time) 
 { return foundation::cpp_calculate_manabar_full_regeneration_time(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
 
-result cpp_calculate_current_manabar_value(const int32_t now, const int32_t max_mana_low, const int32_t max_mana_high, const int32_t current_mana_low, const int32_t current_mana_high, const uint32_t last_update_time) 
+result cpp_calculate_current_manabar_value(const int32_t now, const uint32_t max_mana_low, const uint32_t max_mana_high, const uint32_t current_mana_low, const uint32_t current_mana_high, const uint32_t last_update_time) 
 { return foundation::cpp_calculate_current_manabar_value(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
 
 json_asset cpp_general_asset(const uint32_t asset_num, const int32_t amount_low, const int32_t amount_high)const 

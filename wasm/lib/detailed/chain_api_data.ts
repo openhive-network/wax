@@ -2,6 +2,7 @@ import { GetKeyReferencesRequest, GetKeyReferencesResponse } from "./api/account
 import { GetBlockRequest, GetBlockResponse } from "./api/block_api/get_block.js";
 import { GetBlockHeaderRequest, GetBlockHeaderResponse } from "./api/block_api/get_block_header.js";
 import { GetBlockRangeRequest, GetBlockRangeResponse } from "./api/block_api/get_block_range.js";
+import { FindAccountsRequest, FindAccountsResponse } from "./api/database_api/find_accounts.js";
 import { GetDynamicGlobalPropertiesRequest, GetDynamicGlobalPropertiesResponse } from "./api/database_api/get_dynamic_global_properties.js";
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
 
@@ -13,6 +14,10 @@ export const HiveApiTypes = {
     }
   },
   database_api: {
+    find_accounts: {
+      params: FindAccountsRequest,
+      result: FindAccountsResponse
+    },
     get_dynamic_global_properties: {
       params: GetDynamicGlobalPropertiesRequest,
       result: GetDynamicGlobalPropertiesResponse

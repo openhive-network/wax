@@ -5,11 +5,19 @@
 
 ## Classes
 
+- [ApiAccount](#classesapiaccountmd)
+- [ApiAccountAuth](#classesapiaccountauthmd)
+- [ApiAuthority](#classesapiauthoritymd)
 - [ApiBlock](#classesapiblockmd)
 - [ApiBlockHeader](#classesapiblockheadermd)
+- [ApiDelayedVote](#classesapidelayedvotemd)
+- [ApiKeyAuth](#classesapikeyauthmd)
+- [ApiManabar](#classesapimanabarmd)
 - [ApiTransaction](#classesapitransactionmd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
+- [FindAccountsRequest](#classesfindaccountsrequestmd)
+- [FindAccountsResponse](#classesfindaccountsresponsemd)
 - [GetBlockHeaderRequest](#classesgetblockheaderrequestmd)
 - [GetBlockHeaderResponse](#classesgetblockheaderresponsemd)
 - [GetBlockRangeRequest](#classesgetblockrangerequestmd)
@@ -2563,6 +2571,721 @@ ___
 wasm/lib/wax_module.ts:16
 
 
+<a name="classesapiaccountmd"></a>
+
+# Class: ApiAccount
+
+## Constructors
+
+### constructor
+
+• **new ApiAccount**(): [`ApiAccount`](#classesapiaccountmd)
+
+#### Returns
+
+[`ApiAccount`](#classesapiaccountmd)
+
+## Properties
+
+### active
+
+• **active**: [`ApiAuthority`](#classesapiauthoritymd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:70
+
+___
+
+### balance
+
+• **balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:134
+
+___
+
+### can\_vote
+
+• **can\_vote**: `boolean`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:122
+
+___
+
+### comment\_count
+
+• **comment\_count**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:113
+
+___
+
+### created
+
+• **created**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:98
+
+___
+
+### curation\_rewards
+
+• **curation\_rewards**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:221
+
+___
+
+### delayed\_votes
+
+• **delayed\_votes**: [`ApiDelayedVote`](#classesapidelayedvotemd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:258
+
+___
+
+### delegated\_vesting\_shares
+
+• **delegated\_vesting\_shares**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:191
+
+___
+
+### downvote\_manabar
+
+• **downvote\_manabar**: [`ApiManabar`](#classesapimanabarmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:130
+
+___
+
+### governance\_vote\_expiration\_ts
+
+• **governance\_vote\_expiration\_ts**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:261
+
+___
+
+### hbd\_balance
+
+• **hbd\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:142
+
+___
+
+### hbd\_last\_interest\_payment
+
+• **hbd\_last\_interest\_payment**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:151
+
+___
+
+### hbd\_seconds
+
+• **hbd\_seconds**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:145
+
+___
+
+### hbd\_seconds\_last\_update
+
+• **hbd\_seconds\_last\_update**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:148
+
+___
+
+### id
+
+• **id**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:59
+
+___
+
+### is\_smt
+
+• **is\_smt**: `boolean`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:254
+
+___
+
+### json\_metadata
+
+• **json\_metadata**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:80
+
+___
+
+### last\_account\_recovery
+
+• **last\_account\_recovery**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:107
+
+___
+
+### last\_account\_update
+
+• **last\_account\_update**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:95
+
+___
+
+### last\_owner\_update
+
+• **last\_owner\_update**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:92
+
+___
+
+### last\_post
+
+• **last\_post**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:233
+
+___
+
+### last\_post\_edit
+
+• **last\_post\_edit**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:239
+
+___
+
+### last\_root\_post
+
+• **last\_root\_post**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:236
+
+___
+
+### last\_vote\_time
+
+• **last\_vote\_time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:242
+
+___
+
+### lifetime\_vote\_count
+
+• **lifetime\_vote\_count**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:116
+
+___
+
+### memo\_key
+
+• **memo\_key**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:77
+
+___
+
+### mined
+
+• **mined**: `boolean`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:101
+
+___
+
+### name
+
+• **name**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:62
+
+___
+
+### next\_vesting\_withdrawal
+
+• **next\_vesting\_withdrawal**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:206
+
+___
+
+### open\_recurrent\_transfers
+
+• **open\_recurrent\_transfers**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:251
+
+___
+
+### owner
+
+• **owner**: [`ApiAuthority`](#classesapiauthoritymd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:66
+
+___
+
+### pending\_claimed\_accounts
+
+• **pending\_claimed\_accounts**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:248
+
+___
+
+### pending\_transfers
+
+• **pending\_transfers**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:218
+
+___
+
+### post\_bandwidth
+
+• **post\_bandwidth**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:245
+
+___
+
+### post\_count
+
+• **post\_count**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:119
+
+___
+
+### post\_voting\_power
+
+• **post\_voting\_power**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:203
+
+___
+
+### posting
+
+• **posting**: [`ApiAuthority`](#classesapiauthoritymd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:74
+
+___
+
+### posting\_json\_metadata
+
+• **posting\_json\_metadata**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:83
+
+___
+
+### posting\_rewards
+
+• **posting\_rewards**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:224
+
+___
+
+### previous\_owner\_update
+
+• **previous\_owner\_update**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:89
+
+___
+
+### proxied\_vsf\_votes
+
+• **proxied\_vsf\_votes**: `number`[]
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:227
+
+___
+
+### proxy
+
+• **proxy**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:86
+
+___
+
+### received\_vesting\_shares
+
+• **received\_vesting\_shares**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:195
+
+___
+
+### recovery\_account
+
+• **recovery\_account**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:104
+
+___
+
+### reset\_account
+
+• **reset\_account**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:110
+
+___
+
+### reward\_hbd\_balance
+
+• **reward\_hbd\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:171
+
+___
+
+### reward\_hive\_balance
+
+• **reward\_hive\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:175
+
+___
+
+### reward\_vesting\_balance
+
+• **reward\_vesting\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:179
+
+___
+
+### reward\_vesting\_hive
+
+• **reward\_vesting\_hive**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:183
+
+___
+
+### savings\_balance
+
+• **savings\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:138
+
+___
+
+### savings\_hbd\_balance
+
+• **savings\_hbd\_balance**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:155
+
+___
+
+### savings\_hbd\_last\_interest\_payment
+
+• **savings\_hbd\_last\_interest\_payment**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:164
+
+___
+
+### savings\_hbd\_seconds
+
+• **savings\_hbd\_seconds**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:158
+
+___
+
+### savings\_hbd\_seconds\_last\_update
+
+• **savings\_hbd\_seconds\_last\_update**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:161
+
+___
+
+### savings\_withdraw\_requests
+
+• **savings\_withdraw\_requests**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:167
+
+___
+
+### to\_withdraw
+
+• **to\_withdraw**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:212
+
+___
+
+### vesting\_shares
+
+• **vesting\_shares**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:187
+
+___
+
+### vesting\_withdraw\_rate
+
+• **vesting\_withdraw\_rate**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:199
+
+___
+
+### voting\_manabar
+
+• **voting\_manabar**: [`ApiManabar`](#classesapimanabarmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:126
+
+___
+
+### withdraw\_routes
+
+• **withdraw\_routes**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:215
+
+___
+
+### withdrawn
+
+• **withdrawn**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:209
+
+___
+
+### witnesses\_voted\_for
+
+• **witnesses\_voted\_for**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:230
+
+
+<a name="classesapiaccountauthmd"></a>
+
+# Class: ApiAccountAuth
+
+## Constructors
+
+### constructor
+
+• **new ApiAccountAuth**(): [`ApiAccountAuth`](#classesapiaccountauthmd)
+
+#### Returns
+
+[`ApiAccountAuth`](#classesapiaccountauthmd)
+
+## Properties
+
+### 0
+
+• **0**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:11
+
+___
+
+### 1
+
+• **1**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:14
+
+
+<a name="classesapiauthoritymd"></a>
+
+# Class: ApiAuthority
+
+## Constructors
+
+### constructor
+
+• **new ApiAuthority**(): [`ApiAuthority`](#classesapiauthoritymd)
+
+#### Returns
+
+[`ApiAuthority`](#classesapiauthoritymd)
+
+## Properties
+
+### account\_auths
+
+• **account\_auths**: [`ApiAccountAuth`](#classesapiaccountauthmd)[]
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:41
+
+___
+
+### key\_auths
+
+• **key\_auths**: [`ApiKeyAuth`](#classesapikeyauthmd)[]
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:46
+
+___
+
+### weight\_threshold
+
+• **weight\_threshold**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:36
+
+
 <a name="classesapiblockmd"></a>
 
 # Class: ApiBlock
@@ -2779,6 +3502,111 @@ ___
 wasm/lib/detailed/api/types/block.ts:15
 
 
+<a name="classesapidelayedvotemd"></a>
+
+# Class: ApiDelayedVote
+
+## Constructors
+
+### constructor
+
+• **new ApiDelayedVote**(): [`ApiDelayedVote`](#classesapidelayedvotemd)
+
+#### Returns
+
+[`ApiDelayedVote`](#classesapidelayedvotemd)
+
+## Properties
+
+### time
+
+• **time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:28
+
+___
+
+### val
+
+• **val**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:31
+
+
+<a name="classesapikeyauthmd"></a>
+
+# Class: ApiKeyAuth
+
+## Constructors
+
+### constructor
+
+• **new ApiKeyAuth**(): [`ApiKeyAuth`](#classesapikeyauthmd)
+
+#### Returns
+
+[`ApiKeyAuth`](#classesapikeyauthmd)
+
+## Properties
+
+### 0
+
+• **0**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:19
+
+___
+
+### 1
+
+• **1**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:22
+
+
+<a name="classesapimanabarmd"></a>
+
+# Class: ApiManabar
+
+## Constructors
+
+### constructor
+
+• **new ApiManabar**(): [`ApiManabar`](#classesapimanabarmd)
+
+#### Returns
+
+[`ApiManabar`](#classesapimanabarmd)
+
+## Properties
+
+### current\_mana
+
+• **current\_mana**: `string` \| `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:51
+
+___
+
+### last\_update\_time
+
+• **last\_update\_time**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/account.ts:54
+
+
 <a name="classesapitransactionmd"></a>
 
 # Class: ApiTransaction
@@ -2912,6 +3740,66 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 #### Returns
 
 [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
+
+
+<a name="classesfindaccountsrequestmd"></a>
+
+# Class: FindAccountsRequest
+
+## Constructors
+
+### constructor
+
+• **new FindAccountsRequest**(): [`FindAccountsRequest`](#classesfindaccountsrequestmd)
+
+#### Returns
+
+[`FindAccountsRequest`](#classesfindaccountsrequestmd)
+
+## Properties
+
+### accounts
+
+• **accounts**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/find_accounts.ts:8
+
+___
+
+### delayed\_votes\_active
+
+• `Optional` **delayed\_votes\_active**: `boolean` = `true`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/find_accounts.ts:12
+
+
+<a name="classesfindaccountsresponsemd"></a>
+
+# Class: FindAccountsResponse
+
+## Constructors
+
+### constructor
+
+• **new FindAccountsResponse**(): [`FindAccountsResponse`](#classesfindaccountsresponsemd)
+
+#### Returns
+
+[`FindAccountsResponse`](#classesfindaccountsresponsemd)
+
+## Properties
+
+### accounts
+
+• **accounts**: [`ApiAccount`](#classesapiaccountmd)[]
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/find_accounts.ts:18
 
 
 <a name="classesgetblockheaderrequestmd"></a>

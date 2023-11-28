@@ -41,7 +41,7 @@ const transaction = wax.TransactionBuilder.fromApi(`{
   } ],
   "extensions": []
 }`);
-console.log(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
+console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 ```
 
 #### Use hive chain interface to create a signed transaction
@@ -73,7 +73,7 @@ tx.push({
 // Build and sign the transaction object
 const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
-console.log(stx);
+console.info(stx);
 ```
 
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
@@ -107,10 +107,35 @@ const request = new BroadcastTransactionRequest(tx);
 await chain.api.network_broadcast_api.broadcast_transaction(request);
 ```
 
-#### Advanced usage - extend hive chain interface and call custom API endpoints
+#### Calculate user manabar from API data
 
 ```ts
 import { createHiveChain } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+// Get account info
+const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
+  accounts: [ "initminer" ]
+});
+// Get dynamic global properties object
+const dgpo = await chain.api.database_api.get_dynamic_global_properties({});
+
+// Calculate current manabar value based on the API values we just parsed
+const mana = await chain.calculateCurrentManabarValue(
+  // First argument must be in seconds, not milliseconds!:
+  Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds (dgpo.time is a date string)
+  account.post_voting_power.amount,
+  account.voting_manabar.current_mana,
+  account.voting_manabar.last_update_time
+);
+
+console.info(mana); // "..."
+```
+
+#### Advanced usage - extend hive chain interface and call custom API endpoints
+
+```ts
+import { createHiveChain, TWaxExtended } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 class MyRequest {
@@ -121,18 +146,20 @@ class MyResponse {
   ret!: [];
 }
 
-const extended = chain.extend({
+const MyData = {
   jsonrpc: {
     get_signature: {
       params: MyRequest,
       result: MyResponse
     }
   }
-});
+};
+
+const extended: TWaxExtended<typeof MyData> = chain.extend(MyData);
 
 const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
 
-console.log(result); // { args: {}, ret: [] }
+console.info(result); // { args: {}, ret: [] }
 ```
 
 ## API
