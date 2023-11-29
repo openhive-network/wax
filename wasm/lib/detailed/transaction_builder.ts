@@ -3,7 +3,7 @@ import type { ITransactionBuilder, TBlockHash, TTimestamp, TTransactionId } from
 
 import { transaction, operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
-import { WaxError } from "../errors.js";
+import { calculateExpiration } from "./util/expiration_parser.js";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -99,32 +99,10 @@ export class TransactionBuilder implements ITransactionBuilder {
   }
 
   private applyExpiration(): void {
-    // Transaction directly initialized from protobuf JSON or API. No expiration time given, so do not apply expiration time
-    if(typeof this.expirationTime === 'undefined')
-      return;
+    const expiration = calculateExpiration(this.expirationTime);
 
-    let expiration: Date;
-    if(typeof this.expirationTime === 'string' && this.expirationTime[0] === '+') {
-      let mul = 1000;
-
-       switch(this.expirationTime[this.expirationTime.length - 1])
-       {
-         case 'h':
-           mul *= 60;
-         case 'm':
-           mul *= 60;
-       }
-
-       const num = Number.parseInt((/\d+/).exec(this.expirationTime)?.[0] as string);
-      if(Number.isNaN(num))
-        throw new WaxError("Invalid expiration time offset");
-
-      expiration = new Date(Date.now() + (num * mul));
-    } else {
-      expiration = new Date(this.expirationTime);
-    }
-
-    this.target.expiration = expiration.toISOString().slice(0, -5);
+    if(expiration instanceof Date)
+      this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
   public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): string {

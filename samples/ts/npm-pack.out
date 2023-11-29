@@ -31,6 +31,8 @@ wasm/dist/bundle/detailed/decorators/is_number_or_number_string.d.ts
 wasm/dist/bundle/detailed/decorators/is_public_key.d.ts
 wasm/dist/bundle/detailed/index.d.ts
 wasm/dist/bundle/detailed/transaction_builder.d.ts
+wasm/dist/bundle/detailed/util/expiration_parser.d.ts
+wasm/dist/bundle/detailed/util/index.d.ts
 wasm/dist/bundle/errors.d.ts
 wasm/dist/bundle/index.d.ts
 wasm/dist/bundle/index.js

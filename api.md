@@ -2502,6 +2502,26 @@ wasm/lib/proto/witness_update.ts:36
 
 ## Functions
 
+### calculateExpiration
+
+▸ **calculateExpiration**(`expirationTime?`): `void` \| `Date`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `expirationTime?` | `string` \| `number` \| `Date` |
+
+#### Returns
+
+`void` \| `Date`
+
+#### Defined in
+
+wasm/lib/detailed/util/expiration_parser.ts:3
+
+___
+
 ### createHiveChain
 
 ▸ **createHiveChain**(`options?`): `Promise`\<[`IHiveChainInterface`](#interfacesihivechaininterfacemd)\>
