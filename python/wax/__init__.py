@@ -27,8 +27,10 @@ from .wax import (
     validate_proto_transaction,
     validate_transaction,
     vests,
+    get_tapos_data,
+    get_proto_tapos_data,
 )
-from .wax_result import python_error_code, python_json_asset, python_result
+from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data
 
 __version__ = "0.0.0"
 
@@ -62,4 +64,6 @@ __all__ = [
     "deserialize_proto_transaction",
     "proto_to_api",
     "api_to_proto",
+    "get_tapos_data",
+    "get_proto_tapos_data",
 ]

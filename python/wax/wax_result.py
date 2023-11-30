@@ -21,3 +21,8 @@ class python_json_asset:  # noqa: N801
     amount: bytes
     precision: int
     nai: bytes
+
+@dataclass
+class python_ref_block_data:  # noqa: N801
+    ref_block_num: int
+    ref_block_prefix: int

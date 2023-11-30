@@ -22,7 +22,7 @@ public:
   result cpp_serialize_transaction(const std::string& transaction);
   result cpp_deserialize_transaction(const std::string& transaction);
 
-  ref_block_data cpp_get_tapos_data(const std::string& transaction_id);
+  ref_block_data cpp_get_tapos_data(const std::string& block_id);
 
   // TODO: Implement block bi-directional protobuf JSON conversion
   result cpp_proto_to_api(const std::string& operation_or_tx);

@@ -20,6 +20,12 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         int precision
         string nai
 
+    cdef cppclass ref_block_data:
+        ref_block_data() except +
+
+        int ref_block_num
+        int ref_block_prefix
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -37,6 +43,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_hive( long amount )
         json_asset cpp_hbd( long amount )
         json_asset cpp_vests( long amount )
+        ref_block_data cpp_get_tapos_data( string block_id )
     
     cdef cppclass proto_protocol:
         result cpp_validate_operation( string operation )
@@ -49,3 +56,4 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_deserialize_transaction( string transaction )
         result cpp_proto_to_api( string operation_or_tx )
         result cpp_api_to_proto( string operation_or_tx )
+        ref_block_data cpp_get_tapos_data( string block_id )

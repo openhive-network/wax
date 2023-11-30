@@ -1,10 +1,8 @@
 # distutils: language = c++
 from functools import wraps
 
-from libcpp.string cimport string
-
 from wax cimport error_code, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset
+from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data
 
 def return_python_result(foo):
     @wraps(foo)
@@ -24,6 +22,17 @@ def return_python_json_asset(foo):
             amount=amount,
             precision=precision,
             nai=nai
+        )
+
+    return wrapper
+
+def return_python_ref_block_data(foo):
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        ref_block_num, ref_block_prefix = foo(*args, **kwargs)
+        return python_ref_block_data(
+            ref_block_num=ref_block_num,
+            ref_block_prefix=ref_block_prefix & 0xffffffff # convert to unsigned
         )
 
     return wrapper
@@ -124,6 +133,12 @@ def vests(amount: int) -> python_json_asset:
     response = obj.cpp_vests(amount)
     return response.amount, response.precision, response.nai
 
+@return_python_ref_block_data
+def get_tapos_data(block_id: bytes) -> python_ref_block_data:
+    cdef protocol obj
+    response = obj.cpp_get_tapos_data(block_id)
+    return response.ref_block_num, response.ref_block_prefix
+
 @return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:
     cdef proto_protocol obj
@@ -183,3 +198,9 @@ def api_to_proto(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_api_to_proto( operation_or_tx )
   return response.value, response.content, response.exception_message
+
+@return_python_ref_block_data
+def get_proto_tapos_data(block_id: bytes) -> python_ref_block_data:
+    cdef proto_protocol obj
+    response = obj.cpp_get_tapos_data(block_id)
+    return response.ref_block_num, response.ref_block_prefix
