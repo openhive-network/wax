@@ -186,9 +186,9 @@ export interface IWaxBaseInterface {
    * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call
    * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call
    *
-   * @returns {string} Current manabar value (as number string)
+   * @returns {Long} Current manabar value
    */
-  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): string;
+  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): Long;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
@@ -217,7 +217,7 @@ export type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof Hi
  * @internal
  */
 export type YourApiData<YourTypes> = {
-  [P in keyof YourTypes]: YourTypes[P] extends { params: new () => infer ParamsType; result: new () => infer ResultType; }
+  [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new () => Readonly<infer ParamsType>; readonly result: new () => Readonly<infer ResultType>; }
     ? (params: ParamsType) => Promise<ResultType>
     : never;
 };
@@ -226,13 +226,13 @@ export type YourApiData<YourTypes> = {
  * @internal
  */
 export interface IHiveApi {
-  account_by_key_api: ApiData<'account_by_key_api'>;
-  block_api: ApiData<'block_api'>;
-  database_api: ApiData<'database_api'>;
-  network_broadcast_api: ApiData<'network_broadcast_api'>;
+  account_by_key_api: Readonly<ApiData<'account_by_key_api'>>;
+  block_api: Readonly<ApiData<'block_api'>>;
+  database_api: Readonly<ApiData<'database_api'>>;
+  network_broadcast_api: Readonly<ApiData<'network_broadcast_api'>>;
 }
 
-export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k in keyof YourApi]: YourApiData<YourApi[k]> } };
+export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k in keyof YourApi]: Readonly<YourApiData<YourApi[k]>> } };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
@@ -264,9 +264,9 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @param {string} account account for which we want to calculate current manabar value
    *
-   * @returns {Promise<string>} Current manabar value (as number string)
+   * @returns {Promise<Long>} Current manabar value
    */
-  calculateCurrentManabarValueForAccount(account: string): Promise<string>;
+  calculateCurrentManabarValueForAccount(account: string): Promise<Long>;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
@@ -277,5 +277,5 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    */
   calculateManabarFullRegenerationTimeForAccount(account: string): Promise<Date>;
 
-  api: IHiveApi;
+  readonly api: Readonly<IHiveApi>;
 }

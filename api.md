@@ -211,7 +211,7 @@ ___
 
 ### TWaxExtended
 
-Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & \{ [k in keyof YourApi]: YourApiData\<YourApi[k]\> }  }
+Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & \{ [k in keyof YourApi]: Readonly\<YourApiData\<YourApi[k]\>\> }  }
 
 #### Type parameters
 
@@ -5716,7 +5716,7 @@ wasm/lib/visitor.ts:44
 
 ### api
 
-• **api**: `IHiveApi`
+• `Readonly` **api**: `Readonly`\<`IHiveApi`\>
 
 #### Defined in
 
@@ -5744,7 +5744,7 @@ wasm/lib/interfaces.ts:179
 
 ### calculateCurrentManabarValue
 
-▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `Long`
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -5759,9 +5759,9 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`string`
+`Long`
 
-Current manabar value (as number string)
+Current manabar value
 
 #### Inherited from
 
@@ -5775,7 +5775,7 @@ ___
 
 ### calculateCurrentManabarValueForAccount
 
-▸ **calculateCurrentManabarValueForAccount**(`account`): `Promise`\<`string`\>
+▸ **calculateCurrentManabarValueForAccount**(`account`): `Promise`\<`Long`\>
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -5787,9 +5787,9 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`Promise`\<`string`\>
+`Promise`\<`Long`\>
 
-Current manabar value (as number string)
+Current manabar value
 
 #### Defined in
 
@@ -6275,7 +6275,7 @@ wasm/lib/interfaces.ts:179
 
 ### calculateCurrentManabarValue
 
-▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `string`
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `Long`
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -6290,9 +6290,9 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`string`
+`Long`
 
-Current manabar value (as number string)
+Current manabar value
 
 #### Defined in
 

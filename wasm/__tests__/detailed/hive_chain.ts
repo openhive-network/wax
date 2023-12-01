@@ -195,7 +195,7 @@ test.describe('Wax object interface chain tests', () => {
           account.post_voting_power.amount,
           account.voting_manabar.current_mana,
           account.voting_manabar.last_update_time
-        );
+        ).toString();
       });
 
       expect(retVal).toBe("1000000000000");
