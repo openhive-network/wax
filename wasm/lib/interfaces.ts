@@ -101,6 +101,20 @@ export interface ITransactionBuilder {
   sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
 
   /**
+   * Adds your signature to the internal signatures array. Applies the transaction expiration time
+   *
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+   *
+   * @param {THexString} signature signature to add
+   *
+   * @returns {THexString} transaction signature signed using given key
+   *
+   * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   */
+  sign(signature: THexString): THexString;
+
+  /**
    * Checks if underlying transaction has been already signed at least one time (after {@link sign} or {@link build})
    *
    * @returns {boolean} either true or false based on the signatures amount

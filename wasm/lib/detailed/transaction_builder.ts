@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { ITransactionBuilder, TBlockHash, TTimestamp, TTransactionId } from "../interfaces";
+import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -105,12 +105,13 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
-  public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): string {
-    const signed = wallet.signDigest(publicKey, this.sigDigest);
+  public sign(walletOrSignature: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): THexString {
+    if(typeof walletOrSignature === "object")
+      walletOrSignature = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
 
-    this.target.signatures.push(signed);
+    this.target.signatures.push(walletOrSignature);
 
-    return signed;
+    return walletOrSignature;
   }
 
   public isSigned(): boolean {
