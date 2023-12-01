@@ -101,25 +101,6 @@ result protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(const 
 
 template <class FoundationProvider>
 inline
-ref_block_data protocol_impl<FoundationProvider>::cpp_get_tapos_data(const std::string& block_id)
-{
-  try
-  {
-    const hive::protocol::block_id_type id{ block_id };
-    hive::protocol::transaction tx;
-
-    tx.set_reference_block(id);
-
-    return { tx.ref_block_num, tx.ref_block_prefix };
-  }
-  catch(...)
-  {
-    return { 0, 0 };
-  }
-}
-
-template <class FoundationProvider>
-inline
 result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
 {
   return method_wrapper([&](result& _result)

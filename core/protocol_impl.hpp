@@ -38,7 +38,6 @@ public:
   *   Returns a JSON form of deserialized transaction.
   */
   result cpp_deserialize_transaction(const std::string& transaction);
-  ref_block_data cpp_get_tapos_data(const std::string& block_id);
 };
 
 } /// namespace cpp

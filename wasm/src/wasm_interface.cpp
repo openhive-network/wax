@@ -47,6 +47,9 @@ result cpp_generate_private_key()
 
 result cpp_calculate_public_key(const std::string& wif) 
 { return foundation::cpp_calculate_public_key(wif); }
+
+ref_block_data cpp_get_tapos_data(const std::string& block_id)
+{ return foundation::cpp_get_tapos_data(block_id); }
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
@@ -88,6 +91,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_manabar_full_regeneration_time))
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))
+
+    .function("cpp_get_tapos_data", &foundation_wasm::cpp_get_tapos_data)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
@@ -98,7 +103,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
     .function("cpp_calculate_legacy_transaction_id", &protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
-    .function("cpp_get_tapos_data", &protocol_wasm::cpp_get_tapos_data)
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
   ;
 
@@ -110,7 +114,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)
     .function("cpp_calculate_legacy_transaction_id", &proto_protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &proto_protocol_wasm::cpp_calculate_sig_digest)
-    .function("cpp_get_tapos_data", &proto_protocol_wasm::cpp_get_tapos_data)
     .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
     .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)

@@ -1,5 +1,5 @@
 from libcpp.string cimport string
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint16_t, uint32_t
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef enum error_code:
@@ -21,10 +21,10 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string nai
 
     cdef cppclass ref_block_data:
-        ref_block_data() except +
+        ref_block_data() noexcept
 
-        int ref_block_num
-        int ref_block_prefix
+        uint16_t ref_block_num
+        uint32_t ref_block_prefix
 
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
@@ -56,4 +56,3 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_deserialize_transaction( string transaction )
         result cpp_proto_to_api( string operation_or_tx )
         result cpp_api_to_proto( string operation_or_tx )
-        ref_block_data cpp_get_tapos_data( string block_id )

@@ -28,7 +28,6 @@ from .wax import (
     validate_transaction,
     vests,
     get_tapos_data,
-    get_proto_tapos_data,
 )
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data
 
@@ -38,6 +37,7 @@ __all__ = [
     "python_error_code",
     "python_result",
     "python_json_asset",
+    "python_ref_block_data",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -65,5 +65,4 @@ __all__ = [
     "proto_to_api",
     "api_to_proto",
     "get_tapos_data",
-    "get_proto_tapos_data",
 ]

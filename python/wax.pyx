@@ -11,7 +11,7 @@ def return_python_result(foo):
             value, content, exception_message = foo(*args, **kwargs)
             return python_result(status=python_error_code(value), result=content, exception_message=exception_message)
         except Exception as ex:
-            return python_result(value=0, content="", exception_message=str(ex))
+            return python_result(status=python_error_code.fail, result=b'', exception_message=str(ex))
     return wrapper
 
 def return_python_json_asset(foo):
@@ -31,7 +31,7 @@ def return_python_ref_block_data(foo):
     def wrapper(*args, **kwargs):
         ref_block_num, ref_block_prefix = foo(*args, **kwargs)
         return python_ref_block_data(
-            ref_block_num=ref_block_num,
+            ref_block_num=ref_block_num & 0xffff, # convert to unsigned
             ref_block_prefix=ref_block_prefix & 0xffffffff # convert to unsigned
         )
 
@@ -198,9 +198,3 @@ def api_to_proto(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_api_to_proto( operation_or_tx )
   return response.value, response.content, response.exception_message
-
-@return_python_ref_block_data
-def get_proto_tapos_data(block_id: bytes) -> python_ref_block_data:
-    cdef proto_protocol obj
-    response = obj.cpp_get_tapos_data(block_id)
-    return response.ref_block_num, response.ref_block_prefix

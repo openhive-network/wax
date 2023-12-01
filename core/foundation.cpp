@@ -8,6 +8,7 @@
 #include <string>
 
 #include <hive/protocol/asset.hpp>
+#include <hive/protocol/transaction.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -100,6 +101,23 @@ result foundation::cpp_calculate_current_manabar_value(const int32_t now, const 
   return method_wrapper([&](result& _result) {
     _result.content = std::to_string(__current_manabar(now, max_mana, current_mana, last_update_time));
     });
+}
+
+ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
+{
+  try
+  {
+    const hive::protocol::block_id_type id { block_id };
+    hive::protocol::transaction tx;
+
+    tx.set_reference_block(id);
+
+    return { tx.ref_block_num, tx.ref_block_prefix };
+  }
+  catch(...)
+  {
+    return { 0, 0 };
+  }
 }
 
 } /// namespace cpp

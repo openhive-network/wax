@@ -553,14 +553,6 @@ result proto_protocol_impl<FoundationProvider>::cpp_deserialize_transaction(cons
 }
 
 template <class FoundationProvider>
-ref_block_data proto_protocol_impl<FoundationProvider>::cpp_get_tapos_data(const std::string& block_id)
-{
-  protocol_impl<FoundationProvider> provider;
-
-  return provider.cpp_get_tapos_data(block_id);
-}
-
-template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_proto_to_api(const std::string& operation_or_tx)
 {
   return method_wrapper([&](result& _result)
