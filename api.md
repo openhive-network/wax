@@ -6007,6 +6007,33 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
+wasm/lib/interfaces.ts:123
+
+▸ **build**(`signature`): [`transaction`](#transaction)
+
+Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
+
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `signature` | `string` | signature to add |
+
+#### Returns
+
+[`transaction`](#transaction)
+
+signed protobuf transaction object
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Defined in
+
 wasm/lib/interfaces.ts:137
 
 ▸ **build**(): [`transaction`](#transaction)
@@ -6046,7 +6073,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:122
+wasm/lib/interfaces.ts:108
 
 ___
 
@@ -6107,33 +6134,6 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 #### Defined in
 
 wasm/lib/interfaces.ts:101
-
-▸ **sign**(`signature`): `string`
-
-Adds your signature to the internal signatures array. Applies the transaction expiration time
-
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
-      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `signature` | `string` | signature to add |
-
-#### Returns
-
-`string`
-
-transaction signature signed using given key
-
-**`Throws`**
-
-on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-
-#### Defined in
-
-wasm/lib/interfaces.ts:115
 
 ___
 

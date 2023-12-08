@@ -105,22 +105,24 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
-  public sign(walletOrSignature: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): THexString {
-    if(typeof walletOrSignature === "object")
-      walletOrSignature = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
+  public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString {
+    const sig = wallet.signDigest(publicKey as TPublicKey, this.sigDigest);
 
-    this.target.signatures.push(walletOrSignature);
+    this.target.signatures.push(sig);
 
-    return walletOrSignature;
+    return sig;
   }
 
   public isSigned(): boolean {
     return this.target.signatures.length > 0;
   }
 
-  public build(wallet?: IBeekeeperUnlockedWallet, publicKey?: TPublicKey): transaction {
-    if(typeof wallet !== 'undefined' && typeof publicKey !== 'undefined')
-      this.sign(wallet, publicKey);
+  public build(walletOrSignature?: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): transaction {
+    if(typeof walletOrSignature === 'string')
+      this.target.signatures.push(walletOrSignature);
+
+    if(typeof walletOrSignature === 'object' && typeof publicKey !== 'undefined')
+      this.sign(walletOrSignature, publicKey);
     else
       this.finalize();
 
