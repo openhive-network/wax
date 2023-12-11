@@ -3,6 +3,10 @@
 
 # @hive/wax
 
+## Enumerations
+
+- [EManabarType](#enumsemanabartypemd)
+
 ## Classes
 
 - [ApiAccount](#classesapiaccountmd)
@@ -18,6 +22,8 @@
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
 - [FindAccountsRequest](#classesfindaccountsrequestmd)
 - [FindAccountsResponse](#classesfindaccountsresponsemd)
+- [FindRcAccountsRequest](#classesfindrcaccountsrequestmd)
+- [FindRcAccountsResponse](#classesfindrcaccountsresponsemd)
 - [GetBlockHeaderRequest](#classesgetblockheaderrequestmd)
 - [GetBlockHeaderResponse](#classesgetblockheaderresponsemd)
 - [GetBlockRangeRequest](#classesgetblockrangerequestmd)
@@ -30,6 +36,7 @@
 - [GetKeyReferencesResponse](#classesgetkeyreferencesresponsemd)
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
+- [RcAccount](#classesrcaccountmd)
 
 ## Interfaces
 
@@ -221,7 +228,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:250
+wasm/lib/interfaces.ts:251
 
 ___
 
@@ -3822,6 +3829,56 @@ wasm/lib/detailed/api/database_api/find_accounts.ts:12
 wasm/lib/detailed/api/database_api/find_accounts.ts:18
 
 
+<a name="classesfindrcaccountsrequestmd"></a>
+
+# Class: FindRcAccountsRequest
+
+## Constructors
+
+### constructor
+
+• **new FindRcAccountsRequest**(): [`FindRcAccountsRequest`](#classesfindrcaccountsrequestmd)
+
+#### Returns
+
+[`FindRcAccountsRequest`](#classesfindrcaccountsrequestmd)
+
+## Properties
+
+### accounts
+
+• **accounts**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:9
+
+
+<a name="classesfindrcaccountsresponsemd"></a>
+
+# Class: FindRcAccountsResponse
+
+## Constructors
+
+### constructor
+
+• **new FindRcAccountsResponse**(): [`FindRcAccountsResponse`](#classesfindrcaccountsresponsemd)
+
+#### Returns
+
+[`FindRcAccountsResponse`](#classesfindrcaccountsresponsemd)
+
+## Properties
+
+### rc\_accounts
+
+• **rc\_accounts**: [`RcAccount`](#classesrcaccountmd)[]
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:31
+
+
 <a name="classesgetblockheaderrequestmd"></a>
 
 # Class: GetBlockHeaderRequest
@@ -5702,6 +5759,96 @@ TOperationVisitor.witness\_update
 wasm/lib/visitor.ts:44
 
 
+<a name="classesrcaccountmd"></a>
+
+# Class: RcAccount
+
+## Constructors
+
+### constructor
+
+• **new RcAccount**(): [`RcAccount`](#classesrcaccountmd)
+
+#### Returns
+
+[`RcAccount`](#classesrcaccountmd)
+
+## Properties
+
+### account
+
+• **account**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:14
+
+___
+
+### max\_rc
+
+• **max\_rc**: `string` \| `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:25
+
+___
+
+### max\_rc\_creation\_adjustment
+
+• **max\_rc\_creation\_adjustment**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:22
+
+___
+
+### rc\_manabar
+
+• **rc\_manabar**: [`ApiManabar`](#classesapimanabarmd)
+
+#### Defined in
+
+wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
+
+
+<a name="enumsemanabartypemd"></a>
+
+# Enumeration: EManabarType
+
+## Enumeration Members
+
+### DOWNVOTE
+
+• **DOWNVOTE** = ``1``
+
+#### Defined in
+
+wasm/lib/detailed/chain_api.ts:15
+
+___
+
+### RC
+
+• **RC** = ``2``
+
+#### Defined in
+
+wasm/lib/detailed/chain_api.ts:16
+
+___
+
+### UPVOTE
+
+• **UPVOTE** = ``0``
+
+#### Defined in
+
+wasm/lib/detailed/chain_api.ts:14
+
+
 <a name="interfacesihivechaininterfacemd"></a>
 
 # Interface: IHiveChainInterface
@@ -5720,7 +5867,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:297
+wasm/lib/interfaces.ts:298
 
 ## Accessors
 
@@ -5784,7 +5931,7 @@ Calculates current manabar value for Hive account based on given arguments
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `account` | `string` | account for which we want to calculate current manabar value |
-| `manabarType?` | `EManabarType` | manabar type to calculate (can be either upvote or downvote manabar. Defaults to EManabarType.UPVOTE) |
+| `manabarType?` | [`EManabarType`](#enumsemanabartypemd) | manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to [EManabarType.UPVOTE](#upvote)) |
 
 #### Returns
 
@@ -5794,7 +5941,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:285
+wasm/lib/interfaces.ts:286
 
 ___
 
@@ -5840,7 +5987,7 @@ Calculates full regeneration time of the manabar value for Hive account based on
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `account` | `string` | account for which we want to calculate manabar full regeneration time |
-| `manabarType?` | `EManabarType` | manabar type to calculate (can be either upvote or downvote manabar. Defaults to EManabarType.UPVOTE) |
+| `manabarType?` | [`EManabarType`](#enumsemanabartypemd) | manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to [EManabarType.UPVOTE](#upvote)) |
 
 #### Returns
 
@@ -5850,7 +5997,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:295
+wasm/lib/interfaces.ts:296
 
 ___
 
@@ -5900,7 +6047,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:275
+wasm/lib/interfaces.ts:276
 
 ___
 
@@ -5932,7 +6079,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:266
+wasm/lib/interfaces.ts:267
 
 
 <a name="interfacesitransactionbuildermd"></a>

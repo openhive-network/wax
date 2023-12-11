@@ -1,5 +1,5 @@
 import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
-import type { MainModule } from "../index";
+import type { ApiAccount, ApiManabar, MainModule, RcAccount } from "../index";
 
 import axios, { Axios } from "axios";
 import { instanceToPlain, plainToInstance } from "class-transformer";
@@ -12,7 +12,8 @@ import Long from "long";
 
 export enum EManabarType {
   UPVOTE = 0,
-  DOWNVOTE = 1
+  DOWNVOTE = 1,
+  RC = 2
 }
 
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
@@ -93,33 +94,61 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return builder;
   }
 
-  async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Long> {
-    const { accounts: [ account ] } = await this.api.database_api.find_accounts({
-      accounts: [ accountName ]
-    });
+  private async getRcManabarForAccount(accountName: string): Promise<RcAccount> {
+    const { rc_accounts: [ account ] } = await this.api.rc_api.find_rc_accounts({ accounts: [ accountName ] });
+    if(typeof account === "undefined")
+      throw new WaxError(`No such account on chain with given name: "${accountName}"`);
+
+    return account;
+  }
+
+  private async findAccount(accountName: string): Promise<ApiAccount> {
+    const { accounts: [ account ] } = await this.api.database_api.find_accounts({ accounts: [ accountName ] });
+    if(typeof account === "undefined")
+      throw new WaxError(`No such account on chain with given name: "${accountName}"`);
+
+    return account;
+  }
+
+  public async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Long> {
+    const account = await this.findAccount(accountName);
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
-    const manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
+    let manabar: ApiManabar;
+    let max: string | number;
+
+    if(manabarType === EManabarType.RC) {
+      ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
+    } else {
+      manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
+      max = account.post_voting_power.amount;
+    }
 
     return super.calculateCurrentManabarValue(
       Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
-      account.post_voting_power.amount,
+      max,
       manabar.current_mana,
       manabar.last_update_time
     );
   }
 
-  async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
-    const { accounts: [ account ] } = await this.api.database_api.find_accounts({
-      accounts: [ accountName ]
-    });
+  public async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
+    const account = await this.findAccount(accountName);
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
-    const manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
+    let manabar: ApiManabar;
+    let max: string | number;
+
+    if(manabarType === EManabarType.RC) {
+      ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
+    } else {
+      manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
+      max = account.post_voting_power.amount;
+    }
 
     const time = super.calculateManabarFullRegenerationTime(
       Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
-      account.post_voting_power.amount,
+      max,
       manabar.current_mana,
       manabar.last_update_time
     );

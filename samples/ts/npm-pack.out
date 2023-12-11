@@ -15,6 +15,8 @@ wasm/dist/bundle/detailed/api/database_api/index.d.ts
 wasm/dist/bundle/detailed/api/index.d.ts
 wasm/dist/bundle/detailed/api/network_broadcast_api/broadcast_transaction.d.ts
 wasm/dist/bundle/detailed/api/network_broadcast_api/index.d.ts
+wasm/dist/bundle/detailed/api/rc_api/find_rc_accounts.d.ts
+wasm/dist/bundle/detailed/api/rc_api/index.d.ts
 wasm/dist/bundle/detailed/api/types/account.d.ts
 wasm/dist/bundle/detailed/api/types/asset.d.ts
 wasm/dist/bundle/detailed/api/types/block.d.ts

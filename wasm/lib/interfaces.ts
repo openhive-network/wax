@@ -245,6 +245,7 @@ export interface IHiveApi {
   block_api: Readonly<ApiData<'block_api'>>;
   database_api: Readonly<ApiData<'database_api'>>;
   network_broadcast_api: Readonly<ApiData<'network_broadcast_api'>>;
+  rc_api: Readonly<ApiData<'rc_api'>>;
 }
 
 export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k in keyof YourApi]: Readonly<YourApiData<YourApi[k]>> } };
@@ -278,7 +279,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * Calculates current manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate current manabar value
-   * @param {?EManabarType} manabarType manabar type to calculate (can be either upvote or downvote manabar. Defaults to {@link EManabarType.UPVOTE})
+   * @param {?EManabarType} manabarType manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<Long>} Current manabar value
    */
@@ -288,7 +289,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate manabar full regeneration time
-   * @param {?EManabarType} manabarType manabar type to calculate (can be either upvote or downvote manabar. Defaults to {@link EManabarType.UPVOTE})
+   * @param {?EManabarType} manabarType manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<Date>} Full regeneration time
    */

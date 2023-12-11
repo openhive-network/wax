@@ -4,6 +4,7 @@ import { GetBlockHeaderRequest, GetBlockHeaderResponse } from "./api/block_api/g
 import { GetBlockRangeRequest, GetBlockRangeResponse } from "./api/block_api/get_block_range.js";
 import { FindAccountsRequest, FindAccountsResponse } from "./api/database_api/find_accounts.js";
 import { GetDynamicGlobalPropertiesRequest, GetDynamicGlobalPropertiesResponse } from "./api/database_api/get_dynamic_global_properties.js";
+import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find_rc_accounts.js";
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
 
 export const HiveApiTypes = {
@@ -41,6 +42,12 @@ export const HiveApiTypes = {
     get_block_range: {
       params: GetBlockRangeRequest,
       result: GetBlockRangeResponse
+    }
+  },
+  rc_api: {
+    find_rc_accounts: {
+      params: FindRcAccountsRequest,
+      result: FindRcAccountsResponse
     }
   }
 };
