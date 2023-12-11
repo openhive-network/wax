@@ -10,6 +10,11 @@ import { WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
 import Long from "long";
 
+export enum EManabarType {
+  UPVOTE = 0,
+  DOWNVOTE = 1
+}
+
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: IHiveApi;
 
@@ -88,31 +93,35 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return builder;
   }
 
-  async calculateCurrentManabarValueForAccount(accountName: string): Promise<Long> {
+  async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Long> {
     const { accounts: [ account ] } = await this.api.database_api.find_accounts({
       accounts: [ accountName ]
     });
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
+
+    const manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
 
     return super.calculateCurrentManabarValue(
       Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
       account.post_voting_power.amount,
-      account.voting_manabar.current_mana,
-      account.voting_manabar.last_update_time
+      manabar.current_mana,
+      manabar.last_update_time
     );
   }
 
-  async calculateManabarFullRegenerationTimeForAccount(accountName: string): Promise<Date> {
+  async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
     const { accounts: [ account ] } = await this.api.database_api.find_accounts({
       accounts: [ accountName ]
     });
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
+    const manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
+
     const time = super.calculateManabarFullRegenerationTime(
       Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
       account.post_voting_power.amount,
-      account.voting_manabar.current_mana,
-      account.voting_manabar.last_update_time
+      manabar.current_mana,
+      manabar.last_update_time
     );
 
     return new Date(time * 1000);

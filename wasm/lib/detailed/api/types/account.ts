@@ -223,8 +223,8 @@ export class ApiAccount {
   @IsNumber()
   public posting_rewards!: number;
 
-  @IsNumber({}, { each: true })
-  public proxied_vsf_votes!: number[];
+  @Validate(IsNumberOrStringNumber, { each: true })
+  public proxied_vsf_votes!: Array<string | number>;
 
   @IsNumber()
   public witnesses_voted_for!: number;

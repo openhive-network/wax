@@ -153,7 +153,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:19
+wasm/lib/interfaces.ts:20
 
 ___
 
@@ -165,7 +165,7 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:12
+wasm/lib/interfaces.ts:13
 
 ___
 
@@ -191,7 +191,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:7
+wasm/lib/interfaces.ts:8
 
 ___
 
@@ -205,7 +205,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:26
+wasm/lib/interfaces.ts:27
 
 ___
 
@@ -221,7 +221,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:249
+wasm/lib/interfaces.ts:250
 
 ___
 
@@ -249,7 +249,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:53
+wasm/lib/build_wasm/wax.d.ts:52
 
 ___
 
@@ -267,7 +267,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:47
+wasm/lib/build_wasm/wax.d.ts:46
 
 ## Variables
 
@@ -3009,7 +3009,7 @@ ___
 
 ### proxied\_vsf\_votes
 
-• **proxied\_vsf\_votes**: `number`[]
+• **proxied\_vsf\_votes**: (`string` \| `number`)[]
 
 #### Defined in
 
@@ -5720,7 +5720,7 @@ wasm/lib/visitor.ts:44
 
 #### Defined in
 
-wasm/lib/interfaces.ts:294
+wasm/lib/interfaces.ts:297
 
 ## Accessors
 
@@ -5738,7 +5738,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:193
+wasm/lib/interfaces.ts:194
 
 ## Methods
 
@@ -5769,13 +5769,13 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:205
+wasm/lib/interfaces.ts:206
 
 ___
 
 ### calculateCurrentManabarValueForAccount
 
-▸ **calculateCurrentManabarValueForAccount**(`account`): `Promise`\<`Long`\>
+▸ **calculateCurrentManabarValueForAccount**(`account`, `manabarType?`): `Promise`\<`Long`\>
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -5784,6 +5784,7 @@ Calculates current manabar value for Hive account based on given arguments
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `account` | `string` | account for which we want to calculate current manabar value |
+| `manabarType?` | `EManabarType` | manabar type to calculate (can be either upvote or downvote manabar. Defaults to EManabarType.UPVOTE) |
 
 #### Returns
 
@@ -5793,7 +5794,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:283
+wasm/lib/interfaces.ts:285
 
 ___
 
@@ -5824,13 +5825,13 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:217
+wasm/lib/interfaces.ts:218
 
 ___
 
 ### calculateManabarFullRegenerationTimeForAccount
 
-▸ **calculateManabarFullRegenerationTimeForAccount**(`account`): `Promise`\<`Date`\>
+▸ **calculateManabarFullRegenerationTimeForAccount**(`account`, `manabarType?`): `Promise`\<`Date`\>
 
 Calculates full regeneration time of the manabar value for Hive account based on given arguments
 
@@ -5839,6 +5840,7 @@ Calculates full regeneration time of the manabar value for Hive account based on
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `account` | `string` | account for which we want to calculate manabar full regeneration time |
+| `manabarType?` | `EManabarType` | manabar type to calculate (can be either upvote or downvote manabar. Defaults to EManabarType.UPVOTE) |
 
 #### Returns
 
@@ -5848,7 +5850,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:292
+wasm/lib/interfaces.ts:295
 
 ___
 
@@ -5868,7 +5870,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:222
+wasm/lib/interfaces.ts:223
 
 ___
 
@@ -5898,7 +5900,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:274
+wasm/lib/interfaces.ts:275
 
 ___
 
@@ -5906,13 +5908,13 @@ ___
 
 ▸ **getTransactionBuilder**(`expirationTime?`): `Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
 
-Same as [IWaxBaseInterface#TransactionBuilder](#transactionbuilder), but pulls the reference block data from the remote
+Same as [IWaxBaseInterface.TransactionBuilder](#transactionbuilder), but pulls the reference block data from the remote
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `expirationTime?` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder#build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m` |
+| `expirationTime?` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m` |
 
 #### Returns
 
@@ -5930,7 +5932,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:265
+wasm/lib/interfaces.ts:266
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -5955,7 +5957,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:70
+wasm/lib/interfaces.ts:71
 
 ___
 
@@ -5975,7 +5977,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:61
+wasm/lib/interfaces.ts:62
 
 ## Methods
 
@@ -6007,7 +6009,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:123
+wasm/lib/interfaces.ts:124
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -6034,7 +6036,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:137
+wasm/lib/interfaces.ts:138
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -6055,7 +6057,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:149
+wasm/lib/interfaces.ts:150
 
 ___
 
@@ -6073,7 +6075,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:108
+wasm/lib/interfaces.ts:109
 
 ___
 
@@ -6101,7 +6103,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:52
+wasm/lib/interfaces.ts:53
 
 ___
 
@@ -6133,7 +6135,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:101
+wasm/lib/interfaces.ts:102
 
 ___
 
@@ -6155,7 +6157,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:158
+wasm/lib/interfaces.ts:159
 
 ___
 
@@ -6177,7 +6179,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:86
+wasm/lib/interfaces.ts:87
 
 ___
 
@@ -6197,7 +6199,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:77
+wasm/lib/interfaces.ts:78
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -6217,7 +6219,7 @@ Constructs a new Transaction Builder object with given data
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `taposBlockId` | [`TBlockHash`](#tblockhash) | reference block id (can be head block id) for TaPoS |
-| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder#build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h` |
+| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h` |
 
 #### Returns
 
@@ -6225,7 +6227,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:171
+wasm/lib/interfaces.ts:172
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -6243,7 +6245,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:178
+wasm/lib/interfaces.ts:179
 
 ## Methods
 
@@ -6263,7 +6265,7 @@ Converts Hive API-form transaction in JSON form to our transaction builder
 
 [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
-transaction builder containing ready to sign transaction (or to convert to protobuf structure using [ITransactionBuilder#build](#build))
+transaction builder containing ready to sign transaction (or to convert to protobuf structure using [ITransactionBuilder.build](#build))
 
 **`Throws`**
 
@@ -6271,7 +6273,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:189
+wasm/lib/interfaces.ts:190
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -6296,7 +6298,7 @@ wasm/lib/interfaces.ts:189
 
 #### Defined in
 
-wasm/lib/interfaces.ts:193
+wasm/lib/interfaces.ts:194
 
 ## Methods
 
@@ -6323,7 +6325,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:205
+wasm/lib/interfaces.ts:206
 
 ___
 
@@ -6350,7 +6352,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:217
+wasm/lib/interfaces.ts:218
 
 ___
 
@@ -6366,7 +6368,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:222
+wasm/lib/interfaces.ts:223
 
 
 <a name="interfacesiwaxoptionsmd"></a>
@@ -6387,7 +6389,7 @@ wasm/lib/interfaces.ts:222
 
 #### Defined in
 
-wasm/lib/interfaces.ts:29
+wasm/lib/interfaces.ts:30
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -6416,7 +6418,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:39
+wasm/lib/interfaces.ts:40
 
 ___
 
@@ -6430,7 +6432,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:29
+wasm/lib/interfaces.ts:30
 
 
 <a name="interfacesmainmodulemd"></a>
@@ -6452,7 +6454,7 @@ wasm/lib/interfaces.ts:29
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:60
+wasm/lib/build_wasm/wax.d.ts:59
 
 ___
 
@@ -6470,7 +6472,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:63
+wasm/lib/build_wasm/wax.d.ts:62
 
 ___
 
@@ -6488,7 +6490,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:62
+wasm/lib/build_wasm/wax.d.ts:61
 
 ___
 
@@ -6506,7 +6508,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:61
+wasm/lib/build_wasm/wax.d.ts:60
 
 
 <a name="interfacesaccount_createmd"></a>
@@ -12384,7 +12386,7 @@ wasm/lib/proto/proposal_pay.ts:19
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:38
+wasm/lib/build_wasm/wax.d.ts:37
 
 ___
 
@@ -12589,9 +12591,13 @@ ___
 
 `ref_block_data`
 
+#### Inherited from
+
+[protocol_foundation](#interfacesprotocol_foundationmd).[cpp_get_tapos_data](#cpp_get_tapos_data)
+
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:35
+wasm/lib/build_wasm/wax.d.ts:15
 
 ___
 
@@ -12661,7 +12667,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:37
+wasm/lib/build_wasm/wax.d.ts:36
 
 ___
 
@@ -12681,7 +12687,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:36
+wasm/lib/build_wasm/wax.d.ts:35
 
 ___
 
@@ -12764,7 +12770,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:39
+wasm/lib/build_wasm/wax.d.ts:38
 
 
 <a name="interfacesprotocolmd"></a>
@@ -12824,7 +12830,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:22
+wasm/lib/build_wasm/wax.d.ts:23
 
 ___
 
@@ -12898,7 +12904,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:23
+wasm/lib/build_wasm/wax.d.ts:24
 
 ___
 
@@ -12918,7 +12924,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:21
+wasm/lib/build_wasm/wax.d.ts:22
 
 ___
 
@@ -12980,9 +12986,13 @@ ___
 
 `ref_block_data`
 
+#### Inherited from
+
+[protocol_foundation](#interfacesprotocol_foundationmd).[cpp_get_tapos_data](#cpp_get_tapos_data)
+
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:24
+wasm/lib/build_wasm/wax.d.ts:15
 
 ___
 
@@ -13072,7 +13082,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:19
+wasm/lib/build_wasm/wax.d.ts:20
 
 ___
 
@@ -13092,7 +13102,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:20
+wasm/lib/build_wasm/wax.d.ts:21
 
 ___
 
@@ -13258,6 +13268,26 @@ wasm/lib/build_wasm/wax.d.ts:7
 
 ___
 
+### cpp\_get\_tapos\_data
+
+▸ **cpp_get_tapos_data**(`_0`): `ref_block_data`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `_0` | `string` \| `ArrayBuffer` \| `Int8Array` \| `Uint8Array` \| `Uint8ClampedArray` |
+
+#### Returns
+
+`ref_block_data`
+
+#### Defined in
+
+wasm/lib/build_wasm/wax.d.ts:15
+
+___
+
 ### cpp\_hbd
 
 ▸ **cpp_hbd**(`_0`, `_1`): [`json_asset`](#json_asset)
@@ -13331,7 +13361,7 @@ ___
 
 #### Defined in
 
-wasm/lib/build_wasm/wax.d.ts:15
+wasm/lib/build_wasm/wax.d.ts:16
 
 
 <a name="interfacesproxy_clearedmd"></a>

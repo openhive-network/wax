@@ -1,6 +1,7 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
 import type { operation, transaction } from "./protocol";
+import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type Long from "long";
 
@@ -163,7 +164,7 @@ export interface ITransactionBuilderConstructor {
    * Constructs a new Transaction Builder object with given data
    *
    * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
-   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder#build} call.
+   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
    *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`
@@ -182,7 +183,7 @@ export interface ITransactionBuilderConstructor {
    *
    * @param {string|object} transactionObject transaction object to be converted
    *
-   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder#build})
+   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder.build})
    *
    * @throws {import("./errors").WaxError} on any Wax API-related error
    */
@@ -250,9 +251,9 @@ export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
-   * Same as {@link IWaxBaseInterface#TransactionBuilder}, but pulls the reference block data from the remote
+   * Same as {@link IWaxBaseInterface.TransactionBuilder}, but pulls the reference block data from the remote
    *
-   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder#build} call.
+   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
    *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`
@@ -277,19 +278,21 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * Calculates current manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate current manabar value
+   * @param {?EManabarType} manabarType manabar type to calculate (can be either upvote or downvote manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<Long>} Current manabar value
    */
-  calculateCurrentManabarValueForAccount(account: string): Promise<Long>;
+  calculateCurrentManabarValueForAccount(account: string, manabarType?: EManabarType): Promise<Long>;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate manabar full regeneration time
+   * @param {?EManabarType} manabarType manabar type to calculate (can be either upvote or downvote manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<Date>} Full regeneration time
    */
-  calculateManabarFullRegenerationTimeForAccount(account: string): Promise<Date>;
+  calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
 
   readonly api: Readonly<IHiveApi>;
 }
