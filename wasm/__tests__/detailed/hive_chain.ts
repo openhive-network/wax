@@ -195,7 +195,7 @@ test.describe('Wax object interface chain tests', () => {
           account.post_voting_power.amount,
           account.voting_manabar.current_mana,
           account.voting_manabar.last_update_time
-        ).toString();
+        ).max.toString();
       });
 
       expect(retVal).toBe("1000000000000");
@@ -215,7 +215,7 @@ test.describe('Wax object interface chain tests', () => {
       const retVal = await page.evaluate(async() => {
         const time = await chain.calculateCurrentManabarValueForAccount("initminer", 2);
 
-        return time.toString();
+        return time.max.toString();
       });
 
       expect(retVal).toBe("1002020748973");

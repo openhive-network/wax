@@ -1,4 +1,4 @@
-import type { ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
+import type { IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
 import type { MainModule, result } from "../wax_module";
 
 import { WaxError } from '../errors.js';
@@ -32,14 +32,19 @@ export class WaxBaseApi implements IWaxBaseInterface {
     );
   }
 
-  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): Long {
+  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData {
     if(typeof maxManaLH !== "object")
       maxManaLH = Long.fromValue(maxManaLH, true);
 
     if(typeof currentManaLH !== "object")
       currentManaLH = Long.fromValue(currentManaLH, true);
 
-    return Long.fromString(this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)), true);
+    const max = Long.fromString(this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)), true);
+
+    return {
+      max,
+      current: currentManaLH
+    };
   }
 
   calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number {

@@ -41,6 +41,7 @@
 ## Interfaces
 
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
+- [IManabarData](#interfacesimanabardatamd)
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
@@ -212,7 +213,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:27
+wasm/lib/interfaces.ts:43
 
 ___
 
@@ -228,7 +229,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:251
+wasm/lib/interfaces.ts:267
 
 ___
 
@@ -5826,7 +5827,7 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:15
+wasm/lib/detailed/chain_api.ts:14
 
 ___
 
@@ -5836,7 +5837,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:16
+wasm/lib/detailed/chain_api.ts:15
 
 ___
 
@@ -5846,7 +5847,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:14
+wasm/lib/detailed/chain_api.ts:13
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -5867,7 +5868,7 @@ wasm/lib/detailed/chain_api.ts:14
 
 #### Defined in
 
-wasm/lib/interfaces.ts:298
+wasm/lib/interfaces.ts:314
 
 ## Accessors
 
@@ -5885,13 +5886,13 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:194
+wasm/lib/interfaces.ts:210
 
 ## Methods
 
 ### calculateCurrentManabarValue
 
-▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `Long`
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): [`IManabarData`](#interfacesimanabardatamd)
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -5906,9 +5907,9 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`Long`
+[`IManabarData`](#interfacesimanabardatamd)
 
-Current manabar value
+Manabar data
 
 #### Inherited from
 
@@ -5916,13 +5917,13 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:206
+wasm/lib/interfaces.ts:222
 
 ___
 
 ### calculateCurrentManabarValueForAccount
 
-▸ **calculateCurrentManabarValueForAccount**(`account`, `manabarType?`): `Promise`\<`Long`\>
+▸ **calculateCurrentManabarValueForAccount**(`account`, `manabarType?`): `Promise`\<[`IManabarData`](#interfacesimanabardatamd)\>
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -5935,13 +5936,13 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`Promise`\<`Long`\>
+`Promise`\<[`IManabarData`](#interfacesimanabardatamd)\>
 
-Current manabar value
+Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:286
+wasm/lib/interfaces.ts:302
 
 ___
 
@@ -5972,7 +5973,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:218
+wasm/lib/interfaces.ts:234
 
 ___
 
@@ -5997,7 +5998,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:296
+wasm/lib/interfaces.ts:312
 
 ___
 
@@ -6017,7 +6018,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:223
+wasm/lib/interfaces.ts:239
 
 ___
 
@@ -6047,7 +6048,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:276
+wasm/lib/interfaces.ts:292
 
 ___
 
@@ -6079,7 +6080,36 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:267
+wasm/lib/interfaces.ts:283
+
+
+<a name="interfacesimanabardatamd"></a>
+
+# Interface: IManabarData
+
+## Properties
+
+### current
+
+• **current**: `Long`
+
+Current manabar value
+
+#### Defined in
+
+wasm/lib/interfaces.ts:28
+
+___
+
+### max
+
+• **max**: `Long`
+
+Maximum manabar value
+
+#### Defined in
+
+wasm/lib/interfaces.ts:35
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -6104,7 +6134,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:71
+wasm/lib/interfaces.ts:87
 
 ___
 
@@ -6124,7 +6154,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:62
+wasm/lib/interfaces.ts:78
 
 ## Methods
 
@@ -6156,7 +6186,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:124
+wasm/lib/interfaces.ts:140
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -6183,7 +6213,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:138
+wasm/lib/interfaces.ts:154
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -6204,7 +6234,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:150
+wasm/lib/interfaces.ts:166
 
 ___
 
@@ -6222,7 +6252,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:109
+wasm/lib/interfaces.ts:125
 
 ___
 
@@ -6250,7 +6280,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:53
+wasm/lib/interfaces.ts:69
 
 ___
 
@@ -6282,7 +6312,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:102
+wasm/lib/interfaces.ts:118
 
 ___
 
@@ -6304,7 +6334,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:159
+wasm/lib/interfaces.ts:175
 
 ___
 
@@ -6326,7 +6356,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:87
+wasm/lib/interfaces.ts:103
 
 ___
 
@@ -6346,7 +6376,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:78
+wasm/lib/interfaces.ts:94
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -6374,7 +6404,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:172
+wasm/lib/interfaces.ts:188
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -6392,7 +6422,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:179
+wasm/lib/interfaces.ts:195
 
 ## Methods
 
@@ -6420,7 +6450,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:190
+wasm/lib/interfaces.ts:206
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -6445,13 +6475,13 @@ wasm/lib/interfaces.ts:190
 
 #### Defined in
 
-wasm/lib/interfaces.ts:194
+wasm/lib/interfaces.ts:210
 
 ## Methods
 
 ### calculateCurrentManabarValue
 
-▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): `Long`
+▸ **calculateCurrentManabarValue**(`now`, `maxManaLH`, `currentManaLH`, `lastUpdateTime`): [`IManabarData`](#interfacesimanabardatamd)
 
 Calculates current manabar value for Hive account based on given arguments
 
@@ -6466,13 +6496,13 @@ Calculates current manabar value for Hive account based on given arguments
 
 #### Returns
 
-`Long`
+[`IManabarData`](#interfacesimanabardatamd)
 
-Current manabar value
+Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:206
+wasm/lib/interfaces.ts:222
 
 ___
 
@@ -6499,7 +6529,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:218
+wasm/lib/interfaces.ts:234
 
 ___
 
@@ -6515,7 +6545,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:223
+wasm/lib/interfaces.ts:239
 
 
 <a name="interfacesiwaxoptionsmd"></a>
@@ -6536,7 +6566,7 @@ wasm/lib/interfaces.ts:223
 
 #### Defined in
 
-wasm/lib/interfaces.ts:30
+wasm/lib/interfaces.ts:46
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -6565,7 +6595,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:40
+wasm/lib/interfaces.ts:56
 
 ___
 
@@ -6579,7 +6609,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:30
+wasm/lib/interfaces.ts:46
 
 
 <a name="interfacesmainmodulemd"></a>

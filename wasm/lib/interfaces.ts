@@ -19,6 +19,22 @@ export type THexString = string;
  */
 export type TBlockHash = ArrayBuffer | Uint8Array | Uint8ClampedArray | Int8Array | string;
 
+export interface IManabarData {
+  /**
+   * Current manabar value
+   *
+   * @type {Long}
+   */
+  current: Long;
+
+  /**
+   * Maximum manabar value
+   *
+   * @type {Long}
+   */
+  max: Long
+}
+
 /**
  * Transaction id type
  *
@@ -201,9 +217,9 @@ export interface IWaxBaseInterface {
    * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call
    * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call
    *
-   * @returns {Long} Current manabar value
+   * @returns {IManabarData} Manabar data
    */
-  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): Long;
+  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
@@ -281,9 +297,9 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @param {string} account account for which we want to calculate current manabar value
    * @param {?EManabarType} manabarType manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
    *
-   * @returns {Promise<Long>} Current manabar value
+   * @returns {Promise<IManabarData>} Manabar data
    */
-  calculateCurrentManabarValueForAccount(account: string, manabarType?: EManabarType): Promise<Long>;
+  calculateCurrentManabarValueForAccount(account: string, manabarType?: EManabarType): Promise<IManabarData>;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments

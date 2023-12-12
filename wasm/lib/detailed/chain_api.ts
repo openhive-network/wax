@@ -1,4 +1,4 @@
-import type { IHiveApi, IHiveChainInterface, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
+import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { ApiAccount, ApiManabar, MainModule, RcAccount } from "../index";
 
 import axios, { Axios } from "axios";
@@ -8,7 +8,6 @@ import { validateOrReject } from "class-validator";
 import { WaxError, WaxChainApiError } from "../errors.js";
 import { WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
-import Long from "long";
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -110,7 +109,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return account;
   }
 
-  public async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Long> {
+  public async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<IManabarData> {
     const account = await this.findAccount(accountName);
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
