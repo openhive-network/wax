@@ -3558,7 +3558,7 @@ ___
 
 ### val
 
-• **val**: `string`
+• **val**: `string` \| `number`
 
 #### Defined in
 

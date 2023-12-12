@@ -27,8 +27,8 @@ export class ApiDelayedVote {
   @IsDateString()
   public time!: string;
 
-  @IsNumberString()
-  public val!: string;
+  @Validate(IsNumberOrStringNumber)
+  public val!: number | string;
 }
 
 export class ApiAuthority {
