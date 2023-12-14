@@ -205,8 +205,8 @@ export class ApiAccount {
   @IsDateString()
   public next_vesting_withdrawal!: string;
 
-  @IsNumber()
-  public withdrawn!: number;
+  @IsNumberOrStringNumber()
+  public withdrawn!: number | string;
 
   @IsNumberOrStringNumber()
   public to_withdraw!: number | string;
