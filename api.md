@@ -5827,7 +5827,7 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:16
+wasm/lib/detailed/chain_api.ts:15
 
 ___
 
@@ -5837,7 +5837,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:17
+wasm/lib/detailed/chain_api.ts:16
 
 ___
 
@@ -5847,7 +5847,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:15
+wasm/lib/detailed/chain_api.ts:14
 
 
 <a name="interfacesihivechaininterfacemd"></a>

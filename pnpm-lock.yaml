@@ -23,9 +23,6 @@ dependencies:
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
-  whatwg-fetch:
-    specifier: ^3.6.20
-    version: 3.6.20
 
 devDependencies:
   '@playwright/test':
@@ -2241,10 +2238,6 @@ packages:
     dependencies:
       iconv-lite: 0.6.3
     dev: true
-
-  /whatwg-fetch@3.6.20:
-    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
-    dev: false
 
   /which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
