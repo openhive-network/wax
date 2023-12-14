@@ -185,7 +185,7 @@ test.describe('Wax object interface chain tests', () => {
 
     test('Should be able to calculate current manabar value using hive chain interface', async ({ page }) => {
       const retVal = await page.evaluate(async() => {
-        const { max, percent } = chain.calculateCurrentManabarValue(
+        const { current, max, percent } = chain.calculateCurrentManabarValue(
             1702548351,
             "2196088774870643",
             "1952744111294225",
@@ -194,10 +194,12 @@ test.describe('Wax object interface chain tests', () => {
 
         return {
           max: max.toString(),
+          current: current.toString(),
           percent
         };
       });
 
+      expect(retVal.current).toBe("1953262632254958");
       expect(retVal.max).toBe("2196088774870643");
       expect(retVal.percent).toBe(88.94);
     });

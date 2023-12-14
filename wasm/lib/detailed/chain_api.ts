@@ -117,8 +117,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return account;
   }
 
-  public async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<IManabarData> {
-    const account = await this.findAccount(accountName);
+  private async getManabarDataArguments(accountName: string, manabarType: EManabarType): Promise<Parameters<WaxBaseApi['calculateCurrentManabarValue']>> {
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
     let manabar: ApiManabar;
@@ -127,40 +126,39 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     if(manabarType === EManabarType.RC) {
       ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
     } else {
+      const account = await this.findAccount(accountName);
+
       manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
       max = Long.fromValue(account.post_voting_power.amount);
 
       if(manabarType === EManabarType.DOWNVOTE)
-        max = max.multiply(dgpo.downvote_pool_percent).divide(ONE_HUNDRED_PERCENT);
+        if(max.divide(ONE_HUNDRED_PERCENT).greaterThan(ONE_HUNDRED_PERCENT))
+          max = max.divide(ONE_HUNDRED_PERCENT).multiply(dgpo.downvote_pool_percent);
+        else
+          max = max.multiply(dgpo.downvote_pool_percent).divide(ONE_HUNDRED_PERCENT);
     }
 
-    return super.calculateCurrentManabarValue(
+    return [
       Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
       max,
       manabar.current_mana,
       manabar.last_update_time
+    ];
+  }
+
+  public async calculateCurrentManabarValueForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<IManabarData> {
+    const args = await this.getManabarDataArguments(accountName, manabarType);
+
+    return super.calculateCurrentManabarValue(
+      ...args
     );
   }
 
   public async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
-    const account = await this.findAccount(accountName);
-    const dgpo = await this.api.database_api.get_dynamic_global_properties({});
-
-    let manabar: ApiManabar;
-    let max: string | number;
-
-    if(manabarType === EManabarType.RC) {
-      ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
-    } else {
-      manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
-      max = account.post_voting_power.amount;
-    }
+    const args = await this.getManabarDataArguments(accountName, manabarType);
 
     const time = super.calculateManabarFullRegenerationTime(
-      Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
-      max,
-      manabar.current_mana,
-      manabar.last_update_time
+      ...args
     );
 
     return new Date(time * 1000);
