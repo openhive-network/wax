@@ -208,8 +208,8 @@ export class ApiAccount {
   @IsNumber()
   public withdrawn!: number;
 
-  @IsNumber()
-  public to_withdraw!: number;
+  @IsNumberOrStringNumber()
+  public to_withdraw!: number | string;
 
   @IsNumber()
   public withdraw_routes!: number;
