@@ -230,6 +230,16 @@ test.describe('Wax object interface chain tests', () => {
       expect(Date.now() - retVal).toBeLessThanOrEqual( HIVE_BLOCK_INTERVAL * 2 ); // Manabar of the initminer should not be used
     });
 
+    test('Should be able to calculate current downvote manabar value from API using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async() => {
+        const time = await chain.calculateCurrentManabarValueForAccount("initminer", 1);
+
+        return time.max.toString();
+      });
+
+      expect(retVal).toBe("250000000000");
+    });
+
     test('Should be able to calculate current manabar rc value from API using hive chain interface', async ({ page }) => {
       const retVal = await page.evaluate(async() => {
         const time = await chain.calculateCurrentManabarValueForAccount("initminer", 2);

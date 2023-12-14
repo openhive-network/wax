@@ -229,7 +229,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:274
+wasm/lib/interfaces.ts:282
 
 ___
 
@@ -5827,7 +5827,7 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:14
+wasm/lib/detailed/chain_api.ts:16
 
 ___
 
@@ -5837,7 +5837,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:15
+wasm/lib/detailed/chain_api.ts:17
 
 ___
 
@@ -5847,7 +5847,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:13
+wasm/lib/detailed/chain_api.ts:15
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -5868,7 +5868,7 @@ wasm/lib/detailed/chain_api.ts:13
 
 #### Defined in
 
-wasm/lib/interfaces.ts:321
+wasm/lib/interfaces.ts:329
 
 ## Accessors
 
@@ -5901,9 +5901,9 @@ Calculates current manabar value for Hive account based on given arguments
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
-| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
-| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
-| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes. For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call. For rc manabar calculations use max_rc value from the rc_accounts API call. |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
 
 #### Returns
 
@@ -5917,7 +5917,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:229
+wasm/lib/interfaces.ts:233
 
 ___
 
@@ -5942,7 +5942,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:309
+wasm/lib/interfaces.ts:317
 
 ___
 
@@ -5957,9 +5957,9 @@ Calculates full regeneration time of the manabar value for Hive account based on
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
-| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
-| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
-| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes. For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call. For rc manabar calculations use max_rc value from the rc_accounts API call. |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
 
 #### Returns
 
@@ -5973,7 +5973,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:241
+wasm/lib/interfaces.ts:249
 
 ___
 
@@ -5998,7 +5998,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:319
+wasm/lib/interfaces.ts:327
 
 ___
 
@@ -6018,7 +6018,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:246
+wasm/lib/interfaces.ts:254
 
 ___
 
@@ -6048,7 +6048,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:299
+wasm/lib/interfaces.ts:307
 
 ___
 
@@ -6080,7 +6080,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:290
+wasm/lib/interfaces.ts:298
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -6502,9 +6502,9 @@ Calculates current manabar value for Hive account based on given arguments
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
-| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
-| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
-| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes. For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call. For rc manabar calculations use max_rc value from the rc_accounts API call. |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
 
 #### Returns
 
@@ -6514,7 +6514,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:229
+wasm/lib/interfaces.ts:233
 
 ___
 
@@ -6529,9 +6529,9 @@ Calculates full regeneration time of the manabar value for Hive account based on
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `now` | `number` | head block time. Can be obtained using time property from dynamic global properties |
-| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call |
-| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call |
-| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call |
+| `maxManaLH` | `string` \| `number` \| `Long` | maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes. For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call. For rc manabar calculations use max_rc value from the rc_accounts API call. |
+| `currentManaLH` | `string` \| `number` \| `Long` | current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
+| `lastUpdateTime` | `number` | last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes For rc manabar calculations use rc_manabar value from the rc_accounts API call |
 
 #### Returns
 
@@ -6541,7 +6541,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:241
+wasm/lib/interfaces.ts:249
 
 ___
 
@@ -6557,7 +6557,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:246
+wasm/lib/interfaces.ts:254
 
 
 <a name="interfacesiwaxoptionsmd"></a>

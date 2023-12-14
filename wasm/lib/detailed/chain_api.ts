@@ -6,8 +6,10 @@ import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 
 import { WaxError, WaxChainApiError } from "../errors.js";
-import { WaxBaseApi } from "./base_api.js";
+import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
+
+import Long from "long";
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -121,13 +123,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
     let manabar: ApiManabar;
-    let max: string | number;
+    let max: string | number | Long;
 
     if(manabarType === EManabarType.RC) {
       ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
     } else {
       manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
-      max = account.post_voting_power.amount;
+      max = Long.fromValue(account.post_voting_power.amount);
+
+      if(manabarType === EManabarType.DOWNVOTE)
+        max = max.multiply(dgpo.downvote_pool_percent).divide(ONE_HUNDRED_PERCENT);
     }
 
     return super.calculateCurrentManabarValue(

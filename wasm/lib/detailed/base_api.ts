@@ -7,7 +7,7 @@ import { proto_protocol } from "../wax_module.js";
 import Long from "long";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
-const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
+export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
 
 export class WaxBaseApi implements IWaxBaseInterface {
   public proto: proto_protocol;
