@@ -13,7 +13,8 @@ export default {
   plugins: [
     replace({
       'process': null,
-      'process.env': null
+      'process.env': null,
+      preventAssignment: true
     }),
     nodeResolve({ preferBuiltins: false, browser: true }),
     typescript({

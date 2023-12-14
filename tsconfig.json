@@ -39,7 +39,8 @@
 
     "target": "ES6",
     "lib": [
-      "ES2017"
+      "ES2017",
+      "DOM"
     ],
     "module": "ES6",
     "moduleResolution": "Node",

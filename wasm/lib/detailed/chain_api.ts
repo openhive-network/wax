@@ -1,7 +1,7 @@
 import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { ApiAccount, ApiManabar, MainModule, RcAccount } from "../index";
 
-import axios, { Axios } from "axios";
+import 'whatwg-fetch';
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 
@@ -31,7 +31,14 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private initializeApi(): void {
-    const axios = this.createAxios();
+    const checkStatus = (response: Response) => {
+      if(response.status >= 200 && response.status < 300)
+        return response;
+
+      throw Object.assign(new Error(response.statusText), { response });
+    };
+
+    const parseJSON = (response: Response) => response.json();
 
     this.api = new Proxy({} as IHiveApi, {
       get: (_target: any, propertyParent: string, _receiver: any) => {
@@ -48,12 +55,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
               await validateOrReject(instanceToPlain(this.localTypes[propertyParent][property].params, params));
 
-              const { data } = await axios.post('/', {
-                jsonrpc: "2.0",
-                method,
-                params,
-                id: 1
-              });
+              const data = await fetch(this.apiEndpoint, {
+                method: "POST",
+                body: JSON.stringify({
+                  jsonrpc: "2.0",
+                  method,
+                  params,
+                  id: 1
+                })
+              }).then(checkStatus)
+                .then(parseJSON);
 
               if(typeof data.error === 'object')
                 throw new WaxChainApiError('Error sending request to the Hive API', data.error);
@@ -71,10 +82,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         });
       }
     });
-  }
-
-  private createAxios(): Axios {
-    return axios.create({ baseURL: this.apiEndpoint, responseType: "json" });
   }
 
   public extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi> {

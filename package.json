@@ -36,12 +36,12 @@
   },
   "dependencies": {
     "@hive/beekeeper": "1.27.5-rc0-dd680784f",
-    "axios": "^1.6.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "whatwg-fetch": "^3.6.20"
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "files": [
