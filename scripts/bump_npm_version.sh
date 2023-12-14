@@ -23,7 +23,7 @@ if [ "${CURRENT_BRANCH_IMPL}" = "" ]; then
 else
   CURRENT_BRANCH="${CURRENT_BRANCH_IMPL#*/}"
 fi
-TAG=$(git tag --sort=taggerdate | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-.+)?' | tail -1)
+TAG=$(git tag --sort=-taggerdate | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+(-.+)?' | tail -1)
 
 echo "Preparing npm packge for ${CURRENT_BRANCH}@${TAG} (#${SHORT_HASH})"
 
