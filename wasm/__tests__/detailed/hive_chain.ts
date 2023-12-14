@@ -183,6 +183,25 @@ test.describe('Wax object interface chain tests', () => {
       });
     });
 
+    test('Should be able to calculate current manabar value using hive chain interface', async ({ page }) => {
+      const retVal = await page.evaluate(async() => {
+        const { max, percent } = chain.calculateCurrentManabarValue(
+            1702548351,
+            "2196088774870643",
+            "1952744111294225",
+            1702548249
+          );
+
+        return {
+          max: max.toString(),
+          percent
+        };
+      });
+
+      expect(retVal.max).toBe("2196088774870643");
+      expect(retVal.percent).toBe(88.94);
+    });
+
     test('Should be able to parse user manabar from API using hive chain interface', async ({ page }) => {
       const retVal = await page.evaluate(async() => {
         const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
@@ -191,7 +210,7 @@ test.describe('Wax object interface chain tests', () => {
         const dgpo = await chain.api.database_api.get_dynamic_global_properties({});
 
         return chain.calculateCurrentManabarValue(
-          Math.round(new Date(dgpo.time).getTime() / 1000), // Convert API time to seconds
+          Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
           account.post_voting_power.amount,
           account.voting_manabar.current_mana,
           account.voting_manabar.last_update_time

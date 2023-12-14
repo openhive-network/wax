@@ -32,7 +32,14 @@ export interface IManabarData {
    *
    * @type {Long}
    */
-  max: Long
+  max: Long;
+
+  /**
+   * Percent of manabar load with two digits of precision, safely calculated based on the {@link current} and {@link max} values (prevents 64-bit Long precision overflow)
+   *
+   * @type {number}
+   */
+  percent: number;
 }
 
 /**

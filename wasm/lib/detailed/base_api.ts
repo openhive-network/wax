@@ -6,6 +6,9 @@ import { TransactionBuilder } from "./transaction_builder.js";
 import { proto_protocol } from "../wax_module.js";
 import Long from "long";
 
+const PERCENT_VALUE_DOUBLE_PRECISION = 100;
+const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
+
 export class WaxBaseApi implements IWaxBaseInterface {
   public proto: proto_protocol;
 
@@ -32,6 +35,21 @@ export class WaxBaseApi implements IWaxBaseInterface {
     );
   }
 
+  private calculateManabarPercent(current: Long, max: Long): number {
+    if(max.isZero())
+      return 0;
+
+    // Prevent int64 overflow before calculations
+    if(Long.MAX_UNSIGNED_VALUE.divide(ONE_HUNDRED_PERCENT).lessThan(max)) {
+      max = max.divide(ONE_HUNDRED_PERCENT);
+      current = current.divide(ONE_HUNDRED_PERCENT);
+    }
+
+    const percent = current.multiply(ONE_HUNDRED_PERCENT).divide(max).toNumber() / PERCENT_VALUE_DOUBLE_PRECISION;
+
+    return percent;
+  }
+
   calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData {
     if(typeof maxManaLH !== "object")
       maxManaLH = Long.fromValue(maxManaLH, true);
@@ -39,11 +57,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     if(typeof currentManaLH !== "object")
       currentManaLH = Long.fromValue(currentManaLH, true);
 
-    const max = Long.fromString(this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)), true);
+    const current = Long.fromString(this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)), true);
+
+    const percent = this.calculateManabarPercent(current, maxManaLH);
 
     return {
-      max,
-      current: currentManaLH
+      max: maxManaLH,
+      current,
+      percent
     };
   }
 
