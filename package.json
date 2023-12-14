@@ -35,7 +35,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "1.27.5-rc0-stable.766d1d7bd",
+    "@hive/beekeeper": "1.27.5-rc0-dd680784f",
     "axios": "^1.6.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
