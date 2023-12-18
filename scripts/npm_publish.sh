@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
 git config --global --add safe.directory '*'
 
 git fetch --tags
@@ -30,13 +32,15 @@ else
   NEW_VERSION="dev"
 fi
 
+PACKAGE_LOCATION=$(realpath $(find "${SCRIPTPATH}/../wasm/dist" -name '*.tgz'))
+
 # Check if package with given version has been already published
-# Yes, we want to use `npm` here, not `pnpm` as it does not has a dry-run option
-npm install "${NAME}@${TAG}" --tag="$NEW_VERSION" --dry-run --no-fund --omit=optional --omit=dev --no-audit --no-package-lock
+npm view "${NAME}@${TAG}" version
 
 if [ $? -eq 0 ]; then
   echo "Package already published"
 else
   echo "Publishing ${NAME}@${TAG} to tag ${NEW_VERSION}"
-  npm publish --access=public --tag "${NEW_VERSION}"
+  # We assume that the package is already packed on the CI
+  npm publish --access=public --tag "${NEW_VERSION}" "${PACKAGE_LOCATION}"
 fi

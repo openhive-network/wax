@@ -90,13 +90,16 @@ wax_wasm_proto_tsc_generation:
   script:
     - pnpm install
     - npm run build
+  after_script:
+    - npm pack --pack-destination "$CI_PROJECT_DIR/wasm/dist"
   needs:
     - job: wax_wasm_package_generation
       artifacts: true
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/lib/build_wasm"
-      - "$CI_PROJECT_DIR/wasm/dist"
+      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.js" # For base WASM tests
+      - "$CI_PROJECT_DIR/wasm/dist/proto" # For protobuf pattern tests
+      - "$CI_PROJECT_DIR/wasm/dist/hive-wax-*.tgz" # Packed package tests
 
     when: always
     expire_in: 1 week
@@ -185,6 +188,7 @@ test_wax_wasm:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   script:
+    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hive-wax-*.tgz --strip-components=1
     - npm run test
   artifacts:
     reports:
@@ -202,11 +206,11 @@ test_wax_wasm_proto_pattern:
 
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/wasm/dist/proto"
-    - npm pack --dry-run --json | tail -n+9 | jq -r '.[0]["files"][]["path"]' > $CI_PROJECT_DIR/wasm/dist/npm-pack.gen
+    - tar -tf "$CI_PROJECT_DIR"/wasm/dist/hive-wax-*.tgz > "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen"
     - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/dist"
+      - "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen"
 
     when: always
     expire_in: 1 week
@@ -220,6 +224,7 @@ test_wax_wasm_examples:
       artifacts: true
 
   script:
+    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hive-wax-*.tgz --strip-components=1
     - npm run examples
 
 .deploy_wheel_needs: &deploy_wheel_needs
