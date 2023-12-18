@@ -2667,7 +2667,7 @@ ___
 
 ### curation\_rewards
 
-• **curation\_rewards**: `number`
+• **curation\_rewards**: `string` \| `number`
 
 #### Defined in
 
@@ -2927,7 +2927,7 @@ ___
 
 ### pending\_claimed\_accounts
 
-• **pending\_claimed\_accounts**: `number`
+• **pending\_claimed\_accounts**: `string` \| `number`
 
 #### Defined in
 
@@ -2997,7 +2997,7 @@ ___
 
 ### posting\_rewards
 
-• **posting\_rewards**: `number`
+• **posting\_rewards**: `string` \| `number`
 
 #### Defined in
 
@@ -3167,7 +3167,7 @@ ___
 
 ### to\_withdraw
 
-• **to\_withdraw**: `number`
+• **to\_withdraw**: `string` \| `number`
 
 #### Defined in
 
@@ -3217,7 +3217,7 @@ ___
 
 ### withdrawn
 
-• **withdrawn**: `number`
+• **withdrawn**: `string` \| `number`
 
 #### Defined in
 

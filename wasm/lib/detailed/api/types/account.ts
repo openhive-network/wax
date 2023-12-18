@@ -205,11 +205,11 @@ export class ApiAccount {
   @IsDateString()
   public next_vesting_withdrawal!: string;
 
-  @IsNumber()
-  public withdrawn!: number;
+  @Validate(IsNumberOrStringNumber)
+  public withdrawn!: number | string;
 
-  @IsNumber()
-  public to_withdraw!: number;
+  @Validate(IsNumberOrStringNumber)
+  public to_withdraw!: number | string;
 
   @IsNumber()
   public withdraw_routes!: number;
@@ -217,11 +217,11 @@ export class ApiAccount {
   @IsNumber()
   public pending_transfers!: number;
 
-  @IsNumber()
-  public curation_rewards!: number;
+  @Validate(IsNumberOrStringNumber)
+  public curation_rewards!: number | string;
 
-  @IsNumber()
-  public posting_rewards!: number;
+  @Validate(IsNumberOrStringNumber)
+  public posting_rewards!: number | string;
 
   @Validate(IsNumberOrStringNumber, { each: true })
   public proxied_vsf_votes!: Array<string | number>;
@@ -244,8 +244,8 @@ export class ApiAccount {
   @IsNumber()
   public post_bandwidth!: number;
 
-  @IsNumber()
-  public pending_claimed_accounts!: number;
+  @Validate(IsNumberOrStringNumber)
+  public pending_claimed_accounts!: number | string;
 
   @IsNumber()
   public open_recurrent_transfers!: number;
