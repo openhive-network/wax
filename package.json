@@ -2,7 +2,7 @@
   "name": "@hive/wax",
   "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
   "description": "Provides Hive Protocol features to JavaScript",
-  "main": "wasm/dist/bundle/index.js",
+  "main": "wasm/dist/bundle/web.js",
   "type": "module",
   "private": false,
   "scripts": {
@@ -14,6 +14,11 @@
     "examples": "cd examples/ts && pnpm install && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
     "postpack": "mv _README.md README.md"
+  },
+  "exports": {
+    ".": "./wasm/dist/bundle/web.js",
+    "./web": "./wasm/dist/bundle/web.js",
+    "./node": "./wasm/dist/bundle/node.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
@@ -49,7 +54,7 @@
     "api.md",
     "wasm/dist/bundle"
   ],
-  "types": "wasm/dist/bundle/index.d.ts",
+  "types": "wasm/dist/bundle/web.d.ts",
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"

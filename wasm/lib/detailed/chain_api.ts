@@ -1,5 +1,5 @@
 import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
-import type { ApiAccount, ApiManabar, MainModule, RcAccount } from "../index";
+import type { ApiAccount, ApiManabar, MainModule, RcAccount } from "../web";
 
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";

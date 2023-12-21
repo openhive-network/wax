@@ -1,11 +1,11 @@
 import type beekeeperFactoryT from '@hive/beekeeper';
 import type { IBeekeeperInstance } from '@hive/beekeeper';
-import type WaxModule from '../../lib';
+import type WaxModule from '../../lib/web';
 import type {
   MainModule, proto_protocol, protocol as protocolT, result as resultT,
   createWaxFoundation as createBaseT, createHiveChain as createHiveChainT,
   IWaxBaseInterface, IHiveChainInterface, BroadcastTransactionRequest as BroadcastTransactionRequestT
-} from '../../lib';
+} from '../../lib/web';
 
 declare global {
   var wax: typeof WaxModule;

@@ -2,8 +2,6 @@
  * Required data for the protocol.spec.ts tests
  */
 
-import "./data";
-
 import Long from "long";
 
 /// Converts given number to the array of low and high number parts

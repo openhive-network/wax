@@ -40,40 +40,56 @@ set( SOURCES
       wasm_interface.cpp
 )
 
-ADD_EXECUTABLE( wax_wasm ${SOURCES} ${HEADERS} )
-
 set( INCLUDES "${WAX_ROOT_PATH}"
               "${WAX_ROOT_PATH}/core"
               "${HIVE_ROOT_PATH}/libraries/chain/include"
 )
 
-target_include_directories( wax_wasm PUBLIC ${INCLUDES} )
-target_compile_options( wax_wasm PUBLIC -fexceptions )
-target_link_libraries( wax_wasm PUBLIC embind hive_protocol idbfs.js )
-# -sFORCE_FILESYSTEM=1 -sMODULARIZE=1 -sFILESYSTEM=1
-target_link_options( wax_wasm PUBLIC -fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1
-                                     -sINITIAL_MEMORY=134217728 -sSINGLE_FILE=1 -sENVIRONMENT="web"
-                                     -sUSE_ES6_IMPORT_META=0)
+function( DEFINE_WAX_TARGET_FOR env )
+      set( exec_wasm_name "wax_wasm_${env}" )
+      set( exec_ts_gen "wax_ts_gen_${env}" )
 
-set_target_properties( wax_wasm PROPERTIES OUTPUT_NAME wax.js )
+      message(NOTICE "Configuring '${exec_wasm_name}' and '${exec_ts_gen}'")
 
-INSTALL( TARGETS wax_wasm
-  COMPONENT wax_wasm_runtime
-  RUNTIME DESTINATION .
-  )
+      ADD_EXECUTABLE( ${exec_wasm_name} ${SOURCES} )
 
+      target_include_directories( ${exec_wasm_name} PUBLIC ${INCLUDES} )
+      target_compile_options( ${exec_wasm_name} PUBLIC -fexceptions )
 
-# Helper target, just to perform TypeScript wrapper generation
-ADD_EXECUTABLE( wax_ts_gen ${SOURCES} )
+      target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
+      # add -sASSERTIONS to `target_link_options` if you want more information
+      # INITIAL_MEMORY by default = 16777216
+      target_link_options( ${exec_wasm_name} PUBLIC -fexceptions -sEXPORTED_RUNTIME_METHODS=["FS"] -sMODULARIZE=1 -sSINGLE_FILE=1
+                                                    -sEXPORT_ES6=1 -sINITIAL_MEMORY=67108864 -sENVIRONMENT="${env}"
+                         )
+      set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
+      INSTALL( TARGETS ${exec_wasm_name}
+        COMPONENT "${exec_wasm_name}_runtime"
+        RUNTIME DESTINATION .
+        )
 
-target_include_directories( wax_ts_gen PUBLIC ${INCLUDES} )
-target_compile_options( wax_ts_gen PUBLIC -fexceptions )
-target_link_libraries( wax_ts_gen PUBLIC embind hive_protocol idbfs.js )
+      # Helper target, just to perform TypeScript wrapper generation
+      ADD_EXECUTABLE( ${exec_ts_gen} ${SOURCES} )
 
-target_link_options( wax_ts_gen PUBLIC -fexceptions --embind-emit-tsd ${CMAKE_CURRENT_BINARY_DIR}/wax.d.ts )
-set_target_properties( wax_ts_gen PROPERTIES OUTPUT_NAME wax_ts_gen.cjs )
+      target_include_directories( ${exec_ts_gen} PUBLIC ${INCLUDES} )
+      target_compile_options( ${exec_ts_gen} PUBLIC -fexceptions )
+      target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
 
-INSTALL( FILES "${CMAKE_CURRENT_BINARY_DIR}/wax.d.ts"
-  COMPONENT wax_wasm_dts
-  DESTINATION .
-  )
+      set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
+      target_link_options( ${exec_ts_gen} PUBLIC -fexceptions --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
+      INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
+        COMPONENT "${exec_ts_gen}_dts"
+        DESTINATION .
+        )
+endfunction()
+
+DEFINE_WAX_TARGET_FOR(node)
+DEFINE_WAX_TARGET_FOR(web)
+
+target_link_options( wax_wasm_node PUBLIC -sUSE_ES6_IMPORT_META=1 -sNODERAWFS=1 )
+target_link_libraries( wax_wasm_node PUBLIC nodefs.js )
+target_link_libraries( wax_ts_gen_node PUBLIC nodefs.js )
+
+target_link_options( wax_wasm_web PUBLIC -sUSE_ES6_IMPORT_META=0 )
+target_link_libraries( wax_wasm_web PUBLIC idbfs.js )
+target_link_libraries( wax_ts_gen_web PUBLIC idbfs.js )

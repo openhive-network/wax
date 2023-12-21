@@ -1,7 +1,7 @@
-import type { MainModule } from './build_wasm/wax';
+import type { MainModule } from './build_wasm/wax.web.js';
 
 // Parse the main module
-import MainModuleFunction from './build_wasm/wax.js';
+import MainModuleFunction from './build_wasm/wax.web.js';
 
 export type {
   MainModule,
@@ -11,7 +11,7 @@ export type {
   protocol,
   protocol_foundation,
   result
-} from './build_wasm/wax';
+} from './build_wasm/wax.web.js';
 
 declare function waxmodule(): Promise<MainModule>;
 

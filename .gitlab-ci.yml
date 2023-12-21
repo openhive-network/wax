@@ -97,7 +97,7 @@ wax_wasm_proto_tsc_generation:
       artifacts: true
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.js" # For base WASM tests
+      - "$CI_PROJECT_DIR/wasm/lib/build_wasm/wax.web.js" # For base WASM tests
       - "$CI_PROJECT_DIR/wasm/dist/proto" # For protobuf pattern tests
       - "$CI_PROJECT_DIR/wasm/dist/hive-wax-*.tgz" # Packed package tests
 

@@ -43,12 +43,17 @@ else
     -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}"
   ninja -j8
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_runtime --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_runtime --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
 
 fi
