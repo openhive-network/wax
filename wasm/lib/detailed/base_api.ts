@@ -1,9 +1,8 @@
 import type { IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
-import type { MainModule, result } from "../wax_module";
+import type { MainModule, proto_protocol, result } from "../wax_module.web";
 
 import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";
-import { proto_protocol } from "../wax_module.js";
 import Long from "long";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;

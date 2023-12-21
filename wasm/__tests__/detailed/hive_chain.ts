@@ -1,6 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
+import "../assets/data";
 import { protoVoteOp } from "../assets/data.proto-protocol";
 
 let browser!: ChromiumBrowser;
