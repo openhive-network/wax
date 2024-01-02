@@ -1,12 +1,14 @@
-import { IsNumber, Min, IsDateString, IsObject, ArrayNotEmpty, IsString } from "class-validator";
+import { Min, Max, IsDateString, IsInt, IsObject, ArrayNotEmpty, IsString } from "class-validator";
 
 export class ApiTransaction {
-  @IsNumber()
-  @Min(1) // Should be initialized
+  @IsInt()
+  @Min(0) // Should be set to min/max. uint16 value
+  @Max(65535)
   public ref_block_num!: number;
 
-  @IsNumber()
-  @Min(1) // Should be initialized
+  @IsInt()
+  @Min(-2147483648)
+  @Max(2147483647)
   public ref_block_prefix!: number;
 
   @IsDateString()
