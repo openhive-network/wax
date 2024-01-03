@@ -7,8 +7,8 @@ export class ApiTransaction {
   public ref_block_num!: number;
 
   @IsInt()
-  @Min(-2147483648)
-  @Max(2147483647)
+  @Min(0)
+  @Max(4294967295)
   public ref_block_prefix!: number;
 
   @IsDateString()
