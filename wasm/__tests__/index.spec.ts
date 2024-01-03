@@ -1,3 +1,5 @@
+import "core-js"; // structuredClone polyfill for Node.js environment
+
 // Run tests in a specific order:
 
 import "./detailed/base";

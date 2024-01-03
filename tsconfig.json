@@ -25,7 +25,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
 
-    "rootDir": "./wasm/lib",
+    "rootDir": "./wasm",
     "baseUrl": ".",
 
     "outDir": "./wasm/dist",
@@ -37,13 +37,13 @@
 
     "allowJs": false,
 
-    "target": "ES6",
+    "target": "ES2017",
     "lib": [
       "ES2017",
       "DOM"
     ],
     "module": "ES6",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
 
     "noErrorTruncation": true
@@ -53,6 +53,7 @@
     "verbose": true
   },
   "include": [
-    "wasm/lib"
+    "wasm/lib",
+    "wasm/__tests__"
   ]
 }

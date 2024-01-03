@@ -4,7 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 
 const commonConfiguration = (env, merge = {}) => ({
-  input: `wasm/dist/${env}.js`,
+  input: `wasm/dist/lib/${env}.js`,
   output: {
     format: 'es',
     name: 'wax',
