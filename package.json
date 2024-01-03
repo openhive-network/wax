@@ -16,9 +16,32 @@
     "postpack": "mv _README.md README.md"
   },
   "exports": {
-    ".": "./wasm/dist/bundle/web.js",
-    "./web": "./wasm/dist/bundle/web.js",
-    "./node": "./wasm/dist/bundle/node.js"
+    ".": {
+      "node": {
+        "import": {
+          "types": "./wasm/dist/bundle/node.d.ts",
+          "default": "./wasm/dist/bundle/node.js"
+        }
+      },
+      "default": {
+        "import": {
+          "types": "./wasm/dist/bundle/web.d.ts",
+          "default": "./wasm/dist/bundle/web.js"
+        }
+      }
+    },
+    "./web": {
+      "import": {
+        "types": "./wasm/dist/bundle/web.d.ts",
+        "default": "./wasm/dist/bundle/web.js"
+      }
+    },
+    "./node": {
+      "import": {
+        "types": "./wasm/dist/bundle/node.d.ts",
+        "default": "./wasm/dist/bundle/node.js"
+      }
+    }
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
@@ -27,6 +50,7 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@types/node": "^20.10.6",
     "concat-md": "^0.5.1",
+    "core-js": "^3.35.0",
     "http-server": "^14.1.1",
     "husky": "8.0.3",
     "playwright": "^1.39.0",
@@ -40,7 +64,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "1.27.5-rc0-dd680784f",
+    "@hive/beekeeper": "1.27.5-rc0-cd856bf6d",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",
