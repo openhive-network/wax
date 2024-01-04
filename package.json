@@ -2,7 +2,7 @@
   "name": "@hive/wax",
   "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
   "description": "Provides Hive Protocol features to JavaScript",
-  "main": "wasm/dist/bundle/web.js",
+  "main": "wasm/dist/bundle/lib/web.js",
   "type": "module",
   "private": false,
   "scripts": {
@@ -19,27 +19,27 @@
     ".": {
       "node": {
         "import": {
-          "types": "./wasm/dist/bundle/node.d.ts",
-          "default": "./wasm/dist/bundle/node.js"
+          "types": "./wasm/dist/bundle/lib/node.d.ts",
+          "default": "./wasm/dist/bundle/lib/node.js"
         }
       },
       "default": {
         "import": {
-          "types": "./wasm/dist/bundle/web.d.ts",
-          "default": "./wasm/dist/bundle/web.js"
+          "types": "./wasm/dist/bundle/lib/web.d.ts",
+          "default": "./wasm/dist/bundle/lib/web.js"
         }
       }
     },
     "./web": {
       "import": {
-        "types": "./wasm/dist/bundle/web.d.ts",
-        "default": "./wasm/dist/bundle/web.js"
+        "types": "./wasm/dist/bundle/lib/web.d.ts",
+        "default": "./wasm/dist/bundle/lib/web.js"
       }
     },
     "./node": {
       "import": {
-        "types": "./wasm/dist/bundle/node.d.ts",
-        "default": "./wasm/dist/bundle/node.js"
+        "types": "./wasm/dist/bundle/lib/node.d.ts",
+        "default": "./wasm/dist/bundle/lib/node.js"
       }
     }
   },
@@ -76,9 +76,9 @@
     "LICENSE.md",
     "README.md",
     "api.md",
-    "wasm/dist/bundle"
+    "wasm/dist/bundle/lib"
   ],
-  "types": "wasm/dist/bundle/web.d.ts",
+  "types": "wasm/dist/bundle/lib/web.d.ts",
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"

@@ -78,7 +78,7 @@ function( DEFINE_WAX_TARGET_FOR env )
       set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
       target_link_options( ${exec_ts_gen} PUBLIC -fexceptions --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
       INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
-        COMPONENT "${exec_ts_gen}_dts"
+        COMPONENT "${exec_wasm_name}_dts"
         DESTINATION .
         )
 endfunction()

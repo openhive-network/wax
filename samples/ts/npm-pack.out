@@ -1,5 +1,5 @@
-package/wasm/dist/bundle/node.js
-package/wasm/dist/bundle/web.js
+package/wasm/dist/bundle/lib/node.js
+package/wasm/dist/bundle/lib/web.js
 package/package.json
 package/api.md
 package/LICENSE.md
@@ -17,8 +17,6 @@ package/wasm/dist/bundle/lib/proto/asset.d.ts
 package/wasm/dist/bundle/lib/proto/author_reward.d.ts
 package/wasm/dist/bundle/lib/proto/authority.d.ts
 package/wasm/dist/bundle/lib/detailed/base_api.d.ts
-package/wasm/dist/bundle/__tests__/detailed/base.d.ts
-package/wasm/dist/bundle/__tests__/detailed/base.node.d.ts
 package/wasm/dist/bundle/lib/detailed/base.node.d.ts
 package/wasm/dist/bundle/lib/detailed/base.web.d.ts
 package/wasm/dist/bundle/lib/detailed/api/types/block.d.ts
@@ -48,9 +46,6 @@ package/wasm/dist/bundle/lib/proto/create_proposal.d.ts
 package/wasm/dist/bundle/lib/proto/curation_reward.d.ts
 package/wasm/dist/bundle/lib/proto/custom_json.d.ts
 package/wasm/dist/bundle/lib/proto/custom.d.ts
-package/wasm/dist/bundle/__tests__/assets/data.d.ts
-package/wasm/dist/bundle/__tests__/assets/data.proto-protocol.d.ts
-package/wasm/dist/bundle/__tests__/assets/data.protocol.d.ts
 package/wasm/dist/bundle/lib/proto/decline_voting_rights.d.ts
 package/wasm/dist/bundle/lib/proto/declined_voting_rights.d.ts
 package/wasm/dist/bundle/lib/proto/delayed_voting.d.ts
@@ -87,9 +82,6 @@ package/wasm/dist/bundle/lib/detailed/api/account_by_key_api/get_key_references.
 package/wasm/dist/bundle/lib/proto/hardfork_hive_restore.d.ts
 package/wasm/dist/bundle/lib/proto/hardfork_hive.d.ts
 package/wasm/dist/bundle/lib/proto/hardfork.d.ts
-package/wasm/dist/bundle/__tests__/detailed/hive_base.d.ts
-package/wasm/dist/bundle/__tests__/detailed/hive_base.node.d.ts
-package/wasm/dist/bundle/__tests__/detailed/hive_chain.d.ts
 package/wasm/dist/bundle/lib/detailed/api/account_by_key_api/index.d.ts
 package/wasm/dist/bundle/lib/detailed/api/block_api/index.d.ts
 package/wasm/dist/bundle/lib/detailed/api/database_api/index.d.ts
@@ -98,7 +90,6 @@ package/wasm/dist/bundle/lib/detailed/api/network_broadcast_api/index.d.ts
 package/wasm/dist/bundle/lib/detailed/api/rc_api/index.d.ts
 package/wasm/dist/bundle/lib/detailed/api/types/index.d.ts
 package/wasm/dist/bundle/lib/detailed/util/index.d.ts
-package/wasm/dist/bundle/__tests__/index.spec.d.ts
 package/wasm/dist/bundle/lib/proto/ineffective_delete_comment.d.ts
 package/wasm/dist/bundle/lib/proto/interest.d.ts
 package/wasm/dist/bundle/lib/interfaces.d.ts
@@ -123,8 +114,6 @@ package/wasm/dist/bundle/lib/proto/producer_missed.d.ts
 package/wasm/dist/bundle/lib/proto/producer_reward.d.ts
 package/wasm/dist/bundle/lib/proto/proposal_fee.d.ts
 package/wasm/dist/bundle/lib/proto/proposal_pay.d.ts
-package/wasm/dist/bundle/__tests__/detailed/proto-protocol.d.ts
-package/wasm/dist/bundle/__tests__/detailed/protocol.d.ts
 package/wasm/dist/bundle/lib/protocol.d.ts
 package/wasm/dist/bundle/lib/proto/proxy_cleared.d.ts
 package/wasm/dist/bundle/lib/proto/recover_account.d.ts
@@ -150,6 +139,8 @@ package/wasm/dist/bundle/lib/visitor.d.ts
 package/wasm/dist/bundle/lib/proto/vote.d.ts
 package/wasm/dist/bundle/lib/wax_module.node.d.ts
 package/wasm/dist/bundle/lib/wax_module.web.d.ts
+package/wasm/dist/bundle/lib/build_wasm/wax.node.d.ts
+package/wasm/dist/bundle/lib/build_wasm/wax.web.d.ts
 package/wasm/dist/bundle/lib/detailed/web.d.ts
 package/wasm/dist/bundle/lib/web.d.ts
 package/wasm/dist/bundle/lib/proto/withdraw_vesting.d.ts
