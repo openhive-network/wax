@@ -53,7 +53,7 @@ else
   cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/dist/lib/build_wasm"
   cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/dist/lib/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/lib/build_wasm"
 
 fi

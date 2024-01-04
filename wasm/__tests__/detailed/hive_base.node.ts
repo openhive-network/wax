@@ -6,6 +6,8 @@ import { transaction } from "../assets/data.protocol";
 
 import { createWaxFoundation, IWaxBaseInterface } from "../../lib/node";
 
+import fs from "fs";
+
 let bk: IBeekeeperInstance;
 let wx: IWaxBaseInterface;
 
@@ -13,6 +15,11 @@ test.describe('Wax object interface foundation tests for Node.js', () => {
   test.beforeAll(async () => {
     bk = await beekeeperFactory();
     wx = await createWaxFoundation();
+  });
+
+  test.beforeEach(() => {
+    if(fs.existsSync('storage_root-node/.beekeeper/w0.wallet'))
+      fs.rmSync('storage_root-node/.beekeeper/w0.wallet');
   });
 
   test('Should be able to bidirectional convert api to proto using object interface', async () => {

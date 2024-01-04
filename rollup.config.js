@@ -23,11 +23,13 @@ const commonConfiguration = (env, merge = {}) => ({
 });
 
 export default [
-  commonConfiguration('node', { output: { file: 'wasm/dist/bundle/node.js' } }),
-  commonConfiguration('web', { output: { dir: 'wasm/dist/bundle' }, plugins: [
+  commonConfiguration('node', { output: { file: 'wasm/dist/bundle/lib/node.js' } }),
+  commonConfiguration('web',  { output: { file: 'wasm/dist/bundle/lib/web.js' } }),
+  commonConfiguration('web',  { output: { dir: 'wasm/dist/bundle' }, plugins: [
     typescript({
       rollupCommonJSResolveHack: false,
-      clean: true
+      clean: true,
+      exclude: [ "__tests__/**/*.ts" ]
     }) // We only need one typescript documentation, as it is the same as for node
     ]
   })
