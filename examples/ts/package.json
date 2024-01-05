@@ -2,21 +2,22 @@
   "name": "examples",
   "scripts": {
     "pretest": "playwright install",
-    "test": "ts-node index.ts"
+    "test": "pnpx tsx index.ts"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.9.3",
     "@parcel/core": "^2.9.3",
-    "@types/node": "^20.8.2",
+    "@playwright/test": "^1.39.0",
+    "@types/node": "^20.10.6",
     "buffer": "^5.5.0||^6.0.0",
+    "playwright": "^1.39.0",
     "process": "^0.11.10",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.7.0",
     "typescript": "5.2.2"
   },
   "dependencies": {
     "@hive/beekeeper": "~1.27.5-rc0-stable.766d1d7bd",
-    "@hive/wax": "file:../..",
-    "playwright": "^1.39.0"
+    "@hive/wax": "file:../.."
   },
   "type": "module",
   "pnpm": {
