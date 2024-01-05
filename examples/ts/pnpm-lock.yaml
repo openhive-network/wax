@@ -2161,7 +2161,7 @@ packages:
   file:../..:
     resolution: {directory: ../.., type: directory}
     name: '@hive/wax'
-    engines: {node: '>= 12'}
+    engines: {node: '>= 18'}
     requiresBuild: true
     dependencies:
       '@hive/beekeeper': 1.27.5-rc0-stable.766d1d7bd

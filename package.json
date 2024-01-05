@@ -9,7 +9,7 @@
     "prebuild": "husky install && sh scripts/compile_proto_ts.sh && rimraf wasm/dist",
     "build": "wasm/build_wasm_wax.sh && tsc",
     "postbuild": "rollup -c && scripts/generate_api_docs.sh",
-    "pretest": "playwright install",
+    "pretest": "playwright install chromium",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite",
     "examples": "cd examples/ts && pnpm install && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
@@ -20,7 +20,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
-    "@types/node": "^20.7.1",
+    "@types/node": "^20.10.6",
     "concat-md": "^0.5.1",
     "http-server": "^14.1.1",
     "husky": "8.0.3",
@@ -55,7 +55,7 @@
     "url": "https://gitlab.syncad.com/hive/wax.git"
   },
   "engines": {
-    "node": ">= 12"
+    "node": ">= 18"
   },
   "publishConfig": {
     "registry": "https://RegistryPlaceholder",
