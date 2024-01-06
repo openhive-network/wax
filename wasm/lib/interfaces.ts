@@ -1,6 +1,6 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
-import type { operation, transaction } from "./protocol";
+import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type Long from "long";
@@ -11,6 +11,11 @@ export type TTimestamp = Date | number | string;
  * String in hex format
  */
 export type THexString = string;
+
+/**
+ * Represents a NAI value (Numeric Asset Identifier)
+ */
+export type TNai = string;
 
 /**
  * Block id type
@@ -213,7 +218,52 @@ export interface ITransactionBuilderConstructor {
   fromApi(transactionObject: string | object): ITransactionBuilder;
 }
 
-export interface IWaxBaseInterface {
+/**
+ * Base interface to be implemented by custom implementations of asset formatters.
+ */
+export interface IAssetFormatter<TFormattedResult> {
+  /**
+   * Allows to convert a Hive asset object into requested object form.
+   * @param value the asset object to perform conversion for. Cannot be null.
+   * Performing conversion of unknown NAIs should lead to correct scaling of amount value and storing a NAI as token name.
+   * @returns {TFormattedResult} always non null value, holding the object representing formatted result. 
+   */
+  format(value: asset): TFormattedResult;
+}
+
+/**
+ * Provides access to specific implementation of asset formatter, converting its value to the `TFormattedResult` form.
+ * Default implementation supports all base Hive assets like HIVE, HBD, VESTS and converts their values into form (similar to Hive legacy asset format, i.e. "2.000 HIVE").
+ * Conversion of assets having specified unknown NAI leads to correctly scaling the amount and puting their original NAI as token name.
+ */
+export interface IWaxFormatterProvider<TFormattedResult> {
+  readonly assetFormatter: IAssetFormatter<TFormattedResult>;
+
+  /**
+   * Allows to register custom asset formatter to convert asset objects into specified `TFormattedResult` type value.
+   * Returned object shall be held at client side and next used to perform asset object formatting (in opposite to directly use the default one `IWaxBaseInterface.assetFormatter`)
+   * @param formatter custom implementation to convert an `asset` object instance into expected form. 
+   * @returns an instance of extended IWaxBaseInterface object, where `assetFormatter` field points to this custom formatter object.
+   */
+  registerAssetFormatter<TCustomFormattedResult>(formatter: IAssetFormatter<TCustomFormattedResult>): IWaxFormatterProvider<TCustomFormattedResult>;
+};
+
+/**
+ * Default representation of formatted asset.
+ * Provides asset value where amount is adjusted to given token precision and NAI converted to the preconfigured token names.
+ */
+export interface IFormattedAsset {
+  /**
+   * asset amount value scaled to token precision.
+   */
+  amount: string;
+  /**
+   * asset name (i.e. HDB, HIVE, VESTS)
+   */
+  token: string;
+};
+
+export interface IWaxBaseInterface extends IWaxFormatterProvider<IFormattedAsset> {
   get TransactionBuilder(): ITransactionBuilderConstructor;
 
   /**
