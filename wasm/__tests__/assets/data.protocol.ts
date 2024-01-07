@@ -59,3 +59,21 @@ export const serialization_sensitive_transaction = JSON.stringify({
   ],
   extensions: []
 });
+
+export const hive_asset = JSON.stringify({
+  amount: "300000",
+  precision: 3,
+  nai: "@@000000021"
+});
+
+export const hbd_asset = JSON.stringify({
+  amount: "300000",
+  precision: 3,
+  nai: "@@000000013"
+});
+
+export const vest_asset = JSON.stringify({
+  amount: "30000000",
+  precision: 3,
+  nai: "@@000000037"
+});

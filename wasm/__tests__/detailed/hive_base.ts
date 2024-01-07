@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { transaction } from "../assets/data.protocol";
+import { hive_asset } from "../assets/data.protocol";
+import { asset, IFormattedAsset } from "../../lib";
 
 let browser!: ChromiumBrowser;
 
@@ -74,6 +76,19 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.sig).toBe('1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707');
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
+
+   test('Should be able to perform default HIVE asset formatting', async ({ page }) => {
+    const formatted_hive_asset: IFormattedAsset = {amount: "300.000", token: "HIVE"};
+
+    const retVal = await page.evaluate(async(input_asset) => {
+      /// asset.fromJSON can't be directly used here
+      const protocolAsset: asset = JSON.parse(input_asset);
+      const formatting_result: IFormattedAsset = wx.assetFormatter.format(protocolAsset);
+      return formatting_result;
+    }, hive_asset);
+
+    expect(retVal).toStrictEqual(formatted_hive_asset);
+  });
 
   test.afterAll(async () => {
     await browser.close();
