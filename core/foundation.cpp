@@ -34,6 +34,20 @@ json_asset cpp_generate_nai(const hive::protocol::asset& asset)
   }
 }
 
+hive::protocol::legacy_asset to_asset(const json_asset& v)
+{
+  fc::mutable_variant_object mv;
+  mv( "amount", v.amount )("precision", uint64_t( v.precision ) )("nai", v.nai );
+
+  hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+  hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+  fc::variant helper(mv);
+  hive::protocol::asset a;
+  fc::from_variant(helper, a);
+
+  return hive::protocol::legacy_asset(a);
+}
 
 json_asset foundation::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
 {
@@ -54,6 +68,28 @@ json_asset foundation::cpp_vests(const int64_t amount)const
 {
   return cpp_generate_nai(hive::protocol::VEST_asset{ amount });
 }
+
+std::string foundation::cpp_asset_value(const json_asset& value) const
+{
+  auto a = to_asset(value);
+
+  /// FIXME optimize it by extending legacy_asset interface by providing function to just convert amount
+  std::string s;
+  s = a.to_string();
+  auto space_pos = s.find( ' ' );
+  FC_ASSERT( space_pos != std::string::npos );
+  auto value_part = s.substr( 0, space_pos );
+
+  return value_part;
+}
+
+std::string foundation::cpp_asset_symbol(const json_asset& value) const
+{
+  auto a = to_asset(value);
+  hive::protocol::legacy_asset la(a);
+  return la.asset_num_to_string();
+}
+
 
 result foundation::cpp_generate_private_key()
 {
