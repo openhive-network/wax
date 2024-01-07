@@ -4,7 +4,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 
 export default {
-  input: 'wasm/dist/index.js',
+  input: 'wasm/dist/lib/index.js',
   output: {
     dir: 'wasm/dist/bundle',
     format: 'es',
@@ -19,7 +19,8 @@ export default {
     nodeResolve({ preferBuiltins: false, browser: true }),
     typescript({
       rollupCommonJSResolveHack: false,
-      clean: true
+      clean: true,
+      exclude: [ "__tests__/**/*.ts" ]
     }),
     commonjs()
   ]

@@ -46,8 +46,8 @@ else
   cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
   cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_runtime --prefix "${EXECUTION_PATH}/wasm/dist/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/lib/build_wasm"
 
   cmake --install "${BUILD_DIR}" --component wax_wasm_dts --prefix "${EXECUTION_PATH}/wasm/dist/bundle/build_wasm"
 
