@@ -1,17 +1,18 @@
-import type { IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
+import type { IFormattedAsset, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
 import type { MainModule, result } from "../wax_module";
 
 import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";
+import { CustomFormatterProvider, DefaultAssetFormatter } from "./asset_formatter_support.js"
+
 import { proto_protocol } from "../wax_module.js";
 import Long from "long";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
 
-export class WaxBaseApi implements IWaxBaseInterface {
-  public proto: proto_protocol;
-
+export class WaxBaseApi extends CustomFormatterProvider<IFormattedAsset>
+                        implements IWaxBaseInterface {
   public extract(res: result): string {
     if(res.value !== this.wax.error_code.ok)
       throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
@@ -19,11 +20,15 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return res.content as string;
   }
 
+  public readonly proto: proto_protocol;
+
   public constructor(
     public readonly wax: MainModule,
     public readonly chainId: string
   ) {
-    this.proto = new wax.proto_protocol();
+    const _proto: proto_protocol = new wax.proto_protocol();
+    super( _proto, new DefaultAssetFormatter( _proto ));
+    this.proto = _proto;
   }
 
   get TransactionBuilder(): ITransactionBuilderConstructor {
