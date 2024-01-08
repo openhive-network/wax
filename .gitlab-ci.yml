@@ -133,7 +133,7 @@ test_importing_wax:
   script:
     - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
     - cd ..  # needed to import installed package instead of local one
-    - python3 -c "import wax; print(wax.__version__)"
+    - python3 -c "import wax; print(wax.__version__); exit(wax.__version__ == '0.0.0')"
 
 test_wax_protobuf_python:
   extends: .test_python_env
