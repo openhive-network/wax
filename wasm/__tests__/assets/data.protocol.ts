@@ -5,7 +5,7 @@
 import Long from "long";
 
 /// Converts given number to the array of low and high number parts
-export const numToHighLow = (value: number) => {
+export const numToHighLow = (value: number): [ number, number ] => {
   const long = Long.fromNumber(value);
 
   return [ long.low, long.high ];
