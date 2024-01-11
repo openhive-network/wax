@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
-import type WaxModule from '../../lib/web';
+import type WaxModule from '../../dist/lib/wax_module';
 declare var wax: typeof WaxModule;
 
 let browser!: ChromiumBrowser;

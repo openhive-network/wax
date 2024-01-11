@@ -1,8 +1,8 @@
 import type { IHiveChainInterface, IWaxOptionsChain } from "../interfaces.js";
 
 import { HiveChainApi } from "./chain_api.js";
-import MainModuleFunction from "../wax_module.node.js";
-import { DEFAULT_WAX_OPTIONS } from "./base.node.js";
+import MainModuleFunction from "../wax_module.js";
+import { DEFAULT_WAX_OPTIONS } from "./base.js";
 
 export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
   ...DEFAULT_WAX_OPTIONS,

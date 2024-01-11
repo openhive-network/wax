@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 
 import "../assets/data";
 import { ErrorCodes, numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
-import { result as resultT } from '../../lib/web';
+import { result as resultT } from '../../dist/lib/wax_module';
 
 let browser!: ChromiumBrowser;
 

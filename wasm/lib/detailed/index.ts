@@ -1,5 +1,5 @@
-export { createWaxFoundation } from "./base.web.js";
-export { createHiveChain } from "./chain.web.js";
+export { createWaxFoundation } from "./base.js";
+export { createHiveChain } from "./chain.js";
 export { EManabarType } from './chain_api.js';
 export * from './api/index.js';
 

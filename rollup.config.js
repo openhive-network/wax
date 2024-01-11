@@ -1,36 +1,48 @@
-import typescript from 'rollup-plugin-typescript2';
+import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const commonConfiguration = (env, merge = {}) => ({
-  input: `wasm/dist/lib/${env}.js`,
-  output: {
-    format: 'es',
-    name: 'wax',
-    ...(merge.output || {})
-  },
-  plugins: [
-    replace({
-      'process': null,
-      'process.env': null,
-      preventAssignment: true
-    }),
-    nodeResolve({ preferBuiltins: env !== "web", browser: env === "web" }),
-    commonjs(),
-    ...(merge.plugins || [])
-  ]
-});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const commonConfiguration = env => ([
+  {
+    input: `wasm/dist/lib/${env}.js`,
+    output: {
+      format: 'es',
+      name: 'wax',
+      file: `wasm/dist/bundle/${env}.js`
+    },
+    plugins: [
+      alias({
+        entries: [
+          { find: '@hive/beekeeper', replacement: `@hive/beekeeper/${env}` },
+          { find: './build_wasm/wax.web.js', replacement: path.resolve(__dirname, `./wasm/lib/build_wasm/wax.${env}.js`) }
+        ]
+      }),
+      replace({
+        'process': null,
+        'process.env': null,
+        preventAssignment: true
+      }),
+      nodeResolve({ preferBuiltins: env !== "web", browser: env === "web" }),
+      commonjs()
+    ]
+  }, {
+    input: `wasm/dist/lib/${env}.d.ts`,
+    output: [
+      { file: `wasm/dist/bundle/${env}.d.ts`, format: "es" }
+    ],
+    plugins: [
+      dts()
+    ]
+  }
+]);
 
 export default [
-  commonConfiguration('node', { output: { file: 'wasm/dist/bundle/lib/node.js' } }),
-  commonConfiguration('web',  { output: { file: 'wasm/dist/bundle/lib/web.js' } }),
-  commonConfiguration('web',  { output: { dir: 'wasm/dist/bundle' }, plugins: [
-    typescript({
-      rollupCommonJSResolveHack: false,
-      clean: true,
-      exclude: [ "__tests__/**/*.ts" ]
-    }) // We only need one typescript documentation, as it is the same as for node
-    ]
-  })
+  ...commonConfiguration('node'),
+  ...commonConfiguration('web')
 ];

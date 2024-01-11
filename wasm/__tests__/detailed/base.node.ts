@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-import WaxModule from '../../lib/node';
+import WaxModule from '../../dist/lib/wax_module';
 
 test.describe('WASM Base tests for Node.js', () => {
   test('Should have global module', async () => {

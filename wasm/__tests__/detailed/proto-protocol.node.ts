@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { numToHighLow, protoTx, protoVoteOp, transaction, vote_operation } from "../assets/data.proto-protocol";
 
-import MainModuleFunction, { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../lib/node";
+import MainModuleFunction, { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/wax_module.node";
 
 let error_code: MainModule['error_code'];
 let proto_protocol: proto_protocolT;

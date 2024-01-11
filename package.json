@@ -2,14 +2,14 @@
   "name": "@hive/wax",
   "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
   "description": "Provides Hive Protocol features to JavaScript",
-  "main": "wasm/dist/bundle/lib/web.js",
+  "main": "wasm/dist/bundle/web.js",
   "type": "module",
   "private": false,
   "scripts": {
     "prebuild": "husky install && sh scripts/compile_proto_ts.sh && rimraf wasm/dist",
     "build": "wasm/build_wasm_wax.sh && tsc",
     "postbuild": "rollup -c && scripts/generate_api_docs.sh",
-    "pretest": "playwright install chromium",
+    "pretest": "playwright install chromium && tsc --project wasm/configs/tsconfig.tests.json",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite",
     "examples": "cd examples/ts && pnpm install && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
@@ -19,32 +19,33 @@
     ".": {
       "node": {
         "import": {
-          "types": "./wasm/dist/bundle/lib/node.d.ts",
-          "default": "./wasm/dist/bundle/lib/node.js"
+          "types": "./wasm/dist/bundle/node.d.ts",
+          "default": "./wasm/dist/bundle/node.js"
         }
       },
       "default": {
         "import": {
-          "types": "./wasm/dist/bundle/lib/web.d.ts",
-          "default": "./wasm/dist/bundle/lib/web.js"
+          "types": "./wasm/dist/bundle/web.d.ts",
+          "default": "./wasm/dist/bundle/web.js"
         }
       }
     },
     "./web": {
       "import": {
-        "types": "./wasm/dist/bundle/lib/web.d.ts",
-        "default": "./wasm/dist/bundle/lib/web.js"
+        "types": "./wasm/dist/bundle/web.d.ts",
+        "default": "./wasm/dist/bundle/web.js"
       }
     },
     "./node": {
       "import": {
-        "types": "./wasm/dist/bundle/lib/node.d.ts",
-        "default": "./wasm/dist/bundle/lib/node.js"
+        "types": "./wasm/dist/bundle/node.d.ts",
+        "default": "./wasm/dist/bundle/node.js"
       }
     }
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
+    "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
@@ -55,7 +56,7 @@
     "playwright": "^1.39.0",
     "rimraf": "^5.0.1",
     "rollup": "^4.3.0",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "rollup-plugin-dts": "^6.1.0",
     "ts-proto": "^1.158.0",
     "tslib": "^2.6.2",
     "typedoc": "0.25.3",
@@ -75,9 +76,9 @@
     "LICENSE.md",
     "README.md",
     "api.md",
-    "wasm/dist/bundle/lib"
+    "wasm/dist/bundle"
   ],
-  "types": "wasm/dist/bundle/lib/web.d.ts",
+  "types": "wasm/dist/bundle/web.d.ts",
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"

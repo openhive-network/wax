@@ -1,59 +1,12 @@
 {
+  "extends": "./wasm/configs/tsconfig.base.json",
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-
-    "incremental": false,
-    "noEmit": false,
-
-    "declaration": true,
-    "declarationMap": false,
-    "sourceMap": false,
-
-    "noImplicitAny": false,
-    "noLib": false,
-
-    "allowUnreachableCode": false,
-    "allowSyntheticDefaultImports": true,
-    "allowUnusedLabels": false,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "noFallthroughCasesInSwitch": false,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-
-    "rootDir": "./wasm",
+    "rootDir": "./wasm/lib",
     "baseUrl": ".",
-
-    "outDir": "./wasm/dist",
-
-    "removeComments": false,
-    "checkJs": false,
-    "strict": true,
-    "alwaysStrict": true,
-
-    "allowJs": false,
-
-    "target": "ES2017",
-    "lib": [
-      "ES2017",
-      "DOM"
-    ],
-    "module": "ES6",
-    "moduleResolution": "Bundler",
-    "esModuleInterop": true,
-
-    "noErrorTruncation": true
-  },
-  "buildOptions": {
-    "force": true,
-    "verbose": true
+    "outDir": "./wasm/dist/lib",
+    "paths": {}
   },
   "include": [
-    "wasm/lib",
-    "wasm/__tests__"
+    "./wasm/lib"
   ]
 }

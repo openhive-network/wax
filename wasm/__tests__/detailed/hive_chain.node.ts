@@ -3,7 +3,7 @@ import beekeeperFactory, { DEFAULT_STORAGE_ROOT, IBeekeeperInstance } from "@hiv
 
 import { protoVoteOp } from "../assets/data.proto-protocol";
 
-import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest } from "../../lib/node";
+import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest } from "../../dist/bundle/node";
 
 import fs from "fs";
 import { instanceToPlain } from 'class-transformer';

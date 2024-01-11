@@ -4,7 +4,7 @@ import beekeeperFactory, { IBeekeeperInstance } from "@hive/beekeeper/node";
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { transaction } from "../assets/data.protocol";
 
-import { createWaxFoundation, IWaxBaseInterface } from "../../lib/node";
+import { createWaxFoundation, IWaxBaseInterface } from "../../dist/bundle/node";
 
 import fs from "fs";
 

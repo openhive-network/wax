@@ -9,7 +9,7 @@ export default defineConfig({
   projects: [
     {
       name: "wax_testsuite",
-      testDir: "./wasm/dist/__tests__"
+      testDir: "./wasm/dist"
     }
   ],
   // Run your local dev server before starting the tests

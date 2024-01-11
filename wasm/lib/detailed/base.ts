@@ -1,7 +1,7 @@
 import type { IWaxBaseInterface, IWaxOptions } from "../interfaces.js";
 
 import { WaxBaseApi } from "./base_api.js";
-import MainModuleFunction from "../wax_module.web.js";
+import MainModuleFunction from "../wax_module.js";
 
 export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
   chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
