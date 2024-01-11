@@ -172,9 +172,10 @@ Compile source:
 npm run build
 ```
 
-Then run tests:
+Then build and run tests:
 
 ```bash
+npm run build:test
 npm run test
 ```
 
