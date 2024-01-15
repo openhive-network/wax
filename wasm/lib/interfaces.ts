@@ -3,6 +3,7 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
+import type { IWaxFormatter } from "./detailed/formatters/types";
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -325,6 +326,9 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @returns {Promise<Date>} Full regeneration time
    */
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
+
+  readonly formatter: IWaxFormatter;
+  readonly waxify: IWaxFormatter['format'];
 
   readonly api: Readonly<IHiveApi>;
 }

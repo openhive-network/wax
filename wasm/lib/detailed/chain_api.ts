@@ -9,6 +9,8 @@ import { WaxError, WaxChainApiError } from "../errors.js";
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
 
+import { WaxFormatter } from "./formatters/waxify";
+
 import Long from "long";
 
 export enum EManabarType {
@@ -21,6 +23,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: IHiveApi;
 
   private localTypes = HiveApiTypes;
+
+  public readonly formatter = new WaxFormatter(this).init();
+  public get waxify() {
+    return this.formatter.format;
+  }
 
   public constructor(
     public readonly wax: MainModule,
