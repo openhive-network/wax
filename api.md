@@ -188,7 +188,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:9
+wasm/lib/detailed/formatters/types.ts:20
 
 ___
 
@@ -250,7 +250,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:30
+wasm/lib/detailed/formatters/types.ts:46
 
 ___
 
@@ -5886,7 +5886,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | Name | Type |
 | :------ | :------ |
 | `wax` | [`IHiveChainInterface`](#interfacesihivechaininterfacemd) |
-| `options?` | [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd) |
+| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> |
 
 #### Returns
 
@@ -5904,7 +5904,7 @@ wasm/lib/detailed/formatters/waxify.ts:10
 
 ### matchers
 
-• `Protected` `Readonly` **matchers**: `Map`\<`string`, [`TFormatFunction`](#tformatfunction)\>
+• `Private` **matchers**: `Map`\<`string`, [`TFormatFunction`](#tformatfunction)\>
 
 #### Defined in
 
@@ -5914,7 +5914,13 @@ ___
 
 ### options
 
-• `Readonly` **options**: `Readonly`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> = `{}`
+• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+
+Options for the formatter
+
+#### Implementation of
+
+[IWaxExtendableFormatter](#interfacesiwaxextendableformattermd).[options](#options)
 
 #### Inherited from
 
@@ -5922,7 +5928,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:10
+wasm/lib/detailed/formatters/base.ts:11
 
 ___
 
@@ -5938,7 +5944,7 @@ wasm/lib/detailed/formatters/waxify.ts:11
 
 ### extend
 
-▸ **extend**(`formatterConstructor`): [`WaxFormatter`](#classeswaxformattermd)
+▸ **extend**(`formatterConstructor`, `options?`): [`WaxFormatter`](#classeswaxformattermd)
 
 Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
 
@@ -5947,6 +5953,7 @@ Allows users to extend the default wax formatter using custom user-defined forma
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> | formatter options |
 
 #### Returns
 
@@ -5960,7 +5967,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:25
+wasm/lib/detailed/formatters/waxify.ts:28
 
 ___
 
@@ -5997,7 +6004,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:36
+wasm/lib/detailed/formatters/base.ts:37
 
 ___
 
@@ -6014,7 +6021,7 @@ that the base types are defined for properties handling
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:21
+wasm/lib/detailed/formatters/waxify.ts:24
 
 
 <a name="classeswaxformatterbasemd"></a>
@@ -6043,7 +6050,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 | Name | Type |
 | :------ | :------ |
-| `options?` | [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd) |
+| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> |
 
 #### Returns
 
@@ -6051,17 +6058,23 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:12
+wasm/lib/detailed/formatters/base.ts:13
 
 ## Properties
 
 ### options
 
-• `Readonly` **options**: `Readonly`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> = `{}`
+• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+
+Options for the formatter
+
+#### Implementation of
+
+[IWaxFormatter](#interfacesiwaxformattermd).[options](#options)
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:10
+wasm/lib/detailed/formatters/base.ts:11
 
 ## Methods
 
@@ -6094,7 +6107,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:36
+wasm/lib/detailed/formatters/base.ts:37
 
 ___
 
@@ -6114,7 +6127,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:22
+wasm/lib/detailed/formatters/base.ts:23
 
 ___
 
@@ -6135,7 +6148,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:20
+wasm/lib/detailed/formatters/base.ts:21
 
 
 <a name="enumsemanabartypemd"></a>
@@ -6951,11 +6964,27 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 - [`WaxFormatter`](#classeswaxformattermd)
 
+## Properties
+
+### options
+
+• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+
+Options for the formatter
+
+#### Inherited from
+
+[IWaxFormatter](#interfacesiwaxformattermd).[options](#options)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:39
+
 ## Methods
 
 ### extend
 
-▸ **extend**(`formatterConstructor`): [`IWaxFormatter`](#interfacesiwaxformattermd)
+▸ **extend**(`formatterConstructor`, `options?`): [`IWaxFormatter`](#interfacesiwaxformattermd)
 
 Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
 
@@ -6964,6 +6993,7 @@ Allows users to extend the default wax formatter using custom user-defined forma
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> | formatter options |
 
 #### Returns
 
@@ -6973,7 +7003,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:46
+wasm/lib/detailed/formatters/types.ts:63
 
 ___
 
@@ -7006,7 +7036,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:23
+wasm/lib/detailed/formatters/types.ts:34
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -7024,6 +7054,18 @@ Classes implementing this interface denote that they are ready to handle tagged 
 ## Implemented by
 
 - [`WaxFormatterBase`](#classeswaxformatterbasemd)
+
+## Properties
+
+### options
+
+• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+
+Options for the formatter
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:39
 
 ## Methods
 
@@ -7052,7 +7094,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:23
+wasm/lib/detailed/formatters/types.ts:34
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -7063,17 +7105,35 @@ wasm/lib/detailed/formatters/types.ts:23
 
 ### asset
 
-• `Optional` **asset**: `Object`
+• **asset**: `Object`
 
 #### Type declaration
 
-| Name | Type |
-| :------ | :------ |
-| `displaySymbol?` | `boolean` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `appendTokenName` | `boolean` | Appends token name after asset amount (e.g. `1.100 HIVE`) **`Default`** ```ts true ``` |
 
 #### Defined in
 
 wasm/lib/detailed/formatters/types.ts:4
+
+___
+
+### createDefaultFormatteres
+
+• **createDefaultFormatteres**: `boolean`
+
+Initializes formatter class with default wax formatters
+
+**`Default`**
+
+```ts
+true
+```
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:17
 
 
 <a name="interfacesiwaxoptionsmd"></a>

@@ -205,13 +205,13 @@ test.describe('Wax object interface chain tests for Node.js', () => {
       }
     }
 
-    chain.formatter.extend(MyFormatters);
+    const formatter = chain.formatter.extend(MyFormatters);
     const data = {
       myCustomProp: 12542
     };
 
     expect(
-      chain.waxify`MyData: ${data}`
+      formatter.format`MyData: ${data}`
     ).toBe("MyData: 12542");
   });
 });

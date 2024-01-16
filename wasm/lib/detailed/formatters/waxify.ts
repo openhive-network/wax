@@ -5,13 +5,16 @@ import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
 
 export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
-  protected readonly matchers: Map<string, TFormatFunction> = new Map();
+  private matchers: Map<string, TFormatFunction> = new Map();
 
   public constructor(
     protected readonly wax: IHiveChainInterface,
-    options?: IWaxFormatterOptions
+    options?: Partial<IWaxFormatterOptions>
   ) {
     super(options);
+
+    if(this.options.createDefaultFormatteres)
+      this.init();
   }
 
   /**
@@ -22,17 +25,20 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     return this.extend(DefaultFormatters);
   }
 
-  public extend(formatterConstructor: TWaxCustomFormatterConstructor): WaxFormatter {
-    const formatter = new formatterConstructor(this.options);
+  public extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): WaxFormatter {
+    const newFormatter = new WaxFormatter(this.wax, { ...(options ?? {}), createDefaultFormatteres: false });
+    newFormatter.matchers = new Map(this.matchers);
+
+    const formatter = new formatterConstructor(newFormatter.options);
 
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
       const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
 
       if(typeof matchedProperty === "string")
-        this.matchers.set(matchedProperty, formatter[key]);
+        newFormatter.matchers.set(matchedProperty, formatter[key].bind(formatter));
     }
 
-    return this;
+    return newFormatter;
   }
 
   /**

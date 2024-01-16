@@ -1,9 +1,20 @@
 import type { WaxFormatable } from "../decorators/formatters";
 
 export interface IWaxFormatterOptions {
-  asset?: {
-    displaySymbol?: boolean;
+  asset: {
+    /**
+     * Appends token name after asset amount (e.g. `1.100 HIVE`)
+     *
+     * @default true
+     */
+    appendTokenName: boolean;
   };
+  /**
+   * Initializes formatter class with default wax formatters
+   *
+   * @default true
+   */
+  createDefaultFormatteres: boolean;
 }
 
 export type TFormatFunction = (value: object) => (string | undefined);
@@ -21,6 +32,11 @@ export interface IWaxFormatter {
    * @example format`Hello, ${"alice"}! My account value is ${naiObject}`
    */
   format(strings: TemplateStringsArray, ...args: unknown[]): string;
+
+  /**
+   * Options for the formatter
+   */
+  readonly options: IWaxFormatterOptions;
 }
 
 export interface IWaxCustomFormatter {
@@ -41,7 +57,8 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
    * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormatable}
    *
    * @param {TWaxCustomFormatterConstructor} formatterConstructor constructable formatter object
+   * @param {?Partial<IWaxFormatterOptions>} options formatter options
    * @returns {WaxFormatter} extended formatter class
    */
-  extend(formatterConstructor: TWaxCustomFormatterConstructor): IWaxFormatter;
+  extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): IWaxFormatter;
 }

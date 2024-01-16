@@ -89,13 +89,13 @@ class MyFormatters { // Define custom formatters class
   }
 }
 
-chain.formatter.extend(MyFormatters); // Extend our formatter
+const formatter = chain.formatter.extend(MyFormatters); // Creates and returns new extended formatter object
 
 const data = {
   myCustomProp: 12542
 };
 
-console.info(chain.waxify`${data}`); // Print formatted data
+console.info(formatter.waxify`${data}`); // Print formatted data
 ```
 
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
