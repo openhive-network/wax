@@ -1,3 +1,5 @@
+import type { WaxFormatable } from "../decorators/formatters";
+
 export interface IWaxFormatterOptions {
   asset?: {
     displaySymbol?: boolean;
@@ -30,3 +32,16 @@ export type TWaxCustomFormatterConstructor = ({
 }) | ({
   new(): IWaxCustomFormatter;
 });
+
+/**
+ * Classes implementing this interface denote that they are ready to handle tagged templates
+ */
+export interface IWaxExtendableFormatter extends IWaxFormatter {
+  /**
+   * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormatable}
+   *
+   * @param {TWaxCustomFormatterConstructor} formatterConstructor constructable formatter object
+   * @returns {WaxFormatter} extended formatter class
+   */
+  extend(formatterConstructor: TWaxCustomFormatterConstructor): IWaxFormatter;
+}

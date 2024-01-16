@@ -3,7 +3,7 @@ import beekeeperFactory, { DEFAULT_STORAGE_ROOT, IBeekeeperInstance } from "@hiv
 
 import { protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
 
-import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest } from "../../dist/bundle/node";
+import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest, WaxFormatable } from "../../dist/bundle/node";
 
 import fs from "fs";
 import { instanceToPlain } from 'class-transformer';
@@ -195,5 +195,23 @@ test.describe('Wax object interface chain tests for Node.js', () => {
     expect(
       chain.waxify`Operation: ${vote_operation}`
     ).toBe("Operation: vote_operation");
+  });
+
+  test('Should be able to format values using custom formatters extended from hive chain interface', () => {
+    class MyFormatters {
+      @WaxFormatable()
+      myCustomProp(value) {
+        return value.myCustomProp.toString();
+      }
+    }
+
+    chain.formatter.extend(MyFormatters);
+    const data = {
+      myCustomProp: 12542
+    };
+
+    expect(
+      chain.waxify`MyData: ${data}`
+    ).toBe("MyData: 12542");
   });
 });

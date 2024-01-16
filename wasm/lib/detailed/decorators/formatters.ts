@@ -4,6 +4,19 @@ export interface IWaxFormatterDecoratorOptions {
 
 type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
 
+/**
+ * When used on method, marks that this method is intended to be used for wax formatting with given property matching.
+ * When no options provided, method name is used for property matching
+ *
+ * @param {?(IWaxFormatterDecoratorOptions | string)} options property to match or decorator options
+ * @returns {TWaxFormatterDecorator}
+ *
+ * @example
+ * @WaxFormatable()
+ * public prop(value: Date): string {
+ *   return value.toString();
+ * }
+ */
 export const WaxFormatable = (options?: IWaxFormatterDecoratorOptions | string): TWaxFormatterDecorator => {
   if(typeof options === "string")
     options = {

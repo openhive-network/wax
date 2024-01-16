@@ -38,6 +38,8 @@
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 - [RcAccount](#classesrcaccountmd)
+- [WaxFormatter](#classeswaxformattermd)
+- [WaxFormatterBase](#classeswaxformatterbasemd)
 
 ## Interfaces
 
@@ -46,6 +48,10 @@
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
+- [IWaxCustomFormatter](#interfacesiwaxcustomformattermd)
+- [IWaxExtendableFormatter](#interfacesiwaxextendableformattermd)
+- [IWaxFormatter](#interfacesiwaxformattermd)
+- [IWaxFormatterOptions](#interfacesiwaxformatteroptionsmd)
 - [IWaxOptions](#interfacesiwaxoptionsmd)
 - [IWaxOptionsChain](#interfacesiwaxoptionschainmd)
 - [account\_create](#interfacesaccount_createmd)
@@ -162,6 +168,30 @@ wasm/lib/interfaces.ts:21
 
 ___
 
+### TFormatFunction
+
+Ƭ **TFormatFunction**: (`value`: `object`) => `string` \| `undefined`
+
+#### Type declaration
+
+▸ (`value`): `string` \| `undefined`
+
+##### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `object` |
+
+##### Returns
+
+`string` \| `undefined`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:9
+
+___
+
 ### THexString
 
 Ƭ **THexString**: `string`
@@ -211,6 +241,16 @@ Transaction id type
 #### Defined in
 
 wasm/lib/interfaces.ts:51
+
+___
+
+### TWaxCustomFormatterConstructor
+
+Ƭ **TWaxCustomFormatterConstructor**: (`options`: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)) => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd) \| () => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:30
 
 ___
 
@@ -2460,6 +2500,38 @@ wasm/lib/proto/witness_update.ts:24
 wasm/lib/proto/witness_update.ts:36
 
 ## Functions
+
+### WaxFormatable
+
+▸ **WaxFormatable**(`options?`): `TWaxFormatterDecorator`
+
+When used on method, marks that this method is intended to be used for wax formatting with given property matching.
+When no options provided, method name is used for property matching
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `options?` | `string` \| `IWaxFormatterDecoratorOptions` | property to match or decorator options |
+
+#### Returns
+
+`TWaxFormatterDecorator`
+
+**`Example`**
+
+```ts
+@WaxFormatable()
+public prop(value: Date): string {
+  return value.toString();
+}
+```
+
+#### Defined in
+
+wasm/lib/detailed/decorators/formatters.ts:20
+
+___
 
 ### calculateExpiration
 
@@ -5787,6 +5859,285 @@ ___
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 
+<a name="classeswaxformattermd"></a>
+
+# Class: WaxFormatter
+
+Classes implementing this interface denote that they are ready to handle tagged templates
+
+## Hierarchy
+
+- [`WaxFormatterBase`](#classeswaxformatterbasemd)
+
+  ↳ **`WaxFormatter`**
+
+## Implements
+
+- [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
+
+## Constructors
+
+### constructor
+
+• **new WaxFormatter**(`wax`, `options?`): [`WaxFormatter`](#classeswaxformattermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `wax` | [`IHiveChainInterface`](#interfacesihivechaininterfacemd) |
+| `options?` | [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd) |
+
+#### Returns
+
+[`WaxFormatter`](#classeswaxformattermd)
+
+#### Overrides
+
+[WaxFormatterBase](#classeswaxformatterbasemd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:10
+
+## Properties
+
+### matchers
+
+• `Protected` `Readonly` **matchers**: `Map`\<`string`, [`TFormatFunction`](#tformatfunction)\>
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:8
+
+___
+
+### options
+
+• `Readonly` **options**: `Readonly`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> = `{}`
+
+#### Inherited from
+
+[WaxFormatterBase](#classeswaxformatterbasemd).[options](#options)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:10
+
+___
+
+### wax
+
+• `Protected` `Readonly` **wax**: [`IHiveChainInterface`](#interfacesihivechaininterfacemd)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:11
+
+## Methods
+
+### extend
+
+▸ **extend**(`formatterConstructor`): [`WaxFormatter`](#classeswaxformattermd)
+
+Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+
+#### Returns
+
+[`WaxFormatter`](#classeswaxformattermd)
+
+extended formatter class
+
+#### Implementation of
+
+[IWaxExtendableFormatter](#interfacesiwaxextendableformattermd).[extend](#extend)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:25
+
+___
+
+### format
+
+▸ **format**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+**`Example`**
+
+```ts
+format`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Implementation of
+
+[IWaxExtendableFormatter](#interfacesiwaxextendableformattermd).[format](#format)
+
+#### Inherited from
+
+[WaxFormatterBase](#classeswaxformatterbasemd).[format](#format)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:36
+
+___
+
+### init
+
+▸ **init**(): [`WaxFormatter`](#classeswaxformattermd)
+
+Initializes the internal [matchers](#matchers) map and ensures
+that the base types are defined for properties handling
+
+#### Returns
+
+[`WaxFormatter`](#classeswaxformattermd)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:21
+
+
+<a name="classeswaxformatterbasemd"></a>
+
+# Class: WaxFormatterBase
+
+Classes implementing this interface denote that they are ready to handle tagged templates
+
+## Hierarchy
+
+- **`WaxFormatterBase`**
+
+  ↳ [`WaxFormatter`](#classeswaxformattermd)
+
+## Implements
+
+- [`IWaxFormatter`](#interfacesiwaxformattermd)
+
+## Constructors
+
+### constructor
+
+• **new WaxFormatterBase**(`options?`): [`WaxFormatterBase`](#classeswaxformatterbasemd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `options?` | [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd) |
+
+#### Returns
+
+[`WaxFormatterBase`](#classeswaxformatterbasemd)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:12
+
+## Properties
+
+### options
+
+• `Readonly` **options**: `Readonly`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> = `{}`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:10
+
+## Methods
+
+### format
+
+▸ **format**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+**`Example`**
+
+```ts
+format`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Implementation of
+
+[IWaxFormatter](#interfacesiwaxformattermd).[format](#format)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:36
+
+___
+
+### formatParser
+
+▸ **formatParser**(`value`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `unknown` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:22
+
+___
+
+### handleProperty
+
+▸ **handleProperty**(`target`, `property`): `undefined` \| `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `target` | `object` |
+| `property` | `string` |
+
+#### Returns
+
+`undefined` \| `string`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:20
+
+
 <a name="enumsemanabartypemd"></a>
 
 # Enumeration: EManabarType
@@ -5846,7 +6197,7 @@ ___
 
 ### formatter
 
-• `Readonly` **formatter**: `IWaxFormatter`
+• `Readonly` **formatter**: [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
 #### Defined in
 
@@ -6573,6 +6924,156 @@ Deletes the created wax proto_protocol instance
 #### Defined in
 
 wasm/lib/interfaces.ts:255
+
+
+<a name="interfacesiwaxcustomformattermd"></a>
+
+# Interface: IWaxCustomFormatter
+
+## Indexable
+
+▪ [key: `string`]: [`TFormatFunction`](#tformatfunction) \| `any`
+
+
+<a name="interfacesiwaxextendableformattermd"></a>
+
+# Interface: IWaxExtendableFormatter
+
+Classes implementing this interface denote that they are ready to handle tagged templates
+
+## Hierarchy
+
+- [`IWaxFormatter`](#interfacesiwaxformattermd)
+
+  ↳ **`IWaxExtendableFormatter`**
+
+## Implemented by
+
+- [`WaxFormatter`](#classeswaxformattermd)
+
+## Methods
+
+### extend
+
+▸ **extend**(`formatterConstructor`): [`IWaxFormatter`](#interfacesiwaxformattermd)
+
+Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+
+#### Returns
+
+[`IWaxFormatter`](#interfacesiwaxformattermd)
+
+extended formatter class
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:46
+
+___
+
+### format
+
+▸ **format**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+**`Example`**
+
+```ts
+format`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Inherited from
+
+[IWaxFormatter](#interfacesiwaxformattermd).[format](#format)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:23
+
+
+<a name="interfacesiwaxformattermd"></a>
+
+# Interface: IWaxFormatter
+
+Classes implementing this interface denote that they are ready to handle tagged templates
+
+## Hierarchy
+
+- **`IWaxFormatter`**
+
+  ↳ [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
+
+## Implemented by
+
+- [`WaxFormatterBase`](#classeswaxformatterbasemd)
+
+## Methods
+
+### format
+
+▸ **format**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+**`Example`**
+
+```ts
+format`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:23
+
+
+<a name="interfacesiwaxformatteroptionsmd"></a>
+
+# Interface: IWaxFormatterOptions
+
+## Properties
+
+### asset
+
+• `Optional` **asset**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `displaySymbol?` | `boolean` |
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:4
 
 
 <a name="interfacesiwaxoptionsmd"></a>

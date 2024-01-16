@@ -76,6 +76,28 @@ const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh
 console.info(chain.waxify`${stx}`);
 ```
 
+#### Use hive chain interface and custom formatters to output data in specified format
+
+```ts
+import { createHiveChain, WaxFormatable } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+class MyFormatters { // Define custom formatters class
+  @WaxFormatable() // Match this method as `myCustomProp` custom formatter
+  myCustomProp(value) {
+    return value.myCustomProp.toString();
+  }
+}
+
+chain.formatter.extend(MyFormatters); // Extend our formatter
+
+const data = {
+  myCustomProp: 12542
+};
+
+console.info(chain.waxify`${data}`); // Print formatted data
+```
+
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
 
 ```js

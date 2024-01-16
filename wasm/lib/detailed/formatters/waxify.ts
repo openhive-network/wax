@@ -1,11 +1,10 @@
-import type { TWaxCustomFormatterConstructor, IWaxFormatter, IWaxFormatterOptions, TFormatFunction } from "./types";
+import type { TWaxCustomFormatterConstructor, IWaxFormatterOptions, TFormatFunction, IWaxExtendableFormatter } from "./types";
 import type { IHiveChainInterface } from "../../interfaces";
-import type { WaxFormatable } from "../decorators/formatters";
 
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
 
-export class WaxFormatter extends WaxFormatterBase implements IWaxFormatter {
+export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
   protected readonly matchers: Map<string, TFormatFunction> = new Map();
 
   public constructor(
@@ -23,12 +22,6 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxFormatter {
     return this.extend(DefaultFormatters);
   }
 
-  /**
-   * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormatable}
-   *
-   * @param {TWaxCustomFormatterConstructor} formatterConstructor constructable formatter object
-   * @returns {WaxFormatter} extended formatter class
-   */
   public extend(formatterConstructor: TWaxCustomFormatterConstructor): WaxFormatter {
     const formatter = new formatterConstructor(this.options);
 
