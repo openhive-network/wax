@@ -1,4 +1,4 @@
-import type { TWaxCustomFormatterConstructor, IWaxFormatterOptions, TFormatFunction, IWaxExtendableFormatter } from "./types";
+import type { TWaxCustomFormatterConstructor, IWaxFormatterOptions, TFormatFunction, IWaxExtendableFormatter, DeepPartial } from "./types";
 import type { IHiveChainInterface } from "../../interfaces";
 
 import { WaxFormatterBase } from "./base";
@@ -9,7 +9,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
 
   public constructor(
     protected readonly wax: IHiveChainInterface,
-    options?: Partial<IWaxFormatterOptions>
+    options?: DeepPartial<IWaxFormatterOptions>
   ) {
     super(options);
 
@@ -25,7 +25,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     return this.extend(DefaultFormatters);
   }
 
-  public extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): WaxFormatter {
+  public extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: DeepPartial<IWaxFormatterOptions>): WaxFormatter {
     const newFormatter = new WaxFormatter(this.wax, { ...(options ?? {}), createDefaultFormatteres: false });
     newFormatter.matchers = new Map(this.matchers);
 

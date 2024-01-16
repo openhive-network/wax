@@ -1,4 +1,4 @@
-import { IWaxFormatter, IWaxFormatterOptions } from "./types";
+import { DeepPartial, IWaxFormatter, IWaxFormatterOptions } from "./types";
 
 export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
@@ -10,7 +10,7 @@ export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
 export abstract class WaxFormatterBase implements IWaxFormatter {
   public readonly options: IWaxFormatterOptions = {} as IWaxFormatterOptions;
 
-  public constructor(options?: Partial<IWaxFormatterOptions>) {
+  public constructor(options?: DeepPartial<IWaxFormatterOptions>) {
     for(const prop in DEFAULT_FORMATTER_OPTIONS)
       if(typeof DEFAULT_FORMATTER_OPTIONS[prop] === "object")
         this.options[prop] = { ...DEFAULT_FORMATTER_OPTIONS[prop], ...(options?.[prop] ?? {}) };

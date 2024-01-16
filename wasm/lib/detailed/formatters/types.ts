@@ -1,5 +1,21 @@
 import type { WaxFormatable } from "../decorators/formatters";
 
+export type DeepPartial<T> = T extends object ? {
+  [P in keyof T]?: DeepPartial<T[P]>;
+} : T;
+
+type DeepReadonly<T> =
+    T extends (infer R)[] ? DeepReadonlyArray<R> :
+    T extends Function ? T :
+    T extends object ? DeepReadonlyObject<T> :
+    T;
+
+interface DeepReadonlyArray<T> extends ReadonlyArray<DeepReadonly<T>> {}
+
+type DeepReadonlyObject<T> = {
+    readonly [P in keyof T]: DeepReadonly<T[P]>;
+};
+
 export interface IWaxFormatterOptions {
   asset: {
     /**
@@ -36,7 +52,7 @@ export interface IWaxFormatter {
   /**
    * Options for the formatter
    */
-  readonly options: IWaxFormatterOptions;
+  readonly options: DeepReadonly<IWaxFormatterOptions>;
 }
 
 export interface IWaxCustomFormatter {

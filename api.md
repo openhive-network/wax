@@ -188,7 +188,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:20
+wasm/lib/detailed/formatters/types.ts:36
 
 ___
 
@@ -250,7 +250,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:46
+wasm/lib/detailed/formatters/types.ts:62
 
 ___
 
@@ -5883,10 +5883,12 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `wax` | [`IHiveChainInterface`](#interfacesihivechaininterfacemd) |
-| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wax` | [`IHiveChainInterface`](#interfacesihivechaininterfacemd) | - |
+| `options?` | `Object` | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 
 #### Returns
 
@@ -5953,7 +5955,9 @@ Allows users to extend the default wax formatter using custom user-defined forma
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
-| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> | formatter options |
+| `options?` | `Object` | formatter options |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 
 #### Returns
 
@@ -6048,9 +6052,11 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `options?` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `options?` | `Object` | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 
 #### Returns
 
@@ -6968,7 +6974,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 ### options
 
-• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+• `Readonly` **options**: `DeepReadonlyObject`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\>
 
 Options for the formatter
 
@@ -6978,7 +6984,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:39
+wasm/lib/detailed/formatters/types.ts:55
 
 ## Methods
 
@@ -7003,7 +7009,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:63
+wasm/lib/detailed/formatters/types.ts:79
 
 ___
 
@@ -7036,7 +7042,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:34
+wasm/lib/detailed/formatters/types.ts:50
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -7059,13 +7065,13 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 ### options
 
-• `Readonly` **options**: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)
+• `Readonly` **options**: `DeepReadonlyObject`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\>
 
 Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:39
+wasm/lib/detailed/formatters/types.ts:55
 
 ## Methods
 
@@ -7094,7 +7100,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:34
+wasm/lib/detailed/formatters/types.ts:50
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -7115,7 +7121,7 @@ wasm/lib/detailed/formatters/types.ts:34
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:4
+wasm/lib/detailed/formatters/types.ts:20
 
 ___
 
@@ -7133,7 +7139,7 @@ true
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:17
+wasm/lib/detailed/formatters/types.ts:33
 
 
 <a name="interfacesiwaxoptionsmd"></a>
