@@ -15,8 +15,18 @@ export interface IWaxFormatter {
    *
    * @param {TemplateStringsArray} strings raw strings
    * @param {unknown[]} args arguments to be parsed using custom wax formatters
-   * 
+   *
    * @example format`Hello, ${"alice"}! My account value is ${naiObject}`
    */
   format(strings: TemplateStringsArray, ...args: unknown[]): string;
 }
+
+export interface IWaxCustomFormatter {
+  [key: string]: TFormatFunction | any;
+}
+
+export type TWaxCustomFormatterConstructor = ({
+  new(options: IWaxFormatterOptions): IWaxCustomFormatter;
+}) | ({
+  new(): IWaxCustomFormatter;
+});

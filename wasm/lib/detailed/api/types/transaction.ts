@@ -1,4 +1,13 @@
-import { Min, Max, IsDateString, IsInt, IsObject, ArrayNotEmpty, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { Min, Max, IsDateString, IsInt, IsObject, IsString, ValidateNested } from "class-validator";
+
+export class ApiOperation {
+  @IsString()
+  public type!: string;
+
+  @IsObject()
+  public value!: object;
+}
 
 export class ApiTransaction {
   @IsInt()
@@ -14,9 +23,9 @@ export class ApiTransaction {
   @IsDateString()
   public expiration!: string;
 
-  @IsObject({ each: true })
-  @ArrayNotEmpty() // Api requires at least one operation
-  public operations: object[] = [];
+  @ValidateNested({ each: true })
+  @Type(() => ApiTransaction)
+  public operations: Array<ApiOperation> = [];
 
   @IsObject({ each: true })
   public extensions: object[] = [];

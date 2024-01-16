@@ -17,6 +17,7 @@
 - [ApiDelayedVote](#classesapidelayedvotemd)
 - [ApiKeyAuth](#classesapikeyauthmd)
 - [ApiManabar](#classesapimanabarmd)
+- [ApiOperation](#classesapioperationmd)
 - [ApiTransaction](#classesapitransactionmd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
@@ -3571,6 +3572,41 @@ ___
 wasm/lib/detailed/api/types/account.ts:54
 
 
+<a name="classesapioperationmd"></a>
+
+# Class: ApiOperation
+
+## Constructors
+
+### constructor
+
+• **new ApiOperation**(): [`ApiOperation`](#classesapioperationmd)
+
+#### Returns
+
+[`ApiOperation`](#classesapioperationmd)
+
+## Properties
+
+### type
+
+• **type**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:6
+
+___
+
+### value
+
+• **value**: `object`
+
+#### Defined in
+
+wasm/lib/detailed/api/types/transaction.ts:9
+
+
 <a name="classesapitransactionmd"></a>
 
 # Class: ApiTransaction
@@ -3593,7 +3629,7 @@ wasm/lib/detailed/api/types/account.ts:54
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:15
+wasm/lib/detailed/api/types/transaction.ts:24
 
 ___
 
@@ -3603,17 +3639,17 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:22
+wasm/lib/detailed/api/types/transaction.ts:31
 
 ___
 
 ### operations
 
-• **operations**: `object`[] = `[]`
+• **operations**: [`ApiOperation`](#classesapioperationmd)[] = `[]`
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:19
+wasm/lib/detailed/api/types/transaction.ts:28
 
 ___
 
@@ -3623,7 +3659,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:7
+wasm/lib/detailed/api/types/transaction.ts:16
 
 ___
 
@@ -3633,7 +3669,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:12
+wasm/lib/detailed/api/types/transaction.ts:21
 
 ___
 
@@ -3643,7 +3679,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/types/transaction.ts:25
+wasm/lib/detailed/api/types/transaction.ts:34
 
 
 <a name="classesbroadcasttransactionrequestmd"></a>

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import beekeeperFactory, { DEFAULT_STORAGE_ROOT, IBeekeeperInstance } from "@hive/beekeeper/node";
 
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
 
 import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest } from "../../dist/bundle/node";
 
@@ -189,5 +189,11 @@ test.describe('Wax object interface chain tests for Node.js', () => {
     const retVal = time.max.toString();
 
     expect(retVal).toBe("1002020748973");
+  });
+
+  test('Should be able to format values using default formatters from hive chain interface', () => {
+    expect(
+      chain.waxify`Operation: ${vote_operation}`
+    ).toBe("Operation: vote_operation");
   });
 });

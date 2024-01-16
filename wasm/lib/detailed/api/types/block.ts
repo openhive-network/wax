@@ -25,7 +25,7 @@ export class ApiBlock extends ApiBlockHeader {
   @IsHexadecimal()
   public witness_signature!: string;
 
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => ApiTransaction)
   public transactions: Array<ApiTransaction> = [];
 

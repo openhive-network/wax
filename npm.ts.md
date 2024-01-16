@@ -73,9 +73,7 @@ tx.push({
 // Build and sign the transaction object
 const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
-const { waxify } = chain;
-
-console.info(waxify`${stx}`);
+console.info(chain.waxify`${stx}`);
 ```
 
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
