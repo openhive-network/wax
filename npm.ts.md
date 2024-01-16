@@ -95,7 +95,7 @@ const data = {
   myCustomProp: 12542
 };
 
-console.info(formatter.waxify`${data}`); // Print formatted data
+console.info(formatter.format`${data}`); // Print formatted data
 ```
 
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api

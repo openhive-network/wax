@@ -5954,7 +5954,7 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatteres?`: `boolean`  } | constructable formatter object |
 | `options?` | `Object` | formatter options |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
 | `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
@@ -6990,7 +6990,7 @@ wasm/lib/detailed/formatters/types.ts:55
 
 ### extend
 
-▸ **extend**(`formatterConstructor`, `options?`): [`IWaxFormatter`](#interfacesiwaxformattermd)
+▸ **extend**(`formatterConstructor`, `options?`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
 Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
 
@@ -7003,13 +7003,33 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 #### Returns
 
-[`IWaxFormatter`](#interfacesiwaxformattermd)
+[`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
 extended formatter class
 
 #### Defined in
 
 wasm/lib/detailed/formatters/types.ts:79
+
+▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
+
+Allows users to extend the default wax formatter using given options
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `options` | `Partial`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\> | formatter options |
+
+#### Returns
+
+[`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
+
+extended formatter class
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:87
 
 ___
 

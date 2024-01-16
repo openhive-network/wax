@@ -76,5 +76,13 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
    * @param {?Partial<IWaxFormatterOptions>} options formatter options
    * @returns {WaxFormatter} extended formatter class
    */
-  extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): IWaxFormatter;
+  extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): IWaxExtendableFormatter;
+
+  /**
+   * Allows users to extend the default wax formatter using given options
+   *
+   * @param {?Partial<IWaxFormatterOptions>} options formatter options
+   * @returns {WaxFormatter} extended formatter class
+   */
+  extend(options: Partial<IWaxFormatterOptions>): IWaxExtendableFormatter;
 }
