@@ -1,5 +1,6 @@
-import type { IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
+import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
 import type { MainModule, proto_protocol, result } from "../wax_module";
+import type { NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";
@@ -32,6 +33,16 @@ export class WaxBaseApi implements IWaxBaseInterface {
         fromApi: TransactionBuilder.fromApi.bind(undefined, this)
       }
     );
+  }
+
+  getAsset(nai: NaiAsset): IHiveAssetData {
+    const symbol = this.proto.cpp_asset_symbol(nai);
+    const amount = this.proto.cpp_asset_value(nai);
+
+    return {
+      symbol,
+      amount
+    };
   }
 
   private calculateManabarPercent(current: Long, max: Long): number {

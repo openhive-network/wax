@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 import beekeeperFactory, { DEFAULT_STORAGE_ROOT, IBeekeeperInstance } from "@hive/beekeeper/node";
 
-import { protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
+import { protoVoteOp } from "../assets/data.proto-protocol";
 
-import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest, WaxFormatable } from "../../dist/bundle/node";
+import { createHiveChain, IHiveChainInterface, BroadcastTransactionRequest } from "../../dist/bundle/node";
 
 import fs from "fs";
 import { instanceToPlain } from 'class-transformer';
@@ -189,29 +189,5 @@ test.describe('Wax object interface chain tests for Node.js', () => {
     const retVal = time.max.toString();
 
     expect(retVal).toBe("1002020748973");
-  });
-
-  test('Should be able to format values using default formatters from hive chain interface', () => {
-    expect(
-      chain.waxify`Operation: ${vote_operation}`
-    ).toBe("Operation: vote_operation");
-  });
-
-  test('Should be able to format values using custom formatters extended from hive chain interface', () => {
-    class MyFormatters {
-      @WaxFormatable()
-      myCustomProp(value) {
-        return value.myCustomProp.toString();
-      }
-    }
-
-    const formatter = chain.formatter.extend(MyFormatters);
-    const data = {
-      myCustomProp: 12542
-    };
-
-    expect(
-      formatter.format`MyData: ${data}`
-    ).toBe("MyData: 12542");
   });
 });

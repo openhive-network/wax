@@ -16,6 +16,12 @@ export enum ErrorCodes {
   OK = 1
 }
 
+export const naiAsset = {
+  amount: "300000",
+  precision: 3,
+  nai: "@@000000021"
+};
+
 export const vote_operation = {
   type: "vote_operation",
   value: {
@@ -46,11 +52,7 @@ export const serialization_sensitive_transaction = JSON.stringify({
       value: {
         from: "oneplus7",
         to: "kryptogames",
-        amount: {
-          amount: "300000",
-          precision: 3,
-          nai: "@@000000021"
-        },
+        amount: naiAsset,
         memo: "Roll under 50 4d434bd943616"
       }
     }

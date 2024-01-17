@@ -1,3 +1,4 @@
+import type { IWaxBaseInterface } from "../../interfaces";
 import type { WaxFormatable } from "../decorators/formatters";
 
 export type DeepPartial<T> = T extends object ? {
@@ -60,6 +61,8 @@ export interface IWaxCustomFormatter {
 }
 
 export type TWaxCustomFormatterConstructor = ({
+  new(options: IWaxFormatterOptions, wax: IWaxBaseInterface): IWaxCustomFormatter;
+}) | ({
   new(options: IWaxFormatterOptions): IWaxCustomFormatter;
 }) | ({
   new(): IWaxCustomFormatter;

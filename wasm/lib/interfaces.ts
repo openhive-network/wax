@@ -4,6 +4,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
+import type { NaiAsset } from "./detailed";
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -214,8 +215,32 @@ export interface ITransactionBuilderConstructor {
   fromApi(transactionObject: string | object): ITransactionBuilder;
 }
 
+export interface IHiveAssetData {
+  /**
+   * Asset amount
+   *
+   * @example "1.100"
+   */
+  amount: string;
+
+  /**
+   * Asset symbol
+   *
+   * @example "HIVE"
+   */
+  symbol: string;
+}
+
 export interface IWaxBaseInterface {
   get TransactionBuilder(): ITransactionBuilderConstructor;
+
+  /**
+   * Retrieves asset amount and symbol from the api data
+   *
+   * @param {NaiAsset} nai API asset
+   * @returns {IHiveAssetData} asset data
+   */
+  getAsset(nai: NaiAsset): IHiveAssetData;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments

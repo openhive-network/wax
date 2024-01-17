@@ -1,5 +1,5 @@
 import type { TWaxCustomFormatterConstructor, IWaxFormatterOptions, TFormatFunction, IWaxExtendableFormatter, DeepPartial, IWaxCustomFormatter } from "./types";
-import type { IHiveChainInterface } from "../../interfaces";
+import type { IWaxBaseInterface } from "../../interfaces";
 
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
@@ -8,7 +8,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   private matchers: Map<string, TFormatFunction> = new Map();
 
   public constructor(
-    protected readonly wax: IHiveChainInterface,
+    protected readonly wax: IWaxBaseInterface,
     options?: DeepPartial<IWaxFormatterOptions>
   ) {
     super(options);
@@ -37,7 +37,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
       formatterConstructor = DefaultFormatters;
     }
 
-    formatter = new formatterConstructor(newFormatter.options);
+    formatter = new formatterConstructor(newFormatter.options, this.wax);
 
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
       const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;

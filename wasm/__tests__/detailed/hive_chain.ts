@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import "../assets/data";
-import { protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
+import { protoVoteOp } from "../assets/data.proto-protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -252,14 +252,6 @@ test.describe('Wax object interface chain tests', () => {
 
       expect(retVal).toBe("1002020748973");
     });
-
-  test('Should be able to format values using default formatters from hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate((vote_operation) => {
-      return chain.waxify`Operation: ${vote_operation}`;
-    }, vote_operation);
-
-    expect(retVal).toBe("Operation: vote_operation");
-  });
 
   test.afterAll(async () => {
     await browser.close();

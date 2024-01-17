@@ -10,3 +10,5 @@ import "./detailed/hive_base";
 import "./detailed/hive_base.node";
 import "./detailed/hive_chain";
 import "./detailed/hive_chain.node";
+import "./detailed/formatters";
+import "./detailed/formatters.node";
