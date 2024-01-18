@@ -308,7 +308,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:101
+wasm/lib/detailed/formatters/types.ts:117
 
 ___
 
@@ -6038,26 +6038,34 @@ ___
 
 ### format
 
-▸ **format**(`strings`, `...args`): `string`
+▸ **format**\<`I`, `R`\>(`data`): `R`
 
-Formats given text based on arguments structure
+Formats given data based on formatter options
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `I` | `any` |
+| `R` | `any` |
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `strings` | `TemplateStringsArray` | raw strings |
-| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+| `data` | `I` | raw data |
 
 #### Returns
 
-`string`
+`R`
+
+formatted data
 
 **`Example`**
 
 Formatting data
 ```typescript
-format`Hello, ${"alice"}! My account value is ${naiObject}`
+formatter.format(naiObject);
 ```
 
 #### Implementation of
@@ -6070,7 +6078,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:60
+wasm/lib/detailed/formatters/base.ts:69
 
 ___
 
@@ -6088,6 +6096,46 @@ that the base types are defined for properties handling
 #### Defined in
 
 wasm/lib/detailed/formatters/waxify.ts:24
+
+___
+
+### waxify
+
+▸ **waxify**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+formatted data
+
+**`Example`**
+
+Formatting data
+```typescript
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Implementation of
+
+[IWaxExtendableFormatter](#interfacesiwaxextendableformattermd).[waxify](#waxify)
+
+#### Inherited from
+
+[WaxFormatterBase](#classeswaxformatterbasemd).[waxify](#waxify)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:73
 
 
 <a name="classeswaxformatterbasemd"></a>
@@ -6149,26 +6197,34 @@ wasm/lib/detailed/formatters/base.ts:14
 
 ### format
 
-▸ **format**(`strings`, `...args`): `string`
+▸ **format**\<`I`, `R`\>(`data`): `R`
 
-Formats given text based on arguments structure
+Formats given data based on formatter options
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `I` | `any` |
+| `R` | `any` |
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `strings` | `TemplateStringsArray` | raw strings |
-| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+| `data` | `I` | raw data |
 
 #### Returns
 
-`string`
+`R`
+
+formatted data
 
 **`Example`**
 
 Formatting data
 ```typescript
-format`Hello, ${"alice"}! My account value is ${naiObject}`
+formatter.format(naiObject);
 ```
 
 #### Implementation of
@@ -6177,7 +6233,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:60
+wasm/lib/detailed/formatters/base.ts:69
 
 ___
 
@@ -6197,7 +6253,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:40
+wasm/lib/detailed/formatters/base.ts:60
 
 ___
 
@@ -6223,6 +6279,26 @@ wasm/lib/detailed/formatters/base.ts:24
 
 ___
 
+### rawDataParser
+
+▸ **rawDataParser**(`value`): `any`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `value` | `unknown` |
+
+#### Returns
+
+`any`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:40
+
+___
+
 ### traverseTemplateValue
 
 ▸ **traverseTemplateValue**(`source`, `target`, `key`, `value`): `void`
@@ -6243,6 +6319,42 @@ ___
 #### Defined in
 
 wasm/lib/detailed/formatters/base.ts:26
+
+___
+
+### waxify
+
+▸ **waxify**(`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+#### Returns
+
+`string`
+
+formatted data
+
+**`Example`**
+
+Formatting data
+```typescript
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Implementation of
+
+[IWaxFormatter](#interfacesiwaxformattermd).[waxify](#waxify)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:73
 
 
 <a name="enumsemanabartypemd"></a>
@@ -6374,11 +6486,13 @@ Formats given text based on arguments structure
 
 `string`
 
+formatted data
+
 **`Example`**
 
 Formatting data
 ```typescript
-format`Hello, ${"alice"}! My account value is ${naiObject}`
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
 #### Defined in
@@ -7166,7 +7280,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:94
+wasm/lib/detailed/formatters/types.ts:110
 
 ## Methods
 
@@ -7191,7 +7305,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:120
+wasm/lib/detailed/formatters/types.ts:136
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -7211,13 +7325,55 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:128
+wasm/lib/detailed/formatters/types.ts:144
 
 ___
 
 ### format
 
-▸ **format**(`strings`, `...args`): `string`
+▸ **format**\<`I`, `R`\>(`data`): `R`
+
+Formats given data based on formatter options
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `I` | `any` |
+| `R` | `any` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | `I` | raw data |
+
+#### Returns
+
+`R`
+
+formatted data
+
+**`Example`**
+
+Formatting data
+```typescript
+formatter.format(naiObject);
+```
+
+#### Inherited from
+
+[IWaxFormatter](#interfacesiwaxformattermd).[format](#format)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:105
+
+___
+
+### waxify
+
+▸ **waxify**(`strings`, `...args`): `string`
 
 Formats given text based on arguments structure
 
@@ -7232,20 +7388,22 @@ Formats given text based on arguments structure
 
 `string`
 
+formatted data
+
 **`Example`**
 
 Formatting data
 ```typescript
-format`Hello, ${"alice"}! My account value is ${naiObject}`
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
 #### Inherited from
 
-[IWaxFormatter](#interfacesiwaxformattermd).[format](#format)
+[IWaxFormatter](#interfacesiwaxformattermd).[waxify](#waxify)
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:89
+wasm/lib/detailed/formatters/types.ts:91
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -7274,13 +7432,51 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:94
+wasm/lib/detailed/formatters/types.ts:110
 
 ## Methods
 
 ### format
 
-▸ **format**(`strings`, `...args`): `string`
+▸ **format**\<`I`, `R`\>(`data`): `R`
+
+Formats given data based on formatter options
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `I` | `any` |
+| `R` | `any` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `data` | `I` | raw data |
+
+#### Returns
+
+`R`
+
+formatted data
+
+**`Example`**
+
+Formatting data
+```typescript
+formatter.format(naiObject);
+```
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:105
+
+___
+
+### waxify
+
+▸ **waxify**(`strings`, `...args`): `string`
 
 Formats given text based on arguments structure
 
@@ -7295,16 +7491,18 @@ Formats given text based on arguments structure
 
 `string`
 
+formatted data
+
 **`Example`**
 
 Formatting data
 ```typescript
-format`Hello, ${"alice"}! My account value is ${naiObject}`
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:89
+wasm/lib/detailed/formatters/types.ts:91
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>

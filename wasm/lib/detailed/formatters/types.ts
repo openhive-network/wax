@@ -81,12 +81,28 @@ export interface IWaxFormatter {
    * @param {TemplateStringsArray} strings raw strings
    * @param {unknown[]} args arguments to be parsed using custom wax formatters
    *
+   * @returns {string} formatted data
+   *
    * @example Formatting data
    * ```typescript
-   * format`Hello, ${"alice"}! My account value is ${naiObject}`
+   * formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
    * ```
    */
-  format(strings: TemplateStringsArray, ...args: unknown[]): string;
+  waxify(strings: TemplateStringsArray, ...args: unknown[]): string;
+
+  /**
+   * Formats given data based on formatter options
+   *
+   * @param {I} data raw data
+   *
+   * @returns {R} formatted data
+   *
+   * @example Formatting data
+   * ```typescript
+   * formatter.format(naiObject);
+   * ```
+   */
+  format<I = any, R = any>(data: I): R;
 
   /**
    * Options for the formatter

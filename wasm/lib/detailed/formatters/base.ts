@@ -37,9 +37,9 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
     }
   }
 
-  private formatParser(value: unknown): string {
+  private rawDataParser(value: unknown): any {
     if(typeof value !== "object")
-      return String(value);
+      return value;
 
     const source = structuredClone(value) as object;
 
@@ -49,15 +49,28 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
       const result = this.handleProperty(source, value, key);
 
       if(typeof result === "object")
-        return JSON.stringify(result);
+        return result;
       else if(typeof result !== "undefined")
-        return String(result);
+        return result;
     }
 
-    return JSON.stringify(value);
+    return value;
   }
 
-  public format(strings: TemplateStringsArray, ...args: unknown[]): string {
+  private formatParser(value: unknown): string {
+    const result = this.rawDataParser(value);
+
+    if(typeof result === "object")
+      return JSON.stringify(result);
+
+    return String(result);
+  }
+
+  public format<I = any, R = any>(data: I): R {
+    return this.rawDataParser(data);
+  }
+
+  public waxify(strings: TemplateStringsArray, ...args: unknown[]): string {
     return strings.reduce((prev: string, curr: string, index: number) => {
       return prev + curr + (index in args ? this.formatParser(args[index]) : "");
     }, "");

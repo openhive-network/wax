@@ -353,7 +353,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
 
   readonly formatter: IWaxExtendableFormatter;
-  readonly waxify: IWaxExtendableFormatter['format'];
+  readonly waxify: IWaxExtendableFormatter['waxify'];
 
   readonly api: Readonly<IHiveApi>;
 }

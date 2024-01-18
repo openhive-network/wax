@@ -39,8 +39,24 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
     const formatter = chain.formatter.extend({ transaction: { displayAsId: false } });
 
     expect(
-      formatter.format`Tx: ${tx}`
-    ).toBe("Tx: {\"ref_block_num\":1959,\"ref_block_prefix\":3625727107,\"expiration\":\"2023-11-09T22:01:24\",\"operations\":[{\"type\":\"transfer_operation\",\"value\":{\"from\":\"oneplus7\",\"to\":\"kryptogames\",\"amount\":\"300.000 HIVE\",\"memo\":\"Roll under 50 4d434bd943616\"}}],\"extensions\":[]}");
+      formatter.format(tx)
+    ).toStrictEqual({
+      ref_block_num: 1959,
+      ref_block_prefix: 3625727107,
+      expiration: "2023-11-09T22:01:24",
+      operations: [
+        {
+          type: "transfer_operation",
+          value: {
+            from: "oneplus7",
+            to: "kryptogames",
+            amount: "300.000 HIVE", // !! Amount formatted
+            memo: "Roll under 50 4d434bd943616"
+          }
+        }
+      ],
+      extensions: []
+    });
   });
 
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
@@ -57,7 +73,7 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
     };
 
     expect(
-      formatter.format`MyData: ${data}`
+      formatter.waxify`MyData: ${data}`
     ).toBe("MyData: 12542");
   });
 });

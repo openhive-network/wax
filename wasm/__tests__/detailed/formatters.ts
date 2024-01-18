@@ -52,6 +52,36 @@ test.describe('Wax object interface formatters tests', () => {
     expect(retVal).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
   });
 
+  test('Should be able to extend formatter with custom options from hive chain interface', async({ page }) => {
+    const retVal = await page.evaluate((serialization_sensitive_transaction) => {
+      const tx = JSON.parse(serialization_sensitive_transaction);
+
+      const formatter = chain.formatter.extend({ transaction: { displayAsId: false } });
+
+      return formatter.format(tx)
+    }, serialization_sensitive_transaction);
+
+    expect(
+      retVal
+    ).toStrictEqual({
+      ref_block_num: 1959,
+      ref_block_prefix: 3625727107,
+      expiration: "2023-11-09T22:01:24",
+      operations: [
+        {
+          type: "transfer_operation",
+          value: {
+            from: "oneplus7",
+            to: "kryptogames",
+            amount: "300.000 HIVE", // !! Amount formatted
+            memo: "Roll under 50 4d434bd943616"
+          }
+        }
+      ],
+      extensions: []
+    });
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
