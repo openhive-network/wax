@@ -228,7 +228,7 @@ fc::variants parse_api_extensions(const fc::variant& ex)
       extension.get_object().contains("type") &&
       extension.get_object()["type"].is_string() &&
       extension.get_object().contains("value") &&
-      (extension.get_object()["value"].is_object() || extension.get_object()["value"].is_string()), "Not a valid api operation extension");
+      (extension.get_object()["value"].is_object() || extension.get_object()["value"].is_string()), "Not a valid api operation extension", (ex));
 
     std::string key = extension.get_object()["type"].get_string();
     result.emplace_back(std::move(fc::mutable_variant_object{ key, extension.get_object()["value"] }));
@@ -384,7 +384,7 @@ fc::mutable_variant_object parse_api_operation(const fc::variant& op)
     op.get_object().contains("type") &&
     op.get_object()["type"].is_string() &&
     op.get_object().contains("value") &&
-    op.get_object()["value"].is_object(), "Not a valid api operation");
+    op.get_object()["value"].is_object(), "Not a valid api operation", (op));
 
   std::string key = op.get_object()["type"].get_string();
   key.resize(key.size() - 10 /*strlen("_operation")*/);
