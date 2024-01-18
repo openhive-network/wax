@@ -6,7 +6,13 @@ export const calculateExpiration = (expirationTime?: number | string | Date): Da
     return;
 
   let expiration: Date;
-  if(typeof expirationTime === 'string' && expirationTime[0] === '+') {
+  if(typeof expirationTime === 'string') {
+    if(expirationTime[0] !== "+")
+      if(expirationTime.endsWith('Z'))
+        return new Date(expirationTime);
+      else
+        return new Date(`${expirationTime}Z`);
+
     let mul = 1000;
 
     switch(expirationTime[expirationTime.length - 1])
