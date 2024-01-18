@@ -155,6 +155,38 @@
 
 ## Type Aliases
 
+### DeepPartial
+
+Ƭ **DeepPartial**\<`T`\>: `T` extends `object` ? \{ [P in keyof T]?: DeepPartial\<T[P]\> } : `T`
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:5
+
+___
+
+### DeepReadonly
+
+Ƭ **DeepReadonly**\<`T`\>: `T` extends infer R[] ? `DeepReadonlyArray`\<`R`\> : `T` extends `Function` ? `T` : `T` extends `object` ? `DeepReadonlyObject`\<`T`\> : `T`
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:9
+
+___
+
 ### TBlockHash
 
 Ƭ **TBlockHash**: `ArrayBuffer` \| `Uint8Array` \| `Uint8ClampedArray` \| `Int8Array` \| `string`
@@ -171,25 +203,50 @@ ___
 
 ### TFormatFunction
 
-Ƭ **TFormatFunction**: (`value`: `object`) => `string` \| `undefined`
+Ƭ **TFormatFunction**: (`source`: [`DeepReadonly`](#deepreadonly)\<`object`\>, `target`: `object`) => `string` \| `any`
 
 #### Type declaration
 
-▸ (`value`): `string` \| `undefined`
+▸ (`source`, `target`): `string` \| `any`
+
+Formatter function that receives input value for the matched property and returns the formatted output
+Remember that this function takes two arguments. The first one is for data parsing, e.g. for transactions
+parsing using [["fromApi"]](interfaces/ITransactionBuilderConstructor.md). That data should mantain immutable.
+
+The second argument is the target working argument which should be returned from the formatter function
+if your options specify to ignore given formatting.
 
 ##### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `value` | `object` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `source` | [`DeepReadonly`](#deepreadonly)\<`object`\> | readonly unchanged input value for parsing raw data |
+| `target` | `object` | formatter data that might have been previously changed by other formatters |
 
 ##### Returns
 
-`string` \| `undefined`
+`string` \| `any`
+
+desired formatted output data
+
+**`Example`**
+
+Default formatter for transaction
+```typescript
+;@WaxFormatable({ matchProperty: "operations" })
+public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object): string | object {
+  if(!this.options.transaction.displayAsId)
+    return target;
+
+  const { id } = this.wax.TransactionBuilder.fromApi(source);
+
+  return id;
+}
+```
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:37
+wasm/lib/detailed/formatters/types.ts:72
 
 ___
 
@@ -251,7 +308,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:63
+wasm/lib/detailed/formatters/types.ts:101
 
 ___
 
@@ -2521,8 +2578,9 @@ When no options provided, method name is used for property matching
 
 **`Example`**
 
-```ts
-@WaxFormatable()
+Simple wax decorator usage
+```typescript
+;@WaxFormatable()
 public prop(value: Date): string {
   return value.toString();
 }
@@ -2530,7 +2588,7 @@ public prop(value: Date): string {
 
 #### Defined in
 
-wasm/lib/detailed/decorators/formatters.ts:20
+wasm/lib/detailed/decorators/formatters.ts:22
 
 ___
 
@@ -5890,6 +5948,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | `options?` | `Object` | - |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
 | `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
 
@@ -5931,7 +5990,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:11
+wasm/lib/detailed/formatters/base.ts:14
 
 ___
 
@@ -5955,10 +6014,11 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatteres?`: `boolean`  } | constructable formatter object |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatteres?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
 | `options?` | `Object` | formatter options |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
 | `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
 
@@ -5995,7 +6055,8 @@ Formats given text based on arguments structure
 
 **`Example`**
 
-```ts
+Formatting data
+```typescript
 format`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
@@ -6009,7 +6070,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:37
+wasm/lib/detailed/formatters/base.ts:60
 
 ___
 
@@ -6058,6 +6119,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | `options?` | `Object` | - |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
 | `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
 
@@ -6065,7 +6127,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:13
+wasm/lib/detailed/formatters/base.ts:16
 
 ## Properties
 
@@ -6081,7 +6143,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:11
+wasm/lib/detailed/formatters/base.ts:14
 
 ## Methods
 
@@ -6104,7 +6166,8 @@ Formats given text based on arguments structure
 
 **`Example`**
 
-```ts
+Formatting data
+```typescript
 format`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
@@ -6114,7 +6177,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:37
+wasm/lib/detailed/formatters/base.ts:60
 
 ___
 
@@ -6134,18 +6197,19 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:23
+wasm/lib/detailed/formatters/base.ts:40
 
 ___
 
 ### handleProperty
 
-▸ **handleProperty**(`target`, `property`): `undefined` \| `string`
+▸ **handleProperty**(`source`, `target`, `property`): `undefined` \| `string`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
+| `source` | `object` |
 | `target` | `object` |
 | `property` | `string` |
 
@@ -6155,7 +6219,30 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:21
+wasm/lib/detailed/formatters/base.ts:24
+
+___
+
+### traverseTemplateValue
+
+▸ **traverseTemplateValue**(`source`, `target`, `key`, `value`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `source` | `object` |
+| `target` | `object` |
+| `key` | `string` \| `number` |
+| `value` | `any` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/base.ts:26
 
 
 <a name="enumsemanabartypemd"></a>
@@ -6289,7 +6376,8 @@ Formats given text based on arguments structure
 
 **`Example`**
 
-```ts
+Formatting data
+```typescript
 format`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
@@ -7078,7 +7166,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:56
+wasm/lib/detailed/formatters/types.ts:94
 
 ## Methods
 
@@ -7103,7 +7191,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:82
+wasm/lib/detailed/formatters/types.ts:120
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -7123,7 +7211,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:90
+wasm/lib/detailed/formatters/types.ts:128
 
 ___
 
@@ -7146,7 +7234,8 @@ Formats given text based on arguments structure
 
 **`Example`**
 
-```ts
+Formatting data
+```typescript
 format`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
@@ -7156,7 +7245,7 @@ format`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:51
+wasm/lib/detailed/formatters/types.ts:89
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -7185,7 +7274,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:56
+wasm/lib/detailed/formatters/types.ts:94
 
 ## Methods
 
@@ -7208,13 +7297,14 @@ Formats given text based on arguments structure
 
 **`Example`**
 
-```ts
+Formatting data
+```typescript
 format`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:51
+wasm/lib/detailed/formatters/types.ts:89
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -7235,7 +7325,7 @@ wasm/lib/detailed/formatters/types.ts:51
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:21
+wasm/lib/detailed/formatters/types.ts:22
 
 ___
 
@@ -7253,7 +7343,23 @@ true
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:34
+wasm/lib/detailed/formatters/types.ts:43
+
+___
+
+### transaction
+
+• **transaction**: `Object`
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `displayAsId` | `boolean` | Displays transactiona as its id (new format) instead of an object **`Default`** ```ts true ``` |
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:30
 
 
 <a name="interfacesiwaxoptionsmd"></a>

@@ -1,11 +1,12 @@
 import type { IWaxBaseInterface } from "../../interfaces";
 import type { WaxFormatable } from "../decorators/formatters";
+import type { ITransactionBuilderConstructor } from "../../interfaces";
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
 } : T;
 
-type DeepReadonly<T> =
+export type DeepReadonly<T> =
     T extends (infer R)[] ? DeepReadonlyArray<R> :
     T extends Function ? T :
     T extends object ? DeepReadonlyObject<T> :
@@ -26,6 +27,14 @@ export interface IWaxFormatterOptions {
      */
     appendTokenName: boolean;
   };
+  transaction: {
+    /**
+     * Displays transactiona as its id (new format) instead of an object
+     *
+     * @default true
+     */
+    displayAsId: boolean;
+  };
   /**
    * Initializes formatter class with default wax formatters
    *
@@ -34,7 +43,33 @@ export interface IWaxFormatterOptions {
   createDefaultFormatteres: boolean;
 }
 
-export type TFormatFunction = (value: object) => (string | undefined);
+/**
+ * Formatter function that receives input value for the matched property and returns the formatted output
+ * Remember that this function takes two arguments. The first one is for data parsing, e.g. for transactions
+ * parsing using {@link ITransactionBuilderConstructor["fromApi"]}. That data should mantain immutable.
+ *
+ * The second argument is the target working argument which should be returned from the formatter function
+ * if your options specify to ignore given formatting.
+ *
+ * @param {DeepReadonly<object>} source readonly unchanged input value for parsing raw data
+ * @param {object} target formatter data that might have been previously changed by other formatters
+ *
+ * @returns {string | any} desired formatted output data
+ *
+ * @example Default formatter for transaction
+ * ```typescript
+ * ;@WaxFormatable({ matchProperty: "operations" })
+ * public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object): string | object {
+ *   if(!this.options.transaction.displayAsId)
+ *     return target;
+ *
+ *   const { id } = this.wax.TransactionBuilder.fromApi(source);
+ *
+ *   return id;
+ * }
+ * ```
+ */
+export type TFormatFunction = (source: DeepReadonly<object>, target: object) => (string | any);
 
 /**
  * Classes implementing this interface denote that they are ready to handle tagged templates
@@ -46,7 +81,10 @@ export interface IWaxFormatter {
    * @param {TemplateStringsArray} strings raw strings
    * @param {unknown[]} args arguments to be parsed using custom wax formatters
    *
-   * @example format`Hello, ${"alice"}! My account value is ${naiObject}`
+   * @example Formatting data
+   * ```typescript
+   * format`Hello, ${"alice"}! My account value is ${naiObject}`
+   * ```
    */
   format(strings: TemplateStringsArray, ...args: unknown[]): string;
 

@@ -4,6 +4,9 @@ export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
     appendTokenName: true
   },
+  transaction: {
+    displayAsId: true
+  },
   createDefaultFormatteres: true
 };
 
@@ -18,17 +21,37 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
         this.options[prop] = options?.[prop] ?? DEFAULT_FORMATTER_OPTIONS[prop];
   }
 
-  public abstract handleProperty(target: object, property: string): string | undefined;
+  public abstract handleProperty(source: object, target: object, property: string): string | undefined;
+
+  private traverseTemplateValue(source: object, target: object, key: string | number, value: any): void {
+    if(typeof value !== "object")
+      return;
+
+    for (const childKey in value) {
+      this.traverseTemplateValue(source[key], value, childKey, value[childKey]);
+
+      const result = this.handleProperty(source[key], value, childKey);
+
+      if(typeof result !== "undefined")
+        target[key] = result;
+    }
+  }
 
   private formatParser(value: unknown): string {
     if(typeof value !== "object")
       return String(value);
 
-    for(const key in value) {
-      const result = this.handleProperty(value, key);
+    const source = structuredClone(value) as object;
 
-      if(typeof result === "string")
-        return result;
+    for(const key in value) {
+      this.traverseTemplateValue(source, value, key, value[key]);
+
+      const result = this.handleProperty(source, value, key);
+
+      if(typeof result === "object")
+        return JSON.stringify(result);
+      else if(typeof result !== "undefined")
+        return String(result);
     }
 
     return JSON.stringify(value);

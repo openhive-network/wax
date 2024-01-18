@@ -11,11 +11,13 @@ type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: Pro
  * @param {?(IWaxFormatterDecoratorOptions | string)} options property to match or decorator options
  * @returns {TWaxFormatterDecorator}
  *
- * @example
- * @WaxFormatable()
+ * @example Simple wax decorator usage
+ * ```typescript
+ * ;@WaxFormatable()
  * public prop(value: Date): string {
  *   return value.toString();
  * }
+ * ```
  */
 export const WaxFormatable = (options?: IWaxFormatterDecoratorOptions | string): TWaxFormatterDecorator => {
   if(typeof options === "string")
