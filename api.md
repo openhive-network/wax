@@ -233,7 +233,7 @@ desired formatted output data
 
 Default formatter for transaction
 ```typescript
-;@WaxFormatable({ matchProperty: "operations" })
+;@WaxFormattable({ matchProperty: "operations" })
 public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object): string | object {
   if(!this.options.transaction.displayAsId)
     return target;
@@ -2559,9 +2559,9 @@ wasm/lib/proto/witness_update.ts:36
 
 ## Functions
 
-### WaxFormatable
+### WaxFormattable
 
-▸ **WaxFormatable**(`options?`): `TWaxFormatterDecorator`
+▸ **WaxFormattable**(`options?`): `TWaxFormatterDecorator`
 
 When used on method, marks that this method is intended to be used for wax formatting with given property matching.
 When no options provided, method name is used for property matching
@@ -2580,7 +2580,7 @@ When no options provided, method name is used for property matching
 
 Simple wax decorator usage
 ```typescript
-;@WaxFormatable()
+;@WaxFormattable()
 public prop(value: Date): string {
   return value.toString();
 }
@@ -6008,7 +6008,7 @@ wasm/lib/detailed/formatters/waxify.ts:11
 
 ▸ **extend**(`formatterConstructor`, `options?`): [`WaxFormatter`](#classeswaxformattermd)
 
-Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
+Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormattable](#waxformattable)
 
 #### Parameters
 
@@ -7288,7 +7288,7 @@ wasm/lib/detailed/formatters/types.ts:110
 
 ▸ **extend**(`formatterConstructor`, `options?`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
-Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormatable](#waxformatable)
+Allows users to extend the default wax formatter using custom user-defined formatters with [WaxFormattable](#waxformattable)
 
 #### Parameters
 

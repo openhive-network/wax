@@ -1,4 +1,4 @@
-export { WaxFormatable } from "../decorators/formatters.js";
+export { WaxFormattable } from "../decorators/formatters.js";
 
 export {
   IWaxCustomFormatter, IWaxFormatter, IWaxFormatterOptions,

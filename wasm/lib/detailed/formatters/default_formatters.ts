@@ -2,7 +2,7 @@ import type { ApiTransaction, NaiAsset } from "../api";
 import type { IWaxCustomFormatter, IWaxFormatterOptions } from "./types";
 import type { IWaxBaseInterface } from "../../interfaces";
 
-import { WaxFormatable } from "../decorators/formatters";
+import { WaxFormattable } from "../decorators/formatters";
 import { DeepReadonly } from "./types";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
@@ -11,7 +11,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     private readonly wax: IWaxBaseInterface
   ) {}
 
-  @WaxFormatable({ matchProperty: "nai" })
+  @WaxFormattable({ matchProperty: "nai" })
   public assetFormatter(source: DeepReadonly<NaiAsset>): string {
     const { amount, symbol } = this.wax.getAsset(source);
 
@@ -21,7 +21,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     return amount;
   }
 
-  @WaxFormatable({ matchProperty: "operations" })
+  @WaxFormattable({ matchProperty: "operations" })
   public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object): string | object {
     if(!this.options.transaction.displayAsId)
       return target;

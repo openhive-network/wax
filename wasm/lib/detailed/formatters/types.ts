@@ -1,5 +1,5 @@
 import type { IWaxBaseInterface } from "../../interfaces";
-import type { WaxFormatable } from "../decorators/formatters";
+import type { WaxFormattable } from "../decorators/formatters";
 import type { ITransactionBuilderConstructor } from "../../interfaces";
 
 export type DeepPartial<T> = T extends object ? {
@@ -58,7 +58,7 @@ export interface IWaxFormatterOptions {
  *
  * @example Default formatter for transaction
  * ```typescript
- * ;@WaxFormatable({ matchProperty: "operations" })
+ * ;@WaxFormattable({ matchProperty: "operations" })
  * public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object): string | object {
  *   if(!this.options.transaction.displayAsId)
  *     return target;
@@ -127,7 +127,7 @@ export type TWaxCustomFormatterConstructor = ({
  */
 export interface IWaxExtendableFormatter extends IWaxFormatter {
   /**
-   * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormatable}
+   * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormattable}
    *
    * @param {TWaxCustomFormatterConstructor} formatterConstructor constructable formatter object
    * @param {?Partial<IWaxFormatterOptions>} options formatter options

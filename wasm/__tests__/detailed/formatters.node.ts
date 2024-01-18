@@ -3,7 +3,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 
 import { naiAsset, serialization_sensitive_transaction } from "../assets/data.protocol";
 
-import { createHiveChain, IHiveChainInterface, WaxFormatable } from "../../dist/bundle/node";
+import { createHiveChain, IHiveChainInterface, WaxFormattable } from "../../dist/bundle/node";
 
 import fs from "fs";
 
@@ -61,7 +61,7 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
 
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
     class MyFormatters {
-      @WaxFormatable()
+      @WaxFormattable()
       myCustomProp(value) {
         return value.myCustomProp.toString();
       }

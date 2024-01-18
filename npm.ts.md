@@ -79,11 +79,11 @@ console.info(chain.waxify`${stx}`);
 #### Use hive chain interface and custom formatters to output data in specified format
 
 ```ts
-import { createHiveChain, WaxFormatable } from '@hiveio/wax';
+import { createHiveChain, WaxFormattable } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 class MyFormatters { // Define custom formatters class
-  @WaxFormatable() // Match this method as `myCustomProp` custom formatter
+  @WaxFormattable() // Match this method as `myCustomProp` custom formatter
   myCustomProp(value) {
     return value.myCustomProp.toString();
   }
