@@ -52,7 +52,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   /**
    * @internal
    */
-  public handleProperty(source: object, target: object, property: string): string | undefined {
+  protected handleProperty(source: object, target: object, property: string): string | undefined {
     const matched = this.matchers.get(property);
 
     return matched?.(source, target);

@@ -21,7 +21,7 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
         this.options[prop] = options?.[prop] ?? DEFAULT_FORMATTER_OPTIONS[prop];
   }
 
-  public abstract handleProperty(source: object, target: object, property: string): string | undefined;
+  protected abstract handleProperty(source: object, target: object, property: string): string | undefined;
 
   private traverseTemplateValue(source: object, target: object, key: string | number, value: any): void {
     if(typeof value !== "object")
