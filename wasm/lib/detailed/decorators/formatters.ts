@@ -1,5 +1,18 @@
 export interface IWaxFormatterDecoratorOptions {
+  /**
+   * Property to match. If not specified defaults to the formatter method name
+   *
+   * @type {?string}
+   */
   matchProperty?: string;
+
+  /**
+   * Optional value to match on the property.
+   * Note: uses strict equality for value checking (`===`)
+   *
+   * @type {?any}
+   */
+  matchValue?: any;
 }
 
 type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
@@ -26,8 +39,12 @@ export const WaxFormattable = (options?: IWaxFormatterDecoratorOptions | string)
     };
 
   return (target: any, propertyKey: string, _descriptor: PropertyDescriptor): void => {
-    const matchProperty = (options as IWaxFormatterDecoratorOptions)?.matchProperty ?? propertyKey;
+    const matchProperty = (options as IWaxFormatterDecoratorOptions | undefined)?.matchProperty ?? propertyKey;
+    const matchValue = (options as IWaxFormatterDecoratorOptions | undefined)?.matchValue as any | undefined;
 
     Reflect.defineMetadata("wax:formatter:prop", matchProperty, target, propertyKey);
+
+    if(typeof matchValue !== "undefined")
+      Reflect.defineMetadata("wax:formatter:propvalue", matchValue, target, propertyKey);
   };
 };

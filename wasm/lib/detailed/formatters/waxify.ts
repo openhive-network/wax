@@ -4,8 +4,16 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
 
+export interface IMatchersData {
+  matchValues: Map<string, TFormatFunction>;
+  proxy: Record<string, TFormatFunction> & {
+    default: TFormatFunction;
+    matchValues: Map<string, TFormatFunction>;
+  };
+}
+
 export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
-  private matchers: Map<string, TFormatFunction> = new Map();
+  private matchers: Map<string, IMatchersData> = new Map();
 
   public constructor(
     protected readonly wax: IWaxBaseInterface,
@@ -22,7 +30,11 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
    * that the base types are defined for properties handling
    */
   public init(): WaxFormatter {
-    return this.extend(DefaultFormatters);
+    const formatter = this.extend(DefaultFormatters);
+
+    this.matchers = formatter.matchers;
+
+    return formatter;
   }
 
   public extend(formatterConstructor: TWaxCustomFormatterConstructor | DeepPartial<IWaxFormatterOptions>, options?: DeepPartial<IWaxFormatterOptions>): WaxFormatter {
@@ -41,9 +53,46 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
 
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
       const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
+      const matchedPropertyValue = Reflect.getMetadata("wax:formatter:propvalue", formatter, key) as any | undefined;
 
-      if(typeof matchedProperty === "string")
-        newFormatter.matchers.set(matchedProperty, formatter[key].bind(formatter));
+      if(typeof matchedProperty === "string") {
+        const matched = newFormatter.matchers.get(matchedProperty);
+
+        const overrideFormatterForMatcher = () => {
+          const matchValues = new Map();
+
+          return newFormatter.matchers.set(
+            matchedProperty,
+            {
+              matchValues,
+              proxy: new Proxy({
+                matchValues,
+                default: formatter[key].bind(formatter),
+              }, {
+                get(target: IMatchersData["proxy"], prop: string): TFormatFunction | undefined {
+                  const valueToMatch = target.matchValues.get(prop);
+
+                  if(typeof valueToMatch === "undefined")
+                    return target.default;
+
+                  return valueToMatch;
+                }
+              }) as IMatchersData["proxy"]
+            }
+          );
+        };
+
+        if(typeof matched === "undefined") {
+          overrideFormatterForMatcher();
+
+          if(typeof matchedPropertyValue !== "undefined")
+            newFormatter.matchers.get(matchedProperty)!.matchValues.set(matchedPropertyValue, formatter[key].bind(formatter));
+        } else if(typeof matchedPropertyValue !== "undefined")
+          matched!.matchValues.set(matchedPropertyValue, formatter[key].bind(formatter));
+        else
+          overrideFormatterForMatcher();
+      }
+
     }
 
     return newFormatter;
@@ -55,6 +104,6 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   protected handleProperty(source: object, target: object, property: string): string | undefined {
     const matched = this.matchers.get(property);
 
-    return matched?.(source, target);
+    return matched?.proxy[source[property]](source, target);
   }
 }

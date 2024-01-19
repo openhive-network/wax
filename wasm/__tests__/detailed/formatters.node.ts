@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 
-import { naiAsset, serialization_sensitive_transaction } from "../assets/data.protocol";
+import { naiAsset, serialization_sensitive_transaction, transfer_operation, vote_operation } from "../assets/data.protocol";
 
 import { createHiveChain, IHiveChainInterface, WaxFormattable } from "../../dist/bundle/node";
 
@@ -75,5 +75,30 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
     expect(
       formatter.waxify`MyData: ${data}`
     ).toBe("MyData: 12542");
+  });
+
+  test('Should be able to match values on properties using custom formatters extended from hive chain interface', () => {
+    class OperationsFormatter {
+      @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
+      public transferOperationFormatter(source: any): string {
+        return `${source.value.from} transferred ${chain.waxify`${source.value.amount!}`} to ${source.value.to}`;
+      }
+
+      @WaxFormattable({ matchProperty: "type", matchValue: "vote_operation" })
+      public voteOperationFormatter(source: any): string {
+        return `${source.value.voter} voted on @${source.value.author}/${source.value.permlink}`;
+      }
+    }
+
+    const formatter = chain.formatter.extend(OperationsFormatter);
+
+    const ops = [ transfer_operation, vote_operation ];
+
+    expect(
+      formatter.format(ops)
+    ).toStrictEqual([
+      "oneplus7 transferred 300.000 HIVE to kryptogames",
+      "otom voted on @c0ff33a/ewxhnjbj"
+    ]);
   });
 });

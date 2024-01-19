@@ -32,6 +32,16 @@ export const vote_operation = {
   }
 };
 
+export const transfer_operation = {
+  type: "transfer_operation",
+  value: {
+    from: "oneplus7",
+    to: "kryptogames",
+    amount: naiAsset,
+    memo: "Roll under 50 4d434bd943616"
+  }
+};
+
 export const transaction = JSON.stringify({
   ref_block_num: 34559,
   ref_block_prefix: 1271006404,
@@ -47,15 +57,7 @@ export const serialization_sensitive_transaction = JSON.stringify({
   ref_block_prefix: 3625727107,
   expiration: "2023-11-09T22:01:24",
   operations: [
-    {
-      type: "transfer_operation",
-      value: {
-        from: "oneplus7",
-        to: "kryptogames",
-        amount: naiAsset,
-        memo: "Roll under 50 4d434bd943616"
-      }
-    }
+    transfer_operation
   ],
   extensions: []
 });

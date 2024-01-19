@@ -2588,7 +2588,7 @@ public prop(value: Date): string {
 
 #### Defined in
 
-wasm/lib/detailed/decorators/formatters.ts:22
+wasm/lib/detailed/decorators/formatters.ts:35
 
 ___
 
@@ -5960,17 +5960,17 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:10
+wasm/lib/detailed/formatters/waxify.ts:18
 
 ## Properties
 
 ### matchers
 
-• `Private` **matchers**: `Map`\<`string`, [`TFormatFunction`](#tformatfunction)\>
+• `Private` **matchers**: `Map`\<`string`, `IMatchersData`\>
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:8
+wasm/lib/detailed/formatters/waxify.ts:16
 
 ___
 
@@ -6000,7 +6000,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:11
+wasm/lib/detailed/formatters/waxify.ts:19
 
 ## Methods
 
@@ -6032,7 +6032,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:28
+wasm/lib/detailed/formatters/waxify.ts:40
 
 ___
 
@@ -6095,7 +6095,7 @@ that the base types are defined for properties handling
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:24
+wasm/lib/detailed/formatters/waxify.ts:32
 
 ___
 
