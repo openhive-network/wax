@@ -62,8 +62,8 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
     class MyFormatters {
       @WaxFormattable()
-      myCustomProp(value) {
-        return value.myCustomProp.toString();
+      myCustomProp({ source }) {
+        return source.myCustomProp.toString();
       }
     }
 
@@ -80,12 +80,12 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
   test('Should be able to match values on properties using custom formatters extended from hive chain interface', () => {
     class OperationsFormatter {
       @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
-      public transferOperationFormatter(source: any): string {
+      public transferOperationFormatter({ source }): string {
         return `${source.value.from} transferred ${chain.waxify`${source.value.amount!}`} to ${source.value.to}`;
       }
 
       @WaxFormattable({ matchProperty: "type", matchValue: "vote_operation" })
-      public voteOperationFormatter(source: any): string {
+      public voteOperationFormatter({ source }): string {
         return `${source.value.voter} voted on @${source.value.author}/${source.value.permlink}`;
       }
     }

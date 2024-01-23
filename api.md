@@ -43,6 +43,7 @@
 
 ## Interfaces
 
+- [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [IManabarData](#interfacesimanabardatamd)
@@ -203,11 +204,17 @@ ___
 
 ### TFormatFunction
 
-Ƭ **TFormatFunction**: (`source`: [`DeepReadonly`](#deepreadonly)\<`object`\>, `target`: `object`) => `string` \| `any`
+Ƭ **TFormatFunction**\<`T`\>: (`args`: [`IFormatFunctionArguments`](#interfacesiformatfunctionargumentsmd)\<`T`\>) => `string` \| `any`
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `T` | `object` |
 
 #### Type declaration
 
-▸ (`source`, `target`): `string` \| `any`
+▸ (`args`): `string` \| `any`
 
 Formatter function that receives input value for the matched property and returns the formatted output
 Remember that this function takes two arguments. The first one is for data parsing, e.g. for transactions
@@ -220,8 +227,7 @@ if your options specify to ignore given formatting.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `source` | [`DeepReadonly`](#deepreadonly)\<`object`\> | readonly unchanged input value for parsing raw data |
-| `target` | `object` | formatter data that might have been previously changed by other formatters |
+| `args` | [`IFormatFunctionArguments`](#interfacesiformatfunctionargumentsmd)\<`T`\> | formatter function arguments |
 
 ##### Returns
 
@@ -246,7 +252,7 @@ public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:72
+wasm/lib/detailed/formatters/types.ts:96
 
 ___
 
@@ -304,11 +310,11 @@ ___
 
 ### TWaxCustomFormatterConstructor
 
-Ƭ **TWaxCustomFormatterConstructor**: (`options`: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd), `wax`: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)) => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd) \| (`options`: [`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)) => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd) \| () => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd)
+Ƭ **TWaxCustomFormatterConstructor**: (`wax`: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)) => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd) \| () => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd)
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:117
+wasm/lib/detailed/formatters/types.ts:141
 
 ___
 
@@ -5947,7 +5953,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
 | `options?` | `Object` | - |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
-| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
@@ -5960,7 +5966,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:18
+wasm/lib/detailed/formatters/waxify.ts:15
 
 ## Properties
 
@@ -5970,7 +5976,7 @@ wasm/lib/detailed/formatters/waxify.ts:18
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:16
+wasm/lib/detailed/formatters/waxify.ts:13
 
 ___
 
@@ -6000,9 +6006,29 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:19
+wasm/lib/detailed/formatters/waxify.ts:16
 
 ## Methods
+
+### cloneMatchersTo
+
+▸ **cloneMatchersTo**(`instance`): `void`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `instance` | [`WaxFormatter`](#classeswaxformattermd) |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:34
+
+___
 
 ### extend
 
@@ -6014,10 +6040,10 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatteres?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
 | `options?` | `Object` | formatter options |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
-| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
@@ -6032,7 +6058,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:40
+wasm/lib/detailed/formatters/waxify.ts:42
 
 ___
 
@@ -6082,23 +6108,6 @@ wasm/lib/detailed/formatters/base.ts:69
 
 ___
 
-### init
-
-▸ **init**(): [`WaxFormatter`](#classeswaxformattermd)
-
-Initializes the internal [matchers](#matchers) map and ensures
-that the base types are defined for properties handling
-
-#### Returns
-
-[`WaxFormatter`](#classeswaxformattermd)
-
-#### Defined in
-
-wasm/lib/detailed/formatters/waxify.ts:32
-
-___
-
 ### waxify
 
 ▸ **waxify**(`strings`, `...args`): `string`
@@ -6137,6 +6146,30 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 wasm/lib/detailed/formatters/base.ts:73
 
+___
+
+### create
+
+▸ **create**(`wax`, `options?`): [`WaxFormatter`](#classeswaxformattermd)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
+| `options?` | `Object` | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
+
+#### Returns
+
+[`WaxFormatter`](#classeswaxformattermd)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:22
+
 
 <a name="classeswaxformatterbasemd"></a>
 
@@ -6166,7 +6199,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | :------ | :------ | :------ |
 | `options?` | `Object` | - |
 | `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
-| `options.createDefaultFormatteres?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
+| `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
 #### Returns
@@ -6390,6 +6423,53 @@ ___
 #### Defined in
 
 wasm/lib/detailed/chain_api.ts:17
+
+
+<a name="interfacesiformatfunctionargumentsmd"></a>
+
+# Interface: IFormatFunctionArguments\<T\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `T` | `object` |
+
+## Properties
+
+### options
+
+• `Readonly` **options**: `DeepReadonlyObject`\<[`IWaxFormatterOptions`](#interfacesiwaxformatteroptionsmd)\>
+
+Formatter options
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:53
+
+___
+
+### source
+
+• `Readonly` **source**: [`DeepReadonly`](#deepreadonly)\<`T`\>
+
+Source readonly unchanged input value for parsing raw data
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:61
+
+___
+
+### target
+
+• **target**: `any`
+
+Target formatter data that might have been previously changed by other formatters
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:68
 
 
 <a name="interfacesihiveassetdatamd"></a>
@@ -7280,7 +7360,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:110
+wasm/lib/detailed/formatters/types.ts:134
 
 ## Methods
 
@@ -7305,7 +7385,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:136
+wasm/lib/detailed/formatters/types.ts:158
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -7325,7 +7405,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:144
+wasm/lib/detailed/formatters/types.ts:166
 
 ___
 
@@ -7367,7 +7447,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:105
+wasm/lib/detailed/formatters/types.ts:129
 
 ___
 
@@ -7403,7 +7483,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:91
+wasm/lib/detailed/formatters/types.ts:115
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -7432,7 +7512,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:110
+wasm/lib/detailed/formatters/types.ts:134
 
 ## Methods
 
@@ -7470,7 +7550,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:105
+wasm/lib/detailed/formatters/types.ts:129
 
 ___
 
@@ -7502,7 +7582,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:91
+wasm/lib/detailed/formatters/types.ts:115
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -7527,9 +7607,9 @@ wasm/lib/detailed/formatters/types.ts:22
 
 ___
 
-### createDefaultFormatteres
+### createDefaultFormatters
 
-• **createDefaultFormatteres**: `boolean`
+• **createDefaultFormatters**: `boolean`
 
 Initializes formatter class with default wax formatters
 

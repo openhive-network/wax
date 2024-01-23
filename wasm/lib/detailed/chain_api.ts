@@ -24,7 +24,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   private localTypes = HiveApiTypes;
 
-  public readonly formatter = new WaxFormatter(this).init();
+  public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
     return this.formatter.waxify.bind(this.formatter);
   }

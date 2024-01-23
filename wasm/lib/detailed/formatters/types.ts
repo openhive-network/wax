@@ -40,7 +40,32 @@ export interface IWaxFormatterOptions {
    *
    * @default true
    */
-  createDefaultFormatteres: boolean;
+  createDefaultFormatters: boolean;
+}
+
+export interface IFormatFunctionArguments<T = object> {
+  /**
+   * Formatter options
+   *
+   * @type {DeepReadonly<IWaxFormatterOptions>}
+   * @readonly
+   */
+  readonly options: DeepReadonly<IWaxFormatterOptions>;
+
+  /**
+   * Source readonly unchanged input value for parsing raw data
+   *
+   * @type {DeepReadonly<T>}
+   * @readonly
+   */
+  readonly source: DeepReadonly<T>;
+
+  /**
+   * Target formatter data that might have been previously changed by other formatters
+   *
+   * @type {any}
+   */
+  target: any;
 }
 
 /**
@@ -51,8 +76,7 @@ export interface IWaxFormatterOptions {
  * The second argument is the target working argument which should be returned from the formatter function
  * if your options specify to ignore given formatting.
  *
- * @param {DeepReadonly<object>} source readonly unchanged input value for parsing raw data
- * @param {object} target formatter data that might have been previously changed by other formatters
+ * @param {IFormatFunctionArguments} args formatter function arguments
  *
  * @returns {string | any} desired formatted output data
  *
@@ -69,7 +93,7 @@ export interface IWaxFormatterOptions {
  * }
  * ```
  */
-export type TFormatFunction = (source: DeepReadonly<object>, target: object) => (string | any);
+export type TFormatFunction<T = object> = (args: IFormatFunctionArguments<T>) => (string | any);
 
 /**
  * Classes implementing this interface denote that they are ready to handle tagged templates
@@ -115,9 +139,7 @@ export interface IWaxCustomFormatter {
 }
 
 export type TWaxCustomFormatterConstructor = ({
-  new(options: IWaxFormatterOptions, wax: IWaxBaseInterface): IWaxCustomFormatter;
-}) | ({
-  new(options: IWaxFormatterOptions): IWaxCustomFormatter;
+  new(wax: IWaxBaseInterface): IWaxCustomFormatter;
 }) | ({
   new(): IWaxCustomFormatter;
 });

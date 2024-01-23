@@ -7,7 +7,7 @@ export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   transaction: {
     displayAsId: true
   },
-  createDefaultFormatteres: true
+  createDefaultFormatters: true
 };
 
 export abstract class WaxFormatterBase implements IWaxFormatter {

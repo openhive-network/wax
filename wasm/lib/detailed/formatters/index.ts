@@ -1,9 +1,5 @@
 export { WaxFormattable } from "../decorators/formatters.js";
 
-export {
-  IWaxCustomFormatter, IWaxFormatter, IWaxFormatterOptions,
-  IWaxExtendableFormatter, TFormatFunction, TWaxCustomFormatterConstructor,
-  DeepPartial, DeepReadonly
-} from "./types.js";
+export * from "./types.js";
 export { WaxFormatterBase } from "./base.js";
-export { WaxFormatter } from "./waxify.js";
+export type { WaxFormatter } from "./waxify.js";
