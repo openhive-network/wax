@@ -87,7 +87,13 @@ std::string foundation::cpp_asset_symbol(const json_asset& value) const
 {
   auto a = to_asset(value);
   hive::protocol::legacy_asset la(a);
-  return la.asset_num_to_string();
+
+  const auto symbol = la.asset_num_to_string();
+
+  if(symbol == "UNKN")
+    return value.nai;
+
+  return symbol;
 }
 
 

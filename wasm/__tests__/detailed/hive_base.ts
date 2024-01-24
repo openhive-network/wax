@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 
 import "../assets/data";
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { transaction } from "../assets/data.protocol";
+import { naiAsset, transaction } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -38,6 +38,36 @@ test.describe('Wax object interface foundation tests', () => {
           }
         }
       });
+    });
+  });
+
+  test('Should be able to convert API asset to the proper HIVE asset data', async ({ page }) => {
+    const retVal = await page.evaluate(async(naiAsset) => {
+      const asset = wx.getAsset(naiAsset);
+
+      return asset;
+    }, naiAsset);
+
+    expect(retVal).toStrictEqual({
+      amount: "300.000",
+      symbol: "HIVE"
+    });
+  });
+
+  test('Should be able to convert API asset to the proper custom asset data', async ({ page }) => {
+    const retVal = await page.evaluate(async() => {
+      const asset = wx.getAsset({
+        amount: "300",
+        precision: 1,
+        nai: "@@002137000"
+      });
+
+      return asset;
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: "30.0",
+      symbol: "@@002137000"
     });
   });
 
