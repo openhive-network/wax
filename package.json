@@ -46,6 +46,7 @@
     "./package.json": "./package.json"
   },
   "devDependencies": {
+    "@hive/beekeeper": "1.27.2-240110132748",
     "@playwright/test": "^1.39.0",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.7",
@@ -66,7 +67,6 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "1.27.2-240110132748",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",
@@ -78,7 +78,10 @@
     "LICENSE.md",
     "README.md",
     "api.md",
-    "wasm/dist/bundle"
+    "wasm/dist/bundle/node.js",
+    "wasm/dist/bundle/node.d.ts",
+    "wasm/dist/bundle/web.js",
+    "wasm/dist/bundle/web.d.ts"
   ],
   "types": "wasm/dist/bundle/web.d.ts",
   "repository": {

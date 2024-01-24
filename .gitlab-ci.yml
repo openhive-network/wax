@@ -100,6 +100,7 @@ wax_wasm_proto_tsc_generation:
       - "$CI_PROJECT_DIR/wasm/dist/lib/build_wasm/wax.web.js" # For base WASM tests
       - "$CI_PROJECT_DIR/wasm/dist/lib/proto" # For protobuf pattern tests
       - "$CI_PROJECT_DIR/wasm/dist/lib" # For Node.js tests
+      - "$CI_PROJECT_DIR/wasm/dist/bundle/web-full.js" # For web tests
       - "$CI_PROJECT_DIR/wasm/dist/hive-wax-*.tgz" # Packed package tests
 
     when: always
