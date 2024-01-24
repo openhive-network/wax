@@ -42,7 +42,8 @@
         "types": "./wasm/dist/bundle/node.d.ts",
         "default": "./wasm/dist/bundle/node.js"
       }
-    }
+    },
+    "./package.json": "./package.json"
   },
   "devDependencies": {
     "@playwright/test": "^1.39.0",
