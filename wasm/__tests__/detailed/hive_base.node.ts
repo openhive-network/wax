@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import beekeeperFactory, { IBeekeeperInstance } from "@hive/beekeeper/node";
 
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { transaction } from "../assets/data.protocol";
+import { naiAsset, transaction } from "../assets/data.protocol";
 
 import { createWaxFoundation, IWaxBaseInterface } from "../../dist/bundle/node";
 
@@ -20,6 +20,28 @@ test.describe('Wax object interface foundation tests for Node.js', () => {
   test.beforeEach(() => {
     if(fs.existsSync('storage_root-node/.beekeeper/w0.wallet'))
       fs.rmSync('storage_root-node/.beekeeper/w0.wallet');
+  });
+
+  test('Should be able to convert API asset to the proper HIVE asset data', () => {
+    const retVal = wx.getAsset(naiAsset);
+
+    expect(retVal).toStrictEqual({
+      amount: "300.000",
+      symbol: "HIVE"
+    });
+  });
+
+  test('Should be able to convert API asset to the proper custom asset data', () => {
+    const retVal = wx.getAsset({
+      amount: "300",
+      precision: 1,
+      nai: "@@002137000"
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: "30.0",
+      symbol: "@@002137000"
+    });
   });
 
   test('Should be able to bidirectional convert api to proto using object interface', async () => {

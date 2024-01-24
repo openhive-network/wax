@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 
-import { naiAsset, serialization_sensitive_transaction, transfer_operation, vote_operation } from "../assets/data.protocol";
+import { naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
 
 import { createHiveChain, IHiveChainInterface, WaxFormattable } from "../../dist/bundle/node";
 
@@ -30,6 +30,12 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
 
     expect(
       chain.waxify`Tx: #${tx}`
+    ).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
+  });
+
+  test('Should be able to format protobuf transaction using default formatters from hive chain interface', () => {
+    expect(
+      chain.waxify`Tx: #${serialization_sensitive_transaction_proto}`
     ).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
   });
 

@@ -3,6 +3,7 @@
  */
 
 import Long from "long";
+import type { transaction as transactionT } from "../../dist/lib/web";
 
 /// Converts given number to the array of low and high number parts
 export const numToHighLow = (value: number): [ number, number ] => {
@@ -61,3 +62,21 @@ export const serialization_sensitive_transaction = JSON.stringify({
   ],
   extensions: []
 });
+
+export const serialization_sensitive_transaction_proto: transactionT = {
+  ref_block_num: 1959,
+  ref_block_prefix: 3625727107,
+  expiration: "2023-11-09T22:01:24",
+  operations: [
+    {
+      transfer: {
+        from_account: transfer_operation.value.from,
+        to_account: transfer_operation.value.to,
+        amount: transfer_operation.value.amount,
+        memo: transfer_operation.value.memo
+      }
+    }
+  ],
+  extensions: [],
+  signatures: []
+};
