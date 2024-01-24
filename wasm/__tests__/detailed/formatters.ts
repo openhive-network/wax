@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import "../assets/data";
-import { naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto } from "../assets/data.protocol";
+import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -88,6 +88,18 @@ test.describe('Wax object interface formatters tests', () => {
       ],
       extensions: []
     });
+  });
+
+  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ page }) => {
+    const retVal = await page.evaluate(async() => {
+      const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ] });
+
+      return chain.formatter.format(response.accounts[0]);
+    });
+
+    expect(
+      retVal
+    ).toEqual(initminerAccountApi);
   });
 
   test.afterAll(async () => {

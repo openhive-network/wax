@@ -80,3 +80,106 @@ export const serialization_sensitive_transaction_proto: transactionT = {
   extensions: [],
   signatures: []
 };
+
+export const initminerAccountApi = {
+  active: {
+    account_auths: [],
+    key_auths: [
+      [
+        "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX",
+        1
+      ]
+    ],
+    weight_threshold: 1
+  },
+  balance: "0.004 HIVE",
+  can_vote: true,
+  comment_count: 0,
+  created: "2016-03-24T16:00:00",
+  curation_rewards: 0,
+  delayed_votes: [],
+  delegated_vesting_shares: "0.000000 VESTS",
+  downvote_manabar: {
+    current_mana: 0,
+    last_update_time: 0
+  },
+  governance_vote_expiration_ts: "1969-12-31T23:59:59",
+  hbd_balance: "0.002 HBD",
+  hbd_last_interest_payment: "1970-01-01T00:00:00",
+  hbd_seconds: "0",
+  hbd_seconds_last_update: "2016-08-11T09:57:42",
+  id: 3,
+  is_smt: false,
+  json_metadata: "",
+  last_account_recovery: "1970-01-01T00:00:00",
+  last_account_update: "1970-01-01T00:00:00",
+  last_owner_update: "1970-01-01T00:00:00",
+  last_post: "1970-01-01T00:00:00",
+  last_post_edit: "1970-01-01T00:00:00",
+  last_root_post: "1970-01-01T00:00:00",
+  last_vote_time: "1970-01-01T00:00:00",
+  lifetime_vote_count: 0,
+  memo_key: "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX",
+  mined: true,
+  name: "initminer",
+  next_vesting_withdrawal: "1969-12-31T23:59:59",
+  open_recurrent_transfers: 0,
+  owner: {
+    account_auths: [],
+    key_auths: [
+      [
+        "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX",
+        1
+      ]
+    ],
+    weight_threshold: 1
+  },
+  pending_claimed_accounts: 0,
+  pending_transfers: 0,
+  post_bandwidth: 0,
+  post_count: 0,
+  post_voting_power: "1000000.000000 VESTS",
+  posting: {
+    account_auths: [],
+    key_auths: [
+      [
+        "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX",
+        1
+      ]
+    ],
+    weight_threshold: 1
+  },
+  posting_json_metadata: "",
+  posting_rewards: 0,
+  previous_owner_update: "1970-01-01T00:00:00",
+  proxied_vsf_votes: [
+    0,
+    0,
+    0,
+    0
+  ],
+  proxy: "",
+  received_vesting_shares: "0.000000 VESTS",
+  recovery_account: "",
+  reset_account: "null",
+  reward_hbd_balance: "0.000 HBD",
+  reward_hive_balance: "0.000 HIVE",
+  reward_vesting_balance: "0.000000 VESTS",
+  reward_vesting_hive: "0.000 HIVE",
+  savings_balance: "0.000 HIVE",
+  savings_hbd_balance: "0.000 HBD",
+  savings_hbd_last_interest_payment: "1970-01-01T00:00:00",
+  savings_hbd_seconds: "0",
+  savings_hbd_seconds_last_update: "1970-01-01T00:00:00",
+  savings_withdraw_requests: 0,
+  to_withdraw: 0,
+  vesting_shares: "1000000.000000 VESTS",
+  vesting_withdraw_rate: "0.000001 VESTS",
+  voting_manabar: {
+    current_mana: 0,
+    last_update_time: 0
+  },
+  withdraw_routes: 0,
+  withdrawn: 0,
+  witnesses_voted_for: 0
+};

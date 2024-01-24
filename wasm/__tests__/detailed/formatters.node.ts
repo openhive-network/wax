@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 
-import { naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
+import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
 
 import { createHiveChain, IHiveChainInterface, WaxFormattable } from "../../dist/bundle/node";
 
@@ -106,5 +106,15 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
       "oneplus7 transferred 300.000 HIVE to kryptogames",
       "otom voted on @c0ff33a/ewxhnjbj"
     ]);
+  });
+
+  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async() => {
+    const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ] });
+
+    const retVal = chain.formatter.format(response.accounts[0]);
+
+    expect(
+      retVal
+    ).toEqual(initminerAccountApi);
   });
 });
