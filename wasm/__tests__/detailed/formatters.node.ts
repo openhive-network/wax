@@ -45,7 +45,11 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
     const formatter = chain.formatter.extend({ transaction: { displayAsId: false } });
 
     expect(
-      formatter.format(tx)
+      chain.formatter.format(tx) // Default immutable formatter
+    ).toStrictEqual("3725c81634f152011e2043eb7119911b953d4267");
+
+    expect(
+      formatter.format(tx)  // Extended immutable formatter
     ).toStrictEqual({
       ref_block_num: 1959,
       ref_block_prefix: 3625727107,
@@ -67,9 +71,13 @@ test.describe('Wax object interface formatters tests for Node.js', () => {
 
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
     class MyFormatters {
+      myFunction(value) {
+        return value.toString();
+      }
+
       @WaxFormattable()
       myCustomProp({ source }) {
-        return source.myCustomProp.toString();
+        return this.myFunction(source.myCustomProp);
       }
     }
 
