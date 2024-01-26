@@ -27,7 +27,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
     let id: string;
 
-    if("type" in source.operations[0])
+    if((source.operations.length > 0 && "type" in source.operations[0]) || (source.extensions.length > 0 && "type" in source.extensions[0]))
       ({ id } = this.wax.TransactionBuilder.fromApi(source));
     else
       ({ id } = new this.wax.TransactionBuilder(source as transaction));
