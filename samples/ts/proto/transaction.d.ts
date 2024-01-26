@@ -749,8 +749,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -1899,8 +1899,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -3040,8 +3040,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -5479,8 +5479,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } & {
                 curator?: string | undefined;
@@ -5493,8 +5493,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } & { [K_209 in Exclude<keyof I["operations"][number]["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } & { [K_210 in Exclude<keyof I["operations"][number]["curation_reward"], keyof import("./curation_reward.js").curation_reward>]: never; }) | undefined;
             comment_reward?: ({
@@ -7210,8 +7210,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -8367,8 +8367,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -9517,8 +9517,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -10658,8 +10658,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {
@@ -13097,8 +13097,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } & {
                 curator?: string | undefined;
@@ -13111,8 +13111,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } & { [K_518 in Exclude<keyof I_1["operations"][number]["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } & { [K_519 in Exclude<keyof I_1["operations"][number]["curation_reward"], keyof import("./curation_reward.js").curation_reward>]: never; }) | undefined;
             comment_reward?: ({
@@ -14828,8 +14828,8 @@ export declare const transaction: {
                     precision?: number | undefined;
                     nai?: string | undefined;
                 } | undefined;
-                comment_author?: string | undefined;
-                comment_permlink?: string | undefined;
+                author?: string | undefined;
+                permlink?: string | undefined;
                 payout_must_be_claimed?: boolean | undefined;
             } | undefined;
             comment_reward?: {

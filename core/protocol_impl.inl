@@ -26,7 +26,7 @@ struct validate_visitor
 
 hive::protocol::signed_transaction get_transaction(const std::string& trx)
 {
-  return fc::json::from_string(trx).as<hive::protocol::signed_transaction>();
+  return fc::json::from_string(trx, fc::json::format_validation_mode::full).as<hive::protocol::signed_transaction>();
 }
 
 template <class FoundationProvider>
@@ -35,7 +35,7 @@ result protocol_impl<FoundationProvider>::cpp_validate_operation(const std::stri
 {
   return method_wrapper([&](result&)
     {
-      fc::variant _v = fc::json::from_string(operation);
+      fc::variant _v = fc::json::from_string(operation, fc::json::format_validation_mode::full);
       hive::protocol::operation _operation = _v.as<hive::protocol::operation>();
 
       validate_visitor _visitor;

@@ -9765,23 +9765,13 @@ true if payouts require use of claim_reward_balance_operation
 
 ## Properties
 
-### comment\_author
+### author
 
-• **comment\_author**: `string`
+• **author**: `string`
 
 #### Defined in
 
 wasm/lib/proto/curation_reward.ts:22
-
-___
-
-### comment\_permlink
-
-• **comment\_permlink**: `string`
-
-#### Defined in
-
-wasm/lib/proto/curation_reward.ts:23
 
 ___
 
@@ -9802,6 +9792,16 @@ ___
 #### Defined in
 
 wasm/lib/proto/curation_reward.ts:24
+
+___
+
+### permlink
+
+• **permlink**: `string`
+
+#### Defined in
+
+wasm/lib/proto/curation_reward.ts:23
 
 ___
 

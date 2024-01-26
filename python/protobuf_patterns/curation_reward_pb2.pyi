@@ -24,8 +24,8 @@ class curation_reward(google.protobuf.message.Message):
 
     @param {string} curator - user that curated the comment (receiver of reward)
     @param {asset} reward - (VESTS) curation reward
-    @param {string} comment_author - author of curated comment
-    @param {string} comment_permlink - permlink of curated comment
+    @param {string} author - author of curated comment
+    @param {string} permlink - permlink of curated comment
     @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
     """
 
@@ -33,25 +33,25 @@ class curation_reward(google.protobuf.message.Message):
 
     CURATOR_FIELD_NUMBER: builtins.int
     REWARD_FIELD_NUMBER: builtins.int
-    COMMENT_AUTHOR_FIELD_NUMBER: builtins.int
-    COMMENT_PERMLINK_FIELD_NUMBER: builtins.int
+    AUTHOR_FIELD_NUMBER: builtins.int
+    PERMLINK_FIELD_NUMBER: builtins.int
     PAYOUT_MUST_BE_CLAIMED_FIELD_NUMBER: builtins.int
     curator: builtins.str
     @property
     def reward(self) -> asset_pb2.asset: ...
-    comment_author: builtins.str
-    comment_permlink: builtins.str
+    author: builtins.str
+    permlink: builtins.str
     payout_must_be_claimed: builtins.bool
     def __init__(
         self,
         *,
         curator: builtins.str | None = ...,
         reward: asset_pb2.asset | None = ...,
-        comment_author: builtins.str | None = ...,
-        comment_permlink: builtins.str | None = ...,
+        author: builtins.str | None = ...,
+        permlink: builtins.str | None = ...,
         payout_must_be_claimed: builtins.bool | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["comment_author", b"comment_author", "comment_permlink", b"comment_permlink", "curator", b"curator", "payout_must_be_claimed", b"payout_must_be_claimed", "reward", b"reward"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["comment_author", b"comment_author", "comment_permlink", b"comment_permlink", "curator", b"curator", "payout_must_be_claimed", b"payout_must_be_claimed", "reward", b"reward"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["author", b"author", "curator", b"curator", "payout_must_be_claimed", b"payout_must_be_claimed", "permlink", b"permlink", "reward", b"reward"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["author", b"author", "curator", b"curator", "payout_must_be_claimed", b"payout_must_be_claimed", "permlink", b"permlink", "reward", b"reward"]) -> None: ...
 
 global___curation_reward = curation_reward

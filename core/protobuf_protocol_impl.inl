@@ -431,7 +431,7 @@ fc::mutable_variant_object parse_api_block(const fc::variant& block)
 
 std::string cpp_api_to_proto_impl(const std::string& operation_or_tx_or_block)
 {
-  fc::variant var = fc::json::from_string(operation_or_tx_or_block);
+  fc::variant var = fc::json::from_string(operation_or_tx_or_block, fc::json::format_validation_mode::full);
   FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
 
   if (var.get_object().contains("transactions"))
@@ -445,7 +445,7 @@ std::string cpp_api_to_proto_impl(const std::string& operation_or_tx_or_block)
 
 std::string cpp_proto_to_api_impl(const std::string& operation_or_tx)
 {
-  fc::variant var = fc::json::from_string(operation_or_tx);
+  fc::variant var = fc::json::from_string(operation_or_tx, fc::json::format_validation_mode::full);
   FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
 
   if (var.get_object().contains("operations"))

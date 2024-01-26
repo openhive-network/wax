@@ -921,8 +921,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } | undefined;
         comment_reward?: {
@@ -3360,8 +3360,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } & {
             curator?: string | undefined;
@@ -3374,8 +3374,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } & { [K_209 in Exclude<keyof I["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } & { [K_210 in Exclude<keyof I["curation_reward"], keyof curation_reward>]: never; }) | undefined;
         comment_reward?: ({
@@ -5092,8 +5092,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } | undefined;
         comment_reward?: {
@@ -7531,8 +7531,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } & {
             curator?: string | undefined;
@@ -7545,8 +7545,8 @@ export declare const operation: {
                 precision?: number | undefined;
                 nai?: string | undefined;
             } & { [K_512 in Exclude<keyof I_1["curation_reward"]["reward"], keyof import("./asset.js").asset>]: never; }) | undefined;
-            comment_author?: string | undefined;
-            comment_permlink?: string | undefined;
+            author?: string | undefined;
+            permlink?: string | undefined;
             payout_must_be_claimed?: boolean | undefined;
         } & { [K_513 in Exclude<keyof I_1["curation_reward"], keyof curation_reward>]: never; }) | undefined;
         comment_reward?: ({

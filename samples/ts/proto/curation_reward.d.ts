@@ -9,15 +9,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  *
  * @param {string} curator - user that curated the comment (receiver of reward)
  * @param {asset} reward - (VESTS) curation reward
- * @param {string} comment_author - author of curated comment
- * @param {string} comment_permlink - permlink of curated comment
+ * @param {string} author - author of curated comment
+ * @param {string} permlink - permlink of curated comment
  * @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
  */
 export interface curation_reward {
     curator: string;
     reward: asset | undefined;
-    comment_author: string;
-    comment_permlink: string;
+    author: string;
+    permlink: string;
     payout_must_be_claimed: boolean;
 }
 export declare const curation_reward: {
@@ -32,8 +32,8 @@ export declare const curation_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } | undefined;
-        comment_author?: string | undefined;
-        comment_permlink?: string | undefined;
+        author?: string | undefined;
+        permlink?: string | undefined;
         payout_must_be_claimed?: boolean | undefined;
     } & {
         curator?: string | undefined;
@@ -46,8 +46,8 @@ export declare const curation_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } & { [K in Exclude<keyof I["reward"], keyof asset>]: never; }) | undefined;
-        comment_author?: string | undefined;
-        comment_permlink?: string | undefined;
+        author?: string | undefined;
+        permlink?: string | undefined;
         payout_must_be_claimed?: boolean | undefined;
     } & { [K_1 in Exclude<keyof I, keyof curation_reward>]: never; }>(base?: I | undefined): curation_reward;
     fromPartial<I_1 extends {
@@ -57,8 +57,8 @@ export declare const curation_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } | undefined;
-        comment_author?: string | undefined;
-        comment_permlink?: string | undefined;
+        author?: string | undefined;
+        permlink?: string | undefined;
         payout_must_be_claimed?: boolean | undefined;
     } & {
         curator?: string | undefined;
@@ -71,8 +71,8 @@ export declare const curation_reward: {
             precision?: number | undefined;
             nai?: string | undefined;
         } & { [K_2 in Exclude<keyof I_1["reward"], keyof asset>]: never; }) | undefined;
-        comment_author?: string | undefined;
-        comment_permlink?: string | undefined;
+        author?: string | undefined;
+        permlink?: string | undefined;
         payout_must_be_claimed?: boolean | undefined;
     } & { [K_3 in Exclude<keyof I_1, keyof curation_reward>]: never; }>(object: I_1): curation_reward;
 };

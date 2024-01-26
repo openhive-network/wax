@@ -3,7 +3,7 @@ import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasecuration_reward() {
-    return { curator: "", reward: undefined, comment_author: "", comment_permlink: "", payout_must_be_claimed: false };
+    return { curator: "", reward: undefined, author: "", permlink: "", payout_must_be_claimed: false };
 }
 export const curation_reward = {
     encode(message, writer = _m0.Writer.create()) {
@@ -13,11 +13,11 @@ export const curation_reward = {
         if (message.reward !== undefined) {
             asset.encode(message.reward, writer.uint32(18).fork()).ldelim();
         }
-        if (message.comment_author !== "") {
-            writer.uint32(26).string(message.comment_author);
+        if (message.author !== "") {
+            writer.uint32(26).string(message.author);
         }
-        if (message.comment_permlink !== "") {
-            writer.uint32(34).string(message.comment_permlink);
+        if (message.permlink !== "") {
+            writer.uint32(34).string(message.permlink);
         }
         if (message.payout_must_be_claimed === true) {
             writer.uint32(40).bool(message.payout_must_be_claimed);
@@ -47,13 +47,13 @@ export const curation_reward = {
                     if (tag !== 26) {
                         break;
                     }
-                    message.comment_author = reader.string();
+                    message.author = reader.string();
                     continue;
                 case 4:
                     if (tag !== 34) {
                         break;
                     }
-                    message.comment_permlink = reader.string();
+                    message.permlink = reader.string();
                     continue;
                 case 5:
                     if (tag !== 40) {
@@ -73,8 +73,8 @@ export const curation_reward = {
         return {
             curator: isSet(object.curator) ? String(object.curator) : "",
             reward: isSet(object.reward) ? asset.fromJSON(object.reward) : undefined,
-            comment_author: isSet(object.comment_author) ? String(object.comment_author) : "",
-            comment_permlink: isSet(object.comment_permlink) ? String(object.comment_permlink) : "",
+            author: isSet(object.author) ? String(object.author) : "",
+            permlink: isSet(object.permlink) ? String(object.permlink) : "",
             payout_must_be_claimed: isSet(object.payout_must_be_claimed) ? Boolean(object.payout_must_be_claimed) : false,
         };
     },
@@ -86,11 +86,11 @@ export const curation_reward = {
         if (message.reward !== undefined) {
             obj.reward = asset.toJSON(message.reward);
         }
-        if (message.comment_author !== "") {
-            obj.comment_author = message.comment_author;
+        if (message.author !== "") {
+            obj.author = message.author;
         }
-        if (message.comment_permlink !== "") {
-            obj.comment_permlink = message.comment_permlink;
+        if (message.permlink !== "") {
+            obj.permlink = message.permlink;
         }
         if (message.payout_must_be_claimed === true) {
             obj.payout_must_be_claimed = message.payout_must_be_claimed;
@@ -107,8 +107,8 @@ export const curation_reward = {
         message.reward = (object.reward !== undefined && object.reward !== null)
             ? asset.fromPartial(object.reward)
             : undefined;
-        message.comment_author = (_b = object.comment_author) !== null && _b !== void 0 ? _b : "";
-        message.comment_permlink = (_c = object.comment_permlink) !== null && _c !== void 0 ? _c : "";
+        message.author = (_b = object.author) !== null && _b !== void 0 ? _b : "";
+        message.permlink = (_c = object.permlink) !== null && _c !== void 0 ? _c : "";
         message.payout_must_be_claimed = (_d = object.payout_must_be_claimed) !== null && _d !== void 0 ? _d : false;
         return message;
     },
