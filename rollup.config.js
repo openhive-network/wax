@@ -3,10 +3,6 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const commonConfiguration = (env, packEntire = false) => ([
   {
@@ -35,8 +31,7 @@ const commonConfiguration = (env, packEntire = false) => ([
           'wasm/dist/lib'
         ],
         resolveOnly: packEntire ? [] : [
-          'build_wasm',
-          '@hive/beekeeper'
+          'build_wasm'
         ]
       }),
       commonjs()

@@ -1,4 +1,4 @@
-import { TPublicKey } from "@hive/beekeeper";
+import type { TPublicKey } from "@hive/beekeeper";
 import { IsString, Validate } from "class-validator";
 
 import { IsPublicKey } from "../../decorators/is_public_key.js";

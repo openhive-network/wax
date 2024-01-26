@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@hive/beekeeper':
+    specifier: 1.27.2-240110132748
+    version: 1.27.2-240110132748
   class-transformer:
     specifier: ^0.5.1
     version: 0.5.1
@@ -22,9 +25,6 @@ dependencies:
     version: 0.1.13
 
 devDependencies:
-  '@hive/beekeeper':
-    specifier: 1.27.2-240110132748
-    version: 1.27.2-240110132748
   '@playwright/test':
     specifier: ^1.39.0
     version: 1.39.0
@@ -109,7 +109,7 @@ packages:
   /@hive/beekeeper@1.27.2-240110132748:
     resolution: {integrity: sha1-gowsXVxXbN1M3HxCzGHaGFF4BHo=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.2-240110132748.tgz}
     engines: {node: '>= 12'}
-    dev: true
+    dev: false
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
