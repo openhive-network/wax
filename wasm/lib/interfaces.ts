@@ -21,6 +21,17 @@ export type THexString = string;
  */
 export type TBlockHash = ArrayBuffer | Uint8Array | Uint8ClampedArray | Int8Array | string;
 
+/**
+ * Hive account name
+ */
+export type TAccountName = string;
+
+enum TFollowBlogAction {
+  FOLLOW_BLOG = 1,
+  MUTE_BLOG = 2,
+  BOTH = FOLLOW_BLOG | MUTE_BLOG
+};
+
 export interface IManabarData {
   /**
    * Current manabar value
@@ -76,6 +87,73 @@ export interface ITransactionBuilder {
    * @throws {import("./errors").WaxError} on any Wax API-related error
    */
   push(op: operation): ITransactionBuilder;
+
+  /**
+   * Allows to generate operation to follow specified list of blog accounts.
+   * @param working_account The account which has to authorize transaction. Also it will be the account which follows the ones specified by the blog/other_blogs parameters (aka follower)
+   * @param blog the blog account to be followed by working_account
+   * @param otherBlogs optional list of other blog accounts to be concatenated and build single list
+   * 
+   * @example
+   * ```ts
+   * let txb: ITransactionBuilder;
+   * let wallet: IBeekeeperUnlockedWallet;
+   * let publicKey: TPublicKey;
+   * 
+   * txb.follow("a", "b").build();
+   * txb.follow("a", "b", "c").sign(wallet, publicKey);
+   * ```
+   * 
+   * Internal note: generates:
+   * txb.follow("a", "b") /// results in generating operation:
+   * ```json
+   * {
+   *  "type": "custom_json_operation",
+   *  "value": {
+   *    "id": "follow",
+   *    "json": "[\"follow\",{\"follower\":\"a\",\"following\":\"b\",\"what\":[\"blog\"]}]",
+   *    "required_auths": [],
+   *    "required_posting_auths": [
+   *      "a"
+   *    ]
+   *   }
+   * }
+   * ```
+   * 
+   * txb.follow("a", "b", "c") /// results in generating operation:
+   * ```json
+   * {
+   *  "type": "custom_json_operation",
+   *  "value": {
+   *    "id": "follow",
+   *    "json": "[\"follow\",{\"follower\":\"a\",\"following\":[\"b\",\"c\"],\"what\":[\"blog\"]}]",
+   *    "required_auths": [],
+   *    "required_posting_auths": [
+   *      "a"
+   *    ]
+   *   }
+   * }
+   * ```
+   */
+  followBlog(working_account: TAccountName, blog: TAccountName, ...other_blogs: TAccountName[]): ITransactionBuilder;
+
+  /**
+   * Allows to generate operation to mute given list of blog accounts.
+   * @param workingAccount The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower)
+   * @param blog the blog account to be muted working_account
+   * @param otherBlogs optional list of other blog accounts to be concatenated and build single list
+   */
+  muteBlog(workingAccount: string, blog: TAccountName, ...otherBlogs: TAccountName[]): ITransactionBuilder;
+
+  /**
+   * Allows to push operation to remove all matching entries between workingAccount (follower) and specified following blog accounts.
+   * Scope of clear operation can be specfied by action parameter to point only blog, mute or both entries.
+   * @param workingAccount The account which has to authorize transaction. This is the account which follows the ones specified by the blog/otherBlogs parameters (aka follower)
+   * @param action determines scope of entries removal
+   * @param blog the blog (following) account 
+   * @param otherBlogs optional list of other blog accounts to be concatenated and build single list
+   */
+  resetBlogList(workingAccount: TAccountName, action: TFollowBlogAction, blog: TAccountName, ...otherBlogs: TAccountName[]): ITransactionBuilder;
 
   /**
    * Generates digest of the transaction for signing
