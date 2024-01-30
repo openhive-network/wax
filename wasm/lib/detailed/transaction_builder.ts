@@ -4,6 +4,7 @@ import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransact
 import { transaction, operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
+import { HiveAppsOperation } from "./custom_jsons/builder";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -70,8 +71,11 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public push(op: operation): ITransactionBuilder {
-    this.target.operations.push(op);
+  public push(op: operation | HiveAppsOperation): ITransactionBuilder {
+    if(op instanceof HiveAppsOperation)
+      op.flushOperations(this.target.operations);
+    else
+      this.target.operations.push(op);
 
     return this;
   }

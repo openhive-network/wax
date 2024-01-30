@@ -1,5 +1,8 @@
 import type { IHiveChainInterface, IWaxOptionsChain } from "../interfaces.js";
 
+// @ts-expect-error ts(6133) Type WaxError is used in JSDoc
+import type { WaxError } from "../errors";
+
 import { HiveChainApi } from "./chain_api.js";
 import MainModuleFunction from "../wax_module.js";
 import { DEFAULT_WAX_OPTIONS } from "./base.js";
@@ -16,7 +19,7 @@ export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
  *
  * @returns {Promise<IHiveChainInterface>} Wax Hive chain API Instance
  *
- * @throws {import("../errors").WaxError} on any Wax API-related error
+ * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = async(
   options: Partial<IWaxOptionsChain> = {}

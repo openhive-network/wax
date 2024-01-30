@@ -98,6 +98,20 @@ const formatter = chain.formatter.extend(MyFormatters); // Creates and returns n
 console.info(formatter.waxify`${data}`); // Print formatted data
 ```
 
+#### Use hive TransactionBuilder interface with custom hive apps operations
+
+```ts
+import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
+
+const wax = await createWaxFoundation();
+
+const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").build());
+
+console.info(tx.toApi()); // Print the transaction in the API form
+```
+
 #### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
 
 ```js

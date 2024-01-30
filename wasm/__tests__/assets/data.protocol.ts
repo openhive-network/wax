@@ -183,3 +183,42 @@ export const initminerAccountApi = {
   withdrawn: 0,
   witnesses_voted_for: 0
 };
+
+export const customJsonsTransaction = {
+  ref_block_num: 1960,
+  ref_block_prefix: 3915120327,
+  expiration: "2023-11-09T21:51:27",
+  operations: [
+    vote_operation,
+    {
+      type: "custom_json_operation",
+      value: {
+        required_posting_auths: [
+          "intiminer"
+        ],
+        id: "follow",
+        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
+      }
+    },
+    {
+      type: "custom_json_operation",
+      value: {
+        required_posting_auths: [
+          "initminer"
+        ],
+        id: "follow",
+        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"ignore\"]}]"
+      }
+    },
+    {
+      type: "custom_json_operation",
+      value: {
+        required_posting_auths: [
+          "initminer"
+        ],
+        id: "follow",
+        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_all_lists\"]}]"
+      }
+    }
+  ]
+};

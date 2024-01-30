@@ -2,6 +2,8 @@
 
 import "./detailed/base";
 import "./detailed/base.node";
+import "./detailed/custom_jsons";
+import "./detailed/custom_jsons.node";
 import "./detailed/protocol";
 import "./detailed/protocol.node";
 import "./detailed/proto-protocol";

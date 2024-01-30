@@ -1,10 +1,12 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
+// @ts-expect-error ts(6133) Type WaxError is used in JSDoc
+import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { NaiAsset } from "./detailed";
+import type { HiveAppsOperation, NaiAsset } from "./detailed";
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -69,20 +71,20 @@ export interface ITransactionBuilder {
   /**
    * Pushes given operation to the operations array in the transaction
    *
-   * @param {operation} op operation to append to the transaction
+   * @param {operation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
    *
    * @returns {ITransactionBuilder} current transaction builder instance
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation): ITransactionBuilder;
+  push(op: operation | HiveAppsOperation): ITransactionBuilder;
 
   /**
    * Generates digest of the transaction for signing
    *
    * @type {THexString} digest of the transaction for signing in hex form
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error
    */
   get sigDigest(): THexString;
 
@@ -91,14 +93,14 @@ export interface ITransactionBuilder {
    *
    * @type {TTransactionId} id of the transaction in hex form
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error
    */
   get id(): TTransactionId;
 
   /**
    * Validates current transaction. Throws on error
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error including validation error
+   * @throws {WaxError} on any Wax API-related error including validation error
    */
   validate(): void;
 
@@ -107,7 +109,7 @@ export interface ITransactionBuilder {
    *
    * @returns {string} protobuf JSON string
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error including validation error
+   * @throws {WaxError} on any Wax API-related error including validation error
    */
   toString(): string;
 
@@ -122,7 +124,7 @@ export interface ITransactionBuilder {
    *
    * @returns {THexString} transaction signature signed using given key
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
   sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
 
@@ -144,7 +146,7 @@ export interface ITransactionBuilder {
    *
    * @returns {transaction} signed protobuf transaction object
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
   build(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): transaction;
 
@@ -158,7 +160,7 @@ export interface ITransactionBuilder {
    *
    * @returns {transaction} signed protobuf transaction object
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
   build(signature: THexString): transaction;
 
@@ -170,7 +172,7 @@ export interface ITransactionBuilder {
    *
    * @returns {transaction} transaction
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
   build(): transaction;
 
@@ -179,7 +181,7 @@ export interface ITransactionBuilder {
    *
    * @returns {string} transaction in Hive API-form
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error
    */
   toApi(): string;
 }
@@ -210,7 +212,7 @@ export interface ITransactionBuilderConstructor {
    *
    * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder.build})
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error
    */
   fromApi(transactionObject: string | object): ITransactionBuilder;
 }
@@ -318,8 +320,8 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns {ITransactionBuilder} ready to use transaction builder interface
    *
-   * @throws {import("./errors").WaxError} on any Wax API-related error
-   * @throws {import("./errors").WaxChainApiError} on any Hive API-related error
+   * @throws {WaxError} on any Wax API-related error
+   * @throws {WaxChainApiError} on any Hive API-related error
    */
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
 

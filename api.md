@@ -5,6 +5,7 @@
 
 ## Enumerations
 
+- [EFollowBlogAction](#enumsefollowblogactionmd)
 - [EManabarType](#enumsemanabartypemd)
 
 ## Classes
@@ -25,6 +26,7 @@
 - [FindAccountsResponse](#classesfindaccountsresponsemd)
 - [FindRcAccountsRequest](#classesfindrcaccountsrequestmd)
 - [FindRcAccountsResponse](#classesfindrcaccountsresponsemd)
+- [FollowOperationBuilder](#classesfollowoperationbuildermd)
 - [GetBlockHeaderRequest](#classesgetblockheaderrequestmd)
 - [GetBlockHeaderResponse](#classesgetblockheaderresponsemd)
 - [GetBlockRangeRequest](#classesgetblockrangerequestmd)
@@ -35,6 +37,8 @@
 - [GetDynamicGlobalPropertiesResponse](#classesgetdynamicglobalpropertiesresponsemd)
 - [GetKeyReferencesRequest](#classesgetkeyreferencesrequestmd)
 - [GetKeyReferencesResponse](#classesgetkeyreferencesresponsemd)
+- [HiveAppsOperation](#classeshiveappsoperationmd)
+- [HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd)
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 - [RcAccount](#classesrcaccountmd)
@@ -188,6 +192,16 @@ wasm/lib/detailed/formatters/types.ts:9
 
 ___
 
+### TAccountName
+
+Ƭ **TAccountName**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:10
+
+___
+
 ### TBlockHash
 
 Ƭ **TBlockHash**: `ArrayBuffer` \| `Uint8Array` \| `Uint8ClampedArray` \| `Int8Array` \| `string`
@@ -198,7 +212,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:22
+wasm/lib/interfaces.ts:24
 
 ___
 
@@ -264,7 +278,7 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:15
+wasm/lib/interfaces.ts:17
 
 ___
 
@@ -290,7 +304,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:10
+wasm/lib/interfaces.ts:12
 
 ___
 
@@ -304,7 +318,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:52
+wasm/lib/interfaces.ts:54
 
 ___
 
@@ -330,7 +344,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:308
+wasm/lib/interfaces.ts:310
 
 ## Variables
 
@@ -2642,7 +2656,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/detailed/chain.ts:21
+wasm/lib/detailed/chain.ts:24
 
 ___
 
@@ -2670,7 +2684,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/detailed/base.ts:19
+wasm/lib/detailed/base.ts:22
 
 
 <a name="classesapiaccountmd"></a>
@@ -3989,6 +4003,192 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:9
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:31
 
 
+<a name="classesfollowoperationbuildermd"></a>
+
+# Class: FollowOperationBuilder
+
+## Hierarchy
+
+- [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd)\>
+
+  ↳ **`FollowOperationBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new FollowOperationBuilder**(): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+## Properties
+
+### body
+
+• `Protected` **body**: `object`
+
+Object body to stringify in the final hive apps operation form - <i>Stage</i>
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[body](#body)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:36
+
+___
+
+### id
+
+• `Protected` `Readonly` **id**: ``"follow"``
+
+Id of your custom hive apps operation
+
+#### Overrides
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[id](#id)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:13
+
+## Methods
+
+### authorize
+
+▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `requiredPostingAuths` | `string` \| `string`[] | `undefined` | required posting authorities (can be an account name) |
+| `requiredAuths` | `string`[] | `[]` | required authorities (defaults to the empty array) |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[authorize](#authorize)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:55
+
+___
+
+### build
+
+▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+Marks the current set of the hive apps operations as ready push
+
+#### Returns
+
+[`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[build](#build)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:79
+
+___
+
+### followBlog
+
+▸ **followBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to follow specified list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be muted working_account |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:25
+
+___
+
+### muteBlog
+
+▸ **muteBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to mute given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be muted working_account |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:51
+
+___
+
+### resetBlogList
+
+▸ **resetBlogList**(`action`, `workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to push operation to remove all matching entries between workingAccount (follower) and specified following blog accounts.
+Scope of clear operation can be specfied by action parameter to point only blog, mute or both entries.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `action` | [`EFollowBlogAction`](#enumsefollowblogactionmd) | determines scope of entries removal |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/otherBlogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be muted working_account |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:76
+
+
 <a name="classesgetblockheaderrequestmd"></a>
 
 # Class: GetBlockHeaderRequest
@@ -4637,6 +4837,155 @@ wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:8
 #### Defined in
 
 wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:13
+
+
+<a name="classeshiveappsoperationmd"></a>
+
+# Class: HiveAppsOperation
+
+## Constructors
+
+### constructor
+
+• **new HiveAppsOperation**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+#### Returns
+
+[`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+## Methods
+
+### flushOperations
+
+▸ **flushOperations**(`ops`): `void`
+
+Flushes (pushes) the staged operations to the given container
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `ops` | [`operation`](#operation)[] | operations array to flush the hive apps operations to |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:25
+
+
+<a name="classeshiveappsoperationsbuildermd"></a>
+
+# Class: HiveAppsOperationsBuilder\<ChildT, BodyT\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `ChildT` | extends [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`any`, `BodyT`\> |
+| `BodyT` | extends `object` = `object` |
+
+## Hierarchy
+
+- **`HiveAppsOperationsBuilder`**
+
+  ↳ [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+## Constructors
+
+### constructor
+
+• **new HiveAppsOperationsBuilder**\<`ChildT`, `BodyT`\>(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`ChildT`, `BodyT`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `ChildT` | extends [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`any`, `BodyT`\> |
+| `BodyT` | extends `object` = `object` |
+
+#### Returns
+
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`ChildT`, `BodyT`\>
+
+## Properties
+
+### body
+
+• `Protected` **body**: `BodyT`
+
+Object body to stringify in the final hive apps operation form - <i>Stage</i>
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:36
+
+___
+
+### builtCustomJsons
+
+• `Private` `Readonly` **builtCustomJsons**: [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:45
+
+___
+
+### id
+
+• `Protected` `Readonly` `Abstract` **id**: `string`
+
+Id of your custom hive apps operation
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:43
+
+## Methods
+
+### authorize
+
+▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): `ChildT`
+
+Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `requiredPostingAuths` | `string` \| `string`[] | `undefined` | required posting authorities (can be an account name) |
+| `requiredAuths` | `string`[] | `[]` | required authorities (defaults to the empty array) |
+
+#### Returns
+
+`ChildT`
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:55
+
+___
+
+### build
+
+▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+Marks the current set of the hive apps operations as ready push
+
+#### Returns
+
+[`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:79
 
 
 <a name="classesnaiassetmd"></a>
@@ -6390,6 +6739,41 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 wasm/lib/detailed/formatters/base.ts:73
 
 
+<a name="enumsefollowblogactionmd"></a>
+
+# Enumeration: EFollowBlogAction
+
+## Enumeration Members
+
+### BOTH
+
+• **BOTH** = ``3``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:7
+
+___
+
+### FOLLOW\_BLOG
+
+• **FOLLOW\_BLOG** = ``1``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:5
+
+___
+
+### MUTE\_BLOG
+
+• **MUTE\_BLOG** = ``2``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:6
+
+
 <a name="enumsemanabartypemd"></a>
 
 # Enumeration: EManabarType
@@ -6492,7 +6876,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:224
+wasm/lib/interfaces.ts:226
 
 ___
 
@@ -6510,7 +6894,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:231
+wasm/lib/interfaces.ts:233
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -6531,7 +6915,7 @@ wasm/lib/interfaces.ts:231
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:360
 
 ___
 
@@ -6541,7 +6925,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:355
+wasm/lib/interfaces.ts:357
 
 ___
 
@@ -6577,7 +6961,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:356
+wasm/lib/interfaces.ts:358
 
 ## Accessors
 
@@ -6595,7 +6979,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:235
+wasm/lib/interfaces.ts:237
 
 ## Methods
 
@@ -6626,7 +7010,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:259
+wasm/lib/interfaces.ts:261
 
 ___
 
@@ -6651,7 +7035,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:343
+wasm/lib/interfaces.ts:345
 
 ___
 
@@ -6682,7 +7066,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:275
+wasm/lib/interfaces.ts:277
 
 ___
 
@@ -6707,7 +7091,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:353
+wasm/lib/interfaces.ts:355
 
 ___
 
@@ -6727,7 +7111,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:280
+wasm/lib/interfaces.ts:282
 
 ___
 
@@ -6757,7 +7141,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:333
+wasm/lib/interfaces.ts:335
 
 ___
 
@@ -6785,7 +7169,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:243
+wasm/lib/interfaces.ts:245
 
 ___
 
@@ -6817,7 +7201,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:324
+wasm/lib/interfaces.ts:326
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -6834,7 +7218,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:30
+wasm/lib/interfaces.ts:32
 
 ___
 
@@ -6846,7 +7230,7 @@ Maximum manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:37
+wasm/lib/interfaces.ts:39
 
 ___
 
@@ -6858,7 +7242,7 @@ Percent of manabar load with two digits of precision, safely calculated based on
 
 #### Defined in
 
-wasm/lib/interfaces.ts:44
+wasm/lib/interfaces.ts:46
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -6883,7 +7267,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:96
+wasm/lib/interfaces.ts:98
 
 ___
 
@@ -6903,7 +7287,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:87
+wasm/lib/interfaces.ts:89
 
 ## Methods
 
@@ -6935,7 +7319,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:149
+wasm/lib/interfaces.ts:151
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -6962,7 +7346,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:163
+wasm/lib/interfaces.ts:165
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -6983,7 +7367,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:175
+wasm/lib/interfaces.ts:177
 
 ___
 
@@ -7001,7 +7385,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:134
+wasm/lib/interfaces.ts:136
 
 ___
 
@@ -7015,7 +7399,7 @@ Pushes given operation to the operations array in the transaction
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `op` | [`operation`](#operation) | operation to append to the transaction |
+| `op` | [`operation`](#operation) \| [`HiveAppsOperation`](#classeshiveappsoperationmd) | operation to append to the transaction (can be hive apps operation) |
 
 #### Returns
 
@@ -7029,7 +7413,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:78
+wasm/lib/interfaces.ts:80
 
 ___
 
@@ -7061,7 +7445,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:127
+wasm/lib/interfaces.ts:129
 
 ___
 
@@ -7083,7 +7467,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:184
+wasm/lib/interfaces.ts:186
 
 ___
 
@@ -7105,7 +7489,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:112
+wasm/lib/interfaces.ts:114
 
 ___
 
@@ -7125,7 +7509,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:103
+wasm/lib/interfaces.ts:105
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -7153,7 +7537,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:197
+wasm/lib/interfaces.ts:199
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -7171,7 +7555,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:204
+wasm/lib/interfaces.ts:206
 
 ## Methods
 
@@ -7199,7 +7583,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:215
+wasm/lib/interfaces.ts:217
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -7224,7 +7608,7 @@ wasm/lib/interfaces.ts:215
 
 #### Defined in
 
-wasm/lib/interfaces.ts:235
+wasm/lib/interfaces.ts:237
 
 ## Methods
 
@@ -7251,7 +7635,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:259
+wasm/lib/interfaces.ts:261
 
 ___
 
@@ -7278,7 +7662,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:275
+wasm/lib/interfaces.ts:277
 
 ___
 
@@ -7294,7 +7678,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:280
+wasm/lib/interfaces.ts:282
 
 ___
 
@@ -7318,7 +7702,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:243
+wasm/lib/interfaces.ts:245
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
@@ -7658,7 +8042,7 @@ wasm/lib/detailed/formatters/types.ts:30
 
 #### Defined in
 
-wasm/lib/interfaces.ts:55
+wasm/lib/interfaces.ts:57
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -7687,7 +8071,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:65
+wasm/lib/interfaces.ts:67
 
 ___
 
@@ -7701,7 +8085,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:55
+wasm/lib/interfaces.ts:57
 
 
 <a name="interfacesaccount_createmd"></a>

@@ -44,7 +44,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       if(response.status >= 200 && response.status < 300)
         return response;
 
-      throw Object.assign(new Error(response.statusText), { response });
+      throw new WaxChainApiError(response.statusText, response );
     };
 
     const parseJSON = (response: Response) => response.json();

@@ -3,7 +3,8 @@ import type { IBeekeeperInstance } from '@hive/beekeeper';
 import type WaxModule from '../../dist/lib/wax_module';
 import type {
   createWaxFoundation as createBaseT, createHiveChain as createHiveChainT,
-  IWaxBaseInterface, IHiveChainInterface, BroadcastTransactionRequest as BroadcastTransactionRequestT
+  IWaxBaseInterface, IHiveChainInterface, BroadcastTransactionRequest as BroadcastTransactionRequestT,
+  FollowOperationBuilder as FollowOperationBuilderT
 } from '../../dist/lib/web';
 import type {
   MainModule, proto_protocol, protocol as protocolT, result as resultT
@@ -18,6 +19,7 @@ declare global {
   var beekeeperFactory: typeof beekeeperFactoryT;
   var createHiveChain: typeof createHiveChainT;
   var BroadcastTransactionRequest: typeof BroadcastTransactionRequestT;
+  var FollowOperationBuilder: typeof FollowOperationBuilderT;
   var provider: MainModule;
   var protocol: protocolT;
   var proto_protocol: proto_protocol;
