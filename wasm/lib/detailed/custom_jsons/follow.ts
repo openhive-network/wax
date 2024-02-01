@@ -1,4 +1,4 @@
-import { HiveAppsOperationsBuilder } from './builder.js';
+import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
 import { WaxError } from '../../errors.js';
 
 export enum EFollowBlogAction {
@@ -6,8 +6,6 @@ export enum EFollowBlogAction {
   MUTE_BLOG   = 0b0010,
   BOTH        = FOLLOW_BLOG | MUTE_BLOG
 };
-
-export type TAccountName = string;
 
 export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOperationBuilder> {
   protected readonly id = "follow";
@@ -22,7 +20,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    *
    * @returns {FollowOperationBuilder} itself
    */
-  public followBlog(workingAccount: string, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public followBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
     const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;
 
     this.body = [
@@ -48,7 +46,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    *
    * @returns {FollowOperationBuilder} itself
    */
-  public muteBlog(workingAccount: string, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public muteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
     const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;
 
     this.body = [
@@ -73,7 +71,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be muted working_account
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    */
-  public resetBlogList(action: EFollowBlogAction, workingAccount: string, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetBlogList(action: EFollowBlogAction, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
     const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;
 
     let strAction: string;
@@ -98,6 +96,29 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
         follower: workingAccount,
         following,
         what: [ strAction ]
+      }
+    ];
+
+    return this;
+  }
+
+  /**
+   * Allows to generate operation to reblog specified post.
+   *
+   * @param {string} workingAccount The account which has to authorize transaction.
+   *                                Also it will be the account which reblogs given post (aka account)
+   * @param {TAccountName} author account name of the author of the given post
+   * @param {string} permlink permlink of the given post
+   *
+   * @returns {FollowOperationBuilder} itself
+   */
+  public reblog(workingAccount: TAccountName, author: TAccountName, permlink: string): FollowOperationBuilder {
+    this.body = [
+      "reblog",
+      {
+        account: workingAccount,
+        author,
+        permlink
       }
     ];
 

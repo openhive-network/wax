@@ -198,7 +198,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:10
+wasm/lib/detailed/custom_jsons/builder.ts:5
 
 ___
 
@@ -4041,7 +4041,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:36
+wasm/lib/detailed/custom_jsons/builder.ts:38
 
 ___
 
@@ -4057,7 +4057,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:13
+wasm/lib/detailed/custom_jsons/follow.ts:11
 
 ## Methods
 
@@ -4086,7 +4086,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:55
+wasm/lib/detailed/custom_jsons/builder.ts:57
 
 ___
 
@@ -4108,7 +4108,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:79
+wasm/lib/detailed/custom_jsons/builder.ts:81
 
 ___
 
@@ -4134,7 +4134,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:25
+wasm/lib/detailed/custom_jsons/follow.ts:23
 
 ___
 
@@ -4160,7 +4160,33 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:51
+wasm/lib/detailed/custom_jsons/follow.ts:49
+
+___
+
+### reblog
+
+▸ **reblog**(`workingAccount`, `author`, `permlink`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to reblog specified post.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which reblogs given post (aka account) |
+| `author` | `string` | account name of the author of the given post |
+| `permlink` | `string` | permlink of the given post |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:115
 
 ___
 
@@ -4186,7 +4212,7 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:76
+wasm/lib/detailed/custom_jsons/follow.ts:74
 
 
 <a name="classesgetblockheaderrequestmd"></a>
@@ -4873,7 +4899,7 @@ Flushes (pushes) the staged operations to the given container
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:25
+wasm/lib/detailed/custom_jsons/builder.ts:27
 
 
 <a name="classeshiveappsoperationsbuildermd"></a>
@@ -4920,7 +4946,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:36
+wasm/lib/detailed/custom_jsons/builder.ts:38
 
 ___
 
@@ -4930,7 +4956,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:45
+wasm/lib/detailed/custom_jsons/builder.ts:47
 
 ___
 
@@ -4942,7 +4968,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:43
+wasm/lib/detailed/custom_jsons/builder.ts:45
 
 ## Methods
 
@@ -4967,7 +4993,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:55
+wasm/lib/detailed/custom_jsons/builder.ts:57
 
 ___
 
@@ -4985,7 +5011,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:79
+wasm/lib/detailed/custom_jsons/builder.ts:81
 
 
 <a name="classesnaiassetmd"></a>

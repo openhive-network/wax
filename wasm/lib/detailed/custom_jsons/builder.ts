@@ -2,6 +2,8 @@ import type { custom_json, operation } from '../../protocol';
 import type { ITransactionBuilder } from '../../interfaces';
 import { WaxError } from '../../errors.js';
 
+export type TAccountName = string;
+
 export class HiveAppsOperation {
   /**
    * @internal
