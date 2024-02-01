@@ -1,6 +1,7 @@
 import type { custom_json, operation } from '../../protocol';
 import type { ITransactionBuilder } from '../../interfaces';
 import { WaxError } from '../../errors.js';
+import Long from 'long';
 
 export type TAccountName = string;
 
@@ -63,7 +64,9 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
 
     this.builtCustomJsons.push({
       id: this.id,
-      json: JSON.stringify(this.body),
+      // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
+      // This may be a temporary solution that can be replaced by writing our custom JSON stringifier with nested object iteration:
+      json: JSON.stringify(this.body, (_key: string, value: any) => value instanceof Long ? value.toString() : value),
       required_auths: auths,
       required_posting_auths: postingAuths
     });

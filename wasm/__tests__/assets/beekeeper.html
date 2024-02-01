@@ -15,7 +15,7 @@
     }
   </script>
   <script type="module">
-    import { createWaxFoundation, createHiveChain, BroadcastTransactionRequest, FollowOperationBuilder } from '@hive/wax';
+    import { createWaxFoundation, createHiveChain, BroadcastTransactionRequest, FollowOperationBuilder, ResourceCreditsOperationBuilder } from '@hive/wax';
     import beekeeperFactory from '@hive/beekeeper';
 
     Object.defineProperties(window, {
@@ -37,6 +37,11 @@
       FollowOperationBuilder: {
         get() {
           return FollowOperationBuilder;
+        }
+      },
+      ResourceCreditsOperationBuilder: {
+        get() {
+          return ResourceCreditsOperationBuilder;
         }
       },
       beekeeperFactory: {

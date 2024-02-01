@@ -42,6 +42,7 @@
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 - [RcAccount](#classesrcaccountmd)
+- [ResourceCreditsOperationBuilder](#classesresourcecreditsoperationbuildermd)
 - [WaxFormatter](#classeswaxformattermd)
 - [WaxFormatterBase](#classeswaxformatterbasemd)
 
@@ -198,7 +199,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:5
+wasm/lib/detailed/custom_jsons/builder.ts:6
 
 ___
 
@@ -4041,7 +4042,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:38
+wasm/lib/detailed/custom_jsons/builder.ts:39
 
 ___
 
@@ -4086,7 +4087,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:57
+wasm/lib/detailed/custom_jsons/builder.ts:58
 
 ___
 
@@ -4108,7 +4109,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:81
+wasm/lib/detailed/custom_jsons/builder.ts:84
 
 ___
 
@@ -4899,7 +4900,7 @@ Flushes (pushes) the staged operations to the given container
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:27
+wasm/lib/detailed/custom_jsons/builder.ts:28
 
 
 <a name="classeshiveappsoperationsbuildermd"></a>
@@ -4918,6 +4919,8 @@ wasm/lib/detailed/custom_jsons/builder.ts:27
 - **`HiveAppsOperationsBuilder`**
 
   ↳ [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+  ↳ [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
 
 ## Constructors
 
@@ -4946,7 +4949,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:38
+wasm/lib/detailed/custom_jsons/builder.ts:39
 
 ___
 
@@ -4956,7 +4959,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:47
+wasm/lib/detailed/custom_jsons/builder.ts:48
 
 ___
 
@@ -4968,7 +4971,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:45
+wasm/lib/detailed/custom_jsons/builder.ts:46
 
 ## Methods
 
@@ -4993,7 +4996,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:57
+wasm/lib/detailed/custom_jsons/builder.ts:58
 
 ___
 
@@ -5011,7 +5014,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:81
+wasm/lib/detailed/custom_jsons/builder.ts:84
 
 
 <a name="classesnaiassetmd"></a>
@@ -6297,6 +6300,167 @@ ___
 #### Defined in
 
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
+
+
+<a name="classesresourcecreditsoperationbuildermd"></a>
+
+# Class: ResourceCreditsOperationBuilder
+
+## Hierarchy
+
+- [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)\>
+
+  ↳ **`ResourceCreditsOperationBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new ResourceCreditsOperationBuilder**(): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+#### Returns
+
+[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+## Properties
+
+### body
+
+• `Protected` **body**: `object`
+
+Object body to stringify in the final hive apps operation form - <i>Stage</i>
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[body](#body)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:39
+
+___
+
+### id
+
+• `Protected` `Readonly` **id**: ``"rc"``
+
+Id of your custom hive apps operation
+
+#### Overrides
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[id](#id)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:5
+
+## Methods
+
+### authorize
+
+▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `requiredPostingAuths` | `string` \| `string`[] | `undefined` | required posting authorities (can be an account name) |
+| `requiredAuths` | `string`[] | `[]` | required authorities (defaults to the empty array) |
+
+#### Returns
+
+[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+itself
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[authorize](#authorize)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:58
+
+___
+
+### build
+
+▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+Marks the current set of the hive apps operations as ready push
+
+#### Returns
+
+[`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[build](#build)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:84
+
+___
+
+### delegate
+
+▸ **delegate**(`workingAccount`, `maxRc`, `delegatee`, `...otherDelegatees`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+Delegates resource credits to given account(s)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which delegates resource credits (aka from) |
+| `maxRc` | `string` \| `number` \| `Long` | maximum resource credits delegated (must pe non-negative value) |
+| `delegatee` | `string` | target account to delegate. Remember you cannot delegate to yourself! |
+| `...otherDelegatees` | `string`[] | optional list of other target accounts to delegate. In the standard node configuration there may be 100 delegatees at most. |
+
+#### Returns
+
+[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:19
+
+___
+
+### removeDelegation
+
+▸ **removeDelegation**(`workingAccount`, `delegatee`, `...otherDelegatees`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+Removes resource credits delegation from given account(s)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which delegated resource credits in the past (aka from) |
+| `delegatee` | `string` | target account to remove the delegation from. |
+| `...otherDelegatees` | `string`[] | optional list of other target accounts to remove the delegation from. |
+
+#### Returns
+
+[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:45
 
 
 <a name="classeswaxformattermd"></a>

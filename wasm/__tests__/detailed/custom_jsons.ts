@@ -87,6 +87,49 @@ test.describe('Wax hive apps operations tests', () => {
     });
   });
 
+  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ page }) => {
+    const retVal = await page.evaluate(async() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(new ResourceCreditsOperationBuilder()
+        .delegate("initminer", 3000, "gtg")
+        .authorize("initminer")
+        .removeDelegation("initminer", "gtg")
+        .authorize("initminer")
+        .build());
+
+      return JSON.parse(tx.toApi());
+    });
+
+    expect(retVal).toStrictEqual({
+      expiration: "2023-11-09T21:51:27",
+      operations: [
+        {
+          type: "custom_json_operation",
+          value: {
+            id: "rc",
+            json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"3000\",\"extensions\":[]}]",
+            required_posting_auths: [
+              "initminer",
+            ]
+          }
+        },
+        {
+          type: "custom_json_operation",
+          value: {
+            id: "rc",
+            json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"0\",\"extensions\":[]}]",
+            required_posting_auths: [
+              "initminer",
+            ]
+          }
+        }
+      ],
+      ref_block_num: 1960,
+      ref_block_prefix: 3915120327
+    });
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

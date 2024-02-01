@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 import { customJsonsTransaction, protoVoteOp } from "../assets/data.proto-protocol";
 
-import { EFollowBlogAction, FollowOperationBuilder, IWaxBaseInterface, createWaxFoundation } from "../../dist/bundle/node";
+import { EFollowBlogAction, FollowOperationBuilder, ResourceCreditsOperationBuilder, IWaxBaseInterface, createWaxFoundation } from "../../dist/bundle/node";
 
 let wax: IWaxBaseInterface;
 
@@ -49,6 +49,47 @@ test.describe('Wax hive apps operations tests for Node.js', () => {
           value: {
             id: "follow",
             json: "[\"reblog\",{\"account\":\"initminer\",\"author\":\"gtg\",\"permlink\":\"first-post\"}]",
+            required_posting_auths: [
+              "initminer",
+            ]
+          }
+        }
+      ],
+      ref_block_num: 1960,
+      ref_block_prefix: 3915120327
+    });
+  });
+
+  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', () => {
+    const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+    tx.push(new ResourceCreditsOperationBuilder()
+      .delegate("initminer", 3000, "gtg")
+      .authorize("initminer")
+      .removeDelegation("initminer", "gtg")
+      .authorize("initminer")
+      .build());
+
+    expect(
+      JSON.parse(tx.toApi())
+    ).toStrictEqual({
+      expiration: "2023-11-09T21:51:27",
+      operations: [
+        {
+          type: "custom_json_operation",
+          value: {
+            id: "rc",
+            json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"3000\",\"extensions\":[]}]",
+            required_posting_auths: [
+              "initminer",
+            ]
+          }
+        },
+        {
+          type: "custom_json_operation",
+          value: {
+            id: "rc",
+            json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"0\",\"extensions\":[]}]",
             required_posting_auths: [
               "initminer",
             ]
