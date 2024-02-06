@@ -7,6 +7,7 @@
 
 - [EFollowBlogAction](#enumsefollowblogactionmd)
 - [EManabarType](#enumsemanabartypemd)
+- [ESupportedLanguages](#enumsesupportedlanguagesmd)
 
 ## Classes
 
@@ -22,6 +23,7 @@
 - [ApiTransaction](#classesapitransactionmd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
+- [CommunityOperationBuilder](#classescommunityoperationbuildermd)
 - [FindAccountsRequest](#classesfindaccountsrequestmd)
 - [FindAccountsResponse](#classesfindaccountsresponsemd)
 - [FindRcAccountsRequest](#classesfindrcaccountsrequestmd)
@@ -48,6 +50,7 @@
 
 ## Interfaces
 
+- [ICommunityProps](#interfacesicommunitypropsmd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
@@ -3894,6 +3897,346 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
 
 
+<a name="classescommunityoperationbuildermd"></a>
+
+# Class: CommunityOperationBuilder
+
+## Hierarchy
+
+- [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)\>
+
+  ↳ **`CommunityOperationBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new CommunityOperationBuilder**(): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+## Properties
+
+### body
+
+• `Protected` **body**: `object`
+
+Object body to stringify in the final hive apps operation form - <i>Stage</i>
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[body](#body)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:39
+
+___
+
+### id
+
+• `Protected` `Readonly` **id**: ``"community"``
+
+Id of your custom hive apps operation
+
+#### Overrides
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[id](#id)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:67
+
+## Methods
+
+### authorize
+
+▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `requiredPostingAuths` | `string` \| `string`[] | `undefined` | required posting authorities (can be an account name) |
+| `requiredAuths` | `string`[] | `[]` | required authorities (defaults to the empty array) |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[authorize](#authorize)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:58
+
+___
+
+### build
+
+▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+Marks the current set of the hive apps operations as ready push
+
+#### Returns
+
+[`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[build](#build)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:84
+
+___
+
+### flagPost
+
+▸ **flagPost**(`community`, `account`, `permlink`, `notes`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Flags post on given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | author of the post to flag |
+| `permlink` | `string` | post permlink to flag |
+| `notes` | `string` | notes on the flag |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:79
+
+___
+
+### mutePost
+
+▸ **mutePost**(`community`, `account`, `permlink`, `notes`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Mutes post on given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | author of the post to mute |
+| `permlink` | `string` | post permlink to mute |
+| `notes` | `string` | notes on the mute |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:232
+
+___
+
+### pinPost
+
+▸ **pinPost**(`community`, `account`, `permlink`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Pins given post on the community page
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | author of the post to pin |
+| `permlink` | `string` | post permlink to pin |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:160
+
+___
+
+### setUserTitle
+
+▸ **setUserTitle**(`community`, `account`, `title`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Sets title on the user
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | account to change the title |
+| `title` | `string` | new account title |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:102
+
+___
+
+### subscribe
+
+▸ **subscribe**(`community`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Subscribes to given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:122
+
+___
+
+### unmutePost
+
+▸ **unmutePost**(`community`, `account`, `permlink`, `notes`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Unmutes post on given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | author of the post to unmute |
+| `permlink` | `string` | post permlink to unmute |
+| `notes` | `string` | notes on the unmute |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:256
+
+___
+
+### unpinPost
+
+▸ **unpinPost**(`community`, `account`, `permlink`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Unpins given post from the community page
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `account` | `string` | author of the post to pin |
+| `permlink` | `string` | post permlink to pin |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:182
+
+___
+
+### unsubscribe
+
+▸ **unsubscribe**(`community`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Unsubscribes from given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:140
+
+___
+
+### updateProps
+
+▸ **updateProps**(`community`, `props`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+Updates props for the given community
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `community` | `string` | target community |
+| `props` | [`ICommunityProps`](#interfacesicommunitypropsmd) | community props |
+
+#### Returns
+
+[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:203
+
+
 <a name="classesfindaccountsrequestmd"></a>
 
 # Class: FindAccountsRequest
@@ -4058,7 +4401,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:11
+wasm/lib/detailed/custom_jsons/follow.ts:16
 
 ## Methods
 
@@ -4091,6 +4434,32 @@ wasm/lib/detailed/custom_jsons/builder.ts:58
 
 ___
 
+### blacklistBlog
+
+▸ **blacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to blacklist given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be blacklisted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:99
+
+___
+
 ### build
 
 ▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
@@ -4113,6 +4482,32 @@ wasm/lib/detailed/custom_jsons/builder.ts:84
 
 ___
 
+### followBlacklistBlog
+
+▸ **followBlacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to follow blacklist of given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to follow blacklisted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:113
+
+___
+
 ### followBlog
 
 ▸ **followBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
@@ -4124,7 +4519,7 @@ Allows to generate operation to follow specified list of blog accounts.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
-| `blog` | `string` | the blog account to be muted working_account |
+| `blog` | `string` | the blog account to be followed |
 | `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
 
 #### Returns
@@ -4135,7 +4530,56 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:23
+wasm/lib/detailed/custom_jsons/follow.ts:43
+
+___
+
+### followBodyBuilder
+
+▸ **followBodyBuilder**(`what`, `workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `what` | `string` |
+| `workingAccount` | `string` |
+| `blog` | `string` |
+| `...otherBlogs` | `string`[] |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:18
+
+___
+
+### followMutedBlog
+
+▸ **followMutedBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to follow muted of given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to follow muted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:155
 
 ___
 
@@ -4150,7 +4594,7 @@ Allows to generate operation to mute given list of blog accounts.
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
-| `blog` | `string` | the blog account to be muted working_account |
+| `blog` | `string` | the blog account to be muted |
 | `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
 
 #### Returns
@@ -4161,7 +4605,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:49
+wasm/lib/detailed/custom_jsons/follow.ts:71
 
 ___
 
@@ -4187,7 +4631,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:115
+wasm/lib/detailed/custom_jsons/follow.ts:236
 
 ___
 
@@ -4202,9 +4646,9 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `action` | [`EFollowBlogAction`](#enumsefollowblogactionmd) | determines scope of entries removal |
+| `action` | `number` | determines scope of entries removal |
 | `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/otherBlogs parameters (aka follower) |
-| `blog` | `string` | the blog account to be muted working_account |
+| `blog` | `string` | the blog account to be muted |
 | `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
 
 #### Returns
@@ -4213,7 +4657,137 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:74
+wasm/lib/detailed/custom_jsons/follow.ts:183
+
+___
+
+### unblacklistBlog
+
+▸ **unblacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to unblacklist given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be unblacklisted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:127
+
+___
+
+### unfollowBlacklistBlog
+
+▸ **unfollowBlacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to unfollow blacklist of given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to unfollow blacklisted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:141
+
+___
+
+### unfollowBlog
+
+▸ **unfollowBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Unfollows / unmutes given blog
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. Also it will be the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be unfollowed |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:57
+
+___
+
+### unfollowMutedBlog
+
+▸ **unfollowMutedBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to unfollow muted of given list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to unfollow muted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:169
+
+___
+
+### unmuteBlog
+
+▸ **unmuteBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Unfollows / unmutes given blog
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to be unmuted |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:85
 
 
 <a name="classesgetblockheaderrequestmd"></a>
@@ -4917,6 +5491,8 @@ wasm/lib/detailed/custom_jsons/builder.ts:28
 ## Hierarchy
 
 - **`HiveAppsOperationsBuilder`**
+
+  ↳ [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
 
   ↳ [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
 
@@ -6935,13 +7511,33 @@ wasm/lib/detailed/formatters/base.ts:73
 
 ## Enumeration Members
 
-### BOTH
+### ALL
 
-• **BOTH** = ``3``
+• **ALL** = ``32``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:10
+
+___
+
+### BLACKLIST\_BLOG
+
+• **BLACKLIST\_BLOG** = ``4``
 
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/follow.ts:7
+
+___
+
+### FOLLOW\_BLACKLIST\_BLOG
+
+• **FOLLOW\_BLACKLIST\_BLOG** = ``8``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:8
 
 ___
 
@@ -6952,6 +7548,16 @@ ___
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/follow.ts:5
+
+___
+
+### FOLLOW\_MUTED\_BLOG
+
+• **FOLLOW\_MUTED\_BLOG** = ``16``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:9
 
 ___
 
@@ -6997,6 +7603,228 @@ ___
 #### Defined in
 
 wasm/lib/detailed/chain_api.ts:17
+
+
+<a name="enumsesupportedlanguagesmd"></a>
+
+# Enumeration: ESupportedLanguages
+
+## Enumeration Members
+
+### CHINESE
+
+• **CHINESE** = ``"zh"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:6
+
+___
+
+### ENGLISH
+
+• **ENGLISH** = ``"en"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:4
+
+___
+
+### GERMAN
+
+• **GERMAN** = ``"de"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:12
+
+___
+
+### ITALIAN
+
+• **ITALIAN** = ``"it"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:11
+
+___
+
+### KOREAN
+
+• **KOREAN** = ``"kr"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:5
+
+___
+
+### MALAY
+
+• **MALAY** = ``"ms"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:7
+
+___
+
+### POLISH
+
+• **POLISH** = ``"pl"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:8
+
+___
+
+### PORTUGUESE
+
+• **PORTUGUESE** = ``"pt"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:9
+
+___
+
+### RUSSIAN
+
+• **RUSSIAN** = ``"ru"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:10
+
+___
+
+### SPANISH
+
+• **SPANISH** = ``"es"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:13
+
+___
+
+### SWEDISH
+
+• **SWEDISH** = ``"sv"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:14
+
+
+<a name="interfacesicommunitypropsmd"></a>
+
+# Interface: ICommunityProps
+
+## Properties
+
+### about
+
+• `Optional` **about**: `string`
+
+Community about
+
+**`Default`**
+
+```ts
+""
+```
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:31
+
+___
+
+### description
+
+• `Optional` **description**: `string`
+
+Community description
+
+**`Default`**
+
+```ts
+""
+```
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:55
+
+___
+
+### flag\_text
+
+• `Optional` **flag\_text**: `string`
+
+Community rules
+
+**`Default`**
+
+```ts
+""
+```
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:63
+
+___
+
+### is\_nsfw
+
+• `Optional` **is\_nsfw**: `boolean`
+
+Is Not Safe For Work
+
+**`Default`**
+
+```ts
+false
+```
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:39
+
+___
+
+### lang
+
+• `Optional` **lang**: `string`
+
+Community language
+
+**`Default`**
+
+```ts
+ESupportedLanguages.ENGLISH
+```
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:47
+
+___
+
+### title
+
+• **title**: `string`
+
+Community title
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:23
 
 
 <a name="interfacesiformatfunctionargumentsmd"></a>
