@@ -6,7 +6,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { HiveAppsOperation, NaiAsset } from "./detailed";
+import type { IHiveAppsOperation, NaiAsset } from "./detailed";
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -71,13 +71,13 @@ export interface ITransactionBuilder {
   /**
    * Pushes given operation to the operations array in the transaction
    *
-   * @param {operation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   * @param {operation | IHiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
    *
    * @returns {ITransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | HiveAppsOperation): ITransactionBuilder;
+  push(op: operation | IHiveAppsOperation): ITransactionBuilder;
 
   /**
    * Generates digest of the transaction for signing

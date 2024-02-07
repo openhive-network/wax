@@ -19,7 +19,7 @@ export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<R
   public delegate(workingAccount: TAccountName, maxRc: string | number | Long, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperationBuilder {
     const delegatees = [ delegatee, ...otherDelegatees ];
 
-    this.body = [
+    this.body.push([
       "delegate_rc",
       {
         from: workingAccount,
@@ -27,7 +27,7 @@ export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<R
         max_rc: Long.fromValue(maxRc),
         extensions: []
       }
-    ];
+    ]);
 
     return this;
   }

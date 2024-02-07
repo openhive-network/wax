@@ -46,7 +46,7 @@ test.describe('Wax hive apps operations tests', () => {
           .authorize("intiminer")
           .muteBlog("initminer", "spammer")
           .authorize("initminer")
-          .resetBlogList(3, "initminer", "spammer")
+          .resetBlogList(2, "initminer", "spammer")
           .authorize("initminer")
           .build());
 

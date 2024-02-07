@@ -77,7 +77,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public flagPost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "flagPost",
       {
         community,
@@ -85,7 +85,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
         permlink,
         notes
       }
-    ];
+    ]);
 
     return this;
   }
@@ -100,14 +100,14 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public setUserTitle(community: string, account: TAccountName, title: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "setUserTitle",
       {
         community,
         account,
         title
       }
-    ];
+    ]);
 
     return this;
   }
@@ -120,12 +120,12 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public subscribe(community: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "subscribe",
       {
         community
       }
-    ];
+    ]);
 
     return this;
   }
@@ -138,12 +138,12 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public unsubscribe(community: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "unsubscribe",
       {
         community
       }
-    ];
+    ]);
 
     return this;
   }
@@ -158,14 +158,14 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public pinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "pinPost",
       {
         community,
         account,
         permlink
       }
-    ];
+    ]);
 
     return this;
   }
@@ -180,14 +180,14 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public unpinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "unpinPost",
       {
         community,
         account,
         permlink
       }
-    ];
+    ]);
 
     return this;
   }
@@ -201,7 +201,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public updateProps(community: string, props: ICommunityProps): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "updateProps",
       {
         community,
@@ -214,7 +214,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
           lang: props.lang ?? ESupportedLanguages.ENGLISH
         } as Required<ICommunityProps>
       }
-    ];
+    ]);
 
     return this;
   }
@@ -230,7 +230,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public mutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "mutePost",
       {
         community,
@@ -238,7 +238,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
         permlink,
         notes
       }
-    ];
+    ]);
 
     return this;
   }
@@ -254,7 +254,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @returns {CommunityOperationBuilder} itself
    */
   public unmutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
-    this.body = [
+    this.body.push([
       "unmutePost",
       {
         community,
@@ -262,7 +262,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
         permlink,
         notes
       }
-    ];
+    ]);
 
     return this;
   }

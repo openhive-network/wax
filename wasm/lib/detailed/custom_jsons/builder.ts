@@ -1,15 +1,30 @@
-import type { custom_json, operation } from '../../protocol';
+import type { custom_json } from '../../protocol';
 import type { ITransactionBuilder } from '../../interfaces';
+import type { TransactionBuilder } from '../transaction_builder';
+
 import { WaxError } from '../../errors.js';
 import Long from 'long';
 
 export type TAccountName = string;
 
-export class HiveAppsOperation {
+export interface IHiveAppsOperation {
+  /**
+   * Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
+   *
+   * @type {number}
+   */
+  length: number;
+}
+
+export class HiveAppsOperation implements IHiveAppsOperation {
   /**
    * @internal
    */
   public readonly customJsonContainer: Array<{ custom_json: custom_json }> = [];
+
+  public get length(): number {
+    return this.customJsonContainer.length;
+  }
 
   /**
    * @internal
@@ -21,22 +36,24 @@ export class HiveAppsOperation {
   }
 
   /**
-   * Flushes (pushes) the staged operations to the given container
+   * Flushes (pushes) the staged operations to the TransactionBuilder
    *
-   * @param {Array<operation>} ops operations array to flush the hive apps operations to
+   * @param {TransactionBuilder} tx transaction builder instance
+   *
+   * @internal
    */
-  public flushOperations(ops: Array<operation>): void {
-    ops.push(...this.customJsonContainer);
+  public flushOperations(tx: TransactionBuilder): void {
+    this.customJsonContainer.forEach(tx.push.bind(tx));
   }
 }
 
 export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperationsBuilder<any, BodyT>, BodyT extends object = object> {
   /**
-   * Object body to stringify in the final hive apps operation form - <i>Stage</i>
+   * Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
    *
-   * @type {BodyT}
+   * @type {Array<BodyT>}
    */
-  protected body: BodyT = {} as BodyT;
+  protected body: Array<BodyT> = [];
 
   /**
    * Id of your custom hive apps operation
@@ -62,16 +79,17 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
     if(auths.length === 0 && postingAuths.length === 0)
       throw new WaxError("Missing authority");
 
-    this.builtCustomJsons.push({
-      id: this.id,
-      // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
-      // This may be a temporary solution that can be replaced by writing our custom JSON stringifier with nested object iteration:
-      json: JSON.stringify(this.body, (_key: string, value: any) => value instanceof Long ? value.toString() : value),
-      required_auths: auths,
-      required_posting_auths: postingAuths
-    });
+    for(const body of this.body)
+      this.builtCustomJsons.push({
+        id: this.id,
+        // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
+        // This may be a temporary solution that can be replaced by writing our custom JSON stringifier with nested object iteration:
+        json: JSON.stringify(body, (_key: string, value: any) => value instanceof Long ? value.toString() : value),
+        required_auths: auths,
+        required_posting_auths: postingAuths
+      });
 
-    this.body = {} as BodyT;
+    this.body.splice(0);
 
     return this as unknown as ChildT;
   }
@@ -79,9 +97,9 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
   /**
    * Marks the current set of the hive apps operations as ready push
    *
-   * @returns {HiveAppsOperation} instance of the hive apps operation class that you can pass to the {@link ITransactionBuilder.push}
+   * @returns {IHiveAppsOperation} instance of the hive apps operation class that you can pass to the {@link ITransactionBuilder.push}
    */
-  public build(): HiveAppsOperation {
+  public build(): IHiveAppsOperation {
     return this.builtCustomJsons;
   }
 }

@@ -52,6 +52,7 @@
 
 - [ICommunityProps](#interfacesicommunitypropsmd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
+- [IHiveAppsOperation](#interfacesihiveappsoperationmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [IManabarData](#interfacesimanabardatamd)
@@ -202,7 +203,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:6
+wasm/lib/detailed/custom_jsons/builder.ts:8
 
 ___
 
@@ -3925,9 +3926,9 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 
 ### body
 
-• `Protected` **body**: `object`
+• `Protected` **body**: `object`[] = `[]`
 
-Object body to stringify in the final hive apps operation form - <i>Stage</i>
+Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Inherited from
 
@@ -3935,7 +3936,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:39
+wasm/lib/detailed/custom_jsons/builder.ts:56
 
 ___
 
@@ -3980,19 +3981,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:58
+wasm/lib/detailed/custom_jsons/builder.ts:75
 
 ___
 
 ### build
 
-▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`HiveAppsOperation`](#classeshiveappsoperationmd)
+[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -4002,7 +4003,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:84
+wasm/lib/detailed/custom_jsons/builder.ts:102
 
 ___
 
@@ -4375,9 +4376,9 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:31
 
 ### body
 
-• `Protected` **body**: `object`
+• `Protected` **body**: `object`[] = `[]`
 
-Object body to stringify in the final hive apps operation form - <i>Stage</i>
+Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Inherited from
 
@@ -4385,7 +4386,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:39
+wasm/lib/detailed/custom_jsons/builder.ts:56
 
 ___
 
@@ -4401,7 +4402,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:16
+wasm/lib/detailed/custom_jsons/follow.ts:11
 
 ## Methods
 
@@ -4430,7 +4431,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:58
+wasm/lib/detailed/custom_jsons/builder.ts:75
 
 ___
 
@@ -4456,19 +4457,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:99
+wasm/lib/detailed/custom_jsons/follow.ts:111
 
 ___
 
 ### build
 
-▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`HiveAppsOperation`](#classeshiveappsoperationmd)
+[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -4478,7 +4479,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:84
+wasm/lib/detailed/custom_jsons/builder.ts:102
 
 ___
 
@@ -4504,7 +4505,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:113
+wasm/lib/detailed/custom_jsons/follow.ts:139
 
 ___
 
@@ -4530,7 +4531,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:43
+wasm/lib/detailed/custom_jsons/follow.ts:41
 
 ___
 
@@ -4553,7 +4554,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:18
+wasm/lib/detailed/custom_jsons/follow.ts:13
 
 ___
 
@@ -4579,7 +4580,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:155
+wasm/lib/detailed/custom_jsons/follow.ts:195
 
 ___
 
@@ -4605,7 +4606,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:71
+wasm/lib/detailed/custom_jsons/follow.ts:69
 
 ___
 
@@ -4631,7 +4632,59 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:236
+wasm/lib/detailed/custom_jsons/follow.ts:264
+
+___
+
+### resetAllBlog
+
+▸ **resetAllBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to reset all lists of given blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to reset the lists |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:223
+
+___
+
+### resetBlacklistBlog
+
+▸ **resetBlacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to reset blacklist list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to reset the blacklist list |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:97
 
 ___
 
@@ -4646,7 +4699,7 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `action` | `number` | determines scope of entries removal |
+| `action` | [`EFollowBlogAction`](#enumsefollowblogactionmd) | determines scope of entries removal |
 | `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/otherBlogs parameters (aka follower) |
 | `blog` | `string` | the blog account to be muted |
 | `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
@@ -4657,7 +4710,59 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:183
+wasm/lib/detailed/custom_jsons/follow.ts:237
+
+___
+
+### resetFollowBlacklistBlog
+
+▸ **resetFollowBlacklistBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to reset follow blacklist list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to reset the follow blacklist list |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:125
+
+___
+
+### resetFollowMutedBlog
+
+▸ **resetFollowMutedBlog**(`workingAccount`, `blog`, `...otherBlogs`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+Allows to generate operation to reset follow blacklist list of blog accounts.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `workingAccount` | `string` | The account which has to authorize transaction. This is the account which follows the ones specified by the blog/other_blogs parameters (aka follower) |
+| `blog` | `string` | the blog account to reset the follow blacklist list |
+| `...otherBlogs` | `string`[] | optional list of other blog accounts to be concatenated and build single list |
+
+#### Returns
+
+[`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:181
 
 ___
 
@@ -4683,7 +4788,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:127
+wasm/lib/detailed/custom_jsons/follow.ts:153
 
 ___
 
@@ -4709,7 +4814,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:141
+wasm/lib/detailed/custom_jsons/follow.ts:167
 
 ___
 
@@ -4735,7 +4840,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:57
+wasm/lib/detailed/custom_jsons/follow.ts:55
 
 ___
 
@@ -4761,7 +4866,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:169
+wasm/lib/detailed/custom_jsons/follow.ts:209
 
 ___
 
@@ -4787,7 +4892,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:85
+wasm/lib/detailed/custom_jsons/follow.ts:83
 
 
 <a name="classesgetblockheaderrequestmd"></a>
@@ -5444,6 +5549,10 @@ wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:13
 
 # Class: HiveAppsOperation
 
+## Implements
+
+- [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+
 ## Constructors
 
 ### constructor
@@ -5454,27 +5563,25 @@ wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:13
 
 [`HiveAppsOperation`](#classeshiveappsoperationmd)
 
-## Methods
+## Accessors
 
-### flushOperations
+### length
 
-▸ **flushOperations**(`ops`): `void`
+• `get` **length**(): `number`
 
-Flushes (pushes) the staged operations to the given container
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `ops` | [`operation`](#operation)[] | operations array to flush the hive apps operations to |
+Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
 
 #### Returns
 
-`void`
+`number`
+
+#### Implementation of
+
+[IHiveAppsOperation](#interfacesihiveappsoperationmd).[length](#length)
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:28
+wasm/lib/detailed/custom_jsons/builder.ts:25
 
 
 <a name="classeshiveappsoperationsbuildermd"></a>
@@ -5519,13 +5626,13 @@ wasm/lib/detailed/custom_jsons/builder.ts:28
 
 ### body
 
-• `Protected` **body**: `BodyT`
+• `Protected` **body**: `BodyT`[] = `[]`
 
-Object body to stringify in the final hive apps operation form - <i>Stage</i>
+Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:39
+wasm/lib/detailed/custom_jsons/builder.ts:56
 
 ___
 
@@ -5535,7 +5642,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:48
+wasm/lib/detailed/custom_jsons/builder.ts:65
 
 ___
 
@@ -5547,7 +5654,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:46
+wasm/lib/detailed/custom_jsons/builder.ts:63
 
 ## Methods
 
@@ -5572,25 +5679,25 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:58
+wasm/lib/detailed/custom_jsons/builder.ts:75
 
 ___
 
 ### build
 
-▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`HiveAppsOperation`](#classeshiveappsoperationmd)
+[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:84
+wasm/lib/detailed/custom_jsons/builder.ts:102
 
 
 <a name="classesnaiassetmd"></a>
@@ -6906,9 +7013,9 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 ### body
 
-• `Protected` **body**: `object`
+• `Protected` **body**: `object`[] = `[]`
 
-Object body to stringify in the final hive apps operation form - <i>Stage</i>
+Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Inherited from
 
@@ -6916,7 +7023,7 @@ Object body to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:39
+wasm/lib/detailed/custom_jsons/builder.ts:56
 
 ___
 
@@ -6961,19 +7068,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:58
+wasm/lib/detailed/custom_jsons/builder.ts:75
 
 ___
 
 ### build
 
-▸ **build**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`HiveAppsOperation`](#classeshiveappsoperationmd)
+[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -6983,7 +7090,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:84
+wasm/lib/detailed/custom_jsons/builder.ts:102
 
 ___
 
@@ -7511,19 +7618,9 @@ wasm/lib/detailed/formatters/base.ts:73
 
 ## Enumeration Members
 
-### ALL
+### BOTH
 
-• **ALL** = ``32``
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/follow.ts:10
-
-___
-
-### BLACKLIST\_BLOG
-
-• **BLACKLIST\_BLOG** = ``4``
+• **BOTH** = ``2``
 
 #### Defined in
 
@@ -7531,19 +7628,9 @@ wasm/lib/detailed/custom_jsons/follow.ts:7
 
 ___
 
-### FOLLOW\_BLACKLIST\_BLOG
-
-• **FOLLOW\_BLACKLIST\_BLOG** = ``8``
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/follow.ts:8
-
-___
-
 ### FOLLOW\_BLOG
 
-• **FOLLOW\_BLOG** = ``1``
+• **FOLLOW\_BLOG** = ``0``
 
 #### Defined in
 
@@ -7551,19 +7638,9 @@ wasm/lib/detailed/custom_jsons/follow.ts:5
 
 ___
 
-### FOLLOW\_MUTED\_BLOG
-
-• **FOLLOW\_MUTED\_BLOG** = ``16``
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/follow.ts:9
-
-___
-
 ### MUTE\_BLOG
 
-• **MUTE\_BLOG** = ``2``
+• **MUTE\_BLOG** = ``1``
 
 #### Defined in
 
@@ -7872,6 +7949,27 @@ Target formatter data that might have been previously changed by other formatter
 #### Defined in
 
 wasm/lib/detailed/formatters/types.ts:68
+
+
+<a name="interfacesihiveappsoperationmd"></a>
+
+# Interface: IHiveAppsOperation
+
+## Implemented by
+
+- [`HiveAppsOperation`](#classeshiveappsoperationmd)
+
+## Properties
+
+### length
+
+• **length**: `number`
+
+Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:16
 
 
 <a name="interfacesihiveassetdatamd"></a>
@@ -8417,7 +8515,7 @@ Pushes given operation to the operations array in the transaction
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `op` | [`operation`](#operation) \| [`HiveAppsOperation`](#classeshiveappsoperationmd) | operation to append to the transaction (can be hive apps operation) |
+| `op` | [`operation`](#operation) \| [`IHiveAppsOperation`](#interfacesihiveappsoperationmd) | operation to append to the transaction (can be hive apps operation) |
 
 #### Returns
 

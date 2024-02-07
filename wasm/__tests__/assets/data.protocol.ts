@@ -217,7 +217,17 @@ export const customJsonsTransaction = {
           "initminer"
         ],
         id: "follow",
-        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_all_lists\"]}]"
+        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_following_list\"]}]"
+      }
+    },
+    {
+      type: "custom_json_operation",
+      value: {
+        required_posting_auths: [
+          "initminer"
+        ],
+        id: "follow",
+        json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_muted_list\"]}]"
       }
     }
   ]

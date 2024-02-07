@@ -2,12 +2,10 @@ import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
 import { WaxError } from '../../errors.js';
 
 export enum EFollowBlogAction {
-  FOLLOW_BLOG = 0b000001,
-  MUTE_BLOG   = 0b000010,
-  BOTH        = FOLLOW_BLOG | MUTE_BLOG
+  FOLLOW_BLOG,
+  MUTE_BLOG,
+  BOTH
 };
-
-const followKeys = Object.keys(EFollowBlogAction) as Array<keyof typeof EFollowBlogAction>;
 
 export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOperationBuilder> {
   protected readonly id = "follow";
@@ -18,14 +16,14 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
     if(Array.isArray(following) && following.length > 100)
       throw new WaxError('Too long following list. Accepted max length: 100');
 
-    this.body = [
+    this.body.push([
       this.id,
       {
         follower: workingAccount,
         following,
         what: [ what ]
       }
-    ];
+    ]);
 
     return this;
   }
@@ -236,33 +234,19 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be muted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    */
-  public resetBlogList(action: EFollowBlogAction | number, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;
-
-    const actions: string[] = [];
-
-    for(let i = followKeys.length / 2; i < followKeys.length; ++i)
-      if(action & EFollowBlogAction[followKeys[i]]) {
-        switch(followKeys[i]) {
-          case "FOLLOW_BLOG":
-            actions.push("reset_following_list");
-            break;
-          case "MUTE_BLOG":
-            actions.push("reset_muted_list");
-            break;
-          default:
-            throw new WaxError(`Unknown action to reset blog list: ${action}`);
-        }
-      }
-
-    this.body = [
-      this.id,
-      {
-        follower: workingAccount,
-        following,
-        what: actions
-      }
-    ];
+  public resetBlogList(action: EFollowBlogAction, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+    switch(action) {
+      case EFollowBlogAction.FOLLOW_BLOG:
+        this.followBodyBuilder("reset_following_list", workingAccount, blog, ...otherBlogs);
+        break;
+      case EFollowBlogAction.BOTH: // Intentional fall-through
+        this.followBodyBuilder("reset_following_list", workingAccount, blog, ...otherBlogs);
+      case EFollowBlogAction.MUTE_BLOG:
+        this.followBodyBuilder("reset_muted_list", workingAccount, blog, ...otherBlogs);
+        break;
+      default:
+        throw new WaxError(`Unknown reset action: ${action}`);
+    }
 
     return this;
   }
@@ -278,14 +262,14 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public reblog(workingAccount: TAccountName, author: TAccountName, permlink: string): FollowOperationBuilder {
-    this.body = [
+    this.body.push([
       "reblog",
       {
         account: workingAccount,
         author,
         permlink
       }
-    ];
+    ]);
 
     return this;
   }
