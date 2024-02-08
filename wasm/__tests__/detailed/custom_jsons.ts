@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import "../assets/data";
-import { customJsonsTransaction, protoVoteOp } from '../assets/data.proto-protocol';
+import { customCommunityJsonsTransaction, customJsonsTransaction, customMultipleJsonsTransaction, protoVoteOp } from '../assets/data.proto-protocol';
 
 let browser!: ChromiumBrowser;
 
@@ -35,7 +35,7 @@ test.describe('Wax hive apps operations tests', () => {
   });
 
   test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ page }) => {
-    const retVal = await page.evaluate(async(protoVoteOp) => {
+    const retVal = await page.evaluate((protoVoteOp) => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(protoVoteOp);
@@ -43,7 +43,7 @@ test.describe('Wax hive apps operations tests', () => {
       tx.push(
         new FollowOperationBuilder()
           .followBlog("initminer", "gtg")
-          .authorize("intiminer")
+          .authorize("initminer")
           .muteBlog("initminer", "spammer")
           .authorize("initminer")
           .resetBlogList(2, "initminer", "spammer")
@@ -56,8 +56,85 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ page }) => {
+  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ page }) => {
+    const retVal = await page.evaluate((protoVoteOp) => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(protoVoteOp);
+
+      tx.push(
+        new FollowOperationBuilder()
+          .followBlog("initminer", "gtg")
+          .muteBlog("initminer", "spammer")
+          .resetBlogList(0, "initminer", "spammer")
+          .resetBlogList(1, "initminer", "spammer")
+          .authorize("initminer")
+          .build());
+
+      return JSON.parse(tx.toApi());
+    }, protoVoteOp);
+
+    expect(retVal).toStrictEqual(customJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ page }) => {
+    const retVal = await page.evaluate(() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(
+        new FollowOperationBuilder()
+          .followBlacklistBlog("initminer", "gtg")
+          .followMutedBlog("initminer", "gtg")
+          .resetAllBlog("initminer", "gtg")
+          .resetBlacklistBlog("initminer", "gtg")
+          .resetFollowBlacklistBlog("initminer", "gtg")
+          .resetFollowMutedBlog("initminer", "gtg")
+          .unblacklistBlog("initminer", "gtg")
+          .unfollowBlacklistBlog("initminer", "gtg")
+          .unfollowBlog("initminer", "gtg")
+          .unfollowMutedBlog("initminer", "gtg")
+          .authorize("initminer")
+          .build());
+
+      return JSON.parse(tx.toApi());
+    });
+
+    expect(retVal).toStrictEqual(customMultipleJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ page }) => {
     const retVal = await page.evaluate(async() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(
+        new CommunityOperationBuilder()
+          .flagPost("mycomm", "gtg", "first-post", "note")
+          .mutePost("mycomm", "gtg", "first-post", "note")
+          .pinPost("mycomm", "gtg", "first-post")
+          .subscribe("mycomm")
+          .unmutePost("mycomm", "gtg", "first-post", "note")
+          .unpinPost("mycomm", "gtg", "first-post")
+          .unsubscribe("mycomm")
+          .setUserTitle("mycomm", "gtg", "first-post")
+          .updateProps("mycomm", {
+            title: "Custom title",
+            about: "This community is the best!",
+            description: "Accepting all kind of users",
+            flag_text: "1. Smoking here is not allowed",
+            is_nsfw: false,
+            lang: "en"
+          })
+          .authorize("gtg")
+          .build());
+
+      return JSON.parse(tx.toApi());
+    });
+
+    expect(retVal).toStrictEqual(customCommunityJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ page }) => {
+    const retVal = await page.evaluate(() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(new FollowOperationBuilder()
@@ -88,7 +165,7 @@ test.describe('Wax hive apps operations tests', () => {
   });
 
   test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ page }) => {
-    const retVal = await page.evaluate(async() => {
+    const retVal = await page.evaluate(() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(new ResourceCreditsOperationBuilder()

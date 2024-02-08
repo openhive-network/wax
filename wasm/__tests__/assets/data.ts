@@ -4,7 +4,8 @@ import type WaxModule from '../../dist/lib/wax_module';
 import type {
   createWaxFoundation as createBaseT, createHiveChain as createHiveChainT,
   IWaxBaseInterface, IHiveChainInterface, BroadcastTransactionRequest as BroadcastTransactionRequestT,
-  FollowOperationBuilder as FollowOperationBuilderT, ResourceCreditsOperationBuilder as ResourceCreditsOperationBuilderT
+  FollowOperationBuilder as FollowOperationBuilderT, ResourceCreditsOperationBuilder as ResourceCreditsOperationBuilderT,
+  CommunityOperationBuilder as CommunityOperationBuilderT
 } from '../../dist/lib/web';
 import type {
   MainModule, proto_protocol, protocol as protocolT, result as resultT
@@ -20,6 +21,7 @@ declare global {
   var createHiveChain: typeof createHiveChainT;
   var BroadcastTransactionRequest: typeof BroadcastTransactionRequestT;
   var ResourceCreditsOperationBuilder: typeof ResourceCreditsOperationBuilderT;
+  var CommunityOperationBuilder: typeof CommunityOperationBuilderT;
   var FollowOperationBuilder: typeof FollowOperationBuilderT;
   var provider: MainModule;
   var protocol: protocolT;

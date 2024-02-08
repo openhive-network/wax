@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-import { customJsonsTransaction, protoVoteOp } from "../assets/data.proto-protocol";
+import { customCommunityJsonsTransaction, customJsonsTransaction, customMultipleJsonsTransaction, protoVoteOp } from "../assets/data.proto-protocol";
 
-import { EFollowBlogAction, FollowOperationBuilder, ResourceCreditsOperationBuilder, IWaxBaseInterface, createWaxFoundation } from "../../dist/bundle/node";
+import { EFollowBlogAction, FollowOperationBuilder, CommunityOperationBuilder, ResourceCreditsOperationBuilder, IWaxBaseInterface, createWaxFoundation } from "../../dist/bundle/node";
 
 let wax: IWaxBaseInterface;
 
@@ -19,7 +19,7 @@ test.describe('Wax hive apps operations tests for Node.js', () => {
     tx.push(
       new FollowOperationBuilder()
         .followBlog("initminer", "gtg")
-        .authorize("intiminer")
+        .authorize("initminer")
         .muteBlog("initminer", "spammer")
         .authorize("initminer")
         .resetBlogList(EFollowBlogAction.BOTH, "initminer", "spammer")
@@ -29,6 +29,77 @@ test.describe('Wax hive apps operations tests for Node.js', () => {
     expect(
       JSON.parse(tx.toApi())
     ).toStrictEqual(customJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', () => {
+    const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+    tx.push(protoVoteOp);
+
+    tx.push(
+      new FollowOperationBuilder()
+        .followBlog("initminer", "gtg")
+        .muteBlog("initminer", "spammer")
+        .resetBlogList(EFollowBlogAction.FOLLOW_BLOG, "initminer", "spammer")
+        .resetBlogList(EFollowBlogAction.MUTE_BLOG, "initminer", "spammer")
+        .authorize("initminer")
+        .build());
+
+    expect(
+      JSON.parse(tx.toApi())
+    ).toStrictEqual(customJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', () => {
+    const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+    tx.push(
+      new FollowOperationBuilder()
+        .followBlacklistBlog("initminer", "gtg")
+        .followMutedBlog("initminer", "gtg")
+        .resetAllBlog("initminer", "gtg")
+        .resetBlacklistBlog("initminer", "gtg")
+        .resetFollowBlacklistBlog("initminer", "gtg")
+        .resetFollowMutedBlog("initminer", "gtg")
+        .unblacklistBlog("initminer", "gtg")
+        .unfollowBlacklistBlog("initminer", "gtg")
+        .unfollowBlog("initminer", "gtg")
+        .unfollowMutedBlog("initminer", "gtg")
+        .authorize("initminer")
+        .build());
+
+    expect(
+      JSON.parse(tx.toApi())
+    ).toStrictEqual(customMultipleJsonsTransaction);
+  });
+
+  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', () => {
+    const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+    tx.push(
+      new CommunityOperationBuilder()
+        .flagPost("mycomm", "gtg", "first-post", "note")
+        .mutePost("mycomm", "gtg", "first-post", "note")
+        .pinPost("mycomm", "gtg", "first-post")
+        .subscribe("mycomm")
+        .unmutePost("mycomm", "gtg", "first-post", "note")
+        .unpinPost("mycomm", "gtg", "first-post")
+        .unsubscribe("mycomm")
+        .setUserTitle("mycomm", "gtg", "first-post")
+        .updateProps("mycomm", {
+          title: "Custom title",
+          about: "This community is the best!",
+          description: "Accepting all kind of users",
+          flag_text: "1. Smoking here is not allowed",
+          is_nsfw: false,
+          lang: "en"
+        })
+        .authorize("gtg")
+        .build());
+
+    expect(
+      JSON.parse(tx.toApi())
+    ).toStrictEqual(customCommunityJsonsTransaction);
   });
 
   test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', () => {
