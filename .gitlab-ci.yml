@@ -88,7 +88,7 @@ wax_wasm_proto_tsc_generation:
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
   script:
-    - pnpm install
+    - pnpm install --frozen-lockfile
     - npm run build
   after_script:
     - npm pack --pack-destination "$CI_PROJECT_DIR/wasm/dist"
@@ -121,7 +121,7 @@ wax_wasm_build_tests:
       artifacts: true
   script:
     - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hive-wax-*.tgz --strip-components=1
-    - pnpm install
+    - pnpm install --frozen-lockfile
     - npm run build:test
   artifacts:
     paths:
@@ -203,7 +203,7 @@ test_wax_protobuf_python_examples:
     FF_NETWORK_PER_BUILD: 1
 
   before_script:
-    - pnpm install
+    - pnpm install --frozen-lockfile
 
   tags:
     - public-runner-docker
