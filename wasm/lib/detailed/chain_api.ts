@@ -165,6 +165,9 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
     const args = await this.getManabarDataArguments(accountName, manabarType);
 
+    if(Long.fromValue(args[1]).equals(Long.ZERO))
+      return new Date();
+
     const time = super.calculateManabarFullRegenerationTime(
       ...args
     );

@@ -67,6 +67,13 @@ export class WaxBaseApi implements IWaxBaseInterface {
     if(typeof currentManaLH !== "object")
       currentManaLH = Long.fromValue(currentManaLH, true);
 
+    if(maxManaLH.equals(0))
+      return {
+        max: maxManaLH,
+        current: Long.ZERO,
+        percent: 100
+      };
+
     const current = Long.fromString(this.extract(this.proto.cpp_calculate_current_manabar_value(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)), true);
 
     const percent = this.calculateManabarPercent(current, maxManaLH);
@@ -84,6 +91,9 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     if(typeof currentManaLH !== "object")
       currentManaLH = Long.fromString(currentManaLH.toString(), true);
+
+    if(maxManaLH.equals(0))
+      return Math.floor(Date.now() / 1000);
 
     return Number.parseInt(this.extract(this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)));
   }
