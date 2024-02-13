@@ -20,18 +20,6 @@ test.describe('Wax object interface formatters tests', () => {
 
     await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
     await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
-
-    await page.evaluate(async () => {
-      const chain = await createHiveChain();
-
-      Object.defineProperties(window, {
-        chain: {
-          get() {
-            return chain;
-          }
-        }
-      });
-    });
   });
 
   test('Should be able to format asset using default formatters from hive chain interface', async({ page }) => {

@@ -12,11 +12,6 @@ export const numToHighLow = (value: number): [ number, number ] => {
   return [ long.low, long.high ];
 };
 
-export enum ErrorCodes {
-  FAIL = 0,
-  OK = 1
-}
-
 export const naiAsset = {
   amount: "300000",
   precision: 3,

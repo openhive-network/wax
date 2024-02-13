@@ -2,8 +2,10 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { test, expect } from '@playwright/test';
 
 import "../assets/data";
-import { ErrorCodes, numToHighLow, protoTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
-import { result as resultT } from '../../dist/lib/wax_module';
+import { ErrorCodes } from "../assets/globals-wasm";
+import { numToHighLow, protoTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
+
+import "../assets/globals-wasm";
 
 let browser!: ChromiumBrowser;
 
@@ -21,45 +23,7 @@ test.describe('WASM Proto Protocol', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/assets/test.html`);
-    await page.waitForURL('**/test.html', { waitUntil: 'load' });
-
-    await page.evaluate(async (ErrorCodes) => {
-      const provider = await wax();
-      const protocol = new provider.protocol();
-      const proto_protocol = new provider.proto_protocol();
-
-      Object.defineProperties(window, {
-        protocol: {
-          get() {
-            return protocol;
-          }
-        },
-        proto_protocol: {
-          get() {
-            return proto_protocol;
-          }
-        },
-        provider: {
-          get() {
-            return provider;
-          }
-        },
-        /// Helper function for transforming result type to the node-understandable type (value.value is a non-serialable function)
-        transform: {
-          get() {
-            return (result: resultT) => {
-              const value = result.value === provider.error_code.ok ? ErrorCodes.OK : ErrorCodes.FAIL;
-
-              return {
-                ...result,
-                value
-              };
-            };
-          }
-        }
-      });
-    }, ErrorCodes);
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-wasm.html", { waitUntil: "load" });
   });
 
   test('Should be able to generate random private key', async ({ page }) => {

@@ -22,24 +22,6 @@ test.describe('Wax object interface chain tests', () => {
 
     await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
     await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
-
-    await page.evaluate(async () => {
-      const bk = await beekeeperFactory();
-      const chain = await createHiveChain();
-
-      Object.defineProperties(window, {
-        chain: {
-          get() {
-            return chain;
-          }
-        },
-        bk: {
-          get() {
-            return bk;
-          }
-        }
-      });
-    });
   });
 
   test('Should be able to create and sign transaction using object interface', async ({ page }) => {

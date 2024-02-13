@@ -21,24 +21,6 @@ test.describe('Wax object interface foundation tests', () => {
 
     await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
     await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
-
-    await page.evaluate(async () => {
-      const bk = await beekeeperFactory();
-      const wx = await createWaxFoundation();
-
-      Object.defineProperties(window, {
-        wx: {
-          get() {
-            return wx;
-          }
-        },
-        bk: {
-          get() {
-            return bk;
-          }
-        }
-      });
-    });
   });
 
   test('Should be able to convert API asset to the proper HIVE asset data', async ({ page }) => {

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wax Test</title>
+</head>
+<body id="waxbody">
+  <script type="importmap">
+    {
+      "imports": {
+        "../../dist/bundle/web-full.js": "/wasm/dist/bundle/web-full.js",
+        "@hive/beekeeper": "/node_modules/@hive/beekeeper/dist/bundle/web.js"
+      }
+    }
+  </script>
+  <script type="module" src="/wasm/dist/assets/globals-chain.js"></script>
+</body>
+</html>

@@ -20,18 +20,6 @@ test.describe('Wax hive apps operations tests', () => {
 
     await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
     await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
-
-    await page.evaluate(async () => {
-      const wx = await createWaxFoundation();
-
-      Object.defineProperties(window, {
-        wx: {
-          get() {
-            return wx;
-          }
-        }
-      });
-    });
   });
 
   test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ page }) => {

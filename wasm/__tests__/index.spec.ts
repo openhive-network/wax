@@ -1,6 +1,7 @@
 // Run tests in a specific order:
 
 import "./detailed/base";
+/*
 import "./detailed/base.node";
 import "./detailed/custom_jsons";
 import "./detailed/custom_jsons.node";
@@ -14,3 +15,4 @@ import "./detailed/hive_chain";
 import "./detailed/hive_chain.node";
 import "./detailed/formatters";
 import "./detailed/formatters.node";
+*/

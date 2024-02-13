@@ -1,8 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import type WaxModule from '../../dist/lib/wax_module';
-declare var wax: typeof WaxModule;
+import { testWasm as test } from '../assets/jest-helper';
 
 let browser!: ChromiumBrowser;
 
@@ -18,8 +17,7 @@ test.describe('WASM Base tests', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/assets/test.html`);
-    await page.waitForURL('**/test.html', { waitUntil: 'load' });
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-wasm.html", { waitUntil: "load" });
   });
 
   // Base browser type test
@@ -36,26 +34,20 @@ test.describe('WASM Base tests', () => {
     expect(id).toBe('waxbody');
   });
 
-  test('Should have global module', async ({ page }) => {
-    const moduleType = await page.evaluate(() => {
-      return typeof wax;
+  test('Should have global instance of protocol', async ({ dual }) => {
+    const moduleType = await dual(() => {
+      return typeof protocol;
     });
 
-    expect(moduleType).toBe('function');
+    expect(moduleType).toBe('object');
   });
 
-  test('Should be able to create instance of protocol', async ({ page }) => {
-    await page.evaluate(async () => {
-      const provider = await wax();
-      new provider.protocol();
+  test('Should have global instance of proto protocol', async ({ dual }) => {
+    const moduleType = await dual(() => {
+      return typeof proto_protocol;
     });
-  });
 
-  test('Should be able to create instance of proto protocol', async ({ page }) => {
-    await page.evaluate(async () => {
-      const provider = await wax();
-      new provider.proto_protocol();
-    });
+    expect(moduleType).toBe('object');
   });
 
   test.afterAll(async () => {
