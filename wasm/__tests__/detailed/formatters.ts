@@ -1,8 +1,13 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import "../assets/data";
-import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto } from "../assets/data.protocol";
+import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
+import fs from "fs";
+
+import { testChain as test } from '../assets/jest-helper';
+
+import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
+import { WaxFormattable } from '../../dist/lib/node';
 
 let browser!: ChromiumBrowser;
 
@@ -17,21 +22,22 @@ test.describe('Wax object interface formatters tests', () => {
     page.on('console', (msg: ConsoleMessage) => {
       console.log('>>', msg.type(), msg.text())
     });
+    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
+      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
-    await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
   });
 
-  test('Should be able to format asset using default formatters from hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate((naiAsset) => {
+  test('Should be able to format asset using default formatters from hive chain interface', async({ dual }) => {
+    const retVal = await dual((naiAsset) => {
       return chain.waxify`Amount: ${naiAsset}`;
     }, naiAsset);
 
     expect(retVal).toBe("Amount: 300.000 HIVE");
   });
 
-  test('Should be able to format transaction using default formatters from hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate((serialization_sensitive_transaction) => {
+  test('Should be able to format transaction using default formatters from hive chain interface', async({ dual }) => {
+    const retVal = await dual((serialization_sensitive_transaction) => {
       const tx = JSON.parse(serialization_sensitive_transaction);
 
       return chain.waxify`Tx: #${tx}`
@@ -40,16 +46,16 @@ test.describe('Wax object interface formatters tests', () => {
     expect(retVal).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
   });
 
-  test('Should be able to format protobuf transaction using default formatters from hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate((serialization_sensitive_transaction_proto) => {
+  test('Should be able to format protobuf transaction using default formatters from hive chain interface', async({ dual }) => {
+    const retVal = await dual((serialization_sensitive_transaction_proto) => {
       return chain.waxify`Tx: #${serialization_sensitive_transaction_proto}`
     }, serialization_sensitive_transaction_proto);
 
     expect(retVal).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
   });
 
-  test('Should be able to extend formatter with custom options from hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate((serialization_sensitive_transaction) => {
+  test('Should be able to extend formatter with custom options from hive chain interface', async({ dual }) => {
+    const retVal = await dual((serialization_sensitive_transaction) => {
       const tx = JSON.parse(serialization_sensitive_transaction);
 
       const formatter = chain.formatter.extend({ transaction: { displayAsId: false } });
@@ -78,8 +84,8 @@ test.describe('Wax object interface formatters tests', () => {
     });
   });
 
-  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ page }) => {
-    const retVal = await page.evaluate(async() => {
+  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ dual }) => {
+    const retVal = await dual(async() => {
       const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ] });
 
       return chain.formatter.format(response.accounts[0]);
@@ -88,6 +94,53 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual(initminerAccountApi);
+  });
+
+  test('Should be able to format values using custom formatters extended from hive chain interface', () => {
+    class MyFormatters {
+      myFunction(value) {
+        return value.toString();
+      }
+
+      @WaxFormattable()
+      myCustomProp({ source }) {
+        return this.myFunction(source.myCustomProp);
+      }
+    }
+
+    const formatter = chain.formatter.extend(MyFormatters);
+    const data = {
+      myCustomProp: 12542
+    };
+
+    expect(
+      formatter.waxify`MyData: ${data}`
+    ).toBe("MyData: 12542");
+  });
+
+  test('Should be able to match values on properties using custom formatters extended from hive chain interface', () => {
+    class OperationsFormatter {
+      @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
+      public transferOperationFormatter({ source }): string {
+        return `${source.value.from} transferred ${chain.waxify`${source.value.amount!}`} to ${source.value.to}`;
+      }
+
+      @WaxFormattable({ matchProperty: "type", matchValue: "vote_operation" })
+      public voteOperationFormatter({ source }): string {
+        return `${source.value.voter} voted on @${source.value.author}/${source.value.permlink}`;
+      }
+    }
+
+    const formatter = chain.formatter.extend(OperationsFormatter);
+
+    const ops = [ transfer_operation, vote_operation ];
+
+    expect(
+      formatter.format(ops)
+    ).toStrictEqual([
+      "oneplus7 transferred 300.000 HIVE to kryptogames",
+      "otom voted on @c0ff33a/ewxhnjbj"
+    ]);
   });
 
   test.afterAll(async () => {

@@ -55,7 +55,10 @@ export const testChain = base.extend<{
 
     use(async(fn, arg) => {
       const webData = await page.evaluate(fn, arg);
-      const nodeData = await fn(arg);
+      let nodeData = await fn(arg);
+
+      if(typeof nodeData === "object") // Remove prototype data from the node result to match webData
+        nodeData = JSON.parse(JSON.stringify(nodeData));
 
       expect(webData).toStrictEqual(nodeData);
 

@@ -1,7 +1,8 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import "../assets/data";
+import { testChain as test } from '../assets/jest-helper';
+
 import { customCommunityJsonsTransaction, customJsonsTransaction, customMultipleJsonsTransaction, protoVoteOp } from '../assets/data.proto-protocol';
 
 let browser!: ChromiumBrowser;
@@ -18,12 +19,11 @@ test.describe('Wax hive apps operations tests', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
-    await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
   });
 
-  test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ page }) => {
-    const retVal = await page.evaluate((protoVoteOp) => {
+  test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ dual }) => {
+    const retVal = await dual((protoVoteOp) => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(protoVoteOp);
@@ -44,8 +44,8 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ page }) => {
-    const retVal = await page.evaluate((protoVoteOp) => {
+  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ dual }) => {
+    const retVal = await dual((protoVoteOp) => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(protoVoteOp);
@@ -65,8 +65,8 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ page }) => {
-    const retVal = await page.evaluate(() => {
+  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ dual }) => {
+    const retVal = await dual(() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(
@@ -90,8 +90,8 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customMultipleJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ page }) => {
-    const retVal = await page.evaluate(async() => {
+  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ dual }) => {
+    const retVal = await dual(async() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(
@@ -121,8 +121,8 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customCommunityJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ page }) => {
-    const retVal = await page.evaluate(() => {
+  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ dual }) => {
+    const retVal = await dual(() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(new FollowOperationBuilder()
@@ -152,8 +152,8 @@ test.describe('Wax hive apps operations tests', () => {
     });
   });
 
-  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ page }) => {
-    const retVal = await page.evaluate(() => {
+  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ dual }) => {
+    const retVal = await dual(() => {
       const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(new ResourceCreditsOperationBuilder()

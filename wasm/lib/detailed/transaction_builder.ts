@@ -83,7 +83,7 @@ export class TransactionBuilder implements ITransactionBuilder {
   }
 
   public push(op: operation | HiveAppsOperation): ITransactionBuilder {
-    if(op instanceof HiveAppsOperation)
+    if("flushOperations" in op)
       op.flushOperations(this);
     else
       this.target.operations.push(op);
