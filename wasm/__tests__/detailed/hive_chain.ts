@@ -1,7 +1,10 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import "../assets/data";
+import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
+import fs from "fs";
+
+import { testChain as test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 
 let browser!: ChromiumBrowser;
@@ -20,12 +23,14 @@ test.describe('Wax object interface chain tests', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto(`http://localhost:8080/wasm/__tests__/assets/beekeeper.html`);
-    await page.waitForURL('**/beekeeper.html', { waitUntil: 'load' });
+    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
+      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
   });
 
-  test('Should be able to create and sign transaction using object interface', async ({ page }) => {
-    const retVal = await page.evaluate(async(protoVoteOp) => {
+  test('Should be able to create and sign transaction using object interface', async ({ dual }) => {
+    const retVal = await dual(async(protoVoteOp) => {
       // Create wallet:
       const session = bk.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -49,8 +54,8 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
 
-   test('Should be able to perform example API call', async ({ page }) => {
-     const retVal = await page.evaluate(async() => {
+   test('Should be able to perform example API call', async ({ dual }) => {
+     const retVal = await dual(async() => {
       // https://developers.hive.io/apidefinitions/#account_by_key_api.get_key_references
       const result = await chain.api.account_by_key_api.get_key_references({
         keys: [
@@ -64,8 +69,8 @@ test.describe('Wax object interface chain tests', () => {
      expect(retVal).toStrictEqual({ accounts: [["hiveio"]] });
     });
 
-    test('Should be able to create and sign transaction using hive chain dynamic data', async ({ page }) => {
-      const retVal = await page.evaluate(async(protoVoteOp) => {
+    test('Should be able to create and sign transaction using hive chain dynamic data', async ({ dual }) => {
+      const retVal = await dual.dynamic(async(protoVoteOp) => {
         // Create wallet:
         const session = bk.createSession("salt");
         const { wallet } = await session.createWallet("w0");
@@ -87,8 +92,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal.ref_block_prefix).toBeGreaterThan(0);
     });
 
-    test('Should be able to extend hive chain interface by custom definitions', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to extend hive chain interface by custom definitions', async ({ dual }) => {
+      const retVal = await dual(async() => {
         class MyRequest {
           method!: string;
         }
@@ -114,8 +119,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
-    test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ page }) => {
-      const retVal = await page.evaluate(async(protoVoteOp) => {
+    test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ dual }) => {
+      const retVal = await dual(async(protoVoteOp) => {
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
         tx.push(protoVoteOp).build();
 
@@ -130,8 +135,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBeTruthy();
     });
 
-    test('Should be able to transmit protobuf transaction using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async(protoVoteOp) => {
+    test('Should be able to transmit protobuf transaction using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async(protoVoteOp) => {
         // Create wallet:
         const session = bk.createSession("salt");
         const { wallet } = await session.createWallet("w0");
@@ -166,8 +171,8 @@ test.describe('Wax object interface chain tests', () => {
       });
     });
 
-    test('Should be able to calculate current manabar value using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to calculate current manabar value using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async() => {
         const { current, max, percent } = chain.calculateCurrentManabarValue(
             1702548351,
             "2196088774870643",
@@ -187,8 +192,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal.percent).toBe(88.94);
     });
 
-    test('Should be able to parse user manabar from API using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to parse user manabar from API using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async() => {
         const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
           accounts: [ "initminer" ]
         });
@@ -205,8 +210,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("1000000000000");
     });
 
-    test('Should be able to calculate full manabar regeneration time from API using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to calculate full manabar regeneration time from API using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async() => {
         const time = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
 
         return time.getTime(); // Should be close to Date.now() when fully regenerated
@@ -215,8 +220,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(Date.now() - retVal).toBeLessThanOrEqual( HIVE_BLOCK_INTERVAL * 2 ); // Manabar of the initminer should not be used
     });
 
-    test('Should be able to calculate current downvote manabar value from API using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to calculate current downvote manabar value from API using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async() => {
         const time = await chain.calculateCurrentManabarValueForAccount("initminer", 1);
 
         return time.max.toString();
@@ -225,8 +230,8 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("250000000000");
     });
 
-    test('Should be able to calculate current manabar rc value from API using hive chain interface', async ({ page }) => {
-      const retVal = await page.evaluate(async() => {
+    test('Should be able to calculate current manabar rc value from API using hive chain interface', async ({ dual }) => {
+      const retVal = await dual(async() => {
         const time = await chain.calculateCurrentManabarValueForAccount("initminer", 2);
 
         return time.max.toString();
