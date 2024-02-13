@@ -58,7 +58,7 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
   }
 
   private formatParser(value: unknown): string {
-    const result = this.rawDataParser(value);
+    const result = this.rawDataParser(typeof value === "object" ? structuredClone(value) : value);
 
     if(typeof result === "object")
       return JSON.stringify(result);
@@ -67,7 +67,7 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
   }
 
   public format<I = any, R = any>(data: I): R {
-    return this.rawDataParser(data);
+    return this.rawDataParser(typeof data === "object" ? structuredClone(data) : data);
   }
 
   public waxify(strings: TemplateStringsArray, ...args: unknown[]): string {
