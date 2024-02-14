@@ -13,6 +13,9 @@ public:
   result cpp_calculate_public_key(const std::string& wif);
   result cpp_generate_private_key();
 
+  ///  Allows to retrieve public key in WIF format from the signature and digest in hexadecimal format
+  result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
+
   json_asset cpp_general_asset(const uint32_t asset_num, const int64_t amount)const;
   json_asset cpp_hive(const int64_t amount)const;
   json_asset cpp_hbd(const int64_t amount)const;

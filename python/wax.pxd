@@ -37,6 +37,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_deserialize_transaction( string transaction )
         result cpp_calculate_public_key( string wif )
         result cpp_generate_private_key()
+        result cpp_get_public_key_from_signature( string digest, string signature )
         result cpp_calculate_manabar_full_regeneration_time( int now, long max_mana, long current_mana, int last_update_time )
         result cpp_calculate_current_manabar_value( int now, long max_mana, long current_mana, int last_update_time )
         json_asset cpp_general_asset( uint32_t asset_num, long amount )

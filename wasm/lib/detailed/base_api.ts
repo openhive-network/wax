@@ -1,4 +1,4 @@
-import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface } from "../interfaces";
+import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
 import type { MainModule, proto_protocol, result } from "../wax_module";
 import type { NaiAsset } from "./api";
 
@@ -43,6 +43,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
       symbol,
       amount
     };
+  }
+
+  public getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString {
+    return this.extract(this.proto.cpp_get_public_key_from_signature(sigDigest, signature));
   }
 
   private calculateManabarPercent(current: Long, max: Long): number {

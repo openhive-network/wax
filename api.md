@@ -349,7 +349,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:310
+wasm/lib/interfaces.ts:331
 
 ## Variables
 
@@ -7992,7 +7992,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:226
+wasm/lib/interfaces.ts:235
 
 ___
 
@@ -8010,7 +8010,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:233
+wasm/lib/interfaces.ts:242
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -8031,7 +8031,7 @@ wasm/lib/interfaces.ts:233
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:381
 
 ___
 
@@ -8041,7 +8041,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:357
+wasm/lib/interfaces.ts:378
 
 ___
 
@@ -8077,7 +8077,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:379
 
 ## Accessors
 
@@ -8095,7 +8095,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:237
+wasm/lib/interfaces.ts:246
 
 ## Methods
 
@@ -8126,7 +8126,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:261
+wasm/lib/interfaces.ts:282
 
 ___
 
@@ -8151,7 +8151,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:345
+wasm/lib/interfaces.ts:366
 
 ___
 
@@ -8182,7 +8182,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:277
+wasm/lib/interfaces.ts:298
 
 ___
 
@@ -8207,7 +8207,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:355
+wasm/lib/interfaces.ts:376
 
 ___
 
@@ -8227,7 +8227,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:282
+wasm/lib/interfaces.ts:303
 
 ___
 
@@ -8257,7 +8257,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:335
+wasm/lib/interfaces.ts:356
 
 ___
 
@@ -8285,7 +8285,40 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:245
+wasm/lib/interfaces.ts:254
+
+___
+
+### getPublicKeyFromSignature
+
+▸ **getPublicKeyFromSignature**(`sigDigest`, `signature`): `string`
+
+Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `sigDigest` | `string` | digest data in hexadecimal format |
+| `signature` | `string` | signature in hexadecimal format |
+
+#### Returns
+
+`string`
+
+public key used in the signature
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[getPublicKeyFromSignature](#getpublickeyfromsignature)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:266
 
 ___
 
@@ -8317,7 +8350,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:326
+wasm/lib/interfaces.ts:347
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -8405,6 +8438,26 @@ on any Wax API-related error
 
 wasm/lib/interfaces.ts:89
 
+___
+
+### signatureKeys
+
+• `get` **signatureKeys**(): `string`[]
+
+Returns signature keys from the transaction signatures
+
+#### Returns
+
+`string`[]
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:107
+
 ## Methods
 
 ### build
@@ -8413,7 +8466,7 @@ wasm/lib/interfaces.ts:89
 
 Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
@@ -8435,13 +8488,13 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:151
+wasm/lib/interfaces.ts:160
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
 Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
@@ -8462,13 +8515,13 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:165
+wasm/lib/interfaces.ts:174
 
 ▸ **build**(): [`transaction`](#transaction)
 
 Returns the proto transaction. Applies the transaction expiration time.
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Returns
@@ -8483,7 +8536,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:177
+wasm/lib/interfaces.ts:186
 
 ___
 
@@ -8501,7 +8554,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:136
+wasm/lib/interfaces.ts:145
 
 ___
 
@@ -8539,7 +8592,7 @@ ___
 
 Signs the transaction using given public key. Applies the transaction expiration time
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [validate](#validate), [build](#build) or [sign](#sign)
+Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
@@ -8561,7 +8614,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:129
+wasm/lib/interfaces.ts:138
 
 ___
 
@@ -8583,7 +8636,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:186
+wasm/lib/interfaces.ts:195
 
 ___
 
@@ -8605,7 +8658,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:114
+wasm/lib/interfaces.ts:123
 
 ___
 
@@ -8625,7 +8678,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:105
+wasm/lib/interfaces.ts:114
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -8653,7 +8706,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:199
+wasm/lib/interfaces.ts:208
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -8671,7 +8724,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:206
+wasm/lib/interfaces.ts:215
 
 ## Methods
 
@@ -8699,7 +8752,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:217
+wasm/lib/interfaces.ts:226
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -8724,7 +8777,7 @@ wasm/lib/interfaces.ts:217
 
 #### Defined in
 
-wasm/lib/interfaces.ts:237
+wasm/lib/interfaces.ts:246
 
 ## Methods
 
@@ -8751,7 +8804,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:261
+wasm/lib/interfaces.ts:282
 
 ___
 
@@ -8778,7 +8831,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:277
+wasm/lib/interfaces.ts:298
 
 ___
 
@@ -8794,7 +8847,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:282
+wasm/lib/interfaces.ts:303
 
 ___
 
@@ -8818,7 +8871,36 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:245
+wasm/lib/interfaces.ts:254
+
+___
+
+### getPublicKeyFromSignature
+
+▸ **getPublicKeyFromSignature**(`sigDigest`, `signature`): `string`
+
+Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `sigDigest` | `string` | digest data in hexadecimal format |
+| `signature` | `string` | signature in hexadecimal format |
+
+#### Returns
+
+`string`
+
+public key used in the signature
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:266
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

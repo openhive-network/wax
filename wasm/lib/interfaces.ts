@@ -98,6 +98,15 @@ export interface ITransactionBuilder {
   get id(): TTransactionId;
 
   /**
+   * Returns signature keys from the transaction signatures
+   *
+   * @type {Array<THexString>} list of all the public keys that were used to sign the transaction
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get signatureKeys(): Array<THexString>;
+
+  /**
    * Validates current transaction. Throws on error
    *
    * @throws {WaxError} on any Wax API-related error including validation error
@@ -116,7 +125,7 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
    *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
@@ -138,7 +147,7 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
    *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
@@ -153,7 +162,7 @@ export interface ITransactionBuilder {
   /**
    * Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
    *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @param {THexString} signature signature to add
@@ -167,7 +176,7 @@ export interface ITransactionBuilder {
   /**
    * Returns the proto transaction. Applies the transaction expiration time.
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link validate}, {@link build} or {@link sign}
+   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
    *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @returns {transaction} transaction
@@ -243,6 +252,18 @@ export interface IWaxBaseInterface {
    * @returns {IHiveAssetData} asset data
    */
   getAsset(nai: NaiAsset): IHiveAssetData;
+
+  /**
+   * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
+   *
+   * @param {THexString} sigDigest digest data in hexadecimal format
+   * @param {THexString} signature signature in hexadecimal format
+   *
+   * @returns {THexString} public key used in the signature
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments

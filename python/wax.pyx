@@ -74,6 +74,12 @@ def calculate_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_r
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def get_public_key_from_signature(digest: bytes, signature: bytes) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_get_public_key_from_signature(digest, signature)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def serialize_transaction(transaction: bytes) -> python_result:
     cdef protocol obj
     response = obj.cpp_serialize_transaction(transaction)

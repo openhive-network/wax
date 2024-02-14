@@ -2,6 +2,7 @@
 
 #include "core/types.hpp"
 #include "core/utils.hpp"
+#include "fc/crypto/elliptic.hpp"
 
 #include <boost/lexical_cast.hpp>
 
@@ -102,6 +103,18 @@ result foundation::cpp_generate_private_key()
   return method_wrapper([&](result& _result) {
     _result.content = fc::ecc::private_key::generate().key_to_wif();
     });
+}
+
+result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
+{
+  return method_wrapper([&](result& _result) {
+    const auto d = hive::protocol::digest_type{ digest };
+    auto sig = hive::protocol::signature_type{};
+
+    fc::from_hex(signature, reinterpret_cast<char*>(&*sig.begin()), sig.size());
+
+    _result.content = fc::ecc::public_key::to_base58(fc::ecc::public_key{ sig, d, fc::ecc::bip_0062 }, false);
+  });
 }
 
 result foundation::cpp_calculate_public_key(const std::string& wif)

@@ -40,6 +40,17 @@ export class TransactionBuilder implements ITransactionBuilder {
     this.expirationTime = expirationTime as TTimestamp;
   }
 
+  get signatureKeys(): Array<THexString> {
+    const keys: Array<THexString> = [];
+
+    const digest = this.sigDigest;
+
+    for(const sig of this.target.signatures)
+      keys.push(this.api.getPublicKeyFromSignature(digest, sig));
+
+    return keys;
+  }
+
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): ITransactionBuilder {
     if(typeof transactionObject === 'object')
       transactionObject = JSON.stringify(transactionObject);

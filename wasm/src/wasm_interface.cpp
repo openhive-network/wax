@@ -51,6 +51,9 @@ std::string cpp_asset_symbol(const json_asset& value) const
 result cpp_generate_private_key() 
 { return foundation::cpp_generate_private_key(); }
 
+result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
+{ return foundation::cpp_get_public_key_from_signature(digest, signature); }
+
 result cpp_calculate_public_key(const std::string& wif) 
 { return foundation::cpp_calculate_public_key(wif); }
 
@@ -88,6 +91,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .constructor<>()
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
+    .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
 
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:
     .function("cpp_general_asset", select_overload<json_asset(const uint32_t, const int32_t, const int32_t)const>(&foundation_wasm::cpp_general_asset))
