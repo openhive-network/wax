@@ -184,6 +184,28 @@ test.describe('WASM Protocol', () => {
     });
   });
 
+  test('Should be able to calculate HP APR 1', async ({ dual }) => {
+    const retVal = await dual((args: number []) => {
+      const virtual_supply = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_fund_hive = protocol.cpp_hive(args[4], args[5]);
+      return protocol.cpp_calculate_hp_apr(args[0], args[1], virtual_supply, total_vesting_fund_hive);
+    }, [1_000_000, 1_500, ...numToHighLow(530_656_835_180), ...numToHighLow(173_009_633_181)]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toEqual("4.48");
+  });
+
+  test('Should be able to calculate HP APR 2', async ({ dual }) => {
+    const retVal = await dual((args: number[]) => {
+      const virtual_supply = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_fund_hive = protocol.cpp_hive(args[4], args[5]);
+      return protocol.cpp_calculate_hp_apr(args[0], args[1], virtual_supply, total_vesting_fund_hive);
+    }, [82_779_364, 1_500, ...numToHighLow(530_656_835_180), ...numToHighLow(173_009_633_181)]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toEqual("2.97");
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
