@@ -146,6 +146,19 @@ def get_tapos_data(block_id: bytes) -> python_ref_block_data:
     return response.ref_block_num, response.ref_block_prefix
 
 @return_python_result
+def calculate_hp_apr(
+    head_block_num: int,
+    vesting_reward_percent: int,
+    virtual_supply: python_json_asset,
+    total_vesting_fund_hive: python_json_asset
+) -> python_result:
+    cdef protocol obj
+    cdef json_asset _virtual_supply = json_asset(virtual_supply.amount, virtual_supply.precision, virtual_supply.nai)
+    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    response = obj.cpp_calculate_hp_apr(head_block_num, vesting_reward_percent, _virtual_supply, _total_vesting_fund_hive)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:
     cdef proto_protocol obj
     response = obj.cpp_validate_operation(operation)

@@ -28,6 +28,7 @@ from .wax import (
     validate_transaction,
     vests,
     get_tapos_data,
+    calculate_hp_apr,
 )
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data
 
@@ -65,4 +66,5 @@ __all__ = [
     "proto_to_api",
     "api_to_proto",
     "get_tapos_data",
+    "calculate_hp_apr",
 ]

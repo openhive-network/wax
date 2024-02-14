@@ -175,5 +175,34 @@ ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
   }
 }
 
+result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const
+{
+  return method_wrapper([&](result& _result)
+  {
+    /**
+      * At block 7,000,000 have a 9.5% instantaneous inflation rate, decreasing to 0.95% at a rate of 0.01%
+      * every 250k blocks. This narrowing will take approximately 20.5 years and will complete on block 220,750,000
+      */
+    const int64_t start_inflation_rate = int64_t( HIVE_INFLATION_RATE_START_PERCENT );
+    const int64_t inflation_rate_adjustment = int64_t( head_block_num / HIVE_INFLATION_NARROWING_PERIOD );
+    const int64_t inflation_rate_floor = int64_t( HIVE_INFLATION_RATE_STOP_PERCENT );
+
+    // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
+    const int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
+
+    // calculate the "APR"
+    hive::protocol::legacy_asset _virtual_supply = to_asset(virtual_supply);
+    hive::protocol::legacy_asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+    FC_ASSERT( _virtual_supply.symbol == HIVE_SYMBOL, "'virtual_supply' param expect as HIVE asset" );
+    FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expect as HIVE asset" );
+    const int64_t hp_apr = (_virtual_supply.amount.value * current_inflation_rate * vesting_reward_percent / _total_vesting_fund_hive.amount.value) / HIVE_100_PERCENT;
+    const int64_t hp_apr_percent = hp_apr / 100;
+    const int64_t hp_apr_percent_decimals = hp_apr % 100;
+
+    _result.content = std::to_string(hp_apr_percent) + "." + std::to_string(hp_apr_percent_decimals);
+  });
+
+}
+
 } /// namespace cpp
 

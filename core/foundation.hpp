@@ -29,6 +29,18 @@ public:
 
   ref_block_data cpp_get_tapos_data(const std::string& block_id);
 
+  /**
+   * Calculate current HP APR.
+   * 
+   * @param head_block_num - from dgpo
+   * @param vesting_reward_percent - from dgpo
+   * @param virtual_supply - from dgpo
+   * @param total_vesting_fund_hive - from dqpo
+   * 
+   * @returns HP APR percent with 2 decimals as string in result.content
+   */
+  result cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const;
+
 protected:
   /// use this only through derived classes
   foundation() = default;

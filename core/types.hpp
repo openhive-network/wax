@@ -19,8 +19,12 @@ struct result
 struct json_asset
 {
   std::string amount;
-  uint32_t precision; // XXX: is uint64_t actually
+  uint32_t    precision; // XXX: is uint64_t actually
   std::string nai;
+
+  json_asset() = default;
+  json_asset(const std::string& _amount, uint32_t _precision, const std::string& _nai)
+    : amount(_amount), precision(_precision), nai(_nai) {}
 };
 
 struct ref_block_data

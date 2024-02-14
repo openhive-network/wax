@@ -59,6 +59,17 @@ result cpp_calculate_public_key(const std::string& wif)
 
 ref_block_data cpp_get_tapos_data(const std::string& block_id)
 { return foundation::cpp_get_tapos_data(block_id); }
+
+result cpp_calculate_hp_apr(
+  const uint32_t head_block_num,
+  const uint16_t vesting_reward_percent,
+  const json_asset& virtual_supply,
+  const json_asset& total_vesting_fund_hive) const
+{
+  return foundation::cpp_calculate_hp_apr(
+    head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
+}
+
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
@@ -106,6 +117,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))
 
     .function("cpp_get_tapos_data", &foundation_wasm::cpp_get_tapos_data)
+
+    .function("cpp_calculate_hp_apr", &foundation_wasm::cpp_calculate_hp_apr)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
