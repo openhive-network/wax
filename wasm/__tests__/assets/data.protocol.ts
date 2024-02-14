@@ -6,8 +6,8 @@ import Long from "long";
 import type { transaction as transactionT } from "../../dist/lib/web";
 
 /// Converts given number to the array of low and high number parts
-export const numToHighLow = (value: number): [ number, number ] => {
-  const long = Long.fromNumber(value);
+export const numToHighLow = (value: number | string | Long): [ number, number ] => {
+  const long = Long.fromValue(value);
 
   return [ long.low, long.high ];
 };

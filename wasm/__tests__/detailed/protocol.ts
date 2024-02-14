@@ -206,6 +206,52 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toEqual("2.97");
   });
 
+  test('Should be able to calculate account hp 1', async ({ dual }) => {
+    const retVal = await dual((args: number[]) => {
+      const vests = protocol.cpp_vests(args[0], args[1]);
+      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
+      return protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, [...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000)]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("2");
+  });
+
+  test('Should be able to calculate account hp 2', async ({ dual }) => {
+    const retVal = await dual((args: number[]) => {
+      const vests = protocol.cpp_vests(args[0], args[1]);
+      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
+      return protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, [...numToHighLow(2_268_225_009_295_472), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339")]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("1304910");
+  });
+
+  test('Should be able to calculate witness votes hp 1', async ({ dual }) => {
+    const retVal = await dual((args: number[]) => {
+      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
+      return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
+    }, [...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000)]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("2");
+  });
+
+  test('Should be able to calculate witness votes hp 2', async ({ dual }) => {
+    const retVal = await dual((args: number[]) => {
+      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
+      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
+      return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
+    }, [...numToHighLow("142103996686715320"), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339")]);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("81752423");
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
