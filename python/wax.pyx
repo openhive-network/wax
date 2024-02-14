@@ -1,7 +1,7 @@
 # distutils: language = c++
 from functools import wraps
 
-from wax cimport error_code, result, protocol, proto_protocol
+from wax cimport error_code, json_asset, result, protocol, proto_protocol
 from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data
 
 def return_python_result(foo):
@@ -156,6 +156,25 @@ def calculate_hp_apr(
     cdef json_asset _virtual_supply = json_asset(virtual_supply.amount, virtual_supply.precision, virtual_supply.nai)
     cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
     response = obj.cpp_calculate_hp_apr(head_block_num, vesting_reward_percent, _virtual_supply, _total_vesting_fund_hive)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
+def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
+    cdef protocol obj
+    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
+    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
+def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
+    cdef protocol obj
+    vests: python_json_asset = obj.cpp_vests(votes)
+    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
+    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.value, response.content, response.exception_message
 
 @return_python_result

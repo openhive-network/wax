@@ -201,7 +201,24 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
 
     _result.content = std::to_string(hp_apr_percent) + "." + std::to_string(hp_apr_percent_decimals);
   });
+}
 
+result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+{
+  return method_wrapper([&](result& _result)
+  {
+    static const double hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
+    const hive::protocol::legacy_asset _vests = to_asset(vests);
+    const hive::protocol::legacy_asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+    const hive::protocol::legacy_asset _total_vesting_shares = to_asset(total_vesting_shares);
+    FC_ASSERT( _vests.symbol == VESTS_SYMBOL, "'vests' param expected as VESTS asset" );
+    FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
+    FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
+    const int64_t vests_to_hive =
+      fc::uint128_low_bits((fc::to_uint128(0, _vests.amount.value) * fc::to_uint128(0, _total_vesting_fund_hive.amount.value)) / fc::to_uint128(0, _total_vesting_shares.amount.value));
+    const int64_t hp = (int64_t)std::ceil((double)vests_to_hive / hive_precision);
+    _result.content = std::to_string(hp);
+  });
 }
 
 } /// namespace cpp

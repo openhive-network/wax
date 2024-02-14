@@ -47,6 +47,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_vests( long amount )
         ref_block_data cpp_get_tapos_data( string block_id )
         result cpp_calculate_hp_apr( uint32_t head_block_num, uint16_t vesting_reward_percent, json_asset virtual_supply, json_asset total_vesting_fund_hive )
+        result cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares )
     
     cdef cppclass proto_protocol:
         result cpp_validate_operation( string operation )

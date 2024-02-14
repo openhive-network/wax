@@ -41,6 +41,17 @@ public:
    */
   result cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const;
 
+  /**
+   * Convert VESTS to HP.
+   * 
+   * @param vests - VESTS asset (or votes expressed as VESTS asset in case of witness HP votes calculation)
+   * @param total_vesting_fund_hive - from dgpo HIVE asset
+   * @param total_vesting_shares - from dgpo VESTS asset
+   * 
+   * @returns ceiled value in result.content [HIVE]
+   */
+  result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const;
+
 protected:
   /// use this only through derived classes
   foundation() = default;

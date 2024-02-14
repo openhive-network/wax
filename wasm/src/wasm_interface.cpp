@@ -14,6 +14,7 @@ using namespace emscripten;
 
 using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t);
 using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
+using calculate_witness_votes_hp_fn_t = result(const int32_t, const int32_t, const json_asset&, const json_asset&) const;
 
 class foundation_wasm : public foundation
 {
@@ -70,6 +71,16 @@ result cpp_calculate_hp_apr(
     head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
 }
 
+result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+{
+  return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
+}
+
+result cpp_calculate_witness_votes_hp(const int32_t vests_low, const int32_t vests_high, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+{
+  return foundation::cpp_vests_to_hp(cpp_vests(vests_low, vests_high), total_vesting_fund_hive, total_vesting_shares);
+}
+
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
@@ -119,6 +130,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_get_tapos_data", &foundation_wasm::cpp_get_tapos_data)
 
     .function("cpp_calculate_hp_apr", &foundation_wasm::cpp_calculate_hp_apr)
+    .function("cpp_calculate_account_hp", &foundation_wasm::cpp_vests_to_hp)
+    .function("cpp_calculate_witness_votes_hp", select_overload<calculate_witness_votes_hp_fn_t>(&foundation_wasm::cpp_calculate_witness_votes_hp))
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
