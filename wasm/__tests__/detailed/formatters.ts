@@ -37,11 +37,25 @@ test.describe('Wax object interface formatters tests', () => {
     expect(retVal).toBe("Amount: 300.000 HIVE");
   });
 
+  test('Should be able to format asset using default formatters from hive chain interface nad keep the original object immutable', async({ dual }) => {
+    const retVal = await dual((naiAsset) => {
+      const inputObject = { naiAsset };
+
+      return {
+        input: inputObject,
+        output: chain.formatter.format(inputObject)
+      };
+    }, naiAsset);
+
+    expect(retVal.input).toStrictEqual({ naiAsset });
+    expect(retVal.output).toStrictEqual({ naiAsset: "300.000 HIVE" });
+  });
+
   test('Should be able to format transaction using default formatters from hive chain interface', async({ dual }) => {
     const retVal = await dual((serialization_sensitive_transaction) => {
       const tx = JSON.parse(serialization_sensitive_transaction);
 
-      return chain.waxify`Tx: #${tx}`
+      return chain.waxify`Tx: #${tx}`;
     }, serialization_sensitive_transaction);
 
     expect(retVal).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
@@ -49,7 +63,7 @@ test.describe('Wax object interface formatters tests', () => {
 
   test('Should be able to format protobuf transaction using default formatters from hive chain interface', async({ dual }) => {
     const retVal = await dual((serialization_sensitive_transaction_proto) => {
-      return chain.waxify`Tx: #${serialization_sensitive_transaction_proto}`
+      return chain.waxify`Tx: #${serialization_sensitive_transaction_proto}`;
     }, serialization_sensitive_transaction_proto);
 
     expect(retVal).toBe("Tx: #3725c81634f152011e2043eb7119911b953d4267");
@@ -61,7 +75,7 @@ test.describe('Wax object interface formatters tests', () => {
 
       const formatter = chain.formatter.extend({ transaction: { displayAsId: false } });
 
-      return formatter.format(tx)
+      return formatter.format(tx);
     }, serialization_sensitive_transaction);
 
     expect(
