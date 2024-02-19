@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
-import { testWasm as test } from '../assets/jest-helper';
+import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
 
 import "../assets/globals-wasm";
@@ -23,6 +23,7 @@ test.describe('WASM Protocol', () => {
     });
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test-wasm.html", { waitUntil: "load" });
+    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
   });
 
   test('Should be able to generate random private key', async ({ dual }) => {

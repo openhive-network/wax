@@ -7,59 +7,27 @@ import {
 } from '../../dist/bundle/web-full.js';
 
 declare global {
-  var WaxTests: {
-    bk: () => Promise<IBeekeeperInstance>;
-    wx: () => Promise<IWaxBaseInterface>;
-    chain: () => Promise<IHiveChainInterface>;
-  };
+  var bk: IBeekeeperInstance;
+  var wx: IWaxBaseInterface;
+  var chain: IHiveChainInterface;
   var BroadcastTransactionRequest: typeof BroadcastTransactionRequestT;
   var ResourceCreditsOperationBuilder: typeof ResourceCreditsOperationBuilderT;
   var CommunityOperationBuilder: typeof CommunityOperationBuilderT;
   var FollowOperationBuilder: typeof FollowOperationBuilderT;
+  var waxScriptLoaded: boolean;
 }
 
 // Prevent bundling and rewriting
 const isWeb = new Function("try{return this===window}catch{return false}");
-// cached WASM factories
-const factories = {
-  bk: undefined as IBeekeeperInstance | undefined,
-  wx: undefined as IWaxBaseInterface | undefined,
-  chain: undefined as IHiveChainInterface | undefined
-};
 
-globalThis.WaxTests = {
-  bk: async() => {
-    if(factories.bk) return factories.bk;
-
-    if(isWeb())
-      return factories.bk = await beekeeperFactory();
-
-    const node = await import("@hive/beekeeper/node");
-    return factories.bk = await node.default();
-  },
-  wx: async() => {
-    if(factories.wx) return factories.wx;
-
-    if(isWeb())
-      return factories.wx = await createWaxFoundation();
-
-    const node = await import("../../dist/lib/node.js");
-    return factories.wx = await node.createWaxFoundation();
-  },
-  chain: async() => {
-    if(factories.chain) return factories.chain;
-
-    if(isWeb())
-      return factories.chain = await createHiveChain();
-
-    const node = await import("../../dist/lib/node.js");
-    return factories.chain = await node.createHiveChain();
-  }
-};
-
+globalThis.waxScriptLoaded = false;
+globalThis.bk = isWeb() ? await beekeeperFactory() :  await (await import("@hive/beekeeper/node")).default();
+globalThis.wx = isWeb() ? await createWaxFoundation() :  await (await import("../../dist/lib/node.js")).createWaxFoundation();
+globalThis.chain = isWeb() ? await createHiveChain() :  await (await import("../../dist/lib/node.js")).createHiveChain();
 globalThis.BroadcastTransactionRequest = BroadcastTransactionRequest;
 globalThis.FollowOperationBuilder = FollowOperationBuilder;
 globalThis.ResourceCreditsOperationBuilder = ResourceCreditsOperationBuilder;
 globalThis.CommunityOperationBuilder = CommunityOperationBuilder;
+globalThis.waxScriptLoaded = true; // Setting this to true indicates that the website is ready to be tested
 
 export {};

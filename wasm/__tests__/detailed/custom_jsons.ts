@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
-import { testChain as test } from '../assets/jest-helper';
+import { test } from '../assets/jest-helper';
 
 import { customCommunityJsonsTransaction, customJsonsTransaction, customMultipleJsonsTransaction, protoVoteOp } from '../assets/data.proto-protocol';
 
@@ -20,6 +20,7 @@ test.describe('Wax hive apps operations tests', () => {
     });
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
+    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
   });
 
   test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ dual }) => {

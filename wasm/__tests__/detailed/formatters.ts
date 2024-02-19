@@ -4,7 +4,7 @@ import { expect } from '@playwright/test';
 import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 import fs from "fs";
 
-import { testChain as test } from '../assets/jest-helper';
+import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
 import { WaxFormattable } from '../../dist/lib/node';
@@ -26,6 +26,7 @@ test.describe('Wax object interface formatters tests', () => {
       fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
+    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
   });
 
   test('Should be able to format asset using default formatters from hive chain interface', async({ dual }) => {

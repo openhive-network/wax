@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
-import { testWasm as test } from '../assets/jest-helper';
+import { test } from '../assets/jest-helper';
 
 let browser!: ChromiumBrowser;
 
@@ -18,6 +18,7 @@ test.describe('WASM Base tests', () => {
     });
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test-wasm.html", { waitUntil: "load" });
+    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
   });
 
   // Base browser type test

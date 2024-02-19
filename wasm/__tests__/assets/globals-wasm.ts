@@ -1,13 +1,11 @@
 import WaxModule, {
-  type MainModule, type proto_protocol, type protocol as protocolT
+  type MainModule, type proto_protocol as proto_protocolT, type protocol as protocolT
 } from '../../dist/lib/build_wasm/wax.web.js';
 
 declare global {
-  var WaxWasmTests: {
-    provider: () => Promise<MainModule>;
-    protocol: () => Promise<protocolT>;
-    proto_protocol: () => Promise<proto_protocol>;
-  };
+  var protocol: protocolT;
+  var proto_protocol: proto_protocolT;
+  var waxScriptLoaded: boolean;
 }
 
 type TMainModuleFn = () => Promise<MainModule>;
@@ -22,8 +20,7 @@ const getProvider = async () => {
   return await (node.default as TMainModuleFn)();
 };
 
-globalThis.WaxWasmTests = {
-  provider: () => getProvider(),
-  protocol: async() => new (await getProvider()).protocol(),
-  proto_protocol: async() => new (await getProvider()).proto_protocol()
-};
+globalThis.waxScriptLoaded = false;
+globalThis.protocol = new (await getProvider()).protocol();
+globalThis.proto_protocol = new (await getProvider()).proto_protocol();
+globalThis.waxScriptLoaded = true; // Setting this to true indicates that the website is ready to be tested
