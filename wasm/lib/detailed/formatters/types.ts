@@ -1,6 +1,7 @@
 import type { IWaxBaseInterface } from "../../interfaces";
 import type { WaxFormattable } from "../decorators/formatters";
 import type { ITransactionBuilderConstructor } from "../../interfaces";
+import type Long from "long";
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -176,4 +177,15 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
    * @returns {WaxFormatter} extended formatter class
    */
   extend(options: Partial<IWaxFormatterOptions>): IWaxExtendableFormatter;
+
+  /**
+   * Formats numbers in given format
+   *
+   * @param {string | number | BigInt | Long} amount number to be formatted
+   * @param {number} precision the exact precision of the given number (defaults to 0)
+   * @param {string | string[] | undefined} locales A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale)
+   *
+   * @returns {string} formatted number
+   */
+  formatNumber(amount: string | number | BigInt | Long, precision?: number, locales?: string | string[]): string;
 }

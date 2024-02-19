@@ -3,6 +3,7 @@ import type { IWaxBaseInterface } from "../../interfaces";
 
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
+import Long from "long";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;
@@ -37,6 +38,19 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
         defaultFormatter: value.defaultFormatter,
         matchValues: new Map([ ...value.matchValues, ...(instance.matchers.get(key)?.matchValues ?? []) ])
       })
+  }
+
+  public formatNumber(amount: string | number | BigInt | Long, precision: number = 0, locales?: string | string[]): string {
+    amount = amount.toString();
+
+    // Amount can be larger than the MAX_SAFE_INTEGER, so we have to format BigInt to parts, extract the fraction part from the amount and then join all of the parts together
+    const formatted = Intl.NumberFormat(locales as string, { minimumFractionDigits: 1 }).formatToParts(BigInt(amount.slice(0, -precision)));
+    const decimalIndex = formatted.findIndex(pred => pred.type === "decimal");
+    const integer = (decimalIndex === -1 ? formatted : formatted.slice(0, decimalIndex)).reduce((prev, curr) => prev + curr.value, "") || "0";
+    const decimal = formatted[decimalIndex]?.value || ".";
+    const fraction = amount.slice(-precision).padStart(precision, "0");
+
+    return `${integer}${decimal}${fraction}`;
   }
 
   public extend(formatterConstructor: TWaxCustomFormatterConstructor | DeepPartial<IWaxFormatterOptions>, options?: DeepPartial<IWaxFormatterOptions>): WaxFormatter {

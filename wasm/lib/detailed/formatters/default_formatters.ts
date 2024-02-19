@@ -14,16 +14,8 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   public assetFormatter({ options, source }: IFormatFunctionArguments<NaiAsset>): string {
     let { amount, symbol } = this.wax.getAsset(source);
 
-    if(options.asset.formatAmount) {
-      // Amount can be larger than the MAX_SAFE_INTEGER, so we have to format BigInt to parts, extract the fraction part from the amount and then join all of the parts together
-      const formatted = Intl.NumberFormat(options.asset.locales as string, { minimumFractionDigits: 1 }).formatToParts(BigInt(source.amount.slice(0, -source.precision)));
-      const decimalIndex = formatted.findIndex(pred => pred.type === "decimal");
-      const integer = (decimalIndex === -1 ? formatted : formatted.slice(0, decimalIndex)).reduce((prev, curr) => prev + curr.value, "") || "0";
-      const decimal = formatted[decimalIndex]?.value || ".";
-      const fraction = source.amount.slice(-source.precision).padStart(source.precision, "0");
-
-      amount = `${integer}${decimal}${fraction}`;
-    }
+    if(options.asset.formatAmount)
+      amount = this.wax.formatter.formatNumber(source.amount, source.precision, options.asset.locales as string);
 
     if(options.asset.appendTokenName)
       return `${amount} ${symbol}`;

@@ -177,7 +177,7 @@
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:5
+wasm/lib/detailed/formatters/types.ts:6
 
 ___
 
@@ -193,7 +193,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:9
+wasm/lib/detailed/formatters/types.ts:10
 
 ___
 
@@ -271,7 +271,7 @@ public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:108
+wasm/lib/detailed/formatters/types.ts:109
 
 ___
 
@@ -333,7 +333,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:153
+wasm/lib/detailed/formatters/types.ts:154
 
 ___
 
@@ -349,7 +349,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:331
+wasm/lib/interfaces.ts:334
 
 ## Variables
 
@@ -7188,7 +7188,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:15
+wasm/lib/detailed/formatters/waxify.ts:16
 
 ## Properties
 
@@ -7198,7 +7198,7 @@ wasm/lib/detailed/formatters/waxify.ts:15
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:13
+wasm/lib/detailed/formatters/waxify.ts:14
 
 ___
 
@@ -7228,7 +7228,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:16
+wasm/lib/detailed/formatters/waxify.ts:17
 
 ## Methods
 
@@ -7248,7 +7248,7 @@ wasm/lib/detailed/formatters/waxify.ts:16
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:34
+wasm/lib/detailed/formatters/waxify.ts:35
 
 ___
 
@@ -7280,7 +7280,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:42
+wasm/lib/detailed/formatters/waxify.ts:56
 
 ___
 
@@ -7327,6 +7327,36 @@ formatter.format(naiObject);
 #### Defined in
 
 wasm/lib/detailed/formatters/base.ts:70
+
+___
+
+### formatNumber
+
+▸ **formatNumber**(`amount`, `precision?`, `locales?`): `string`
+
+Formats numbers in given format
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | `undefined` | number to be formatted |
+| `precision` | `number` | `0` | the exact precision of the given number (defaults to 0) |
+| `locales?` | `string` \| `string`[] | `undefined` | A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale) |
+
+#### Returns
+
+`string`
+
+formatted number
+
+#### Implementation of
+
+[IWaxExtendableFormatter](#interfacesiwaxextendableformattermd).[formatNumber](#formatnumber)
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:43
 
 ___
 
@@ -7390,7 +7420,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:22
+wasm/lib/detailed/formatters/waxify.ts:23
 
 
 <a name="classeswaxformatterbasemd"></a>
@@ -7659,7 +7689,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:6
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:18
+wasm/lib/detailed/chain_api.ts:16
 
 ___
 
@@ -7669,7 +7699,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:19
+wasm/lib/detailed/chain_api.ts:17
 
 ___
 
@@ -7679,7 +7709,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:17
+wasm/lib/detailed/chain_api.ts:15
 
 
 <a name="enumsesupportedlanguagesmd"></a>
@@ -7924,7 +7954,7 @@ Formatter options
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:65
+wasm/lib/detailed/formatters/types.ts:66
 
 ___
 
@@ -7936,7 +7966,7 @@ Source readonly unchanged input value for parsing raw data
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:73
+wasm/lib/detailed/formatters/types.ts:74
 
 ___
 
@@ -7948,7 +7978,7 @@ Target formatter data that might have been previously changed by other formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:80
+wasm/lib/detailed/formatters/types.ts:81
 
 
 <a name="interfacesihiveappsoperationmd"></a>
@@ -8039,9 +8069,13 @@ ___
 
 • `Readonly` **formatter**: [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[formatter](#formatter)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:378
+wasm/lib/interfaces.ts:248
 
 ___
 
@@ -8075,9 +8109,13 @@ Formatting data
 formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 ```
 
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[waxify](#waxify)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:379
+wasm/lib/interfaces.ts:249
 
 ## Accessors
 
@@ -8126,7 +8164,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:282
+wasm/lib/interfaces.ts:285
 
 ___
 
@@ -8151,7 +8189,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:366
+wasm/lib/interfaces.ts:369
 
 ___
 
@@ -8182,7 +8220,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:298
+wasm/lib/interfaces.ts:301
 
 ___
 
@@ -8207,7 +8245,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:376
+wasm/lib/interfaces.ts:379
 
 ___
 
@@ -8227,7 +8265,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:303
+wasm/lib/interfaces.ts:306
 
 ___
 
@@ -8257,7 +8295,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:356
+wasm/lib/interfaces.ts:359
 
 ___
 
@@ -8285,7 +8323,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:254
+wasm/lib/interfaces.ts:257
 
 ___
 
@@ -8318,7 +8356,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:266
+wasm/lib/interfaces.ts:269
 
 ___
 
@@ -8350,7 +8388,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:347
+wasm/lib/interfaces.ts:350
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -8765,6 +8803,52 @@ wasm/lib/interfaces.ts:226
 
   ↳ [`IHiveChainInterface`](#interfacesihivechaininterfacemd)
 
+## Properties
+
+### formatter
+
+• `Readonly` **formatter**: [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:248
+
+___
+
+### waxify
+
+• `Readonly` **waxify**: (`strings`: `TemplateStringsArray`, ...`args`: `unknown`[]) => `string`
+
+#### Type declaration
+
+▸ (`strings`, `...args`): `string`
+
+Formats given text based on arguments structure
+
+##### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `strings` | `TemplateStringsArray` | raw strings |
+| `...args` | `unknown`[] | arguments to be parsed using custom wax formatters |
+
+##### Returns
+
+`string`
+
+formatted data
+
+**`Example`**
+
+Formatting data
+```typescript
+formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
+```
+
+#### Defined in
+
+wasm/lib/interfaces.ts:249
+
 ## Accessors
 
 ### TransactionBuilder
@@ -8804,7 +8888,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:282
+wasm/lib/interfaces.ts:285
 
 ___
 
@@ -8831,7 +8915,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:298
+wasm/lib/interfaces.ts:301
 
 ___
 
@@ -8847,7 +8931,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:303
+wasm/lib/interfaces.ts:306
 
 ___
 
@@ -8871,7 +8955,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:254
+wasm/lib/interfaces.ts:257
 
 ___
 
@@ -8900,7 +8984,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:266
+wasm/lib/interfaces.ts:269
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
@@ -8942,7 +9026,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:146
+wasm/lib/detailed/formatters/types.ts:147
 
 ## Methods
 
@@ -8967,7 +9051,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:170
+wasm/lib/detailed/formatters/types.ts:171
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -8987,7 +9071,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:178
+wasm/lib/detailed/formatters/types.ts:179
 
 ___
 
@@ -9029,7 +9113,33 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:141
+wasm/lib/detailed/formatters/types.ts:142
+
+___
+
+### formatNumber
+
+▸ **formatNumber**(`amount`, `precision?`, `locales?`): `string`
+
+Formats numbers in given format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | number to be formatted |
+| `precision?` | `number` | the exact precision of the given number (defaults to 0) |
+| `locales?` | `string` \| `string`[] | A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale) |
+
+#### Returns
+
+`string`
+
+formatted number
+
+#### Defined in
+
+wasm/lib/detailed/formatters/types.ts:190
 
 ___
 
@@ -9065,7 +9175,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:127
+wasm/lib/detailed/formatters/types.ts:128
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -9094,7 +9204,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:146
+wasm/lib/detailed/formatters/types.ts:147
 
 ## Methods
 
@@ -9132,7 +9242,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:141
+wasm/lib/detailed/formatters/types.ts:142
 
 ___
 
@@ -9164,7 +9274,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:127
+wasm/lib/detailed/formatters/types.ts:128
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -9187,7 +9297,7 @@ wasm/lib/detailed/formatters/types.ts:127
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:22
+wasm/lib/detailed/formatters/types.ts:23
 
 ___
 
@@ -9205,7 +9315,7 @@ true
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:55
+wasm/lib/detailed/formatters/types.ts:56
 
 ___
 
@@ -9221,7 +9331,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:42
+wasm/lib/detailed/formatters/types.ts:43
 
 
 <a name="interfacesiwaxoptionsmd"></a>
