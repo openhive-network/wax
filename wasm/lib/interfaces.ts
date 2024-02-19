@@ -245,6 +245,9 @@ export interface IHiveAssetData {
 export interface IWaxBaseInterface {
   get TransactionBuilder(): ITransactionBuilderConstructor;
 
+  readonly formatter: IWaxExtendableFormatter;
+  readonly waxify: IWaxExtendableFormatter['waxify'];
+
   /**
    * Retrieves asset amount and symbol from the api data
    *
@@ -374,9 +377,6 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @returns {Promise<Date>} Full regeneration time
    */
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
-
-  readonly formatter: IWaxExtendableFormatter;
-  readonly waxify: IWaxExtendableFormatter['waxify'];
 
   readonly api: Readonly<IHiveApi>;
 }

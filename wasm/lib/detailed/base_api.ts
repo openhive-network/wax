@@ -6,11 +6,18 @@ import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";
 import Long from "long";
 
+import { WaxFormatter } from "./formatters/waxify";
+
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
 
 export class WaxBaseApi implements IWaxBaseInterface {
   public proto: proto_protocol;
+
+  public readonly formatter = WaxFormatter.create(this);
+  public get waxify() {
+    return this.formatter.waxify.bind(this.formatter);
+  }
 
   public extract(res: result): string {
     if(res.value !== this.wax.error_code.ok)
