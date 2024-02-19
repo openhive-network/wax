@@ -327,6 +327,30 @@ wasm/lib/interfaces.ts:54
 
 ___
 
+### TWaxApiRequest
+
+Ƭ **TWaxApiRequest**\<`TReq`, `TRes`\>: `Object`
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `TReq` |
+| `TRes` |
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `params` | `TReq` |
+| `result` | `TRes` |
+
+#### Defined in
+
+wasm/lib/interfaces.ts:314
+
+___
+
 ### TWaxCustomFormatterConstructor
 
 Ƭ **TWaxCustomFormatterConstructor**: (`wax`: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)) => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd) \| () => [`IWaxCustomFormatter`](#interfacesiwaxcustomformattermd)
@@ -349,7 +373,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:334
+wasm/lib/interfaces.ts:336
 
 ## Variables
 
@@ -8061,7 +8085,7 @@ wasm/lib/interfaces.ts:242
 
 #### Defined in
 
-wasm/lib/interfaces.ts:381
+wasm/lib/interfaces.ts:390
 
 ___
 
@@ -8189,7 +8213,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:369
+wasm/lib/interfaces.ts:378
 
 ___
 
@@ -8245,7 +8269,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:379
+wasm/lib/interfaces.ts:388
 
 ___
 
@@ -8285,7 +8309,7 @@ Extends hive chain interface with your custom API definitions
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `extendedHiveApiData` | `YourApi` | your custom api definitions |
+| `extendedHiveApiData` | `YourApi` | your custom api definitions for use with class-validators and class-transformers |
 
 #### Returns
 
@@ -8295,7 +8319,27 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:359
+wasm/lib/interfaces.ts:361
+
+▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
+
+Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `YourApi` |
+
+#### Returns
+
+[`TWaxExtended`](#twaxextended)\<`YourApi`\>
+
+Wax Hive chain instance containing extended api
+
+#### Defined in
+
+wasm/lib/interfaces.ts:368
 
 ___
 
@@ -8388,7 +8432,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:350
+wasm/lib/interfaces.ts:352
 
 
 <a name="interfacesimanabardatamd"></a>

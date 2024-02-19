@@ -19,7 +19,9 @@ npm install @hiveio/wax
 
 ## Usage
 
-#### Simple wax foundation usage
+### Wax foundation
+
+#### Create a TransactionBuilder instance from api data
 
 ```js
 import { createWaxFoundation } from '@hiveio/wax';
@@ -44,7 +46,23 @@ const transaction = wax.TransactionBuilder.fromApi(`{
 console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 ```
 
-#### Use hive chain interface to create a signed transaction
+#### Add custom hive apps operations to the TransactionBuilder
+
+```ts
+import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
+
+const wax = await createWaxFoundation();
+
+const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").build());
+
+console.info(tx.toApi()); // Print the transaction in the API form
+```
+
+### Wax chain interface
+
+#### Create a signed transaction
 
 ```js
 import { createHiveChain } from '@hiveio/wax';
@@ -76,43 +94,7 @@ const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh
 console.info(chain.waxify`${stx}`);
 ```
 
-#### Use hive chain interface and custom formatters to output data in specified format
-
-```ts
-import { createHiveChain, IFormatFunctionArguments, WaxFormattable } from '@hiveio/wax';
-const chain = await createHiveChain();
-
-const data = {
-  myCustomProp: 12542
-};
-
-class MyFormatters { // Define custom formatters class
-  @WaxFormattable() // Match this method as `myCustomProp` custom formatter
-  myCustomProp({ source }: IFormatFunctionArguments<typeof data>) {
-    return source.myCustomProp.toString();
-  }
-}
-
-const formatter = chain.formatter.extend(MyFormatters); // Creates and returns new extended formatter object
-
-console.info(formatter.waxify`${data}`); // Print formatted data
-```
-
-#### Use hive TransactionBuilder interface with custom hive apps operations
-
-```ts
-import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
-
-const wax = await createWaxFoundation();
-
-const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
-
-tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").build());
-
-console.info(tx.toApi()); // Print the transaction in the API form
-```
-
-#### Use hive chain interface to create a transaction and broadcast it using network_broadcast_api
+#### Create a transaction and broadcast it using network_broadcast_api
 
 ```js
 import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
@@ -143,6 +125,28 @@ const request = new BroadcastTransactionRequest(tx);
 await chain.api.network_broadcast_api.broadcast_transaction(request);
 ```
 
+#### Use custom formatters to output data in specified format
+
+```ts
+import { createHiveChain, IFormatFunctionArguments, WaxFormattable } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+const data = {
+  myCustomProp: 12542
+};
+
+class MyFormatters { // Define custom formatters class
+  @WaxFormattable() // Match this method as `myCustomProp` custom formatter
+  myCustomProp({ source }: IFormatFunctionArguments<typeof data>) {
+    return source.myCustomProp.toString();
+  }
+}
+
+const formatter = chain.formatter.extend(MyFormatters); // Creates and returns new extended formatter object
+
+console.info(formatter.waxify`${data}`); // Print formatted data
+```
+
 #### Calculate user manabar regeneration time
 
 ```ts
@@ -154,7 +158,7 @@ const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("ini
 console.info(manaTime); // Date
 ```
 
-#### Advanced usage - extend hive chain interface and call custom API endpoints
+#### Extend API interface and call custom endpoints
 
 ```ts
 import { createHiveChain, TWaxExtended } from '@hiveio/wax';
@@ -178,6 +182,33 @@ const MyData = {
 };
 
 const extended: TWaxExtended<typeof MyData> = chain.extend(MyData);
+
+const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+
+console.info(result); // { args: {}, ret: [] }
+```
+
+#### Extend API interface using interfaces only and call custom endpoints
+
+```ts
+import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+interface IMyRequest {
+  method: string;
+}
+interface IMyResponse {
+  args: {};
+  ret: [];
+}
+
+type TMyData = {
+  jsonrpc: {
+    get_signature: TWaxApiRequest<IMyRequest, IMyResponse>
+  }
+};
+
+const extended = chain.extend<TMyData>();
 
 const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
 

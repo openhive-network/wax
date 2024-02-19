@@ -46,16 +46,21 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
           get: (_target: any, property: string, _receiver: any) => {
+            /* // We want to let users extend wax with interfaces only and those are not compiled into JS objects, so this assertion is no longer suitable for us:
             if(typeof this.localTypes[propertyParent] !== 'object')
               throw new WaxError(`Api "${propertyParent}" has not been implemented yet or does not exist`);
+            */
 
             return async(params: object) => {
               const method = `${propertyParent}.${property}`;
 
-              if(typeof this.localTypes[propertyParent][property] !== 'object')
-                throw new WaxError(`Method "${method}" has not been implemented yet or does not exist`);
+              /* // We want to let users extend wax with interfaces only and those are not compiled into JS objects, so this assertion is no longer suitable for us:
+                if(typeof this.localTypes[propertyParent][property] !== 'object')
+                  throw new WaxError(`Method "${method}" has not been implemented yet or does not exist`);
+              */
 
-              await validateOrReject(instanceToPlain(this.localTypes[propertyParent][property].params, params));
+              if(typeof this.localTypes[propertyParent]?.[property] === 'object')
+                await validateOrReject(instanceToPlain(this.localTypes[propertyParent][property].params, params));
 
               const data = await fetch(this.apiEndpoint, {
                 method: "POST",
@@ -71,12 +76,20 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               if(typeof data.error === 'object')
                 throw new WaxChainApiError('Error sending request to the Hive API', data.error);
 
-              if(typeof data.result !== 'object')
-                throw new WaxChainApiError('No result found in the Hive API response', data);
+              let result = data.result;
 
-              const result = plainToInstance(this.localTypes[propertyParent][property].result, data.result) as object;
+              if(typeof this.localTypes[propertyParent]?.[property] === 'object') {
+                if(typeof data.result !== 'object')
+                  throw new WaxChainApiError('No result found in the Hive API response', data);
 
-              await validateOrReject(result);
+                result = plainToInstance(this.localTypes[propertyParent][property].result, data.result) as object;
+
+                if(Array.isArray(result))
+                  for(const node of result)
+                    await validateOrReject(node);
+                else
+                  await validateOrReject(result);
+              }
 
               return result;
             };
@@ -86,10 +99,15 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     });
   }
 
-  public extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi> {
+  public extend<YourApi>(extendedHiveApiData?: YourApi): TWaxExtended<YourApi> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint);
 
-    newApi.localTypes = { ...newApi.localTypes, ...extendedHiveApiData };
+    if(typeof extendedHiveApiData === "object")
+      for(const methodName in extendedHiveApiData)
+        newApi.localTypes[methodName as keyof TWaxExtended<YourApi>] = {
+          ...(newApi.localTypes[methodName as keyof typeof newApi['localTypes']] ?? {}),
+          ...extendedHiveApiData[methodName]
+        };
 
     return newApi as unknown as TWaxExtended<YourApi>;
   }

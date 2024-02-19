@@ -311,13 +311,15 @@ export interface IWaxBaseInterface {
  */
 export type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
 
+export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly result: TRes; };
+
 /**
  * @internal
  */
 export type YourApiData<YourTypes> = {
   [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new () => Readonly<infer ParamsType>; readonly result: new () => Readonly<infer ResultType>; }
     ? (params: ParamsType) => Promise<ResultType>
-    : never;
+    : (YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; } ? (params: ParamsType) => Promise<ResultType> : never);
 };
 
 /**
@@ -352,11 +354,18 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Extends hive chain interface with your custom API definitions
    *
-   * @param extendedHiveApiData your custom api definitions
+   * @param extendedHiveApiData your custom api definitions for use with class-validators and class-transformers
    *
    * @returns Wax Hive chain instance containing extended api
    */
   extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi>;
+
+  /**
+   * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)
+   *
+   * @returns Wax Hive chain instance containing extended api
+   */
+  extend<YourApi>(): TWaxExtended<YourApi>;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments

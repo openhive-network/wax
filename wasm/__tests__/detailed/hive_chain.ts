@@ -120,6 +120,33 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
+    test('Should be able to extend hive chain interface by custom definitions using interfaces only', async ({ dual }) => {
+      const retVal = await dual(async() => {
+        interface IMyRequest {
+          method: string;
+        }
+        interface IMyResponse {
+          args: {};
+          ret: [];
+        }
+
+        type TMyType = {
+          jsonrpc: {
+            get_signature: {
+              params: IMyRequest,
+              result: IMyResponse
+            }
+          }
+        };
+
+        const result = await chain.extend<TMyType>().api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+
+        return result;
+      });
+
+      expect(retVal).toStrictEqual({ args: {}, ret: [] });
+    });
+
     test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ dual }) => {
       const retVal = await dual(async(protoVoteOp) => {
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
