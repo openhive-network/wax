@@ -1,6 +1,7 @@
 // Exports only the prootbuf definitions
 
-// Transaction types
+// Transaction and block types
+export { block } from "./proto/block.js";
 export { transaction } from "./proto/transaction.js";
 export { operation } from "./proto/operation.js";
 
@@ -12,8 +13,8 @@ export { legacy_chain_properties } from "./proto/legacy_chain_properties.js";
 export { price } from "./proto/price.js";
 
 // Operations
-export { account_create } from "./proto/account_create.js";
 export { account_create_with_delegation } from "./proto/account_create_with_delegation.js";
+export { account_create } from "./proto/account_create.js";
 export { account_created } from "./proto/account_created.js";
 export { account_update } from "./proto/account_update.js";
 export { account_update2 } from "./proto/account_update2.js";
@@ -26,20 +27,20 @@ export { changed_recovery_account } from "./proto/changed_recovery_account.js";
 export { claim_account } from "./proto/claim_account.js";
 export { claim_reward_balance } from "./proto/claim_reward_balance.js";
 export { clear_null_account_balance } from "./proto/clear_null_account_balance.js";
-export { collateralized_convert } from "./proto/collateralized_convert.js";
 export { collateralized_convert_immediate_conversion } from "./proto/collateralized_convert_immediate_conversion.js";
-export { comment } from "./proto/comment.js";
+export { collateralized_convert } from "./proto/collateralized_convert.js";
 export { comment_benefactor_reward } from "./proto/comment_benefactor_reward.js";
 export { comment_options } from "./proto/comment_options.js";
 export { comment_payout_update } from "./proto/comment_payout_update.js";
 export { comment_reward } from "./proto/comment_reward.js";
+export { comment } from "./proto/comment.js";
 export { consolidate_treasury_balance } from "./proto/consolidate_treasury_balance.js";
 export { convert } from "./proto/convert.js";
 export { create_claimed_account } from "./proto/create_claimed_account.js";
 export { create_proposal } from "./proto/create_proposal.js";
 export { curation_reward } from "./proto/curation_reward.js";
-export { custom } from "./proto/custom.js";
 export { custom_json } from "./proto/custom_json.js";
+export { custom } from "./proto/custom.js";
 export { decline_voting_rights } from "./proto/decline_voting_rights.js";
 export { declined_voting_rights } from "./proto/declined_voting_rights.js";
 export { delayed_voting } from "./proto/delayed_voting.js";
@@ -63,9 +64,9 @@ export { fill_order } from "./proto/fill_order.js";
 export { fill_recurrent_transfer } from "./proto/fill_recurrent_transfer.js";
 export { fill_transfer_from_savings } from "./proto/fill_transfer_from_savings.js";
 export { fill_vesting_withdraw } from "./proto/fill_vesting_withdraw.js";
-export { hardfork } from "./proto/hardfork.js";
-export { hardfork_hive } from "./proto/hardfork_hive.js";
 export { hardfork_hive_restore } from "./proto/hardfork_hive_restore.js";
+export { hardfork_hive } from "./proto/hardfork_hive.js";
+export { hardfork } from "./proto/hardfork.js";
 export { ineffective_delete_comment } from "./proto/ineffective_delete_comment.js";
 export { interest } from "./proto/interest.js";
 export { limit_order_cancel } from "./proto/limit_order_cancel.js";
@@ -73,9 +74,9 @@ export { limit_order_cancelled } from "./proto/limit_order_cancelled.js";
 export { limit_order_create } from "./proto/limit_order_create.js";
 export { limit_order_create2 } from "./proto/limit_order_create2.js";
 export { liquidity_reward } from "./proto/liquidity_reward.js";
+export { pow_reward } from "./proto/pow_reward.js";
 export { pow } from "./proto/pow.js";
 export { pow2 } from "./proto/pow2.js";
-export { pow_reward } from "./proto/pow_reward.js";
 export { producer_missed } from "./proto/producer_missed.js";
 export { producer_reward } from "./proto/producer_reward.js";
 export { proposal_fee } from "./proto/proposal_fee.js";
@@ -89,13 +90,13 @@ export { return_vesting_delegation } from "./proto/return_vesting_delegation.js"
 export { set_withdraw_vesting_route } from "./proto/set_withdraw_vesting_route.js";
 export { shutdown_witness } from "./proto/shutdown_witness.js";
 export { system_warning } from "./proto/system_warning.js";
-export { transfer } from "./proto/transfer.js";
 export { transfer_from_savings } from "./proto/transfer_from_savings.js";
 export { transfer_to_savings } from "./proto/transfer_to_savings.js";
-export { transfer_to_vesting } from "./proto/transfer_to_vesting.js";
 export { transfer_to_vesting_completed } from "./proto/transfer_to_vesting_completed.js";
-export { update_proposal } from "./proto/update_proposal.js";
+export { transfer_to_vesting } from "./proto/transfer_to_vesting.js";
+export { transfer } from "./proto/transfer.js";
 export { update_proposal_votes } from "./proto/update_proposal_votes.js";
+export { update_proposal } from "./proto/update_proposal.js";
 export { vesting_shares_split } from "./proto/vesting_shares_split.js";
 export { vote } from "./proto/vote.js";
 export { withdraw_vesting } from "./proto/withdraw_vesting.js";
