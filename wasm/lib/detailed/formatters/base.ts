@@ -2,7 +2,8 @@ import { DeepPartial, IWaxFormatter, IWaxFormatterOptions } from "./types";
 
 export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
-    appendTokenName: true
+    appendTokenName: true,
+    formatAmount: true
   },
   transaction: {
     displayAsId: true

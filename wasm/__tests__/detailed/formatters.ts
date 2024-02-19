@@ -103,7 +103,7 @@ test.describe('Wax object interface formatters tests', () => {
     const retVal = await dual(async() => {
       const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ] });
 
-      return chain.formatter.format(response.accounts[0]);
+      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(response.accounts[0]);
     });
 
     expect(

@@ -271,7 +271,7 @@ public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:96
+wasm/lib/detailed/formatters/types.ts:108
 
 ___
 
@@ -333,7 +333,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:141
+wasm/lib/detailed/formatters/types.ts:153
 
 ___
 
@@ -7174,7 +7174,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | :------ | :------ | :------ |
 | `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -7218,7 +7218,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:14
+wasm/lib/detailed/formatters/base.ts:15
 
 ___
 
@@ -7262,9 +7262,9 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
 | `options?` | `Object` | formatter options |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -7326,7 +7326,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:69
+wasm/lib/detailed/formatters/base.ts:70
 
 ___
 
@@ -7366,7 +7366,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:73
+wasm/lib/detailed/formatters/base.ts:74
 
 ___
 
@@ -7380,7 +7380,7 @@ ___
 | :------ | :------ | :------ |
 | `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -7420,7 +7420,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; } | - |
+| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -7430,7 +7430,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:16
+wasm/lib/detailed/formatters/base.ts:17
 
 ## Properties
 
@@ -7446,7 +7446,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:14
+wasm/lib/detailed/formatters/base.ts:15
 
 ## Methods
 
@@ -7488,7 +7488,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:69
+wasm/lib/detailed/formatters/base.ts:70
 
 ___
 
@@ -7508,7 +7508,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:60
+wasm/lib/detailed/formatters/base.ts:61
 
 ___
 
@@ -7530,7 +7530,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:24
+wasm/lib/detailed/formatters/base.ts:25
 
 ___
 
@@ -7550,7 +7550,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:40
+wasm/lib/detailed/formatters/base.ts:41
 
 ___
 
@@ -7573,7 +7573,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:26
+wasm/lib/detailed/formatters/base.ts:27
 
 ___
 
@@ -7609,7 +7609,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:73
+wasm/lib/detailed/formatters/base.ts:74
 
 
 <a name="enumsefollowblogactionmd"></a>
@@ -7924,7 +7924,7 @@ Formatter options
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:53
+wasm/lib/detailed/formatters/types.ts:65
 
 ___
 
@@ -7936,7 +7936,7 @@ Source readonly unchanged input value for parsing raw data
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:61
+wasm/lib/detailed/formatters/types.ts:73
 
 ___
 
@@ -7948,7 +7948,7 @@ Target formatter data that might have been previously changed by other formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:68
+wasm/lib/detailed/formatters/types.ts:80
 
 
 <a name="interfacesihiveappsoperationmd"></a>
@@ -8942,7 +8942,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:134
+wasm/lib/detailed/formatters/types.ts:146
 
 ## Methods
 
@@ -8967,7 +8967,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:158
+wasm/lib/detailed/formatters/types.ts:170
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -8987,7 +8987,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:166
+wasm/lib/detailed/formatters/types.ts:178
 
 ___
 
@@ -9029,7 +9029,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:129
+wasm/lib/detailed/formatters/types.ts:141
 
 ___
 
@@ -9065,7 +9065,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:115
+wasm/lib/detailed/formatters/types.ts:127
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -9094,7 +9094,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:134
+wasm/lib/detailed/formatters/types.ts:146
 
 ## Methods
 
@@ -9132,7 +9132,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:129
+wasm/lib/detailed/formatters/types.ts:141
 
 ___
 
@@ -9164,7 +9164,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:115
+wasm/lib/detailed/formatters/types.ts:127
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -9182,6 +9182,8 @@ wasm/lib/detailed/formatters/types.ts:115
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `appendTokenName` | `boolean` | Appends token name after asset amount (e.g. `1.100 HIVE`) **`Default`** ```ts true ``` |
+| `formatAmount` | `boolean` | Formats the output amount in human-readable format based on current localization settings of the user (e.g. `100'000'000.100 HIVE`) **`Default`** ```ts true ``` |
+| `locales?` | `string` \| `string`[] | Locales to be used when formatting the amount of the asset (defaults to the currently used locale by the user) **`Default`** ```ts undefined ``` |
 
 #### Defined in
 
@@ -9203,7 +9205,7 @@ true
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:43
+wasm/lib/detailed/formatters/types.ts:55
 
 ___
 
@@ -9219,7 +9221,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:30
+wasm/lib/detailed/formatters/types.ts:42
 
 
 <a name="interfacesiwaxoptionsmd"></a>

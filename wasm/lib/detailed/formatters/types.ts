@@ -26,6 +26,18 @@ export interface IWaxFormatterOptions {
      * @default true
      */
     appendTokenName: boolean;
+    /**
+     * Formats the output amount in human-readable format based on current localization settings of the user (e.g. `100'000'000.100 HIVE`)
+     *
+     * @default true
+     */
+    formatAmount: boolean;
+    /**
+     * Locales to be used when formatting the amount of the asset (defaults to the currently used locale by the user)
+     *
+     * @default undefined
+     */
+    locales?: string | string[];
   };
   transaction: {
     /**

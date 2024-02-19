@@ -133,7 +133,7 @@ export const initminerAccountApi = {
   pending_transfers: 0,
   post_bandwidth: 0,
   post_count: 0,
-  post_voting_power: "1000000.000000 VESTS",
+  post_voting_power: "1,000,000.000000 VESTS",
   posting: {
     account_auths: [],
     key_auths: [
@@ -168,7 +168,7 @@ export const initminerAccountApi = {
   savings_hbd_seconds_last_update: "1970-01-01T00:00:00",
   savings_withdraw_requests: 0,
   to_withdraw: 0,
-  vesting_shares: "1000000.000000 VESTS",
+  vesting_shares: "1,000,000.000000 VESTS",
   vesting_withdraw_rate: "0.000001 VESTS",
   voting_manabar: {
     current_mana: 0,
