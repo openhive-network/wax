@@ -40,15 +40,30 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
       })
   }
 
-  public formatNumber(amount: string | number | BigInt | Long, precision: number = 0, locales?: string | string[]): string {
-    amount = amount.toString();
+  // Similar thing could be achieved using Intl.NumberFormat interface only, but it does not allow dynamic precision and precision larger than 20, which HIVE may provide in the SMTs
+  public formatNumber(amount: string | number | BigInt | Long, precision?: number, locales?: string | string[]): string {
+    if(Number.isNaN(amount))
+      amount = 0;
 
-    // Amount can be larger than the MAX_SAFE_INTEGER, so we have to format BigInt to parts, extract the fraction part from the amount and then join all of the parts together
-    const formatted = Intl.NumberFormat(locales as string, { minimumFractionDigits: 1 }).formatToParts(BigInt(amount.slice(0, -precision)));
+    // Every possible type of the amount variable has a toString() method which assures immutability of our numeric value (with fraction part)
+    amount = amount.toString();
+    const isFloat = amount.indexOf(".");
+    const floatEnd = isFloat === -1 ? amount.length : isFloat;
+
+    // Amount can be larger than the MAX_SAFE_INTEGER, so we have to format BigInt to parts, remove the fraction part from the amount and then join all of the parts together
+    // (Even though we are removing the fraction part from the value, we are setting minimumFractionDigits option to 1 to extract the decimal character)
+    const formatted = Intl.NumberFormat(locales as string, { minimumFractionDigits: 1 }).formatToParts(BigInt(amount.slice(0, floatEnd)));
     const decimalIndex = formatted.findIndex(pred => pred.type === "decimal");
+    // Join all of the parts of the formatted BigInt value or fallback to "0"
     const integer = (decimalIndex === -1 ? formatted : formatted.slice(0, decimalIndex)).reduce((prev, curr) => prev + curr.value, "") || "0";
+    if(precision === 0 || (isFloat === -1 && typeof precision === "undefined"))
+      return integer; // We do not want the decimal character when there is no fraction part
+
     const decimal = formatted[decimalIndex]?.value || ".";
-    const fraction = amount.slice(-precision).padStart(precision, "0");
+    // Retrieve the fraction part from the stringified amount variable and pad zeros if it is necessary
+    let fraction = amount.slice(floatEnd + 1, typeof precision === "undefined" ? undefined : floatEnd + 1 + precision);
+    if(typeof precision === "number")
+      fraction = fraction.padEnd(precision, "0");
 
     return `${integer}${decimal}${fraction}`;
   }

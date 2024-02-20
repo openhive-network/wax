@@ -29,6 +29,88 @@ test.describe('Wax object interface formatters tests', () => {
     await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
   });
 
+  test('Should be able to format numbers using default formatters from hive chain interface', async({ dual }) => {
+    const retVal = await dual(() => {
+      return [
+        chain.formatter.formatNumber(76543212345678, 3, "en-US"),
+        chain.formatter.formatNumber(76543212345678, 2, "en-US"),
+        chain.formatter.formatNumber(76543212345678, 0, "en-US"),
+        chain.formatter.formatNumber(76543212345678, undefined, "en-US"),
+        chain.formatter.formatNumber(BigInt(76543212345678), 3, "en-US"),
+        chain.formatter.formatNumber(BigInt(76543212345678), 2, "en-US"),
+        chain.formatter.formatNumber(BigInt(76543212345678), 0, "en-US"),
+        chain.formatter.formatNumber(BigInt(76543212345678), undefined, "en-US"),
+        chain.formatter.formatNumber("76543212345678", 3, "en-US"),
+        chain.formatter.formatNumber("76543212345678", 2, "en-US"),
+        chain.formatter.formatNumber("76543212345678", 0, "en-US"),
+        chain.formatter.formatNumber("76543212345678", undefined, "en-US"),
+        chain.formatter.formatNumber("765432123.4567", 3, "en-US"),
+        chain.formatter.formatNumber("765432123.4567", 2, "en-US"),
+        chain.formatter.formatNumber("765432123.4567", 0, "en-US"),
+        chain.formatter.formatNumber("765432123.4567", undefined, "en-US"),
+        chain.formatter.formatNumber("-76543212.3456", 3, "en-US"),
+        chain.formatter.formatNumber("-76543212.3456", 2, "en-US"),
+        chain.formatter.formatNumber("-76543212.3456", 0, "en-US"),
+        chain.formatter.formatNumber("-76543212.3456", undefined, "en-US"),
+        chain.formatter.formatNumber("0.3456",         3, "en-US"),
+        chain.formatter.formatNumber("0.3456",         2, "en-US"),
+        chain.formatter.formatNumber("0.3456",         0, "en-US"),
+        chain.formatter.formatNumber("0.3456",         undefined, "en-US"),
+        chain.formatter.formatNumber("0.1",            3, "en-US"),
+        chain.formatter.formatNumber("0.1",            2, "en-US"),
+        chain.formatter.formatNumber("0.1",            0, "en-US"),
+        chain.formatter.formatNumber("0.1",            undefined, "en-US"),
+        chain.formatter.formatNumber("0",              3, "en-US"),
+        chain.formatter.formatNumber("0",              2, "en-US"),
+        chain.formatter.formatNumber("0",              0, "en-US"),
+        chain.formatter.formatNumber("0",              undefined, "en-US"),
+        chain.formatter.formatNumber(Number.NaN,       3, "en-US"),
+        chain.formatter.formatNumber(Number.NaN,       2, "en-US"),
+        chain.formatter.formatNumber(Number.NaN,       0, "en-US"),
+        chain.formatter.formatNumber(Number.NaN,       undefined, "en-US")
+      ];
+    });
+
+    expect(retVal).toStrictEqual([
+      "76,543,212,345,678.000",
+      "76,543,212,345,678.00",
+      "76,543,212,345,678",
+      "76,543,212,345,678",
+      "76,543,212,345,678.000",
+      "76,543,212,345,678.00",
+      "76,543,212,345,678",
+      "76,543,212,345,678",
+      "76,543,212,345,678.000",
+      "76,543,212,345,678.00",
+      "76,543,212,345,678",
+      "76,543,212,345,678",
+      "765,432,123.456",
+      "765,432,123.45",
+      "765,432,123",
+      "765,432,123.4567",
+      "-76,543,212.345",
+      "-76,543,212.34",
+      "-76,543,212",
+      "-76,543,212.3456",
+      "0.345",
+      "0.34",
+      "0",
+      "0.3456",
+      "0.100",
+      "0.10",
+      "0",
+      "0.1",
+      "0.000",
+      "0.00",
+      "0",
+      "0",
+      "0.000",
+      "0.00",
+      "0",
+      "0"
+    ]);
+  });
+
   test('Should be able to format asset using default formatters from hive chain interface', async({ dual }) => {
     const retVal = await dual((naiAsset) => {
       return chain.waxify`Amount: ${naiAsset}`;

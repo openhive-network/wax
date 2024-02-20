@@ -182,7 +182,7 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
    * Formats numbers in given format
    *
    * @param {string | number | BigInt | Long} amount number to be formatted
-   * @param {number} precision the exact precision of the given number (defaults to 0)
+   * @param {number} precision the exact precision of the given number (defaults to undefined - dynamic precision)
    * @param {string | string[] | undefined} locales A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale)
    *
    * @returns {string} formatted number

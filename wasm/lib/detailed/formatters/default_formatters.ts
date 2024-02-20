@@ -15,7 +15,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     let { amount, symbol } = this.wax.getAsset(source);
 
     if(options.asset.formatAmount)
-      amount = this.wax.formatter.formatNumber(source.amount, source.precision, options.asset.locales as string);
+      amount = this.wax.formatter.formatNumber(amount, undefined, options.asset.locales as string);
 
     if(options.asset.appendTokenName)
       return `${amount} ${symbol}`;

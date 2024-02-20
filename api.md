@@ -7304,7 +7304,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:56
+wasm/lib/detailed/formatters/waxify.ts:71
 
 ___
 
@@ -7362,11 +7362,11 @@ Formats numbers in given format
 
 #### Parameters
 
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `amount` | `string` \| `number` \| `BigInt` \| `Long` | `undefined` | number to be formatted |
-| `precision` | `number` | `0` | the exact precision of the given number (defaults to 0) |
-| `locales?` | `string` \| `string`[] | `undefined` | A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale) |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | number to be formatted |
+| `precision?` | `number` | the exact precision of the given number (defaults to undefined - dynamic precision) |
+| `locales?` | `string` \| `string`[] | A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale) |
 
 #### Returns
 
@@ -7380,7 +7380,7 @@ formatted number
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:43
+wasm/lib/detailed/formatters/waxify.ts:44
 
 ___
 
@@ -9172,7 +9172,7 @@ Formats numbers in given format
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `amount` | `string` \| `number` \| `BigInt` \| `Long` | number to be formatted |
-| `precision?` | `number` | the exact precision of the given number (defaults to 0) |
+| `precision?` | `number` | the exact precision of the given number (defaults to undefined - dynamic precision) |
 | `locales?` | `string` \| `string`[] | A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale) |
 
 #### Returns

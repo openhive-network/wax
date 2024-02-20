@@ -280,7 +280,7 @@ test.describe('Wax object interface chain tests', () => {
     });
 
     test('Should be able to calculate full manabar regeneration time from API using hive chain interface', async ({ dual }) => {
-      const retVal = await dual(async() => {
+      const retVal = await dual.dynamic(async() => {
         const time = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
 
         return time.getTime(); // Should be close to Date.now() when fully regenerated
