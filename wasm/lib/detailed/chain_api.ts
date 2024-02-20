@@ -2,7 +2,7 @@ import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, 
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
-import { instanceToPlain, plainToInstance } from "class-transformer";
+import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 
 import { WaxError, WaxChainApiError } from "../errors.js";
@@ -60,7 +60,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               */
 
               if(typeof this.localTypes[propertyParent]?.[property] === 'object')
-                await validateOrReject(instanceToPlain(this.localTypes[propertyParent][property].params, params));
+                await validateOrReject(plainToInstance(this.localTypes[propertyParent][property].params, params));
 
               const data = await fetch(this.apiEndpoint, {
                 method: "POST",

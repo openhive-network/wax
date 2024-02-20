@@ -6,6 +6,7 @@ import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
+import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
 
@@ -118,6 +119,46 @@ test.describe('Wax object interface chain tests', () => {
       });
 
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
+    });
+
+    test('Should be able to extend hive chain and validate properties interface by custom definitions', async () => {
+      class MyRequest {
+        @IsString()
+        method!: string;
+      }
+      class MyResponse {
+        @IsObject()
+        args!: {};
+        @IsArray()
+        ret!: [];
+      }
+
+      const extended = chain.extend({
+        jsonrpc: {
+          get_signature: {
+            params: MyRequest,
+            result: MyResponse
+          }
+        }
+      });
+
+      await expect(async() => {
+        await extended.api.jsonrpc.get_signature(new MyRequest());
+      }).rejects.toBeInstanceOf(Array); // Array<ValidationError>
+
+      await expect(async() => {
+        const req = new MyRequest();
+        (req.method as any) = 10; // Force invalid type on the method
+
+        await extended.api.jsonrpc.get_signature(req); // This should throw after validating
+      }).rejects.toBeInstanceOf(Array); // Array<ValidationError>
+
+      const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+
+      const expectedResult = new MyResponse();
+      expectedResult.args = {};
+      expectedResult.ret = [];
+      expect(result).toStrictEqual(expectedResult);
     });
 
     test('Should be able to extend hive chain interface by custom definitions using interfaces only', async ({ dual }) => {

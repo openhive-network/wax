@@ -317,7 +317,7 @@ export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly resul
  * @internal
  */
 export type YourApiData<YourTypes> = {
-  [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new () => Readonly<infer ParamsType>; readonly result: new () => Readonly<infer ResultType>; }
+  [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; }
     ? (params: ParamsType) => Promise<ResultType>
     : (YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; } ? (params: ParamsType) => Promise<ResultType> : never);
 };
