@@ -6,7 +6,9 @@
 ## Enumerations
 
 - [ECommunityOperationActions](#enumsecommunityoperationactionsmd)
+- [EFollowActions](#enumsefollowactionsmd)
 - [EFollowBlogAction](#enumsefollowblogactionmd)
+- [EFollowOperationActions](#enumsefollowoperationactionsmd)
 - [EManabarType](#enumsemanabartypemd)
 - [ESupportedLanguages](#enumsesupportedlanguagesmd)
 
@@ -4481,7 +4483,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:11
+wasm/lib/detailed/custom_jsons/follow.ts:34
 
 ## Methods
 
@@ -4536,7 +4538,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:111
+wasm/lib/detailed/custom_jsons/follow.ts:134
 
 ___
 
@@ -4584,7 +4586,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:139
+wasm/lib/detailed/custom_jsons/follow.ts:162
 
 ___
 
@@ -4610,7 +4612,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:41
+wasm/lib/detailed/custom_jsons/follow.ts:64
 
 ___
 
@@ -4633,7 +4635,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:13
+wasm/lib/detailed/custom_jsons/follow.ts:36
 
 ___
 
@@ -4659,7 +4661,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:195
+wasm/lib/detailed/custom_jsons/follow.ts:218
 
 ___
 
@@ -4685,7 +4687,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:69
+wasm/lib/detailed/custom_jsons/follow.ts:92
 
 ___
 
@@ -4711,7 +4713,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:264
+wasm/lib/detailed/custom_jsons/follow.ts:287
 
 ___
 
@@ -4737,7 +4739,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:223
+wasm/lib/detailed/custom_jsons/follow.ts:246
 
 ___
 
@@ -4763,7 +4765,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:97
+wasm/lib/detailed/custom_jsons/follow.ts:120
 
 ___
 
@@ -4789,7 +4791,7 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:237
+wasm/lib/detailed/custom_jsons/follow.ts:260
 
 ___
 
@@ -4815,7 +4817,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:125
+wasm/lib/detailed/custom_jsons/follow.ts:148
 
 ___
 
@@ -4841,7 +4843,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:181
+wasm/lib/detailed/custom_jsons/follow.ts:204
 
 ___
 
@@ -4867,7 +4869,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:153
+wasm/lib/detailed/custom_jsons/follow.ts:176
 
 ___
 
@@ -4893,7 +4895,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:167
+wasm/lib/detailed/custom_jsons/follow.ts:190
 
 ___
 
@@ -4919,7 +4921,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:55
+wasm/lib/detailed/custom_jsons/follow.ts:78
 
 ___
 
@@ -4945,7 +4947,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:209
+wasm/lib/detailed/custom_jsons/follow.ts:232
 
 ___
 
@@ -4971,7 +4973,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:83
+wasm/lib/detailed/custom_jsons/follow.ts:106
 
 
 <a name="classesgetblockheaderrequestmd"></a>
@@ -7816,6 +7818,161 @@ ___
 wasm/lib/detailed/custom_jsons/community.ts:73
 
 
+<a name="enumsefollowactionsmd"></a>
+
+# Enumeration: EFollowActions
+
+## Enumeration Members
+
+### BLACKLIST
+
+• **BLACKLIST** = ``"blacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:20
+
+___
+
+### FOLLOW
+
+• **FOLLOW** = ``"blog"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:16
+
+___
+
+### FOLLOW\_BLACKLIST
+
+• **FOLLOW\_BLACKLIST** = ``"follow_blacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:22
+
+___
+
+### FOLLOW\_MUTED
+
+• **FOLLOW\_MUTED** = ``"follow_muted"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:26
+
+___
+
+### MUTE
+
+• **MUTE** = ``"ignore"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:18
+
+___
+
+### RESET\_ALL\_LISTS
+
+• **RESET\_ALL\_LISTS** = ``"reset_all_lists"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:28
+
+___
+
+### RESET\_BLACKLIST
+
+• **RESET\_BLACKLIST** = ``"reset_blacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:19
+
+___
+
+### RESET\_FOLLOWING\_LIST
+
+• **RESET\_FOLLOWING\_LIST** = ``"reset_following_list"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:29
+
+___
+
+### RESET\_FOLLOW\_BLACKLIST
+
+• **RESET\_FOLLOW\_BLACKLIST** = ``"reset_follow_blacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:21
+
+___
+
+### RESET\_FOLLOW\_MUTED\_LIST
+
+• **RESET\_FOLLOW\_MUTED\_LIST** = ``"reset_follow_muted_list"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:25
+
+___
+
+### RESET\_MUTED\_LIST
+
+• **RESET\_MUTED\_LIST** = ``"reset_muted_list"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:30
+
+___
+
+### UNBLACKLIST
+
+• **UNBLACKLIST** = ``"unblacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:23
+
+___
+
+### UNFOLLOW
+
+• **UNFOLLOW** = ``""``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:17
+
+___
+
+### UNFOLLOW\_BLACKLIST
+
+• **UNFOLLOW\_BLACKLIST** = ``"unfollow_blacklist"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:24
+
+___
+
+### UNFOLLOW\_MUTED
+
+• **UNFOLLOW\_MUTED** = ``"unfollow_muted"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:27
+
+
 <a name="enumsefollowblogactionmd"></a>
 
 # Enumeration: EFollowBlogAction
@@ -7849,6 +8006,31 @@ ___
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/follow.ts:6
+
+
+<a name="enumsefollowoperationactionsmd"></a>
+
+# Enumeration: EFollowOperationActions
+
+## Enumeration Members
+
+### FOLLOW
+
+• **FOLLOW** = ``"follow"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:11
+
+___
+
+### REBLOG
+
+• **REBLOG** = ``"reblog"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:12
 
 
 <a name="enumsemanabartypemd"></a>

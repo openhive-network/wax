@@ -267,6 +267,60 @@ test.describe('Wax object interface formatters tests', () => {
     }]);
   });
 
+  test('Should be format custom JSON follow operation using default formatter from the hive chain interface', async({ dual }) => {
+    const retVal = await dual(async() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(
+        new FollowOperationBuilder()
+          .followBlacklistBlog("initminer", "gtg", "null")
+          .followMutedBlog("initminer", "gtg")
+          .resetAllBlog("initminer", "gtg", "null")
+          .resetBlacklistBlog("initminer", "gtg")
+          .resetFollowBlacklistBlog("initminer", "gtg", "null")
+          .resetFollowMutedBlog("initminer", "gtg")
+          .unblacklistBlog("initminer", "gtg", "null")
+          .unfollowBlacklistBlog("initminer", "gtg")
+          .unfollowBlog("initminer", "gtg", "null")
+          .unfollowMutedBlog("initminer", "gtg")
+          .reblog("initminer", "gtg", "first-post")
+          .authorize("initminer")
+          .build());
+
+      const built = tx.build();
+
+      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+        built.operations
+      );
+    });
+
+    expect(
+      retVal
+    ).toEqual([{
+      custom_json: "Account initminer followed blacklist of gtg, null"
+    }, {
+      custom_json: "Account initminer followed muted list of gtg"
+    }, {
+      custom_json: "Account initminer reset all lists of gtg, null"
+    }, {
+      custom_json: "Account initminer reset blacklist of gtg"
+    }, {
+      custom_json: "Account initminer stopped following blacklist of gtg, null"
+    }, {
+      custom_json: "Account initminer stopped following muted list of gtg"
+    }, {
+      custom_json: "Account initminer unblacklisted gtg, null"
+    }, {
+      custom_json: "Account initminer unfollowed blacklist of gtg"
+    }, {
+      custom_json: "Account initminer unfollowed gtg, null"
+    }, {
+      custom_json: "Account initminer unfollowed muted list of gtg"
+    }, {
+      custom_json: "Account initminer reblogged post \"first-post\" authored by gtg"
+    }]);
+  });
+
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
     class MyFormatters {
       myFunction(value) {

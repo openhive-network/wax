@@ -7,6 +7,29 @@ export enum EFollowBlogAction {
   BOTH
 };
 
+export enum EFollowOperationActions {
+  FOLLOW = "follow",
+  REBLOG = "reblog"
+}
+
+export enum EFollowActions {
+  FOLLOW = "blog",
+  UNFOLLOW = "",
+  MUTE = "ignore",
+  RESET_BLACKLIST = "reset_blacklist",
+  BLACKLIST = "blacklist",
+  RESET_FOLLOW_BLACKLIST = "reset_follow_blacklist",
+  FOLLOW_BLACKLIST = "follow_blacklist",
+  UNBLACKLIST = "unblacklist",
+  UNFOLLOW_BLACKLIST = "unfollow_blacklist",
+  RESET_FOLLOW_MUTED_LIST = "reset_follow_muted_list",
+  FOLLOW_MUTED = "follow_muted",
+  UNFOLLOW_MUTED = "unfollow_muted",
+  RESET_ALL_LISTS = "reset_all_lists",
+  RESET_FOLLOWING_LIST = "reset_following_list",
+  RESET_MUTED_LIST = "reset_muted_list"
+}
+
 export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOperationBuilder> {
   protected readonly id = "follow";
 
@@ -17,7 +40,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
       throw new WaxError('Too long following list. Accepted max length: 100');
 
     this.body.push([
-      this.id,
+      EFollowOperationActions.FOLLOW,
       {
         follower: workingAccount,
         following,
@@ -39,7 +62,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public followBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("blog", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.FOLLOW, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -53,7 +76,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public unfollowBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.UNFOLLOW, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -67,7 +90,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public muteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("ignore", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.MUTE, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -95,7 +118,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public resetBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("reset_blacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.RESET_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -109,7 +132,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public blacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("blacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -123,7 +146,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public resetFollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("reset_follow_blacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.RESET_FOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -137,7 +160,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public followBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("follow_blacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.FOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -151,7 +174,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public unblacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("unblacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.UNBLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -165,7 +188,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public unfollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("unfollow_blacklist", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.UNFOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -179,7 +202,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public resetFollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("reset_follow_muted_list", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.RESET_FOLLOW_MUTED_LIST, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -193,7 +216,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public followMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("follow_muted", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.FOLLOW_MUTED, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -207,7 +230,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public unfollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("unfollow_muted", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.UNFOLLOW_MUTED, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -221,7 +244,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @returns {FollowOperationBuilder} itself
    */
   public resetAllBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
-    return this.followBodyBuilder("reset_all_lists", workingAccount, blog, ...otherBlogs);
+    return this.followBodyBuilder(EFollowActions.RESET_ALL_LISTS, workingAccount, blog, ...otherBlogs);
   }
 
   /**
@@ -237,12 +260,12 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
   public resetBlogList(action: EFollowBlogAction, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
     switch(action) {
       case EFollowBlogAction.FOLLOW_BLOG:
-        this.followBodyBuilder("reset_following_list", workingAccount, blog, ...otherBlogs);
+        this.followBodyBuilder(EFollowActions.RESET_FOLLOWING_LIST, workingAccount, blog, ...otherBlogs);
         break;
       case EFollowBlogAction.BOTH: // Intentional fall-through
-        this.followBodyBuilder("reset_following_list", workingAccount, blog, ...otherBlogs);
+        this.followBodyBuilder(EFollowActions.RESET_FOLLOWING_LIST, workingAccount, blog, ...otherBlogs);
       case EFollowBlogAction.MUTE_BLOG:
-        this.followBodyBuilder("reset_muted_list", workingAccount, blog, ...otherBlogs);
+        this.followBodyBuilder(EFollowActions.RESET_MUTED_LIST, workingAccount, blog, ...otherBlogs);
         break;
       default:
         throw new WaxError(`Unknown reset action: ${action}`);
@@ -263,7 +286,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    */
   public reblog(workingAccount: TAccountName, author: TAccountName, permlink: string): FollowOperationBuilder {
     this.body.push([
-      "reblog",
+      EFollowOperationActions.REBLOG,
       {
         account: workingAccount,
         author,

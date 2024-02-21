@@ -5,7 +5,7 @@ import type { custom_json, transaction } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
 import { VESTS } from "../util";
-import { ECommunityOperationActions } from "../custom_jsons/community";
+import { ECommunityOperationActions, EFollowActions, EFollowOperationActions } from "../custom_jsons";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
   public constructor(
@@ -71,7 +71,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     const accountsStr = `Account${accounts.length > 1 ? "s" : ""} ${accounts.join(", ")}`;
 
     const [ type, data ] = json;
-    switch(type) {
+    switch(type as ECommunityOperationActions) {
       case ECommunityOperationActions.FLAG_POST:
         return `${accountsStr} flagged post "${this.formatPostId(data.account, data.permlink)}" on community ${data.community}`;
       case ECommunityOperationActions.MUTE_POST:
@@ -90,6 +90,55 @@ export class DefaultFormatters implements IWaxCustomFormatter {
         return `${accountsStr} unsubscribed from community ${data.community}`;
       case ECommunityOperationActions.UPDATE_PROPS:
         return `${accountsStr} updated community ${data.community} properties`;
+      default:
+        return target;
+    }
+  }
+
+  @WaxFormattable({ matchProperty: "id", matchValue: "follow" })
+  public followOperationFormatter({ target, source }: IFormatFunctionArguments<custom_json>): string | any {
+    const json = JSON.parse(source.json);
+
+    const [ type, data ] = json;
+
+    if(type === EFollowOperationActions.REBLOG)
+      return `Account ${data.account} reblogged post "${data.permlink}" authored by ${data.author}`;
+
+    const { follower, following, what: [ what ] } = data;
+
+    let stringifiedFollowing = Array.isArray(following) ? following.join(", ") : following;
+
+    switch(what as EFollowActions) {
+      case EFollowActions.BLACKLIST:
+        return `Account ${follower} blacklisted ${stringifiedFollowing}`;
+      case EFollowActions.FOLLOW:
+        return `Account ${follower} followed ${stringifiedFollowing}`;
+      case EFollowActions.FOLLOW_BLACKLIST:
+        return `Account ${follower} followed blacklist of ${stringifiedFollowing}`;
+      case EFollowActions.FOLLOW_MUTED:
+        return `Account ${follower} followed muted list of ${stringifiedFollowing}`;
+      case EFollowActions.MUTE:
+        return `Account ${follower} muted ${stringifiedFollowing}`;
+      case EFollowActions.RESET_ALL_LISTS:
+        return `Account ${follower} reset all lists of ${stringifiedFollowing}`;
+      case EFollowActions.RESET_BLACKLIST:
+        return `Account ${follower} reset blacklist of ${stringifiedFollowing}`;
+      case EFollowActions.RESET_FOLLOWING_LIST:
+        return `Account ${follower} reset following list of ${stringifiedFollowing}`;
+      case EFollowActions.RESET_FOLLOW_BLACKLIST:
+        return `Account ${follower} stopped following blacklist of ${stringifiedFollowing}`;
+      case EFollowActions.RESET_FOLLOW_MUTED_LIST:
+        return `Account ${follower} stopped following muted list of ${stringifiedFollowing}`;
+      case EFollowActions.RESET_MUTED_LIST:
+        return `Account ${follower} reset muted list of ${stringifiedFollowing}`;
+      case EFollowActions.UNBLACKLIST:
+        return `Account ${follower} unblacklisted ${stringifiedFollowing}`;
+      case EFollowActions.UNFOLLOW:
+        return `Account ${follower} unfollowed ${stringifiedFollowing}`;
+      case EFollowActions.UNFOLLOW_BLACKLIST:
+        return `Account ${follower} unfollowed blacklist of ${stringifiedFollowing}`;
+      case EFollowActions.UNFOLLOW_MUTED:
+        return `Account ${follower} unfollowed muted list of ${stringifiedFollowing}`;
       default:
         return target;
     }
