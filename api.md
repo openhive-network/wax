@@ -5,6 +5,7 @@
 
 ## Enumerations
 
+- [ECommunityOperationActions](#enumsecommunityoperationactionsmd)
 - [EFollowBlogAction](#enumsefollowblogactionmd)
 - [EManabarType](#enumsemanabartypemd)
 - [ESupportedLanguages](#enumsesupportedlanguagesmd)
@@ -4030,7 +4031,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:67
+wasm/lib/detailed/custom_jsons/community.ts:79
 
 ## Methods
 
@@ -4108,7 +4109,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:79
+wasm/lib/detailed/custom_jsons/community.ts:91
 
 ___
 
@@ -4135,7 +4136,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:232
+wasm/lib/detailed/custom_jsons/community.ts:244
 
 ___
 
@@ -4161,7 +4162,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:160
+wasm/lib/detailed/custom_jsons/community.ts:172
 
 ___
 
@@ -4187,7 +4188,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:102
+wasm/lib/detailed/custom_jsons/community.ts:114
 
 ___
 
@@ -4211,7 +4212,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:122
+wasm/lib/detailed/custom_jsons/community.ts:134
 
 ___
 
@@ -4238,7 +4239,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:256
+wasm/lib/detailed/custom_jsons/community.ts:268
 
 ___
 
@@ -4264,7 +4265,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:182
+wasm/lib/detailed/custom_jsons/community.ts:194
 
 ___
 
@@ -4288,7 +4289,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:140
+wasm/lib/detailed/custom_jsons/community.ts:152
 
 ___
 
@@ -4313,7 +4314,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:203
+wasm/lib/detailed/custom_jsons/community.ts:215
 
 
 <a name="classesfindaccountsrequestmd"></a>
@@ -7718,6 +7719,101 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 #### Defined in
 
 wasm/lib/detailed/formatters/base.ts:74
+
+
+<a name="enumsecommunityoperationactionsmd"></a>
+
+# Enumeration: ECommunityOperationActions
+
+## Enumeration Members
+
+### FLAG\_POST
+
+• **FLAG\_POST** = ``"flagPost"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:67
+
+___
+
+### MUTE\_POST
+
+• **MUTE\_POST** = ``"mutePost"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:74
+
+___
+
+### PIN\_POST
+
+• **PIN\_POST** = ``"pinPost"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:71
+
+___
+
+### SET\_USER\_TITLE
+
+• **SET\_USER\_TITLE** = ``"setUserTitle"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:68
+
+___
+
+### SUBSCRIBE
+
+• **SUBSCRIBE** = ``"subscribe"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:69
+
+___
+
+### UNMUTE\_POST
+
+• **UNMUTE\_POST** = ``"unmutePost"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:75
+
+___
+
+### UNPIN\_POST
+
+• **UNPIN\_POST** = ``"unpinPost"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:72
+
+___
+
+### UNSUBSCRIBE
+
+• **UNSUBSCRIBE** = ``"unsubscribe"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:70
+
+___
+
+### UPDATE\_PROPS
+
+• **UPDATE\_PROPS** = ``"updateProps"``
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:73
 
 
 <a name="enumsefollowblogactionmd"></a>

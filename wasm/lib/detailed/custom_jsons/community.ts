@@ -63,6 +63,18 @@ export interface ICommunityProps {
   flag_text?: string;
 }
 
+export enum ECommunityOperationActions {
+  FLAG_POST = "flagPost",
+  SET_USER_TITLE = "setUserTitle",
+  SUBSCRIBE = "subscribe",
+  UNSUBSCRIBE = "unsubscribe",
+  PIN_POST = "pinPost",
+  UNPIN_POST = "unpinPost",
+  UPDATE_PROPS = "updateProps",
+  MUTE_POST = "mutePost",
+  UNMUTE_POST = "unmutePost"
+}
+
 export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<CommunityOperationBuilder> {
   protected readonly id = "community";
 
@@ -78,7 +90,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public flagPost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
     this.body.push([
-      "flagPost",
+      ECommunityOperationActions.FLAG_POST,
       {
         community,
         account,
@@ -101,7 +113,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public setUserTitle(community: string, account: TAccountName, title: string): CommunityOperationBuilder {
     this.body.push([
-      "setUserTitle",
+      ECommunityOperationActions.SET_USER_TITLE,
       {
         community,
         account,
@@ -121,7 +133,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public subscribe(community: string): CommunityOperationBuilder {
     this.body.push([
-      "subscribe",
+      ECommunityOperationActions.SUBSCRIBE,
       {
         community
       }
@@ -139,7 +151,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public unsubscribe(community: string): CommunityOperationBuilder {
     this.body.push([
-      "unsubscribe",
+      ECommunityOperationActions.UNSUBSCRIBE,
       {
         community
       }
@@ -159,7 +171,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public pinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
     this.body.push([
-      "pinPost",
+      ECommunityOperationActions.PIN_POST,
       {
         community,
         account,
@@ -181,7 +193,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public unpinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
     this.body.push([
-      "unpinPost",
+      ECommunityOperationActions.UNPIN_POST,
       {
         community,
         account,
@@ -202,7 +214,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public updateProps(community: string, props: ICommunityProps): CommunityOperationBuilder {
     this.body.push([
-      "updateProps",
+      ECommunityOperationActions.UPDATE_PROPS,
       {
         community,
         props: {
@@ -231,7 +243,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public mutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
     this.body.push([
-      "mutePost",
+      ECommunityOperationActions.MUTE_POST,
       {
         community,
         account,
@@ -255,7 +267,7 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    */
   public unmutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
     this.body.push([
-      "unmutePost",
+      ECommunityOperationActions.UNMUTE_POST,
       {
         community,
         account,

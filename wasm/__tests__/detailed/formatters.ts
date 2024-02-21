@@ -199,21 +199,72 @@ test.describe('Wax object interface formatters tests', () => {
 
       tx.push(new ResourceCreditsOperationBuilder()
         .delegate("initminer", 4127361273, "gtg", "null")
+        .removeDelegation("initminer", "null")
         .authorize("initminer")
         .build());
 
       const built = tx.build();
 
       return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
-        built.operations[0]
+        built.operations
       );
     });
 
     expect(
       retVal
-    ).toEqual({
+    ).toEqual([{
       custom_json: "Account initminer delegated 4,127.361273 VESTS to accounts: gtg, null"
+    }, {
+      custom_json: "Account initminer removed delegation for account: null"
+    }]);
+  });
+
+  test('Should be format custom JSON community operation using default formatter from the hive chain interface', async({ dual }) => {
+    const retVal = await dual(async() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(
+        new CommunityOperationBuilder()
+          .flagPost("mycomm", "gtg", "first-post", "note")
+          .mutePost("mycomm", "gtg", "first-post", "note")
+          .pinPost("mycomm", "gtg", "first-post")
+          .subscribe("mycomm")
+          .unmutePost("mycomm", "gtg", "first-post", "note")
+          .unpinPost("mycomm", "gtg", "first-post")
+          .unsubscribe("mycomm")
+          .setUserTitle("mycomm", "gtg", "first-post")
+          .updateProps("mycomm", { title: "Custom title" })
+          .authorize("gtg")
+          .build());
+
+      const built = tx.build();
+
+      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+        built.operations
+      );
     });
+
+    expect(
+      retVal
+    ).toEqual([{
+      custom_json: "Account gtg flagged post \"@gtg/first-post\" on community mycomm"
+    }, {
+      custom_json: "Account gtg muted post \"@gtg/first-post\" on community mycomm"
+    }, {
+      custom_json: "Account gtg pinned post \"@gtg/first-post\" on community mycomm"
+    }, {
+      custom_json: "Account gtg subscribed to community mycomm"
+    }, {
+      custom_json: "Account gtg unmuted post \"@gtg/first-post\" on community mycomm"
+    }, {
+      custom_json: "Account gtg unpinned post \"@gtg/first-post\" from community mycomm"
+    }, {
+      custom_json: "Account gtg unsubscribed from community mycomm"
+    }, {
+      custom_json: "Account gtg set account gtg title to \"first-post\" on community mycomm"
+    }, {
+      custom_json: "Account gtg updated community mycomm properties"
+    }]);
   });
 
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
