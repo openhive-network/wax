@@ -193,6 +193,29 @@ test.describe('Wax object interface formatters tests', () => {
     ).toEqual(initminerAccountApi);
   });
 
+  test('Should be format custom JSON rc delegation operation using default formatter from the hive chain interface', async({ dual }) => {
+    const retVal = await dual(async() => {
+      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(new ResourceCreditsOperationBuilder()
+        .delegate("initminer", 4127361273, "gtg", "null")
+        .authorize("initminer")
+        .build());
+
+      const built = tx.build();
+
+      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+        built.operations[0]
+      );
+    });
+
+    expect(
+      retVal
+    ).toEqual({
+      custom_json: "Account initminer delegated 4,127.361273 VESTS to accounts: gtg, null"
+    });
+  });
+
   test('Should be able to format values using custom formatters extended from hive chain interface', () => {
     class MyFormatters {
       myFunction(value) {

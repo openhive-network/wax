@@ -7,7 +7,7 @@ import Long from "long";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;
-  defaultFormatter: TFormatFunction;
+  defaultFormatter?: TFormatFunction;
 }
 
 export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
@@ -93,13 +93,12 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
 
         const overrideFormatterForMatcher = () => {
           const matchValues = new Map();
-          const defaultFormatter = formatter[key].bind(formatter);
 
           return newFormatter.matchers.set(
             matchedProperty,
             {
               matchValues,
-              defaultFormatter
+              defaultFormatter: typeof matchedPropertyValue === "undefined" ? formatter[key].bind(formatter) : undefined
             }
           );
         };

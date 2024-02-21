@@ -75,6 +75,7 @@
 - [asset](#interfacesassetmd)
 - [author\_reward](#interfacesauthor_rewardmd)
 - [authority](#interfacesauthoritymd)
+- [block](#interfacesblockmd)
 - [cancel\_transfer\_from\_savings](#interfacescancel_transfer_from_savingsmd)
 - [change\_recovery\_account](#interfaceschange_recovery_accountmd)
 - [changed\_recovery\_account](#interfaceschanged_recovery_accountmd)
@@ -377,6 +378,36 @@ wasm/lib/interfaces.ts:336
 
 ## Variables
 
+### HBD
+
+• `Const` **HBD**: `Omit`\<[`NaiAsset`](#classesnaiassetmd), ``"amount"``\>
+
+#### Defined in
+
+wasm/lib/detailed/util/default_assets.ts:8
+
+___
+
+### HIVE
+
+• `Const` **HIVE**: `Omit`\<[`NaiAsset`](#classesnaiassetmd), ``"amount"``\>
+
+#### Defined in
+
+wasm/lib/detailed/util/default_assets.ts:3
+
+___
+
+### VESTS
+
+• `Const` **VESTS**: `Omit`\<[`NaiAsset`](#classesnaiassetmd), ``"amount"``\>
+
+#### Defined in
+
+wasm/lib/detailed/util/default_assets.ts:13
+
+___
+
 ### account\_create
 
 • **account\_create**: `Object`
@@ -604,6 +635,29 @@ ___
 wasm/lib/proto/authority.ts:6
 
 wasm/lib/proto/authority.ts:26
+
+___
+
+### block
+
+• **block**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `create` | \<I\>(`base?`: `I`) => [`block`](#block) |
+| `decode` | (`input`: `Uint8Array` \| `Reader`, `length?`: `number`) => [`block`](#block) |
+| `encode` | (`message`: [`block`](#block), `writer`: `Writer`) => `Writer` |
+| `fromJSON` | (`object`: `any`) => [`block`](#block) |
+| `fromPartial` | \<I\>(`object`: `I`) => [`block`](#block) |
+| `toJSON` | (`message`: [`block`](#block)) => `unknown` |
+
+#### Defined in
+
+wasm/lib/proto/block.ts:19
+
+wasm/lib/proto/block.ts:217
 
 ___
 
@@ -10274,6 +10328,111 @@ ___
 #### Defined in
 
 wasm/lib/proto/authority.ts:7
+
+
+<a name="interfacesblockmd"></a>
+
+# Interface: block
+
+## Properties
+
+### block\_id
+
+• **block\_id**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:27
+
+___
+
+### extensions
+
+• **extensions**: `block_header_extensions`[]
+
+#### Defined in
+
+wasm/lib/proto/block.ts:24
+
+___
+
+### previous
+
+• **previous**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:20
+
+___
+
+### signing\_key
+
+• **signing\_key**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:28
+
+___
+
+### timestamp
+
+• **timestamp**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:21
+
+___
+
+### transaction\_ids
+
+• **transaction\_ids**: `string`[]
+
+#### Defined in
+
+wasm/lib/proto/block.ts:29
+
+___
+
+### transaction\_merkle\_root
+
+• **transaction\_merkle\_root**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:23
+
+___
+
+### transactions
+
+• **transactions**: [`transaction`](#transaction)[]
+
+#### Defined in
+
+wasm/lib/proto/block.ts:26
+
+___
+
+### witness
+
+• **witness**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:22
+
+___
+
+### witness\_signature
+
+• **witness\_signature**: `string`
+
+#### Defined in
+
+wasm/lib/proto/block.ts:25
 
 
 <a name="interfacescancel_transfer_from_savingsmd"></a>
