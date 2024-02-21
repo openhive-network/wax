@@ -19,7 +19,7 @@ class foundation_wasm : public foundation
 {
 private:
   long long join_lh(int32_t low, int32_t high)const
-{ return (long long) high << 32 | low; }
+{ return (long long) high << 32 | (uint32_t) low; }
   unsigned long long join_lh(uint32_t low, uint32_t high)const
 { return (unsigned long long) high << 32 | low; }
 
