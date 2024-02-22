@@ -137,8 +137,11 @@ const data = {
 
 class MyFormatters { // Define custom formatters class
   @WaxFormattable() // Match this method as `myCustomProp` custom formatter
-  myCustomProp({ source }: IFormatFunctionArguments<typeof data>) {
-    return source.myCustomProp.toString();
+  myCustomProp({ source }: IFormatFunctionArguments<typeof data>): string | void {
+    if(Math.random() > 0.5) // Happy debugging :)
+      return; // No replacement will take place here - that's reason why return type is defined as string and void union
+
+    return source.myCustomProp.toString(); // return string
   }
 }
 

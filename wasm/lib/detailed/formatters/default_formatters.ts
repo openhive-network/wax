@@ -33,9 +33,9 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "operations" })
-  public transactionFormatter({ options, source, target }: IFormatFunctionArguments<ApiTransaction | transaction>): string | any {
+  public transactionFormatter({ options, source }: IFormatFunctionArguments<ApiTransaction | transaction>): string | void {
     if(!options.transaction.displayAsId)
-      return target;
+      return;
 
     let id: string;
 
@@ -62,7 +62,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "community" })
-  public communityOperationFormatter({ target, source }: IFormatFunctionArguments<custom_json>): string | any {
+  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): string | void {
     const json = JSON.parse(source.json);
 
     // We do not have access to the entire transaction body, holding operation to be formatted, so we have to rely on the account(s) in custom_json_operation auths
@@ -89,13 +89,11 @@ export class DefaultFormatters implements IWaxCustomFormatter {
         return `${accountsStr} unsubscribed from community ${data.community}`;
       case ECommunityOperationActions.UPDATE_PROPS:
         return `${accountsStr} updated community ${data.community} properties`;
-      default:
-        return target;
     }
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "follow" })
-  public followOperationFormatter({ target, source }: IFormatFunctionArguments<custom_json>): string | any {
+  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): string | void {
     const json = JSON.parse(source.json);
 
     const [ type, data ] = json;
@@ -138,8 +136,6 @@ export class DefaultFormatters implements IWaxCustomFormatter {
         return `Account ${follower} unfollowed blacklist of ${stringifiedFollowing}`;
       case EFollowActions.UNFOLLOW_MUTED:
         return `Account ${follower} unfollowed muted list of ${stringifiedFollowing}`;
-      default:
-        return target;
     }
   }
 }
