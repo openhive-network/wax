@@ -4,7 +4,6 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import type { custom_json, transaction } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
-import { VESTS } from "../util";
 import { ECommunityOperationActions, EFollowActions, EFollowOperationActions } from "../custom_jsons";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
@@ -57,7 +56,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     if(max_rc.toString() === "0")
       return `Account ${from} removed delegation for account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
 
-    const rc = this.formatNai(options, { ...VESTS, amount: max_rc });
+    const rc = this.formatNai(options, { ...this.wax.ASSETS.VESTS, amount: max_rc });
 
     return `Account ${from} delegated ${rc} to account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
   }

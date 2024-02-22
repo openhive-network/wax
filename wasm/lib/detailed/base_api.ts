@@ -11,8 +11,16 @@ import { WaxFormatter } from "./formatters/waxify";
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
 
+export enum EAssetName {
+  HIVE = "HIVE",
+  HBD = "HBD",
+  VESTS = "VESTS"
+}
+
 export class WaxBaseApi implements IWaxBaseInterface {
   public proto: proto_protocol;
+
+  public readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
 
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
@@ -31,9 +39,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     public readonly chainId: string
   ) {
     this.proto = new wax.proto_protocol();
+    this.ASSETS = {
+      [EAssetName.HBD]: this.proto.cpp_hbd(0, 0) as NaiAsset,
+      [EAssetName.HIVE]: this.proto.cpp_hive(0, 0) as NaiAsset,
+      [EAssetName.VESTS]: this.proto.cpp_vests(0, 0) as NaiAsset
+    };
   }
 
-  get TransactionBuilder(): ITransactionBuilderConstructor {
+  public get TransactionBuilder(): ITransactionBuilderConstructor {
     return Object.assign(
       TransactionBuilder.bind(undefined, this),
       {
@@ -42,7 +55,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     );
   }
 
-  getAsset(nai: NaiAsset): IHiveAssetData {
+  public getAsset(nai: NaiAsset): IHiveAssetData {
     const symbol = this.proto.cpp_asset_symbol(nai);
     const amount = this.proto.cpp_asset_value(nai);
 
@@ -71,7 +84,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return percent;
   }
 
-  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData {
+  public calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData {
     if(typeof maxManaLH !== "object")
       maxManaLH = Long.fromValue(maxManaLH, true);
 
@@ -96,7 +109,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
-  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number {
+  public calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number {
     if(typeof maxManaLH !== "object")
       maxManaLH = Long.fromString(maxManaLH.toString(), true);
 
@@ -109,7 +122,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return Number.parseInt(this.extract(this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)));
   }
 
-  delete(): void {
+  public delete(): void {
     this.proto.delete();
   }
 }

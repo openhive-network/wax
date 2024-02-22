@@ -7,6 +7,7 @@ import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { IHiveAppsOperation, NaiAsset } from "./detailed";
+import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -244,6 +245,8 @@ export interface IHiveAssetData {
 
 export interface IWaxBaseInterface {
   get TransactionBuilder(): ITransactionBuilderConstructor;
+
+  readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
 
   readonly formatter: IWaxExtendableFormatter;
   readonly waxify: IWaxExtendableFormatter['waxify'];
