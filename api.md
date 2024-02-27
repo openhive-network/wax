@@ -355,7 +355,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:345
+wasm/lib/interfaces.ts:380
 
 ___
 
@@ -381,7 +381,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:367
+wasm/lib/interfaces.ts:402
 
 ## Variables
 
@@ -7507,7 +7507,7 @@ wasm/lib/detailed/custom_jsons/rc.ts:45
 
 ### constructor
 
-• **new UpdateProposalBuilder**(`txBuilder`, `updateProposalObject`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+• **new UpdateProposalBuilder**(`txBuilder`, `updateProposalObject`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
 
 #### Parameters
 
@@ -7515,6 +7515,7 @@ wasm/lib/detailed/custom_jsons/rc.ts:45
 | :------ | :------ |
 | `txBuilder` | `TransactionBuilder` |
 | `updateProposalObject` | `Partial`\<[`update_proposal`](#update_proposal)\> |
+| `endDate?` | `string` \| `number` \| `Date` |
 
 #### Returns
 
@@ -7566,7 +7567,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:18
+wasm/lib/detailed/operation_factories/update_proposal.ts:21
 
 ___
 
@@ -7584,7 +7585,7 @@ transaction builder object
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:36
+wasm/lib/detailed/operation_factories/update_proposal.ts:39
 
 
 <a name="classeswaxformattermd"></a>
@@ -8738,7 +8739,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:264
+wasm/lib/interfaces.ts:278
 
 ___
 
@@ -8756,7 +8757,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:271
+wasm/lib/interfaces.ts:285
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -8781,7 +8782,7 @@ wasm/lib/interfaces.ts:271
 
 #### Defined in
 
-wasm/lib/interfaces.ts:277
+wasm/lib/interfaces.ts:291
 
 ___
 
@@ -8791,7 +8792,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:421
+wasm/lib/interfaces.ts:456
 
 ___
 
@@ -8805,7 +8806,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:279
+wasm/lib/interfaces.ts:293
 
 ___
 
@@ -8845,7 +8846,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:280
+wasm/lib/interfaces.ts:294
 
 ## Accessors
 
@@ -8863,7 +8864,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:275
+wasm/lib/interfaces.ts:289
 
 ## Methods
 
@@ -8894,7 +8895,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:316
+wasm/lib/interfaces.ts:351
 
 ___
 
@@ -8919,7 +8920,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:409
+wasm/lib/interfaces.ts:444
 
 ___
 
@@ -8950,7 +8951,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:332
+wasm/lib/interfaces.ts:367
 
 ___
 
@@ -8975,7 +8976,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:419
+wasm/lib/interfaces.ts:454
 
 ___
 
@@ -8995,7 +8996,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:337
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -9025,7 +9026,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:427
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -9045,7 +9046,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:434
 
 ___
 
@@ -9073,7 +9074,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:288
+wasm/lib/interfaces.ts:302
 
 ___
 
@@ -9106,7 +9107,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:300
+wasm/lib/interfaces.ts:335
 
 ___
 
@@ -9138,7 +9139,91 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:383
+wasm/lib/interfaces.ts:418
+
+___
+
+### hbd
+
+▸ **hbd**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves HBD in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of HBD |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HBD in nai form
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[hbd](#hbd)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:316
+
+___
+
+### hive
+
+▸ **hive**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves HIVE in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of HIVE |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HIVE in nai form
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[hive](#hive)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:309
+
+___
+
+### vests
+
+▸ **vests**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves VESTS in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of VESTS |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+VESTS in nai form
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[vests](#vests)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:323
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -9204,7 +9289,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:127
+wasm/lib/interfaces.ts:141
 
 ___
 
@@ -9224,7 +9309,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:118
+wasm/lib/interfaces.ts:132
 
 ___
 
@@ -9244,7 +9329,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:136
+wasm/lib/interfaces.ts:150
 
 ## Methods
 
@@ -9276,7 +9361,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:189
+wasm/lib/interfaces.ts:203
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -9303,7 +9388,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:203
+wasm/lib/interfaces.ts:217
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -9324,7 +9409,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:215
+wasm/lib/interfaces.ts:229
 
 ___
 
@@ -9342,7 +9427,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:174
+wasm/lib/interfaces.ts:188
 
 ___
 
@@ -9428,6 +9513,35 @@ wasm/lib/interfaces.ts:109
 
 ___
 
+### pushUpdateProposal
+
+▸ **pushUpdateProposal**(`proposalId`, `creator`, `dailyPay`, `subject`, `permlink`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+Returns a update proposal operation builder
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `proposalId` | `string` \| `number` | id of the proposal |
+| `creator` | `string` | Account name of the proposal creator |
+| `dailyPay` | [`asset`](#asset) | daily pay for the proposal |
+| `subject` | `string` | proposal subject |
+| `permlink` | `string` | proposal permlink |
+| `endDate?` | `string` \| `number` \| `Date` | optional proposal end date |
+
+#### Returns
+
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+update proposal operation builder
+
+#### Defined in
+
+wasm/lib/interfaces.ts:123
+
+___
+
 ### sign
 
 ▸ **sign**(`wallet`, `publicKey`): `string`
@@ -9456,7 +9570,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:167
+wasm/lib/interfaces.ts:181
 
 ___
 
@@ -9478,7 +9592,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:224
+wasm/lib/interfaces.ts:238
 
 ___
 
@@ -9500,7 +9614,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:152
+wasm/lib/interfaces.ts:166
 
 ___
 
@@ -9520,7 +9634,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:143
+wasm/lib/interfaces.ts:157
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -9548,7 +9662,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:237
+wasm/lib/interfaces.ts:251
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -9566,7 +9680,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:244
+wasm/lib/interfaces.ts:258
 
 ## Methods
 
@@ -9594,7 +9708,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:255
+wasm/lib/interfaces.ts:269
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -9615,7 +9729,7 @@ wasm/lib/interfaces.ts:255
 
 #### Defined in
 
-wasm/lib/interfaces.ts:277
+wasm/lib/interfaces.ts:291
 
 ___
 
@@ -9625,7 +9739,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:279
+wasm/lib/interfaces.ts:293
 
 ___
 
@@ -9661,7 +9775,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:280
+wasm/lib/interfaces.ts:294
 
 ## Accessors
 
@@ -9675,7 +9789,7 @@ wasm/lib/interfaces.ts:280
 
 #### Defined in
 
-wasm/lib/interfaces.ts:275
+wasm/lib/interfaces.ts:289
 
 ## Methods
 
@@ -9702,7 +9816,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:316
+wasm/lib/interfaces.ts:351
 
 ___
 
@@ -9729,7 +9843,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:332
+wasm/lib/interfaces.ts:367
 
 ___
 
@@ -9745,7 +9859,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:337
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -9769,7 +9883,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:288
+wasm/lib/interfaces.ts:302
 
 ___
 
@@ -9798,7 +9912,79 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:300
+wasm/lib/interfaces.ts:335
+
+___
+
+### hbd
+
+▸ **hbd**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves HBD in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of HBD |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HBD in nai form
+
+#### Defined in
+
+wasm/lib/interfaces.ts:316
+
+___
+
+### hive
+
+▸ **hive**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves HIVE in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of HIVE |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HIVE in nai form
+
+#### Defined in
+
+wasm/lib/interfaces.ts:309
+
+___
+
+### vests
+
+▸ **vests**(`amount`): [`NaiAsset`](#classesnaiassetmd)
+
+Retrieves VESTS in nai form with given amount
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `string` \| `number` \| `BigInt` \| `Long` | amount of VESTS |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+VESTS in nai form
+
+#### Defined in
+
+wasm/lib/interfaces.ts:323
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

@@ -100,6 +100,7 @@ test.describe('Wax object interface foundation tests', () => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
       tx.pushRecurrentTransfer("initminer", "gtg", 100).generateRemoval().build();
+      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).build();
 
       return tx.build().operations;
     });
@@ -112,7 +113,7 @@ test.describe('Wax object interface foundation tests', () => {
           amount: {
             amount: "0",
             nai: "@@000000021",
-            precision: 3,
+            precision: 3
           },
           memo: "",
           recurrence: 0,
@@ -121,6 +122,21 @@ test.describe('Wax object interface foundation tests', () => {
             { recurrent_transfer_pair_id: { pair_id: 100 } }
           ]
         }
+      },
+      {
+        recurrent_transfer: {
+          from_account: "initminer",
+          to_account: "gtg",
+          amount: {
+            amount: "100",
+            nai: "@@000000021",
+            precision: 3
+          },
+          memo: "",
+          recurrence: 0,
+          executions: 0,
+          extensions: []
+        }
       }
     ]);
   });
@@ -128,7 +144,7 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushRecurrentTransfer("initminer", "gtg", { ...chain.ASSETS.HIVE, amount: "100" }).build();
+      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).build();
 
       return tx.build().operations;
     });
@@ -141,11 +157,54 @@ test.describe('Wax object interface foundation tests', () => {
           amount: {
             amount: "100",
             nai: "@@000000021",
-            precision: 3,
+            precision: 3
           },
           memo: "",
           recurrence: 0,
           executions: 0,
+          extensions: []
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48").build();
+      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink").build();
+
+      return tx.build().operations;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        update_proposal: {
+          creator: "initminer",
+          daily_pay: {
+            amount: "0",
+            nai: "@@000000021",
+            precision: 3
+          },
+          permlink: "permlink",
+          subject: "subject",
+          proposal_id: "100",
+          extensions: [
+            { update_proposal_end_date: { end_date: "2023-08-01T15:38:48" } }
+          ]
+        }
+      },
+      {
+        update_proposal: {
+          creator: "initminer",
+          daily_pay: {
+            amount: "0",
+            nai: "@@000000021",
+            precision: 3
+          },
+          permlink: "permlink",
+          subject: "subject",
+          proposal_id: "100",
           extensions: []
         }
       }

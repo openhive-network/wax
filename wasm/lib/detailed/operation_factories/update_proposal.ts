@@ -5,8 +5,11 @@ import { update_proposal } from "../../proto/update_proposal.js";
 export class UpdateProposalBuilder {
   private readonly updateProposal: update_proposal;
 
-  public constructor(private readonly txBuilder: TransactionBuilder, updateProposalObject: Partial<update_proposal>) {
+  public constructor(private readonly txBuilder: TransactionBuilder, updateProposalObject: Partial<update_proposal>, endDate?: string | Date | number) {
     this.updateProposal = update_proposal.fromPartial(updateProposalObject);
+
+    if(typeof endDate !== "undefined")
+      this.addEndDate(endDate);
   }
 
   /**
@@ -15,8 +18,8 @@ export class UpdateProposalBuilder {
    * @param {string | number | Date} endDate end date
    * @returns {UpdateProposalBuilder} itself
    */
-  public addEndDate(endDate: string | number | Date): UpdateProposalBuilder {
-    if(typeof endDate === "string" && endDate.endsWith("Z"))
+  private addEndDate(endDate: string | number | Date): UpdateProposalBuilder {
+    if(typeof endDate === "string" && !endDate.endsWith("Z"))
       endDate += "Z";
 
     this.updateProposal.extensions.push({

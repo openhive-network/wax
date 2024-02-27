@@ -27,6 +27,24 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.formatter.waxify.bind(this.formatter);
   }
 
+  public hive(amount: number | string | BigInt | Long): NaiAsset {
+    const long = Long.fromString(amount.toString());
+
+    return this.proto.cpp_hive(long.low, long.high) as NaiAsset;
+  }
+
+  public hbd(amount: number | string | BigInt | Long): NaiAsset {
+    const long = Long.fromString(amount.toString());
+
+    return this.proto.cpp_hbd(long.low, long.high) as NaiAsset;
+  }
+
+  public vests(amount: number | string | BigInt | Long): NaiAsset {
+    const long = Long.fromString(amount.toString());
+
+    return this.proto.cpp_vests(long.low, long.high) as NaiAsset;
+  }
+
   public extract(res: result): string {
     if(res.value !== this.wax.error_code.ok)
       throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
@@ -40,9 +58,9 @@ export class WaxBaseApi implements IWaxBaseInterface {
   ) {
     this.proto = new wax.proto_protocol();
     this.ASSETS = {
-      [EAssetName.HBD]: this.proto.cpp_hbd(0, 0) as NaiAsset,
-      [EAssetName.HIVE]: this.proto.cpp_hive(0, 0) as NaiAsset,
-      [EAssetName.VESTS]: this.proto.cpp_vests(0, 0) as NaiAsset
+      [EAssetName.HBD]: this.hbd(0),
+      [EAssetName.HIVE]: this.hive(0),
+      [EAssetName.VESTS]: this.vests(0)
     };
   }
 

@@ -1,11 +1,11 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
-import { transaction, type operation, type asset, type recurrent_transfer } from "../protocol.js";
+import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation, TAccountName } from "./custom_jsons/builder";
-import { RecurrentTransferBuilder, RecurrentTransferPairIdBuilder } from "./operation_factories";
+import { RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./operation_factories";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -131,6 +131,20 @@ export class TransactionBuilder implements ITransactionBuilder {
 
     // JavaScript does not allow overriding functions, so we have to cast this class to a top-level class having all of the missing methods to match ITransactionBuilder interface
     return new RecurrentTransferBuilder(this, partialRecurrentTransferOp) as RecurrentTransferPairIdBuilder;
+  }
+
+  public pushUpdateProposal(
+    proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date
+  ): UpdateProposalBuilder {
+    const updateProposalOp: Partial<update_proposal> = {
+      proposal_id: proposalId.toString(),
+      creator,
+      daily_pay: dailyPay,
+      subject,
+      permlink
+    };
+
+    return new UpdateProposalBuilder(this, updateProposalOp, endDate);
   }
 
   private applyExpiration(): void {

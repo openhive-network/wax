@@ -6,7 +6,7 @@ import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName } from "./detailed";
+import type { IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, UpdateProposalBuilder } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
@@ -107,6 +107,20 @@ export interface ITransactionBuilder {
    * @returns {RecurrentTransferPairIdBuilder} recurrent transfer operation builder
    */
   pushRecurrentTransfer(from: TAccountName, to: TAccountName, pairId: number, memo?: string, recurrence?: number, executions?: number): RecurrentTransferPairIdBuilder;
+
+  /**
+   * Returns a update proposal operation builder
+   *
+   * @param {string | number} proposalId id of the proposal
+   * @param {TAccountName} creator Account name of the proposal creator
+   * @param {asset} dailyPay daily pay for the proposal
+   * @param {string} subject proposal subject
+   * @param {string} permlink proposal permlink
+   * @param {?number | string | Date} endDate optional proposal end date
+   *
+   * @returns {UpdateProposalBuilder} update proposal operation builder
+   */
+  pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder;
 
   /**
    * Generates digest of the transaction for signing
@@ -286,6 +300,27 @@ export interface IWaxBaseInterface {
    * @returns {IHiveAssetData} asset data
    */
   getAsset(nai: NaiAsset): IHiveAssetData;
+
+  /**
+   * Retrieves HIVE in nai form with given amount
+   * @param {number | string | BigInt | Long} amount amount of HIVE
+   * @returns {NaiAsset} HIVE in nai form
+   */
+  hive(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves HBD in nai form with given amount
+   * @param {number | string | BigInt | Long} amount amount of HBD
+   * @returns {NaiAsset} HBD in nai form
+   */
+  hbd(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves VESTS in nai form with given amount
+   * @param {number | string | BigInt | Long} amount amount of VESTS
+   * @returns {NaiAsset} VESTS in nai form
+   */
+  vests(amount: number | string | BigInt | Long): NaiAsset;
 
   /**
    * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
