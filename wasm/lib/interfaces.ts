@@ -2,11 +2,11 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
-import type { operation, transaction } from "./protocol";
+import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { IHiveAppsOperation, NaiAsset } from "./detailed";
+import type { IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
@@ -79,6 +79,34 @@ export interface ITransactionBuilder {
    * @throws {WaxError} on any Wax API-related error
    */
   push(op: operation | IHiveAppsOperation): ITransactionBuilder;
+
+  /**
+   * Returns a recurrent transfer operation builder
+   *
+   * @param {TAccountName} from Account which transfers asset
+   * @param {TAccountName} to Account to transfer asset to. Cannot set a transfer to yourself
+   * @param {asset} amount The amount of asset to transfer from {@link from} to {@link to}
+   * @param {?string} memo must be shorter than 2048 (defaults to `""` - empty memo)
+   * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
+   * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
+   *
+   * @returns {RecurrentTransferBuilder} recurrent transfer operation builder
+   */
+  pushRecurrentTransfer(from: TAccountName, to: TAccountName, amount: asset, memo?: string, recurrence?: number, executions?: number): RecurrentTransferBuilder;
+
+  /**
+   * Returns a recurrent transfer operation builder
+   *
+   * @param {TAccountName} from Account which transfers asset
+   * @param {TAccountName} to Account to transfer asset to. Cannot set a transfer to yourself
+   * @param {number} pairId It allows to define more than one recurrent transfer from sender to the same receiver 'to'
+   * @param {?string} memo must be shorter than 2048 (defaults to `""` - empty memo)
+   * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
+   * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
+   *
+   * @returns {RecurrentTransferPairIdBuilder} recurrent transfer operation builder
+   */
+  pushRecurrentTransfer(from: TAccountName, to: TAccountName, pairId: number, memo?: string, recurrence?: number, executions?: number): RecurrentTransferPairIdBuilder;
 
   /**
    * Generates digest of the transaction for signing

@@ -1,10 +1,11 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
-import { transaction, operation } from "../protocol.js";
+import { transaction, type operation, type asset, type recurrent_transfer } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
-import { HiveAppsOperation } from "./custom_jsons/builder";
+import { HiveAppsOperation, TAccountName } from "./custom_jsons/builder";
+import { RecurrentTransferBuilder, RecurrentTransferPairIdBuilder } from "./operation_factories";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -111,6 +112,25 @@ export class TransactionBuilder implements ITransactionBuilder {
     const tx = this.toString();
 
     this.api.extract(this.api.proto.cpp_validate_transaction(tx));
+  }
+
+  public pushRecurrentTransfer(
+    from: TAccountName, to: TAccountName, amountOrPairId: asset | number, memo: string = "", recurrence: number = 0, executions: number = 0
+  ): RecurrentTransferPairIdBuilder {
+    const partialRecurrentTransferOp: Partial<recurrent_transfer> = {
+      from_account: from,
+      to_account: to,
+      amount: typeof amountOrPairId === "object" ? amountOrPairId : undefined,
+      executions,
+      recurrence,
+      memo
+    };
+
+    if(typeof amountOrPairId === "number")
+      return new RecurrentTransferPairIdBuilder(this, partialRecurrentTransferOp, amountOrPairId);
+
+    // JavaScript does not allow overriding functions, so we have to cast this class to a top-level class having all of the missing methods to match ITransactionBuilder interface
+    return new RecurrentTransferBuilder(this, partialRecurrentTransferOp) as RecurrentTransferPairIdBuilder;
   }
 
   private applyExpiration(): void {

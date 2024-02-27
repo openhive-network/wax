@@ -94,7 +94,63 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
     expect(retVal.signees).toHaveLength(1);
     expect(retVal.signees[0]).toBe('5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
-   });
+  });
+
+  test('Should be able to create a recurrent transfer with underlying extensions using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushRecurrentTransfer("initminer", "gtg", 100).generateRemoval().build();
+
+      return tx.build().operations;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        recurrent_transfer: {
+          from_account: "initminer",
+          to_account: "gtg",
+          amount: {
+            amount: "0",
+            nai: "@@000000021",
+            precision: 3,
+          },
+          memo: "",
+          recurrence: 0,
+          executions: 0,
+          extensions: [
+            { recurrent_transfer_pair_id: { pair_id: 100 } }
+          ]
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushRecurrentTransfer("initminer", "gtg", { ...chain.ASSETS.HIVE, amount: "100" }).build();
+
+      return tx.build().operations;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        recurrent_transfer: {
+          from_account: "initminer",
+          to_account: "gtg",
+          amount: {
+            amount: "100",
+            nai: "@@000000021",
+            precision: 3,
+          },
+          memo: "",
+          recurrence: 0,
+          executions: 0,
+          extensions: []
+        }
+      }
+    ]);
+  });
 
   test.afterAll(async () => {
     await browser.close();

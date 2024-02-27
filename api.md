@@ -26,6 +26,7 @@
 - [ApiTransaction](#classesapitransactionmd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
+- [CommentBuilder](#classescommentbuildermd)
 - [CommunityOperationBuilder](#classescommunityoperationbuildermd)
 - [FindAccountsRequest](#classesfindaccountsrequestmd)
 - [FindAccountsResponse](#classesfindaccountsresponsemd)
@@ -47,7 +48,10 @@
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 - [RcAccount](#classesrcaccountmd)
+- [RecurrentTransferBuilder](#classesrecurrenttransferbuildermd)
+- [RecurrentTransferPairIdBuilder](#classesrecurrenttransferpairidbuildermd)
 - [ResourceCreditsOperationBuilder](#classesresourcecreditsoperationbuildermd)
+- [UpdateProposalBuilder](#classesupdateproposalbuildermd)
 - [WaxFormatter](#classeswaxformattermd)
 - [WaxFormatterBase](#classeswaxformatterbasemd)
 
@@ -351,7 +355,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:317
+wasm/lib/interfaces.ts:345
 
 ___
 
@@ -377,7 +381,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:339
+wasm/lib/interfaces.ts:367
 
 ## Variables
 
@@ -3949,6 +3953,105 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
 
 
+<a name="classescommentbuildermd"></a>
+
+# Class: CommentBuilder
+
+## Constructors
+
+### constructor
+
+• **new CommentBuilder**(`txBuilder`, `commentObject`): [`CommentBuilder`](#classescommentbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `txBuilder` | `TransactionBuilder` |
+| `commentObject` | `Partial`\<[`comment`](#comment)\> |
+
+#### Returns
+
+[`CommentBuilder`](#classescommentbuildermd)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:11
+
+## Properties
+
+### comment
+
+• `Private` `Readonly` **comment**: [`comment`](#comment)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:8
+
+___
+
+### commentOptions
+
+• `Private` `Optional` **commentOptions**: [`comment_options`](#comment_options)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:9
+
+___
+
+### txBuilder
+
+• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:11
+
+## Methods
+
+### addBeneficiary
+
+▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
+
+Adds beneficiary account to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `account` | `string` | beneficiary account |
+| `weight` | `number` | weight of the beneficiary account |
+
+#### Returns
+
+[`CommentBuilder`](#classescommentbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:23
+
+___
+
+### build
+
+▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:42
+
+
 <a name="classescommunityoperationbuildermd"></a>
 
 # Class: CommunityOperationBuilder
@@ -7036,6 +7139,205 @@ ___
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 
+<a name="classesrecurrenttransferbuildermd"></a>
+
+# Class: RecurrentTransferBuilder
+
+## Hierarchy
+
+- **`RecurrentTransferBuilder`**
+
+  ↳ [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+## Constructors
+
+### constructor
+
+• **new RecurrentTransferBuilder**(`txBuilder`, `recurrentTransferObject`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `txBuilder` | `TransactionBuilder` |
+| `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
+
+#### Returns
+
+[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+
+## Properties
+
+### recurrentTransfer
+
+• `Protected` `Readonly` **recurrentTransfer**: [`recurrent_transfer`](#recurrent_transfer)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:6
+
+___
+
+### txBuilder
+
+• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+
+## Methods
+
+### build
+
+▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
+
+
+<a name="classesrecurrenttransferpairidbuildermd"></a>
+
+# Class: RecurrentTransferPairIdBuilder
+
+## Hierarchy
+
+- [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+
+  ↳ **`RecurrentTransferPairIdBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new RecurrentTransferPairIdBuilder**(`txBuilder`, `recurrentTransferObject`, `pairId?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `txBuilder` | `TransactionBuilder` |
+| `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
+| `pairId?` | `number` |
+
+#### Returns
+
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+#### Overrides
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:25
+
+## Properties
+
+### recurrentTransfer
+
+• `Protected` `Readonly` **recurrentTransfer**: [`recurrent_transfer`](#recurrent_transfer)
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[recurrentTransfer](#recurrenttransfer)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:6
+
+___
+
+### txBuilder
+
+• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[txBuilder](#txbuilder)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+
+## Methods
+
+### addPairId
+
+▸ **addPairId**(`pairId`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+Adds pair id to the recurrent transfer
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `pairId` | `number` | Pair id to add to the recurrent transfer |
+
+#### Returns
+
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:39
+
+___
+
+### build
+
+▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[build](#build)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
+
+___
+
+### generateRemoval
+
+▸ **generateRemoval**(): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+Removes recurrent transfer with the previously set pair id
+
+#### Returns
+
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:54
+
+
 <a name="classesresourcecreditsoperationbuildermd"></a>
 
 # Class: ResourceCreditsOperationBuilder
@@ -7195,6 +7497,94 @@ itself
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/rc.ts:45
+
+
+<a name="classesupdateproposalbuildermd"></a>
+
+# Class: UpdateProposalBuilder
+
+## Constructors
+
+### constructor
+
+• **new UpdateProposalBuilder**(`txBuilder`, `updateProposalObject`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `txBuilder` | `TransactionBuilder` |
+| `updateProposalObject` | `Partial`\<[`update_proposal`](#update_proposal)\> |
+
+#### Returns
+
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/update_proposal.ts:8
+
+## Properties
+
+### txBuilder
+
+• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/update_proposal.ts:8
+
+___
+
+### updateProposal
+
+• `Private` `Readonly` **updateProposal**: [`update_proposal`](#update_proposal)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/update_proposal.ts:6
+
+## Methods
+
+### addEndDate
+
+▸ **addEndDate**(`endDate`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+Adds end date to the update proposal
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `endDate` | `string` \| `number` \| `Date` | end date |
+
+#### Returns
+
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/update_proposal.ts:18
+
+___
+
+### build
+
+▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/update_proposal.ts:36
 
 
 <a name="classeswaxformattermd"></a>
@@ -8348,7 +8738,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:236
+wasm/lib/interfaces.ts:264
 
 ___
 
@@ -8366,7 +8756,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:243
+wasm/lib/interfaces.ts:271
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -8391,7 +8781,7 @@ wasm/lib/interfaces.ts:243
 
 #### Defined in
 
-wasm/lib/interfaces.ts:249
+wasm/lib/interfaces.ts:277
 
 ___
 
@@ -8401,7 +8791,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:393
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -8415,7 +8805,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:251
+wasm/lib/interfaces.ts:279
 
 ___
 
@@ -8455,7 +8845,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:252
+wasm/lib/interfaces.ts:280
 
 ## Accessors
 
@@ -8473,7 +8863,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:247
+wasm/lib/interfaces.ts:275
 
 ## Methods
 
@@ -8504,7 +8894,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:288
+wasm/lib/interfaces.ts:316
 
 ___
 
@@ -8529,7 +8919,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:381
+wasm/lib/interfaces.ts:409
 
 ___
 
@@ -8560,7 +8950,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:304
+wasm/lib/interfaces.ts:332
 
 ___
 
@@ -8585,7 +8975,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:391
+wasm/lib/interfaces.ts:419
 
 ___
 
@@ -8605,7 +8995,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:309
+wasm/lib/interfaces.ts:337
 
 ___
 
@@ -8635,7 +9025,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:364
+wasm/lib/interfaces.ts:392
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -8655,7 +9045,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:371
+wasm/lib/interfaces.ts:399
 
 ___
 
@@ -8683,7 +9073,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:260
+wasm/lib/interfaces.ts:288
 
 ___
 
@@ -8716,7 +9106,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:272
+wasm/lib/interfaces.ts:300
 
 ___
 
@@ -8748,7 +9138,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:355
+wasm/lib/interfaces.ts:383
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -8814,7 +9204,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:99
+wasm/lib/interfaces.ts:127
 
 ___
 
@@ -8834,7 +9224,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:90
+wasm/lib/interfaces.ts:118
 
 ___
 
@@ -8854,7 +9244,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:108
+wasm/lib/interfaces.ts:136
 
 ## Methods
 
@@ -8886,7 +9276,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:161
+wasm/lib/interfaces.ts:189
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -8913,7 +9303,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:175
+wasm/lib/interfaces.ts:203
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -8934,7 +9324,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:187
+wasm/lib/interfaces.ts:215
 
 ___
 
@@ -8952,7 +9342,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:146
+wasm/lib/interfaces.ts:174
 
 ___
 
@@ -8984,6 +9374,60 @@ wasm/lib/interfaces.ts:81
 
 ___
 
+### pushRecurrentTransfer
+
+▸ **pushRecurrentTransfer**(`from`, `to`, `amount`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+
+Returns a recurrent transfer operation builder
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `from` | `string` | Account which transfers asset |
+| `to` | `string` | Account to transfer asset to. Cannot set a transfer to yourself |
+| `amount` | [`asset`](#asset) | The amount of asset to transfer from from to to |
+| `memo?` | `string` | must be shorter than 2048 (defaults to `""` - empty memo) |
+| `recurrence?` | `number` | How often will the payment be triggered, unit: hours (defaults to `0`) |
+| `executions?` | `number` | How many times the recurrent payment will be executed (defaults to `0`) |
+
+#### Returns
+
+[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+
+recurrent transfer operation builder
+
+#### Defined in
+
+wasm/lib/interfaces.ts:95
+
+▸ **pushRecurrentTransfer**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+Returns a recurrent transfer operation builder
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `from` | `string` | Account which transfers asset |
+| `to` | `string` | Account to transfer asset to. Cannot set a transfer to yourself |
+| `pairId` | `number` | It allows to define more than one recurrent transfer from sender to the same receiver 'to' |
+| `memo?` | `string` | must be shorter than 2048 (defaults to `""` - empty memo) |
+| `recurrence?` | `number` | How often will the payment be triggered, unit: hours (defaults to `0`) |
+| `executions?` | `number` | How many times the recurrent payment will be executed (defaults to `0`) |
+
+#### Returns
+
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+
+recurrent transfer operation builder
+
+#### Defined in
+
+wasm/lib/interfaces.ts:109
+
+___
+
 ### sign
 
 ▸ **sign**(`wallet`, `publicKey`): `string`
@@ -9012,7 +9456,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:139
+wasm/lib/interfaces.ts:167
 
 ___
 
@@ -9034,7 +9478,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:196
+wasm/lib/interfaces.ts:224
 
 ___
 
@@ -9056,7 +9500,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:124
+wasm/lib/interfaces.ts:152
 
 ___
 
@@ -9076,7 +9520,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:115
+wasm/lib/interfaces.ts:143
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -9104,7 +9548,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:209
+wasm/lib/interfaces.ts:237
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -9122,7 +9566,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:216
+wasm/lib/interfaces.ts:244
 
 ## Methods
 
@@ -9150,7 +9594,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:227
+wasm/lib/interfaces.ts:255
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -9171,7 +9615,7 @@ wasm/lib/interfaces.ts:227
 
 #### Defined in
 
-wasm/lib/interfaces.ts:249
+wasm/lib/interfaces.ts:277
 
 ___
 
@@ -9181,7 +9625,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:251
+wasm/lib/interfaces.ts:279
 
 ___
 
@@ -9217,7 +9661,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:252
+wasm/lib/interfaces.ts:280
 
 ## Accessors
 
@@ -9231,7 +9675,7 @@ wasm/lib/interfaces.ts:252
 
 #### Defined in
 
-wasm/lib/interfaces.ts:247
+wasm/lib/interfaces.ts:275
 
 ## Methods
 
@@ -9258,7 +9702,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:288
+wasm/lib/interfaces.ts:316
 
 ___
 
@@ -9285,7 +9729,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:304
+wasm/lib/interfaces.ts:332
 
 ___
 
@@ -9301,7 +9745,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:309
+wasm/lib/interfaces.ts:337
 
 ___
 
@@ -9325,7 +9769,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:260
+wasm/lib/interfaces.ts:288
 
 ___
 
@@ -9354,7 +9798,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:272
+wasm/lib/interfaces.ts:300
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
