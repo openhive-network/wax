@@ -59,8 +59,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
                   throw new WaxError(`Method "${method}" has not been implemented yet or does not exist`);
               */
 
+              // Helper function to determine if we have to convert plain object to the instance of the given request or not
+              const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
+
               if(typeof this.localTypes[propertyParent]?.[property] === 'object')
-                await validateOrReject(plainToInstance(this.localTypes[propertyParent][property].params, params));
+                await validateOrReject(isPlainObj(params) ? plainToInstance(this.localTypes[propertyParent][property].params, params) : params);
 
               const data = await fetch(this.apiEndpoint, {
                 method: "POST",
