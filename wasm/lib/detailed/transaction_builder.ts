@@ -148,20 +148,21 @@ export class TransactionBuilder implements ITransactionBuilder {
   }
 
   public pushArticle(
-    author: TAccountName, permlink: string, title: string, body: string
+    author: TAccountName, permlink: string, title: string, body: string, jsonMetadata: object = {}
   ): CommentBuilder {
     const commentOp: Partial<comment> = {
       author,
       body,
       permlink,
-      title
+      title,
+      json_metadata: JSON.stringify(jsonMetadata)
     };
 
     return new CommentBuilder(this, commentOp);
   }
 
   public pushReply(
-    parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, permlink?: string, title: string = ""
+    parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata: object = {}, permlink?: string, title: string = ""
   ): CommentBuilder {
     const commentOp: Partial<comment> = {
       author,
@@ -169,7 +170,8 @@ export class TransactionBuilder implements ITransactionBuilder {
       permlink: typeof permlink === "string" ? permlink : `re-${parentAuthor}-${Date.now()}`,
       parent_author: parentAuthor,
       parent_permlink: parentPermlink,
-      title
+      title,
+      json_metadata: JSON.stringify(jsonMetadata)
     };
 
     return new CommentBuilder(this, commentOp);

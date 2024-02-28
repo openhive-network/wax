@@ -132,7 +132,7 @@ export interface ITransactionBuilder {
    *
    * @returns {CommentBuilder} comment operation builder
    */
-  pushArticle(author: TAccountName, permlink: string, title: string, body: string): CommentBuilder;
+  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): CommentBuilder;
 
   /**
    * Returns a comment operation builder
@@ -141,12 +141,13 @@ export interface ITransactionBuilder {
    * @param {string} parentPermlink parent permlink
    * @param {string} author reply author
    * @param {string} body reply body
+   * @param {?object} jsonMetadata optional json metadata
    * @param {?string} permlink reply permlink. Defaults to `re-parentAuthor-timestamp`
    * @param {?string} title reply title (defaults to `""`)
    *
    * @returns {CommentBuilder} comment operation builder
    */
-  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, permlink?: string, title?: string): CommentBuilder;
+  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title?: string): CommentBuilder;
 
   /**
    * Generates digest of the transaction for signing
