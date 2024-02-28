@@ -83,6 +83,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public getVersion(): string {
+    return process.env.npm_package_version as string;
+  }
+
   public getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString {
     return this.extract(this.proto.cpp_get_public_key_from_signature(sigDigest, signature));
   }

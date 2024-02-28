@@ -320,6 +320,13 @@ export interface IWaxBaseInterface {
   readonly waxify: IWaxExtendableFormatter['waxify'];
 
   /**
+   * Retrieves the bundled package version string
+   *
+   * @returns {string} application version
+   */
+  getVersion(): string;
+
+  /**
    * Retrieves asset amount and symbol from the api data
    *
    * @param {NaiAsset} nai API asset
