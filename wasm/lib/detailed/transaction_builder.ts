@@ -1,11 +1,11 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
-import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal } from "../protocol.js";
+import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation, TAccountName } from "./custom_jsons/builder";
-import { RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./operation_factories";
+import { CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./operation_factories";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -145,6 +145,34 @@ export class TransactionBuilder implements ITransactionBuilder {
     };
 
     return new UpdateProposalBuilder(this, updateProposalOp, endDate);
+  }
+
+  public pushArticle(
+    author: TAccountName, permlink: string, title: string, body: string
+  ): CommentBuilder {
+    const commentOp: Partial<comment> = {
+      author,
+      body,
+      permlink,
+      title
+    };
+
+    return new CommentBuilder(this, commentOp);
+  }
+
+  public pushReply(
+    parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, permlink?: string, title: string = ""
+  ): CommentBuilder {
+    const commentOp: Partial<comment> = {
+      author,
+      body,
+      permlink: typeof permlink === "string" ? permlink : `re-${parentAuthor}-${Date.now()}`,
+      parent_author: parentAuthor,
+      parent_permlink: parentPermlink,
+      title
+    };
+
+    return new CommentBuilder(this, commentOp);
   }
 
   private applyExpiration(): void {

@@ -8,7 +8,7 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [npm registry](https://www.npmjs.com/).
 
 Before installing, [download and install Node.js](https://nodejs.org/en/download/).
-Node.js 12 or higher is required.
+Node.js 18 or higher is required.
 
 Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
@@ -224,14 +224,15 @@ See API definition in [api.md](https://gitlab.syncad.com/hive/wax/-/blob/${Commi
 
 ## Support and tests
 
-Tested on the latest Chromium (v117)
+Tested on the latest Chromium
 
 [Automated CI test](https://gitlab.syncad.com/hive/wax/-/pipelines) runs are available.
 
 To run the tests on your own, clone the Wax repo and install the dependencies and then compile the project:
 
 ```bash
-./wasm/build_wasm_wax.sh
+sudo apt install protobuf-compiler
+git submodule update --init --progress --depth=1 # Clone HIVE repository containing proto definitions
 sudo npm install -g pnpm
 pnpm install
 ```

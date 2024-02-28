@@ -6,7 +6,7 @@ import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, UpdateProposalBuilder } from "./detailed";
+import type { CommentBuilder, IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, UpdateProposalBuilder } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
@@ -121,6 +121,32 @@ export interface ITransactionBuilder {
    * @returns {UpdateProposalBuilder} update proposal operation builder
    */
   pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder;
+
+  /**
+   * Returns a comment operation builder
+   *
+   * @param {string} author article author
+   * @param {string} permlink article permlink
+   * @param {string} title article title
+   * @param {string} body article body
+   *
+   * @returns {CommentBuilder} comment operation builder
+   */
+  pushArticle(author: TAccountName, permlink: string, title: string, body: string): CommentBuilder;
+
+  /**
+   * Returns a comment operation builder
+   *
+   * @param {string} parentAuthor parent author
+   * @param {string} parentPermlink parent permlink
+   * @param {string} author reply author
+   * @param {string} body reply body
+   * @param {?string} permlink reply permlink. Defaults to `re-parentAuthor-timestamp`
+   * @param {?string} title reply title (defaults to `""`)
+   *
+   * @returns {CommentBuilder} comment operation builder
+   */
+  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, permlink?: string, title?: string): CommentBuilder;
 
   /**
    * Generates digest of the transaction for signing

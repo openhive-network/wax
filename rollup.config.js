@@ -20,6 +20,8 @@ const commonConfiguration = (env, packEntire = false) => ([
         ]
       }),
       replace({
+        'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
+        'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
         'process': null,
         'process.env': null,
         preventAssignment: true
