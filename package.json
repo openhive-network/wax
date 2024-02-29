@@ -18,12 +18,6 @@
   },
   "exports": {
     ".": {
-      "node": {
-        "import": {
-          "types": "./wasm/dist/bundle/node.d.ts",
-          "default": "./wasm/dist/bundle/node.js"
-        }
-      },
       "default": {
         "import": {
           "types": "./wasm/dist/bundle/web.d.ts",
