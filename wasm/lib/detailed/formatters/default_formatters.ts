@@ -52,11 +52,12 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     const json = JSON.parse(source.json);
 
     const [ , { from, delegatees, max_rc } ] = json;
+    const maxRc = max_rc.toString();
 
-    if(max_rc.toString() === "0")
+    if(maxRc === "0")
       return `Account ${from} removed delegation for account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
 
-    const rc = this.formatNai(options, { ...this.wax.ASSETS.VESTS, amount: max_rc });
+    const rc = this.formatNai(options, { ...this.wax.ASSETS.VESTS, amount: maxRc });
 
     return `Account ${from} delegated ${rc} to account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
   }
