@@ -25,13 +25,12 @@ test.describe('Wax object interface foundation tests', () => {
     if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
       fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
 
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
-    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
-  test('Should be able to convert API asset to the proper HIVE asset data', async ({ dual }) => {
-    const retVal = await dual(async(naiAsset) => {
-      const asset = wx.getAsset(naiAsset);
+  test('Should be able to convert API asset to the proper HIVE asset data', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, naiAsset) => {
+      const asset = base.getAsset(naiAsset);
 
       return asset;
     }, naiAsset);
@@ -42,9 +41,9 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
-  test('Should be able to convert API asset to the proper custom asset data', async ({ dual }) => {
-    const retVal = await dual(async() => {
-      const asset = wx.getAsset({
+  test('Should be able to convert API asset to the proper custom asset data', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      const asset = base.getAsset({
         amount: "300",
         precision: 1,
         nai: "@@002137000"
@@ -59,9 +58,9 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
-  test('Should be able to bidirectional convert api to proto using object interface', async ({ dual }) => {
-    const retVal = await dual(async(transaction) => {
-      const tx = wx.TransactionBuilder.fromApi(transaction);
+  test('Should be able to bidirectional convert api to proto using object interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, transaction) => {
+      const tx = base.TransactionBuilder.fromApi(transaction);
 
       return tx.toApi();
     }, transaction);
@@ -69,15 +68,15 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal).toBe(transaction);
   });
 
-  test('Should be able to create and sign transaction using object interface', async ({ dual }) => {
-    const retVal = await dual(async(protoVoteOp) => {
+  test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ beekeeper, base }, protoVoteOp) => {
       // Create wallet:
-      const session = bk.createSession("salt");
+      const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
       // Create transaction
-      const tx = new wx.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new base.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
       tx.push(protoVoteOp).validate();

@@ -17,8 +17,7 @@ test.describe('WASM Base tests', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-wasm.html", { waitUntil: "load" });
-    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
   // Base browser type test
@@ -35,17 +34,9 @@ test.describe('WASM Base tests', () => {
     expect(id).toBe('waxbody');
   });
 
-  test('Should have global instance of protocol', async ({ dual }) => {
-    const moduleType = await dual(() => {
+  test('Should have global instance of protocol', async ({ wasmTest }) => {
+    const moduleType = await wasmTest(({ protocol }) => {
       return typeof protocol;
-    });
-
-    expect(moduleType).toBe('object');
-  });
-
-  test('Should have global instance of proto protocol', async ({ dual }) => {
-    const moduleType = await dual(() => {
-      return typeof proto_protocol;
     });
 
     expect(moduleType).toBe('object');

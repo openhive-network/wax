@@ -19,18 +19,17 @@ test.describe('Wax hive apps operations tests', () => {
       console.log('>>', msg.type(), msg.text())
     });
 
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test-chain.html", { waitUntil: "load" });
-    await page.waitForFunction(() => waxScriptLoaded); // Wait until async scripts load
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
-  test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ dual }) => {
-    const retVal = await dual((protoVoteOp) => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(protoVoteOp);
 
       tx.push(
-        new FollowOperationBuilder()
+        new wax.FollowOperationBuilder()
           .followBlog("initminer", "gtg")
           .authorize("initminer")
           .muteBlog("initminer", "spammer")
@@ -45,14 +44,14 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ dual }) => {
-    const retVal = await dual((protoVoteOp) => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(protoVoteOp);
 
       tx.push(
-        new FollowOperationBuilder()
+        new wax.FollowOperationBuilder()
           .followBlog("initminer", "gtg")
           .muteBlog("initminer", "spammer")
           .resetBlogList(0, "initminer", "spammer")
@@ -66,12 +65,12 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ dual }) => {
-    const retVal = await dual(() => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(
-        new FollowOperationBuilder()
+        new wax.FollowOperationBuilder()
           .followBlacklistBlog("initminer", "gtg")
           .followMutedBlog("initminer", "gtg")
           .resetAllBlog("initminer", "gtg")
@@ -91,12 +90,12 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customMultipleJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ dual }) => {
-    const retVal = await dual(async() => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ waxTest }) => {
+    const retVal = await waxTest(async({ base, wax }) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(
-        new CommunityOperationBuilder()
+        new wax.CommunityOperationBuilder()
           .flagPost("mycomm", "gtg", "first-post", "note")
           .mutePost("mycomm", "gtg", "first-post", "note")
           .pinPost("mycomm", "gtg", "first-post")
@@ -122,11 +121,11 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customCommunityJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ dual }) => {
-    const retVal = await dual(() => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.push(new FollowOperationBuilder()
+      tx.push(new wax.FollowOperationBuilder()
         .reblog("initminer", "gtg", "first-post")
         .authorize("initminer")
         .build());
@@ -153,11 +152,11 @@ test.describe('Wax hive apps operations tests', () => {
     });
   });
 
-  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ dual }) => {
-    const retVal = await dual(() => {
-      const tx = new wx.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.push(new ResourceCreditsOperationBuilder()
+      tx.push(new wax.ResourceCreditsOperationBuilder()
         .delegate("initminer", 3000, "gtg")
         .authorize("initminer")
         .removeDelegation("initminer", "gtg")
