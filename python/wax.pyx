@@ -178,6 +178,14 @@ def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def calculate_inflation_rate_for_block(
+    block_num: int
+) -> python_result:
+    cdef protocol obj
+    response = obj.cpp_calculate_inflation_rate_for_block(block_num)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:
     cdef proto_protocol obj
     response = obj.cpp_validate_operation(operation)

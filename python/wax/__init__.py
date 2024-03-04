@@ -31,6 +31,7 @@ from .wax import (
     calculate_hp_apr,
     calculate_account_hp,
     calculate_witness_votes_hp,
+    calculate_inflation_rate_for_block
 )
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data
 
@@ -71,4 +72,5 @@ __all__ = [
     "calculate_hp_apr",
     "calculate_account_hp",
     "calculate_witness_votes_hp",
+    "calculate_inflation_rate_for_block",
 ]
