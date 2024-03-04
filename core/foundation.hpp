@@ -52,6 +52,15 @@ public:
    */
   result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const;
 
+  /**
+   * Calculate current inflation rate.
+   *
+   * @param block_num - block number for which will be calculated inflation rate
+   *
+   * @returns curent inflation rare.
+   */
+  result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const;
+         
 protected:
   /// use this only through derived classes
   foundation() = default;

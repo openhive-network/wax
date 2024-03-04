@@ -35,6 +35,20 @@ json_asset cpp_generate_nai(const hive::protocol::asset& asset)
   }
 }
 
+int64_t calculate_inflation_rate_for_block(const uint32_t block_num)
+{
+  /**
+    * At block 7,000,000 have a 9.5% instantaneous inflation rate, decreasing to 0.95% at a rate of 0.01%
+    * every 250k blocks. This narrowing will take approximately 20.5 years and will complete on block 220,750,000
+    */
+  const int64_t start_inflation_rate = int64_t( HIVE_INFLATION_RATE_START_PERCENT );
+  const int64_t inflation_rate_adjustment = int64_t( block_num / HIVE_INFLATION_NARROWING_PERIOD );
+  const int64_t inflation_rate_floor = int64_t( HIVE_INFLATION_RATE_STOP_PERCENT );
+  
+  // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
+  return std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
+}
+
 hive::protocol::legacy_asset to_asset(const json_asset& v)
 {
   fc::mutable_variant_object mv;
@@ -179,16 +193,7 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
 {
   return method_wrapper([&](result& _result)
   {
-    /**
-      * At block 7,000,000 have a 9.5% instantaneous inflation rate, decreasing to 0.95% at a rate of 0.01%
-      * every 250k blocks. This narrowing will take approximately 20.5 years and will complete on block 220,750,000
-      */
-    const int64_t start_inflation_rate = int64_t( HIVE_INFLATION_RATE_START_PERCENT );
-    const int64_t inflation_rate_adjustment = int64_t( head_block_num / HIVE_INFLATION_NARROWING_PERIOD );
-    const int64_t inflation_rate_floor = int64_t( HIVE_INFLATION_RATE_STOP_PERCENT );
-
-    // below subtraction cannot underflow int64_t because inflation_rate_adjustment is <2^32
-    const int64_t current_inflation_rate = std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
+    const int64_t current_inflation_rate = calculate_inflation_rate_for_block(head_block_num);
 
     // calculate the "APR"
     hive::protocol::legacy_asset _virtual_supply = to_asset(virtual_supply);
@@ -219,6 +224,14 @@ result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& to
     const int64_t hp = (int64_t)std::ceil((double)vests_to_hive / hive_precision);
     _result.content = std::to_string(hp);
   });
+}
+
+result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
+{
+    return method_wrapper([&](result& _result)
+    {
+        _result.content = std::to_string(calculate_inflation_rate_for_block(block_num));
+    });
 }
 
 } /// namespace cpp
