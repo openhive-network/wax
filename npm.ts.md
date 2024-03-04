@@ -14,7 +14,7 @@ Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```bash
-npm install @hiveio/wax
+npm install @hive/wax
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ npm install @hiveio/wax
 #### Create a TransactionBuilder instance from api data
 
 ```js
-import { createWaxFoundation } from '@hiveio/wax';
+import { createWaxFoundation } from '@hive/wax';
 
 const wax = await createWaxFoundation();
 
@@ -49,7 +49,7 @@ console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 #### Add custom hive apps operations to the TransactionBuilder
 
 ```ts
-import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
+import { createWaxFoundation, FollowOperationBuilder } from '@hive/wax';
 
 const wax = await createWaxFoundation();
 
@@ -65,7 +65,7 @@ console.info(tx.toApi()); // Print the transaction in the API form
 #### Create a signed transaction
 
 ```js
-import { createHiveChain } from '@hiveio/wax';
+import { createHiveChain } from '@hive/wax';
 import beekeeperFactory from '@hiveio/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
@@ -97,7 +97,7 @@ console.info(chain.waxify`${stx}`);
 #### Create a transaction and broadcast it using network_broadcast_api
 
 ```js
-import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
+import { createHiveChain, BroadcastTransactionRequest } from '@hive/wax';
 import beekeeperFactory from '@hiveio/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
@@ -128,7 +128,7 @@ await chain.api.network_broadcast_api.broadcast_transaction(request);
 #### Use custom formatters to output data in specified format
 
 ```ts
-import { createHiveChain, IFormatFunctionArguments, WaxFormattable } from '@hiveio/wax';
+import { createHiveChain, IFormatFunctionArguments, WaxFormattable } from '@hive/wax';
 const chain = await createHiveChain();
 
 const data = {
@@ -153,7 +153,7 @@ console.info(formatter.waxify`${data}`); // Print formatted data
 #### Calculate user manabar regeneration time
 
 ```ts
-import { createHiveChain } from '@hiveio/wax';
+import { createHiveChain } from '@hive/wax';
 const chain = await createHiveChain();
 
 const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
@@ -164,7 +164,7 @@ console.info(manaTime); // Date
 #### Extend API interface and call custom endpoints
 
 ```ts
-import { createHiveChain, TWaxExtended } from '@hiveio/wax';
+import { createHiveChain, TWaxExtended } from '@hive/wax';
 const chain = await createHiveChain();
 
 class MyRequest {
@@ -194,7 +194,7 @@ console.info(result); // { args: {}, ret: [] }
 #### Extend API interface using interfaces only and call custom endpoints
 
 ```ts
-import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hiveio/wax';
+import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hive/wax';
 const chain = await createHiveChain();
 
 interface IMyRequest {
