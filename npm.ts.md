@@ -14,17 +14,28 @@ Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```bash
-npm install @hiveio/wax
+echo @hive:registry=https://gitlab.syncad.com/api/v4/packages/npm/ >> .npmrc
+npm install @hive/wax
 ```
 
 ## Usage
+
+Wax is designed to work in web environment by default, so remember to use:
+
+```ts
+import '@hive/wax/node';
+```
+
+import when you intend to work in the Node.js environment.
+
+You may need to set `moduleResolution` to `Bundler` in your `tsconfig.json` in order to respect the `exports` fields in our `package.json` file
 
 ### Wax foundation
 
 #### Create a TransactionBuilder instance from api data
 
 ```js
-import { createWaxFoundation } from '@hiveio/wax';
+import { createWaxFoundation } from '@hive/wax';
 
 const wax = await createWaxFoundation();
 
@@ -49,7 +60,7 @@ console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 #### Add custom hive apps operations to the TransactionBuilder
 
 ```ts
-import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
+import { createWaxFoundation, FollowOperationBuilder } from '@hive/wax';
 
 const wax = await createWaxFoundation();
 
@@ -65,8 +76,8 @@ console.info(tx.toApi()); // Print the transaction in the API form
 #### Create a signed transaction
 
 ```js
-import { createHiveChain } from '@hiveio/wax';
-import beekeeperFactory from '@hiveio/beekeeper';
+import { createHiveChain } from '@hive/wax';
+import beekeeperFactory from '@hive/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
 
@@ -97,8 +108,8 @@ console.info(chain.waxify`${stx}`);
 #### Create a transaction and broadcast it using network_broadcast_api
 
 ```js
-import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
-import beekeeperFactory from '@hiveio/beekeeper';
+import { createHiveChain, BroadcastTransactionRequest } from '@hive/wax';
+import beekeeperFactory from '@hive/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
 
@@ -128,7 +139,7 @@ await chain.api.network_broadcast_api.broadcast_transaction(request);
 #### Use custom formatters to output data in specified format
 
 ```ts
-import { createHiveChain, IFormatFunctionArguments, WaxFormattable } from '@hiveio/wax';
+import { createHiveChain, IWaxBaseInterface, IFormatFunctionArguments, WaxFormattable } from '@hive/wax';
 const chain = await createHiveChain();
 
 const data = {
@@ -136,10 +147,16 @@ const data = {
 };
 
 class MyFormatters { // Define custom formatters class
+  // This line is optional, you can omit providing the constructor and default contstructor will be used instead
+  // It is to show that you can gain access to the wax interface easily inside the formatters
+  public constructor( private readonly wax: IWaxBaseInterface ) {}
+
   @WaxFormattable() // Match this method as `myCustomProp` custom formatter
-  myCustomProp({ source }: IFormatFunctionArguments<typeof data>): string | void {
+  public myCustomProp({ source }: IFormatFunctionArguments<typeof data>): string | void {
     if(Math.random() > 0.5) // Happy debugging :)
       return; // No replacement will take place here - that's reason why return type is defined as string and void union
+
+    console.info(`You are using wax version: ${this.wax.getVersion()}`);
 
     return source.myCustomProp.toString(); // return string
   }
@@ -153,7 +170,7 @@ console.info(formatter.waxify`${data}`); // Print formatted data
 #### Calculate user manabar regeneration time
 
 ```ts
-import { createHiveChain } from '@hiveio/wax';
+import { createHiveChain } from '@hive/wax';
 const chain = await createHiveChain();
 
 const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
@@ -163,59 +180,90 @@ console.info(manaTime); // Date
 
 #### Extend API interface and call custom endpoints
 
+In this example we will extend the base Wax endpoints and create our classes with validators
+in order to use the [transaction_status_api.find_transaction](https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction) API:
+
 ```ts
-import { createHiveChain, TWaxExtended } from '@hiveio/wax';
+import { IsHexadecimal, IsDateString, IsString } from 'class-validator';
+import { createHiveChain, TWaxExtended } from '@hive/wax';
 const chain = await createHiveChain();
 
-class MyRequest {
-  method!: string;
-}
-class MyResponse {
-  args!: {};
-  ret!: [];
+// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-parameter_json
+// Create a request class with validators that will require a valid input from the end user
+class FindTransactionRequest {
+  @IsHexadecimal()
+  public transaction_id!: string;
+
+  @IsDateString()
+  public expiration!: string;
 }
 
-const MyData = {
-  jsonrpc: {
-    get_signature: {
-      params: MyRequest,
-      result: MyResponse
+// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-expected_response_json
+// Create a response class with validators that will require a valid output from the remote API
+class FindTransactionResponse {
+  @IsString()
+  public status!: 'unknown' | string;
+}
+
+// Create the proper API structure
+const ExtendedApi = {
+  transaction_status_api: { // API
+    find_transaction: { // Method
+      params: FindTransactionRequest, // params is our request
+      result: FindTransactionResponse // result is out response
     }
   }
 };
 
-const extended: TWaxExtended<typeof MyData> = chain.extend(MyData);
+const extended: TWaxExtended<typeof ExtendedApi> = chain.extend(ExtendedApi);
 
-const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+// Call the transaction_status_api API using our extended interface
+const result = await extended.api.transaction_status_api.find_transaction({
+  transaction_id: "0000000000000000000000000000000000000000",
+  expiration: "2016-03-24T18:00:21"
+});
 
-console.info(result); // { args: {}, ret: [] }
+console.info(result); // { status: 'unknown' }
 ```
 
 #### Extend API interface using interfaces only and call custom endpoints
 
+In this example we will extend the base Wax endpoints without creating any validators.
+The goal is to extend the API interface using TypeScript interfaces-only in order to also use the [transaction_status_api.find_transaction](https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction) API:
+
 ```ts
-import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hiveio/wax';
+import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hive/wax';
 const chain = await createHiveChain();
 
-interface IMyRequest {
-  method: string;
-}
-interface IMyResponse {
-  args: {};
-  ret: [];
+// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-parameter_json
+// Create a request interface without validators - this will be the input from the end user
+interface IFindTransactionRequest {
+  transaction_id: string;
+  expiration: string;
 }
 
-type TMyData = {
-  jsonrpc: {
-    get_signature: TWaxApiRequest<IMyRequest, IMyResponse>
+// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-expected_response_json
+// Create a response interface without validators - this will be the output from the remote API
+interface IFindTransactionResponse {
+  status: 'unknown' | string;
+}
+
+// Create the proper API structure
+type TExtendedApi = {
+  transaction_status_api: { // API
+    find_transaction: TWaxApiRequest<IFindTransactionRequest, IFindTransactionResponse> // Method
   }
 };
 
-const extended = chain.extend<TMyData>();
+const extended = chain.extend<TExtendedApi>();
 
-const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
+// Call the transaction_status_api API using our extended interface
+const result = await extended.api.transaction_status_api.find_transaction({
+  transaction_id: "0000000000000000000000000000000000000000",
+  expiration: "2016-03-24T18:00:21"
+});
 
-console.info(result); // { args: {}, ret: [] }
+console.info(result); // { status: 'unknown' }
 ```
 
 ## API
@@ -228,22 +276,26 @@ Tested on the latest Chromium
 
 [Automated CI test](https://gitlab.syncad.com/hive/wax/-/pipelines) runs are available.
 
-To run the tests on your own, clone the Wax repo and install the dependencies and then compile the project:
+To run the tests on your own, clone the wax repo and install the dependencies and then compile the project:
+
+You should perform any development-related work in our devcontainers available in the [.devcontainer](.devcontainer) directory.
+If you do not wish to use docker, then you will have to install project dependencies on your own:
+`protobuf-compiler`, `docker.io`, `npm`, `pnpm`, `nodejs`, `jq`
+
+After successfully setting up your environment, remember to clone the submodule and install library dependencies:
 
 ```bash
-sudo apt install protobuf-compiler
 git submodule update --init --progress --depth=1 # Clone HIVE repository containing proto definitions
-sudo npm install -g pnpm
 pnpm install
 ```
 
-Compile source:
+Then compile the source:
 
 ```bash
 npm run build
 ```
 
-Then build and run tests:
+Build and run tests:
 
 ```bash
 npm run build:test
