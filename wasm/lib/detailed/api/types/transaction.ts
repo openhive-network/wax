@@ -24,7 +24,7 @@ export class ApiTransaction {
   public expiration!: string;
 
   @ValidateNested({ each: true })
-  @Type(() => ApiTransaction)
+  @Type(() => ApiOperation)
   public operations: Array<ApiOperation> = [];
 
   @IsObject({ each: true })
