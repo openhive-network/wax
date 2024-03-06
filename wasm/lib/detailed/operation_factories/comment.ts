@@ -21,14 +21,12 @@ export class CommentBuilder {
   };
 
   private extendDefaultJsonMetadata(optionalJsonMeta: string = "{}"): void {
-    try {
-      const parsed = JSON.parse(optionalJsonMeta);
-      const apps = [ `${process.env.npm_package_name}/${process.env.npm_package_version}` ];
-      if(typeof parsed.app === "string")
-        apps.unshift(parsed.app);
+    const parsed = JSON.parse(optionalJsonMeta);
+    const apps = [ `${process.env.npm_package_name}/${process.env.npm_package_version}` ];
+    if(typeof parsed.app === "string")
+      apps.unshift(parsed.app);
 
-      Object.assign(this.jsonMetadata, parsed, { app: apps.join(", ") });
-    } catch {}
+    Object.assign(this.jsonMetadata, parsed, { app: apps.join(", ") });
   }
 
   public constructor(private readonly txBuilder: TransactionBuilder, commentObject: Partial<comment>) {
