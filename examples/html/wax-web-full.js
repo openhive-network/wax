@@ -1,0 +1,1 @@
+../../wasm/dist/bundle/web-full.js

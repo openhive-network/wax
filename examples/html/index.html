@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiny Wax API usage example</title>
+</head>
+<body>
+  <ol>
+    <li>Before loading this page be sure the wax project is built.</li>
+    <li>
+      Then start your beloved web server and point a wax source directory to it, i.e.:<br/>
+      <code>
+        /home/dev/src/wax$ docker run --rm -it -v $(pwd):/usr/share/nginx/html -p 8080:80 nginx
+      </code>
+    </li>
+    <li>
+      And next load this page in your browser by opening url like this: http://localhost:8080/examples/html/index.html
+    </li>
+    <li>
+      Open developer console and watch if your code performs as expected
+    </li>
+
+  </ol> 
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@hive/wax": "./wax-web-full.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import { createHiveChain } from '@hive/wax'
+
+    /// This is your tx received from KeyChain after signing
+    const txJSON = {
+      "expiration": "2024-02-21T06:55:40",
+      "extensions": [],
+      "operations": [
+        {
+          "type": "account_update2_operation",
+          "value": {
+            "account": "thatcryptodave",
+            "extensions": [],
+            "json_metadata": "",
+            "posting_json_metadata": "{\"name\":\"David P.\",\"about\":\"\",\"website\":\"\",\"location\":\"Ontario, Canada\",\"birthday\":\"03.28.1984\",\"profile\":{\"name\":\"David P.\",\"about\":\"\",\"website\":\"\",\"location\":\"Ontario, Canada\",\"birthday\":\"03.28.1984\",\"profile_image\":\"\",\"cover_image\":\"\"}}"
+          }
+        }
+      ],
+      "signatures": [
+        "1f6ad21ddf9f57f1a94c1462185744cb0ea779ec1e99899f2556a3ce02b18d1b810fcddaccb349a53037798aea8023909447df756db461235ba5b63984d515c977"
+      ],
+      "ref_block_num": 26295,
+      "ref_block_prefix": 26859167
+    };
+
+    console.log("Attempting to instantiate hive chain interface");
+
+    const hiveChain = await createHiveChain();
+
+    console.log("hive chain interface built successfully");
+
+    try {
+      const authorityVerificationResult = await hiveChain.api.database_api.verify_authority({ trx: txJSON });
+      console.log(`Got verification result: ${authorityVerificationResult.valid}`);
+    }
+    catch (e) {
+      console.log(`verification failed with error: ${e}`);
+    }
+
+  </script>
+</body>
+</html>
