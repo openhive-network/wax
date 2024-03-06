@@ -20,13 +20,16 @@ curl -sSL https://install.python-poetry.org | python3 - --version 1.6.1
 
 #### Building
 
+Wax uses dedicated version of boost library (it is statically built to reduce Python packages dependencies). Please use a CI base image defined here: https://gitlab.syncad.com/hive/wax/-/blob/develop/python/docker/Dockerfile.ci?ref_type=heads as your build environment.
+Prebuilt image can be also retrieved from Gitlab container registry: https://gitlab.syncad.com/hive/wax/container_registry/556
+
 In order to build wax python package, one need to simply type from root project directory:
 
 ```bash
-./scripts/build_wax_python.sh
+./python/scripts/build_wax.sh
 ```
 
-This script will generate wheel file using virtual enviorement of poetry  which will be saved in ./dist directory.
+This script will generate wheel file using virtual environment of poetry  which will be saved in ./dist directory.
 
 #### Instaling
 
@@ -42,6 +45,11 @@ Now in order to install wax module to python, one need to type.
 ```bash
 python3 -m pip install ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
 ```
+
+You can always take prebuilt PyPI package also pushed to Gitlab package registry - here is for example some `develop` related version: `0.0.3a2.dev131+bb99c4e`:
+https://gitlab.syncad.com/hive/wax/-/packages/3474
+
+Packages produced for Git protected tags will be versioned according to tag names.
 
 ### TypeScript Building
 
