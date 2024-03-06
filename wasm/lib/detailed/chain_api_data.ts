@@ -6,6 +6,7 @@ import { FindAccountsRequest, FindAccountsResponse } from "./api/database_api/fi
 import { GetDynamicGlobalPropertiesRequest, GetDynamicGlobalPropertiesResponse } from "./api/database_api/get_dynamic_global_properties.js";
 import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find_rc_accounts.js";
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
+import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
 export const HiveApiTypes = {
   account_by_key_api: {
@@ -22,6 +23,10 @@ export const HiveApiTypes = {
     get_dynamic_global_properties: {
       params: GetDynamicGlobalPropertiesRequest,
       result: GetDynamicGlobalPropertiesResponse
+    },
+    verify_authority: {
+      params: VerifyAuthorityRequest,
+      result: VerifyAuthorityResponse
     }
   },
   network_broadcast_api: {
