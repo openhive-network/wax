@@ -249,6 +249,33 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toBe("81752423");
   });
 
+  test('Should be able to calculate inflation rate for block 1_000_000', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, block_num) => {
+      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+    }, 1_000_000);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("974");
+  });
+
+  test('Should be able to calculate inflation rate for block 7_000_000', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, block_num) => {
+      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+    }, 7_000_000);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("950");
+  });
+  
+  test('Should be able to calculate inflation rate for block 9_000_000', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, block_num) => {
+      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+    }, 9_000_000);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("942");
+  });
+  
   test.afterAll(async () => {
     await browser.close();
   });
