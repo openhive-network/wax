@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, protoTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
+import { numToHighLow, protoTx, legacyTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -231,6 +231,15 @@ test.describe('WASM Proto Protocol', () => {
     expect(toProto2.exception_message).toHaveLength(0);
 
     expect(JSON.parse(toProto1.content as string)).toEqual(JSON.parse(toProto2.content as string));
+  });
+
+  test('Should be able to convert proto schema to legacy api schema without data loss - basic operation', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ proto_protocol }, transaction) => {
+      return proto_protocol.cpp_proto_to_legacy_api(transaction);
+    }, protoTx);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(JSON.parse(retVal.content as string)).toEqual(JSON.parse(legacyTx as string));
   });
 
   test('Should be able to perform multiple bidirectional conversion - basic transaction', async ({ wasmTest }) => {

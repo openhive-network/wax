@@ -35,3 +35,22 @@ export const protoRecurrentTransferOperation = JSON.stringify({
     extensions: [ { recurrent_transfer_pair_id: { pair_id: 0 } }, { void_t: {} } ]
   }
 });
+
+export const legacyTx = JSON.stringify({
+  ref_block_num: 34559,
+  ref_block_prefix: 1271006404,
+  expiration: "2021-12-13T11:31:33",
+  operations: [
+    [
+      "vote",
+      {
+        voter: "otom",
+        author: "c0ff33a",
+        permlink: "ewxhnjbj",
+        weight: 2200
+      }
+    ]
+  ],
+  signatures: [],
+  extensions: []
+});
