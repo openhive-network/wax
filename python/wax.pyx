@@ -240,6 +240,12 @@ def proto_to_api(operation_or_tx: bytes) -> python_result:
   return response.value, response.content, response.exception_message
 
 @return_python_result
+def proto_to_legacy_api(operation_or_tx: bytes) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_proto_to_legacy_api( operation_or_tx )
+  return response.value, response.content, response.exception_message
+
+@return_python_result
 def api_to_proto(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_api_to_proto( operation_or_tx )

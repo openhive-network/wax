@@ -60,4 +60,5 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_serialize_transaction( string transaction )
         result cpp_deserialize_transaction( string transaction )
         result cpp_proto_to_api( string operation_or_tx )
+        result cpp_proto_to_legacy_api( string operation_or_tx )
         result cpp_api_to_proto( string operation_or_tx )

@@ -454,6 +454,14 @@ std::string cpp_proto_to_api_impl(const std::string& operation_or_tx)
   return fc::json::to_string(parse_proto_operation(var));
 }
 
+bool cpp_is_proto_transaction(const std::string& operation_or_tx)
+{
+  fc::variant var = fc::json::from_string(operation_or_tx, fc::json::format_validation_mode::full);
+  FC_ASSERT(var.is_object(), "cpp_proto_to_api requires JSON object as an argument");
+
+  return var.get_object().contains("operations");
+}
+
 template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
 {
@@ -558,6 +566,34 @@ result proto_protocol_impl<FoundationProvider>::cpp_proto_to_api(const std::stri
   return method_wrapper([&](result& _result)
     {
       _result.content = cpp_proto_to_api_impl(operation_or_tx);
+    });
+}
+
+template <class FoundationProvider>
+result proto_protocol_impl<FoundationProvider>::cpp_proto_to_legacy_api(const std::string& operation_or_tx)
+{
+  return method_wrapper([&](result& _result)
+    {
+      const fc::variant var = fc::json::from_string(operation_or_tx, fc::json::format_validation_mode::full);
+      FC_ASSERT(var.is_object(), "cpp_proto_to_legacy_api requires JSON object as an argument");
+      const bool is_transaction = var.get_object().contains("operations");
+      const fc::variant api_var = is_transaction ? parse_proto_transaction(var) : parse_proto_operation(var);
+      hive::protocol::signed_transaction _transaction;
+      hive::protocol::operation _operation;
+
+      if (is_transaction)
+        _transaction = api_var.as<hive::protocol::signed_transaction>();
+      else
+        _operation = api_var.as<hive::protocol::operation>();
+
+      // now deserialize as legacy
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
+      if (is_transaction)
+        _result.content = fc::json::to_string(_transaction);
+      else
+        _result.content = fc::json::to_string(_operation);
     });
 }
 
