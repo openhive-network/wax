@@ -7,7 +7,7 @@ import fs from "fs";
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
-import { WaxFormattable } from '../../dist/lib/node';
+import { ECommunityOperationActions, EFollowActions, WaxFormattable } from '../../dist/lib/node';
 
 let browser!: ChromiumBrowser;
 
@@ -204,7 +204,7 @@ test.describe('Wax object interface formatters tests', () => {
 
       const built = tx.build();
 
-      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+      return chain.formatter.format(
         built.operations
       );
     });
@@ -212,14 +212,30 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: "Account initminer delegated 4,127.361273 VESTS to accounts: gtg, null"
+      custom_json: {
+        delegatees: [ "gtg", "null" ],
+        from: "initminer",
+        rc: {
+          amount: "4127361273",
+          nai: "@@000000037",
+          precision: 6,
+        }
+      }
     }, {
-      custom_json: "Account initminer removed delegation for account: null"
+      custom_json: {
+        delegatees: [ "null" ],
+        from: "initminer",
+        rc: {
+          amount: "0",
+          nai: "@@000000037",
+          precision: 6,
+        }
+      }
     }]);
   });
 
   test('Should be format custom JSON community operation using default formatter from the hive chain interface', async({ waxTest }) => {
-    const retVal = await waxTest(async({ base, wax, chain }) => {
+    const retVal = await waxTest.dynamic(async({ base, wax, chain }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.push(
@@ -238,7 +254,7 @@ test.describe('Wax object interface formatters tests', () => {
 
       const built = tx.build();
 
-      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+      return chain.formatter.format(
         built.operations
       );
     });
@@ -246,23 +262,129 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: "Account gtg flagged post \"@gtg/first-post\" on community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.FLAG_POST,
+          account: "gtg",
+          permlink: "first-post",
+          notes: "note",
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg muted post \"@gtg/first-post\" on community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.MUTE_POST,
+          account: "gtg",
+          permlink: "first-post",
+          notes: "note",
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg pinned post \"@gtg/first-post\" on community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.PIN_POST,
+          account: "gtg",
+          permlink: "first-post",
+          notes: undefined,
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg subscribed to community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.SUBSCRIBE,
+          account: undefined,
+          permlink: undefined,
+          notes: undefined,
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg unmuted post \"@gtg/first-post\" on community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.UNMUTE_POST,
+          account: "gtg",
+          permlink: "first-post",
+          notes: "note",
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg unpinned post \"@gtg/first-post\" from community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.UNPIN_POST,
+          account: "gtg",
+          permlink: "first-post",
+          notes: undefined,
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg unsubscribed from community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.UNSUBSCRIBE,
+          account: undefined,
+          permlink: undefined,
+          notes: undefined,
+          props: undefined,
+          title: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg set account gtg title to \"first-post\" on community mycomm"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.SET_USER_TITLE,
+          account: "gtg",
+          title: "first-post",
+          permlink: undefined,
+          notes: undefined,
+          props: undefined
+        }
+      }
     }, {
-      custom_json: "Account gtg updated community mycomm properties"
+      custom_json: {
+        accounts: [ "gtg" ],
+        community: "mycomm",
+        data: {
+          action: ECommunityOperationActions.UPDATE_PROPS,
+          props: {
+            about: "",
+            description: "",
+            title: "Custom title",
+            flag_text: "",
+            is_nsfw: false,
+            lang: "en",
+          },
+          account: undefined,
+          permlink: undefined,
+          notes: undefined,
+          title: undefined
+        }
+      }
     }]);
   });
 
@@ -288,7 +410,7 @@ test.describe('Wax object interface formatters tests', () => {
 
       const built = tx.build();
 
-      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(
+      return chain.formatter.format(
         built.operations
       );
     });
@@ -296,27 +418,96 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: "Account initminer followed blacklist of gtg, null"
+      custom_json: {
+        action: EFollowActions.FOLLOW_BLACKLIST,
+        follower: "initminer",
+        following: [
+          "gtg",
+          "null"
+        ]
+      }
     }, {
-      custom_json: "Account initminer followed muted list of gtg"
+      custom_json: {
+        action: EFollowActions.FOLLOW_MUTED,
+        follower: "initminer",
+        following: [
+          "gtg"
+        ]
+      }
     }, {
-      custom_json: "Account initminer reset all lists of gtg, null"
+      custom_json: {
+        action: EFollowActions.RESET_ALL_LISTS,
+        follower: "initminer",
+        following: [
+          "gtg",
+          "null"
+        ]
+      }
     }, {
-      custom_json: "Account initminer reset blacklist of gtg"
+      custom_json: {
+        action: EFollowActions.RESET_BLACKLIST,
+        follower: "initminer",
+        following: [
+          "gtg"
+        ]
+      }
     }, {
-      custom_json: "Account initminer stopped following blacklist of gtg, null"
+      custom_json: {
+        action: EFollowActions.RESET_FOLLOW_BLACKLIST,
+        follower: "initminer",
+        following: [
+          "gtg",
+          "null"
+        ]
+      }
     }, {
-      custom_json: "Account initminer stopped following muted list of gtg"
+      custom_json: {
+        action: EFollowActions.RESET_FOLLOW_MUTED_LIST,
+        follower: "initminer",
+        following: [
+          "gtg"
+        ]
+      }
     }, {
-      custom_json: "Account initminer unblacklisted gtg, null"
+      custom_json: {
+        action: EFollowActions.UNBLACKLIST,
+        follower: "initminer",
+        following: [
+          "gtg",
+          "null"
+        ]
+      }
     }, {
-      custom_json: "Account initminer unfollowed blacklist of gtg"
+      custom_json: {
+        action: EFollowActions.UNFOLLOW_BLACKLIST,
+        follower: "initminer",
+        following: [
+          "gtg"
+        ]
+      }
     }, {
-      custom_json: "Account initminer unfollowed gtg, null"
+      custom_json: {
+        action: EFollowActions.UNFOLLOW,
+        follower: "initminer",
+        following: [
+          "gtg",
+          "null"
+        ]
+      }
     }, {
-      custom_json: "Account initminer unfollowed muted list of gtg"
+      custom_json: {
+        action: EFollowActions.UNFOLLOW_MUTED,
+        follower: "initminer",
+        following: [
+          "gtg"
+        ]
+      }
     }, {
-      custom_json: "Account initminer reblogged post \"first-post\" authored by gtg"
+      custom_json: {
+        account: "initminer",
+        author: "gtg",
+        permlink: "first-post"
+      }
     }]);
   });
 

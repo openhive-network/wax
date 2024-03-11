@@ -4,16 +4,64 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import type { custom_json, transaction } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
-import { ECommunityOperationActions, EFollowActions, EFollowOperationActions } from "../custom_jsons";
+import { ECommunityOperationActions, EFollowActions, EFollowOperationActions, ICommunityProps, TAccountName } from "../custom_jsons";
+
+export class FormattedRcOperation {
+  public constructor(
+    public readonly from: TAccountName,
+    public readonly rc: NaiAsset,
+    public readonly delegatees: Array<TAccountName>
+  ) {}
+}
+
+export type TCommunityRules = {
+  action: ECommunityOperationActions.FLAG_POST | ECommunityOperationActions.MUTE_POST | ECommunityOperationActions.UNMUTE_POST;
+  account: TAccountName;
+  permlink: string;
+  notes: string;
+} | {
+  action: ECommunityOperationActions.PIN_POST | ECommunityOperationActions.UNPIN_POST;
+  account: TAccountName;
+  permlink: string;
+} | {
+  action: ECommunityOperationActions.SUBSCRIBE | ECommunityOperationActions.UNSUBSCRIBE;
+} | {
+  action: ECommunityOperationActions.SET_USER_TITLE;
+  account: TAccountName;
+  title: string;
+} | {
+  action: ECommunityOperationActions.UPDATE_PROPS;
+  props: Readonly<ICommunityProps>;
+}
+
+export class FormattedCommunityOperation {
+  public constructor(
+    public readonly accounts: Array<TAccountName>,
+    public readonly community: string,
+    public readonly data: TCommunityRules
+  ) {}
+}
+
+export class FormattedReblogOperation {
+  public constructor(
+    public readonly account: TAccountName,
+    public readonly author: TAccountName,
+    public readonly permlink: string
+  ) {}
+}
+
+export class FormattedFollowOperation {
+  public constructor(
+    public readonly action: EFollowActions,
+    public readonly follower: TAccountName,
+    public readonly following: Array<TAccountName>
+  ) {}
+}
 
 export class DefaultFormatters implements IWaxCustomFormatter {
   public constructor(
     private readonly wax: IWaxBaseInterface
   ) {}
-
-  private formatPostId(author: string, permlink: string): string {
-    return `@${author}/${permlink}`;
-  }
 
   private formatNai(options: DeepReadonly<IWaxFormatterOptions>, source: Readonly<NaiAsset>): string {
     let { amount, symbol } = this.wax.getAsset(source);
@@ -48,95 +96,70 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "rc" })
-  public rcOperationFormatter({ options, source }: IFormatFunctionArguments<custom_json>): string {
-    const json = JSON.parse(source.json);
+  public rcOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedRcOperation | void {
+    try {
+      const json = JSON.parse(source.json);
 
-    const [ , { from, delegatees, max_rc } ] = json;
-    const maxRc = max_rc.toString();
+      const [ , { from, delegatees, max_rc } ] = json;
+      const maxRc = max_rc.toString();
 
-    if(maxRc === "0")
-      return `Account ${from} removed delegation for account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
+      const rc = this.wax.vests(maxRc);
 
-    const rc = this.formatNai(options, { ...this.wax.ASSETS.VESTS, amount: maxRc });
-
-    return `Account ${from} delegated ${rc} to account${delegatees.length > 1 ? "s" : ""}: ${delegatees.join(", ")}`;
+      // Ensure that from is a string and delegatees is an array
+      if(typeof from === "string" && Array.isArray(delegatees))
+        return new FormattedRcOperation(
+          from,
+          rc,
+          delegatees
+        );
+    } catch {}
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "community" })
-  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): string | void {
-    const json = JSON.parse(source.json);
+  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedCommunityOperation | void {
+    try {
+      const json = JSON.parse(source.json);
 
-    // We do not have access to the entire transaction body, holding operation to be formatted, so we have to rely on the account(s) in custom_json_operation auths
-    const accounts = [ ...(source.required_auths || []), ...(source.required_posting_auths || []) ];
-    const accountsStr = `Account${accounts.length > 1 ? "s" : ""} ${accounts.join(", ")}`;
+      // We do not have access to the entire transaction body, holding operation to be formatted, so we have to rely on the account(s) in custom_json_operation auths
+      const accounts = [ ...(source.required_auths || []), ...(source.required_posting_auths || []) ];
 
-    const [ type, data ] = json;
-    switch(type as ECommunityOperationActions) {
-      case ECommunityOperationActions.FLAG_POST:
-        return `${accountsStr} flagged post "${this.formatPostId(data.account, data.permlink)}" on community ${data.community}`;
-      case ECommunityOperationActions.MUTE_POST:
-        return `${accountsStr} muted post "${this.formatPostId(data.account, data.permlink)}" on community ${data.community}`;
-      case ECommunityOperationActions.PIN_POST:
-        return `${accountsStr} pinned post "${this.formatPostId(data.account, data.permlink)}" on community ${data.community}`;
-      case ECommunityOperationActions.SET_USER_TITLE:
-        return `${accountsStr} set account ${data.account} title to "${data.title}" on community ${data.community}`;
-      case ECommunityOperationActions.SUBSCRIBE:
-        return `${accountsStr} subscribed to community ${data.community}`;
-      case ECommunityOperationActions.UNMUTE_POST:
-        return `${accountsStr} unmuted post "${this.formatPostId(data.account, data.permlink)}" on community ${data.community}`;
-      case ECommunityOperationActions.UNPIN_POST:
-        return `${accountsStr} unpinned post "${this.formatPostId(data.account, data.permlink)}" from community ${data.community}`;
-      case ECommunityOperationActions.UNSUBSCRIBE:
-        return `${accountsStr} unsubscribed from community ${data.community}`;
-      case ECommunityOperationActions.UPDATE_PROPS:
-        return `${accountsStr} updated community ${data.community} properties`;
-    }
+      const [ type, data ] = json;
+
+      // Ensure that community and type are strings
+      if(typeof data.community === "string" && typeof type === "string")
+        return new FormattedCommunityOperation(
+          accounts,
+          data.community,
+          {
+            action: type as ECommunityOperationActions,
+            account: typeof data.account === "string" ? data.account : undefined,
+            permlink: typeof data.permlink === "string" ? data.permlink : undefined,
+            title: typeof data.title === "string" ? data.title : undefined,
+            props: typeof data.props === "object" ? data.props : undefined,
+            notes: typeof data.notes === "string" ? data.notes : undefined
+          }
+        );
+    } catch {}
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "follow" })
-  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): string | void {
-    const json = JSON.parse(source.json);
+  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedReblogOperation | FormattedFollowOperation | void {
+    try {
+      const json = JSON.parse(source.json);
 
-    const [ type, data ] = json;
+      const [ type, data ] = json;
 
-    if(type === EFollowOperationActions.REBLOG)
-      return `Account ${data.account} reblogged post "${data.permlink}" authored by ${data.author}`;
+      // Return the reblog operation if detected and ensure all of its properties have a valid type
+      if(type === EFollowOperationActions.REBLOG && typeof data.account === "string" && typeof data.author === "string" && typeof data.permlink === "string")
+        return new FormattedReblogOperation(data.account, data.author, data.permlink);
 
-    const { follower, following, what: [ what ] } = data;
+      const { follower, following, what: [ what ] } = data;
 
-    let stringifiedFollowing = Array.isArray(following) ? following.join(", ") : following;
+      const followingParsed = Array.isArray(following) ? following : [ following ];
 
-    switch(what as EFollowActions) {
-      case EFollowActions.BLACKLIST:
-        return `Account ${follower} blacklisted ${stringifiedFollowing}`;
-      case EFollowActions.FOLLOW:
-        return `Account ${follower} followed ${stringifiedFollowing}`;
-      case EFollowActions.FOLLOW_BLACKLIST:
-        return `Account ${follower} followed blacklist of ${stringifiedFollowing}`;
-      case EFollowActions.FOLLOW_MUTED:
-        return `Account ${follower} followed muted list of ${stringifiedFollowing}`;
-      case EFollowActions.MUTE:
-        return `Account ${follower} muted ${stringifiedFollowing}`;
-      case EFollowActions.RESET_ALL_LISTS:
-        return `Account ${follower} reset all lists of ${stringifiedFollowing}`;
-      case EFollowActions.RESET_BLACKLIST:
-        return `Account ${follower} reset blacklist of ${stringifiedFollowing}`;
-      case EFollowActions.RESET_FOLLOWING_LIST:
-        return `Account ${follower} reset following list of ${stringifiedFollowing}`;
-      case EFollowActions.RESET_FOLLOW_BLACKLIST:
-        return `Account ${follower} stopped following blacklist of ${stringifiedFollowing}`;
-      case EFollowActions.RESET_FOLLOW_MUTED_LIST:
-        return `Account ${follower} stopped following muted list of ${stringifiedFollowing}`;
-      case EFollowActions.RESET_MUTED_LIST:
-        return `Account ${follower} reset muted list of ${stringifiedFollowing}`;
-      case EFollowActions.UNBLACKLIST:
-        return `Account ${follower} unblacklisted ${stringifiedFollowing}`;
-      case EFollowActions.UNFOLLOW:
-        return `Account ${follower} unfollowed ${stringifiedFollowing}`;
-      case EFollowActions.UNFOLLOW_BLACKLIST:
-        return `Account ${follower} unfollowed blacklist of ${stringifiedFollowing}`;
-      case EFollowActions.UNFOLLOW_MUTED:
-        return `Account ${follower} unfollowed muted list of ${stringifiedFollowing}`;
-    }
+      // Check the integrity of the custom operation
+      if(typeof what === "string" && typeof follower === "string")
+        return new FormattedFollowOperation(what as EFollowActions, follower, followingParsed);
+    } catch {}
   }
 }
