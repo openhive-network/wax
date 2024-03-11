@@ -159,23 +159,25 @@ def calculate_hp_apr(
     return response.value, response.content, response.exception_message
 
 @return_python_result
-def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
+def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
     cdef protocol obj
-    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    cdef json_asset _vests = obj.cpp_vests(int(vests.amount))
+    cdef json_asset _total_vesting_fund_hive = obj.cpp_hive(int(total_vesting_fund_hive.amount))
+    cdef json_asset _total_vesting_shares = obj.cpp_vests(int(total_vesting_shares.amount))
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
+    response = calculate_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares)
+    return response.status, response.result, response.exception_message
+
+@return_python_result
 def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
     cdef protocol obj
-    vests: python_json_asset = obj.cpp_vests(votes)
-    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
-    response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
-    return response.value, response.content, response.exception_message
+    _vests: python_json_asset = vests(votes) 
+    response = calculate_vests_to_hp(_vests, total_vesting_fund_hive, total_vesting_shares)
+    return response.status, response.result, response.exception_message
 
 @return_python_result
 def calculate_inflation_rate_for_block(
