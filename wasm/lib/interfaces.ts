@@ -6,7 +6,7 @@ import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { CommentBuilder, IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, TArticleBuilder, UpdateProposalBuilder } from "./detailed";
+import type { CommentBuilder, HiveAppsOperation, IBuiltHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, TArticleBuilder, UpdateProposalBuilder } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
@@ -72,13 +72,13 @@ export interface ITransactionBuilder {
   /**
    * Pushes given operation to the operations array in the transaction
    *
-   * @param {operation | IHiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
    *
    * @returns {ITransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | IHiveAppsOperation): ITransactionBuilder;
+  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
 
   /**
    * Returns a recurrent transfer operation builder

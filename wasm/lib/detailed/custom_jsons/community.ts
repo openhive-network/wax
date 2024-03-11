@@ -1,4 +1,39 @@
+import { HiveAppsOperation } from "./apps_operation.js";
 import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
+
+export type TCommunityRules = {
+  action: ECommunityOperationActions.FLAG_POST | ECommunityOperationActions.MUTE_POST | ECommunityOperationActions.UNMUTE_POST;
+  account: TAccountName;
+  permlink: string;
+  notes: string;
+} | {
+  action: ECommunityOperationActions.PIN_POST | ECommunityOperationActions.UNPIN_POST;
+  account: TAccountName;
+  permlink: string;
+} | {
+  action: ECommunityOperationActions.SUBSCRIBE | ECommunityOperationActions.UNSUBSCRIBE;
+} | {
+  action: ECommunityOperationActions.SET_USER_TITLE;
+  account: TAccountName;
+  title: string;
+} | {
+  action: ECommunityOperationActions.UPDATE_PROPS;
+  props: Readonly<ICommunityProps>;
+}
+
+export class CommunityOperation extends HiveAppsOperation<CommunityOperationBuilder> {
+  public constructor(
+    public readonly accounts: Array<TAccountName>,
+    public readonly community: string,
+    public readonly data: TCommunityRules
+  ) {
+    super();
+  }
+
+  public get builder(): HiveAppsOperationsBuilder<CommunityOperationBuilder> {
+    return new CommunityOperationBuilder(this);
+  }
+}
 
 export enum ESupportedLanguages {
   ENGLISH    = "en",
@@ -77,6 +112,25 @@ export enum ECommunityOperationActions {
 
 export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<CommunityOperationBuilder> {
   protected readonly id = "community";
+
+  public constructor(hiveAppsOp?: CommunityOperation) {
+    super();
+
+    if(typeof hiveAppsOp === "undefined")
+      return;
+
+    const { accounts, community, data: { action, ...otherData } } = hiveAppsOp;
+
+    this.body.push([
+      action,
+      {
+        community,
+        ...otherData
+      }
+    ]);
+
+    this.authorize(accounts);
+  }
 
   /**
    * Flags post on given community

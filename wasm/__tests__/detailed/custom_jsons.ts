@@ -195,6 +195,19 @@ test.describe('Wax hive apps operations tests', () => {
     });
   });
 
+  test('Should be able to create transaction with hive apps rc operation using both operation type and operation builder in transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base, wax }) => {
+      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.push(new wax.ResourceCreditsOperationBuilder().removeDelegation("gtg", "initminer").authorize("gtg").build());
+      tx.push(new wax.ResourceCreditsOperation("gtg", base.vests(0), [ "initminer" ]));
+
+      return tx.build().operations;
+    });
+
+    expect(retVal[0]).toStrictEqual(retVal[1]);
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

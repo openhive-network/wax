@@ -4,8 +4,9 @@ import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransact
 import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
-import { HiveAppsOperation, TAccountName } from "./custom_jsons/builder";
+import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
 import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
+import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -96,9 +97,11 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public push(op: operation | HiveAppsOperation): ITransactionBuilder {
+  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder {
     if("flushOperations" in op)
       op.flushOperations(this);
+    else if("builder" in op)
+      this.push(op.builder.build() as BuiltHiveAppsOperation);
     else
       this.target.operations.push(op);
 

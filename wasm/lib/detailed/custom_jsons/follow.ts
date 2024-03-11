@@ -1,5 +1,34 @@
 import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
 import { WaxError } from '../../errors.js';
+import { HiveAppsOperation } from "./apps_operation.js";
+
+export class ReblogOperation extends HiveAppsOperation<FollowOperationBuilder> {
+  public constructor(
+    public readonly account: TAccountName,
+    public readonly author: TAccountName,
+    public readonly permlink: string
+  ) {
+    super();
+  }
+
+  public get builder(): HiveAppsOperationsBuilder<FollowOperationBuilder> {
+    return new FollowOperationBuilder(this);
+  }
+}
+
+export class FollowOperation extends HiveAppsOperation<FollowOperationBuilder> {
+  public constructor(
+    public readonly action: EFollowActions,
+    public readonly follower: TAccountName,
+    public readonly following: Array<TAccountName>
+  ) {
+    super();
+  }
+
+  public get builder(): HiveAppsOperationsBuilder<FollowOperationBuilder> {
+    return new FollowOperationBuilder(this);
+  }
+}
 
 export enum EFollowBlogAction {
   FOLLOW_BLOG,
@@ -32,6 +61,36 @@ export enum EFollowActions {
 
 export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOperationBuilder> {
   protected readonly id = "follow";
+
+  public constructor(hiveAppsOp?: FollowOperation | ReblogOperation) {
+    super();
+
+    if(typeof hiveAppsOp === "undefined")
+      return;
+
+    let toAuthorize: TAccountName;
+
+    if("permlink" in hiveAppsOp)
+      this.body.push([
+        EFollowOperationActions.REBLOG,
+        {
+          account: (toAuthorize = hiveAppsOp.account),
+          author: hiveAppsOp.author,
+          permlink: hiveAppsOp.permlink
+        }
+      ]);
+    else
+      this.body.push([
+        EFollowOperationActions.FOLLOW,
+        {
+          follower: (toAuthorize = hiveAppsOp.follower),
+          following: hiveAppsOp.following,
+          what: [ hiveAppsOp.action ]
+        }
+      ]);
+
+    this.authorize(toAuthorize);
+  }
 
   private followBodyBuilder(what: string, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
     const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;

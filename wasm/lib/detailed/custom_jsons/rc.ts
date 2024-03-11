@@ -1,8 +1,37 @@
+import type { NaiAsset } from "../index";
 import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
 import Long from 'long';
+import { HiveAppsOperation } from "./index.js";
+
+export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsOperationBuilder> {
+  public constructor(
+    public readonly from: TAccountName,
+    public readonly rc: NaiAsset,
+    public readonly delegatees: Array<TAccountName>
+  ) {
+    super();
+  }
+
+  public get builder(): HiveAppsOperationsBuilder<ResourceCreditsOperationBuilder> {
+    return new ResourceCreditsOperationBuilder(this);
+  }
+}
 
 export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<ResourceCreditsOperationBuilder> {
   protected readonly id = "rc";
+
+  public constructor(hiveAppsOp?: ResourceCreditsOperation) {
+    super();
+
+    if(typeof hiveAppsOp === "undefined")
+      return;
+
+    const { delegatees: [ delegatee, ...otherDelegatees ], from, rc } = hiveAppsOp;
+
+    this.delegate(from, rc.amount, delegatee, ...otherDelegatees);
+
+    this.authorize(from);
+  }
 
   /**
    * Delegates resource credits to given account(s)

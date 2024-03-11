@@ -4,59 +4,7 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import type { custom_json, transaction } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
-import { ECommunityOperationActions, EFollowActions, EFollowOperationActions, ICommunityProps, TAccountName } from "../custom_jsons";
-
-export class FormattedRcOperation {
-  public constructor(
-    public readonly from: TAccountName,
-    public readonly rc: string | NaiAsset,
-    public readonly delegatees: Array<TAccountName>
-  ) {}
-}
-
-export type TCommunityRules = {
-  action: ECommunityOperationActions.FLAG_POST | ECommunityOperationActions.MUTE_POST | ECommunityOperationActions.UNMUTE_POST;
-  account: TAccountName;
-  permlink: string;
-  notes: string;
-} | {
-  action: ECommunityOperationActions.PIN_POST | ECommunityOperationActions.UNPIN_POST;
-  account: TAccountName;
-  permlink: string;
-} | {
-  action: ECommunityOperationActions.SUBSCRIBE | ECommunityOperationActions.UNSUBSCRIBE;
-} | {
-  action: ECommunityOperationActions.SET_USER_TITLE;
-  account: TAccountName;
-  title: string;
-} | {
-  action: ECommunityOperationActions.UPDATE_PROPS;
-  props: Readonly<ICommunityProps>;
-}
-
-export class FormattedCommunityOperation {
-  public constructor(
-    public readonly accounts: Array<TAccountName>,
-    public readonly community: string,
-    public readonly data: TCommunityRules
-  ) {}
-}
-
-export class FormattedReblogOperation {
-  public constructor(
-    public readonly account: TAccountName,
-    public readonly author: TAccountName,
-    public readonly permlink: string
-  ) {}
-}
-
-export class FormattedFollowOperation {
-  public constructor(
-    public readonly action: EFollowActions,
-    public readonly follower: TAccountName,
-    public readonly following: Array<TAccountName>
-  ) {}
-}
+import { CommunityOperation, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperation, ReblogOperation, ResourceCreditsOperation } from "../custom_jsons";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
   public constructor(
@@ -99,7 +47,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "rc" })
-  public rcOperationFormatter({ options, source }: IFormatFunctionArguments<custom_json>): FormattedRcOperation | void {
+  public rcOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ResourceCreditsOperation | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -110,16 +58,16 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Ensure that from is a string and delegatees is an array
       if(typeof from === "string" && Array.isArray(delegatees))
-        return new FormattedRcOperation(
+        return new ResourceCreditsOperation(
           from,
-          this.formatNai(options, rc),
+          rc,
           delegatees
         );
     } catch {}
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "community" })
-  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedCommunityOperation | void {
+  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): CommunityOperation | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -130,7 +78,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Ensure that community and type are strings
       if(typeof data.community === "string" && typeof type === "string")
-        return new FormattedCommunityOperation(
+        return new CommunityOperation(
           accounts,
           data.community,
           {
@@ -146,7 +94,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "follow" })
-  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedReblogOperation | FormattedFollowOperation | void {
+  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ReblogOperation | FollowOperation | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -154,7 +102,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Return the reblog operation if detected and ensure all of its properties have a valid type
       if(type === EFollowOperationActions.REBLOG && typeof data.account === "string" && typeof data.author === "string" && typeof data.permlink === "string")
-        return new FormattedReblogOperation(data.account, data.author, data.permlink);
+        return new ReblogOperation(data.account, data.author, data.permlink);
 
       const { follower, following, what: [ what ] } = data;
 
@@ -162,7 +110,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Check the integrity of the custom operation
       if(typeof what === "string" && typeof follower === "string")
-        return new FormattedFollowOperation(what as EFollowActions, follower, followingParsed);
+        return new FollowOperation(what as EFollowActions, follower, followingParsed);
     } catch {}
   }
 }

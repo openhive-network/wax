@@ -7,7 +7,7 @@ import fs from "fs";
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
-import { ECommunityOperationActions, EFollowActions, WaxFormattable } from '../../dist/lib/node';
+import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperation, WaxFormattable, operation } from '../../dist/lib/node';
 
 let browser!: ChromiumBrowser;
 
@@ -192,7 +192,7 @@ test.describe('Wax object interface formatters tests', () => {
     ).toEqual(initminerAccountApi);
   });
 
-  test('Should be format custom JSON rc delegation operation using default formatter from the hive chain interface', async({ waxTest }) => {
+  test('Should be able to format custom JSON rc delegation operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ wax, base, chain }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -215,18 +215,26 @@ test.describe('Wax object interface formatters tests', () => {
       custom_json: {
         delegatees: [ "gtg", "null" ],
         from: "initminer",
-        rc: "4,127.361273 VESTS"
+        rc: {
+          amount: "4127361273",
+          nai: "@@000000037",
+          precision: 6,
+        }
       }
     }, {
       custom_json: {
         delegatees: [ "null" ],
         from: "initminer",
-        rc: "0.000000 VESTS"
+        rc: {
+          amount: "0",
+          nai: "@@000000037",
+          precision: 6,
+        }
       }
     }]);
   });
 
-  test('Should be format custom JSON community operation using default formatter from the hive chain interface', async({ waxTest }) => {
+  test('Should be able to format custom JSON community operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ base, wax, chain }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -380,7 +388,7 @@ test.describe('Wax object interface formatters tests', () => {
     }]);
   });
 
-  test('Should be format custom JSON follow operation using default formatter from the hive chain interface', async({ waxTest }) => {
+  test('Should be able to format custom JSON follow operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, chain, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -549,6 +557,30 @@ test.describe('Wax object interface formatters tests', () => {
     ).toStrictEqual([
       "oneplus7 transferred 300.000 HIVE to kryptogames",
       "otom voted on @c0ff33a/ewxhnjbj"
+    ]);
+  });
+
+  test('Should be able to match instances of the hive apps operations using custom formatters extended from hive chain interface', async() => {
+    const { wax, chain } = await createWaxTestFor('node');
+
+    class HiveAppsOperationsFormatter {
+      @wax.WaxFormattable({ matchInstanceOf: wax.ResourceCreditsOperation })
+      public rcOperationFormatter({ target }: IFormatFunctionArguments<operation, { custom_json: ResourceCreditsOperation }>) {
+        return `${target.custom_json.from} delegated ${target.custom_json.rc.amount} to ${target.custom_json.delegatees.join(",")}`;
+      }
+    }
+
+    const formatter = chain.formatter.extend(HiveAppsOperationsFormatter);
+
+    const tx = new chain.TransactionBuilder("04c507a8c7fe5be96be64ce7c86855e1806cbde3", "2023-11-09T21:51:27");
+    tx.push(
+      new wax.ResourceCreditsOperationBuilder().removeDelegation("gtg", "initminer").authorize("gtg").build()
+    );
+
+    expect(
+      formatter.format(tx.build().operations)
+    ).toStrictEqual([
+      "gtg delegated 0 to initminer"
     ]);
   });
 

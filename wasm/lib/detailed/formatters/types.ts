@@ -62,7 +62,7 @@ export interface IWaxFormatterOptions {
   createDefaultFormatters: boolean;
 }
 
-export interface IFormatFunctionArguments<T = object> {
+export interface IFormatFunctionArguments<TSource = object, TTarget = any> {
   /**
    * Formatter options
    *
@@ -74,17 +74,17 @@ export interface IFormatFunctionArguments<T = object> {
   /**
    * Source readonly unchanged input value for parsing raw data
    *
-   * @type {DeepReadonly<T>}
+   * @type {DeepReadonly<TSource>}
    * @readonly
    */
-  readonly source: DeepReadonly<T>;
+  readonly source: DeepReadonly<TSource>;
 
   /**
    * Target formatter data that might have been previously changed by other formatters
    *
-   * @type {any}
+   * @type {TTarget}
    */
-  target: any;
+  target: TTarget;
 }
 
 /**

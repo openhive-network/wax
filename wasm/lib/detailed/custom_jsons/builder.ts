@@ -7,7 +7,7 @@ import Long from 'long';
 
 export type TAccountName = string;
 
-export interface IHiveAppsOperation {
+export interface IBuiltHiveAppsOperation {
   /**
    * Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
    *
@@ -16,7 +16,7 @@ export interface IHiveAppsOperation {
   length: number;
 }
 
-export class HiveAppsOperation implements IHiveAppsOperation {
+export class BuiltHiveAppsOperation implements IBuiltHiveAppsOperation {
   /**
    * @internal
    */
@@ -29,7 +29,7 @@ export class HiveAppsOperation implements IHiveAppsOperation {
   /**
    * @internal
    */
-  public push(op: custom_json): HiveAppsOperation {
+  public push(op: custom_json): BuiltHiveAppsOperation {
     this.customJsonContainer.push({ custom_json: op });
 
     return this;
@@ -62,10 +62,10 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
    */
   protected readonly abstract id: string;
 
-  private readonly builtCustomJsons: HiveAppsOperation = new HiveAppsOperation();
+  private readonly builtCustomJsons: BuiltHiveAppsOperation = new BuiltHiveAppsOperation();
 
   /**
-   * Authorizes the currently staged hive apps operation, commits it to the {@link HiveAppsOperation} instance and clears the stage
+   * Authorizes the currently staged hive apps operation, commits it to the {@link BuiltHiveAppsOperation} instance and clears the stage
    *
    * @param {string[] | string} requiredPostingAuths required posting authorities (can be an account name)
    * @param {?string[]} requiredAuths required authorities (defaults to the empty array)
@@ -97,9 +97,9 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
   /**
    * Marks the current set of the hive apps operations as ready push
    *
-   * @returns {IHiveAppsOperation} instance of the hive apps operation class that you can pass to the {@link ITransactionBuilder.push}
+   * @returns {IBuiltHiveAppsOperation} instance of the hive apps operation class that you can pass to the {@link ITransactionBuilder.push}
    */
-  public build(): IHiveAppsOperation {
+  public build(): IBuiltHiveAppsOperation {
     return this.builtCustomJsons;
   }
 }
