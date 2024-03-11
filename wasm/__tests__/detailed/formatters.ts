@@ -184,7 +184,7 @@ test.describe('Wax object interface formatters tests', () => {
     const retVal = await waxTest(async({ chain }) => {
       const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ] });
 
-      return chain.formatter.extend({ asset: { appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(response.accounts[0]);
+      return chain.formatter.extend({ asset: { displayAsNai: false, appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(response.accounts[0]);
     });
 
     expect(
@@ -215,21 +215,13 @@ test.describe('Wax object interface formatters tests', () => {
       custom_json: {
         delegatees: [ "gtg", "null" ],
         from: "initminer",
-        rc: {
-          amount: "4127361273",
-          nai: "@@000000037",
-          precision: 6,
-        }
+        rc: "4,127.361273 VESTS"
       }
     }, {
       custom_json: {
         delegatees: [ "null" ],
         from: "initminer",
-        rc: {
-          amount: "0",
-          nai: "@@000000037",
-          precision: 6,
-        }
+        rc: "0.000000 VESTS"
       }
     }]);
   });

@@ -2,6 +2,7 @@ import { DeepPartial, IWaxFormatter, IWaxFormatterOptions } from "./types";
 
 export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
+    displayAsNai: false,
     appendTokenName: true,
     formatAmount: true
   },

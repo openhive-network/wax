@@ -22,6 +22,12 @@ type DeepReadonlyObject<T> = {
 export interface IWaxFormatterOptions {
   asset: {
     /**
+     * Displays assets in NAI form instead of the human-readable form
+     *
+     * @default false
+     */
+    displayAsNai: boolean;
+    /**
      * Appends token name after asset amount (e.g. `1.100 HIVE`)
      *
      * @default true

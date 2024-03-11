@@ -9,7 +9,7 @@ import { ECommunityOperationActions, EFollowActions, EFollowOperationActions, IC
 export class FormattedRcOperation {
   public constructor(
     public readonly from: TAccountName,
-    public readonly rc: NaiAsset,
+    public readonly rc: string | NaiAsset,
     public readonly delegatees: Array<TAccountName>
   ) {}
 }
@@ -63,7 +63,10 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     private readonly wax: IWaxBaseInterface
   ) {}
 
-  private formatNai(options: DeepReadonly<IWaxFormatterOptions>, source: Readonly<NaiAsset>): string {
+  private formatNai(options: DeepReadonly<IWaxFormatterOptions>, source: Readonly<NaiAsset>): string | NaiAsset {
+    if(options.asset.displayAsNai)
+      return source;
+
     let { amount, symbol } = this.wax.getAsset(source);
 
     if(options.asset.formatAmount)
@@ -76,7 +79,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "nai" })
-  public assetFormatter({ options, source }: IFormatFunctionArguments<NaiAsset>): string {
+  public assetFormatter({ options, source }: IFormatFunctionArguments<NaiAsset>): string | NaiAsset {
     return this.formatNai(options, source);
   }
 
@@ -96,7 +99,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "rc" })
-  public rcOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): FormattedRcOperation | void {
+  public rcOperationFormatter({ options, source }: IFormatFunctionArguments<custom_json>): FormattedRcOperation | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -109,7 +112,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
       if(typeof from === "string" && Array.isArray(delegatees))
         return new FormattedRcOperation(
           from,
-          rc,
+          this.formatNai(options, rc),
           delegatees
         );
     } catch {}
