@@ -2665,7 +2665,7 @@ When no options provided, method name is used for property matching
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `options?` | `string` \| `IWaxFormatterDecoratorOptions` | property to match or decorator options |
+| `options?` | `string` \| `IWaxFormatterDecoratorOptions`\<`any`\> | property to match or decorator options |
 
 #### Returns
 
@@ -2683,7 +2683,7 @@ public prop(value: Date): string {
 
 #### Defined in
 
-wasm/lib/detailed/decorators/formatters.ts:35
+wasm/lib/detailed/decorators/formatters.ts:42
 
 ___
 
@@ -8516,9 +8516,19 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:16
+wasm/lib/detailed/formatters/waxify.ts:23
 
 ## Properties
+
+### instances
+
+• `Private` **instances**: `IInstancesData`[]
+
+#### Defined in
+
+wasm/lib/detailed/formatters/waxify.ts:21
+
+___
 
 ### matchers
 
@@ -8526,7 +8536,7 @@ wasm/lib/detailed/formatters/waxify.ts:16
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:14
+wasm/lib/detailed/formatters/waxify.ts:20
 
 ___
 
@@ -8556,7 +8566,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:17
+wasm/lib/detailed/formatters/waxify.ts:24
 
 ## Methods
 
@@ -8576,7 +8586,7 @@ wasm/lib/detailed/formatters/waxify.ts:17
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:35
+wasm/lib/detailed/formatters/waxify.ts:42
 
 ___
 
@@ -8608,7 +8618,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:71
+wasm/lib/detailed/formatters/waxify.ts:87
 
 ___
 
@@ -8684,7 +8694,7 @@ formatted number
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:44
+wasm/lib/detailed/formatters/waxify.ts:60
 
 ___
 
@@ -8748,7 +8758,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/waxify.ts:23
+wasm/lib/detailed/formatters/waxify.ts:30
 
 
 <a name="classeswaxformatterbasemd"></a>
@@ -8914,7 +8924,7 @@ ___
 
 ### traverseTemplateValue
 
-▸ **traverseTemplateValue**(`source`, `target`, `key`, `value`): `void`
+▸ **traverseTemplateValue**(`source`, `target`, `key`): `void`
 
 #### Parameters
 
@@ -8923,7 +8933,6 @@ ___
 | `source` | `object` |
 | `target` | `object` |
 | `key` | `string` \| `number` |
-| `value` | `any` |
 
 #### Returns
 

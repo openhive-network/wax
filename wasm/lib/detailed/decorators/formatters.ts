@@ -1,4 +1,4 @@
-export interface IWaxFormatterDecoratorOptions {
+export interface IWaxFormatterDecoratorOptions<T = any> {
   /**
    * Property to match. If not specified defaults to the formatter method name
    *
@@ -13,6 +13,13 @@ export interface IWaxFormatterDecoratorOptions {
    * @type {?any}
    */
   matchValue?: any;
+
+  /**
+   * Matches instance of a given class
+   *
+   * @type {?{ new(...args: any[]): T }}
+   */
+  matchInstanceOf?: { new(...args: any[]): T };
 }
 
 type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
@@ -39,12 +46,17 @@ export const WaxFormattable = (options?: IWaxFormatterDecoratorOptions | string)
     };
 
   return (target: any, propertyKey: string, _descriptor: PropertyDescriptor): void => {
-    const matchProperty = (options as IWaxFormatterDecoratorOptions | undefined)?.matchProperty ?? propertyKey;
+    const matchProperty = (options as IWaxFormatterDecoratorOptions | undefined)?.matchProperty;
     const matchValue = (options as IWaxFormatterDecoratorOptions | undefined)?.matchValue as any | undefined;
+    const matchInstanceOf = (options as IWaxFormatterDecoratorOptions | undefined)?.matchInstanceOf as { new(...args: any[]): any } | undefined;
 
-    Reflect.defineMetadata("wax:formatter:prop", matchProperty, target, propertyKey);
+    Reflect.defineMetadata("wax:formatter:prop", matchProperty ?? propertyKey, target, propertyKey);
+    Reflect.defineMetadata("wax:formatter:explicitprop", typeof matchProperty === "string", target, propertyKey);
 
     if(typeof matchValue !== "undefined")
       Reflect.defineMetadata("wax:formatter:propvalue", matchValue, target, propertyKey);
+
+    if(typeof matchInstanceOf !== "undefined")
+      Reflect.defineMetadata("wax:formatter:instanceof", matchInstanceOf, target, propertyKey);
   };
 };

@@ -25,14 +25,14 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
 
   protected abstract handleProperty(source: object, target: object, property: string): string | undefined;
 
-  private traverseTemplateValue(source: object, target: object, key: string | number, value: any): void {
-    if(typeof value !== "object")
+  private traverseTemplateValue(source: object, target: object, key: string | number): void {
+    if(typeof target[key] !== "object")
       return;
 
-    for (const childKey in value) {
-      this.traverseTemplateValue(source[key], value, childKey, value[childKey]);
+    for (const childKey in target[key]) {
+      this.traverseTemplateValue(source[key], target[key], childKey);
 
-      const result = this.handleProperty(source[key], value, childKey);
+      const result = this.handleProperty(source[key], target[key], childKey);
 
       if(typeof result !== "undefined")
         target[key] = result;
@@ -46,7 +46,7 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
     const source = structuredClone(value) as object;
 
     for(const key in value) {
-      this.traverseTemplateValue(source, value, key, value[key]);
+      this.traverseTemplateValue(source, value, key);
 
       const result = this.handleProperty(source, value, key);
 

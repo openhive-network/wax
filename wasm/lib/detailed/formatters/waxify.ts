@@ -7,11 +7,18 @@ import Long from "long";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;
+  matchInstanceOf?: { new(...args: any[]): any };
   defaultFormatter?: TFormatFunction;
+}
+
+export interface IInstancesData {
+  formatFn: TFormatFunction;
+  matchInstanceOf: { new(...args: any[]): any };
 }
 
 export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
   private matchers: Map<string, IMatchersData> = new Map();
+  private instances: Array<IInstancesData> = new Array();
 
   private constructor(
     protected readonly wax: IWaxBaseInterface,
@@ -36,8 +43,17 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     for(const [ key, value ] of this.matchers)
       instance.matchers.set(key, {
         defaultFormatter: value.defaultFormatter,
+        matchInstanceOf: value.matchInstanceOf,
         matchValues: new Map([ ...value.matchValues, ...(instance.matchers.get(key)?.matchValues ?? []) ])
       })
+    for(const { formatFn, matchInstanceOf } of this.instances) {
+      const pred = instance.instances.find(obj => obj.matchInstanceOf === matchInstanceOf);
+
+      if(typeof pred === "object")
+        pred.formatFn = formatFn;
+      else
+        instance.instances.push({ matchInstanceOf, formatFn });
+    }
   }
 
   // Similar thing could be achieved using Intl.NumberFormat interface only, but it does not allow dynamic precision and precision larger than 20, which HIVE may provide in the SMTs
@@ -86,9 +102,18 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
 
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
       const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
+      const explicitProp = Reflect.getMetadata("wax:formatter:explicitprop", formatter, key) as boolean | undefined;
       const matchedPropertyValue = Reflect.getMetadata("wax:formatter:propvalue", formatter, key) as any | undefined;
+      const matchInstanceOf = Reflect.getMetadata("wax:formatter:instanceof", formatter, key) as { new(...args: any[]): any } | undefined;
 
-      if(typeof matchedProperty === "string") {
+      if(!explicitProp && typeof matchInstanceOf === "function") { // Match only by the instance if requested
+        const pred = newFormatter.instances.find(obj => obj.matchInstanceOf === matchInstanceOf);
+
+        if(typeof pred === "object")
+          pred.formatFn = formatter[key].bind(formatter);
+        else
+          newFormatter.instances.push({ matchInstanceOf, formatFn: formatter[key].bind(formatter) });
+      } else if(typeof matchedProperty === "string") {
         const matched = newFormatter.matchers.get(matchedProperty);
 
         const overrideFormatterForMatcher = () => {
@@ -98,6 +123,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
             matchedProperty,
             {
               matchValues,
+              matchInstanceOf,
               defaultFormatter: typeof matchedPropertyValue === "undefined" ? formatter[key].bind(formatter) : undefined
             }
           );
@@ -113,7 +139,6 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
         else
           overrideFormatterForMatcher();
       }
-
     }
 
     return newFormatter;
@@ -125,7 +150,29 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   protected handleProperty(source: object, target: object, property: string): string | undefined {
     const matched = this.matchers.get(property);
 
+    // If no matchers found, then iterate over instances to match
+    if(typeof matched === "undefined") {
+      const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
+
+      // If source is a plain object then do not waste time iterating
+      if(typeof target !== "object" || typeof target[property] !== "object" || isPlainObj(target[property]))
+        return;
+
+      for(const { formatFn, matchInstanceOf } of this.instances)
+        if(target[property] instanceof matchInstanceOf)
+          return formatFn({
+            options: this.options,
+            source,
+            target
+          });
+
+      return;
+    }
+
     const matchValues = matched?.matchValues.get(source[property]) ?? matched?.defaultFormatter;
+
+    if(typeof matchValues === "function" && typeof matched?.matchInstanceOf === "function" && !(source[property] instanceof matched.matchInstanceOf))
+      return;
 
     return matchValues?.({
       options: this.options,
