@@ -134,4 +134,29 @@ result protocol_impl<FoundationProvider>::cpp_deserialize_transaction(const std:
     });
 }
 
+template <class FoundationProvider>
+inline
+required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
+{
+  const auto _transaction = get_transaction(transaction);
+
+  typedef flat_set<hive::protocol::account_name_type> raw_account_set;
+
+  raw_account_set active;
+  raw_account_set owner;
+  raw_account_set posting;
+  raw_account_set witness;
+  std::vector<hive::protocol::authority> other_authorities;
+  _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
+
+  required_authority_collection ret_val;
+  ret_val.posting_accounts.insert(posting.cbegin(), posting.cend());
+  ret_val.owner_accounts.insert(owner.cbegin(), owner.cend());
+  ret_val.active_accounts.insert(active.cbegin(), active.cend());
+
+  /// ret_val.other_authorities = std::move(other_authorities);
+
+  return ret_val;
+}
+
 } /// namespace cpp

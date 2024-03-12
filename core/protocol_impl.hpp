@@ -2,6 +2,7 @@
 
 #include "core/types.hpp"
 
+#include <set>
 #include <string>
 
 namespace cpp {
@@ -38,6 +39,11 @@ public:
   *   Returns a JSON form of deserialized transaction.
   */
   result cpp_deserialize_transaction(const std::string& transaction);
+
+  /** Allows to collect all authorities required to process given transaction (needed to correctly sign it)
+  *   Can throw on error.
+  */
+  required_authority_collection cpp_collect_transaction_required_authorities(const std::string& transaction);
 };
 
 } /// namespace cpp
