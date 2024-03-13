@@ -309,6 +309,39 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("1002020748973");
     });
 
+    test('Should be able to change endpointUrl property', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        chain.endpointUrl = "https://best.honey.provider";
+        return chain.endpointUrl;
+      });
+
+      expect(retVal).toBe("https://best.honey.provider");
+    });
+
+    test('Should be able to change endpointUrl property on both: extended and base chain objects', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        const customExtendedTypes = {};
+        const extendedHiveChain = chain.extend(customExtendedTypes);
+
+        extendedHiveChain.endpointUrl = "https://best.honey.provider";
+        return [chain.endpointUrl, extendedHiveChain.endpointUrl];
+      });
+
+      expect(retVal).toStrictEqual(["https://best.honey.provider", "https://best.honey.provider"]);
+    });
+
+    test('Should be able to change endpointUrl property ONLY at base chain object', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        const customExtendedTypes = {};
+        const extendedHiveChain = chain.extend(customExtendedTypes);
+
+        chain.endpointUrl = "https://best.honey.provider";
+        return [chain.endpointUrl, extendedHiveChain.endpointUrl];
+      });
+
+      expect(retVal).toStrictEqual(["https://best.honey.provider", "https://api.hive.blog"]);
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });
