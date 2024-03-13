@@ -28,7 +28,7 @@ export const createHiveChain = async(
 
   const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
 
-  const api = new HiveChainApi(waxProvider, apiOptions.chainId, apiOptions.apiEndpoint);
+  const api = new HiveChainApi(waxProvider, apiOptions.chainId, apiOptions.apiEndpoint, null);
 
   return api;
 };

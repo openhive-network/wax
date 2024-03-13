@@ -25,7 +25,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public constructor(
     public readonly wax: MainModule,
     public readonly chainId: string,
-    private readonly apiEndpoint: string
+    private apiEndpoint: string,
+    private readonly originator: HiveChainApi|null
   ) {
     super(wax, chainId);
 
@@ -102,8 +103,19 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     });
   }
 
+  public set endpointUrl(endpoint: string) {
+    this.apiEndpoint = endpoint;
+
+    if(this.originator !== null)
+      this.originator.endpointUrl = endpoint;
+  }
+
+  public get endpointUrl(): string {
+    return this.apiEndpoint;
+  }
+
   public extend<YourApi>(extendedHiveApiData?: YourApi): TWaxExtended<YourApi> {
-    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint);
+    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this);
 
     if(typeof extendedHiveApiData === "object")
       for(const methodName in extendedHiveApiData)

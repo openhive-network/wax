@@ -452,6 +452,16 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
 
   /**
+   * Allows to override default endpoint URL used to call RPC APIs initially configured by {@link IWaxOptionsChain} passed to {@link createHiveChain} builder function.
+   */
+  set endpointUrl(endpoint: string);
+
+  /**
+   * Allows to query for endpoint url used to perform API calls.
+   */
+  get endpointUrl(): string;
+
+  /**
    * Extends hive chain interface with your custom API definitions
    *
    * @param extendedHiveApiData your custom api definitions for use with class-validators and class-transformers
