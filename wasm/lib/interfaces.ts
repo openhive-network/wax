@@ -150,7 +150,7 @@ export interface ITransactionBuilder {
   pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title?: string): CommentBuilder;
 
   /**
-   * Generates digest of the transaction for signing
+   * Generates digest of the transaction for signing (HF26 serialization form is used).
    *
    * @type {THexString} digest of the transaction for signing in hex form
    *
@@ -159,13 +159,31 @@ export interface ITransactionBuilder {
   get sigDigest(): THexString;
 
   /**
-   * Generates id of the transaction
+   * Generates digest of the transaction for signing (legacy serialization form is used).
+   *
+   * @type {THexString} digest of the transaction for signing in hex form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get legacy_sigDigest(): THexString;
+
+  /**
+   * Generates id of the transaction (HF26 serialization form is used).
    *
    * @type {TTransactionId} id of the transaction in hex form
    *
    * @throws {WaxError} on any Wax API-related error
    */
   get id(): TTransactionId;
+
+  /**
+   * Generates id of the transaction (legacy serialization form is used).
+   *
+   * @type {TTransactionId} id of the transaction in hex form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get legacy_id(): TTransactionId;
 
   /**
    * Returns signature keys from the transaction signatures
@@ -263,6 +281,21 @@ export interface ITransactionBuilder {
    * @throws {WaxError} on any Wax API-related error
    */
   toApi(): string;
+
+  /**
+   * Converts the created transaction into the Hive API-legacy form JSON string.
+   *
+   * Legacy form differs in few aspects to regular (HF26) one:
+   * - for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
+   * - asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
+   *
+   * Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
+   * produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
+   * In general, preferred way of generating transactions is HF-26 form (default in this library).
+   *
+   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form. 
+   */
+  toLegacyApi(): string;
 }
 
 export interface ITransactionBuilderConstructor {

@@ -71,6 +71,14 @@ export class TransactionBuilder implements ITransactionBuilder {
     return serialized;
   }
 
+  public toLegacyApi(): string {
+    this.finalize();
+
+    const serialized = this.api.extract(this.api.proto.cpp_proto_to_legacy_api(this.toString()));
+
+    return serialized;
+  }
+
   private finalize(): void {
     // Sign can be called before build, so ensure that we are applying the expiration time only once
     if(this.target.expiration.length === 0)
@@ -100,10 +108,26 @@ export class TransactionBuilder implements ITransactionBuilder {
     return sigDigest;
   }
 
+  public get legacy_sigDigest(): string {
+    const tx = this.toString();
+
+    const sigDigest: string = this.api.extract(this.api.proto.cpp_calculate_legacy_sig_digest(tx, this.api.chainId));
+
+    return sigDigest;
+  }
+
   public get id(): TTransactionId {
     const tx = this.toString();
 
     const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_transaction_id(tx));
+
+    return transactionId;
+  }
+
+  public get legacy_id(): TTransactionId {
+    const tx = this.toString();
+
+    const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_legacy_transaction_id(tx));
 
     return transactionId;
   }
