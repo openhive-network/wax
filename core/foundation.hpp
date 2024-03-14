@@ -41,7 +41,19 @@ public:
    */
   result cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const;
 
-  /**
+  
+    /**
+   * Convert HBD to HP.
+   * 
+   * @param hbd-  HBD asset
+   * @param base  - base value from get_current_price_feed 
+   * @param quote - quote value from get_current_price_feed
+   * 
+   * @returns amount of hive in result.content 
+   */
+  result cpp_hbd_to_hp(const json_asset &hbd, const float base, const float quote) const;
+  
+    /**
    * Convert VESTS to HP.
    * 
    * @param vests - VESTS asset (or votes expressed as VESTS asset in case of witness HP votes calculation)

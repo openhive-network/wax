@@ -159,6 +159,13 @@ def calculate_hp_apr(
     return response.value, response.content, response.exception_message
 
 @return_python_result
+def calculate_hbd_to_hp(hbd: python_json_asset, base : float, quote : float ) -> python_json_asset:
+    cdef protocol obj
+    cdef json_asset _hbd = obj.cpp_hbd(int(hbd.amount))
+    response = obj.cpp_hbd_to_hp(_hbd, base, quote)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_result:
     cdef protocol obj
     cdef json_asset _vests = obj.cpp_vests(int(vests.amount))
