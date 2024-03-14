@@ -195,6 +195,15 @@ export interface ITransactionBuilder {
   get signatureKeys(): Array<THexString>;
 
   /**
+   * Returns signature keys from the transaction signatures (legacy serialization form is used).
+   *
+   * @type {Array<THexString>} list of all the public keys that were used to sign the transaction
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get legacy_signatureKeys(): Array<THexString>;
+
+  /**
    * Validates current transaction. Throws on error
    *
    * @throws {WaxError} on any Wax API-related error including validation error

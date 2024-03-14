@@ -41,15 +41,20 @@ export class TransactionBuilder implements ITransactionBuilder {
     this.expirationTime = expirationTime as TTimestamp;
   }
 
-  get signatureKeys(): Array<THexString> {
+  private calculateSignerPublicKeys(calculatedSigDigest: string): Array<THexString> {
     const keys: Array<THexString> = [];
-
-    const digest = this.sigDigest;
-
     for(const sig of this.target.signatures)
-      keys.push(this.api.getPublicKeyFromSignature(digest, sig));
+      keys.push(this.api.getPublicKeyFromSignature(calculatedSigDigest, sig));
 
     return keys;
+  }
+
+  public get signatureKeys(): Array<THexString> {
+    return this.calculateSignerPublicKeys(this.sigDigest);
+  }
+
+  public get legacy_signatureKeys(): Array<THexString> {
+    return this.calculateSignerPublicKeys(this.legacy_sigDigest);
   }
 
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): ITransactionBuilder {
