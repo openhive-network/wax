@@ -72,6 +72,11 @@ result cpp_calculate_hp_apr(
     head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
 }
 
+result cpp_hbd_to_hp(const json_asset &hbd, const float base, const float quote) const 
+{
+  return foundation::cpp_hbd_to_hp(hbd, base, quote);
+}
+
 result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
@@ -139,6 +144,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_account_hp", &foundation_wasm::cpp_vests_to_hp)
     .function("cpp_calculate_witness_votes_hp", select_overload<calculate_witness_votes_hp_fn_t>(&foundation_wasm::cpp_calculate_witness_votes_hp))
     .function("cpp_calculate_inflation_rate_for_block", &foundation_wasm::cpp_calculate_inflation_rate_for_block)
+    .function("cpp_vests_to_hp", &foundation_wasm::cpp_vests_to_hp)
+    .function("cpp_hbd_to_hp", &foundation_wasm::cpp_hbd_to_hp)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")

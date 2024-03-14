@@ -49,6 +49,17 @@ int64_t calculate_inflation_rate_for_block(const uint32_t block_num)
   return std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
 }
 
+std::string round_to_precision(const float value, const int precision)
+{
+    double rounded = round(value * pow(10, precision)) / pow(10, precision);
+    std::string result = std::to_string(rounded * pow(10, precision) );
+    size_t decimalPos = result.find('.');
+    if (decimalPos != std::string::npos) {
+        return result.substr(0, decimalPos);
+    }
+    return result;
+}
+
 hive::protocol::legacy_asset to_asset(const json_asset& v)
 {
   fc::mutable_variant_object mv;
@@ -205,6 +216,19 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
     const int64_t hp_apr_percent_decimals = hp_apr % 100;
 
     _result.content = std::to_string(hp_apr_percent) + "." + std::to_string(hp_apr_percent_decimals);
+  });
+}
+
+result foundation::cpp_hbd_to_hp(const json_asset &hbd, const float base, const float quote) const 
+{
+  return method_wrapper([&](result& _result)
+  {
+    constexpr int hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
+    const hive::protocol::legacy_asset _hbd = to_asset(hbd);
+    FC_ASSERT( _hbd.symbol == HBD_SYMBOL, "'hbd' param expected as HBD asset" );
+    const double hbd_to_hive_feed = base / quote;
+    const double hp = (double(_hbd.amount.value) ) * hbd_to_hive_feed;
+     _result.content = round_to_precision(hp / hive_precision, HIVE_PRECISION_HIVE); 
   });
 }
 
