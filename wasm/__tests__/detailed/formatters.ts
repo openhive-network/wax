@@ -28,6 +28,108 @@ test.describe('Wax object interface formatters tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
+  test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async() => {
+    const { wax, base } = await createWaxTestFor('node');
+
+    const BottomKey1 = "bottomKey1";
+    const BottomKey2 = "bottomKey2";
+    const BottomKey3 = "bottomKey3";
+
+    const NestedKey1 = "nestedKey1";
+    const NestedKey2 = "nestedKey2";
+    const NestedKey3 = "nestedKey3";
+    const NestedKey4 = "nestedKey4";
+
+    class ExampleClassMatch { a = "hello"; }
+
+    const myClass = new ExampleClassMatch();
+
+    const obj = {
+      [NestedKey1]: {
+        [NestedKey2]: {
+          [BottomKey1]: "123"
+        },
+        [NestedKey3]: {
+          [BottomKey2]: "123"
+        },
+        [NestedKey4]: {
+          [BottomKey3]: myClass
+        }
+      }
+    };
+
+    expect(Object.getPrototypeOf(obj[NestedKey1][NestedKey4][BottomKey3]) === Object.prototype).toBeFalsy();
+
+    let counter = 0;
+
+    class TraverseCustomFormatter {
+      @wax.WaxFormattable({ matchProperty: BottomKey1 })
+      public bottomKey1Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1']['nestedKey2'], { [BottomKey1]: string }>) {
+        expect(++counter).toBe(1);
+
+        expect(source).toStrictEqual(obj[NestedKey1][NestedKey2]);
+        expect(target).toStrictEqual(obj[NestedKey1][NestedKey2]);
+
+        return Number.parseInt(source[BottomKey1]);
+      }
+      @wax.WaxFormattable({ matchProperty: NestedKey2 })
+      public nestedKey2Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1'], { [NestedKey2]: number; [NestedKey3]: { [BottomKey2]: string }; [NestedKey4]: { [BottomKey3]: ExampleClassMatch } }>) {
+        expect(++counter).toBe(2);
+
+        expect(source).toStrictEqual(obj[NestedKey1]);
+        expect(target).toStrictEqual({ [NestedKey2]: 123, [NestedKey3]: { [BottomKey2]: "123" }, [NestedKey4]: { [BottomKey3]: { a: myClass.a } } });
+
+        return target[NestedKey2][BottomKey1];
+      }
+      @wax.WaxFormattable({ matchProperty: BottomKey2 })
+      public bottomKey2Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1']['nestedKey3'], { [BottomKey2]: string }>) {
+        expect(++counter).toBe(3);
+
+        expect(source).toStrictEqual(obj[NestedKey1][NestedKey3]);
+        expect(target).toStrictEqual(obj[NestedKey1][NestedKey3]);
+
+        return Boolean(source[BottomKey2]);
+      }
+      @wax.WaxFormattable({ matchProperty: NestedKey3 })
+      public nestedKey3Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1'], { [NestedKey2]: number; [NestedKey3]: boolean; [NestedKey4]: { [BottomKey3]: ExampleClassMatch } }>) {
+        expect(++counter).toBe(4);
+
+        expect(source).toStrictEqual(obj[NestedKey1]);
+        expect(target).toStrictEqual({ [NestedKey2]: 123, [NestedKey3]: true, [NestedKey4]: { [BottomKey3]: { a: myClass.a } } });
+      }
+      @wax.WaxFormattable({ matchInstanceOf: ExampleClassMatch })
+      public bottomKey3Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1']['nestedKey4'], { [BottomKey3]: ExampleClassMatch }>) {
+        expect(++counter).toBe(5);
+
+        expect(source).toStrictEqual(obj[NestedKey1][NestedKey4]);
+        expect(target).toStrictEqual({ [BottomKey3]: { a: myClass.a } });
+
+        return source[BottomKey3].a;
+      }
+      @wax.WaxFormattable({ matchProperty: NestedKey4 })
+      public nestedKey4Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1'], { [NestedKey2]: number; [NestedKey3]: boolean; [NestedKey4]: string }>) {
+        expect(++counter).toBe(6);
+
+        expect(source).toStrictEqual(obj[NestedKey1]);
+        expect(target).toStrictEqual({ [NestedKey2]: 123, [NestedKey3]: true, [NestedKey4]: myClass.a });
+
+        return [ target[NestedKey2], target[NestedKey3], target[NestedKey4] ];
+      }
+      @wax.WaxFormattable({ matchProperty: NestedKey1 })
+      public nestedKey1Handler({ source, target }: IFormatFunctionArguments<typeof obj, { [NestedKey1]: [ number, boolean, string ] }>) {
+        expect(++counter).toBe(7);
+
+        expect(source).toStrictEqual(obj);
+        expect(target).toStrictEqual({ [NestedKey1]: [ 123, true, myClass.a ] });
+
+        return JSON.stringify(target[NestedKey1]);
+      }
+    }
+
+    const formatted = base.formatter.extend(TraverseCustomFormatter).format(obj);
+    expect(formatted).toBe('[123,true,"hello"]');
+  });
+
   test('Should be able to format numbers using default formatters from hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
       return [

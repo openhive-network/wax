@@ -147,31 +147,35 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   /**
    * @internal
    */
-  protected handleProperty(source: object, target: object, property: string): string | undefined {
+  protected handleInstanceOf(source: object, target: any, property: string): any | undefined {
+    const isInstance = (value: any, prop: string) => typeof value === "object" && value[prop] !== null && Object.getPrototypeOf(value[prop]) !== Object.prototype && !Array.isArray(value[prop]);
+
+    // If source is a plain object then do not waste time iterating
+    if (!isInstance(source, property) && !isInstance(target, property))
+      return;
+
+    for(const { formatFn, matchInstanceOf } of this.instances)
+      if(source[property] instanceof matchInstanceOf || target[property] instanceof matchInstanceOf)
+        return formatFn({
+          options: this.options,
+          source,
+          target
+        });
+  }
+
+  /**
+   * @internal
+   */
+  protected handleProperty(source: object, target: any, property: string): any | undefined {
     const matched = this.matchers.get(property);
 
     // If no matchers found, then iterate over instances to match
-    if(typeof matched === "undefined") {
-      const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
-
-      // If source is a plain object then do not waste time iterating
-      if(typeof target !== "object" || typeof target[property] !== "object" || isPlainObj(target[property]))
-        return;
-
-      for(const { formatFn, matchInstanceOf } of this.instances)
-        if(target[property] instanceof matchInstanceOf)
-          return formatFn({
-            options: this.options,
-            source,
-            target
-          });
-
-      return;
-    }
+    if(typeof matched === "undefined")
+      return this.handleInstanceOf(source, target, property);
 
     const matchValues = matched?.matchValues.get(source[property]) ?? matched?.defaultFormatter;
 
-    if(typeof matchValues === "function" && typeof matched?.matchInstanceOf === "function" && !(source[property] instanceof matched.matchInstanceOf))
+    if(typeof matchValues === "function" && typeof matched?.matchInstanceOf === "function" && !(typeof source === "object" && source[property] instanceof matched.matchInstanceOf))
       return;
 
     return matchValues?.({

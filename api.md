@@ -28,12 +28,15 @@
 - [ApiTransaction](#classesapitransactionmd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
+- [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd)
 - [CommentBuilder](#classescommentbuildermd)
+- [CommunityOperation](#classescommunityoperationmd)
 - [CommunityOperationBuilder](#classescommunityoperationbuildermd)
 - [FindAccountsRequest](#classesfindaccountsrequestmd)
 - [FindAccountsResponse](#classesfindaccountsresponsemd)
 - [FindRcAccountsRequest](#classesfindrcaccountsrequestmd)
 - [FindRcAccountsResponse](#classesfindrcaccountsresponsemd)
+- [FollowOperation](#classesfollowoperationmd)
 - [FollowOperationBuilder](#classesfollowoperationbuildermd)
 - [GetBlockHeaderRequest](#classesgetblockheaderrequestmd)
 - [GetBlockHeaderResponse](#classesgetblockheaderresponsemd)
@@ -50,8 +53,10 @@
 - [NaiAsset](#classesnaiassetmd)
 - [OperationVisitor](#classesoperationvisitormd)
 - [RcAccount](#classesrcaccountmd)
+- [ReblogOperation](#classesreblogoperationmd)
 - [RecurrentTransferBuilder](#classesrecurrenttransferbuildermd)
 - [RecurrentTransferPairIdBuilder](#classesrecurrenttransferpairidbuildermd)
+- [ResourceCreditsOperation](#classesresourcecreditsoperationmd)
 - [ResourceCreditsOperationBuilder](#classesresourcecreditsoperationbuildermd)
 - [RootCommentBuilder](#classesrootcommentbuildermd)
 - [UpdateProposalBuilder](#classesupdateproposalbuildermd)
@@ -62,9 +67,9 @@
 
 ## Interfaces
 
+- [IBuiltHiveAppsOperation](#interfacesibuilthiveappsoperationmd)
 - [ICommunityProps](#interfacesicommunitypropsmd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
-- [IHiveAppsOperation](#interfacesihiveappsoperationmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [IManabarData](#interfacesimanabardatamd)
@@ -244,6 +249,16 @@ wasm/lib/interfaces.ts:25
 
 ___
 
+### TCommunityRules
+
+Ƭ **TCommunityRules**: \{ `account`: [`TAccountName`](#taccountname) ; `action`: [`FLAG_POST`](#flag_post) \| [`MUTE_POST`](#mute_post) \| [`UNMUTE_POST`](#unmute_post) ; `notes`: `string` ; `permlink`: `string`  } \| \{ `account`: [`TAccountName`](#taccountname) ; `action`: [`PIN_POST`](#pin_post) \| [`UNPIN_POST`](#unpin_post) ; `permlink`: `string`  } \| \{ `action`: [`SUBSCRIBE`](#subscribe) \| [`UNSUBSCRIBE`](#unsubscribe)  } \| \{ `account`: [`TAccountName`](#taccountname) ; `action`: [`SET_USER_TITLE`](#set_user_title) ; `title`: `string`  } \| \{ `action`: [`UPDATE_PROPS`](#update_props) ; `props`: `Readonly`\<[`ICommunityProps`](#interfacesicommunitypropsmd)\>  }
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:4
+
+___
+
 ### TFormatFunction
 
 Ƭ **TFormatFunction**\<`T`\>: (`args`: [`IFormatFunctionArguments`](#interfacesiformatfunctionargumentsmd)\<`T`\>) => `string` \| `any`
@@ -294,7 +309,7 @@ public transactionFormatter(source: DeepReadonly<ApiTransaction>, target: object
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:109
+wasm/lib/detailed/formatters/types.ts:115
 
 ___
 
@@ -380,7 +395,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:154
+wasm/lib/detailed/formatters/types.ts:160
 
 ___
 
@@ -3968,6 +3983,45 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
 
 
+<a name="classesbuilthiveappsoperationmd"></a>
+
+# Class: BuiltHiveAppsOperation
+
+## Implements
+
+- [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+
+## Constructors
+
+### constructor
+
+• **new BuiltHiveAppsOperation**(): [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
+
+#### Returns
+
+[`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
+
+## Accessors
+
+### length
+
+• `get` **length**(): `number`
+
+Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
+
+#### Returns
+
+`number`
+
+#### Implementation of
+
+[IBuiltHiveAppsOperation](#interfacesibuilthiveappsoperationmd).[length](#length)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:25
+
+
 <a name="classescommentbuildermd"></a>
 
 # Class: CommentBuilder
@@ -4405,6 +4459,95 @@ itself
 wasm/lib/detailed/operation_factories/comment.ts:220
 
 
+<a name="classescommunityoperationmd"></a>
+
+# Class: CommunityOperation
+
+## Hierarchy
+
+- [`HiveAppsOperation`](#classeshiveappsoperationmd)\<[`CommunityOperationBuilder`](#classescommunityoperationbuildermd)\>
+
+  ↳ **`CommunityOperation`**
+
+## Constructors
+
+### constructor
+
+• **new CommunityOperation**(`accounts`, `community`, `data`): [`CommunityOperation`](#classescommunityoperationmd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `accounts` | `string`[] |
+| `community` | `string` |
+| `data` | [`TCommunityRules`](#tcommunityrules) |
+
+#### Returns
+
+[`CommunityOperation`](#classescommunityoperationmd)
+
+#### Overrides
+
+[HiveAppsOperation](#classeshiveappsoperationmd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:25
+
+## Properties
+
+### accounts
+
+• `Readonly` **accounts**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:26
+
+___
+
+### community
+
+• `Readonly` **community**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:27
+
+___
+
+### data
+
+• `Readonly` **data**: [`TCommunityRules`](#tcommunityrules)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:28
+
+## Accessors
+
+### builder
+
+• `get` **builder**(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`CommunityOperationBuilder`](#classescommunityoperationbuildermd), `object`\>
+
+Converts the current hive apps operation to the builder type ([HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd))
+
+#### Returns
+
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`CommunityOperationBuilder`](#classescommunityoperationbuildermd), `object`\>
+
+hive chain operation builder
+
+#### Overrides
+
+HiveAppsOperation.builder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:33
+
+
 <a name="classescommunityoperationbuildermd"></a>
 
 # Class: CommunityOperationBuilder
@@ -4419,15 +4562,25 @@ wasm/lib/detailed/operation_factories/comment.ts:220
 
 ### constructor
 
-• **new CommunityOperationBuilder**(): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+• **new CommunityOperationBuilder**(`hiveAppsOp?`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `hiveAppsOp?` | [`CommunityOperation`](#classescommunityoperationmd) |
 
 #### Returns
 
 [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
 
-#### Inherited from
+#### Overrides
 
 [HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/community.ts:116
 
 ## Properties
 
@@ -4459,7 +4612,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:79
+wasm/lib/detailed/custom_jsons/community.ts:114
 
 ## Methods
 
@@ -4467,7 +4620,7 @@ wasm/lib/detailed/custom_jsons/community.ts:79
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
 
 #### Parameters
 
@@ -4494,13 +4647,13 @@ ___
 
 ### build
 
-▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -4537,7 +4690,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:91
+wasm/lib/detailed/custom_jsons/community.ts:145
 
 ___
 
@@ -4564,7 +4717,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:244
+wasm/lib/detailed/custom_jsons/community.ts:298
 
 ___
 
@@ -4590,7 +4743,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:172
+wasm/lib/detailed/custom_jsons/community.ts:226
 
 ___
 
@@ -4616,7 +4769,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:114
+wasm/lib/detailed/custom_jsons/community.ts:168
 
 ___
 
@@ -4640,7 +4793,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:134
+wasm/lib/detailed/custom_jsons/community.ts:188
 
 ___
 
@@ -4667,7 +4820,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:268
+wasm/lib/detailed/custom_jsons/community.ts:322
 
 ___
 
@@ -4693,7 +4846,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:194
+wasm/lib/detailed/custom_jsons/community.ts:248
 
 ___
 
@@ -4717,7 +4870,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:152
+wasm/lib/detailed/custom_jsons/community.ts:206
 
 ___
 
@@ -4742,7 +4895,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:215
+wasm/lib/detailed/custom_jsons/community.ts:269
 
 
 <a name="classesfindaccountsrequestmd"></a>
@@ -4855,6 +5008,95 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:9
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:31
 
 
+<a name="classesfollowoperationmd"></a>
+
+# Class: FollowOperation
+
+## Hierarchy
+
+- [`HiveAppsOperation`](#classeshiveappsoperationmd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd)\>
+
+  ↳ **`FollowOperation`**
+
+## Constructors
+
+### constructor
+
+• **new FollowOperation**(`action`, `follower`, `following`): [`FollowOperation`](#classesfollowoperationmd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `action` | [`EFollowActions`](#enumsefollowactionsmd) |
+| `follower` | `string` |
+| `following` | `string`[] |
+
+#### Returns
+
+[`FollowOperation`](#classesfollowoperationmd)
+
+#### Overrides
+
+[HiveAppsOperation](#classeshiveappsoperationmd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:20
+
+## Properties
+
+### action
+
+• `Readonly` **action**: [`EFollowActions`](#enumsefollowactionsmd)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:21
+
+___
+
+### follower
+
+• `Readonly` **follower**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:22
+
+___
+
+### following
+
+• `Readonly` **following**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:23
+
+## Accessors
+
+### builder
+
+• `get` **builder**(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd), `object`\>
+
+Converts the current hive apps operation to the builder type ([HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd))
+
+#### Returns
+
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd), `object`\>
+
+hive chain operation builder
+
+#### Overrides
+
+HiveAppsOperation.builder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:28
+
+
 <a name="classesfollowoperationbuildermd"></a>
 
 # Class: FollowOperationBuilder
@@ -4869,15 +5111,25 @@ wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:31
 
 ### constructor
 
-• **new FollowOperationBuilder**(): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+• **new FollowOperationBuilder**(`hiveAppsOp?`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `hiveAppsOp?` | [`ReblogOperation`](#classesreblogoperationmd) \| [`FollowOperation`](#classesfollowoperationmd) |
 
 #### Returns
 
 [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
 
-#### Inherited from
+#### Overrides
 
 [HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:65
 
 ## Properties
 
@@ -4909,7 +5161,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:34
+wasm/lib/detailed/custom_jsons/follow.ts:63
 
 ## Methods
 
@@ -4917,7 +5169,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:34
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
 
 #### Parameters
 
@@ -4964,19 +5216,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:134
+wasm/lib/detailed/custom_jsons/follow.ts:193
 
 ___
 
 ### build
 
-▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -5012,7 +5264,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:162
+wasm/lib/detailed/custom_jsons/follow.ts:221
 
 ___
 
@@ -5038,7 +5290,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:64
+wasm/lib/detailed/custom_jsons/follow.ts:123
 
 ___
 
@@ -5061,7 +5313,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:36
+wasm/lib/detailed/custom_jsons/follow.ts:95
 
 ___
 
@@ -5087,7 +5339,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:218
+wasm/lib/detailed/custom_jsons/follow.ts:277
 
 ___
 
@@ -5113,7 +5365,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:92
+wasm/lib/detailed/custom_jsons/follow.ts:151
 
 ___
 
@@ -5139,7 +5391,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:287
+wasm/lib/detailed/custom_jsons/follow.ts:346
 
 ___
 
@@ -5165,7 +5417,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:246
+wasm/lib/detailed/custom_jsons/follow.ts:305
 
 ___
 
@@ -5191,7 +5443,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:120
+wasm/lib/detailed/custom_jsons/follow.ts:179
 
 ___
 
@@ -5217,7 +5469,7 @@ Scope of clear operation can be specfied by action parameter to point only blog,
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:260
+wasm/lib/detailed/custom_jsons/follow.ts:319
 
 ___
 
@@ -5243,7 +5495,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:148
+wasm/lib/detailed/custom_jsons/follow.ts:207
 
 ___
 
@@ -5269,7 +5521,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:204
+wasm/lib/detailed/custom_jsons/follow.ts:263
 
 ___
 
@@ -5295,7 +5547,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:176
+wasm/lib/detailed/custom_jsons/follow.ts:235
 
 ___
 
@@ -5321,7 +5573,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:190
+wasm/lib/detailed/custom_jsons/follow.ts:249
 
 ___
 
@@ -5347,7 +5599,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:78
+wasm/lib/detailed/custom_jsons/follow.ts:137
 
 ___
 
@@ -5373,7 +5625,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:232
+wasm/lib/detailed/custom_jsons/follow.ts:291
 
 ___
 
@@ -5399,7 +5651,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:106
+wasm/lib/detailed/custom_jsons/follow.ts:165
 
 
 <a name="classesgetblockheaderrequestmd"></a>
@@ -6054,41 +6306,61 @@ wasm/lib/detailed/api/account_by_key_api/get_key_references.ts:13
 
 <a name="classeshiveappsoperationmd"></a>
 
-# Class: HiveAppsOperation
+# Class: HiveAppsOperation\<ChildT, BodyT\>
 
-## Implements
+## Type parameters
 
-- [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+| Name | Type |
+| :------ | :------ |
+| `ChildT` | extends [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`any`, `BodyT`\> |
+| `BodyT` | extends `object` = `object` |
+
+## Hierarchy
+
+- **`HiveAppsOperation`**
+
+  ↳ [`CommunityOperation`](#classescommunityoperationmd)
+
+  ↳ [`ReblogOperation`](#classesreblogoperationmd)
+
+  ↳ [`FollowOperation`](#classesfollowoperationmd)
+
+  ↳ [`ResourceCreditsOperation`](#classesresourcecreditsoperationmd)
 
 ## Constructors
 
 ### constructor
 
-• **new HiveAppsOperation**(): [`HiveAppsOperation`](#classeshiveappsoperationmd)
+• **new HiveAppsOperation**\<`ChildT`, `BodyT`\>(): [`HiveAppsOperation`](#classeshiveappsoperationmd)\<`ChildT`, `BodyT`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `ChildT` | extends [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`any`, `BodyT`\> |
+| `BodyT` | extends `object` = `object` |
 
 #### Returns
 
-[`HiveAppsOperation`](#classeshiveappsoperationmd)
+[`HiveAppsOperation`](#classeshiveappsoperationmd)\<`ChildT`, `BodyT`\>
 
 ## Accessors
 
-### length
+### builder
 
-• `get` **length**(): `number`
+• `get` **builder**(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`ChildT`, `BodyT`\>
 
-Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
+Converts the current hive apps operation to the builder type ([HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd))
 
 #### Returns
 
-`number`
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`ChildT`, `BodyT`\>
 
-#### Implementation of
-
-[IHiveAppsOperation](#interfacesihiveappsoperationmd).[length](#length)
+hive chain operation builder
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:25
+wasm/lib/detailed/custom_jsons/apps_operation.ts:9
 
 
 <a name="classeshiveappsoperationsbuildermd"></a>
@@ -6145,7 +6417,7 @@ ___
 
 ### builtCustomJsons
 
-• `Private` `Readonly` **builtCustomJsons**: [`HiveAppsOperation`](#classeshiveappsoperationmd)
+• `Private` `Readonly` **builtCustomJsons**: [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
 
 #### Defined in
 
@@ -6169,7 +6441,7 @@ wasm/lib/detailed/custom_jsons/builder.ts:63
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): `ChildT`
 
-Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
 
 #### Parameters
 
@@ -6192,13 +6464,13 @@ ___
 
 ### build
 
-▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -7492,6 +7764,95 @@ ___
 wasm/lib/detailed/api/rc_api/find_rc_accounts.ts:18
 
 
+<a name="classesreblogoperationmd"></a>
+
+# Class: ReblogOperation
+
+## Hierarchy
+
+- [`HiveAppsOperation`](#classeshiveappsoperationmd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd)\>
+
+  ↳ **`ReblogOperation`**
+
+## Constructors
+
+### constructor
+
+• **new ReblogOperation**(`account`, `author`, `permlink`): [`ReblogOperation`](#classesreblogoperationmd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `account` | `string` |
+| `author` | `string` |
+| `permlink` | `string` |
+
+#### Returns
+
+[`ReblogOperation`](#classesreblogoperationmd)
+
+#### Overrides
+
+[HiveAppsOperation](#classeshiveappsoperationmd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:6
+
+## Properties
+
+### account
+
+• `Readonly` **account**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:7
+
+___
+
+### author
+
+• `Readonly` **author**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:8
+
+___
+
+### permlink
+
+• `Readonly` **permlink**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:9
+
+## Accessors
+
+### builder
+
+• `get` **builder**(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd), `object`\>
+
+Converts the current hive apps operation to the builder type ([HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd))
+
+#### Returns
+
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`FollowOperationBuilder`](#classesfollowoperationbuildermd), `object`\>
+
+hive chain operation builder
+
+#### Overrides
+
+HiveAppsOperation.builder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/follow.ts:14
+
+
 <a name="classesrecurrenttransferbuildermd"></a>
 
 # Class: RecurrentTransferBuilder
@@ -7691,6 +8052,95 @@ itself
 wasm/lib/detailed/operation_factories/recurrent_transfer.ts:54
 
 
+<a name="classesresourcecreditsoperationmd"></a>
+
+# Class: ResourceCreditsOperation
+
+## Hierarchy
+
+- [`HiveAppsOperation`](#classeshiveappsoperationmd)\<[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)\>
+
+  ↳ **`ResourceCreditsOperation`**
+
+## Constructors
+
+### constructor
+
+• **new ResourceCreditsOperation**(`from`, `rc`, `delegatees`): [`ResourceCreditsOperation`](#classesresourcecreditsoperationmd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `from` | `string` |
+| `rc` | [`NaiAsset`](#classesnaiassetmd) |
+| `delegatees` | `string`[] |
+
+#### Returns
+
+[`ResourceCreditsOperation`](#classesresourcecreditsoperationmd)
+
+#### Overrides
+
+[HiveAppsOperation](#classeshiveappsoperationmd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:7
+
+## Properties
+
+### delegatees
+
+• `Readonly` **delegatees**: `string`[]
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:10
+
+___
+
+### from
+
+• `Readonly` **from**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:8
+
+___
+
+### rc
+
+• `Readonly` **rc**: [`NaiAsset`](#classesnaiassetmd)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:9
+
+## Accessors
+
+### builder
+
+• `get` **builder**(): [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd), `object`\>
+
+Converts the current hive apps operation to the builder type ([HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd))
+
+#### Returns
+
+[`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<[`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd), `object`\>
+
+hive chain operation builder
+
+#### Overrides
+
+HiveAppsOperation.builder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:15
+
+
 <a name="classesresourcecreditsoperationbuildermd"></a>
 
 # Class: ResourceCreditsOperationBuilder
@@ -7705,15 +8155,25 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:54
 
 ### constructor
 
-• **new ResourceCreditsOperationBuilder**(): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+• **new ResourceCreditsOperationBuilder**(`hiveAppsOp?`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `hiveAppsOp?` | [`ResourceCreditsOperation`](#classesresourcecreditsoperationmd) |
 
 #### Returns
 
 [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
 
-#### Inherited from
+#### Overrides
 
 [HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[constructor](#constructor)
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/rc.ts:23
 
 ## Properties
 
@@ -7745,7 +8205,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/rc.ts:5
+wasm/lib/detailed/custom_jsons/rc.ts:21
 
 ## Methods
 
@@ -7753,7 +8213,7 @@ wasm/lib/detailed/custom_jsons/rc.ts:5
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [HiveAppsOperation](#classeshiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
 
 #### Parameters
 
@@ -7780,13 +8240,13 @@ ___
 
 ### build
 
-▸ **build**(): [`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IHiveAppsOperation`](#interfacesihiveappsoperationmd)
+[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -7823,7 +8283,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/rc.ts:19
+wasm/lib/detailed/custom_jsons/rc.ts:48
 
 ___
 
@@ -7849,7 +8309,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/rc.ts:45
+wasm/lib/detailed/custom_jsons/rc.ts:74
 
 
 <a name="classesrootcommentbuildermd"></a>
@@ -8502,7 +8962,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | :------ | :------ | :------ |
 | `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
+| `options.asset?` | \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -8556,7 +9016,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:15
+wasm/lib/detailed/formatters/base.ts:16
 
 ___
 
@@ -8600,9 +9060,9 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | \{ `asset?`: \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } \| [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+| `formatterConstructor` | \{ `asset?`: \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } \| [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
 | `options?` | `Object` | formatter options |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
+| `options.asset?` | \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -8664,7 +9124,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:70
+wasm/lib/detailed/formatters/base.ts:71
 
 ___
 
@@ -8734,7 +9194,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:74
+wasm/lib/detailed/formatters/base.ts:75
 
 ___
 
@@ -8748,7 +9208,7 @@ ___
 | :------ | :------ | :------ |
 | `wax` | [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd) | - |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
+| `options.asset?` | \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -8788,7 +9248,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `options?` | `Object` | - |
-| `options.asset?` | \{ appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
+| `options.asset?` | \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
 | `options.transaction?` | \{ displayAsId?: boolean \| undefined; } | - |
 
@@ -8798,7 +9258,7 @@ Classes implementing this interface denote that they are ready to handle tagged 
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:17
+wasm/lib/detailed/formatters/base.ts:18
 
 ## Properties
 
@@ -8814,7 +9274,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:15
+wasm/lib/detailed/formatters/base.ts:16
 
 ## Methods
 
@@ -8856,7 +9316,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:70
+wasm/lib/detailed/formatters/base.ts:71
 
 ___
 
@@ -8876,29 +9336,29 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:61
+wasm/lib/detailed/formatters/base.ts:62
 
 ___
 
 ### handleProperty
 
-▸ **handleProperty**(`source`, `target`, `property`): `undefined` \| `string`
+▸ **handleProperty**(`source`, `target`, `property`): `any`
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `source` | `object` |
-| `target` | `object` |
+| `target` | `any` |
 | `property` | `string` |
 
 #### Returns
 
-`undefined` \| `string`
+`any`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:25
+wasm/lib/detailed/formatters/base.ts:26
 
 ___
 
@@ -8918,7 +9378,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:41
+wasm/lib/detailed/formatters/base.ts:44
 
 ___
 
@@ -8940,7 +9400,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:27
+wasm/lib/detailed/formatters/base.ts:28
 
 ___
 
@@ -8976,7 +9436,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/base.ts:74
+wasm/lib/detailed/formatters/base.ts:75
 
 
 <a name="enumsecommentformatmd"></a>
@@ -9026,7 +9486,7 @@ wasm/lib/detailed/operation_factories/comment.ts:12
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:67
+wasm/lib/detailed/custom_jsons/community.ts:102
 
 ___
 
@@ -9036,7 +9496,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:74
+wasm/lib/detailed/custom_jsons/community.ts:109
 
 ___
 
@@ -9046,7 +9506,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:71
+wasm/lib/detailed/custom_jsons/community.ts:106
 
 ___
 
@@ -9056,7 +9516,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:68
+wasm/lib/detailed/custom_jsons/community.ts:103
 
 ___
 
@@ -9066,7 +9526,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:69
+wasm/lib/detailed/custom_jsons/community.ts:104
 
 ___
 
@@ -9076,7 +9536,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:75
+wasm/lib/detailed/custom_jsons/community.ts:110
 
 ___
 
@@ -9086,7 +9546,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:72
+wasm/lib/detailed/custom_jsons/community.ts:107
 
 ___
 
@@ -9096,7 +9556,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:70
+wasm/lib/detailed/custom_jsons/community.ts:105
 
 ___
 
@@ -9106,7 +9566,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:73
+wasm/lib/detailed/custom_jsons/community.ts:108
 
 
 <a name="enumsefollowactionsmd"></a>
@@ -9121,7 +9581,7 @@ wasm/lib/detailed/custom_jsons/community.ts:73
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:20
+wasm/lib/detailed/custom_jsons/follow.ts:49
 
 ___
 
@@ -9131,7 +9591,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:16
+wasm/lib/detailed/custom_jsons/follow.ts:45
 
 ___
 
@@ -9141,7 +9601,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:22
+wasm/lib/detailed/custom_jsons/follow.ts:51
 
 ___
 
@@ -9151,7 +9611,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:26
+wasm/lib/detailed/custom_jsons/follow.ts:55
 
 ___
 
@@ -9161,7 +9621,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:18
+wasm/lib/detailed/custom_jsons/follow.ts:47
 
 ___
 
@@ -9171,7 +9631,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:28
+wasm/lib/detailed/custom_jsons/follow.ts:57
 
 ___
 
@@ -9181,7 +9641,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:19
+wasm/lib/detailed/custom_jsons/follow.ts:48
 
 ___
 
@@ -9191,7 +9651,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:29
+wasm/lib/detailed/custom_jsons/follow.ts:58
 
 ___
 
@@ -9201,7 +9661,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:21
+wasm/lib/detailed/custom_jsons/follow.ts:50
 
 ___
 
@@ -9211,7 +9671,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:25
+wasm/lib/detailed/custom_jsons/follow.ts:54
 
 ___
 
@@ -9221,7 +9681,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:30
+wasm/lib/detailed/custom_jsons/follow.ts:59
 
 ___
 
@@ -9231,7 +9691,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:23
+wasm/lib/detailed/custom_jsons/follow.ts:52
 
 ___
 
@@ -9241,7 +9701,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:17
+wasm/lib/detailed/custom_jsons/follow.ts:46
 
 ___
 
@@ -9251,7 +9711,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:24
+wasm/lib/detailed/custom_jsons/follow.ts:53
 
 ___
 
@@ -9261,7 +9721,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:27
+wasm/lib/detailed/custom_jsons/follow.ts:56
 
 
 <a name="enumsefollowblogactionmd"></a>
@@ -9276,7 +9736,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:27
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:7
+wasm/lib/detailed/custom_jsons/follow.ts:36
 
 ___
 
@@ -9286,7 +9746,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:5
+wasm/lib/detailed/custom_jsons/follow.ts:34
 
 ___
 
@@ -9296,7 +9756,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:6
+wasm/lib/detailed/custom_jsons/follow.ts:35
 
 
 <a name="enumsefollowoperationactionsmd"></a>
@@ -9311,7 +9771,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:6
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:11
+wasm/lib/detailed/custom_jsons/follow.ts:40
 
 ___
 
@@ -9321,7 +9781,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/follow.ts:12
+wasm/lib/detailed/custom_jsons/follow.ts:41
 
 
 <a name="enumsemanabartypemd"></a>
@@ -9371,7 +9831,7 @@ wasm/lib/detailed/chain_api.ts:15
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:6
+wasm/lib/detailed/custom_jsons/community.ts:41
 
 ___
 
@@ -9381,7 +9841,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:4
+wasm/lib/detailed/custom_jsons/community.ts:39
 
 ___
 
@@ -9391,7 +9851,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:12
+wasm/lib/detailed/custom_jsons/community.ts:47
 
 ___
 
@@ -9401,7 +9861,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:11
+wasm/lib/detailed/custom_jsons/community.ts:46
 
 ___
 
@@ -9411,7 +9871,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:5
+wasm/lib/detailed/custom_jsons/community.ts:40
 
 ___
 
@@ -9421,7 +9881,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:7
+wasm/lib/detailed/custom_jsons/community.ts:42
 
 ___
 
@@ -9431,7 +9891,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:8
+wasm/lib/detailed/custom_jsons/community.ts:43
 
 ___
 
@@ -9441,7 +9901,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:9
+wasm/lib/detailed/custom_jsons/community.ts:44
 
 ___
 
@@ -9451,7 +9911,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:10
+wasm/lib/detailed/custom_jsons/community.ts:45
 
 ___
 
@@ -9461,7 +9921,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:13
+wasm/lib/detailed/custom_jsons/community.ts:48
 
 ___
 
@@ -9471,7 +9931,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:14
+wasm/lib/detailed/custom_jsons/community.ts:49
 
 
 <a name="enumsttransactionpacktypemd"></a>
@@ -9499,6 +9959,27 @@ ___
 wasm/lib/detailed/api/types/index.ts:6
 
 
+<a name="interfacesibuilthiveappsoperationmd"></a>
+
+# Interface: IBuiltHiveAppsOperation
+
+## Implemented by
+
+- [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
+
+## Properties
+
+### length
+
+• **length**: `number`
+
+Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
+
+#### Defined in
+
+wasm/lib/detailed/custom_jsons/builder.ts:16
+
+
 <a name="interfacesicommunitypropsmd"></a>
 
 # Interface: ICommunityProps
@@ -9519,7 +10000,7 @@ Community about
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:31
+wasm/lib/detailed/custom_jsons/community.ts:66
 
 ___
 
@@ -9537,7 +10018,7 @@ Community description
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:55
+wasm/lib/detailed/custom_jsons/community.ts:90
 
 ___
 
@@ -9555,7 +10036,7 @@ Community rules
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:63
+wasm/lib/detailed/custom_jsons/community.ts:98
 
 ___
 
@@ -9573,7 +10054,7 @@ false
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:39
+wasm/lib/detailed/custom_jsons/community.ts:74
 
 ___
 
@@ -9591,7 +10072,7 @@ ESupportedLanguages.ENGLISH
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:47
+wasm/lib/detailed/custom_jsons/community.ts:82
 
 ___
 
@@ -9603,18 +10084,19 @@ Community title
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/community.ts:23
+wasm/lib/detailed/custom_jsons/community.ts:58
 
 
 <a name="interfacesiformatfunctionargumentsmd"></a>
 
-# Interface: IFormatFunctionArguments\<T\>
+# Interface: IFormatFunctionArguments\<TSource, TTarget\>
 
 ## Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `T` | `object` |
+| `TSource` | `object` |
+| `TTarget` | `any` |
 
 ## Properties
 
@@ -9626,52 +10108,31 @@ Formatter options
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:66
+wasm/lib/detailed/formatters/types.ts:72
 
 ___
 
 ### source
 
-• `Readonly` **source**: [`DeepReadonly`](#deepreadonly)\<`T`\>
+• `Readonly` **source**: [`DeepReadonly`](#deepreadonly)\<`TSource`\>
 
 Source readonly unchanged input value for parsing raw data
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:74
+wasm/lib/detailed/formatters/types.ts:80
 
 ___
 
 ### target
 
-• **target**: `any`
+• **target**: `TTarget`
 
 Target formatter data that might have been previously changed by other formatters
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:81
-
-
-<a name="interfacesihiveappsoperationmd"></a>
-
-# Interface: IHiveAppsOperation
-
-## Implemented by
-
-- [`HiveAppsOperation`](#classeshiveappsoperationmd)
-
-## Properties
-
-### length
-
-• **length**: `number`
-
-Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/builder.ts:16
+wasm/lib/detailed/formatters/types.ts:87
 
 
 <a name="interfacesihiveassetdatamd"></a>
@@ -10512,7 +10973,7 @@ Pushes given operation to the operations array in the transaction
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `op` | [`operation`](#operation) \| [`IHiveAppsOperation`](#interfacesihiveappsoperationmd) | operation to append to the transaction (can be hive apps operation) |
+| `op` | [`operation`](#operation) \| [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd) \| [`HiveAppsOperation`](#classeshiveappsoperationmd)\<`any`, `object`\> | operation to append to the transaction (can be hive apps operation) |
 
 #### Returns
 
@@ -11199,7 +11660,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:147
+wasm/lib/detailed/formatters/types.ts:153
 
 ## Methods
 
@@ -11224,7 +11685,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:171
+wasm/lib/detailed/formatters/types.ts:177
 
 ▸ **extend**(`options`): [`IWaxExtendableFormatter`](#interfacesiwaxextendableformattermd)
 
@@ -11244,7 +11705,7 @@ extended formatter class
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:179
+wasm/lib/detailed/formatters/types.ts:185
 
 ___
 
@@ -11286,7 +11747,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:142
+wasm/lib/detailed/formatters/types.ts:148
 
 ___
 
@@ -11312,7 +11773,7 @@ formatted number
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:190
+wasm/lib/detailed/formatters/types.ts:196
 
 ___
 
@@ -11348,7 +11809,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:128
+wasm/lib/detailed/formatters/types.ts:134
 
 
 <a name="interfacesiwaxformattermd"></a>
@@ -11377,7 +11838,7 @@ Options for the formatter
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:147
+wasm/lib/detailed/formatters/types.ts:153
 
 ## Methods
 
@@ -11415,7 +11876,7 @@ formatter.format(naiObject);
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:142
+wasm/lib/detailed/formatters/types.ts:148
 
 ___
 
@@ -11447,7 +11908,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:128
+wasm/lib/detailed/formatters/types.ts:134
 
 
 <a name="interfacesiwaxformatteroptionsmd"></a>
@@ -11465,6 +11926,7 @@ wasm/lib/detailed/formatters/types.ts:128
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `appendTokenName` | `boolean` | Appends token name after asset amount (e.g. `1.100 HIVE`) **`Default`** ```ts true ``` |
+| `displayAsNai` | `boolean` | Displays assets in NAI form instead of the human-readable form **`Default`** ```ts false ``` |
 | `formatAmount` | `boolean` | Formats the output amount in human-readable format based on current localization settings of the user (e.g. `100'000'000.100 HIVE`) **`Default`** ```ts true ``` |
 | `locales?` | `string` \| `string`[] | Locales to be used when formatting the amount of the asset (defaults to the currently used locale by the user) **`Default`** ```ts undefined ``` |
 
@@ -11488,7 +11950,7 @@ true
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:56
+wasm/lib/detailed/formatters/types.ts:62
 
 ___
 
@@ -11504,7 +11966,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/formatters/types.ts:43
+wasm/lib/detailed/formatters/types.ts:49
 
 
 <a name="interfacesiwaxoptionsmd"></a>

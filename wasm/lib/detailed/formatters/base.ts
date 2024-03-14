@@ -1,4 +1,4 @@
-import { DeepPartial, IWaxFormatter, IWaxFormatterOptions } from "./types";
+import { DeepPartial, DeepReadonly, IWaxFormatter, IWaxFormatterOptions } from "./types";
 
 export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
@@ -23,44 +23,44 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
         this.options[prop] = options?.[prop] ?? DEFAULT_FORMATTER_OPTIONS[prop];
   }
 
-  protected abstract handleProperty(source: object, target: object, property: string): string | undefined;
+  protected abstract handleProperty(source: object, target: any, property: string): any | undefined;
 
-  private traverseTemplateValue(source: object, target: object, key: string | number): void {
-    if(typeof target[key] !== "object")
+  private traverseTemplateValue(source: DeepReadonly<object>, target: object, key: string | number): void {
+    if(typeof source[key] !== "object")
       return;
 
-    for (const childKey in target[key]) {
-      this.traverseTemplateValue(source[key], target[key], childKey);
+    const originalTarget = target[key];
 
-      const result = this.handleProperty(source[key], target[key], childKey);
+    for (const childKey in source[key]) {
+      this.traverseTemplateValue(source[key], originalTarget, childKey);
 
-      if(typeof result !== "undefined")
+      const result = this.handleProperty(source[key], originalTarget, childKey);
+
+      if(typeof target === "object" && typeof result !== "undefined" && Object.isExtensible(target[key]))
         target[key] = result;
     }
   }
 
   private rawDataParser(value: unknown): any {
-    if(typeof value !== "object")
+    if(typeof value !== "object" || value === null)
       return value;
 
-    const source = structuredClone(value) as object;
+    const target = structuredClone(value) as object;
 
     for(const key in value) {
-      this.traverseTemplateValue(source, value, key);
+      this.traverseTemplateValue(value, target, key);
 
-      const result = this.handleProperty(source, value, key);
+      const result = this.handleProperty(value, target, key);
 
-      if(typeof result === "object")
-        return result;
-      else if(typeof result !== "undefined")
+      if(typeof result !== "undefined")
         return result;
     }
 
-    return value;
+    return target;
   }
 
   private formatParser(value: unknown): string {
-    const result = this.rawDataParser(typeof value === "object" ? structuredClone(value) : value);
+    const result = this.rawDataParser(value);
 
     if(typeof result === "object")
       return JSON.stringify(result);
@@ -69,7 +69,7 @@ export abstract class WaxFormatterBase implements IWaxFormatter {
   }
 
   public format<I = any, R = any>(data: I): R {
-    return this.rawDataParser(typeof data === "object" ? structuredClone(data) : data);
+    return this.rawDataParser(data);
   }
 
   public waxify(strings: TemplateStringsArray, ...args: unknown[]): string {
