@@ -6,7 +6,7 @@ import type { asset, operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { CommentBuilder, IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, UpdateProposalBuilder } from "./detailed";
+import type { CommentBuilder, IHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, TArticleBuilder, UpdateProposalBuilder } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
@@ -123,16 +123,16 @@ export interface ITransactionBuilder {
   pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder;
 
   /**
-   * Returns a comment operation builder
+   * Returns a comment operation builder. When using this method remeber you have to call {@link TArticleBuilder.setCategory} before building the transaction
    *
    * @param {string} author article author
    * @param {string} permlink article permlink
    * @param {string} title article title
    * @param {string} body article body
    *
-   * @returns {CommentBuilder} comment operation builder
+   * @returns {TArticleBuilder} comment operation builder
    */
-  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): CommentBuilder;
+  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): TArticleBuilder;
 
   /**
    * Returns a comment operation builder

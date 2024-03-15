@@ -5,7 +5,7 @@ import { transaction, type operation, type asset, type recurrent_transfer, type 
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation, TAccountName } from "./custom_jsons/builder";
-import { CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./operation_factories";
+import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -178,7 +178,7 @@ export class TransactionBuilder implements ITransactionBuilder {
 
   public pushArticle(
     author: TAccountName, permlink: string, title: string, body: string, jsonMetadata: object = {}
-  ): CommentBuilder {
+  ): TArticleBuilder {
     const commentOp: Partial<comment> = {
       author,
       body,
@@ -187,7 +187,7 @@ export class TransactionBuilder implements ITransactionBuilder {
       json_metadata: JSON.stringify(jsonMetadata)
     };
 
-    return new CommentBuilder(this, commentOp);
+    return new RootCommentBuilder(this, commentOp);
   }
 
   public pushReply(

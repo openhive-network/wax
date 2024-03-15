@@ -13,10 +13,10 @@ export enum ECommentFormat {
 }
 
 export class CommentBuilder {
-  private readonly comment: comment;
+  protected readonly comment: comment;
   private commentOptions?: comment_options;
 
-  private jsonMetadata: Record<string, any> = {
+  protected jsonMetadata: Record<string, any> = {
     format: ECommentFormat.MIXED
   };
 
@@ -93,18 +93,14 @@ export class CommentBuilder {
   }
 
   /**
-   * Pushes alt users to the json metadata object
+   * Pushes alternative users to the json metadata object
    *
-   * @param {string} user alt user to be pushed to the json metadata object
-   * @param {string[]} otherUsers other alt users to be pushed to the json metadata object
+   * @param {string} user alternative user to be pushed to the json metadata object
    *
    * @returns {CommentBuilder} itself
    */
-  public pushUsers(user: string, ...otherUsers: string[]): CommentBuilder {
-    if(typeof this.jsonMetadata.users === "undefined")
-      this.jsonMetadata.users = [];
-
-    this.jsonMetadata.users.push(user, ...otherUsers);
+  public setAlternativeAuthor(user: string): CommentBuilder {
+    this.jsonMetadata.author = user;
 
     return this;
   }
@@ -112,8 +108,8 @@ export class CommentBuilder {
   /**
    * Pushes images to the json metadata object
    *
-   * @param {string} image image to be pushed to the json metadata object
-   * @param {string[]} otherImages other images to be pushed to the json metadata object
+   * @param {string} image image to be pushed to the json metadata object (this image will be your post cover image)
+   * @param {string[]} otherImages other images to be pushed to the json metadata object (Other images contained in the post - optional)
    *
    * @returns {CommentBuilder} itself
    */
@@ -278,3 +274,32 @@ export class CommentBuilder {
     return this.txBuilder;
   }
 }
+
+/**
+ * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
+ */
+export class RootCommentBuilder extends CommentBuilder {
+  public constructor(txBuilder: TransactionBuilder, commentObject: Partial<comment>) {
+    super(txBuilder, commentObject);
+  }
+
+  /**
+   * Sets category of the article
+   *
+   * @param {string} category category (parent permlink) and also the first tag
+   *
+   * @returns {CommentBuilder} ready to build transaction builder
+   */
+  setCategory(category: string): CommentBuilder {
+    this.comment.parent_permlink = category;
+
+    if(typeof this.jsonMetadata.tags === "undefined")
+      this.jsonMetadata.tags = [];
+
+    this.jsonMetadata.tags.unshift(category);
+
+    return this;
+  }
+}
+
+export type TArticleBuilder = Omit<RootCommentBuilder, 'build'>;
