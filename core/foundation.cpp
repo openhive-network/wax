@@ -49,10 +49,11 @@ int64_t calculate_inflation_rate_for_block(const uint32_t block_num)
   return std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
 }
 
-std::string round_to_precision(const float value, const int precision)
+std::string round_to_precision(const double value, const int precision)
 {
-    double rounded = round(value * pow(10, precision)) / pow(10, precision);
-    std::string result = std::to_string(rounded * pow(10, precision) );
+    const int factor = std::pow(10,precision);
+    double rounded = round(value * factor) / factor;
+    std::string result = std::to_string(rounded * factor);
     size_t decimalPos = result.find('.');
     if (decimalPos != std::string::npos) {
         return result.substr(0, decimalPos);
@@ -243,10 +244,9 @@ result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& to
     FC_ASSERT( _vests.symbol == VESTS_SYMBOL, "'vests' param expected as VESTS asset" );
     FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
     FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
-    const int64_t vests_to_hive =
-      fc::uint128_low_bits((fc::to_uint128(0, _vests.amount.value) * fc::to_uint128(0, _total_vesting_fund_hive.amount.value)) / fc::to_uint128(0, _total_vesting_shares.amount.value));
-    const int64_t hp = (int64_t)std::ceil((double)vests_to_hive / hive_precision);
-    _result.content = std::to_string(hp);
+    const double vests_to_hive_feed = (double)(_total_vesting_fund_hive.amount.value) / (double)(_total_vesting_shares.amount.value);
+    const double hp = (double)(_vests.amount.value) * vests_to_hive_feed;
+    _result.content = round_to_precision(hp / hive_precision, HIVE_PRECISION_HIVE);
   });
 }
 

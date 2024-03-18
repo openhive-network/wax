@@ -60,7 +60,7 @@ public:
    * @param total_vesting_fund_hive - from dgpo HIVE asset
    * @param total_vesting_shares - from dgpo VESTS asset
    * 
-   * @returns ceiled value in result.content [HIVE]
+   * @returns amount of hive in result.content [HIVE]
    */
   result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const;
 

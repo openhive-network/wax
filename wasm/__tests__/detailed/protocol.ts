@@ -212,7 +212,7 @@ test.describe('WASM Protocol', () => {
     }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
 
     expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("2");
+    expect(retVal.content).toBe("1100");
   });
 
   test('Should be able to calculate account hp 2', async ({ wasmTest }) => {
@@ -224,7 +224,7 @@ test.describe('WASM Protocol', () => {
     }, ...numToHighLow(2_268_225_009_295_472), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
 
     expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("1304910");
+    expect(retVal.content).toBe("1304909735");
   });
 
   test('Should be able to calculate witness votes hp 1', async ({ wasmTest }) => {
@@ -235,7 +235,7 @@ test.describe('WASM Protocol', () => {
     }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
 
     expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("2");
+    expect(retVal.content).toBe("1100");
   });
 
   test('Should be able to calculate witness votes hp 2', async ({ wasmTest }) => {
@@ -246,7 +246,7 @@ test.describe('WASM Protocol', () => {
     }, ...numToHighLow("142103996686715320"), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
 
     expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("81752423");
+    expect(retVal.content).toBe("81752422223");
   });
 
   test('Should be able to calculate inflation rate for block 1_000_000', async ({ wasmTest }) => {
