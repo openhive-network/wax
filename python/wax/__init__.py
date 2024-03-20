@@ -32,9 +32,10 @@ from .wax import (
     calculate_hp_apr,
     calculate_account_hp,
     calculate_witness_votes_hp,
-    calculate_inflation_rate_for_block
+    calculate_inflation_rate_for_block,
+    get_transaction_required_authorities
 )
-from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data
+from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection
 
 __version__ = "0.0.0"
 
@@ -43,6 +44,7 @@ __all__ = [
     "python_result",
     "python_json_asset",
     "python_ref_block_data",
+    "python_required_authority_collection",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -75,4 +77,5 @@ __all__ = [
     "calculate_account_hp",
     "calculate_witness_votes_hp",
     "calculate_inflation_rate_for_block",
+    "get_transaction_required_authorities",
 ]
