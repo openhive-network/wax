@@ -20,7 +20,7 @@ struct result
 struct json_asset
 {
   std::string amount;
-  uint32_t    precision; // XXX: is uint64_t actually
+  uint32_t    precision=0;
   std::string nai;
 
   json_asset() = default;
