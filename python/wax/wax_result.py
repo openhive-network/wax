@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum
 
-
 class python_error_code(IntEnum):  # noqa: N801
     fail = 0
     ok = 1
@@ -26,3 +25,9 @@ class python_json_asset:  # noqa: N801
 class python_ref_block_data:  # noqa: N801
     ref_block_num: int
     ref_block_prefix: int
+
+@dataclass
+class python_required_authority_collection:  # noqa: N801
+    posting_accounts: set[string]
+    active_accounts: set[string]
+    owner_accounts: set[string]
