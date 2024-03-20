@@ -1,8 +1,11 @@
 # distutils: language = c++
 from functools import wraps
 
+from libcpp.set cimport set as cppset
+from cython.operator cimport dereference, preincrement
+
 from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data
+from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection
 
 def return_python_result(foo):
     @wraps(foo)
@@ -259,3 +262,17 @@ def api_to_proto(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_api_to_proto( operation_or_tx )
   return response.value, response.content, response.exception_message
+
+def get_transaction_required_authorities( transaction: bytes ) -> python_required_authority_collection:
+    cdef protocol obj
+    cdef required_authority_collection collection = obj.cpp_collect_transaction_required_authorities(transaction)
+
+    op = set(collection.posting_accounts)
+    oa = set(collection.active_accounts)
+    oo = set(collection.owner_accounts)
+
+    return python_required_authority_collection(
+      posting_accounts=op,
+      active_accounts=oa,
+      owner_accounts=oo
+    )
