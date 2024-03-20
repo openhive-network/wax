@@ -1,4 +1,5 @@
 from libcpp.string cimport string
+from libcpp.set cimport set as cppset
 from libc.stdint cimport uint16_t, uint32_t
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
@@ -27,6 +28,14 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         uint16_t ref_block_num
         uint32_t ref_block_prefix
 
+    cdef cppclass required_authority_collection:
+         required_authority_collection() except +
+         ctypedef cppset[string] account_set
+
+         account_set posting_accounts
+         account_set active_accounts
+         account_set owner_accounts
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -50,6 +59,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_hbd_to_hive( json_asset hbd, json_asset base, json_asset quote)
         json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares )
         result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
+        required_authority_collection cpp_collect_transaction_required_authorities( string transaction )
     
     cdef cppclass proto_protocol:
         result cpp_validate_operation( string operation )
