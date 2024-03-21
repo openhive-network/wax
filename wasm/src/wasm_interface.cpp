@@ -53,6 +53,12 @@ std::string cpp_asset_symbol(const json_asset& value) const
 void cpp_throws(int value) const
 { foundation::cpp_throws(value); }
 
+crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
+{ return foundation::cpp_crypto_memo_from_string(value); }
+
+std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const
+{ return foundation::cpp_crypto_memo_dump_string(value); }
+
 result cpp_generate_private_key() 
 { return foundation::cpp_generate_private_key(); }
 
@@ -118,6 +124,12 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("nai", &json_asset::nai)
       ;
 
+  value_object<crypto_memo>("crypto_memo")
+      .field("from", &crypto_memo::from)
+      .field("to", &crypto_memo::to)
+      .field("content", &crypto_memo::content)
+      ;
+
   value_object<ref_block_data>("ref_block_data")
       .field("ref_block_num", &ref_block_data::ref_block_num)
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
@@ -139,6 +151,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
 
     .function("cpp_throws", &foundation_wasm::cpp_throws)
+
+    .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
+    .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)
 
     .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_manabar_full_regeneration_time))
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))

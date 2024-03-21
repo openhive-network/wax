@@ -10,6 +10,7 @@
 
 #include <hive/protocol/asset.hpp>
 #include <hive/protocol/transaction.hpp>
+#include <hive/protocol/crypto_memo.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -137,7 +138,6 @@ result foundation::cpp_get_public_key_from_signature(const std::string& digest, 
   });
 }
 
-
 void foundation::cpp_throws(int type) const
 {
   if(type == 0)
@@ -150,6 +150,32 @@ void foundation::cpp_throws(int type) const
     throw std::runtime_error{ "Hello, my exception!" };
   else if(type == 4)
     FC_ASSERT( false, "Hello fc exception!" );
+}
+
+crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const
+{
+  std::optional<hive::protocol::crypto_memo::memo_content> loaded = hive::protocol::crypto_memo{}.load_from_string(value);
+
+  FC_ASSERT( loaded.has_value(), "Could not load the crypto memo content from given string", (value) );
+
+  const std::string from = loaded->from.to_base58();
+  const std::string to = loaded->to.to_base58();
+
+  fc::crypto_data::content crypto_obj{ std::move(loaded.value()) };
+
+  return crypto_memo{ from, to, fc::to_base58( fc::raw::pack_to_vector( crypto_obj ) ) };
+}
+
+std::string foundation::cpp_crypto_memo_dump_string(const crypto_memo& value) const
+{
+  auto memo_obj = hive::protocol::crypto_memo{};
+
+  const fc::ecc::public_key from = fc::ecc::public_key::from_base58( value.from );
+  const fc::ecc::public_key to = fc::ecc::public_key::from_base58( value.to );
+
+  const hive::protocol::crypto_memo::memo_content encoded = memo_obj.build_from_base58_content(from, to, value.content);
+
+  return memo_obj.dump_to_string(encoded);
 }
 
 result foundation::cpp_calculate_public_key(const std::string& wif)
