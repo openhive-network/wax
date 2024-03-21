@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fc/io/json.hpp>
 #include <string>
 
 namespace cpp {
@@ -27,6 +28,17 @@ struct json_asset
     : amount(_amount), precision(_precision), nai(_nai) {}
 };
 
+struct crypto_memo
+{
+  std::string from;
+  std::string to;
+  std::string content;
+
+  crypto_memo() = default;
+  crypto_memo(const std::string& from, const std::string& to, const std::string& content)
+    : from(from), to(to), content(content) {}
+};
+
 struct ref_block_data
 {
   uint16_t ref_block_num;
@@ -34,3 +46,5 @@ struct ref_block_data
 };
 
 } /// namespace cpp
+
+FC_REFLECT( cpp::crypto_memo, (from)(to)(content) );
