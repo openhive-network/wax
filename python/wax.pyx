@@ -161,18 +161,18 @@ def calculate_hp_apr(
 @return_python_json_asset
 def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset ) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _hbd = obj.cpp_hbd(int(hbd.amount))
-    cdef json_asset _base = obj.cpp_hbd(int(base.amount))
-    cdef json_asset _quote = obj.cpp_hive(int(quote.amount))
+    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
+    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
+    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
     response = obj.cpp_hbd_to_hive(_hbd, _base, _quote)
     return response.amount, response.precision, response.nai
 
 @return_python_json_asset
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _vests = obj.cpp_vests(int(vests.amount))
-    cdef json_asset _total_vesting_fund_hive = obj.cpp_hive(int(total_vesting_fund_hive.amount))
-    cdef json_asset _total_vesting_shares = obj.cpp_vests(int(total_vesting_shares.amount))
+    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
+    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
