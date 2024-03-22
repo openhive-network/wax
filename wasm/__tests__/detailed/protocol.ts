@@ -211,8 +211,11 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares);
     }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("1100");
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1100"
+    });
   });
 
   test('Should be able to calculate account hp 2', async ({ wasmTest }) => {
@@ -223,8 +226,11 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares);
     }, ...numToHighLow(2_268_225_009_295_472), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("1304909735");
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1304909734"
+    });
   });
 
   test('Should be able to calculate witness votes hp 1', async ({ wasmTest }) => {
@@ -234,8 +240,11 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
     }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("1100");
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1100"
+    });
   });
 
   test('Should be able to calculate witness votes hp 2', async ({ wasmTest }) => {
@@ -245,8 +254,11 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
     }, ...numToHighLow("142103996686715320"), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("81752422223");
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "81752422223"
+    });
   });
 
   test('Should be able to calculate inflation rate for block 1_000_000', async ({ wasmTest }) => {

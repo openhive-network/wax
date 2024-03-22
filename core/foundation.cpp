@@ -49,18 +49,6 @@ int64_t calculate_inflation_rate_for_block(const uint32_t block_num)
   return std::max( start_inflation_rate - inflation_rate_adjustment, inflation_rate_floor );
 }
 
-std::string round_to_precision(const double value, const int precision)
-{
-    const int factor = std::pow(10,precision);
-    double rounded = round(value * factor) / factor;
-    std::string result = std::to_string(rounded * factor);
-    size_t decimalPos = result.find('.');
-    if (decimalPos != std::string::npos) {
-        return result.substr(0, decimalPos);
-    }
-    return result;
-}
-
 hive::protocol::asset to_asset(const json_asset& v)
 {
   fc::mutable_variant_object mv;
@@ -229,34 +217,32 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
   });
 }
 
-result foundation::cpp_hbd_to_hive(const json_asset &hbd, const float base, const float quote) const
+json_asset foundation::cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const
 {
-  return method_wrapper([&](result& _result)
-  {
-    static const double hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
-    const hive::protocol::asset _hbd = to_asset(hbd);
-    FC_ASSERT( _hbd.symbol == HBD_SYMBOL, "'hbd' param expected as HBD asset" );
-    const double hbd_to_hive_feed = base / quote;
-    const double hp = (double(_hbd.amount.value) ) * hbd_to_hive_feed;
-     _result.content = round_to_precision(hp / hive_precision, HIVE_PRECISION_HIVE); 
-  });
+  const hive::protocol::asset _hbd = to_asset(hbd);
+  const hive::protocol::asset _base = to_asset(base);
+  const hive::protocol::asset _quote = to_asset(quote);
+  FC_ASSERT( _hbd.symbol == HBD_SYMBOL, "'hbd' param expected as HBD asset" );
+  FC_ASSERT( _base.symbol == HBD_SYMBOL, "'price_base' param expected as HBD asset" );
+  FC_ASSERT( _quote.symbol == HIVE_SYMBOL, "'price_quote' param expected as HIVE asset" );
+  const hive::protocol::price hbd_to_hive_feed{ _base, _quote };
+
+  const hive::protocol::asset hive = _hbd * hbd_to_hive_feed;
+  return to_json_asset(hive);
 }
 
-result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+json_asset foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
-  return method_wrapper([&](result& _result)
-  {
-    static const double hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
-    const hive::protocol::asset _vests = to_asset(vests);
-    const hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
-    const hive::protocol::asset _total_vesting_shares = to_asset(total_vesting_shares);
-    FC_ASSERT( _vests.symbol == VESTS_SYMBOL, "'vests' param expected as VESTS asset" );
-    FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
-    FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
-    const double vests_to_hive_feed = (double)(_total_vesting_fund_hive.amount.value) / (double)(_total_vesting_shares.amount.value);
-    const double hp = (double)(_vests.amount.value) * vests_to_hive_feed;
-    _result.content = round_to_precision(hp / hive_precision, HIVE_PRECISION_HIVE);
-  });
+  const hive::protocol::asset _vests = to_asset(vests);
+  const hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+  const hive::protocol::asset _total_vesting_shares = to_asset(total_vesting_shares);
+  FC_ASSERT( _vests.symbol == VESTS_SYMBOL, "'vests' param expected as VESTS asset" );
+  FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
+  FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
+  const hive::protocol::price vests_to_hive_feed{ _total_vesting_fund_hive, _total_vesting_shares };
+
+  const hive::protocol::asset hp = _vests * vests_to_hive_feed;
+  return to_json_asset(hp);
 }
 
 result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 

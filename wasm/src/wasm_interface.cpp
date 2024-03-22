@@ -14,7 +14,7 @@ using namespace emscripten;
 
 using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t);
 using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
-using calculate_witness_votes_hp_fn_t = result(const int32_t, const int32_t, const json_asset&, const json_asset&) const;
+using calculate_witness_votes_hp_fn_t = json_asset(const int32_t, const int32_t, const json_asset&, const json_asset&) const;
 
 class foundation_wasm : public foundation
 {
@@ -72,17 +72,17 @@ result cpp_calculate_hp_apr(
     head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
 }
 
-result cpp_hbd_to_hive(const json_asset &hbd, const float base, const float quote) const
+json_asset cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const
 {
   return foundation::cpp_hbd_to_hive(hbd, base, quote);
 }
 
-result cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
 }
 
-result cpp_calculate_witness_votes_hp(const int32_t vests_low, const int32_t vests_high, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+json_asset cpp_calculate_witness_votes_hp(const int32_t vests_low, const int32_t vests_high, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return foundation::cpp_vests_to_hp(cpp_vests(vests_low, vests_high), total_vesting_fund_hive, total_vesting_shares);
 }
