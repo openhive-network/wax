@@ -15,7 +15,7 @@
 
 namespace cpp {
 
-json_asset cpp_generate_nai(const hive::protocol::asset& asset)
+json_asset to_json_asset(const hive::protocol::asset& asset)
 {
   try
   {
@@ -61,7 +61,7 @@ std::string round_to_precision(const double value, const int precision)
     return result;
 }
 
-hive::protocol::legacy_asset to_asset(const json_asset& v)
+hive::protocol::asset to_asset(const json_asset& v)
 {
   fc::mutable_variant_object mv;
   mv( "amount", v.amount )("precision", uint64_t( v.precision ) )("nai", v.nai );
@@ -73,32 +73,37 @@ hive::protocol::legacy_asset to_asset(const json_asset& v)
   hive::protocol::asset a;
   fc::from_variant(helper, a);
 
-  return hive::protocol::legacy_asset(a);
+  return a;
+}
+
+hive::protocol::legacy_asset to_legacy_asset(const json_asset& v)
+{
+  return hive::protocol::legacy_asset(to_asset(v));
 }
 
 json_asset foundation::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
 {
-  return cpp_generate_nai(hive::protocol::asset{ amount, hive::protocol::asset_symbol_type::from_asset_num(asset_num) });
+  return to_json_asset(hive::protocol::asset{ amount, hive::protocol::asset_symbol_type::from_asset_num(asset_num) });
 }
 
 json_asset foundation::cpp_hive(const int64_t amount)const
 {
-  return cpp_generate_nai(hive::protocol::HIVE_asset{ amount });
+  return to_json_asset(hive::protocol::HIVE_asset{ amount });
 }
 
 json_asset foundation::cpp_hbd(const int64_t amount)const
 {
-  return cpp_generate_nai(hive::protocol::HBD_asset{ amount });
+  return to_json_asset(hive::protocol::HBD_asset{ amount });
 }
 
 json_asset foundation::cpp_vests(const int64_t amount)const
 {
-  return cpp_generate_nai(hive::protocol::VEST_asset{ amount });
+  return to_json_asset(hive::protocol::VEST_asset{ amount });
 }
 
 std::string foundation::cpp_asset_value(const json_asset& value) const
 {
-  auto a = to_asset(value);
+  auto a = to_legacy_asset(value);
 
   /// FIXME optimize it by extending legacy_asset interface by providing function to just convert amount
   std::string s;
@@ -112,7 +117,7 @@ std::string foundation::cpp_asset_value(const json_asset& value) const
 
 std::string foundation::cpp_asset_symbol(const json_asset& value) const
 {
-  auto a = to_asset(value);
+  auto a = to_legacy_asset(value);
   hive::protocol::legacy_asset la(a);
 
   const auto symbol = la.asset_num_to_string();
@@ -123,17 +128,18 @@ std::string foundation::cpp_asset_symbol(const json_asset& value) const
   return symbol;
 }
 
-
 result foundation::cpp_generate_private_key()
 {
-  return method_wrapper([&](result& _result) {
+  return method_wrapper([&](result& _result)
+  {
     _result.content = fc::ecc::private_key::generate().key_to_wif();
-    });
+  });
 }
 
 result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
 {
-  return method_wrapper([&](result& _result) {
+  return method_wrapper([&](result& _result)
+  {
     const auto d = hive::protocol::digest_type{ digest };
     auto sig = hive::protocol::signature_type{};
 
@@ -145,11 +151,12 @@ result foundation::cpp_get_public_key_from_signature(const std::string& digest, 
 
 result foundation::cpp_calculate_public_key(const std::string& wif)
 {
-  return method_wrapper([&](result& _result) {
+  return method_wrapper([&](result& _result)
+  {
     const auto private_key = fc::ecc::private_key::wif_to_key(wif);
     FC_ASSERT(private_key.valid(), "given string is not valid private key");
     _result.content = fc::ecc::public_key::to_base58(private_key->get_public_key(), false/*is_sha256*/);
-    });
+  });
 }
 
 int64_t __current_manabar(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
@@ -166,7 +173,8 @@ result foundation::cpp_calculate_manabar_full_regeneration_time(const int32_t no
   // safe is used because of detected issue with overflow
   using safe_uint128_t = fc::safe<fc::uint128_t>;
 
-  return method_wrapper([&](result& _result) {
+  return method_wrapper([&](result& _result)
+  {
     const safe_uint128_t hive_rc_regen_time{ HIVE_RC_REGEN_TIME };
     const safe_uint128_t safe_max_mana{ max_mana };
     const safe_uint128_t safe_now{ now };
@@ -175,13 +183,14 @@ result foundation::cpp_calculate_manabar_full_regeneration_time(const int32_t no
     const safe_uint128_t time_to_regenerate_missing_mana = (safe_max_mana - mana) * hive_rc_regen_time / max_mana;
 
     _result.content = std::to_string((safe_now + time_to_regenerate_missing_mana).value);
-    });
+  });
 }
 
 result foundation::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
-  return method_wrapper([&](result& _result) {
+  return method_wrapper([&](result& _result)
+  {
     _result.content = std::to_string(__current_manabar(now, max_mana, current_mana, last_update_time));
-    });
+  });
 }
 
 ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
@@ -208,8 +217,8 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
     const int64_t current_inflation_rate = calculate_inflation_rate_for_block(head_block_num);
 
     // calculate the "APR"
-    hive::protocol::legacy_asset _virtual_supply = to_asset(virtual_supply);
-    hive::protocol::legacy_asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+    hive::protocol::asset _virtual_supply = to_asset(virtual_supply);
+    hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
     FC_ASSERT( _virtual_supply.symbol == HIVE_SYMBOL, "'virtual_supply' param expect as HIVE asset" );
     FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expect as HIVE asset" );
     const int64_t hp_apr = (_virtual_supply.amount.value * current_inflation_rate * vesting_reward_percent / _total_vesting_fund_hive.amount.value) / HIVE_100_PERCENT;
@@ -225,7 +234,7 @@ result foundation::cpp_hbd_to_hp(const json_asset &hbd, const float base, const 
   return method_wrapper([&](result& _result)
   {
     static const double hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
-    const hive::protocol::legacy_asset _hbd = to_asset(hbd);
+    const hive::protocol::asset _hbd = to_asset(hbd);
     FC_ASSERT( _hbd.symbol == HBD_SYMBOL, "'hbd' param expected as HBD asset" );
     const double hbd_to_hive_feed = base / quote;
     const double hp = (double(_hbd.amount.value) ) * hbd_to_hive_feed;
@@ -238,9 +247,9 @@ result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& to
   return method_wrapper([&](result& _result)
   {
     static const double hive_precision = std::pow(10, HIVE_PRECISION_HIVE);
-    const hive::protocol::legacy_asset _vests = to_asset(vests);
-    const hive::protocol::legacy_asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
-    const hive::protocol::legacy_asset _total_vesting_shares = to_asset(total_vesting_shares);
+    const hive::protocol::asset _vests = to_asset(vests);
+    const hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+    const hive::protocol::asset _total_vesting_shares = to_asset(total_vesting_shares);
     FC_ASSERT( _vests.symbol == VESTS_SYMBOL, "'vests' param expected as VESTS asset" );
     FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
     FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
@@ -252,10 +261,10 @@ result foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& to
 
 result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
 {
-    return method_wrapper([&](result& _result)
-    {
-        _result.content = std::to_string(calculate_inflation_rate_for_block(block_num));
-    });
+  return method_wrapper([&](result& _result)
+  {
+    _result.content = std::to_string(calculate_inflation_rate_for_block(block_num));
+  });
 }
 
 } /// namespace cpp
