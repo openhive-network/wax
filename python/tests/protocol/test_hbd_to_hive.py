@@ -5,9 +5,9 @@ from typing import Final
 
 import pytest
 
-from wax import calculate_hbd_to_hp, hive, hbd, python_json_asset
+from wax import calculate_hbd_to_hive, hive, hbd, python_json_asset
 
-# Data based on tests runned on convert_hbd_to_hive function fromt tt.
+# Data based on tests runned on convert_hbd_to_hive function from tt.
 
 TESTDATA: Final[list[tuple[python_json_asset, float, float, python_json_asset]]] = [
     (hbd(2432), 1_000, 400, hive(6080)),
@@ -43,8 +43,8 @@ TESTDATA: Final[list[tuple[python_json_asset, float, float, python_json_asset]]]
 
 
 @pytest.mark.parametrize(("hbd", "base", "quote", "expected"), TESTDATA)
-def test_calculate_hbd_to_hp(hbd: python_json_asset, base : float, quote : float, expected: python_json_asset):
-    result = calculate_hbd_to_hp(hbd, base, quote)
+def test_calculate_hbd_to_hive(hbd: python_json_asset, base : float, quote : float, expected: python_json_asset):
+    result = calculate_hbd_to_hive(hbd, base, quote)
     assert result.result == expected.amount
     assert result.exception_message == b''
     assert result.status == result.status.ok

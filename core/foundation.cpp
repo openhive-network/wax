@@ -229,7 +229,7 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
   });
 }
 
-result foundation::cpp_hbd_to_hp(const json_asset &hbd, const float base, const float quote) const 
+result foundation::cpp_hbd_to_hive(const json_asset &hbd, const float base, const float quote) const
 {
   return method_wrapper([&](result& _result)
   {
