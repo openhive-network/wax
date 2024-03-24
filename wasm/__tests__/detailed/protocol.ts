@@ -1,7 +1,7 @@
 import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
-import { test } from '../assets/jest-helper';
+import { wasmTestFixture, test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
@@ -203,7 +203,9 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toEqual("2.97");
   });
 
-  test('Should be able to calculate account hp 1', async ({ wasmTest }) => {
+  wasmTestFixture('Should be able to calculate account hp 1', async ({ wasmTest, wasmRefContext }) => {
+    const refProtocol = wasmRefContext.protocol;
+
     const retVal = await wasmTest(({ protocol }, ...args) => {
       const vests = protocol.cpp_vests(args[0], args[1]);
       const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
@@ -211,11 +213,7 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares);
     }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
 
-    expect(retVal).toEqual({
-      nai: "@@000000021",
-      precision: 3,
-      amount: "1100"
-    });
+    expect(retVal).toEqual(refProtocol.cpp_hive(...numToHighLow(1100)));
   });
 
   test('Should be able to calculate account hp 2', async ({ wasmTest }) => {
