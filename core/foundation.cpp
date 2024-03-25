@@ -142,17 +142,14 @@ result foundation::cpp_get_public_key_from_signature(const std::string& digest, 
 result foundation::cpp_crypto_memo_from_string(const std::string& value) const
 {
   return method_wrapper([&](result& _result) {
-    const std::optional<hive::protocol::crypto_memo::memo_content> loaded = hive::protocol::crypto_memo{}.load_from_string(value);
+    std::optional<hive::protocol::crypto_memo::memo_content> loaded = hive::protocol::crypto_memo{}.load_from_string(value);
 
     FC_ASSERT( loaded.has_value(), "Could not load the crypto memo content from given string", (value) );
 
     const std::string from = loaded->from.to_base58();
     const std::string to = loaded->to.to_base58();
 
-    auto crypto_obj = fc::crypto_data::content{};
-    crypto_obj.nonce = loaded->nonce;
-    crypto_obj.check = loaded->check;
-    crypto_obj.encrypted = std::move(loaded->encrypted);
+    fc::crypto_data::content crypto_obj{ std::move(loaded.value()) };
 
     const auto memo = crypto_memo{ from, to, fc::to_base58( fc::raw::pack_to_vector( crypto_obj ) ) };
 
