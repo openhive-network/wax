@@ -50,6 +50,9 @@ std::string cpp_asset_value(const json_asset& value) const
 std::string cpp_asset_symbol(const json_asset& value) const
 { return foundation::cpp_asset_symbol(value); }
 
+void cpp_throws(int value) const
+{ foundation::cpp_throws(value); }
+
 result cpp_generate_private_key() 
 { return foundation::cpp_generate_private_key(); }
 
@@ -134,6 +137,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
+
+    .function("cpp_throws", &foundation_wasm::cpp_throws)
 
     .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_manabar_full_regeneration_time))
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))

@@ -137,6 +137,21 @@ result foundation::cpp_get_public_key_from_signature(const std::string& digest, 
   });
 }
 
+
+void foundation::cpp_throws(int type) const
+{
+  if(type == 0)
+    throw;
+  else if(type == 1)
+    throw "Hello";
+  else if(type == 2)
+    throw std::string{"Hello, world!"};
+  else if(type == 3)
+    throw std::runtime_error{ "Hello, my exception!" };
+  else if(type == 4)
+    FC_ASSERT( false, "Hello fc exception!" );
+}
+
 result foundation::cpp_calculate_public_key(const std::string& wif)
 {
   return method_wrapper([&](result& _result)

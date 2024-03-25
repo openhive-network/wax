@@ -42,6 +42,82 @@ test.describe('WASM Base tests', () => {
     expect(moduleType).toBe('object');
   });
 
+  test('Should test throw 0', async () => {
+    const { protocol } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(0);
+      } catch(error) {
+        const e: Error = error as Error;
+        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
+  test('Should test throw 1', async () => {
+    const { protocol } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(1);
+      } catch(error) {
+        const e: Error = error as Error;
+        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
+  test('Should test throw 2', async () => {
+    const { protocol } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(2);
+      } catch(error) {
+        const e: Error = error as Error;
+        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
+  test('Should test throw 3', async () => {
+    const { protocol } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(3);
+      } catch(error) {
+        const e: Error = error as Error;
+        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
+  test('Should test throw 4', async () => {
+    const { protocol, provider } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(4);
+      } catch(error) {
+        console.error((provider as any).getExceptionMessage(error));
+        const e: Error = error as Error;
+        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

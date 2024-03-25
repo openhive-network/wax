@@ -24,6 +24,8 @@ public:
   std::string cpp_asset_value(const json_asset& value) const;
   std::string cpp_asset_symbol(const json_asset& value) const;
 
+  void cpp_throws(int type) const;
+
   result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
   result cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
 
