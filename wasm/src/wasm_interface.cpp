@@ -50,6 +50,9 @@ std::string cpp_asset_value(const json_asset& value) const
 std::string cpp_asset_symbol(const json_asset& value) const
 { return foundation::cpp_asset_symbol(value); }
 
+void cpp_throws(int value) const
+{ foundation::cpp_throws(value); }
+
 result cpp_crypto_memo_from_string(const std::string& value) const
 { return foundation::cpp_crypto_memo_from_string(value); }
 
@@ -146,6 +149,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
+
+    .function("cpp_throws", &foundation_wasm::cpp_throws)
 
     .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
     .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)

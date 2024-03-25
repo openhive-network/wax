@@ -157,6 +157,21 @@ result foundation::cpp_crypto_memo_from_string(const std::string& value) const
   });
 }
 
+
+void foundation::cpp_throws(int type) const
+{
+  if(type == 0)
+    throw;
+  else if(type == 1)
+    throw "Hello";
+  else if(type == 2)
+    throw std::string{"Hello, world!"};
+  else if(type == 3)
+    throw std::runtime_error{ "Hello, my exception!" };
+  else if(type == 4)
+    FC_ASSERT( false, "Hello fc exception!" );
+}
+
 result foundation::cpp_crypto_memo_dump_string(const crypto_memo& value) const
 {
   return method_wrapper([&](result& _result) {

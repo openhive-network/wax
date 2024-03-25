@@ -24,6 +24,8 @@ public:
   std::string cpp_asset_value(const json_asset& value) const;
   std::string cpp_asset_symbol(const json_asset& value) const;
 
+  void cpp_throws(int type) const;
+
   result cpp_crypto_memo_from_string(const std::string& value) const;
   result cpp_crypto_memo_dump_string(const crypto_memo& value) const;
 
