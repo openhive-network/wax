@@ -231,7 +231,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:305
+wasm/lib/detailed/operation_factories/comment.ts:320
 
 ___
 
@@ -4095,6 +4095,30 @@ wasm/lib/detailed/operation_factories/comment.ts:32
 
 ## Methods
 
+### addBeneficiaries
+
+▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
+
+Adds beneficiary account(s) to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
+
+#### Returns
+
+[`CommentBuilder`](#classescommentbuildermd)
+
+itself
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:209
+
+___
+
 ### addBeneficiary
 
 ▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
@@ -4116,7 +4140,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:176
+wasm/lib/detailed/operation_factories/comment.ts:182
 
 ___
 
@@ -4134,7 +4158,7 @@ transaction builder object
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:265
+wasm/lib/detailed/operation_factories/comment.ts:285
 
 ___
 
@@ -4174,7 +4198,7 @@ ___
 
 ### pushImages
 
-▸ **pushImages**(`image`, `...otherImages`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes images to the json metadata object
 
@@ -4182,8 +4206,7 @@ Pushes images to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `image` | `string` | image to be pushed to the json metadata object (this image will be your post cover image) |
-| `...otherImages` | `string`[] | other images to be pushed to the json metadata object (Other images contained in the post - optional) |
+| `...images` | `string`[] | image to be pushed to the json metadata object |
 
 #### Returns
 
@@ -4193,13 +4216,13 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:116
+wasm/lib/detailed/operation_factories/comment.ts:117
 
 ___
 
 ### pushLinks
 
-▸ **pushLinks**(`link`, `...otherLinks`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes links to the json metadata object
 
@@ -4207,8 +4230,7 @@ Pushes links to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `link` | `string` | link to be pushed to the json metadata object |
-| `...otherLinks` | `string`[] | other links to be pushed to the json metadata object |
+| `...links` | `string`[] | links to be pushed to the json metadata object |
 
 #### Returns
 
@@ -4218,7 +4240,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:133
+wasm/lib/detailed/operation_factories/comment.ts:136
 
 ___
 
@@ -4253,7 +4275,7 @@ ___
 
 ### pushTags
 
-▸ **pushTags**(`tag`, `...otherTags`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes tags to the json metadata object
 
@@ -4261,8 +4283,7 @@ Pushes tags to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `tag` | `string` | tag to be pushed to the json metadata object |
-| `...otherTags` | `string`[] | other tags to be pushed to the json metadata object |
+| `...tags` | `string`[] | tags to be pushed to the json metadata object |
 
 #### Returns
 
@@ -4272,7 +4293,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:86
+wasm/lib/detailed/operation_factories/comment.ts:85
 
 ___
 
@@ -4300,7 +4321,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:236
+wasm/lib/detailed/operation_factories/comment.ts:256
 
 ___
 
@@ -4328,21 +4349,21 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:252
+wasm/lib/detailed/operation_factories/comment.ts:272
 
 ___
 
 ### setAlternativeAuthor
 
-▸ **setAlternativeAuthor**(`user`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
 
-Pushes alternative users to the json metadata object
+Sets alternative author to the json metadata object
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `user` | `string` | alternative user to be pushed to the json metadata object |
+| `author` | `string` | alternative author to be set on the json metadata object |
 
 #### Returns
 
@@ -4352,7 +4373,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:102
+wasm/lib/detailed/operation_factories/comment.ts:104
 
 ___
 
@@ -4376,7 +4397,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:149
+wasm/lib/detailed/operation_factories/comment.ts:155
 
 ___
 
@@ -4400,7 +4421,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:162
+wasm/lib/detailed/operation_factories/comment.ts:168
 
 ___
 
@@ -4428,7 +4449,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:204
+wasm/lib/detailed/operation_factories/comment.ts:224
 
 ___
 
@@ -4456,7 +4477,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:220
+wasm/lib/detailed/operation_factories/comment.ts:240
 
 
 <a name="classescommunityoperationmd"></a>
@@ -8347,7 +8368,7 @@ Same as the comment builder base, but requires user to set the category (parent 
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:282
+wasm/lib/detailed/operation_factories/comment.ts:302
 
 ## Properties
 
@@ -8379,6 +8400,34 @@ wasm/lib/detailed/operation_factories/comment.ts:19
 
 ## Methods
 
+### addBeneficiaries
+
+▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
+
+Adds beneficiary account(s) to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
+
+#### Returns
+
+[`CommentBuilder`](#classescommentbuildermd)
+
+itself
+
+#### Inherited from
+
+[CommentBuilder](#classescommentbuildermd).[addBeneficiaries](#addbeneficiaries)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:209
+
+___
+
 ### addBeneficiary
 
 ▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
@@ -8404,7 +8453,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:176
+wasm/lib/detailed/operation_factories/comment.ts:182
 
 ___
 
@@ -8426,13 +8475,13 @@ transaction builder object
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:265
+wasm/lib/detailed/operation_factories/comment.ts:285
 
 ___
 
 ### pushImages
 
-▸ **pushImages**(`image`, `...otherImages`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes images to the json metadata object
 
@@ -8440,8 +8489,7 @@ Pushes images to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `image` | `string` | image to be pushed to the json metadata object (this image will be your post cover image) |
-| `...otherImages` | `string`[] | other images to be pushed to the json metadata object (Other images contained in the post - optional) |
+| `...images` | `string`[] | image to be pushed to the json metadata object |
 
 #### Returns
 
@@ -8455,13 +8503,13 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:116
+wasm/lib/detailed/operation_factories/comment.ts:117
 
 ___
 
 ### pushLinks
 
-▸ **pushLinks**(`link`, `...otherLinks`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes links to the json metadata object
 
@@ -8469,8 +8517,7 @@ Pushes links to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `link` | `string` | link to be pushed to the json metadata object |
-| `...otherLinks` | `string`[] | other links to be pushed to the json metadata object |
+| `...links` | `string`[] | links to be pushed to the json metadata object |
 
 #### Returns
 
@@ -8484,7 +8531,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:133
+wasm/lib/detailed/operation_factories/comment.ts:136
 
 ___
 
@@ -8523,7 +8570,7 @@ ___
 
 ### pushTags
 
-▸ **pushTags**(`tag`, `...otherTags`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
 
 Pushes tags to the json metadata object
 
@@ -8531,8 +8578,7 @@ Pushes tags to the json metadata object
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `tag` | `string` | tag to be pushed to the json metadata object |
-| `...otherTags` | `string`[] | other tags to be pushed to the json metadata object |
+| `...tags` | `string`[] | tags to be pushed to the json metadata object |
 
 #### Returns
 
@@ -8546,7 +8592,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:86
+wasm/lib/detailed/operation_factories/comment.ts:85
 
 ___
 
@@ -8578,7 +8624,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:236
+wasm/lib/detailed/operation_factories/comment.ts:256
 
 ___
 
@@ -8610,21 +8656,21 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:252
+wasm/lib/detailed/operation_factories/comment.ts:272
 
 ___
 
 ### setAlternativeAuthor
 
-▸ **setAlternativeAuthor**(`user`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
 
-Pushes alternative users to the json metadata object
+Sets alternative author to the json metadata object
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `user` | `string` | alternative user to be pushed to the json metadata object |
+| `author` | `string` | alternative author to be set on the json metadata object |
 
 #### Returns
 
@@ -8638,7 +8684,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:102
+wasm/lib/detailed/operation_factories/comment.ts:104
 
 ___
 
@@ -8662,7 +8708,7 @@ ready to build transaction builder
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:293
+wasm/lib/detailed/operation_factories/comment.ts:313
 
 ___
 
@@ -8690,7 +8736,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:149
+wasm/lib/detailed/operation_factories/comment.ts:155
 
 ___
 
@@ -8718,7 +8764,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:162
+wasm/lib/detailed/operation_factories/comment.ts:168
 
 ___
 
@@ -8750,7 +8796,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:204
+wasm/lib/detailed/operation_factories/comment.ts:224
 
 ___
 
@@ -8782,7 +8828,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:220
+wasm/lib/detailed/operation_factories/comment.ts:240
 
 
 <a name="classesupdateproposalbuildermd"></a>

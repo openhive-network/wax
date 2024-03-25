@@ -2,7 +2,7 @@ import type { TransactionBuilder } from "../transaction_builder.js";
 import type { ITransactionBuilder } from "../../interfaces";
 import type { TAccountName } from "../custom_jsons/builder";
 import { comment } from "../../proto/comment.js";
-import { comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
+import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { NaiAsset } from "../index.js";
 import { WaxError } from "../../errors.js";
 
@@ -78,29 +78,31 @@ export class CommentBuilder {
   /**
    * Pushes tags to the json metadata object
    *
-   * @param {string} tag tag to be pushed to the json metadata object
-   * @param {string[]} otherTags other tags to be pushed to the json metadata object
+   * @param {string[]} tags tags to be pushed to the json metadata object
    *
    * @returns {CommentBuilder} itself
    */
-  public pushTags(tag: string, ...otherTags: string[]): CommentBuilder {
+  public pushTags(...tags: string[]): CommentBuilder {
+    if(tags.length === 0)
+      return this;
+
     if(typeof this.jsonMetadata.tags === "undefined")
       this.jsonMetadata.tags = [];
 
-    this.jsonMetadata.tags.push(tag, ...otherTags);
+    this.jsonMetadata.tags = [... new Set(this.jsonMetadata.tags)];
 
     return this;
   }
 
   /**
-   * Pushes alternative users to the json metadata object
+   * Sets alternative author to the json metadata object
    *
-   * @param {string} user alternative user to be pushed to the json metadata object
+   * @param {string} author alternative author to be set on the json metadata object
    *
    * @returns {CommentBuilder} itself
    */
-  public setAlternativeAuthor(user: string): CommentBuilder {
-    this.jsonMetadata.author = user;
+  public setAlternativeAuthor(author: string): CommentBuilder {
+    this.jsonMetadata.author = author;
 
     return this;
   }
@@ -108,16 +110,18 @@ export class CommentBuilder {
   /**
    * Pushes images to the json metadata object
    *
-   * @param {string} image image to be pushed to the json metadata object (this image will be your post cover image)
-   * @param {string[]} otherImages other images to be pushed to the json metadata object (Other images contained in the post - optional)
+   * @param {string} images image to be pushed to the json metadata object
    *
    * @returns {CommentBuilder} itself
    */
-  public pushImages(image: string, ...otherImages: string[]): CommentBuilder {
+  public pushImages(...images: string[]): CommentBuilder {
+    if(images.length === 0)
+      return this;
+
     if(typeof this.jsonMetadata.image === "undefined")
       this.jsonMetadata.image = [];
 
-    this.jsonMetadata.image.push(image, ...otherImages);
+    this.jsonMetadata.image.push(...images);
 
     return this;
   }
@@ -125,16 +129,18 @@ export class CommentBuilder {
   /**
    * Pushes links to the json metadata object
    *
-   * @param {string} link link to be pushed to the json metadata object
-   * @param {string[]} otherLinks other links to be pushed to the json metadata object
+   * @param {string[]} links links to be pushed to the json metadata object
    *
    * @returns {CommentBuilder} itself
    */
-  public pushLinks(link: string, ...otherLinks: string[]): CommentBuilder {
+  public pushLinks(...links: string[]): CommentBuilder {
+    if(links.length === 0)
+      return this;
+
     if(typeof this.jsonMetadata.links === "undefined")
       this.jsonMetadata.links = [];
 
-    this.jsonMetadata.links.push(link, ...otherLinks);
+    this.jsonMetadata.links.push(...links);
 
     return this;
   }
@@ -189,6 +195,20 @@ export class CommentBuilder {
       });
     else
       beneficiary.beneficiaries.push({ account, weight });
+
+    return this;
+  }
+
+  /**
+   * Adds beneficiary account(s) to the comment operation object
+   *
+   * @param {Array<beneficiary_route_type>} accounts beneficiary accounts
+   *
+   * @returns {CommentBuilder} itself
+   */
+  public addBeneficiaries(...accounts: Array<beneficiary_route_type>): CommentBuilder {
+    for(const { account, weight } of accounts)
+      this.addBeneficiary(account, weight);
 
     return this;
   }
@@ -292,11 +312,6 @@ export class RootCommentBuilder extends CommentBuilder {
    */
   setCategory(category: string): CommentBuilder {
     this.comment.parent_permlink = category;
-
-    if(typeof this.jsonMetadata.tags === "undefined")
-      this.jsonMetadata.tags = [];
-
-    this.jsonMetadata.tags.unshift(category);
 
     return this;
   }
