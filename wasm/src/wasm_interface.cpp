@@ -50,10 +50,10 @@ std::string cpp_asset_value(const json_asset& value) const
 std::string cpp_asset_symbol(const json_asset& value) const
 { return foundation::cpp_asset_symbol(value); }
 
-result cpp_crypto_memo_from_string(const std::string& value) const
+crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
 { return foundation::cpp_crypto_memo_from_string(value); }
 
-result cpp_crypto_memo_dump_string(const crypto_memo& value) const
+std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const
 { return foundation::cpp_crypto_memo_dump_string(value); }
 
 result cpp_generate_private_key() 
