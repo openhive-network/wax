@@ -53,14 +53,15 @@ function( DEFINE_WAX_TARGET_FOR env )
 
       ADD_EXECUTABLE( ${exec_wasm_name} ${SOURCES} )
 
+      target_compile_options( ${exec_wasm_name} PUBLIC -fwasm-exceptions )
+
       target_include_directories( ${exec_wasm_name} PUBLIC ${INCLUDES} )
 
       target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
       # add -sASSERTIONS to `target_link_options` if you want more information
       # INITIAL_MEMORY by default = 16777216
-      target_link_options( ${exec_wasm_name} PUBLIC -fwasm-exceptions -sASSERTIONS
-      -sEXPORTED_FUNCTIONS=["___get_exception_message","___cpp_exception"]
-      -sEXPORTED_RUNTIME_METHODS=["FS"] -sMODULARIZE=1 -sSINGLE_FILE=1
+      target_link_options( ${exec_wasm_name} PUBLIC -fwasm-exceptions -sEXPORT_EXCEPTION_HANDLING_HELPERS -sASSERTIONS
+                                                    -sEXPORTED_RUNTIME_METHODS=["FS"] -sMODULARIZE=1 -sSINGLE_FILE=1
                                                     -sEXPORT_ES6=1 -sINITIAL_MEMORY=67108864 -sENVIRONMENT="${env}"
                          )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
@@ -72,11 +73,14 @@ function( DEFINE_WAX_TARGET_FOR env )
       # Helper target, just to perform TypeScript wrapper generation
       ADD_EXECUTABLE( ${exec_ts_gen} ${SOURCES} )
 
+      target_compile_options( ${exec_ts_gen} PUBLIC -fwasm-exceptions )
+
       target_include_directories( ${exec_ts_gen} PUBLIC ${INCLUDES} )
       target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
 
       set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
-      target_link_options( ${exec_ts_gen} PUBLIC --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
+      target_link_options( ${exec_ts_gen} PUBLIC -fwasm-exceptions -sEXPORT_EXCEPTION_HANDLING_HELPERS -sASSERTIONS
+                                                 --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
       INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
         COMPONENT "${exec_wasm_name}_dts"
         DESTINATION .
