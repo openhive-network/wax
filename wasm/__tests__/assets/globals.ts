@@ -17,6 +17,7 @@ export interface IWaxGlobals {
 export interface IWasmGlobals {
   protocol: protocolT;
   proto_protocol: proto_protocolT;
+  provider: MainModule;
 }
 
 declare global {
@@ -60,7 +61,8 @@ globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
   // Provide results
   return {
     protocol: new provider.protocol(),
-    proto_protocol: new provider.proto_protocol()
+    proto_protocol: new provider.proto_protocol(),
+    provider
   };
 };
 

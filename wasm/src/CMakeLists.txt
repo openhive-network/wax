@@ -73,13 +73,13 @@ function( DEFINE_WAX_TARGET_FOR env )
       # Helper target, just to perform TypeScript wrapper generation
       ADD_EXECUTABLE( ${exec_ts_gen} ${SOURCES} )
 
-      target_compile_options( ${exec_ts_gen} PUBLIC -fwasm-exceptions )
+      # target_compile_options( ${exec_ts_gen} PUBLIC -fwasm-exceptions )
 
       target_include_directories( ${exec_ts_gen} PUBLIC ${INCLUDES} )
       target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
 
       set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
-      target_link_options( ${exec_ts_gen} PUBLIC -fwasm-exceptions -sEXPORT_EXCEPTION_HANDLING_HELPERS -sASSERTIONS
+      target_link_options( ${exec_ts_gen} PUBLIC # -fwasm-exceptions -sEXPORT_EXCEPTION_HANDLING_HELPERS -sASSERTIONS
                                                  --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
       INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
         COMPONENT "${exec_wasm_name}_dts"

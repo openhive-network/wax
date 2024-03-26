@@ -49,7 +49,7 @@ test.describe('WASM Base tests', () => {
       try {
         protocol.cpp_throws(0);
       } catch(error) {
-        console.error((error as WebAssembly.RuntimeError).message);
+        console.error(error);
 
         throw error;
       }
@@ -85,13 +85,20 @@ test.describe('WASM Base tests', () => {
   });
 
   test('Should test throw 3', async () => {
-    const { protocol } = await createWasmTestFor('node');
+    const { protocol, provider } = await createWasmTestFor('node');
 
     expect(() => {
       try {
         protocol.cpp_throws(3);
       } catch(error) {
-        console.error((error as WebAssembly.RuntimeError).message);
+        try {
+          console.error((error as Error).message);
+          console.error((provider as any).getExceptionMessage(error));
+        } catch(error) {
+          console.error(error);
+
+          return;
+        }
 
         throw error;
       }
