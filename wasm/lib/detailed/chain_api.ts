@@ -1,3 +1,4 @@
+import type { IBeekeeperUnlockedWallet } from "@hive/beekeeper";
 import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
@@ -149,6 +150,25 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       throw new WaxError(`No such account on chain with given name: "${accountName}"`);
 
     return account;
+  }
+
+  public async encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount: string): Promise<string> {
+    let from: string, to: string;
+
+    ({ memo_key: from } = await this.findAccount(fromAccount));
+
+    if(fromAccount === toAccount)
+      to = from;
+    else
+      ({ memo_key: to } = await this.findAccount(toAccount));
+
+    const encrypted = wallet.encryptData(content, from, to);
+
+    return this.proto.cpp_crypto_memo_dump_string({
+      content: encrypted,
+      from,
+      to
+    });
   }
 
   private async getManabarDataArguments(accountName: string, manabarType: EManabarType): Promise<Parameters<WaxBaseApi['calculateCurrentManabarValue']>> {

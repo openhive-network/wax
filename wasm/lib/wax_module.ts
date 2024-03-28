@@ -7,6 +7,7 @@ export type {
   MainModule,
   error_code,
   json_asset,
+  crypto_memo,
   proto_protocol,
   protocol,
   protocol_foundation,

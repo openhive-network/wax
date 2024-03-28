@@ -385,7 +385,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:456
+wasm/lib/interfaces.ts:466
 
 ___
 
@@ -411,7 +411,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:478
+wasm/lib/interfaces.ts:488
 
 ## Variables
 
@@ -9842,7 +9842,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:41
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:16
+wasm/lib/detailed/chain_api.ts:17
 
 ___
 
@@ -9852,7 +9852,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:17
+wasm/lib/detailed/chain_api.ts:18
 
 ___
 
@@ -9862,7 +9862,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:15
+wasm/lib/detailed/chain_api.ts:16
 
 
 <a name="enumsesupportedlanguagesmd"></a>
@@ -10254,7 +10254,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:542
+wasm/lib/interfaces.ts:552
 
 ___
 
@@ -10342,7 +10342,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:504
+wasm/lib/interfaces.ts:514
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10360,7 +10360,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:499
+wasm/lib/interfaces.ts:509
 
 ## Methods
 
@@ -10391,7 +10391,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:427
+wasm/lib/interfaces.ts:437
 
 ___
 
@@ -10416,7 +10416,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:530
+wasm/lib/interfaces.ts:540
 
 ___
 
@@ -10447,7 +10447,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:443
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -10472,7 +10472,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:550
 
 ___
 
@@ -10492,7 +10492,34 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:458
+
+___
+
+### encrypt
+
+▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` |
+| `content` | `string` |
+| `from` | `string` |
+| `to` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[encrypt](#encrypt)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -10522,7 +10549,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:513
+wasm/lib/interfaces.ts:523
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10542,7 +10569,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:520
+wasm/lib/interfaces.ts:530
 
 ___
 
@@ -10635,7 +10662,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:494
+wasm/lib/interfaces.ts:504
 
 ___
 
@@ -11478,7 +11505,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:427
+wasm/lib/interfaces.ts:437
 
 ___
 
@@ -11505,7 +11532,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:443
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -11521,7 +11548,30 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:458
+
+___
+
+### encrypt
+
+▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` |
+| `content` | `string` |
+| `from` | `string` |
+| `to` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+wasm/lib/interfaces.ts:421
 
 ___
 
