@@ -305,6 +305,40 @@ export interface ITransactionBuilder {
    * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form. 
    */
   toLegacyApi(): string;
+
+  /**
+   * Lets you create encrypted data in the transaction
+   *
+   * @type {IEncryptedTransactionBuilderProxy}
+   */
+  readonly encrypt: IEncryptedTransactionBuilderProxy;
+}
+
+export type TEncryptedTransactionBuilder = Omit<ITransactionBuilder, 'encrypt'> & {
+  readonly from: TPublicKey;
+  readonly to: TPublicKey;
+};
+
+export interface IEncryptedTransactionBuilderProxy {
+  /**
+   * Marks this chain of responsibility as encrypted for {@link from} and {@link to}
+   *
+   * Remember this function "creates" an immutable copy of the transaction builder
+   * linked to the original transaction builder - both versions have the same set of data,
+   * but you can't create non-encrypted (supported) operations using encrypted transaction
+   * builder returned by this function. Same applies to the non-encrypted transaction builder
+   * - operations created by it will not be encrypted, but encrypted builders will keep track of
+   * the non-encrypted operations added to the original transaction builder.
+   *
+   * Thanks to this sollution you can call {@link ITransactionBuilder.build} any time you want
+   * from either the encrypted builder or the standard one and it will return the properly synced data
+   *
+   * @param {TPublicKey} from first account to encrypt the data to
+   * @param {TPublicKey} to second account to encrypt the data to
+   *
+   * @returns {TEncryptedTransactionBuilder} encrypted transaction builder chain
+   */
+  with(from: TPublicKey, to: TPublicKey): TEncryptedTransactionBuilder;
 }
 
 export interface ITransactionBuilderConstructor {

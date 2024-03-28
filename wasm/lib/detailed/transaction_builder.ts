@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { IEncryptedTransactionBuilderProxy, ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -8,19 +8,44 @@ import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
 import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 
-export class TransactionBuilder implements ITransactionBuilder {
-  private target: transaction;
+export interface IIndexKeeperMetaEncrypted {
+  index: number;
+  from: TPublicKey;
+  to: TPublicKey;
+}
+export interface IIndexKeeperMeta {
+  index: number;
+}
+export type TIndexKeeper = IIndexKeeperMeta | IIndexKeeperMetaEncrypted;
 
-  private expirationTime?: TTimestamp;
+export class TransactionBuilder implements ITransactionBuilder {
+  public target: transaction;
+
+  public expirationTime?: TTimestamp;
+
+  public indexKeeper: Array<TIndexKeeper> = [];
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return this.api.proto.cpp_get_tapos_data(hex);
   }
 
+  private readonly encryptedDataContainer = new EncryptedProxy(this);
+
+  public get encrypt (): IEncryptedTransactionBuilderProxy {
+    return this.encryptedDataContainer;
+  }
+
+  private internalOperationIndex = 0;
+
+  public get operationIndex (): number {
+    return this.internalOperationIndex++;
+  }
+
   public constructor(
     public readonly api: WaxBaseApi,
     taposBlockId: TBlockHash | string | transaction,
-    expirationTime?: TTimestamp
+    expirationTime?: TTimestamp,
+    private readonly getIndexMeta: () => TIndexKeeper = () => ({ index: this.operationIndex })
   ) {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
@@ -102,8 +127,11 @@ export class TransactionBuilder implements ITransactionBuilder {
       op.flushOperations(this);
     else if("builder" in op)
       this.push(op.builder.build() as BuiltHiveAppsOperation);
-    else
+    else {
       this.target.operations.push(op);
+
+      this.indexKeeper.push(this.getIndexMeta());
+    }
 
     return this;
   }
@@ -238,5 +266,37 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.finalize();
 
     return this.target;
+  }
+}
+
+export class EncryptedTransactionBuilder extends TransactionBuilder {
+  public constructor(
+    originatingTxBuilder: TransactionBuilder,
+    public readonly from: TPublicKey,
+    public readonly to: TPublicKey
+  ) {
+    super(originatingTxBuilder.api, originatingTxBuilder.target, originatingTxBuilder.expirationTime, () => ({
+      index: originatingTxBuilder.operationIndex,
+      from,
+      to
+    }));
+
+    this.indexKeeper = originatingTxBuilder.indexKeeper;
+  }
+}
+
+export class EncryptedProxy {
+  public readonly encryptedBuilders: Array<EncryptedTransactionBuilder> = [];
+
+  public constructor(
+    private readonly txBuilder: TransactionBuilder
+  ) {}
+
+  public with(from: TPublicKey, to: TPublicKey): EncryptedTransactionBuilder {
+    const encrypted = new EncryptedTransactionBuilder(this.txBuilder, from, to);
+
+    this.encryptedBuilders.push(encrypted);
+
+    return encrypted;
   }
 }
