@@ -66,7 +66,7 @@ const wax = await createWaxFoundation();
 
 const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").build());
+tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").store());
 
 console.info(tx.toApi()); // Print the transaction in the API form
 ```

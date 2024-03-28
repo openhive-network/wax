@@ -4144,24 +4144,6 @@ wasm/lib/detailed/operation_factories/comment.ts:182
 
 ___
 
-### build
-
-▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-
-#### Returns
-
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:285
-
-___
-
 ### ensureCommentOptionsCreated
 
 ▸ **ensureCommentOptionsCreated**(): `void`
@@ -4478,6 +4460,24 @@ itself
 #### Defined in
 
 wasm/lib/detailed/operation_factories/comment.ts:240
+
+___
+
+### store
+
+▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:285
 
 
 <a name="classescommunityoperationmd"></a>
@@ -7927,9 +7927,9 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
 
 ## Methods
 
-### build
+### store
 
-▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
@@ -8034,28 +8034,6 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:39
 
 ___
 
-### build
-
-▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-
-#### Returns
-
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
-
-#### Inherited from
-
-[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[build](#build)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
-
-___
-
 ### generateRemoval
 
 ▸ **generateRemoval**(): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
@@ -8071,6 +8049,28 @@ itself
 #### Defined in
 
 wasm/lib/detailed/operation_factories/recurrent_transfer.ts:54
+
+___
+
+### store
+
+▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[store](#store)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
 
 
 <a name="classesresourcecreditsoperationmd"></a>
@@ -8457,28 +8457,6 @@ wasm/lib/detailed/operation_factories/comment.ts:182
 
 ___
 
-### build
-
-▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-
-#### Returns
-
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[build](#build)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:285
-
-___
-
 ### pushImages
 
 ▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
@@ -8830,6 +8808,28 @@ itself
 
 wasm/lib/detailed/operation_factories/comment.ts:240
 
+___
+
+### store
+
+▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+transaction builder object
+
+#### Inherited from
+
+[CommentBuilder](#classescommentbuildermd).[store](#store)
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:285
+
 
 <a name="classesupdateproposalbuildermd"></a>
 
@@ -8903,9 +8903,9 @@ wasm/lib/detailed/operation_factories/update_proposal.ts:21
 
 ___
 
-### build
+### store
 
-▸ **build**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
