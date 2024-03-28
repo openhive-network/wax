@@ -60,7 +60,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "1.27.2-240110132748",
+    "@hive/beekeeper": "1.27.5-rc7-stable.240327121004",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",
