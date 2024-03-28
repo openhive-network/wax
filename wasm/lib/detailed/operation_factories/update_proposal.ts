@@ -36,7 +36,7 @@ export class UpdateProposalBuilder {
    *
    * @returns {ITransactionBuilder} transaction builder object
    */
-  public build(): ITransactionBuilder {
+  public store(): ITransactionBuilder {
     this.txBuilder.push({ update_proposal: this.updateProposal });
 
     return this.txBuilder;

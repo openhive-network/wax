@@ -14,7 +14,7 @@ export class RecurrentTransferBuilder {
    *
    * @returns {ITransactionBuilder} transaction builder object
    */
-  public build(): ITransactionBuilder {
+  public store(): ITransactionBuilder {
     this.txBuilder.push({ recurrent_transfer: this.recurrentTransfer });
 
     return this.txBuilder;

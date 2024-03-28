@@ -282,7 +282,7 @@ export class CommentBuilder {
    *
    * @returns {ITransactionBuilder} transaction builder object
    */
-  public build(): ITransactionBuilder {
+  public store(): ITransactionBuilder {
     // Apply cached json metadata before pushing the comment operation
     this.comment.json_metadata = JSON.stringify(this.jsonMetadata);
 
