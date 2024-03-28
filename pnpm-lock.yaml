@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@hive/beekeeper':
-    specifier: 1.27.2-240110132748
-    version: 1.27.2-240110132748
+    specifier: 1.27.5-rc7-stable.240327121004
+    version: 1.27.5-rc7-stable.240327121004
   class-transformer:
     specifier: ^0.5.1
     version: 0.5.1
@@ -106,8 +106,8 @@ packages:
       js-tokens: 4.0.0
     dev: true
 
-  /@hive/beekeeper@1.27.2-240110132748:
-    resolution: {integrity: sha1-gowsXVxXbN1M3HxCzGHaGFF4BHo=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.2-240110132748.tgz}
+  /@hive/beekeeper@1.27.5-rc7-stable.240327121004:
+    resolution: {integrity: sha1-Y9XzxtOwlD6YPn43ynj8wnsxBTo=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc7-stable.240327121004.tgz}
     engines: {node: '>= 12'}
     dev: false
 

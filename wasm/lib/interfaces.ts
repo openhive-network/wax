@@ -445,6 +445,16 @@ export interface IWaxBaseInterface {
   getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString;
 
   /**
+   * 
+   *
+   * @param {IBeekeeperUnlockedWallet} wallet 
+   * @param {string} content 
+   * @param {TPublicKey} from 
+   * @param {TPublicKey} to 
+   */
+  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to: TPublicKey): string;
+
+  /**
    * Calculates current manabar value for Hive account based on given arguments
    *
    * @param {number} now head block time. Can be obtained using time property from dynamic global properties

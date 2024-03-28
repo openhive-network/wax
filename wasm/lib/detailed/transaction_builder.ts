@@ -275,11 +275,13 @@ export class EncryptedTransactionBuilder extends TransactionBuilder {
     public readonly from: TPublicKey,
     public readonly to: TPublicKey
   ) {
-    super(originatingTxBuilder.api, originatingTxBuilder.target, originatingTxBuilder.expirationTime, () => ({
+    super(originatingTxBuilder.api, {} as transaction, originatingTxBuilder.expirationTime, () => ({
       index: originatingTxBuilder.operationIndex,
       from,
       to
     }));
+
+    this.target = originatingTxBuilder.target;
 
     this.indexKeeper = originatingTxBuilder.indexKeeper;
   }

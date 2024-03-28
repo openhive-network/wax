@@ -1,3 +1,4 @@
+import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
 import type { MainModule, proto_protocol, result } from "../wax_module";
 import type { NaiAsset } from "./api";
@@ -89,6 +90,22 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
   public getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString {
     return this.extract(this.proto.cpp_get_public_key_from_signature(sigDigest, signature));
+  }
+
+  public encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to: TPublicKey): string {
+    const encrypted = wallet.encryptData(content, from, to);
+
+    return this.proto.cpp_crypto_memo_dump_string({
+      content: encrypted,
+      from,
+      to
+    });
+  }
+
+  public decrypt(wallet: IBeekeeperUnlockedWallet, encrypted: string): string {
+    const data = this.proto.cpp_crypto_memo_from_string(encrypted);
+
+    return wallet.decryptData(data.content as string, data.from as string, data.to as string);
   }
 
   private calculateManabarPercent(current: Long, max: Long): number {
