@@ -99,8 +99,8 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushRecurrentTransfer("initminer", "gtg", 100).generateRemoval().build();
-      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).build();
+      tx.pushRecurrentTransfer("initminer", "gtg", 100).generateRemoval().store();
+      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).store();
 
       return tx.build().operations;
     });
@@ -144,7 +144,7 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).build();
+      tx.pushRecurrentTransfer("initminer", "gtg", chain.hive(100)).store();
 
       return tx.build().operations;
     });
@@ -171,8 +171,8 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48").build();
-      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink").build();
+      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48").store();
+      tx.pushUpdateProposal(100, "initminer", chain.hive(0), "subject", "permlink").store();
 
       return tx.build().operations;
     });
