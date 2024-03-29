@@ -153,11 +153,23 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
 
   required_authority_collection ret_val;
-  ret_val.posting_accounts.insert(posting.cbegin(), posting.cend());
-  ret_val.owner_accounts.insert(owner.cbegin(), owner.cend());
-  ret_val.active_accounts.insert(active.cbegin(), active.cend());
+  ret_val.posting_accounts.insert(ret_val.posting_accounts.end(), posting.cbegin(), posting.cend());
+  ret_val.owner_accounts.insert(ret_val.owner_accounts.end(), owner.cbegin(), owner.cend());
+  ret_val.active_accounts.insert(ret_val.active_accounts.end(), active.cbegin(), active.cend());
 
-  /// ret_val.other_authorities = std::move(other_authorities);
+  for(const auto& auth : other_authorities)
+  {
+    wax_authority wa;
+    wa.weight_threshold = auth.weight_threshold;
+
+    for(const auto& [account, weight] : auth.account_auths)
+      wa.account_auths.emplace(account.operator std::string(), weight);
+
+    for(const auto& [key, weight] : auth.key_auths)
+      wa.key_auths.emplace(key.operator std::string(), weight);
+
+    ret_val.other_authorities.emplace_back(wa);
+  }
 
   return ret_val;
   });

@@ -538,6 +538,14 @@ result proto_protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(
   }
 
 template <class FoundationProvider>
+required_authority_collection proto_protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
+{
+  protocol_impl<FoundationProvider> provider;
+
+  return provider.cpp_collect_transaction_required_authorities(cpp_proto_to_api_impl(transaction));
+}
+
+template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
 {
   return method_wrapper([&](result& _result)

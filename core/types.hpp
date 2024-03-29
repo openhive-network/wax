@@ -1,7 +1,7 @@
 #pragma once
 
-#include <set>
 #include <map>
+#include <vector>
 #include <string>
 #include <optional>
 
@@ -102,20 +102,6 @@ struct witness_set_properties_data
 
 using witness_set_properties_serialized = std::map<std::string, std::string>;
 
-struct required_authority_collection
-{
-  typedef std::set<std::string> account_set;
-
-  account_set posting_accounts;
-  account_set active_accounts;
-  account_set owner_accounts;
-
-  /** TODO: Additionally we need to collect here also other required authority based entries, according to `void transaction::get_required_authorities` interface
-  *   It is hard to do atm since we don't have representation of authority and pointing it directly can be troublesome.
-  */
-  /// std::vector<authority> other_authorities;
-};
-
 struct wax_authority
 {
   using authority_map = std::map<std::string, uint16_t>;
@@ -123,6 +109,16 @@ struct wax_authority
   uint32_t      weight_threshold = 0;
   authority_map account_auths;
   authority_map key_auths;
+};
+
+struct required_authority_collection
+{
+  typedef std::vector<std::string> account_vector;
+
+  account_vector posting_accounts;
+  account_vector active_accounts;
+  account_vector owner_accounts;
+  std::vector<wax_authority> other_authorities;
 };
 
 struct wax_authorities

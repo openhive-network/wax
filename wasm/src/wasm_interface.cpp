@@ -156,6 +156,19 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("content", &crypto_memo::content)
       ;
 
+  value_object<wax_authority>("wax_authority")
+      .field("weight_threshold", &wax_authority::weight_threshold)
+      .field("account_auths", &wax_authority::account_auths)
+      .field("key_auths", &wax_authority::key_auths)
+      ;
+
+  value_object<required_authority_collection>("required_authority_collection")
+      .field("posting_accounts", &required_authority_collection::posting_accounts)
+      .field("active_accounts", &required_authority_collection::active_accounts)
+      .field("owner_accounts", &required_authority_collection::owner_accounts)
+      .field("other_authorities", &required_authority_collection::other_authorities)
+      ;
+
   value_object<ref_block_data>("ref_block_data")
       .field("ref_block_num", &ref_block_data::ref_block_num)
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
@@ -173,7 +186,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<json_asset>();
   register_optional<price>();
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
+  register_vector<wax_authority>("VectorWaxAuthority");
   register_map<std::string, std::string>("MapStringString");
+  register_map<std::string, uint16_t>("MapStringUInt16");
 
   value_object<witness_set_properties_data>("witness_set_properties_data")
       .field("key",                     &witness_set_properties_data::key)
@@ -236,6 +251,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
     .function("cpp_calculate_legacy_sig_digest", &protocol_wasm::cpp_calculate_legacy_sig_digest)
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
+    .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
@@ -251,7 +267,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
     .function("cpp_proto_to_legacy_api", &proto_protocol_wasm::cpp_proto_to_legacy_api)
     .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)
-
+    .function("cpp_collect_transaction_required_authorities", &proto_protocol_wasm::cpp_collect_transaction_required_authorities)
     ;
 }
 
