@@ -8,6 +8,7 @@ import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { ApiTransaction, NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
+import type { TTransactionRequiredAuthorities } from './detailed';
 import type Long from "long";
 import type { OperationBase } from "./detailed/operation_builder";
 import type { BlogPostOperation, ReplyOperation, RecurrentTransferOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/operation_factories";
@@ -160,6 +161,15 @@ interface ITransactionBase {
    * @throws {WaxError} on any Wax API-related error including validation error
    */
   decrypt(wallet: IBeekeeperUnlockedWallet): transaction;
+
+  /**
+   * Returns required authority accounts from the transaction
+   *
+   * @type {TTransactionRequiredAuthorities} list of all possible authority types
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get requiredAuthorities(): TTransactionRequiredAuthorities;
 
   /**
    * Validates current transaction. Throws on error

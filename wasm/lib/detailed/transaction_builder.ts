@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
-import { transaction, type operation } from "../protocol.js";
+import { authority, transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { OperationBase } from "./operation_builder";
@@ -20,6 +20,13 @@ type TIndexEndEncryption = TIndexBeginEncryption & {
 };
 
 type TIndexKeeperNode = TIndexBeginEncryption | TIndexEndEncryption;
+
+export type TTransactionRequiredAuthorities = {
+  posting: Set<string>;
+  active: Set<string>;
+  owner: Set<string>;
+  other: Array<authority>;
+}
 
 export class Transaction implements ITransaction, IEncryptingTransaction {
   private target: transaction;
@@ -177,6 +184,61 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_legacy_transaction_id(tx));
 
     return transactionId;
+  }
+
+  public get requiredAuthorities(): TTransactionRequiredAuthorities {
+    const tx = this.toString();
+
+    const posting: Set<string> = new Set();
+    const active: Set<string> = new Set();
+    const owner: Set<string> = new Set();
+    const other: Array<authority> = [];
+
+    const res = this.api.proto.cpp_collect_transaction_required_authorities(tx);
+
+    for(let i = 0; i < res.posting_accounts.size(); i++)
+      posting.add(res.posting_accounts.get(i) as string);
+
+    for(let i = 0; i < res.active_accounts.size(); i++)
+      active.add(res.active_accounts.get(i) as string);
+
+    for(let i = 0; i < res.owner_accounts.size(); i++)
+      owner.add(res.owner_accounts.get(i) as string);
+
+    for(let i = 0; i < res.other_authorities.size(); ++i) {
+      const auth = res.other_authorities.get(i);
+
+      const otherAuthToPush: authority = {
+        weight_threshold: auth!.weight_threshold,
+        account_auths: {},
+        key_auths: {}
+      };
+
+      const accountAuthsKeys = auth!.account_auths.keys();
+      for(let j = 0; j < accountAuthsKeys.size(); ++j) {
+        const accAuthKey = accountAuthsKeys!.get(j);
+        const retrievedAccAuth = auth!.account_auths.get(accAuthKey as string);
+
+        otherAuthToPush.account_auths[accAuthKey as string] = retrievedAccAuth as number;
+      }
+
+      const keyAuthsKeys = auth!.key_auths.keys();
+      for(let j = 0; j < keyAuthsKeys.size(); ++j) {
+        const keyAuthKey = keyAuthsKeys!.get(j);
+        const retrievedKeyAuth = auth!.key_auths.get(keyAuthKey as string);
+
+        otherAuthToPush.key_auths[keyAuthKey as string] = retrievedKeyAuth as number;
+      }
+
+      other.push(otherAuthToPush);
+    }
+
+    return {
+      posting,
+      active,
+      owner,
+      other
+    };
   }
 
   public validate(): void {

@@ -13,3 +13,4 @@ export * from './operation_factories/index.js';
 export * from './util/index.js';
 export * from './healthchecker/index.js';
 export { IOperationSink, OperationBase } from './operation_builder.js';
+export { TTransactionRequiredAuthorities } from './transaction_builder.js';
