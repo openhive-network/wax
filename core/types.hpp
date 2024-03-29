@@ -1,6 +1,6 @@
 #pragma once
 
-#include <set>
+#include <vector>
 #include <string>
 
 namespace cpp {
@@ -36,7 +36,7 @@ struct ref_block_data
 
 struct required_authority_collection
 {
-  typedef std::set<std::string> account_set;
+  typedef std::vector<std::string> account_set;
 
   account_set posting_accounts;
   account_set active_accounts;

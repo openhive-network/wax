@@ -150,9 +150,9 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
 
   required_authority_collection ret_val;
-  ret_val.posting_accounts.insert(posting.cbegin(), posting.cend());
-  ret_val.owner_accounts.insert(owner.cbegin(), owner.cend());
-  ret_val.active_accounts.insert(active.cbegin(), active.cend());
+  ret_val.posting_accounts.insert(ret_val.posting_accounts.begin(), posting.cbegin(), posting.cend());
+  ret_val.owner_accounts.insert(ret_val.owner_accounts.begin(), owner.cbegin(), owner.cend());
+  ret_val.active_accounts.insert(ret_val.active_accounts.begin(), active.cbegin(), active.cend());
 
   /// ret_val.other_authorities = std::move(other_authorities);
 
