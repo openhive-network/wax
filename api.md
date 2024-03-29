@@ -227,7 +227,7 @@ ___
 
 ### TArticleBuilder
 
-Ƭ **TArticleBuilder**: `Omit`\<[`RootCommentBuilder`](#classesrootcommentbuildermd), ``"build"``\>
+Ƭ **TArticleBuilder**: `Omit`\<[`RootCommentBuilder`](#classesrootcommentbuildermd), ``"store"``\>
 
 #### Defined in
 

@@ -317,4 +317,4 @@ export class RootCommentBuilder extends CommentBuilder {
   }
 }
 
-export type TArticleBuilder = Omit<RootCommentBuilder, 'build'>;
+export type TArticleBuilder = Omit<RootCommentBuilder, 'store'>;
