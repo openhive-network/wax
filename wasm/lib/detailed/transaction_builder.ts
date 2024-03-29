@@ -58,7 +58,7 @@ export class TransactionBuilder implements ITransactionBuilder {
     return this.calculateSignerPublicKeys(this.legacy_sigDigest);
   }
 
-  public static fromApi(api: WaxBaseApi, transactionObject: string | object): ITransactionBuilder {
+  public static fromApi(api: WaxBaseApi, transactionObject: string | object): TransactionBuilder {
     if(typeof transactionObject === 'object')
       transactionObject = JSON.stringify(transactionObject);
 
@@ -97,7 +97,7 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder {
+  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TransactionBuilder {
     if("flushOperations" in op)
       op.flushOperations(this);
     else if("builder" in op)
