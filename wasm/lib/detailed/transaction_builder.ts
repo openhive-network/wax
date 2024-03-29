@@ -8,6 +8,12 @@ import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
 import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 
+export type TTransactionRequiredAuthorities = {
+  posting: Set<string>;
+  active: Set<string>;
+  owner: Set<string>;
+}
+
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
 
@@ -138,6 +144,31 @@ export class TransactionBuilder implements ITransactionBuilder {
     const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_legacy_transaction_id(tx));
 
     return transactionId;
+  }
+
+  public get requiredAuthorities(): TTransactionRequiredAuthorities {
+    const tx = this.toString();
+
+    const posting: Set<string> = new Set();
+    const active: Set<string> = new Set();
+    const owner: Set<string> = new Set();
+
+    const res = this.api.proto.cpp_collect_transaction_required_authorities(tx);
+
+    for(let i = 0; i < res.posting_accounts.size(); i++)
+      posting.add(res.posting_accounts.get(i));
+
+    for(let i = 0; i < res.active_accounts.size(); i++)
+      active.add(res.active_accounts.get(i));
+
+    for(let i = 0; i < res.owner_accounts.size(); i++)
+      owner.add(res.owner_accounts.get(i));
+
+    return {
+      posting,
+      active,
+      owner
+    };
   }
 
   public validate(): void {

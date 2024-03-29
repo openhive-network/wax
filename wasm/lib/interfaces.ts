@@ -8,6 +8,7 @@ import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { CommentBuilder, HiveAppsOperation, IBuiltHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, TArticleBuilder, UpdateProposalBuilder } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
+import type { TTransactionRequiredAuthorities } from './detailed/transaction_builder';
 import type Long from "long";
 
 export type TTimestamp = Date | number | string;
@@ -202,6 +203,15 @@ export interface ITransactionBuilder {
    * @throws {WaxError} on any Wax API-related error
    */
   get legacy_signatureKeys(): Array<THexString>;
+
+  /**
+   * Returns required authority accounts from the transaction
+   *
+   * @type {TTransactionRequiredAuthorities} list of all possible authority types
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  get requiredAuthorities(): TTransactionRequiredAuthorities;
 
   /**
    * Validates current transaction. Throws on error

@@ -245,7 +245,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:25
+wasm/lib/interfaces.ts:26
 
 ___
 
@@ -321,7 +321,7 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:18
+wasm/lib/interfaces.ts:19
 
 ___
 
@@ -347,7 +347,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:13
+wasm/lib/interfaces.ts:14
 
 ___
 
@@ -361,7 +361,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:55
+wasm/lib/interfaces.ts:56
 
 ___
 
@@ -385,7 +385,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:456
+wasm/lib/interfaces.ts:466
 
 ___
 
@@ -411,7 +411,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:478
+wasm/lib/interfaces.ts:488
 
 ## Variables
 
@@ -10201,7 +10201,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:347
+wasm/lib/interfaces.ts:357
 
 ___
 
@@ -10219,7 +10219,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:354
+wasm/lib/interfaces.ts:364
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10244,7 +10244,7 @@ wasm/lib/interfaces.ts:354
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:370
 
 ___
 
@@ -10254,7 +10254,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:542
+wasm/lib/interfaces.ts:552
 
 ___
 
@@ -10268,7 +10268,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -10308,7 +10308,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:363
+wasm/lib/interfaces.ts:373
 
 ## Accessors
 
@@ -10326,7 +10326,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:368
 
 ___
 
@@ -10342,7 +10342,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:504
+wasm/lib/interfaces.ts:514
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10360,7 +10360,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:499
+wasm/lib/interfaces.ts:509
 
 ## Methods
 
@@ -10391,7 +10391,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:427
+wasm/lib/interfaces.ts:437
 
 ___
 
@@ -10416,7 +10416,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:530
+wasm/lib/interfaces.ts:540
 
 ___
 
@@ -10447,7 +10447,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:443
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -10472,7 +10472,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:550
 
 ___
 
@@ -10492,7 +10492,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:458
 
 ___
 
@@ -10522,7 +10522,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:513
+wasm/lib/interfaces.ts:523
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10542,7 +10542,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:520
+wasm/lib/interfaces.ts:530
 
 ___
 
@@ -10570,7 +10570,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:378
+wasm/lib/interfaces.ts:388
 
 ___
 
@@ -10603,7 +10603,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:411
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -10635,7 +10635,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:494
+wasm/lib/interfaces.ts:504
 
 ___
 
@@ -10657,7 +10657,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:370
+wasm/lib/interfaces.ts:380
 
 ___
 
@@ -10685,7 +10685,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:402
 
 ___
 
@@ -10713,7 +10713,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:385
+wasm/lib/interfaces.ts:395
 
 ___
 
@@ -10741,7 +10741,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:409
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -10758,7 +10758,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:33
+wasm/lib/interfaces.ts:34
 
 ___
 
@@ -10770,7 +10770,7 @@ Maximum manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:40
+wasm/lib/interfaces.ts:41
 
 ___
 
@@ -10782,7 +10782,7 @@ Percent of manabar load with two digits of precision, safely calculated based on
 
 #### Defined in
 
-wasm/lib/interfaces.ts:47
+wasm/lib/interfaces.ts:48
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -10807,7 +10807,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:177
+wasm/lib/interfaces.ts:178
 
 ___
 
@@ -10827,7 +10827,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:186
+wasm/lib/interfaces.ts:187
 
 ___
 
@@ -10847,7 +10847,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:168
+wasm/lib/interfaces.ts:169
 
 ___
 
@@ -10867,7 +10867,27 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:204
+wasm/lib/interfaces.ts:205
+
+___
+
+### requiredAuthorities
+
+• `get` **requiredAuthorities**(): `TTransactionRequiredAuthorities`
+
+Returns required authority accounts from the transaction
+
+#### Returns
+
+`TTransactionRequiredAuthorities`
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:214
 
 ___
 
@@ -10887,7 +10907,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:159
+wasm/lib/interfaces.ts:160
 
 ___
 
@@ -10907,7 +10927,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:195
+wasm/lib/interfaces.ts:196
 
 ## Methods
 
@@ -10939,7 +10959,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:257
+wasm/lib/interfaces.ts:267
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -10966,7 +10986,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:271
+wasm/lib/interfaces.ts:281
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -10987,7 +11007,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:283
+wasm/lib/interfaces.ts:293
 
 ___
 
@@ -11005,7 +11025,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:242
+wasm/lib/interfaces.ts:252
 
 ___
 
@@ -11033,7 +11053,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:81
+wasm/lib/interfaces.ts:82
 
 ___
 
@@ -11061,7 +11081,7 @@ comment operation builder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:135
+wasm/lib/interfaces.ts:136
 
 ___
 
@@ -11090,7 +11110,7 @@ recurrent transfer operation builder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:95
+wasm/lib/interfaces.ts:96
 
 ▸ **pushRecurrentTransfer**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
 
@@ -11115,7 +11135,7 @@ recurrent transfer operation builder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:109
+wasm/lib/interfaces.ts:110
 
 ___
 
@@ -11145,7 +11165,7 @@ comment operation builder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:150
+wasm/lib/interfaces.ts:151
 
 ___
 
@@ -11174,7 +11194,7 @@ update proposal operation builder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:123
+wasm/lib/interfaces.ts:124
 
 ___
 
@@ -11206,7 +11226,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:235
+wasm/lib/interfaces.ts:245
 
 ___
 
@@ -11228,7 +11248,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:292
+wasm/lib/interfaces.ts:302
 
 ___
 
@@ -11254,7 +11274,7 @@ This method is added only for convenience and better cooperation to other transa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:307
+wasm/lib/interfaces.ts:317
 
 ___
 
@@ -11276,7 +11296,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:220
+wasm/lib/interfaces.ts:230
 
 ___
 
@@ -11296,7 +11316,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:211
+wasm/lib/interfaces.ts:221
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -11324,7 +11344,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:320
+wasm/lib/interfaces.ts:330
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -11342,7 +11362,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:327
+wasm/lib/interfaces.ts:337
 
 ## Methods
 
@@ -11370,7 +11390,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:338
+wasm/lib/interfaces.ts:348
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11391,7 +11411,7 @@ wasm/lib/interfaces.ts:338
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:370
 
 ___
 
@@ -11401,7 +11421,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -11437,7 +11457,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:363
+wasm/lib/interfaces.ts:373
 
 ## Accessors
 
@@ -11451,7 +11471,7 @@ wasm/lib/interfaces.ts:363
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:368
 
 ## Methods
 
@@ -11478,7 +11498,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:427
+wasm/lib/interfaces.ts:437
 
 ___
 
@@ -11505,7 +11525,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:443
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -11521,7 +11541,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:458
 
 ___
 
@@ -11545,7 +11565,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:378
+wasm/lib/interfaces.ts:388
 
 ___
 
@@ -11574,7 +11594,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:411
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -11592,7 +11612,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:370
+wasm/lib/interfaces.ts:380
 
 ___
 
@@ -11616,7 +11636,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:402
 
 ___
 
@@ -11640,7 +11660,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:385
+wasm/lib/interfaces.ts:395
 
 ___
 
@@ -11664,7 +11684,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:409
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
@@ -12033,7 +12053,7 @@ wasm/lib/detailed/formatters/types.ts:49
 
 #### Defined in
 
-wasm/lib/interfaces.ts:58
+wasm/lib/interfaces.ts:59
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -12062,7 +12082,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:68
+wasm/lib/interfaces.ts:69
 
 ___
 
@@ -12076,7 +12096,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:58
+wasm/lib/interfaces.ts:59
 
 
 <a name="interfacesaccount_createmd"></a>
