@@ -262,11 +262,11 @@ ___
 
 ### TEncryptedTransactionBuilder
 
-Ƭ **TEncryptedTransactionBuilder**: `Omit`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd), ``"encrypt"``\> & \{ `from`: `TPublicKey` ; `to`: `TPublicKey`  }
+Ƭ **TEncryptedTransactionBuilder**: `Omit`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd), ``"startEncrypt"``\> & \{ `from`: `TPublicKey` ; `to`: `TPublicKey` ; `stopEncrypt`: () => [`ITransactionBuilder`](#interfacesitransactionbuildermd)  }
 
 #### Defined in
 
-wasm/lib/interfaces.ts:317
+wasm/lib/interfaces.ts:330
 
 ___
 
@@ -396,7 +396,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:490
+wasm/lib/interfaces.ts:502
 
 ___
 
@@ -422,7 +422,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:512
+wasm/lib/interfaces.ts:524
 
 ## Variables
 
@@ -9853,7 +9853,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:41
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:16
+wasm/lib/detailed/chain_api.ts:17
 
 ___
 
@@ -9863,7 +9863,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:17
+wasm/lib/detailed/chain_api.ts:18
 
 ___
 
@@ -9873,7 +9873,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/chain_api.ts:15
+wasm/lib/detailed/chain_api.ts:16
 
 
 <a name="enumsesupportedlanguagesmd"></a>
@@ -10148,41 +10148,6 @@ wasm/lib/detailed/custom_jsons/community.ts:58
 
 # Interface: IEncryptedTransactionBuilderProxy
 
-## Methods
-
-### with
-
-▸ **with**(`from`, `to`): [`TEncryptedTransactionBuilder`](#tencryptedtransactionbuilder)
-
-Marks this chain of responsibility as encrypted for from and to
-
-Remember this function "creates" an immutable copy of the transaction builder
-linked to the original transaction builder - both versions have the same set of data,
-but you can't create non-encrypted (supported) operations using encrypted transaction
-builder returned by this function. Same applies to the non-encrypted transaction builder
-- operations created by it will not be encrypted, but encrypted builders will keep track of
-the non-encrypted operations added to the original transaction builder.
-
-Thanks to this sollution you can call [ITransactionBuilder.build](#build) any time you want
-from either the encrypted builder or the standard one and it will return the properly synced data
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `from` | `string` | first account to encrypt the data to |
-| `to` | `string` | second account to encrypt the data to |
-
-#### Returns
-
-[`TEncryptedTransactionBuilder`](#tencryptedtransactionbuilder)
-
-encrypted transaction builder chain
-
-#### Defined in
-
-wasm/lib/interfaces.ts:341
-
 
 <a name="interfacesiformatfunctionargumentsmd"></a>
 
@@ -10252,7 +10217,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:381
+wasm/lib/interfaces.ts:383
 
 ___
 
@@ -10270,7 +10235,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:388
+wasm/lib/interfaces.ts:390
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10295,7 +10260,7 @@ wasm/lib/interfaces.ts:388
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:396
 
 ___
 
@@ -10305,7 +10270,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:576
+wasm/lib/interfaces.ts:588
 
 ___
 
@@ -10319,7 +10284,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:396
+wasm/lib/interfaces.ts:398
 
 ___
 
@@ -10359,7 +10324,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:397
+wasm/lib/interfaces.ts:399
 
 ## Accessors
 
@@ -10377,7 +10342,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:394
 
 ___
 
@@ -10393,7 +10358,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:538
+wasm/lib/interfaces.ts:550
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10411,7 +10376,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:533
+wasm/lib/interfaces.ts:545
 
 ## Methods
 
@@ -10442,7 +10407,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:461
+wasm/lib/interfaces.ts:473
 
 ___
 
@@ -10467,7 +10432,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:564
+wasm/lib/interfaces.ts:576
 
 ___
 
@@ -10498,7 +10463,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:477
+wasm/lib/interfaces.ts:489
 
 ___
 
@@ -10523,7 +10488,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:574
+wasm/lib/interfaces.ts:586
 
 ___
 
@@ -10543,7 +10508,34 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:482
+wasm/lib/interfaces.ts:494
+
+___
+
+### encrypt
+
+▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` |
+| `content` | `string` |
+| `from` | `string` |
+| `to` | `string` |
+
+#### Returns
+
+`string`
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[encrypt](#encrypt)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:457
 
 ___
 
@@ -10573,7 +10565,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:547
+wasm/lib/interfaces.ts:559
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10593,7 +10585,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:554
+wasm/lib/interfaces.ts:566
 
 ___
 
@@ -10621,7 +10613,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:412
+wasm/lib/interfaces.ts:414
 
 ___
 
@@ -10654,7 +10646,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:445
+wasm/lib/interfaces.ts:447
 
 ___
 
@@ -10686,7 +10678,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:528
+wasm/lib/interfaces.ts:540
 
 ___
 
@@ -10708,7 +10700,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:404
+wasm/lib/interfaces.ts:406
 
 ___
 
@@ -10736,7 +10728,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:426
+wasm/lib/interfaces.ts:428
 
 ___
 
@@ -10764,7 +10756,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:419
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -10792,7 +10784,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:433
+wasm/lib/interfaces.ts:435
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -10839,18 +10831,6 @@ wasm/lib/interfaces.ts:47
 <a name="interfacesitransactionbuildermd"></a>
 
 # Interface: ITransactionBuilder
-
-## Properties
-
-### encrypt
-
-• `Readonly` **encrypt**: [`IEncryptedTransactionBuilderProxy`](#interfacesiencryptedtransactionbuilderproxymd)
-
-Lets you create encrypted data in the transaction
-
-#### Defined in
-
-wasm/lib/interfaces.ts:314
 
 ## Accessors
 
@@ -11273,6 +11253,41 @@ wasm/lib/interfaces.ts:235
 
 ___
 
+### startEncrypt
+
+▸ **startEncrypt**(`from`, `to`): [`TEncryptedTransactionBuilder`](#tencryptedtransactionbuilder)
+
+Marks this chain of responsibility as encrypted for from and to
+
+Remember this function "creates" an immutable copy of the transaction builder
+linked to the original transaction builder - both versions have the same set of data,
+but you can't create non-encrypted (supported) operations using encrypted transaction
+builder returned by this function. Same applies to the non-encrypted transaction builder
+- operations created by it will not be encrypted, but encrypted builders will keep track of
+the non-encrypted operations added to the original transaction builder.
+
+Thanks to this sollution you can call [ITransactionBuilder.build](#build) any time you want
+from either the encrypted builder or the standard one and it will return the properly synced data
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `from` | `string` | first account to encrypt the data to |
+| `to` | `string` | second account to encrypt the data to |
+
+#### Returns
+
+[`TEncryptedTransactionBuilder`](#tencryptedtransactionbuilder)
+
+encrypted transaction builder chain
+
+#### Defined in
+
+wasm/lib/interfaces.ts:327
+
+___
+
 ### toApi
 
 ▸ **toApi**(): `string`
@@ -11387,7 +11402,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:354
+wasm/lib/interfaces.ts:356
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -11405,7 +11420,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:361
+wasm/lib/interfaces.ts:363
 
 ## Methods
 
@@ -11433,7 +11448,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:372
+wasm/lib/interfaces.ts:374
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11454,7 +11469,7 @@ wasm/lib/interfaces.ts:372
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:396
 
 ___
 
@@ -11464,7 +11479,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:396
+wasm/lib/interfaces.ts:398
 
 ___
 
@@ -11500,7 +11515,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:397
+wasm/lib/interfaces.ts:399
 
 ## Accessors
 
@@ -11514,7 +11529,7 @@ wasm/lib/interfaces.ts:397
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:394
 
 ## Methods
 
@@ -11541,7 +11556,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:461
+wasm/lib/interfaces.ts:473
 
 ___
 
@@ -11568,7 +11583,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:477
+wasm/lib/interfaces.ts:489
 
 ___
 
@@ -11584,7 +11599,30 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:482
+wasm/lib/interfaces.ts:494
+
+___
+
+### encrypt
+
+▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` |
+| `content` | `string` |
+| `from` | `string` |
+| `to` | `string` |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+wasm/lib/interfaces.ts:457
 
 ___
 
@@ -11608,7 +11646,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:412
+wasm/lib/interfaces.ts:414
 
 ___
 
@@ -11637,7 +11675,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:445
+wasm/lib/interfaces.ts:447
 
 ___
 
@@ -11655,7 +11693,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:404
+wasm/lib/interfaces.ts:406
 
 ___
 
@@ -11679,7 +11717,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:426
+wasm/lib/interfaces.ts:428
 
 ___
 
@@ -11703,7 +11741,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:419
+wasm/lib/interfaces.ts:421
 
 ___
 
@@ -11727,7 +11765,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:433
+wasm/lib/interfaces.ts:435
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

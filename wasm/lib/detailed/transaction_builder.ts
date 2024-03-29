@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { IEncryptedTransactionBuilderProxy, ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -29,23 +29,22 @@ export class TransactionBuilder implements ITransactionBuilder {
     return this.api.proto.cpp_get_tapos_data(hex);
   }
 
-  private readonly encryptedDataContainer = new EncryptedProxy(this);
-
-  public get encrypt (): IEncryptedTransactionBuilderProxy {
-    return this.encryptedDataContainer;
+  public startEncrypt (from: TPublicKey, to: TPublicKey): EncryptedTransactionBuilder {
+    return new EncryptedTransactionBuilder(this, from, to);
   }
 
   private internalOperationIndex = 0;
 
-  public get operationIndex (): number {
-    return this.internalOperationIndex++;
+  public get operationIndex (): TIndexKeeper {
+    return {
+      index: this.internalOperationIndex++
+    };
   }
 
   public constructor(
     public readonly api: WaxBaseApi,
     taposBlockId: TBlockHash | string | transaction,
-    expirationTime?: TTimestamp,
-    private readonly getIndexMeta: () => TIndexKeeper = () => ({ index: this.operationIndex })
+    expirationTime?: TTimestamp
   ) {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
@@ -130,7 +129,7 @@ export class TransactionBuilder implements ITransactionBuilder {
     else {
       this.target.operations.push(op);
 
-      this.indexKeeper.push(this.getIndexMeta());
+      this.indexKeeper.push(this.operationIndex);
     }
 
     return this;
@@ -271,34 +270,26 @@ export class TransactionBuilder implements ITransactionBuilder {
 
 export class EncryptedTransactionBuilder extends TransactionBuilder {
   public constructor(
-    originatingTxBuilder: TransactionBuilder,
+    private readonly originatingTxBuilder: TransactionBuilder,
     public readonly from: TPublicKey,
     public readonly to: TPublicKey
   ) {
-    super(originatingTxBuilder.api, {} as transaction, originatingTxBuilder.expirationTime, () => ({
-      index: originatingTxBuilder.operationIndex,
-      from,
-      to
-    }));
+    super(originatingTxBuilder.api, {} as transaction, originatingTxBuilder.expirationTime);
 
     this.target = originatingTxBuilder.target;
 
     this.indexKeeper = originatingTxBuilder.indexKeeper;
   }
-}
 
-export class EncryptedProxy {
-  public readonly encryptedBuilders: Array<EncryptedTransactionBuilder> = [];
+  public get operationIndex(): TIndexKeeper {
+    return {
+      ...this.originatingTxBuilder.operationIndex,
+      from: this.from,
+      to: this.to
+    };
+  }
 
-  public constructor(
-    private readonly txBuilder: TransactionBuilder
-  ) {}
-
-  public with(from: TPublicKey, to: TPublicKey): EncryptedTransactionBuilder {
-    const encrypted = new EncryptedTransactionBuilder(this.txBuilder, from, to);
-
-    this.encryptedBuilders.push(encrypted);
-
-    return encrypted;
+  public stopEncrypt(): TransactionBuilder {
+    return this.originatingTxBuilder;
   }
 }

@@ -307,20 +307,6 @@ export interface ITransactionBuilder {
   toLegacyApi(): string;
 
   /**
-   * Lets you create encrypted data in the transaction
-   *
-   * @type {IEncryptedTransactionBuilderProxy}
-   */
-  readonly encrypt: IEncryptedTransactionBuilderProxy;
-}
-
-export type TEncryptedTransactionBuilder = Omit<ITransactionBuilder, 'encrypt'> & {
-  readonly from: TPublicKey;
-  readonly to: TPublicKey;
-};
-
-export interface IEncryptedTransactionBuilderProxy {
-  /**
    * Marks this chain of responsibility as encrypted for {@link from} and {@link to}
    *
    * Remember this function "creates" an immutable copy of the transaction builder
@@ -338,7 +324,23 @@ export interface IEncryptedTransactionBuilderProxy {
    *
    * @returns {TEncryptedTransactionBuilder} encrypted transaction builder chain
    */
-  with(from: TPublicKey, to: TPublicKey): TEncryptedTransactionBuilder;
+  startEncrypt(from: TPublicKey, to: TPublicKey): TEncryptedTransactionBuilder;
+}
+
+export type TEncryptedTransactionBuilder = Omit<ITransactionBuilder, 'startEncrypt'> & {
+  readonly from: TPublicKey;
+  readonly to: TPublicKey;
+
+  /**
+   * Returns the original transaction builder interface, also marking that encryption for given
+   * {@link TEncryptedTransactionBuilder.from} and {@link TEncryptedTransactionBuilder.to} ends
+   *
+   * @returns {ITransactionBuilder} original transaction builder
+   */
+  stopEncrypt(): ITransactionBuilder;
+};
+
+export interface IEncryptedTransactionBuilderProxy {
 }
 
 export interface ITransactionBuilderConstructor {
