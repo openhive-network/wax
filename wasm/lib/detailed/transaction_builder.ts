@@ -7,6 +7,7 @@ import { calculateExpiration } from "./util/expiration_parser.js";
 import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
 import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
+import { EncryptionVisitor } from './encryption_visitor';
 
 export interface IIndexKeeperMetaEncrypted {
   index: number;
@@ -243,7 +244,18 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
+  private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
+    for(const index of this.indexKeeper)
+      if("from" in index) {
+        const visitor = new EncryptionVisitor((data: string) => this.api.encrypt(wallet, data, index.from, index.to));
+
+        visitor.accept(this.target.operations[index.index]);
+      }
+  }
+
   public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString {
+    this.encryptOperations(wallet);
+
     const sig = wallet.signDigest(publicKey as TPublicKey, this.sigDigest);
 
     this.target.signatures.push(sig);
