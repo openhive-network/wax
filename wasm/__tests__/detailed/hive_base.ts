@@ -168,6 +168,27 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
+  test('Should be able to encrypt comment opertion using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain, beekeeper }) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.startEncrypt('5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh', '5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh')
+          .pushArticle('initminer', 'first-post', 'First post', 'This should be encrypted').setCategory('blog').store()
+        .stopEncrypt()
+          .pushArticle('initminer', 'first-post', 'First post', 'This should not be encrypted').setCategory('blog').store();
+
+      const stx = tx.build(wallet, '5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
+
+      return stx.operations;
+    });
+
+    expect(retVal).toStrictEqual([]);
+  });
+
   test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");

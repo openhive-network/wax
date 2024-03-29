@@ -2,7 +2,7 @@ import type { TransactionBuilder } from "../transaction_builder";
 import type { ITransactionBuilder } from "../../interfaces";
 import { recurrent_transfer } from "../../proto/recurrent_transfer.js";
 
-export class RecurrentTransferBuilder {
+export class RecurrentTransferBuilder<TChain = ITransactionBuilder> {
   protected readonly recurrentTransfer: recurrent_transfer;
 
   public constructor(protected readonly txBuilder: TransactionBuilder, recurrentTransferObject: Partial<recurrent_transfer>) {
@@ -12,16 +12,16 @@ export class RecurrentTransferBuilder {
   /**
    * Pushes the prepared operation to the transaction builder operations and returns the transaction builder
    *
-   * @returns {ITransactionBuilder} transaction builder object
+   * @returns {TChain} transaction builder object
    */
-  public store(): ITransactionBuilder {
+  public store(): TChain {
     this.txBuilder.push({ recurrent_transfer: this.recurrentTransfer });
 
-    return this.txBuilder;
+    return this.txBuilder as TChain;
   }
 }
 
-export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
+export class RecurrentTransferPairIdBuilder<TChain = ITransactionBuilder> extends RecurrentTransferBuilder<TChain> {
   public constructor(txBuilder: TransactionBuilder, recurrentTransferObject: Partial<recurrent_transfer>, pairId?: number) {
     super(txBuilder, recurrentTransferObject);
 
@@ -34,9 +34,9 @@ export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
    *
    * @param {number} pairId Pair id to add to the recurrent transfer
    *
-   * @returns {RecurrentTransferPairIdBuilder} itself
+   * @returns {RecurrentTransferPairIdBuilder<TChain>} itself
    */
-  private addPairId(pairId: number): RecurrentTransferPairIdBuilder {
+  private addPairId(pairId: number): RecurrentTransferPairIdBuilder<TChain> {
     this.recurrentTransfer.extensions.push({
       recurrent_transfer_pair_id: {
         pair_id: pairId
@@ -49,9 +49,9 @@ export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
   /**
    * Removes recurrent transfer with the previously set pair id
    *
-   * @returns {RecurrentTransferPairIdBuilder} itself
+   * @returns {RecurrentTransferPairIdBuilder<TChain>} itself
    */
-  public generateRemoval(): RecurrentTransferPairIdBuilder {
+  public generateRemoval(): RecurrentTransferPairIdBuilder<TChain> {
     this.recurrentTransfer.amount = { ...this.txBuilder.api.ASSETS.HIVE, amount: "0" };
 
     return this;

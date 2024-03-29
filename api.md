@@ -69,12 +69,11 @@
 
 - [IBuiltHiveAppsOperation](#interfacesibuilthiveappsoperationmd)
 - [ICommunityProps](#interfacesicommunitypropsmd)
-- [IEncryptedTransactionBuilderProxy](#interfacesiencryptedtransactionbuilderproxymd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [IManabarData](#interfacesimanabardatamd)
-- [ITransactionBuilder](#interfacesitransactionbuildermd)
+- [ITransactionBuilderBase](#interfacesitransactionbuilderbasemd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
 - [IWaxCustomFormatter](#interfacesiwaxcustomformattermd)
@@ -216,6 +215,16 @@ wasm/lib/detailed/formatters/types.ts:10
 
 ___
 
+### ITransactionBuilder
+
+Ƭ **ITransactionBuilder**: [`ITransactionBuilderBase`](#interfacesitransactionbuilderbasemd)\<[`ITransactionBuilder`](#itransactionbuilder)\>
+
+#### Defined in
+
+wasm/lib/interfaces.ts:330
+
+___
+
 ### TAccountName
 
 Ƭ **TAccountName**: `string`
@@ -228,7 +237,13 @@ ___
 
 ### TArticleBuilder
 
-Ƭ **TArticleBuilder**: `Omit`\<[`RootCommentBuilder`](#classesrootcommentbuildermd), ``"store"``\>
+Ƭ **TArticleBuilder**\<`TChain`\>: `Omit`\<[`RootCommentBuilder`](#classesrootcommentbuildermd)\<`TChain`\>, ``"store"``\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Defined in
 
@@ -262,11 +277,29 @@ ___
 
 ### TEncryptedTransactionBuilder
 
-Ƭ **TEncryptedTransactionBuilder**: `Omit`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd), ``"startEncrypt"``\> & \{ `from`: `TPublicKey` ; `to`: `TPublicKey` ; `stopEncrypt`: () => [`ITransactionBuilder`](#interfacesitransactionbuildermd)  }
+Ƭ **TEncryptedTransactionBuilder**: `Omit`\<[`ITransactionBuilderBase`](#interfacesitransactionbuilderbasemd)\<[`ITransactionBuilder`](#itransactionbuilder) & [`TEncryptedTransactionBuilderBase`](#tencryptedtransactionbuilderbase)\>, ``"startEncrypt"``\>
 
 #### Defined in
 
-wasm/lib/interfaces.ts:330
+wasm/lib/interfaces.ts:345
+
+___
+
+### TEncryptedTransactionBuilderBase
+
+Ƭ **TEncryptedTransactionBuilderBase**: `Object`
+
+#### Type declaration
+
+| Name | Type |
+| :------ | :------ |
+| `from` | `TPublicKey` |
+| `to` | `TPublicKey` |
+| `stopEncrypt` | () => [`ITransactionBuilder`](#itransactionbuilder) |
+
+#### Defined in
+
+wasm/lib/interfaces.ts:332
 
 ___
 
@@ -396,7 +429,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:502
+wasm/lib/interfaces.ts:503
 
 ___
 
@@ -422,7 +455,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:524
+wasm/lib/interfaces.ts:525
 
 ## Variables
 
@@ -3948,7 +3981,7 @@ wasm/lib/detailed/api/types/transaction.ts:34
 
 | Name | Type |
 | :------ | :------ |
-| `trx?` | [`ITransactionBuilder`](#interfacesitransactionbuildermd) |
+| `trx?` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Returns
 
@@ -4035,7 +4068,13 @@ wasm/lib/detailed/custom_jsons/builder.ts:25
 
 <a name="classescommentbuildermd"></a>
 
-# Class: CommentBuilder
+# Class: CommentBuilder\<TChain\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 ## Hierarchy
 
@@ -4047,18 +4086,24 @@ wasm/lib/detailed/custom_jsons/builder.ts:25
 
 ### constructor
 
-• **new CommentBuilder**(`txBuilder`, `commentObject`): [`CommentBuilder`](#classescommentbuildermd)
+• **new CommentBuilder**\<`TChain`\>(`txBuilder`, `commentObject`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
+| `txBuilder` | `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\> |
 | `commentObject` | `Partial`\<[`comment`](#comment)\> |
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 #### Defined in
 
@@ -4098,7 +4143,7 @@ ___
 
 ### txBuilder
 
-• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
+• `Private` `Readonly` **txBuilder**: `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 #### Defined in
 
@@ -4108,7 +4153,7 @@ wasm/lib/detailed/operation_factories/comment.ts:32
 
 ### addBeneficiaries
 
-▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Adds beneficiary account(s) to the comment operation object
 
@@ -4120,7 +4165,7 @@ Adds beneficiary account(s) to the comment operation object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4132,7 +4177,7 @@ ___
 
 ### addBeneficiary
 
-▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Adds beneficiary account to the comment operation object
 
@@ -4145,7 +4190,7 @@ Adds beneficiary account to the comment operation object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4191,7 +4236,7 @@ ___
 
 ### pushImages
 
-▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes images to the json metadata object
 
@@ -4203,7 +4248,7 @@ Pushes images to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4215,7 +4260,7 @@ ___
 
 ### pushLinks
 
-▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes links to the json metadata object
 
@@ -4227,7 +4272,7 @@ Pushes links to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4239,7 +4284,7 @@ ___
 
 ### pushMetadataProperty
 
-▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Assigns given object or sets given value on key in comment meta values
 
@@ -4252,7 +4297,7 @@ Assigns given object or sets given value on key in comment meta values
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4268,7 +4313,7 @@ ___
 
 ### pushTags
 
-▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes tags to the json metadata object
 
@@ -4280,7 +4325,7 @@ Pushes tags to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4292,7 +4337,7 @@ ___
 
 ### setAllowCurationRewards
 
-▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets allow curation rewards
 
@@ -4304,7 +4349,7 @@ Sets allow curation rewards
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4320,7 +4365,7 @@ ___
 
 ### setAllowVotes
 
-▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets allow votes
 
@@ -4332,7 +4377,7 @@ Sets allow votes
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4348,7 +4393,7 @@ ___
 
 ### setAlternativeAuthor
 
-▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets alternative author to the json metadata object
 
@@ -4360,7 +4405,7 @@ Sets alternative author to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4372,7 +4417,7 @@ ___
 
 ### setDescription
 
-▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets description on the json metadata object
 
@@ -4384,7 +4429,7 @@ Sets description on the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4396,7 +4441,7 @@ ___
 
 ### setFormat
 
-▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets format on the json metadata object
 
@@ -4408,7 +4453,7 @@ Sets format on the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4420,7 +4465,7 @@ ___
 
 ### setMaxAcceptedPayout
 
-▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets maximum accepted payout on the comment
 
@@ -4432,7 +4477,7 @@ Sets maximum accepted payout on the comment
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4448,7 +4493,7 @@ ___
 
 ### setPercentHbd
 
-▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets percent hbd
 
@@ -4460,7 +4505,7 @@ Sets percent hbd
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -4476,13 +4521,13 @@ ___
 
 ### store
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): `TChain`
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 transaction builder object
 
@@ -7887,7 +7932,13 @@ wasm/lib/detailed/custom_jsons/follow.ts:14
 
 <a name="classesrecurrenttransferbuildermd"></a>
 
-# Class: RecurrentTransferBuilder
+# Class: RecurrentTransferBuilder\<TChain\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 ## Hierarchy
 
@@ -7899,18 +7950,24 @@ wasm/lib/detailed/custom_jsons/follow.ts:14
 
 ### constructor
 
-• **new RecurrentTransferBuilder**(`txBuilder`, `recurrentTransferObject`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+• **new RecurrentTransferBuilder**\<`TChain`\>(`txBuilder`, `recurrentTransferObject`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)\<`TChain`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
+| `txBuilder` | `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\> |
 | `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
 
 #### Returns
 
-[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)\<`TChain`\>
 
 #### Defined in
 
@@ -7930,7 +7987,7 @@ ___
 
 ### txBuilder
 
-• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
+• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 #### Defined in
 
@@ -7940,13 +7997,13 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
 
 ### store
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): `TChain`
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 transaction builder object
 
@@ -7957,11 +8014,17 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
 
 <a name="classesrecurrenttransferpairidbuildermd"></a>
 
-# Class: RecurrentTransferPairIdBuilder
+# Class: RecurrentTransferPairIdBuilder\<TChain\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 ## Hierarchy
 
-- [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+- [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)\<`TChain`\>
 
   ↳ **`RecurrentTransferPairIdBuilder`**
 
@@ -7969,19 +8032,25 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
 
 ### constructor
 
-• **new RecurrentTransferPairIdBuilder**(`txBuilder`, `recurrentTransferObject`, `pairId?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+• **new RecurrentTransferPairIdBuilder**\<`TChain`\>(`txBuilder`, `recurrentTransferObject`, `pairId?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
+| `txBuilder` | `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\> |
 | `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
 | `pairId?` | `number` |
 
 #### Returns
 
-[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 #### Overrides
 
@@ -8009,7 +8078,7 @@ ___
 
 ### txBuilder
 
-• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
+• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 #### Inherited from
 
@@ -8023,7 +8092,7 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
 
 ### addPairId
 
-▸ **addPairId**(`pairId`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+▸ **addPairId**(`pairId`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 Adds pair id to the recurrent transfer
 
@@ -8035,7 +8104,7 @@ Adds pair id to the recurrent transfer
 
 #### Returns
 
-[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 itself
 
@@ -8047,13 +8116,13 @@ ___
 
 ### generateRemoval
 
-▸ **generateRemoval**(): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+▸ **generateRemoval**(): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 Removes recurrent transfer with the previously set pair id
 
 #### Returns
 
-[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 itself
 
@@ -8065,13 +8134,13 @@ ___
 
 ### store
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): `TChain`
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 transaction builder object
 
@@ -8346,13 +8415,19 @@ wasm/lib/detailed/custom_jsons/rc.ts:74
 
 <a name="classesrootcommentbuildermd"></a>
 
-# Class: RootCommentBuilder
+# Class: RootCommentBuilder\<TChain\>
 
 Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
 
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
+
 ## Hierarchy
 
-- [`CommentBuilder`](#classescommentbuildermd)
+- [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
   ↳ **`RootCommentBuilder`**
 
@@ -8360,18 +8435,24 @@ Same as the comment builder base, but requires user to set the category (parent 
 
 ### constructor
 
-• **new RootCommentBuilder**(`txBuilder`, `commentObject`): [`RootCommentBuilder`](#classesrootcommentbuildermd)
+• **new RootCommentBuilder**\<`TChain`\>(`txBuilder`, `commentObject`): [`RootCommentBuilder`](#classesrootcommentbuildermd)\<`TChain`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
+| `txBuilder` | `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\> |
 | `commentObject` | `Partial`\<[`comment`](#comment)\> |
 
 #### Returns
 
-[`RootCommentBuilder`](#classesrootcommentbuildermd)
+[`RootCommentBuilder`](#classesrootcommentbuildermd)\<`TChain`\>
 
 #### Overrides
 
@@ -8413,7 +8494,7 @@ wasm/lib/detailed/operation_factories/comment.ts:19
 
 ### addBeneficiaries
 
-▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Adds beneficiary account(s) to the comment operation object
 
@@ -8425,7 +8506,7 @@ Adds beneficiary account(s) to the comment operation object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8441,7 +8522,7 @@ ___
 
 ### addBeneficiary
 
-▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Adds beneficiary account to the comment operation object
 
@@ -8454,7 +8535,7 @@ Adds beneficiary account to the comment operation object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8470,7 +8551,7 @@ ___
 
 ### pushImages
 
-▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes images to the json metadata object
 
@@ -8482,7 +8563,7 @@ Pushes images to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8498,7 +8579,7 @@ ___
 
 ### pushLinks
 
-▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes links to the json metadata object
 
@@ -8510,7 +8591,7 @@ Pushes links to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8526,7 +8607,7 @@ ___
 
 ### pushMetadataProperty
 
-▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Assigns given object or sets given value on key in comment meta values
 
@@ -8539,7 +8620,7 @@ Assigns given object or sets given value on key in comment meta values
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8559,7 +8640,7 @@ ___
 
 ### pushTags
 
-▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Pushes tags to the json metadata object
 
@@ -8571,7 +8652,7 @@ Pushes tags to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8587,7 +8668,7 @@ ___
 
 ### setAllowCurationRewards
 
-▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets allow curation rewards
 
@@ -8599,7 +8680,7 @@ Sets allow curation rewards
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8619,7 +8700,7 @@ ___
 
 ### setAllowVotes
 
-▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets allow votes
 
@@ -8631,7 +8712,7 @@ Sets allow votes
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8651,7 +8732,7 @@ ___
 
 ### setAlternativeAuthor
 
-▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets alternative author to the json metadata object
 
@@ -8663,7 +8744,7 @@ Sets alternative author to the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8679,7 +8760,7 @@ ___
 
 ### setCategory
 
-▸ **setCategory**(`category`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setCategory**(`category`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets category of the article
 
@@ -8691,7 +8772,7 @@ Sets category of the article
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 ready to build transaction builder
 
@@ -8703,7 +8784,7 @@ ___
 
 ### setDescription
 
-▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets description on the json metadata object
 
@@ -8715,7 +8796,7 @@ Sets description on the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8731,7 +8812,7 @@ ___
 
 ### setFormat
 
-▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets format on the json metadata object
 
@@ -8743,7 +8824,7 @@ Sets format on the json metadata object
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8759,7 +8840,7 @@ ___
 
 ### setMaxAcceptedPayout
 
-▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets maximum accepted payout on the comment
 
@@ -8771,7 +8852,7 @@ Sets maximum accepted payout on the comment
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8791,7 +8872,7 @@ ___
 
 ### setPercentHbd
 
-▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Sets percent hbd
 
@@ -8803,7 +8884,7 @@ Sets percent hbd
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 itself
 
@@ -8823,13 +8904,13 @@ ___
 
 ### store
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): `TChain`
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 transaction builder object
 
@@ -8844,25 +8925,37 @@ wasm/lib/detailed/operation_factories/comment.ts:285
 
 <a name="classesupdateproposalbuildermd"></a>
 
-# Class: UpdateProposalBuilder
+# Class: UpdateProposalBuilder\<TChain\>
+
+## Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 ## Constructors
 
 ### constructor
 
-• **new UpdateProposalBuilder**(`txBuilder`, `updateProposalObject`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+• **new UpdateProposalBuilder**\<`TChain`\>(`txBuilder`, `updateProposalObject`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TChain` | [`ITransactionBuilder`](#itransactionbuilder) |
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
+| `txBuilder` | `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\> |
 | `updateProposalObject` | `Partial`\<[`update_proposal`](#update_proposal)\> |
 | `endDate?` | `string` \| `number` \| `Date` |
 
 #### Returns
 
-[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
 
 #### Defined in
 
@@ -8872,7 +8965,7 @@ wasm/lib/detailed/operation_factories/update_proposal.ts:8
 
 ### txBuilder
 
-• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
+• `Private` `Readonly` **txBuilder**: `TransactionBuilder`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 #### Defined in
 
@@ -8892,7 +8985,7 @@ wasm/lib/detailed/operation_factories/update_proposal.ts:6
 
 ### addEndDate
 
-▸ **addEndDate**(`endDate`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+▸ **addEndDate**(`endDate`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
 
 Adds end date to the update proposal
 
@@ -8904,7 +8997,7 @@ Adds end date to the update proposal
 
 #### Returns
 
-[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
 
 itself
 
@@ -8916,13 +9009,13 @@ ___
 
 ### store
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **store**(): `TChain`
 
 Pushes the prepared operation to the transaction builder operations and returns the transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 transaction builder object
 
@@ -10144,11 +10237,6 @@ Community title
 wasm/lib/detailed/custom_jsons/community.ts:58
 
 
-<a name="interfacesiencryptedtransactionbuilderproxymd"></a>
-
-# Interface: IEncryptedTransactionBuilderProxy
-
-
 <a name="interfacesiformatfunctionargumentsmd"></a>
 
 # Interface: IFormatFunctionArguments\<TSource, TTarget\>
@@ -10217,7 +10305,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:383
+wasm/lib/interfaces.ts:384
 
 ___
 
@@ -10235,7 +10323,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:390
+wasm/lib/interfaces.ts:391
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10260,7 +10348,7 @@ wasm/lib/interfaces.ts:390
 
 #### Defined in
 
-wasm/lib/interfaces.ts:396
+wasm/lib/interfaces.ts:397
 
 ___
 
@@ -10270,7 +10358,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:588
+wasm/lib/interfaces.ts:589
 
 ___
 
@@ -10284,7 +10372,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:398
+wasm/lib/interfaces.ts:399
 
 ___
 
@@ -10324,7 +10412,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:400
 
 ## Accessors
 
@@ -10342,7 +10430,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:395
 
 ___
 
@@ -10358,7 +10446,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:550
+wasm/lib/interfaces.ts:551
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10376,7 +10464,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:545
+wasm/lib/interfaces.ts:546
 
 ## Methods
 
@@ -10407,7 +10495,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:473
+wasm/lib/interfaces.ts:474
 
 ___
 
@@ -10432,7 +10520,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:576
+wasm/lib/interfaces.ts:577
 
 ___
 
@@ -10463,7 +10551,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:489
+wasm/lib/interfaces.ts:490
 
 ___
 
@@ -10488,7 +10576,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:586
+wasm/lib/interfaces.ts:587
 
 ___
 
@@ -10508,7 +10596,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:494
+wasm/lib/interfaces.ts:495
 
 ___
 
@@ -10535,7 +10623,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:457
+wasm/lib/interfaces.ts:458
 
 ___
 
@@ -10565,7 +10653,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:559
+wasm/lib/interfaces.ts:560
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10585,7 +10673,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:566
+wasm/lib/interfaces.ts:567
 
 ___
 
@@ -10613,7 +10701,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:414
+wasm/lib/interfaces.ts:415
 
 ___
 
@@ -10646,13 +10734,13 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:447
+wasm/lib/interfaces.ts:448
 
 ___
 
 ### getTransactionBuilder
 
-▸ **getTransactionBuilder**(`expirationTime?`): `Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
+▸ **getTransactionBuilder**(`expirationTime?`): `Promise`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 Same as [IWaxBaseInterface.TransactionBuilder](#transactionbuilder), but pulls the reference block data from the remote
 
@@ -10664,7 +10752,7 @@ Same as [IWaxBaseInterface.TransactionBuilder](#transactionbuilder), but pulls t
 
 #### Returns
 
-`Promise`\<[`ITransactionBuilder`](#interfacesitransactionbuildermd)\>
+`Promise`\<[`ITransactionBuilder`](#itransactionbuilder)\>
 
 ready to use transaction builder interface
 
@@ -10678,7 +10766,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:541
 
 ___
 
@@ -10700,7 +10788,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:406
+wasm/lib/interfaces.ts:407
 
 ___
 
@@ -10728,7 +10816,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:428
+wasm/lib/interfaces.ts:429
 
 ___
 
@@ -10756,7 +10844,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:421
+wasm/lib/interfaces.ts:422
 
 ___
 
@@ -10784,7 +10872,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:435
+wasm/lib/interfaces.ts:436
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -10828,9 +10916,15 @@ Percent of manabar load with two digits of precision, safely calculated based on
 wasm/lib/interfaces.ts:47
 
 
-<a name="interfacesitransactionbuildermd"></a>
+<a name="interfacesitransactionbuilderbasemd"></a>
 
-# Interface: ITransactionBuilder
+# Interface: ITransactionBuilderBase\<TChain\>
+
+## Type parameters
+
+| Name |
+| :------ |
+| `TChain` |
 
 ## Accessors
 
@@ -11054,7 +11148,7 @@ ___
 
 ### push
 
-▸ **push**(`op`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **push**(`op`): `TChain`
 
 Pushes given operation to the operations array in the transaction
 
@@ -11066,7 +11160,7 @@ Pushes given operation to the operations array in the transaction
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`TChain`
 
 current transaction builder instance
 
@@ -11082,7 +11176,7 @@ ___
 
 ### pushArticle
 
-▸ **pushArticle**(`author`, `permlink`, `title`, `body`, `jsonMetadata?`): [`TArticleBuilder`](#tarticlebuilder)
+▸ **pushArticle**(`author`, `permlink`, `title`, `body`, `jsonMetadata?`): [`TArticleBuilder`](#tarticlebuilder)\<`TChain`\>
 
 Returns a comment operation builder. When using this method remeber you have to call TArticleBuilder.setCategory before building the transaction
 
@@ -11098,7 +11192,7 @@ Returns a comment operation builder. When using this method remeber you have to 
 
 #### Returns
 
-[`TArticleBuilder`](#tarticlebuilder)
+[`TArticleBuilder`](#tarticlebuilder)\<`TChain`\>
 
 comment operation builder
 
@@ -11110,7 +11204,7 @@ ___
 
 ### pushRecurrentTransfer
 
-▸ **pushRecurrentTransfer**(`from`, `to`, `amount`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+▸ **pushRecurrentTransfer**(`from`, `to`, `amount`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)\<`TChain`\>
 
 Returns a recurrent transfer operation builder
 
@@ -11127,7 +11221,7 @@ Returns a recurrent transfer operation builder
 
 #### Returns
 
-[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)\<`TChain`\>
 
 recurrent transfer operation builder
 
@@ -11135,7 +11229,7 @@ recurrent transfer operation builder
 
 wasm/lib/interfaces.ts:95
 
-▸ **pushRecurrentTransfer**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+▸ **pushRecurrentTransfer**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 Returns a recurrent transfer operation builder
 
@@ -11152,7 +11246,7 @@ Returns a recurrent transfer operation builder
 
 #### Returns
 
-[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)\<`TChain`\>
 
 recurrent transfer operation builder
 
@@ -11164,7 +11258,7 @@ ___
 
 ### pushReply
 
-▸ **pushReply**(`parentAuthor`, `parentPermlink`, `author`, `body`, `jsonMetadata?`, `permlink?`, `title?`): [`CommentBuilder`](#classescommentbuildermd)
+▸ **pushReply**(`parentAuthor`, `parentPermlink`, `author`, `body`, `jsonMetadata?`, `permlink?`, `title?`): [`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 Returns a comment operation builder
 
@@ -11182,7 +11276,7 @@ Returns a comment operation builder
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
+[`CommentBuilder`](#classescommentbuildermd)\<`TChain`\>
 
 comment operation builder
 
@@ -11194,7 +11288,7 @@ ___
 
 ### pushUpdateProposal
 
-▸ **pushUpdateProposal**(`proposalId`, `creator`, `dailyPay`, `subject`, `permlink`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+▸ **pushUpdateProposal**(`proposalId`, `creator`, `dailyPay`, `subject`, `permlink`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
 
 Returns a update proposal operation builder
 
@@ -11211,7 +11305,7 @@ Returns a update proposal operation builder
 
 #### Returns
 
-[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)\<`TChain`\>
 
 update proposal operation builder
 
@@ -11385,7 +11479,7 @@ wasm/lib/interfaces.ts:211
 
 ### constructor
 
-• **new ITransactionBuilderConstructor**(`taposBlockId`, `expirationTime`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+• **new ITransactionBuilderConstructor**(`taposBlockId`, `expirationTime`): [`ITransactionBuilder`](#itransactionbuilder)
 
 Constructs a new Transaction Builder object with given data
 
@@ -11398,13 +11492,13 @@ Constructs a new Transaction Builder object with given data
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+[`ITransactionBuilder`](#itransactionbuilder)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:356
+wasm/lib/interfaces.ts:357
 
-• **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+• **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#itransactionbuilder)
 
 Constructs a new Transaction Builder object with ready protobuf transaction
 
@@ -11416,17 +11510,17 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+[`ITransactionBuilder`](#itransactionbuilder)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:363
+wasm/lib/interfaces.ts:364
 
 ## Methods
 
 ### fromApi
 
-▸ **fromApi**(`transactionObject`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+▸ **fromApi**(`transactionObject`): [`ITransactionBuilder`](#itransactionbuilder)
 
 Converts Hive API-form transaction in JSON form to our transaction builder
 
@@ -11438,7 +11532,7 @@ Converts Hive API-form transaction in JSON form to our transaction builder
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+[`ITransactionBuilder`](#itransactionbuilder)
 
 transaction builder containing ready to sign transaction (or to convert to protobuf structure using [ITransactionBuilder.build](#build))
 
@@ -11448,7 +11542,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:374
+wasm/lib/interfaces.ts:375
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11469,7 +11563,7 @@ wasm/lib/interfaces.ts:374
 
 #### Defined in
 
-wasm/lib/interfaces.ts:396
+wasm/lib/interfaces.ts:397
 
 ___
 
@@ -11479,7 +11573,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:398
+wasm/lib/interfaces.ts:399
 
 ___
 
@@ -11515,7 +11609,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:400
 
 ## Accessors
 
@@ -11529,7 +11623,7 @@ wasm/lib/interfaces.ts:399
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:395
 
 ## Methods
 
@@ -11556,7 +11650,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:473
+wasm/lib/interfaces.ts:474
 
 ___
 
@@ -11583,7 +11677,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:489
+wasm/lib/interfaces.ts:490
 
 ___
 
@@ -11599,7 +11693,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:494
+wasm/lib/interfaces.ts:495
 
 ___
 
@@ -11622,7 +11716,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:457
+wasm/lib/interfaces.ts:458
 
 ___
 
@@ -11646,7 +11740,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:414
+wasm/lib/interfaces.ts:415
 
 ___
 
@@ -11675,7 +11769,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:447
+wasm/lib/interfaces.ts:448
 
 ___
 
@@ -11693,7 +11787,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:406
+wasm/lib/interfaces.ts:407
 
 ___
 
@@ -11717,7 +11811,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:428
+wasm/lib/interfaces.ts:429
 
 ___
 
@@ -11741,7 +11835,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:421
+wasm/lib/interfaces.ts:422
 
 ___
 
@@ -11765,7 +11859,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:435
+wasm/lib/interfaces.ts:436
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

@@ -12,7 +12,7 @@ export enum ECommentFormat {
   MIXED = "markdown+html"
 }
 
-export class CommentBuilder {
+export class CommentBuilder<TChain = ITransactionBuilder> {
   protected readonly comment: comment;
   private commentOptions?: comment_options;
 
@@ -56,9 +56,9 @@ export class CommentBuilder {
    * @param {?any} value value to be set (optional when passing the entire object)
    *
    * @throws {WaxError} if key already exists on the jsonmetadata object
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public pushMetadataProperty(keyOrObject: string | object, value?: any): CommentBuilder {
+  public pushMetadataProperty(keyOrObject: string | object, value?: any): CommentBuilder<TChain> {
     const assign = (key: string, value: any) => {
       if(key in this.jsonMetadata)
         throw new WaxError("Key already exists on the json metadata object");
@@ -80,9 +80,9 @@ export class CommentBuilder {
    *
    * @param {string[]} tags tags to be pushed to the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public pushTags(...tags: string[]): CommentBuilder {
+  public pushTags(...tags: string[]): CommentBuilder<TChain> {
     if(tags.length === 0)
       return this;
 
@@ -99,9 +99,9 @@ export class CommentBuilder {
    *
    * @param {string} author alternative author to be set on the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public setAlternativeAuthor(author: string): CommentBuilder {
+  public setAlternativeAuthor(author: string): CommentBuilder<TChain> {
     this.jsonMetadata.author = author;
 
     return this;
@@ -112,9 +112,9 @@ export class CommentBuilder {
    *
    * @param {string} images image to be pushed to the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public pushImages(...images: string[]): CommentBuilder {
+  public pushImages(...images: string[]): CommentBuilder<TChain> {
     if(images.length === 0)
       return this;
 
@@ -131,9 +131,9 @@ export class CommentBuilder {
    *
    * @param {string[]} links links to be pushed to the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public pushLinks(...links: string[]): CommentBuilder {
+  public pushLinks(...links: string[]): CommentBuilder<TChain> {
     if(links.length === 0)
       return this;
 
@@ -150,9 +150,9 @@ export class CommentBuilder {
    *
    * @param {string} description description to be set on the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public setDescription(description: string): CommentBuilder {
+  public setDescription(description: string): CommentBuilder<TChain> {
     this.jsonMetadata.description = description;
 
     return this;
@@ -163,9 +163,9 @@ export class CommentBuilder {
    *
    * @param {ECommentFormat} format format to be set on the json metadata object
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public setFormat(format: ECommentFormat): CommentBuilder {
+  public setFormat(format: ECommentFormat): CommentBuilder<TChain> {
     this.jsonMetadata.format = format;
 
     return this;
@@ -177,9 +177,9 @@ export class CommentBuilder {
    * @param {TAccountName} account beneficiary account
    * @param {number} weight weight of the beneficiary account
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public addBeneficiary(account: TAccountName, weight: number): CommentBuilder {
+  public addBeneficiary(account: TAccountName, weight: number): CommentBuilder<TChain> {
     this.ensureCommentOptionsCreated();
 
     let beneficiary: comment_payout_beneficiaries | undefined;
@@ -204,9 +204,9 @@ export class CommentBuilder {
    *
    * @param {Array<beneficiary_route_type>} accounts beneficiary accounts
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    */
-  public addBeneficiaries(...accounts: Array<beneficiary_route_type>): CommentBuilder {
+  public addBeneficiaries(...accounts: Array<beneficiary_route_type>): CommentBuilder<TChain> {
     for(const { account, weight } of accounts)
       this.addBeneficiary(account, weight);
 
@@ -218,10 +218,10 @@ export class CommentBuilder {
    *
    * @param {NaiAsset} amount Maximum accepted payout (defaults to `1000000.000 HBD`)
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    * @see {@link comment_options.max_accepted_payout}
    */
-  public setMaxAcceptedPayout(amount: NaiAsset): CommentBuilder {
+  public setMaxAcceptedPayout(amount: NaiAsset): CommentBuilder<TChain> {
     this.ensureCommentOptionsCreated();
 
     this.commentOptions!.max_accepted_payout = amount;
@@ -234,10 +234,10 @@ export class CommentBuilder {
    *
    * @param {number} value percent hbd (defaults to `10000` - `HIVE_100_PERCENT`)
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    * @see {@link comment_options.percent_hbd}
    */
-  public setPercentHbd(value: number): CommentBuilder {
+  public setPercentHbd(value: number): CommentBuilder<TChain> {
     this.ensureCommentOptionsCreated();
 
     this.commentOptions!.percent_hbd = value;
@@ -250,10 +250,10 @@ export class CommentBuilder {
    *
    * @param {boolean} value allow curation rewards value (defaults to `true`)
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    * @see {@link comment_options.allow_curation_rewards}
    */
-  public setAllowCurationRewards(value: boolean): CommentBuilder {
+  public setAllowCurationRewards(value: boolean): CommentBuilder<TChain> {
     this.ensureCommentOptionsCreated();
 
     this.commentOptions!.allow_curation_rewards = value;
@@ -266,10 +266,10 @@ export class CommentBuilder {
    *
    * @param {boolean} value allow votes value (defaults to `true`)
    *
-   * @returns {CommentBuilder} itself
+   * @returns {CommentBuilder<TChain>} itself
    * @see {@link comment_options.allow_votes}
    */
-  public setAllowVotes(value: boolean): CommentBuilder {
+  public setAllowVotes(value: boolean): CommentBuilder<TChain> {
     this.ensureCommentOptionsCreated();
 
     this.commentOptions!.allow_votes = value;
@@ -280,9 +280,9 @@ export class CommentBuilder {
   /**
    * Pushes the prepared operation to the transaction builder operations and returns the transaction builder
    *
-   * @returns {ITransactionBuilder} transaction builder object
+   * @returns {TChain} transaction builder object
    */
-  public store(): ITransactionBuilder {
+  public store(): TChain {
     // Apply cached json metadata before pushing the comment operation
     this.comment.json_metadata = JSON.stringify(this.jsonMetadata);
 
@@ -291,14 +291,14 @@ export class CommentBuilder {
     if(typeof this.commentOptions === "object")
       this.txBuilder.push({ comment_options: this.commentOptions });
 
-    return this.txBuilder;
+    return this.txBuilder as TChain;
   }
 }
 
 /**
  * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
  */
-export class RootCommentBuilder extends CommentBuilder {
+export class RootCommentBuilder<TChain = ITransactionBuilder> extends CommentBuilder<TChain> {
   public constructor(txBuilder: TransactionBuilder, commentObject: Partial<comment>) {
     super(txBuilder, commentObject);
   }
@@ -308,13 +308,13 @@ export class RootCommentBuilder extends CommentBuilder {
    *
    * @param {string} category category (parent permlink) and also the first tag
    *
-   * @returns {CommentBuilder} ready to build transaction builder
+   * @returns {CommentBuilder<TChain>} ready to build transaction builder
    */
-  setCategory(category: string): CommentBuilder {
+  setCategory(category: string): CommentBuilder<TChain> {
     this.comment.parent_permlink = category;
 
     return this;
   }
 }
 
-export type TArticleBuilder = Omit<RootCommentBuilder, 'store'>;
+export type TArticleBuilder<TChain = ITransactionBuilder> = Omit<RootCommentBuilder<TChain>, 'store'>;

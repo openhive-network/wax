@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { ITransactionBuilder, TBlockHash, TEncryptedTransactionBuilderBase, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -8,6 +8,7 @@ import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
 import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 import { EncryptionVisitor } from './encryption_visitor';
+import { TEncryptedTransactionBuilder } from '../interfaces';
 
 export interface IIndexKeeperMetaEncrypted {
   index: number;
@@ -19,7 +20,7 @@ export interface IIndexKeeperMeta {
 }
 export type TIndexKeeper = IIndexKeeperMeta | IIndexKeeperMetaEncrypted;
 
-export class TransactionBuilder implements ITransactionBuilder {
+export class TransactionBuilder<TChain extends ITransactionBuilder = ITransactionBuilder> implements ITransactionBuilder {
   public target: transaction;
 
   public expirationTime?: TTimestamp;
@@ -122,7 +123,7 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder {
+  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TChain {
     if("flushOperations" in op)
       op.flushOperations(this);
     else if("builder" in op)
@@ -133,7 +134,7 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.indexKeeper.push(this.operationIndex);
     }
 
-    return this;
+    return this as unknown as TChain;
   }
 
   public get sigDigest(): string {
@@ -176,7 +177,7 @@ export class TransactionBuilder implements ITransactionBuilder {
 
   public pushRecurrentTransfer(
     from: TAccountName, to: TAccountName, amountOrPairId: asset | number, memo: string = "", recurrence: number = 0, executions: number = 0
-  ): RecurrentTransferPairIdBuilder {
+  ): RecurrentTransferPairIdBuilder<TChain> {
     const partialRecurrentTransferOp: Partial<recurrent_transfer> = {
       from_account: from,
       to_account: to,
@@ -190,12 +191,12 @@ export class TransactionBuilder implements ITransactionBuilder {
       return new RecurrentTransferPairIdBuilder(this, partialRecurrentTransferOp, amountOrPairId);
 
     // JavaScript does not allow overriding functions, so we have to cast this class to a top-level class having all of the missing methods to match ITransactionBuilder interface
-    return new RecurrentTransferBuilder(this, partialRecurrentTransferOp) as RecurrentTransferPairIdBuilder;
+    return new RecurrentTransferBuilder(this, partialRecurrentTransferOp) as RecurrentTransferPairIdBuilder<TChain>;
   }
 
   public pushUpdateProposal(
     proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date
-  ): UpdateProposalBuilder {
+  ): UpdateProposalBuilder<TChain> {
     const updateProposalOp: Partial<update_proposal> = {
       proposal_id: proposalId.toString(),
       creator,
@@ -209,7 +210,7 @@ export class TransactionBuilder implements ITransactionBuilder {
 
   public pushArticle(
     author: TAccountName, permlink: string, title: string, body: string, jsonMetadata: object = {}
-  ): TArticleBuilder {
+  ): TArticleBuilder<TChain> {
     const commentOp: Partial<comment> = {
       author,
       body,
@@ -223,7 +224,7 @@ export class TransactionBuilder implements ITransactionBuilder {
 
   public pushReply(
     parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata: object = {}, permlink?: string, title: string = ""
-  ): CommentBuilder {
+  ): CommentBuilder<TChain> {
     const commentOp: Partial<comment> = {
       author,
       body,
@@ -280,7 +281,7 @@ export class TransactionBuilder implements ITransactionBuilder {
   }
 }
 
-export class EncryptedTransactionBuilder extends TransactionBuilder {
+export class EncryptedTransactionBuilder extends TransactionBuilder<ITransactionBuilder & TEncryptedTransactionBuilderBase> implements TEncryptedTransactionBuilder {
   public constructor(
     private readonly originatingTxBuilder: TransactionBuilder,
     public readonly from: TPublicKey,

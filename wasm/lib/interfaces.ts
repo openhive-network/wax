@@ -68,17 +68,17 @@ export interface IWaxOptionsChain extends IWaxOptions {
   apiEndpoint: string;
 }
 
-export interface ITransactionBuilder {
+export interface ITransactionBuilderBase<TChain> {
   /**
    * Pushes given operation to the operations array in the transaction
    *
    * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
    *
-   * @returns {ITransactionBuilder} current transaction builder instance
+   * @returns {TChain} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
+  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): TChain;
 
   /**
    * Returns a recurrent transfer operation builder
@@ -90,9 +90,9 @@ export interface ITransactionBuilder {
    * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
    * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
    *
-   * @returns {RecurrentTransferBuilder} recurrent transfer operation builder
+   * @returns {RecurrentTransferBuilder<TChain>} recurrent transfer operation builder
    */
-  pushRecurrentTransfer(from: TAccountName, to: TAccountName, amount: asset, memo?: string, recurrence?: number, executions?: number): RecurrentTransferBuilder;
+  pushRecurrentTransfer(from: TAccountName, to: TAccountName, amount: asset, memo?: string, recurrence?: number, executions?: number): RecurrentTransferBuilder<TChain>;
 
   /**
    * Returns a recurrent transfer operation builder
@@ -104,9 +104,9 @@ export interface ITransactionBuilder {
    * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
    * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
    *
-   * @returns {RecurrentTransferPairIdBuilder} recurrent transfer operation builder
+   * @returns {RecurrentTransferPairIdBuilder<TChain>} recurrent transfer operation builder
    */
-  pushRecurrentTransfer(from: TAccountName, to: TAccountName, pairId: number, memo?: string, recurrence?: number, executions?: number): RecurrentTransferPairIdBuilder;
+  pushRecurrentTransfer(from: TAccountName, to: TAccountName, pairId: number, memo?: string, recurrence?: number, executions?: number): RecurrentTransferPairIdBuilder<TChain>;
 
   /**
    * Returns a update proposal operation builder
@@ -118,9 +118,9 @@ export interface ITransactionBuilder {
    * @param {string} permlink proposal permlink
    * @param {?number | string | Date} endDate optional proposal end date
    *
-   * @returns {UpdateProposalBuilder} update proposal operation builder
+   * @returns {UpdateProposalBuilder<TChain>} update proposal operation builder
    */
-  pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder;
+  pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder<TChain>;
 
   /**
    * Returns a comment operation builder. When using this method remeber you have to call {@link TArticleBuilder.setCategory} before building the transaction
@@ -130,9 +130,9 @@ export interface ITransactionBuilder {
    * @param {string} title article title
    * @param {string} body article body
    *
-   * @returns {TArticleBuilder} comment operation builder
+   * @returns {TArticleBuilder<TChain>} comment operation builder
    */
-  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): TArticleBuilder;
+  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): TArticleBuilder<TChain>;
 
   /**
    * Returns a comment operation builder
@@ -145,9 +145,9 @@ export interface ITransactionBuilder {
    * @param {?string} permlink reply permlink. Defaults to `re-parentAuthor-timestamp`
    * @param {?string} title reply title (defaults to `""`)
    *
-   * @returns {CommentBuilder} comment operation builder
+   * @returns {CommentBuilder<TChain>} comment operation builder
    */
-  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title?: string): CommentBuilder;
+  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title?: string): CommentBuilder<TChain>;
 
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
@@ -327,21 +327,22 @@ export interface ITransactionBuilder {
   startEncrypt(from: TPublicKey, to: TPublicKey): TEncryptedTransactionBuilder;
 }
 
-export type TEncryptedTransactionBuilder = Omit<ITransactionBuilder, 'startEncrypt'> & {
+export type ITransactionBuilder = ITransactionBuilderBase<ITransactionBuilder>;
+
+export type TEncryptedTransactionBuilderBase = {
   readonly from: TPublicKey;
   readonly to: TPublicKey;
 
   /**
    * Returns the original transaction builder interface, also marking that encryption for given
-   * {@link TEncryptedTransactionBuilder.from} and {@link TEncryptedTransactionBuilder.to} ends
+   * {@link TEncryptedTransactionBuilderBase.from} and {@link TEncryptedTransactionBuilderBase.to} ends
    *
    * @returns {ITransactionBuilder} original transaction builder
    */
   stopEncrypt(): ITransactionBuilder;
 };
 
-export interface IEncryptedTransactionBuilderProxy {
-}
+export type TEncryptedTransactionBuilder = Omit<ITransactionBuilderBase<ITransactionBuilder & TEncryptedTransactionBuilderBase>, 'startEncrypt'>;
 
 export interface ITransactionBuilderConstructor {
   /**
