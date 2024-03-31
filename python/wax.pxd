@@ -59,8 +59,10 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_hbd_to_hive( json_asset hbd, json_asset base, json_asset quote)
         json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares )
         result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
-        required_authority_collection cpp_collect_transaction_required_authorities( string transaction )
-    
+        required_authority_collection cpp_collect_transaction_required_authorities( string transaction ) except +
+
+        void cpp_throws(int type) except +
+
     cdef cppclass proto_protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )

@@ -276,3 +276,7 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
       active_accounts=oa,
       owner_accounts=oo
     )
+
+def verify_exception_handling(throw_type: int) -> None:
+    cdef protocol obj
+    obj.cpp_throws(throw_type)

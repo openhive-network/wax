@@ -35,7 +35,8 @@ from .wax import (
     calculate_inflation_rate_for_block,
     calculate_vests_to_hp,
     calculate_hbd_to_hive,
-    get_transaction_required_authorities
+    get_transaction_required_authorities,
+    verify_exception_handling
 )
 
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection
@@ -83,4 +84,5 @@ __all__ = [
     "calculate_vests_to_hp",
     "calculate_hbd_to_hive",
     "get_transaction_required_authorities",
+    "verify_exception_handling",
 ]
