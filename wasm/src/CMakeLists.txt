@@ -33,6 +33,13 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/fc build_fc_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
+# Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
+TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions )
+TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions 
+  -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
+  -sEXCEPTION_STACK_TRACES=1
+ )
+
 file(GLOB HEADERS "core/*.hpp")
 
 set( SOURCES
@@ -56,13 +63,15 @@ function( DEFINE_WAX_TARGET_FOR env )
       target_include_directories( ${exec_wasm_name} PUBLIC ${INCLUDES} )
 
       target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
-      # add -sASSERTIONS to `target_link_options` if you want more information
-      # INITIAL_MEMORY by default = 16777216
-      target_link_options( ${exec_wasm_name} PUBLIC -fwasm-exceptions -sASSERTIONS
-      -sEXPORTED_FUNCTIONS=["___get_exception_message","___cpp_exception"]
-      -sEXPORTED_RUNTIME_METHODS=["FS"] -sMODULARIZE=1 -sSINGLE_FILE=1
-                                                    -sEXPORT_ES6=1 -sINITIAL_MEMORY=67108864 -sENVIRONMENT="${env}"
-                         )
+
+      target_link_options( ${exec_wasm_name} PUBLIC 
+        -sEXPORTED_RUNTIME_METHODS=["FS"]
+        -sMODULARIZE=1
+        -sSINGLE_FILE=1
+        -sEXPORT_ES6=1
+        -sINITIAL_MEMORY=67108864
+        -sENVIRONMENT="${env}"
+      )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
       INSTALL( TARGETS ${exec_wasm_name}
         COMPONENT "${exec_wasm_name}_runtime"
