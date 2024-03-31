@@ -40,8 +40,8 @@ else
     -DBoost_NO_WARN_NEW_VERSIONS=1 \
     -DBoost_USE_STATIC_RUNTIME=ON \
     -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Ninja" \
-    -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}"
-  ninja -j8
+    -S "${EXECUTION_PATH}/wasm/src" -B "${BUILD_DIR}" 2>&1 | tee -i "${BUILD_DIR}/cmake.log"
+  ninja -v -j8 2>&1 | tee -i "${BUILD_DIR}/build.log"
 
   cmake --install "${BUILD_DIR}" --component wax_wasm_node_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
   cmake --install "${BUILD_DIR}" --component wax_wasm_web_runtime --prefix "${EXECUTION_PATH}/wasm/lib/build_wasm"
