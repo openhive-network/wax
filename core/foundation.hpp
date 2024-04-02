@@ -26,7 +26,17 @@ public:
 
   void cpp_throws(int type) const;
 
+  /* Allows to decode a `crypto-memo` string into structure providing such data directly (needed to start actual decryption process).
+  *  To be used as 1st step of decryption process.
+  * @returns A structure holding data decoded from input string, providing all required informations for further decryption.
+  */
   crypto_memo cpp_crypto_memo_from_string(const std::string& value) const;
+
+  /** Encodes `crypto_memo` structure into `crypto-memo` encoded string.
+  *   To be used as 2nd step of encryption process.
+  *
+  *   @returns Encoded string holding all required informations for further decryption.
+  */
   std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const;
 
   result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);

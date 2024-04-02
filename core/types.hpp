@@ -30,8 +30,18 @@ struct json_asset
 
 struct crypto_memo
 {
+  /** Base58 encoded string representing a PUBLIC key identifying a PRIVATE key used for encryption.
+  *   Does NOT contain prefix (STM)
+  */
   std::string from;
+  /** Base58 encoded string representing a second PUBLIC key used used at encryption.
+      Allows to use also this second PRIVATE key to decrypt the content.
+  *   Does NOT contain prefix (STM)
+  */
   std::string to;
+
+  /** Base58 encoded encrypted content.
+  */
   std::string content;
 
   crypto_memo() = default;
