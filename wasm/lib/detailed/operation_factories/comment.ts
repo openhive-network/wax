@@ -89,7 +89,7 @@ export class CommentBuilder {
     if(typeof this.jsonMetadata.tags === "undefined")
       this.jsonMetadata.tags = [];
 
-    this.jsonMetadata.tags = [... new Set(this.jsonMetadata.tags)];
+    this.jsonMetadata.tags = [... new Set([ ...this.jsonMetadata.tags, ...tags ])];
 
     return this;
   }
