@@ -5,7 +5,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 import fs from "fs";
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { protoVoteOp, serialization_sensitive_transaction, signatureTransaction } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
@@ -307,6 +307,62 @@ test.describe('Wax object interface chain tests', () => {
       });
 
       expect(retVal).toBe("1002020748973");
+    });
+
+    test('Should be able to calculate signature keys from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, signatureTransaction) => {
+        return chain.TransactionBuilder.fromApi(signatureTransaction).signatureKeys[0];
+      }, signatureTransaction);
+
+      expect(retVal).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+    });
+
+    test('Should be able to calculate legacy signature keys from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, signatureTransaction) => {
+        return chain.TransactionBuilder.fromApi(signatureTransaction).legacy_signatureKeys[0];
+      }, signatureTransaction);
+
+      expect(retVal).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+    });
+
+    test('Should be able to calculate sig digest from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
+        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).sigDigest;
+      }, serialization_sensitive_transaction);
+
+      expect(retVal).toBe('8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9');
+    });
+
+    test('Should be able to calculate legacy sig digest from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
+        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).legacy_sigDigest;
+      }, serialization_sensitive_transaction);
+
+      expect(retVal).toBe('7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe');
+    });
+
+    test('Should be able to calculate id from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
+        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).id;
+      }, serialization_sensitive_transaction);
+
+      expect(retVal).toBe('3725c81634f152011e2043eb7119911b953d4267');
+    });
+
+    test('Should be able to calculate legacy id from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
+        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).legacy_id;
+      }, serialization_sensitive_transaction);
+
+      expect(retVal).toBe('7f34699e9eea49d1bcc10c88f96e38897839ece3');
+    });
+
+    test('Should be able to get transaction signing status from hive chain interface', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, signatureTransaction) => {
+        return chain.TransactionBuilder.fromApi(signatureTransaction).isSigned();
+      }, signatureTransaction);
+
+      expect(retVal).toBe(true);
     });
 
     test('Should be able to change endpointUrl property', async ({ waxTest }) => {

@@ -87,6 +87,15 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toBe("1394412814ea3e444f65c46f075e15b9b82e6bea9241319b02743a8e593219e1");
   });
 
+  test('Should be able to calculate legacy sig digest of the transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, serialization_sensitive_transaction) => {
+      return protocol.cpp_calculate_legacy_sig_digest(serialization_sensitive_transaction, "beeab0de00000000000000000000000000000000000000000000000000000000");
+    }, serialization_sensitive_transaction);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe");
+  });
+
   test('Should be able to validate example operation', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, operation) => {
       return protocol.cpp_validate_operation(operation);

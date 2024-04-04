@@ -47,6 +47,36 @@ export const transaction = JSON.stringify({
   ]
 });
 
+export const legacyApiTransaction = JSON.stringify({
+  ref_block_num: 1959,
+  ref_block_prefix: 3625727107,
+  expiration: '2023-11-09T22:01:24',
+  operations: [['transfer', { from: 'oneplus7', to: 'kryptogames', amount: '300.000 HIVE', memo: 'Roll under 50 4d434bd943616' }]],
+  extensions: [],
+  signatures: [],
+});
+
+export const signatureTransaction = JSON.stringify({
+  expiration: "2024-02-21T06:55:40",
+  extensions: [],
+  operations: [
+    {
+      type: "account_update2_operation",
+      value: {
+        account: "thatcryptodave",
+        extensions: [],
+        json_metadata: "",
+        posting_json_metadata: "{\"name\":\"David P.\",\"about\":\"\",\"website\":\"\",\"location\":\"Ontario, Canada\",\"birthday\":\"03.28.1984\",\"profile\":{\"name\":\"David P.\",\"about\":\"\",\"website\":\"\",\"location\":\"Ontario, Canada\",\"birthday\":\"03.28.1984\",\"profile_image\":\"\",\"cover_image\":\"\"}}"
+      }
+    }
+  ],
+  signatures: [
+    "1f6ad21ddf9f57f1a94c1462185744cb0ea779ec1e99899f2556a3ce02b18d1b810fcddaccb349a53037798aea8023909447df756db461235ba5b63984d515c977"
+  ],
+  ref_block_num: 26295,
+  ref_block_prefix: 26859167
+});
+
 /// See Hive mainnet block 80021416, trx_id: 7f34699e9eea49d1bcc10c88f96e38897839ece3
 export const serialization_sensitive_transaction = JSON.stringify({
   ref_block_num: 1959,
