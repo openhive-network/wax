@@ -5,7 +5,10 @@
 #include "core/protocol_impl.inl"
 #include "core/protobuf_protocol_impl.inl"
 
+#include "set_binding.hpp"
+
 #include <iostream>
+#include <set>
 
 #include <emscripten/bind.h>
 
@@ -63,13 +66,19 @@ result cpp_generate_private_key()
 { return foundation::cpp_generate_private_key(); }
 
 result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
-{ return foundation::cpp_get_public_key_from_signature(digest, signature); }
+{
+  return foundation::cpp_get_public_key_from_signature(digest, signature);
+}
 
-result cpp_calculate_public_key(const std::string& wif) 
-{ return foundation::cpp_calculate_public_key(wif); }
+result cpp_calculate_public_key(const std::string& wif)
+{
+  return foundation::cpp_calculate_public_key(wif);
+}
 
 ref_block_data cpp_get_tapos_data(const std::string& block_id)
-{ return foundation::cpp_get_tapos_data(block_id); }
+{
+  return foundation::cpp_get_tapos_data(block_id);
+}
 
 result cpp_calculate_hp_apr(
   const uint32_t head_block_num,
@@ -81,7 +90,7 @@ result cpp_calculate_hp_apr(
     head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
 }
 
-json_asset cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const
+json_asset cpp_hbd_to_hive(const json_asset& hbd, const json_asset& base, const json_asset& quote) const
 {
   return foundation::cpp_hbd_to_hive(hbd, base, quote);
 }
@@ -96,15 +105,16 @@ json_asset cpp_calculate_witness_votes_hp(const int32_t vests_low, const int32_t
   return foundation::cpp_vests_to_hp(cpp_vests(vests_low, vests_high), total_vesting_fund_hive, total_vesting_shares);
 }
 
-result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
+result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const
 {
-    return foundation::cpp_calculate_inflation_rate_for_block( block_num );
+  return foundation::cpp_calculate_inflation_rate_for_block(block_num);
 }
 
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
 using proto_protocol_wasm = cpp::proto_protocol_impl<foundation_wasm>;
+
 
 EMSCRIPTEN_BINDINGS(wax_api_instance) {
   enum_<error_code>("error_code")
@@ -134,6 +144,15 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("ref_block_num", &ref_block_data::ref_block_num)
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
       ;
+
+  register_set<std::string>("string_set");
+
+  value_object<required_authority_collection>("required_authority_collection")
+    .field("posting_accounts", &required_authority_collection::posting_accounts)
+    .field("active_accounts", &required_authority_collection::active_accounts)
+    .field("owner_accounts", &required_authority_collection::owner_accounts)
+    ;
+
 
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
@@ -178,6 +197,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
     .function("cpp_calculate_legacy_sig_digest", &protocol_wasm::cpp_calculate_legacy_sig_digest)
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
+    .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
