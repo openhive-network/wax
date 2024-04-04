@@ -10,7 +10,11 @@ export type {
   proto_protocol,
   protocol,
   protocol_foundation,
-  result
+  result,
+  required_authority_collection,
+  string_set_iterator_result,
+  string_set_iterator,
+  string_set
 } from './build_wasm/wax.web.js';
 
 declare function waxmodule(): Promise<MainModule>;

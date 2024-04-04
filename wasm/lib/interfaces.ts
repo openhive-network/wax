@@ -10,6 +10,9 @@ import type { CommentBuilder, HiveAppsOperation, IBuiltHiveAppsOperation, NaiAss
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 
+import { protocol, required_authority_collection, string_set_iterator_result, string_set_iterator,
+  string_set } from "./wax_module";
+ 
 export type TTimestamp = Date | number | string;
 
 /**
@@ -369,6 +372,8 @@ export interface IWaxBaseInterface {
    */
   getVersion(): string;
 
+  getProtocol(): protocol;
+
   /**
    * Retrieves asset amount and symbol from the api data
    *
@@ -541,3 +546,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
 
   readonly api: Readonly<IHiveApi>;
 }
+
+export type { protocol, required_authority_collection,   string_set_iterator,
+  string_set, string_set_iterator_result
+ } ;

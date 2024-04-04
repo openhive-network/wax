@@ -1,5 +1,6 @@
 import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
-import type { MainModule, proto_protocol, result } from "../wax_module";
+import type { MainModule, protocol, proto_protocol, result } from "../wax_module";
+
 import type { NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
@@ -73,7 +74,13 @@ export class WaxBaseApi implements IWaxBaseInterface {
     );
   }
 
+  public getProtocol(): protocol {
+    const p: protocol = new this.wax.protocol();
+    return p;
+  }
+
   public getAsset(nai: NaiAsset): IHiveAssetData {
+
     const symbol = this.proto.cpp_asset_symbol(nai);
     const amount = this.proto.cpp_asset_value(nai);
 

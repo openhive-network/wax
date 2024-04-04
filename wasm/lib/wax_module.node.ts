@@ -10,6 +10,8 @@ export type {
   proto_protocol,
   protocol,
   protocol_foundation,
+  required_authority_collection,
+  string_set_iterator_result,
   result
 } from './build_wasm/wax.node.js';
 
