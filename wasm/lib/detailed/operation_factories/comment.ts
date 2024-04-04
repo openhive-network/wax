@@ -1,10 +1,9 @@
-import type { TransactionBuilder } from "../transaction_builder.js";
-import type { ITransactionBuilder } from "../../interfaces";
 import type { TAccountName } from "../custom_jsons/builder";
 import { comment } from "../../proto/comment.js";
 import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { NaiAsset } from "../index.js";
 import { WaxError } from "../../errors.js";
+import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.js";
 
 export enum ECommentFormat {
   HTML = "html",
@@ -12,7 +11,7 @@ export enum ECommentFormat {
   MIXED = "markdown+html"
 }
 
-export class CommentBuilder {
+class CommentBuilder extends OperationBuilder {
   protected readonly comment: comment;
   private commentOptions?: comment_options;
 
@@ -20,24 +19,35 @@ export class CommentBuilder {
     format: ECommentFormat.MIXED
   };
 
-  private extendDefaultJsonMetadata(optionalJsonMeta: string = "{}"): void {
-    const parsed = JSON.parse(optionalJsonMeta);
+  private extendDefaultJsonMetadata(optionalJsonMeta: { app?: string } = {}): void {
     const apps = [ `${process.env.npm_package_name}/${process.env.npm_package_version}` ];
-    if(typeof parsed.app === "string")
-      apps.unshift(parsed.app);
+    if(typeof optionalJsonMeta.app === "string")
+      apps.unshift(optionalJsonMeta.app);
 
-    Object.assign(this.jsonMetadata, parsed, { app: apps.join(", ") });
+    Object.assign(this.jsonMetadata, optionalJsonMeta, { app: apps.join(", ") });
   }
 
-  public constructor(private readonly txBuilder: TransactionBuilder, commentObject: Partial<comment>) {
+  protected constructor(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title: string = "") {
+    super();
+
+    if(permlink === undefined)
+      permlink = `re-${parentAuthor}-${Date.now()}`;
+
     this.comment = comment.fromPartial({
-      ...commentObject
+      parent_author: parentAuthor,
+      parent_permlink: parentPermlink,
+      author,
+      body,
+      permlink,
+      title
     });
 
-    this.extendDefaultJsonMetadata(commentObject.json_metadata);
+    this.extendDefaultJsonMetadata(jsonMetadata);
   }
 
   private ensureCommentOptionsCreated(): void {
+    this.requireApi();
+
     if(typeof this.commentOptions === "undefined")
       this.commentOptions = comment_options.fromPartial({
         author: this.comment.author,
@@ -45,7 +55,7 @@ export class CommentBuilder {
         allow_curation_rewards: true,
         allow_votes: true,
         percent_hbd: 10000,
-        max_accepted_payout: this.txBuilder.api.hbd(1000000000)
+        max_accepted_payout: this.api!.hbd(1000000000)
       });
   }
 
@@ -278,29 +288,42 @@ export class CommentBuilder {
   }
 
   /**
-   * Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-   *
-   * @returns {ITransactionBuilder} transaction builder object
+   * @internal
    */
-  public store(): ITransactionBuilder {
+  public override build(): IBuiltHiveAppsOperation {
     // Apply cached json metadata before pushing the comment operation
     this.comment.json_metadata = JSON.stringify(this.jsonMetadata);
 
-    this.txBuilder.push({ comment: this.comment });
+    this.push({ comment: this.comment });
 
     if(typeof this.commentOptions === "object")
-      this.txBuilder.push({ comment_options: this.commentOptions });
+      this.push({ comment_options: this.commentOptions });
 
-    return this.txBuilder;
+    return this.builtOperations;
+  }
+}
+
+/**
+ * Same as the comment builder base, but requires parentAuthor and parentPermlink to be set
+ */
+export class ReplyBuilder extends CommentBuilder {
+  public constructor(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title: string = "") {
+    super(parentAuthor, parentPermlink, author, body, jsonMetadata, permlink, title);
+
+    if(parentAuthor.length === 0)
+      throw new WaxError('No parent author specified in the reply builder');
+
+    if(parentPermlink.length === 0)
+      throw new WaxError('No parent permlink specified in the reply builder');
   }
 }
 
 /**
  * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
  */
-export class RootCommentBuilder extends CommentBuilder {
-  public constructor(txBuilder: TransactionBuilder, commentObject: Partial<comment>) {
-    super(txBuilder, commentObject);
+export class ArticleBuilder extends CommentBuilder {
+  public constructor(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object) {
+    super('', '', author, body, jsonMetadata, permlink, title);
   }
 
   /**
@@ -316,5 +339,3 @@ export class RootCommentBuilder extends CommentBuilder {
     return this;
   }
 }
-
-export type TArticleBuilder = Omit<RootCommentBuilder, 'store'>;

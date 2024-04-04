@@ -1,29 +1,37 @@
-import type { TransactionBuilder } from "../transaction_builder";
-import type { ITransactionBuilder } from "../../interfaces";
+import type { TAccountName } from "../custom_jsons";
+import type { asset } from "../../protocol";
 import { recurrent_transfer } from "../../proto/recurrent_transfer.js";
+import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.js";
 
-export class RecurrentTransferBuilder {
+export class RecurrentTransferBuilder extends OperationBuilder {
   protected readonly recurrentTransfer: recurrent_transfer;
 
-  public constructor(protected readonly txBuilder: TransactionBuilder, recurrentTransferObject: Partial<recurrent_transfer>) {
-    this.recurrentTransfer = recurrent_transfer.fromPartial(recurrentTransferObject);
+  public constructor(from: TAccountName, to: TAccountName, amount: asset, memo: string = "", recurrence: number = 0, executions: number = 0) {
+    super();
+
+    this.recurrentTransfer = recurrent_transfer.fromPartial({
+      from_account: from,
+      to_account: to,
+      amount,
+      executions,
+      recurrence,
+      memo
+    });
   }
 
   /**
-   * Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-   *
-   * @returns {ITransactionBuilder} transaction builder object
+   * @internal
    */
-  public store(): ITransactionBuilder {
-    this.txBuilder.push({ recurrent_transfer: this.recurrentTransfer });
+  public override build(): IBuiltHiveAppsOperation {
+    this.push({ recurrent_transfer: this.recurrentTransfer });
 
-    return this.txBuilder;
+    return this.builtOperations;
   }
 }
 
 export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
-  public constructor(txBuilder: TransactionBuilder, recurrentTransferObject: Partial<recurrent_transfer>, pairId?: number) {
-    super(txBuilder, recurrentTransferObject);
+  public constructor(from: TAccountName, to: TAccountName, pairId: number, memo: string = "", recurrence: number = 0, executions: number = 0) {
+    super(from, to, {} as asset, memo, recurrence, executions);
 
     if(typeof pairId === "number")
       this.addPairId(pairId);
@@ -52,7 +60,9 @@ export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
    * @returns {RecurrentTransferPairIdBuilder} itself
    */
   public generateRemoval(): RecurrentTransferPairIdBuilder {
-    this.recurrentTransfer.amount = { ...this.txBuilder.api.ASSETS.HIVE, amount: "0" };
+    this.requireApi();
+
+    this.recurrentTransfer.amount = { ...this.api!.ASSETS.HIVE, amount: "0" };
 
     return this;
   }

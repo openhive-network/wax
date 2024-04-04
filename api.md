@@ -26,10 +26,9 @@
 - [ApiManabar](#classesapimanabarmd)
 - [ApiOperation](#classesapioperationmd)
 - [ApiTransaction](#classesapitransactionmd)
+- [ArticleBuilder](#classesarticlebuildermd)
 - [BroadcastTransactionRequest](#classesbroadcasttransactionrequestmd)
 - [BroadcastTransactionResponse](#classesbroadcasttransactionresponsemd)
-- [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd)
-- [CommentBuilder](#classescommentbuildermd)
 - [CommunityOperation](#classescommunityoperationmd)
 - [CommunityOperationBuilder](#classescommunityoperationbuildermd)
 - [FindAccountsRequest](#classesfindaccountsrequestmd)
@@ -56,9 +55,9 @@
 - [ReblogOperation](#classesreblogoperationmd)
 - [RecurrentTransferBuilder](#classesrecurrenttransferbuildermd)
 - [RecurrentTransferPairIdBuilder](#classesrecurrenttransferpairidbuildermd)
+- [ReplyBuilder](#classesreplybuildermd)
 - [ResourceCreditsOperation](#classesresourcecreditsoperationmd)
 - [ResourceCreditsOperationBuilder](#classesresourcecreditsoperationbuildermd)
-- [RootCommentBuilder](#classesrootcommentbuildermd)
 - [UpdateProposalBuilder](#classesupdateproposalbuildermd)
 - [VerifyAuthorityRequest](#classesverifyauthorityrequestmd)
 - [VerifyAuthorityResponse](#classesverifyauthorityresponsemd)
@@ -67,7 +66,6 @@
 
 ## Interfaces
 
-- [IBuiltHiveAppsOperation](#interfacesibuilthiveappsoperationmd)
 - [ICommunityProps](#interfacesicommunitypropsmd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
@@ -221,17 +219,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:8
-
-___
-
-### TArticleBuilder
-
-Ƭ **TArticleBuilder**: `Omit`\<[`RootCommentBuilder`](#classesrootcommentbuildermd), ``"store"``\>
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:320
+wasm/lib/detailed/custom_jsons/builder.ts:5
 
 ___
 
@@ -245,7 +233,7 @@ Block id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:25
+wasm/lib/interfaces.ts:28
 
 ___
 
@@ -321,7 +309,23 @@ String in hex format
 
 #### Defined in
 
-wasm/lib/interfaces.ts:18
+wasm/lib/interfaces.ts:21
+
+___
+
+### TInterfaceOperationBuilder
+
+Ƭ **TInterfaceOperationBuilder**\<`T`\>: `T` extends `OperationBuilder` ? `Omit`\<`T`, ``"build"`` \| ``"push"``\> & \{ `api`: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)  } : `never`
+
+#### Type parameters
+
+| Name |
+| :------ |
+| `T` |
+
+#### Defined in
+
+wasm/lib/interfaces.ts:14
 
 ___
 
@@ -347,7 +351,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:13
+wasm/lib/interfaces.ts:16
 
 ___
 
@@ -361,7 +365,7 @@ Transaction id type
 
 #### Defined in
 
-wasm/lib/interfaces.ts:55
+wasm/lib/interfaces.ts:58
 
 ___
 
@@ -385,7 +389,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:480
+wasm/lib/interfaces.ts:431
 
 ___
 
@@ -411,7 +415,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:502
+wasm/lib/interfaces.ts:453
 
 ## Variables
 
@@ -3923,6 +3927,531 @@ ___
 wasm/lib/detailed/api/types/transaction.ts:34
 
 
+<a name="classesarticlebuildermd"></a>
+
+# Class: ArticleBuilder
+
+Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
+
+## Hierarchy
+
+- `CommentBuilder`
+
+  ↳ **`ArticleBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new ArticleBuilder**(`author`, `permlink`, `title`, `body`, `jsonMetadata?`): [`ArticleBuilder`](#classesarticlebuildermd)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `author` | `string` |
+| `permlink` | `string` |
+| `title` | `string` |
+| `body` | `string` |
+| `jsonMetadata?` | `object` |
+
+#### Returns
+
+[`ArticleBuilder`](#classesarticlebuildermd)
+
+#### Overrides
+
+CommentBuilder.constructor
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:325
+
+## Properties
+
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+CommentBuilder.api
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+CommentBuilder.builtOperations
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
+
+___
+
+### comment
+
+• `Protected` `Readonly` **comment**: [`comment`](#comment)
+
+#### Inherited from
+
+CommentBuilder.comment
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:15
+
+___
+
+### jsonMetadata
+
+• `Protected` **jsonMetadata**: `Record`\<`string`, `any`\>
+
+#### Inherited from
+
+CommentBuilder.jsonMetadata
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:18
+
+## Methods
+
+### addBeneficiaries
+
+▸ **addBeneficiaries**(`...accounts`): `CommentBuilder`
+
+Adds beneficiary account(s) to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.addBeneficiaries
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:219
+
+___
+
+### addBeneficiary
+
+▸ **addBeneficiary**(`account`, `weight`): `CommentBuilder`
+
+Adds beneficiary account to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `account` | `string` | beneficiary account |
+| `weight` | `number` | weight of the beneficiary account |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.addBeneficiary
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:192
+
+___
+
+### pushImages
+
+▸ **pushImages**(`...images`): `CommentBuilder`
+
+Pushes images to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...images` | `string`[] | image to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushImages
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:127
+
+___
+
+### pushLinks
+
+▸ **pushLinks**(`...links`): `CommentBuilder`
+
+Pushes links to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...links` | `string`[] | links to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushLinks
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:146
+
+___
+
+### pushMetadataProperty
+
+▸ **pushMetadataProperty**(`keyOrObject`, `value?`): `CommentBuilder`
+
+Assigns given object or sets given value on key in comment meta values
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `keyOrObject` | `string` \| `object` | key to set the value on or the entire object of key-value pairs to assign to the json metadata object |
+| `value?` | `any` | value to be set (optional when passing the entire object) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`Throws`**
+
+if key already exists on the jsonmetadata object
+
+#### Inherited from
+
+CommentBuilder.pushMetadataProperty
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:71
+
+___
+
+### pushTags
+
+▸ **pushTags**(`...tags`): `CommentBuilder`
+
+Pushes tags to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...tags` | `string`[] | tags to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushTags
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:95
+
+___
+
+### requireApi
+
+▸ **requireApi**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+CommentBuilder.requireApi
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:49
+
+___
+
+### setAllowCurationRewards
+
+▸ **setAllowCurationRewards**(`value`): `CommentBuilder`
+
+Sets allow curation rewards
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | allow curation rewards value (defaults to `true`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.allow_curation_rewards](#allow_curation_rewards)
+
+#### Inherited from
+
+CommentBuilder.setAllowCurationRewards
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:266
+
+___
+
+### setAllowVotes
+
+▸ **setAllowVotes**(`value`): `CommentBuilder`
+
+Sets allow votes
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | allow votes value (defaults to `true`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.allow_votes](#allow_votes)
+
+#### Inherited from
+
+CommentBuilder.setAllowVotes
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:282
+
+___
+
+### setAlternativeAuthor
+
+▸ **setAlternativeAuthor**(`author`): `CommentBuilder`
+
+Sets alternative author to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `author` | `string` | alternative author to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setAlternativeAuthor
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:114
+
+___
+
+### setCategory
+
+▸ **setCategory**(`category`): `CommentBuilder`
+
+Sets category of the article
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `category` | `string` | category (parent permlink) and also the first tag |
+
+#### Returns
+
+`CommentBuilder`
+
+ready to build transaction builder
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:336
+
+___
+
+### setDescription
+
+▸ **setDescription**(`description`): `CommentBuilder`
+
+Sets description on the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `description` | `string` | description to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setDescription
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:165
+
+___
+
+### setFormat
+
+▸ **setFormat**(`format`): `CommentBuilder`
+
+Sets format on the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `format` | [`ECommentFormat`](#enumsecommentformatmd) | format to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setFormat
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:178
+
+___
+
+### setMaxAcceptedPayout
+
+▸ **setMaxAcceptedPayout**(`amount`): `CommentBuilder`
+
+Sets maximum accepted payout on the comment
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | [`NaiAsset`](#classesnaiassetmd) | Maximum accepted payout (defaults to `1000000.000 HBD`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.max_accepted_payout](#max_accepted_payout)
+
+#### Inherited from
+
+CommentBuilder.setMaxAcceptedPayout
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:234
+
+___
+
+### setPercentHbd
+
+▸ **setPercentHbd**(`value`): `CommentBuilder`
+
+Sets percent hbd
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | percent hbd (defaults to `10000` - `HIVE_100_PERCENT`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.percent_hbd](#percent_hbd)
+
+#### Inherited from
+
+CommentBuilder.setPercentHbd
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:250
+
+
 <a name="classesbroadcasttransactionrequestmd"></a>
 
 # Class: BroadcastTransactionRequest
@@ -3981,503 +4510,6 @@ wasm/lib/detailed/api/network_broadcast_api/broadcast_transaction.ts:22
 #### Returns
 
 [`BroadcastTransactionResponse`](#classesbroadcasttransactionresponsemd)
-
-
-<a name="classesbuilthiveappsoperationmd"></a>
-
-# Class: BuiltHiveAppsOperation
-
-## Implements
-
-- [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
-
-## Constructors
-
-### constructor
-
-• **new BuiltHiveAppsOperation**(): [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
-
-#### Returns
-
-[`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
-
-## Accessors
-
-### length
-
-• `get` **length**(): `number`
-
-Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
-
-#### Returns
-
-`number`
-
-#### Implementation of
-
-[IBuiltHiveAppsOperation](#interfacesibuilthiveappsoperationmd).[length](#length)
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/builder.ts:25
-
-
-<a name="classescommentbuildermd"></a>
-
-# Class: CommentBuilder
-
-## Hierarchy
-
-- **`CommentBuilder`**
-
-  ↳ [`RootCommentBuilder`](#classesrootcommentbuildermd)
-
-## Constructors
-
-### constructor
-
-• **new CommentBuilder**(`txBuilder`, `commentObject`): [`CommentBuilder`](#classescommentbuildermd)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
-| `commentObject` | `Partial`\<[`comment`](#comment)\> |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:32
-
-## Properties
-
-### comment
-
-• `Protected` `Readonly` **comment**: [`comment`](#comment)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:16
-
-___
-
-### commentOptions
-
-• `Private` `Optional` **commentOptions**: [`comment_options`](#comment_options)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:17
-
-___
-
-### jsonMetadata
-
-• `Protected` **jsonMetadata**: `Record`\<`string`, `any`\>
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:19
-
-___
-
-### txBuilder
-
-• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:32
-
-## Methods
-
-### addBeneficiaries
-
-▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
-
-Adds beneficiary account(s) to the comment operation object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:209
-
-___
-
-### addBeneficiary
-
-▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
-
-Adds beneficiary account to the comment operation object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `account` | `string` | beneficiary account |
-| `weight` | `number` | weight of the beneficiary account |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:182
-
-___
-
-### ensureCommentOptionsCreated
-
-▸ **ensureCommentOptionsCreated**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:40
-
-___
-
-### extendDefaultJsonMetadata
-
-▸ **extendDefaultJsonMetadata**(`optionalJsonMeta?`): `void`
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `optionalJsonMeta` | `string` | `"{}"` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:23
-
-___
-
-### pushImages
-
-▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes images to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...images` | `string`[] | image to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:117
-
-___
-
-### pushLinks
-
-▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes links to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...links` | `string`[] | links to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:136
-
-___
-
-### pushMetadataProperty
-
-▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)
-
-Assigns given object or sets given value on key in comment meta values
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `keyOrObject` | `string` \| `object` | key to set the value on or the entire object of key-value pairs to assign to the json metadata object |
-| `value?` | `any` | value to be set (optional when passing the entire object) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`Throws`**
-
-if key already exists on the jsonmetadata object
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:61
-
-___
-
-### pushTags
-
-▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes tags to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...tags` | `string`[] | tags to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:85
-
-___
-
-### setAllowCurationRewards
-
-▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets allow curation rewards
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `boolean` | allow curation rewards value (defaults to `true`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.allow_curation_rewards](#allow_curation_rewards)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:256
-
-___
-
-### setAllowVotes
-
-▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets allow votes
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `boolean` | allow votes value (defaults to `true`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.allow_votes](#allow_votes)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:272
-
-___
-
-### setAlternativeAuthor
-
-▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets alternative author to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `author` | `string` | alternative author to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:104
-
-___
-
-### setDescription
-
-▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets description on the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `description` | `string` | description to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:155
-
-___
-
-### setFormat
-
-▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets format on the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `format` | [`ECommentFormat`](#enumsecommentformatmd) | format to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:168
-
-___
-
-### setMaxAcceptedPayout
-
-▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets maximum accepted payout on the comment
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `amount` | [`NaiAsset`](#classesnaiassetmd) | Maximum accepted payout (defaults to `1000000.000 HBD`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.max_accepted_payout](#max_accepted_payout)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:224
-
-___
-
-### setPercentHbd
-
-▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets percent hbd
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `number` | percent hbd (defaults to `10000` - `HIVE_100_PERCENT`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.percent_hbd](#percent_hbd)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:240
-
-___
-
-### store
-
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-
-#### Returns
-
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:285
 
 
 <a name="classescommunityoperationmd"></a>
@@ -4605,6 +4637,20 @@ wasm/lib/detailed/custom_jsons/community.ts:116
 
 ## Properties
 
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[api](#api)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
 ### body
 
 • `Protected` **body**: `object`[] = `[]`
@@ -4617,7 +4663,21 @@ Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:56
+wasm/lib/detailed/custom_jsons/builder.ts:13
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[builtOperations](#builtoperations)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
 
 ___
 
@@ -4641,7 +4701,7 @@ wasm/lib/detailed/custom_jsons/community.ts:114
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the BuiltHiveAppsOperation instance and clears the stage
 
 #### Parameters
 
@@ -4662,19 +4722,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:75
+wasm/lib/detailed/custom_jsons/builder.ts:30
 
 ___
 
 ### build
 
-▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+▸ **build**(): `IBuiltHiveAppsOperation`
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+`IBuiltHiveAppsOperation`
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -4684,7 +4744,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:102
+wasm/lib/detailed/operation_builder.ts:70
 
 ___
 
@@ -4765,6 +4825,24 @@ itself
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/community.ts:226
+
+___
+
+### requireApi
+
+▸ **requireApi**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[requireApi](#requireapi)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:49
 
 ___
 
@@ -5154,6 +5232,20 @@ wasm/lib/detailed/custom_jsons/follow.ts:65
 
 ## Properties
 
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[api](#api)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
 ### body
 
 • `Protected` **body**: `object`[] = `[]`
@@ -5166,7 +5258,21 @@ Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:56
+wasm/lib/detailed/custom_jsons/builder.ts:13
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[builtOperations](#builtoperations)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
 
 ___
 
@@ -5190,7 +5296,7 @@ wasm/lib/detailed/custom_jsons/follow.ts:63
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the BuiltHiveAppsOperation instance and clears the stage
 
 #### Parameters
 
@@ -5211,7 +5317,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:75
+wasm/lib/detailed/custom_jsons/builder.ts:30
 
 ___
 
@@ -5243,13 +5349,13 @@ ___
 
 ### build
 
-▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+▸ **build**(): `IBuiltHiveAppsOperation`
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+`IBuiltHiveAppsOperation`
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -5259,7 +5365,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:102
+wasm/lib/detailed/operation_builder.ts:70
 
 ___
 
@@ -5413,6 +5519,24 @@ itself
 #### Defined in
 
 wasm/lib/detailed/custom_jsons/follow.ts:346
+
+___
+
+### requireApi
+
+▸ **requireApi**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[requireApi](#requireapi)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:49
 
 ___
 
@@ -6397,13 +6521,15 @@ wasm/lib/detailed/custom_jsons/apps_operation.ts:9
 
 ## Hierarchy
 
-- **`HiveAppsOperationsBuilder`**
+- `OperationBuilder`
 
-  ↳ [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
+  ↳ **`HiveAppsOperationsBuilder`**
 
-  ↳ [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+  ↳↳ [`CommunityOperationBuilder`](#classescommunityoperationbuildermd)
 
-  ↳ [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
+  ↳↳ [`FollowOperationBuilder`](#classesfollowoperationbuildermd)
+
+  ↳↳ [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
 
 ## Constructors
 
@@ -6422,7 +6548,25 @@ wasm/lib/detailed/custom_jsons/apps_operation.ts:9
 
 [`HiveAppsOperationsBuilder`](#classeshiveappsoperationsbuildermd)\<`ChildT`, `BodyT`\>
 
+#### Inherited from
+
+OperationBuilder.constructor
+
 ## Properties
+
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+OperationBuilder.api
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
 
 ### body
 
@@ -6432,17 +6576,21 @@ Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:56
+wasm/lib/detailed/custom_jsons/builder.ts:13
 
 ___
 
-### builtCustomJsons
+### builtOperations
 
-• `Private` `Readonly` **builtCustomJsons**: [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+OperationBuilder.builtOperations
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:65
+wasm/lib/detailed/operation_builder.ts:47
 
 ___
 
@@ -6454,7 +6602,7 @@ Id of your custom hive apps operation
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:63
+wasm/lib/detailed/custom_jsons/builder.ts:20
 
 ## Methods
 
@@ -6462,7 +6610,7 @@ wasm/lib/detailed/custom_jsons/builder.ts:63
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): `ChildT`
 
-Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the BuiltHiveAppsOperation instance and clears the stage
 
 #### Parameters
 
@@ -6479,25 +6627,47 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:75
+wasm/lib/detailed/custom_jsons/builder.ts:30
 
 ___
 
 ### build
 
-▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+▸ **build**(): `IBuiltHiveAppsOperation`
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+`IBuiltHiveAppsOperation`
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
+#### Inherited from
+
+OperationBuilder.build
+
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:102
+wasm/lib/detailed/operation_builder.ts:70
+
+___
+
+### requireApi
+
+▸ **requireApi**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+OperationBuilder.requireApi
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:49
 
 
 <a name="classesnaiassetmd"></a>
@@ -7880,32 +8050,70 @@ wasm/lib/detailed/custom_jsons/follow.ts:14
 
 ## Hierarchy
 
-- **`RecurrentTransferBuilder`**
+- `OperationBuilder`
 
-  ↳ [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+  ↳ **`RecurrentTransferBuilder`**
+
+  ↳↳ [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
 
 ## Constructors
 
 ### constructor
 
-• **new RecurrentTransferBuilder**(`txBuilder`, `recurrentTransferObject`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
+• **new RecurrentTransferBuilder**(`from`, `to`, `amount`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
-| `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `from` | `string` | `undefined` |
+| `to` | `string` | `undefined` |
+| `amount` | [`asset`](#asset) | `undefined` |
+| `memo` | `string` | `""` |
+| `recurrence` | `number` | `0` |
+| `executions` | `number` | `0` |
 
 #### Returns
 
 [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
 
+#### Overrides
+
+OperationBuilder.constructor
+
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:9
 
 ## Properties
+
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+OperationBuilder.api
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+OperationBuilder.builtOperations
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
+
+___
 
 ### recurrentTransfer
 
@@ -7913,35 +8121,25 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:6
-
-___
-
-### txBuilder
-
-• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:7
 
 ## Methods
 
-### store
+### requireApi
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+▸ **requireApi**(): `void`
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`void`
 
-transaction builder object
+#### Inherited from
+
+OperationBuilder.requireApi
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
+wasm/lib/detailed/operation_builder.ts:49
 
 
 <a name="classesrecurrenttransferpairidbuildermd"></a>
@@ -7958,15 +8156,18 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
 
 ### constructor
 
-• **new RecurrentTransferPairIdBuilder**(`txBuilder`, `recurrentTransferObject`, `pairId?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
+• **new RecurrentTransferPairIdBuilder**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
-| `recurrentTransferObject` | `Partial`\<[`recurrent_transfer`](#recurrent_transfer)\> |
-| `pairId?` | `number` |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `from` | `string` | `undefined` |
+| `to` | `string` | `undefined` |
+| `pairId` | `number` | `undefined` |
+| `memo` | `string` | `""` |
+| `recurrence` | `number` | `0` |
+| `executions` | `number` | `0` |
 
 #### Returns
 
@@ -7978,9 +8179,37 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:25
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:33
 
 ## Properties
+
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[api](#api)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[builtOperations](#builtoperations)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
+
+___
 
 ### recurrentTransfer
 
@@ -7992,21 +8221,7 @@ wasm/lib/detailed/operation_factories/recurrent_transfer.ts:25
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:6
-
-___
-
-### txBuilder
-
-• `Protected` `Readonly` **txBuilder**: `TransactionBuilder`
-
-#### Inherited from
-
-[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[txBuilder](#txbuilder)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:8
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:7
 
 ## Methods
 
@@ -8030,7 +8245,7 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:39
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:47
 
 ___
 
@@ -8048,29 +8263,528 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:54
+wasm/lib/detailed/operation_factories/recurrent_transfer.ts:62
 
 ___
 
-### store
+### requireApi
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+▸ **requireApi**(): `void`
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
+`void`
 
 #### Inherited from
 
-[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[store](#store)
+[RecurrentTransferBuilder](#classesrecurrenttransferbuildermd).[requireApi](#requireapi)
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/recurrent_transfer.ts:17
+wasm/lib/detailed/operation_builder.ts:49
+
+
+<a name="classesreplybuildermd"></a>
+
+# Class: ReplyBuilder
+
+Same as the comment builder base, but requires parentAuthor and parentPermlink to be set
+
+## Hierarchy
+
+- `CommentBuilder`
+
+  ↳ **`ReplyBuilder`**
+
+## Constructors
+
+### constructor
+
+• **new ReplyBuilder**(`parentAuthor`, `parentPermlink`, `author`, `body`, `jsonMetadata?`, `permlink?`, `title?`): [`ReplyBuilder`](#classesreplybuildermd)
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `parentAuthor` | `string` | `undefined` |
+| `parentPermlink` | `string` | `undefined` |
+| `author` | `string` | `undefined` |
+| `body` | `string` | `undefined` |
+| `jsonMetadata?` | `object` | `undefined` |
+| `permlink?` | `string` | `undefined` |
+| `title` | `string` | `""` |
+
+#### Returns
+
+[`ReplyBuilder`](#classesreplybuildermd)
+
+#### Overrides
+
+CommentBuilder.constructor
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:310
+
+## Properties
+
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+CommentBuilder.api
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+CommentBuilder.builtOperations
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
+
+___
+
+### comment
+
+• `Protected` `Readonly` **comment**: [`comment`](#comment)
+
+#### Inherited from
+
+CommentBuilder.comment
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:15
+
+___
+
+### jsonMetadata
+
+• `Protected` **jsonMetadata**: `Record`\<`string`, `any`\>
+
+#### Inherited from
+
+CommentBuilder.jsonMetadata
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:18
+
+## Methods
+
+### addBeneficiaries
+
+▸ **addBeneficiaries**(`...accounts`): `CommentBuilder`
+
+Adds beneficiary account(s) to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.addBeneficiaries
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:219
+
+___
+
+### addBeneficiary
+
+▸ **addBeneficiary**(`account`, `weight`): `CommentBuilder`
+
+Adds beneficiary account to the comment operation object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `account` | `string` | beneficiary account |
+| `weight` | `number` | weight of the beneficiary account |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.addBeneficiary
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:192
+
+___
+
+### pushImages
+
+▸ **pushImages**(`...images`): `CommentBuilder`
+
+Pushes images to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...images` | `string`[] | image to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushImages
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:127
+
+___
+
+### pushLinks
+
+▸ **pushLinks**(`...links`): `CommentBuilder`
+
+Pushes links to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...links` | `string`[] | links to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushLinks
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:146
+
+___
+
+### pushMetadataProperty
+
+▸ **pushMetadataProperty**(`keyOrObject`, `value?`): `CommentBuilder`
+
+Assigns given object or sets given value on key in comment meta values
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `keyOrObject` | `string` \| `object` | key to set the value on or the entire object of key-value pairs to assign to the json metadata object |
+| `value?` | `any` | value to be set (optional when passing the entire object) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`Throws`**
+
+if key already exists on the jsonmetadata object
+
+#### Inherited from
+
+CommentBuilder.pushMetadataProperty
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:71
+
+___
+
+### pushTags
+
+▸ **pushTags**(`...tags`): `CommentBuilder`
+
+Pushes tags to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `...tags` | `string`[] | tags to be pushed to the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.pushTags
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:95
+
+___
+
+### requireApi
+
+▸ **requireApi**(): `void`
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+CommentBuilder.requireApi
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:49
+
+___
+
+### setAllowCurationRewards
+
+▸ **setAllowCurationRewards**(`value`): `CommentBuilder`
+
+Sets allow curation rewards
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | allow curation rewards value (defaults to `true`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.allow_curation_rewards](#allow_curation_rewards)
+
+#### Inherited from
+
+CommentBuilder.setAllowCurationRewards
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:266
+
+___
+
+### setAllowVotes
+
+▸ **setAllowVotes**(`value`): `CommentBuilder`
+
+Sets allow votes
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `boolean` | allow votes value (defaults to `true`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.allow_votes](#allow_votes)
+
+#### Inherited from
+
+CommentBuilder.setAllowVotes
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:282
+
+___
+
+### setAlternativeAuthor
+
+▸ **setAlternativeAuthor**(`author`): `CommentBuilder`
+
+Sets alternative author to the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `author` | `string` | alternative author to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setAlternativeAuthor
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:114
+
+___
+
+### setDescription
+
+▸ **setDescription**(`description`): `CommentBuilder`
+
+Sets description on the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `description` | `string` | description to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setDescription
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:165
+
+___
+
+### setFormat
+
+▸ **setFormat**(`format`): `CommentBuilder`
+
+Sets format on the json metadata object
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `format` | [`ECommentFormat`](#enumsecommentformatmd) | format to be set on the json metadata object |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+#### Inherited from
+
+CommentBuilder.setFormat
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:178
+
+___
+
+### setMaxAcceptedPayout
+
+▸ **setMaxAcceptedPayout**(`amount`): `CommentBuilder`
+
+Sets maximum accepted payout on the comment
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | [`NaiAsset`](#classesnaiassetmd) | Maximum accepted payout (defaults to `1000000.000 HBD`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.max_accepted_payout](#max_accepted_payout)
+
+#### Inherited from
+
+CommentBuilder.setMaxAcceptedPayout
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:234
+
+___
+
+### setPercentHbd
+
+▸ **setPercentHbd**(`value`): `CommentBuilder`
+
+Sets percent hbd
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `value` | `number` | percent hbd (defaults to `10000` - `HIVE_100_PERCENT`) |
+
+#### Returns
+
+`CommentBuilder`
+
+itself
+
+**`See`**
+
+[comment_options.percent_hbd](#percent_hbd)
+
+#### Inherited from
+
+CommentBuilder.setPercentHbd
+
+#### Defined in
+
+wasm/lib/detailed/operation_factories/comment.ts:250
 
 
 <a name="classesresourcecreditsoperationmd"></a>
@@ -8198,6 +8912,20 @@ wasm/lib/detailed/custom_jsons/rc.ts:23
 
 ## Properties
 
+### api
+
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[api](#api)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
 ### body
 
 • `Protected` **body**: `object`[] = `[]`
@@ -8210,7 +8938,21 @@ Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:56
+wasm/lib/detailed/custom_jsons/builder.ts:13
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[builtOperations](#builtoperations)
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
 
 ___
 
@@ -8234,7 +8976,7 @@ wasm/lib/detailed/custom_jsons/rc.ts:21
 
 ▸ **authorize**(`requiredPostingAuths`, `requiredAuths?`): [`ResourceCreditsOperationBuilder`](#classesresourcecreditsoperationbuildermd)
 
-Authorizes the currently staged hive apps operation, commits it to the [BuiltHiveAppsOperation](#classesbuilthiveappsoperationmd) instance and clears the stage
+Authorizes the currently staged hive apps operation, commits it to the BuiltHiveAppsOperation instance and clears the stage
 
 #### Parameters
 
@@ -8255,19 +8997,19 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:75
+wasm/lib/detailed/custom_jsons/builder.ts:30
 
 ___
 
 ### build
 
-▸ **build**(): [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+▸ **build**(): `IBuiltHiveAppsOperation`
 
 Marks the current set of the hive apps operations as ready push
 
 #### Returns
 
-[`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd)
+`IBuiltHiveAppsOperation`
 
 instance of the hive apps operation class that you can pass to the [ITransactionBuilder.push](#push)
 
@@ -8277,7 +9019,7 @@ instance of the hive apps operation class that you can pass to the [ITransaction
 
 #### Defined in
 
-wasm/lib/detailed/custom_jsons/builder.ts:102
+wasm/lib/detailed/operation_builder.ts:70
 
 ___
 
@@ -8332,540 +9074,91 @@ itself
 
 wasm/lib/detailed/custom_jsons/rc.ts:74
 
-
-<a name="classesrootcommentbuildermd"></a>
-
-# Class: RootCommentBuilder
-
-Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
-
-## Hierarchy
-
-- [`CommentBuilder`](#classescommentbuildermd)
-
-  ↳ **`RootCommentBuilder`**
-
-## Constructors
-
-### constructor
-
-• **new RootCommentBuilder**(`txBuilder`, `commentObject`): [`RootCommentBuilder`](#classesrootcommentbuildermd)
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
-| `commentObject` | `Partial`\<[`comment`](#comment)\> |
-
-#### Returns
-
-[`RootCommentBuilder`](#classesrootcommentbuildermd)
-
-#### Overrides
-
-[CommentBuilder](#classescommentbuildermd).[constructor](#constructor)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:302
-
-## Properties
-
-### comment
-
-• `Protected` `Readonly` **comment**: [`comment`](#comment)
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[comment](#comment)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:16
-
 ___
 
-### jsonMetadata
+### requireApi
 
-• `Protected` **jsonMetadata**: `Record`\<`string`, `any`\>
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[jsonMetadata](#jsonmetadata)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:19
-
-## Methods
-
-### addBeneficiaries
-
-▸ **addBeneficiaries**(`...accounts`): [`CommentBuilder`](#classescommentbuildermd)
-
-Adds beneficiary account(s) to the comment operation object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...accounts` | `beneficiary_route_type`[] | beneficiary accounts |
+▸ **requireApi**(): `void`
 
 #### Returns
 
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
+`void`
 
 #### Inherited from
 
-[CommentBuilder](#classescommentbuildermd).[addBeneficiaries](#addbeneficiaries)
+[HiveAppsOperationsBuilder](#classeshiveappsoperationsbuildermd).[requireApi](#requireapi)
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:209
-
-___
-
-### addBeneficiary
-
-▸ **addBeneficiary**(`account`, `weight`): [`CommentBuilder`](#classescommentbuildermd)
-
-Adds beneficiary account to the comment operation object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `account` | `string` | beneficiary account |
-| `weight` | `number` | weight of the beneficiary account |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[addBeneficiary](#addbeneficiary)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:182
-
-___
-
-### pushImages
-
-▸ **pushImages**(`...images`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes images to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...images` | `string`[] | image to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[pushImages](#pushimages)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:117
-
-___
-
-### pushLinks
-
-▸ **pushLinks**(`...links`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes links to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...links` | `string`[] | links to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[pushLinks](#pushlinks)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:136
-
-___
-
-### pushMetadataProperty
-
-▸ **pushMetadataProperty**(`keyOrObject`, `value?`): [`CommentBuilder`](#classescommentbuildermd)
-
-Assigns given object or sets given value on key in comment meta values
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `keyOrObject` | `string` \| `object` | key to set the value on or the entire object of key-value pairs to assign to the json metadata object |
-| `value?` | `any` | value to be set (optional when passing the entire object) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`Throws`**
-
-if key already exists on the jsonmetadata object
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[pushMetadataProperty](#pushmetadataproperty)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:61
-
-___
-
-### pushTags
-
-▸ **pushTags**(`...tags`): [`CommentBuilder`](#classescommentbuildermd)
-
-Pushes tags to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `...tags` | `string`[] | tags to be pushed to the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[pushTags](#pushtags)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:85
-
-___
-
-### setAllowCurationRewards
-
-▸ **setAllowCurationRewards**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets allow curation rewards
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `boolean` | allow curation rewards value (defaults to `true`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.allow_curation_rewards](#allow_curation_rewards)
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setAllowCurationRewards](#setallowcurationrewards)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:256
-
-___
-
-### setAllowVotes
-
-▸ **setAllowVotes**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets allow votes
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `boolean` | allow votes value (defaults to `true`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.allow_votes](#allow_votes)
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setAllowVotes](#setallowvotes)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:272
-
-___
-
-### setAlternativeAuthor
-
-▸ **setAlternativeAuthor**(`author`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets alternative author to the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `author` | `string` | alternative author to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setAlternativeAuthor](#setalternativeauthor)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:104
-
-___
-
-### setCategory
-
-▸ **setCategory**(`category`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets category of the article
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `category` | `string` | category (parent permlink) and also the first tag |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-ready to build transaction builder
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:313
-
-___
-
-### setDescription
-
-▸ **setDescription**(`description`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets description on the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `description` | `string` | description to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setDescription](#setdescription)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:155
-
-___
-
-### setFormat
-
-▸ **setFormat**(`format`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets format on the json metadata object
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `format` | [`ECommentFormat`](#enumsecommentformatmd) | format to be set on the json metadata object |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setFormat](#setformat)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:168
-
-___
-
-### setMaxAcceptedPayout
-
-▸ **setMaxAcceptedPayout**(`amount`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets maximum accepted payout on the comment
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `amount` | [`NaiAsset`](#classesnaiassetmd) | Maximum accepted payout (defaults to `1000000.000 HBD`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.max_accepted_payout](#max_accepted_payout)
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setMaxAcceptedPayout](#setmaxacceptedpayout)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:224
-
-___
-
-### setPercentHbd
-
-▸ **setPercentHbd**(`value`): [`CommentBuilder`](#classescommentbuildermd)
-
-Sets percent hbd
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `value` | `number` | percent hbd (defaults to `10000` - `HIVE_100_PERCENT`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-itself
-
-**`See`**
-
-[comment_options.percent_hbd](#percent_hbd)
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[setPercentHbd](#setpercenthbd)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:240
-
-___
-
-### store
-
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-
-#### Returns
-
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-transaction builder object
-
-#### Inherited from
-
-[CommentBuilder](#classescommentbuildermd).[store](#store)
-
-#### Defined in
-
-wasm/lib/detailed/operation_factories/comment.ts:285
+wasm/lib/detailed/operation_builder.ts:49
 
 
 <a name="classesupdateproposalbuildermd"></a>
 
 # Class: UpdateProposalBuilder
 
+## Hierarchy
+
+- `OperationBuilder`
+
+  ↳ **`UpdateProposalBuilder`**
+
 ## Constructors
 
 ### constructor
 
-• **new UpdateProposalBuilder**(`txBuilder`, `updateProposalObject`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
+• **new UpdateProposalBuilder**(`proposalId`, `creator`, `dailyPay`, `subject`, `permlink`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `txBuilder` | `TransactionBuilder` |
-| `updateProposalObject` | `Partial`\<[`update_proposal`](#update_proposal)\> |
+| `proposalId` | `string` \| `number` |
+| `creator` | `string` |
+| `dailyPay` | [`asset`](#asset) |
+| `subject` | `string` |
+| `permlink` | `string` |
 | `endDate?` | `string` \| `number` \| `Date` |
 
 #### Returns
 
 [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
 
+#### Overrides
+
+OperationBuilder.constructor
+
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:8
+wasm/lib/detailed/operation_factories/update_proposal.ts:9
 
 ## Properties
 
-### txBuilder
+### api
 
-• `Private` `Readonly` **txBuilder**: `TransactionBuilder`
+• `Optional` **api**: [`IWaxBaseInterface`](#interfacesiwaxbaseinterfacemd)
+
+#### Inherited from
+
+OperationBuilder.api
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:8
+wasm/lib/detailed/operation_builder.ts:54
+
+___
+
+### builtOperations
+
+• `Protected` `Readonly` **builtOperations**: `BuiltHiveAppsOperation`
+
+#### Inherited from
+
+OperationBuilder.builtOperations
+
+#### Defined in
+
+wasm/lib/detailed/operation_builder.ts:47
 
 ___
 
@@ -8875,7 +9168,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:6
+wasm/lib/detailed/operation_factories/update_proposal.ts:7
 
 ## Methods
 
@@ -8899,25 +9192,25 @@ itself
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:21
+wasm/lib/detailed/operation_factories/update_proposal.ts:30
 
 ___
 
-### store
+### requireApi
 
-▸ **store**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
-
-Pushes the prepared operation to the transaction builder operations and returns the transaction builder
+▸ **requireApi**(): `void`
 
 #### Returns
 
-[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+`void`
 
-transaction builder object
+#### Inherited from
+
+OperationBuilder.requireApi
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/update_proposal.ts:39
+wasm/lib/detailed/operation_builder.ts:49
 
 
 <a name="classesverifyauthorityrequestmd"></a>
@@ -9106,7 +9399,7 @@ Allows users to extend the default wax formatter using custom user-defined forma
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `formatterConstructor` | \{ `asset?`: \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } \| [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) | constructable formatter object |
+| `formatterConstructor` | [`TWaxCustomFormatterConstructor`](#twaxcustomformatterconstructor) \| \{ `asset?`: \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } ; `createDefaultFormatters?`: `boolean` ; `transaction?`: \{ displayAsId?: boolean \| undefined; }  } | constructable formatter object |
 | `options?` | `Object` | formatter options |
 | `options.asset?` | \{ displayAsNai?: boolean \| undefined; appendTokenName?: boolean \| undefined; formatAmount?: boolean \| undefined; locales?: string \| (string \| undefined)[] \| undefined; } | - |
 | `options.createDefaultFormatters?` | `boolean` | Initializes formatter class with default wax formatters **`Default`** ```ts true ``` |
@@ -9497,7 +9790,7 @@ wasm/lib/detailed/formatters/base.ts:75
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:10
+wasm/lib/detailed/operation_factories/comment.ts:9
 
 ___
 
@@ -9507,7 +9800,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:11
+wasm/lib/detailed/operation_factories/comment.ts:10
 
 ___
 
@@ -9517,7 +9810,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:12
+wasm/lib/detailed/operation_factories/comment.ts:11
 
 
 <a name="enumsecommunityoperationactionsmd"></a>
@@ -10005,27 +10298,6 @@ ___
 wasm/lib/detailed/api/types/index.ts:6
 
 
-<a name="interfacesibuilthiveappsoperationmd"></a>
-
-# Interface: IBuiltHiveAppsOperation
-
-## Implemented by
-
-- [`BuiltHiveAppsOperation`](#classesbuilthiveappsoperationmd)
-
-## Properties
-
-### length
-
-• **length**: `number`
-
-Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
-
-#### Defined in
-
-wasm/lib/detailed/custom_jsons/builder.ts:16
-
-
 <a name="interfacesicommunitypropsmd"></a>
 
 # Interface: ICommunityProps
@@ -10201,7 +10473,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:349
+wasm/lib/interfaces.ts:300
 
 ___
 
@@ -10219,7 +10491,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:356
+wasm/lib/interfaces.ts:307
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10244,7 +10516,7 @@ wasm/lib/interfaces.ts:356
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:313
 
 ___
 
@@ -10254,7 +10526,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:579
+wasm/lib/interfaces.ts:530
 
 ___
 
@@ -10268,7 +10540,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:364
+wasm/lib/interfaces.ts:315
 
 ___
 
@@ -10308,7 +10580,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:365
+wasm/lib/interfaces.ts:316
 
 ## Accessors
 
@@ -10326,7 +10598,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:311
 
 ___
 
@@ -10342,7 +10614,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:541
+wasm/lib/interfaces.ts:492
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10360,7 +10632,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:536
+wasm/lib/interfaces.ts:487
 
 ## Methods
 
@@ -10391,7 +10663,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:451
+wasm/lib/interfaces.ts:402
 
 ___
 
@@ -10416,7 +10688,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:567
+wasm/lib/interfaces.ts:518
 
 ___
 
@@ -10447,7 +10719,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:467
+wasm/lib/interfaces.ts:418
 
 ___
 
@@ -10472,7 +10744,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:577
+wasm/lib/interfaces.ts:528
 
 ___
 
@@ -10501,7 +10773,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:435
+wasm/lib/interfaces.ts:386
 
 ___
 
@@ -10521,7 +10793,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:472
+wasm/lib/interfaces.ts:423
 
 ___
 
@@ -10552,7 +10824,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:425
+wasm/lib/interfaces.ts:376
 
 ___
 
@@ -10579,7 +10851,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:531
+wasm/lib/interfaces.ts:482
 
 ___
 
@@ -10609,7 +10881,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:550
+wasm/lib/interfaces.ts:501
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10629,7 +10901,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:557
+wasm/lib/interfaces.ts:508
 
 ___
 
@@ -10657,7 +10929,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:380
+wasm/lib/interfaces.ts:331
 
 ___
 
@@ -10690,7 +10962,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:413
+wasm/lib/interfaces.ts:364
 
 ___
 
@@ -10722,7 +10994,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:519
+wasm/lib/interfaces.ts:470
 
 ___
 
@@ -10744,7 +11016,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:372
+wasm/lib/interfaces.ts:323
 
 ___
 
@@ -10772,7 +11044,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:345
 
 ___
 
@@ -10800,7 +11072,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:387
+wasm/lib/interfaces.ts:338
 
 ___
 
@@ -10828,7 +11100,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:401
+wasm/lib/interfaces.ts:352
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -10845,7 +11117,7 @@ Current manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:33
+wasm/lib/interfaces.ts:36
 
 ___
 
@@ -10857,7 +11129,7 @@ Maximum manabar value
 
 #### Defined in
 
-wasm/lib/interfaces.ts:40
+wasm/lib/interfaces.ts:43
 
 ___
 
@@ -10869,7 +11141,7 @@ Percent of manabar load with two digits of precision, safely calculated based on
 
 #### Defined in
 
-wasm/lib/interfaces.ts:47
+wasm/lib/interfaces.ts:50
 
 
 <a name="interfacesitransactionbuildermd"></a>
@@ -10894,7 +11166,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:179
+wasm/lib/interfaces.ts:130
 
 ___
 
@@ -10916,7 +11188,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:190
+wasm/lib/interfaces.ts:141
 
 ___
 
@@ -10938,7 +11210,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:170
+wasm/lib/interfaces.ts:121
 
 ___
 
@@ -10960,7 +11232,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:210
+wasm/lib/interfaces.ts:161
 
 ___
 
@@ -10980,7 +11252,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:159
+wasm/lib/interfaces.ts:110
 
 ___
 
@@ -11000,7 +11272,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:199
+wasm/lib/interfaces.ts:150
 
 ## Methods
 
@@ -11029,7 +11301,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:257
+wasm/lib/interfaces.ts:208
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -11053,7 +11325,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:268
+wasm/lib/interfaces.ts:219
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -11071,7 +11343,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:277
+wasm/lib/interfaces.ts:228
 
 ___
 
@@ -11089,7 +11361,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:245
+wasm/lib/interfaces.ts:196
 
 ___
 
@@ -11103,7 +11375,7 @@ Pushes given operation to the operations array in the transaction
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `op` | [`operation`](#operation) \| [`IBuiltHiveAppsOperation`](#interfacesibuilthiveappsoperationmd) \| [`HiveAppsOperation`](#classeshiveappsoperationmd)\<`any`, `object`\> | operation to append to the transaction (can be hive apps operation) |
+| `op` | [`operation`](#operation) \| `IBuiltHiveAppsOperation` \| [`HiveAppsOperation`](#classeshiveappsoperationmd)\<`any`, `object`\> | operation to append to the transaction (can be hive apps operation) |
 
 #### Returns
 
@@ -11117,148 +11389,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:81
-
-___
-
-### pushArticle
-
-▸ **pushArticle**(`author`, `permlink`, `title`, `body`, `jsonMetadata?`): [`TArticleBuilder`](#tarticlebuilder)
-
-Returns a comment operation builder. When using this method remeber you have to call TArticleBuilder.setCategory before building the transaction
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `author` | `string` | article author |
-| `permlink` | `string` | article permlink |
-| `title` | `string` | article title |
-| `body` | `string` | article body |
-| `jsonMetadata?` | `object` | - |
-
-#### Returns
-
-[`TArticleBuilder`](#tarticlebuilder)
-
-comment operation builder
-
-#### Defined in
-
-wasm/lib/interfaces.ts:135
-
-___
-
-### pushRecurrentTransfer
-
-▸ **pushRecurrentTransfer**(`from`, `to`, `amount`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
-
-Returns a recurrent transfer operation builder
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `from` | `string` | Account which transfers asset |
-| `to` | `string` | Account to transfer asset to. Cannot set a transfer to yourself |
-| `amount` | [`asset`](#asset) | The amount of asset to transfer from from to to |
-| `memo?` | `string` | must be shorter than 2048 (defaults to `""` - empty memo) |
-| `recurrence?` | `number` | How often will the payment be triggered, unit: hours (defaults to `0`) |
-| `executions?` | `number` | How many times the recurrent payment will be executed (defaults to `0`) |
-
-#### Returns
-
-[`RecurrentTransferBuilder`](#classesrecurrenttransferbuildermd)
-
-recurrent transfer operation builder
-
-#### Defined in
-
-wasm/lib/interfaces.ts:95
-
-▸ **pushRecurrentTransfer**(`from`, `to`, `pairId`, `memo?`, `recurrence?`, `executions?`): [`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
-
-Returns a recurrent transfer operation builder
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `from` | `string` | Account which transfers asset |
-| `to` | `string` | Account to transfer asset to. Cannot set a transfer to yourself |
-| `pairId` | `number` | It allows to define more than one recurrent transfer from sender to the same receiver 'to' |
-| `memo?` | `string` | must be shorter than 2048 (defaults to `""` - empty memo) |
-| `recurrence?` | `number` | How often will the payment be triggered, unit: hours (defaults to `0`) |
-| `executions?` | `number` | How many times the recurrent payment will be executed (defaults to `0`) |
-
-#### Returns
-
-[`RecurrentTransferPairIdBuilder`](#classesrecurrenttransferpairidbuildermd)
-
-recurrent transfer operation builder
-
-#### Defined in
-
-wasm/lib/interfaces.ts:109
-
-___
-
-### pushReply
-
-▸ **pushReply**(`parentAuthor`, `parentPermlink`, `author`, `body`, `jsonMetadata?`, `permlink?`, `title?`): [`CommentBuilder`](#classescommentbuildermd)
-
-Returns a comment operation builder
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `parentAuthor` | `string` | parent author |
-| `parentPermlink` | `string` | parent permlink |
-| `author` | `string` | reply author |
-| `body` | `string` | reply body |
-| `jsonMetadata?` | `object` | optional json metadata |
-| `permlink?` | `string` | reply permlink. Defaults to `re-parentAuthor-timestamp` |
-| `title?` | `string` | reply title (defaults to `""`) |
-
-#### Returns
-
-[`CommentBuilder`](#classescommentbuildermd)
-
-comment operation builder
-
-#### Defined in
-
-wasm/lib/interfaces.ts:150
-
-___
-
-### pushUpdateProposal
-
-▸ **pushUpdateProposal**(`proposalId`, `creator`, `dailyPay`, `subject`, `permlink`, `endDate?`): [`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
-
-Returns a update proposal operation builder
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `proposalId` | `string` \| `number` | id of the proposal |
-| `creator` | `string` | Account name of the proposal creator |
-| `dailyPay` | [`asset`](#asset) | daily pay for the proposal |
-| `subject` | `string` | proposal subject |
-| `permlink` | `string` | proposal permlink |
-| `endDate?` | `string` \| `number` \| `Date` | optional proposal end date |
-
-#### Returns
-
-[`UpdateProposalBuilder`](#classesupdateproposalbuildermd)
-
-update proposal operation builder
-
-#### Defined in
-
-wasm/lib/interfaces.ts:123
+wasm/lib/interfaces.ts:84
 
 ___
 
@@ -11287,7 +11418,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:238
+wasm/lib/interfaces.ts:189
 
 ___
 
@@ -11309,7 +11440,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:286
+wasm/lib/interfaces.ts:237
 
 ___
 
@@ -11343,7 +11474,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:307
+wasm/lib/interfaces.ts:258
 
 ___
 
@@ -11365,7 +11496,43 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:226
+wasm/lib/interfaces.ts:177
+
+___
+
+### useBuilder
+
+▸ **useBuilder**\<`TBuilder`\>(`builderConstructor`, `builderFn`, `...constructorArgs`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Uses given builder to construct operations and push them to the current instance of the transaction builder
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TBuilder` | extends (...`args`: `any`[]) => `any` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `builderConstructor` | `TBuilder` | Builder constructor (class) |
+| `builderFn` | (`builder`: [`TInterfaceOperationBuilder`](#tinterfaceoperationbuilder)\<`InstanceType`\<`TBuilder`\>\>) => `void` | Lambda function for your builder configuration |
+| `...constructorArgs` | `ConstructorParameters`\<`TBuilder`\> | Optional arguments to pass to the builder constructor |
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+current transaction builder instance
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:97
 
 ___
 
@@ -11385,7 +11552,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:217
+wasm/lib/interfaces.ts:168
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -11413,7 +11580,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:322
+wasm/lib/interfaces.ts:273
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -11431,7 +11598,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:329
+wasm/lib/interfaces.ts:280
 
 ## Methods
 
@@ -11459,7 +11626,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:340
+wasm/lib/interfaces.ts:291
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11480,7 +11647,7 @@ wasm/lib/interfaces.ts:340
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:313
 
 ___
 
@@ -11490,7 +11657,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:364
+wasm/lib/interfaces.ts:315
 
 ___
 
@@ -11526,7 +11693,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:365
+wasm/lib/interfaces.ts:316
 
 ## Accessors
 
@@ -11540,7 +11707,7 @@ wasm/lib/interfaces.ts:365
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:311
 
 ## Methods
 
@@ -11567,7 +11734,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:451
+wasm/lib/interfaces.ts:402
 
 ___
 
@@ -11594,7 +11761,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:467
+wasm/lib/interfaces.ts:418
 
 ___
 
@@ -11619,7 +11786,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:435
+wasm/lib/interfaces.ts:386
 
 ___
 
@@ -11635,7 +11802,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:472
+wasm/lib/interfaces.ts:423
 
 ___
 
@@ -11662,7 +11829,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:425
+wasm/lib/interfaces.ts:376
 
 ___
 
@@ -11686,7 +11853,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:380
+wasm/lib/interfaces.ts:331
 
 ___
 
@@ -11715,7 +11882,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:413
+wasm/lib/interfaces.ts:364
 
 ___
 
@@ -11733,7 +11900,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:372
+wasm/lib/interfaces.ts:323
 
 ___
 
@@ -11757,7 +11924,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:394
+wasm/lib/interfaces.ts:345
 
 ___
 
@@ -11781,7 +11948,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:387
+wasm/lib/interfaces.ts:338
 
 ___
 
@@ -11805,7 +11972,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:401
+wasm/lib/interfaces.ts:352
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
@@ -12174,7 +12341,7 @@ wasm/lib/detailed/formatters/types.ts:49
 
 #### Defined in
 
-wasm/lib/interfaces.ts:58
+wasm/lib/interfaces.ts:61
 
 
 <a name="interfacesiwaxoptionschainmd"></a>
@@ -12203,7 +12370,7 @@ Endpoint for all of the API requests
 
 #### Defined in
 
-wasm/lib/interfaces.ts:68
+wasm/lib/interfaces.ts:71
 
 ___
 
@@ -12217,7 +12384,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:58
+wasm/lib/interfaces.ts:61
 
 
 <a name="interfacesaccount_createmd"></a>

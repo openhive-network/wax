@@ -1,12 +1,21 @@
-import type { ITransactionBuilder } from "../../interfaces";
-import type { TransactionBuilder } from "../transaction_builder";
+import type { asset } from "../../protocol";
+import type { TAccountName } from "../custom_jsons";
 import { update_proposal } from "../../proto/update_proposal.js";
+import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.js";
 
-export class UpdateProposalBuilder {
+export class UpdateProposalBuilder extends OperationBuilder {
   private readonly updateProposal: update_proposal;
 
-  public constructor(private readonly txBuilder: TransactionBuilder, updateProposalObject: Partial<update_proposal>, endDate?: string | Date | number) {
-    this.updateProposal = update_proposal.fromPartial(updateProposalObject);
+  public constructor(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date) {
+    super();
+
+    this.updateProposal = update_proposal.fromPartial({
+      proposal_id: proposalId.toString(),
+      creator,
+      daily_pay: dailyPay,
+      subject,
+      permlink
+    });
 
     if(typeof endDate !== "undefined")
       this.addEndDate(endDate);
@@ -32,13 +41,11 @@ export class UpdateProposalBuilder {
   }
 
   /**
-   * Pushes the prepared operation to the transaction builder operations and returns the transaction builder
-   *
-   * @returns {ITransactionBuilder} transaction builder object
+   * @internal
    */
-  public store(): ITransactionBuilder {
-    this.txBuilder.push({ update_proposal: this.updateProposal });
+  public override build(): IBuiltHiveAppsOperation {
+    this.push({ update_proposal: this.updateProposal });
 
-    return this.txBuilder;
+    return this.builtOperations;
   }
 }

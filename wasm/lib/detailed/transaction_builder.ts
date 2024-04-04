@@ -1,12 +1,11 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
 
-import { transaction, type operation, type asset, type recurrent_transfer, type update_proposal, comment } from "../protocol.js";
+import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
-import { BuiltHiveAppsOperation, TAccountName } from "./custom_jsons/builder";
-import { RootCommentBuilder, CommentBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TArticleBuilder, UpdateProposalBuilder } from "./operation_factories";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
+import { BuiltHiveAppsOperation } from "./operation_builder";
 
 export class TransactionBuilder implements ITransactionBuilder {
   private target: transaction;
@@ -97,6 +96,20 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
+  public useBuilder<TBuilder extends new (...args: any[]) => any>(
+    builderConstructor: TBuilder,
+    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
+    ...constructorArgs: ConstructorParameters<TBuilder>
+  ): TransactionBuilder {
+    const builder = new builderConstructor(...constructorArgs);
+    builder.api = this.api;
+    builderFn(builder);
+
+    this.push(builder.build() as BuiltHiveAppsOperation);
+
+    return this;
+  }
+
   public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TransactionBuilder {
     if("flushOperations" in op)
       op.flushOperations(this);
@@ -144,69 +157,6 @@ export class TransactionBuilder implements ITransactionBuilder {
     const tx = this.toString();
 
     this.api.extract(this.api.proto.cpp_validate_transaction(tx));
-  }
-
-  public pushRecurrentTransfer(
-    from: TAccountName, to: TAccountName, amountOrPairId: asset | number, memo: string = "", recurrence: number = 0, executions: number = 0
-  ): RecurrentTransferPairIdBuilder {
-    const partialRecurrentTransferOp: Partial<recurrent_transfer> = {
-      from_account: from,
-      to_account: to,
-      amount: typeof amountOrPairId === "object" ? amountOrPairId : undefined,
-      executions,
-      recurrence,
-      memo
-    };
-
-    if(typeof amountOrPairId === "number")
-      return new RecurrentTransferPairIdBuilder(this, partialRecurrentTransferOp, amountOrPairId);
-
-    // JavaScript does not allow overriding functions, so we have to cast this class to a top-level class having all of the missing methods to match ITransactionBuilder interface
-    return new RecurrentTransferBuilder(this, partialRecurrentTransferOp) as RecurrentTransferPairIdBuilder;
-  }
-
-  public pushUpdateProposal(
-    proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date
-  ): UpdateProposalBuilder {
-    const updateProposalOp: Partial<update_proposal> = {
-      proposal_id: proposalId.toString(),
-      creator,
-      daily_pay: dailyPay,
-      subject,
-      permlink
-    };
-
-    return new UpdateProposalBuilder(this, updateProposalOp, endDate);
-  }
-
-  public pushArticle(
-    author: TAccountName, permlink: string, title: string, body: string, jsonMetadata: object = {}
-  ): TArticleBuilder {
-    const commentOp: Partial<comment> = {
-      author,
-      body,
-      permlink,
-      title,
-      json_metadata: JSON.stringify(jsonMetadata)
-    };
-
-    return new RootCommentBuilder(this, commentOp);
-  }
-
-  public pushReply(
-    parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata: object = {}, permlink?: string, title: string = ""
-  ): CommentBuilder {
-    const commentOp: Partial<comment> = {
-      author,
-      body,
-      permlink: typeof permlink === "string" ? permlink : `re-${parentAuthor}-${Date.now()}`,
-      parent_author: parentAuthor,
-      parent_permlink: parentPermlink,
-      title,
-      json_metadata: JSON.stringify(jsonMetadata)
-    };
-
-    return new CommentBuilder(this, commentOp);
   }
 
   private applyExpiration(): void {

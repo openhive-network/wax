@@ -2,13 +2,16 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
-import type { asset, operation, transaction } from "./protocol";
+import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { CommentBuilder, HiveAppsOperation, IBuiltHiveAppsOperation, NaiAsset, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, TAccountName, TArticleBuilder, UpdateProposalBuilder } from "./detailed";
+import type { HiveAppsOperation, NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
+import { IBuiltHiveAppsOperation, OperationBuilder } from "./detailed/operation_builder";
+
+export type TInterfaceOperationBuilder<T> = T extends OperationBuilder ? (Omit<T, 'build'|'push'> & { api: IWaxBaseInterface }) : never;
 
 export type TTimestamp = Date | number | string;
 
@@ -81,73 +84,21 @@ export interface ITransactionBuilder {
   push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
 
   /**
-   * Returns a recurrent transfer operation builder
+   * Uses given builder to construct operations and push them to the current instance of the transaction builder
    *
-   * @param {TAccountName} from Account which transfers asset
-   * @param {TAccountName} to Account to transfer asset to. Cannot set a transfer to yourself
-   * @param {asset} amount The amount of asset to transfer from {@link from} to {@link to}
-   * @param {?string} memo must be shorter than 2048 (defaults to `""` - empty memo)
-   * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
-   * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
+   * @param {TBuilder} builderConstructor Builder constructor (class)
+   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void} builderFn Lambda function for your builder configuration
+   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
    *
-   * @returns {RecurrentTransferBuilder} recurrent transfer operation builder
+   * @returns {ITransactionBuilder} current transaction builder instance
+   *
+   * @throws {WaxError} on any Wax API-related error
    */
-  pushRecurrentTransfer(from: TAccountName, to: TAccountName, amount: asset, memo?: string, recurrence?: number, executions?: number): RecurrentTransferBuilder;
-
-  /**
-   * Returns a recurrent transfer operation builder
-   *
-   * @param {TAccountName} from Account which transfers asset
-   * @param {TAccountName} to Account to transfer asset to. Cannot set a transfer to yourself
-   * @param {number} pairId It allows to define more than one recurrent transfer from sender to the same receiver 'to'
-   * @param {?string} memo must be shorter than 2048 (defaults to `""` - empty memo)
-   * @param {?number} recurrence How often will the payment be triggered, unit: hours (defaults to `0`)
-   * @param {?number} executions How many times the recurrent payment will be executed (defaults to `0`)
-   *
-   * @returns {RecurrentTransferPairIdBuilder} recurrent transfer operation builder
-   */
-  pushRecurrentTransfer(from: TAccountName, to: TAccountName, pairId: number, memo?: string, recurrence?: number, executions?: number): RecurrentTransferPairIdBuilder;
-
-  /**
-   * Returns a update proposal operation builder
-   *
-   * @param {string | number} proposalId id of the proposal
-   * @param {TAccountName} creator Account name of the proposal creator
-   * @param {asset} dailyPay daily pay for the proposal
-   * @param {string} subject proposal subject
-   * @param {string} permlink proposal permlink
-   * @param {?number | string | Date} endDate optional proposal end date
-   *
-   * @returns {UpdateProposalBuilder} update proposal operation builder
-   */
-  pushUpdateProposal(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date): UpdateProposalBuilder;
-
-  /**
-   * Returns a comment operation builder. When using this method remeber you have to call {@link TArticleBuilder.setCategory} before building the transaction
-   *
-   * @param {string} author article author
-   * @param {string} permlink article permlink
-   * @param {string} title article title
-   * @param {string} body article body
-   *
-   * @returns {TArticleBuilder} comment operation builder
-   */
-  pushArticle(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object): TArticleBuilder;
-
-  /**
-   * Returns a comment operation builder
-   *
-   * @param {string} parentAuthor parent author
-   * @param {string} parentPermlink parent permlink
-   * @param {string} author reply author
-   * @param {string} body reply body
-   * @param {?object} jsonMetadata optional json metadata
-   * @param {?string} permlink reply permlink. Defaults to `re-parentAuthor-timestamp`
-   * @param {?string} title reply title (defaults to `""`)
-   *
-   * @returns {CommentBuilder} comment operation builder
-   */
-  pushReply(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title?: string): CommentBuilder;
+  useBuilder<TBuilder extends new (...args: any[]) => any>(
+    builderConstructor: TBuilder,
+    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
+    ...constructorArgs: ConstructorParameters<TBuilder>
+  ): ITransactionBuilder;
 
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
