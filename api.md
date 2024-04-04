@@ -385,7 +385,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:466
+wasm/lib/interfaces.ts:480
 
 ___
 
@@ -411,7 +411,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:488
+wasm/lib/interfaces.ts:502
 
 ## Variables
 
@@ -10201,7 +10201,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:347
+wasm/lib/interfaces.ts:349
 
 ___
 
@@ -10219,7 +10219,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:354
+wasm/lib/interfaces.ts:356
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10244,7 +10244,7 @@ wasm/lib/interfaces.ts:354
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:362
 
 ___
 
@@ -10254,7 +10254,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:552
+wasm/lib/interfaces.ts:579
 
 ___
 
@@ -10268,7 +10268,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:364
 
 ___
 
@@ -10308,7 +10308,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:363
+wasm/lib/interfaces.ts:365
 
 ## Accessors
 
@@ -10326,7 +10326,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:360
 
 ___
 
@@ -10342,7 +10342,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:514
+wasm/lib/interfaces.ts:541
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10360,7 +10360,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:509
+wasm/lib/interfaces.ts:536
 
 ## Methods
 
@@ -10391,7 +10391,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:437
+wasm/lib/interfaces.ts:451
 
 ___
 
@@ -10416,7 +10416,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:567
 
 ___
 
@@ -10447,7 +10447,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:467
 
 ___
 
@@ -10472,7 +10472,36 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:550
+wasm/lib/interfaces.ts:577
+
+___
+
+### decrypt
+
+▸ **decrypt**(`wallet`, `encrypted`): `string`
+
+Decrypts given data from the encrypted string in `#encrypted` format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported encryption keys |
+| `encrypted` | `string` | Content to be decoded |
+
+#### Returns
+
+`string`
+
+Decoded content
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[decrypt](#decrypt)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:435
 
 ___
 
@@ -10492,26 +10521,30 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:458
+wasm/lib/interfaces.ts:472
 
 ___
 
 ### encrypt
 
-▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+▸ **encrypt**(`wallet`, `content`, `from`, `to?`): `string`
+
+Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `wallet` | `IBeekeeperUnlockedWallet` |
-| `content` | `string` |
-| `from` | `string` |
-| `to` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported from and to keys |
+| `content` | `string` | Content to be encoded |
+| `from` | `string` | first public key used for encryption |
+| `to?` | `string` | second public key used for encryption |
 
 #### Returns
 
 `string`
+
+Encrypted content
 
 #### Inherited from
 
@@ -10519,7 +10552,34 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:421
+wasm/lib/interfaces.ts:425
+
+___
+
+### encryptForAccounts
+
+▸ **encryptForAccounts**(`wallet`, `content`, `fromAccount`, `toAccount?`): `Promise`\<`string`\>
+
+Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported fromAccount and toAccount memo public keys |
+| `content` | `string` | Content to be encoded |
+| `fromAccount` | `string` | first account to retrieve the memo public key used for encryption |
+| `toAccount?` | `string` | second account to retrieve the memo public key used for encryption |
+
+#### Returns
+
+`Promise`\<`string`\>
+
+Encrypted content
+
+#### Defined in
+
+wasm/lib/interfaces.ts:531
 
 ___
 
@@ -10549,7 +10609,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:523
+wasm/lib/interfaces.ts:550
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10569,7 +10629,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:530
+wasm/lib/interfaces.ts:557
 
 ___
 
@@ -10597,7 +10657,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:378
+wasm/lib/interfaces.ts:380
 
 ___
 
@@ -10630,7 +10690,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:411
+wasm/lib/interfaces.ts:413
 
 ___
 
@@ -10644,7 +10704,7 @@ Same as [IWaxBaseInterface.TransactionBuilder](#transactionbuilder), but pulls t
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `expirationTime?` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m` |
+| `expirationTime?` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`. Expiration time will be applied when calling any non-push-related method in [ITransactionBuilder](#interfacesitransactionbuildermd) |
 
 #### Returns
 
@@ -10662,7 +10722,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:504
+wasm/lib/interfaces.ts:519
 
 ___
 
@@ -10684,7 +10744,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:370
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -10712,7 +10772,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:394
 
 ___
 
@@ -10740,7 +10800,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:385
+wasm/lib/interfaces.ts:387
 
 ___
 
@@ -10768,7 +10828,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:401
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -10834,7 +10894,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:177
+wasm/lib/interfaces.ts:179
 
 ___
 
@@ -10852,9 +10912,11 @@ Generates id of the transaction (legacy serialization form is used).
 
 on any Wax API-related error
 
+**`Deprecated`**
+
 #### Defined in
 
-wasm/lib/interfaces.ts:186
+wasm/lib/interfaces.ts:190
 
 ___
 
@@ -10872,9 +10934,11 @@ Generates digest of the transaction for signing (legacy serialization form is us
 
 on any Wax API-related error
 
+**`Deprecated`**
+
 #### Defined in
 
-wasm/lib/interfaces.ts:168
+wasm/lib/interfaces.ts:170
 
 ___
 
@@ -10892,9 +10956,11 @@ Returns signature keys from the transaction signatures (legacy serialization for
 
 on any Wax API-related error
 
+**`Deprecated`**
+
 #### Defined in
 
-wasm/lib/interfaces.ts:204
+wasm/lib/interfaces.ts:210
 
 ___
 
@@ -10934,7 +11000,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:195
+wasm/lib/interfaces.ts:199
 
 ## Methods
 
@@ -10943,9 +11009,6 @@ wasm/lib/interfaces.ts:195
 ▸ **build**(`wallet`, `publicKey`): [`transaction`](#transaction)
 
 Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
-
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
-      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Parameters
 
@@ -10972,9 +11035,6 @@ wasm/lib/interfaces.ts:257
 
 Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
-      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-
 #### Parameters
 
 | Name | Type | Description |
@@ -10993,14 +11053,11 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:271
+wasm/lib/interfaces.ts:268
 
 ▸ **build**(): [`transaction`](#transaction)
 
 Returns the proto transaction. Applies the transaction expiration time.
-
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
-      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
 
 #### Returns
 
@@ -11014,7 +11071,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:283
+wasm/lib/interfaces.ts:277
 
 ___
 
@@ -11032,7 +11089,7 @@ either true or false based on the signatures amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:242
+wasm/lib/interfaces.ts:245
 
 ___
 
@@ -11211,9 +11268,6 @@ ___
 
 Signs the transaction using given public key. Applies the transaction expiration time
 
-Note: Only the first call to [toApi](#toapi), [toString](#tostring), [sigDigest](#sigdigest), [id](#id), [signatureKeys](#signaturekeys), [validate](#validate), [build](#build) or [sign](#sign)
-      will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-
 #### Parameters
 
 | Name | Type | Description |
@@ -11233,7 +11287,7 @@ on any Wax API-related error or no public key found in the unlocked wallet or wa
 
 #### Defined in
 
-wasm/lib/interfaces.ts:235
+wasm/lib/interfaces.ts:238
 
 ___
 
@@ -11255,7 +11309,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:292
+wasm/lib/interfaces.ts:286
 
 ___
 
@@ -11278,6 +11332,14 @@ This method is added only for convenience and better cooperation to other transa
 #### Returns
 
 `string`
+
+transaction in Legacy Hive API-form
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
 
 #### Defined in
 
@@ -11303,7 +11365,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:220
+wasm/lib/interfaces.ts:226
 
 ___
 
@@ -11323,7 +11385,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:211
+wasm/lib/interfaces.ts:217
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -11343,7 +11405,7 @@ Constructs a new Transaction Builder object with given data
 | Name | Type | Description |
 | :------ | :------ | :------ |
 | `taposBlockId` | [`TBlockHash`](#tblockhash) | reference block id (can be head block id) for TaPoS |
-| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h` |
+| `expirationTime` | [`TTimestamp`](#ttimestamp) | expiration time for the transaction. Applies upon the [ITransactionBuilder.build](#build) call. Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.: `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Expiration time will be applied when calling any non-push-related method in [ITransactionBuilder](#interfacesitransactionbuildermd) |
 
 #### Returns
 
@@ -11351,7 +11413,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:320
+wasm/lib/interfaces.ts:322
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -11369,7 +11431,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:327
+wasm/lib/interfaces.ts:329
 
 ## Methods
 
@@ -11397,7 +11459,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:338
+wasm/lib/interfaces.ts:340
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11418,7 +11480,7 @@ wasm/lib/interfaces.ts:338
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:362
 
 ___
 
@@ -11428,7 +11490,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:362
+wasm/lib/interfaces.ts:364
 
 ___
 
@@ -11464,7 +11526,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:363
+wasm/lib/interfaces.ts:365
 
 ## Accessors
 
@@ -11478,7 +11540,7 @@ wasm/lib/interfaces.ts:363
 
 #### Defined in
 
-wasm/lib/interfaces.ts:358
+wasm/lib/interfaces.ts:360
 
 ## Methods
 
@@ -11505,7 +11567,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:437
+wasm/lib/interfaces.ts:451
 
 ___
 
@@ -11532,7 +11594,32 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:467
+
+___
+
+### decrypt
+
+▸ **decrypt**(`wallet`, `encrypted`): `string`
+
+Decrypts given data from the encrypted string in `#encrypted` format
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported encryption keys |
+| `encrypted` | `string` | Content to be decoded |
+
+#### Returns
+
+`string`
+
+Decoded content
+
+#### Defined in
+
+wasm/lib/interfaces.ts:435
 
 ___
 
@@ -11548,30 +11635,34 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:458
+wasm/lib/interfaces.ts:472
 
 ___
 
 ### encrypt
 
-▸ **encrypt**(`wallet`, `content`, `from`, `to`): `string`
+▸ **encrypt**(`wallet`, `content`, `from`, `to?`): `string`
+
+Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `wallet` | `IBeekeeperUnlockedWallet` |
-| `content` | `string` |
-| `from` | `string` |
-| `to` | `string` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported from and to keys |
+| `content` | `string` | Content to be encoded |
+| `from` | `string` | first public key used for encryption |
+| `to?` | `string` | second public key used for encryption |
 
 #### Returns
 
 `string`
 
+Encrypted content
+
 #### Defined in
 
-wasm/lib/interfaces.ts:421
+wasm/lib/interfaces.ts:425
 
 ___
 
@@ -11595,7 +11686,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:378
+wasm/lib/interfaces.ts:380
 
 ___
 
@@ -11624,7 +11715,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:411
+wasm/lib/interfaces.ts:413
 
 ___
 
@@ -11642,7 +11733,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:370
+wasm/lib/interfaces.ts:372
 
 ___
 
@@ -11666,7 +11757,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:394
 
 ___
 
@@ -11690,7 +11781,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:385
+wasm/lib/interfaces.ts:387
 
 ___
 
@@ -11714,7 +11805,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:399
+wasm/lib/interfaces.ts:401
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

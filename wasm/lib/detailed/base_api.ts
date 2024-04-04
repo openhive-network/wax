@@ -92,13 +92,13 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.extract(this.proto.cpp_get_public_key_from_signature(sigDigest, signature));
   }
 
-  public encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to: TPublicKey): string {
+  public encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to?: TPublicKey): string {
     const encrypted = wallet.encryptData(content, from, to);
 
     return this.proto.cpp_crypto_memo_dump_string({
       content: encrypted,
       from,
-      to
+      to: to ?? from
     });
   }
 

@@ -164,6 +164,8 @@ export interface ITransactionBuilder {
    * @type {THexString} digest of the transaction for signing in hex form
    *
    * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
    */
   get legacy_sigDigest(): THexString;
 
@@ -182,6 +184,8 @@ export interface ITransactionBuilder {
    * @type {TTransactionId} id of the transaction in hex form
    *
    * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
    */
   get legacy_id(): TTransactionId;
 
@@ -200,6 +204,8 @@ export interface ITransactionBuilder {
    * @type {Array<THexString>} list of all the public keys that were used to sign the transaction
    *
    * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
    */
   get legacy_signatureKeys(): Array<THexString>;
 
@@ -222,9 +228,6 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
-   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-   *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
@@ -244,9 +247,6 @@ export interface ITransactionBuilder {
   /**
    * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
-   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-   *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
@@ -259,9 +259,6 @@ export interface ITransactionBuilder {
   /**
    * Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
    *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
-   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
-   *
    * @param {THexString} signature signature to add
    *
    * @returns {transaction} signed protobuf transaction object
@@ -272,9 +269,6 @@ export interface ITransactionBuilder {
 
   /**
    * Returns the proto transaction. Applies the transaction expiration time.
-   *
-   * Note: Only the first call to {@link toApi}, {@link toString}, {@link sigDigest}, {@link id}, {@link signatureKeys}, {@link validate}, {@link build} or {@link sign}
-   *       will apply the expiration times (relative or absolute) to ensure validity of all of the signatures
    *
    * @returns {transaction} transaction
    *
@@ -302,7 +296,13 @@ export interface ITransactionBuilder {
    * produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
    * In general, preferred way of generating transactions is HF-26 form (default in this library).
    *
-   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form. 
+   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
+   *
+   * @returns {string} transaction in Legacy Hive API-form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
    */
   toLegacyApi(): string;
 }
@@ -315,7 +315,9 @@ export interface ITransactionBuilderConstructor {
    * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
    *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
-   *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`
+   *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
+   *                                    Expiration time will be applied when calling any non-push-related method in {@link ITransactionBuilder}
+   *
    */
   new(taposBlockId: TBlockHash, expirationTime: TTimestamp): ITransactionBuilder;
 
@@ -411,14 +413,26 @@ export interface IWaxBaseInterface {
   getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString;
 
   /**
-   * 
+   * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
-   * @param {IBeekeeperUnlockedWallet} wallet 
-   * @param {string} content 
-   * @param {TPublicKey} from 
-   * @param {TPublicKey} to 
+   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link from} and {@link to} keys
+   * @param {string} content Content to be encoded
+   * @param {TPublicKey} from first public key used for encryption
+   * @param {?TPublicKey} to second public key used for encryption
+   *
+   * @returns {string} Encrypted content
    */
-  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to: TPublicKey): string;
+  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to?: TPublicKey): string;
+
+  /**
+   * Decrypts given data from the encrypted string in `#encrypted` format
+   *
+   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported encryption keys
+   * @param {string} encrypted Content to be decoded
+   *
+   * @returns {string} Decoded content
+   */
+  decrypt(wallet: IBeekeeperUnlockedWallet, encrypted: string): string;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments
@@ -494,7 +508,8 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
    *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
-   *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`
+   *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`.
+   *                                     Expiration time will be applied when calling any non-push-related method in {@link ITransactionBuilder}
    *
    * @returns {ITransactionBuilder} ready to use transaction builder interface
    *
@@ -502,6 +517,18 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @throws {WaxChainApiError} on any Hive API-related error
    */
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
+
+  /**
+   * Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format
+   *
+   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link fromAccount} and {@link toAccount} memo public keys
+   * @param {string} content Content to be encoded
+   * @param {string} fromAccount first account to retrieve the memo public key used for encryption
+   * @param {?string} toAccount second account to retrieve the memo public key used for encryption
+   *
+   * @returns {Promise<string>} Encrypted content
+   */
+  encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount?: string): Promise<string>;
 
   /**
    * Allows to override default endpoint URL used to call RPC APIs initially configured by {@link IWaxOptionsChain} passed to {@link createHiveChain} builder function.
