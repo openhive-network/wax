@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation } from "../assets/data.protocol";
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -113,6 +113,36 @@ test.describe('WASM Protocol', () => {
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe");
+  });
+
+  test('Should be able to get required authorities for the transaction', async ({ wasmTest }) => {
+    const serializedRequiredAuthorities = await wasmTest(({ protocol }, required_authorities_transaction) => {
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(required_authorities_transaction);
+
+      const postingSize = reqAuths.posting_accounts.size();
+      const ownerSize = reqAuths.owner_accounts.size();
+      const activeSize = reqAuths.active_accounts.size();
+      const otherSize = reqAuths.other_authorities.size();
+
+      const reqPostingAuth = reqAuths.posting_accounts.get(0);
+
+      return {
+        postingSize,
+        ownerSize,
+        activeSize,
+        otherSize,
+        reqPostingAuth
+      };
+    }, required_authorities_transaction);
+
+    const { postingSize, ownerSize, activeSize, otherSize, reqPostingAuth } = serializedRequiredAuthorities;
+
+    expect(postingSize).toBe(1);
+    expect(ownerSize).toBe(0);
+    expect(activeSize).toBe(0);
+    expect(otherSize).toBe(0);
+
+    expect(reqPostingAuth).toBe('taoteh1221');
   });
 
   test('Should be able to validate example operation', async ({ wasmTest }) => {
