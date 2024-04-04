@@ -144,10 +144,19 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return account;
   }
 
+  private async findAccounts(...accountNames: string[]): Promise<Array<ApiAccount>> {
+    const { accounts } = await this.api.database_api.find_accounts({ accounts: accountNames });
+    if(accounts.length !== accountNames.length) {
+      const notFoundAccounts = accounts.map(node => node.name).filter(node => !accountNames.includes(node));
+
+      throw new WaxError(`No such account(s) on chain with given name(s): "${notFoundAccounts.join(', ')}"`);
+    }
+
+    return accounts;
+  }
+
   private async findAccount(accountName: string): Promise<ApiAccount> {
-    const { accounts: [ account ] } = await this.api.database_api.find_accounts({ accounts: [ accountName ] });
-    if(typeof account === "undefined")
-      throw new WaxError(`No such account on chain with given name: "${accountName}"`);
+    const [ account ] = await this.findAccounts(accountName);
 
     return account;
   }
@@ -155,12 +164,10 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public async encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount: string): Promise<string> {
     let from: string, to: string;
 
-    ({ memo_key: from } = await this.findAccount(fromAccount));
+    ([ { memo_key: from }, { memo_key: to } ] = await this.findAccounts(...[... new Set([ fromAccount, toAccount ])]));
 
-    if(fromAccount === toAccount)
+    if(to === undefined)
       to = from;
-    else
-      ({ memo_key: to } = await this.findAccount(toAccount));
 
     const encrypted = wallet.encryptData(content, from, to);
 
