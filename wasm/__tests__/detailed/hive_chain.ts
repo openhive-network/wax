@@ -365,6 +365,31 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe(true);
     });
 
+    test('Should be able to get transaction block from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.block_api.get_block({ block_num: 26295 })).block;
+      });
+
+      expect(retVal).toBeDefined();
+    });
+
+    test('Should be able to get transaction block header from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.block_api.get_block_header({ block_num: 26295 })).header;
+      });
+
+      expect(retVal).toBeDefined();
+    });
+
+    test('Should be able to get transaction block range from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.block_api.get_block_range({ starting_block_num: 26295, count: 5 })).blocks;
+      });
+
+      expect(retVal).toHaveLength(5);
+      expect(retVal[0].block_id).toBe('000066b76f6014ae4ab9407552d7859911cf5cad');
+    });
+
     test('Should be able to change endpointUrl property', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         chain.endpointUrl = "https://best.honey.provider";
