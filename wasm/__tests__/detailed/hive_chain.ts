@@ -365,6 +365,14 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe(true);
     });
 
+    test('Should be able to get transaction key references from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.api.account_by_key_api.get_key_references({ keys: ['STM5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf'] });
+      });
+
+      expect(retVal).toStrictEqual({'accounts': [['thatcryptodave']]});
+    });
+
     test('Should be able to get transaction block from hive chain interafce', async({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         return (await chain.api.block_api.get_block({ block_num: 26295 })).block;
