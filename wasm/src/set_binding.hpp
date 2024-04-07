@@ -49,21 +49,16 @@ public:
   }
 
   TResult next()
-  //emscripten::val next()
-  {
+    {
     TResult result;
 
     ilog("Entering next");
-
-    //emscripten::val retval = emscripten::val::object();
 
     if (_pos != _end)
     {
       //TIteratedValueConverter conv;
       //auto value = conv(*_pos);
       auto value = *_pos;
-      //retval.set("value", emscripten::val(value));
-      //retval.set("done", emscripten::val(false));
 
       result.done = false;
       result.value = value;
@@ -73,13 +68,10 @@ public:
     }
     else
     {
-      //retval.set("done", emscripten::val(true));
       result.done = true;
     }
 
     return result;
-
-    //return retval;
   }
 
 private:
@@ -158,8 +150,8 @@ class_<std::set<K>> register_set(const char* name) {
 
   class_<typename TSetWrapper::TIterator>(iterator_typename.c_str())
     .template constructor<>()
-    .property("[Symbol.iterator]", &TIterator::thisIterator)
-    .property("[\"@@iterator\"]", &TIterator::thisIterator)
+    //.function("[Symbol.iterator]", &TIterator::thisIterator)
+    .function("@@iterator", &TIterator::thisIterator)
     .function("next", &TIterator::next)
     ;
 
@@ -194,8 +186,8 @@ class_<std::set<K>> register_set(const char* name) {
     .function("size", TSetWrapper::size)
     .function("keys", TSetWrapper::keys)
     .function("values", &TSetWrapper::values)
-    .function("[Symbol.iterator]", &TSetWrapper::values)
-    .function("[\"@@iterator\"]", &TSetWrapper::values)
+    //.function("[Symbol.iterator]", &TSetWrapper::values)
+    .function("@@iterator", &TSetWrapper::values)
     //.function("entries", TSetWrapper::entries)
     ;
 }
