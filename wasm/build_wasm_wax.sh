@@ -35,6 +35,10 @@ else
   mkdir -vp "${BUILD_DIR}"
   cd "${BUILD_DIR}"
 
+  # Temp. work around of emscripten problem related to wrong handling of Iterator.protocol being implemented at C++ side. Specifically it's impossible to specify custom `@@iterator` function,
+  # since TS types/wrapper generation produces bad code. This line deploys fixed code into effective location 
+  cp -f "${EXECUTION_PATH}/embind_gen.js"  /emsdk/upstream/emscripten/src/embind/
+
   #-DBoost_DEBUG=TRUE -DBoost_VERBOSE=TRUE -DCMAKE_STATIC_LIBRARY_SUFFIX=".a;.bc"
   cmake \
     -DBoost_NO_WARN_NEW_VERSIONS=1 \
