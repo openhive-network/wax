@@ -22,40 +22,6 @@ const settest = (hiveChain: IHiveChainInterface): void => {
     ]
   });
 
-  class StringSetIterator implements Iterator<string_set_iterator_result['value']> {
-    
-    public static from(source: string_set): StringSetIterator {
-      return new StringSetIterator(source.values());
-    }
-
-    public next(...args: [] | [any]): IteratorResult<string_set_iterator_result['value'], undefined> {
-      let result: IteratorResult<string_set_iterator_result['value'], undefined>;
-
-      console.log("StringSetIterator::next()");
-
-      const sourceResult = this.source.next();
-
-      console.log(`Received sourceResult: ${JSON.stringify(sourceResult)}, ${typeof (sourceResult)}`);
-
-      if(sourceResult.done === true) {
-        console.log("StringSetIterator::next(): done");
-        return { done: true, value: undefined };
-      }
-      else {
-        console.log("StringSetIterator::next(): nonempty");
-        return { value: sourceResult.value };
-      }
-
-      return result;
-    }
-
-    [Symbol.iterator](): StringSetIterator { return this};
-
-    private constructor(private readonly source: string_set_iterator) {
-      console.log("StringSetIterator()");
-    }
-  }
-
   const p: protocol = hiveChain.getProtocol();
 
   const raq :required_authority_collection = p.cpp_collect_transaction_required_authorities(transaction);
@@ -64,33 +30,38 @@ const settest = (hiveChain: IHiveChainInterface): void => {
 
   console.log(`Received raq: ${JSON.stringify(raq)}, ${typeof(raq)}`);
 
-  let iii = StringSetIterator.from(raq.posting_accounts);
+  let vvv: string_set_iterator = raq.posting_accounts.values();
 
-  for(let i of iii) {
-    console.log(`Iterated items: ${i}`);
+  console.log(`raq.posting_accounts type: ${typeof(raq.posting_accounts)}, object props: ${Object.getOwnPropertyNames(raq.posting_accounts)}, prototype props: ${Object.getOwnPropertyNames(Object.getPrototypeOf(raq.posting_accounts))}`);
+
+  console.log(`vvv type: ${typeof(vvv)}, object props: ${Object.getOwnPropertyNames(vvv)}, prototype props: ${Object.getOwnPropertyNames(Object.getPrototypeOf(vvv))}`);
+
+//  let ps = new Set(raq.posting_accounts);
+  //const psValues = ps.values();
+
+  //console.log(`ps type: ${typeof(ps)}, object props: ${Object.getOwnPropertyNames(ps)}, prototype props: ${Object.getOwnPropertyNames(Object.getPrototypeOf(ps))}`);
+
+  //console.log(`ps.values type: ${typeof(psValues)}, object props: ${Object.getOwnPropertyNames(psValues)}, prototype props: ${Object.getOwnPropertyNames(Object.getPrototypeOf(psValues))}`);
+
+  for(let i of raq.posting_accounts) {
+    console.log(`raq.posting_accounts Iterated items: ${i}`);
   }
 
 
-  let vvv = raq.posting_accounts.values();
-
-  const n = vvv.next();
-
-  console.log(`Received vvv.next item: ${JSON.stringify(n)}, ${typeof (n)}`);
-
-  let ps: Set<string> = new Set<string>();
-
-  for(const k of Object.keys(ps)) {
-    console.log(`Key: ${k}`);
+  for(let i of vvv) {
+    console.log(`vvvIterable Iterated items: ${i}`);
   }
 
-  console.log(`Received values: ${JSON.stringify(vvv)}, ${typeof(vvv)}`);
+//  const n = vvv.next();
+
+//  console.log(`Received vvv.next item: ${JSON.stringify(n)}, ${typeof (n)}`);
 
 // for(let a of raq.posting_accounts)
   // console.log(`Required posting auth: ${a}`);
 
 
-  for(let a of raq.posting_accounts.values())
-    console.log(`Required posting auth: ${a}`);
+  //for(let a of raq.posting_accounts.values())
+    //console.log(`Required posting auth: ${a}`);
 
   //let _iterable: Iterable<string> = raq.posting_accounts.values();
 
@@ -98,15 +69,6 @@ const settest = (hiveChain: IHiveChainInterface): void => {
   //console.log(`Set size: ${ps.size}`);
 
   //let _iterable2: Iterable<string> = ps;
-
-  const cit = raq.posting_accounts.values();
-
-  const r = cit.next();
-  r.done;
-
-  const sit = ps.values();
-  const sr : IteratorResult<string, any> = sit.next();
-  sr.done
 }
 
 const main = async (): Promise<void> =>  {
