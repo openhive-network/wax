@@ -309,60 +309,40 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("1002020748973");
     });
 
-    test('Should be able to calculate signature keys from hive chain interface', async ({ waxTest }) => {
+    test('Should be able to calculate from api properties from hive chain interface with signature transaction provided', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }, signatureTransaction) => {
-        return chain.TransactionBuilder.fromApi(signatureTransaction).signatureKeys[0];
+        const stringifiedTransaction = JSON.stringify(signatureTransaction);
+        const tx = chain.TransactionBuilder.fromApi(stringifiedTransaction);
+
+        return {
+          signatureKeys: tx.signatureKeys[0],
+          legacySignatureKeys: tx.legacy_signatureKeys[0],
+          isSigned: tx.isSigned()
+        };
       }, signatureTransaction);
 
-      expect(retVal).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+      expect(retVal.signatureKeys).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+      expect(retVal.legacySignatureKeys).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+      expect(retVal.isSigned).toBe(true);
+
     });
 
-    test('Should be able to calculate legacy signature keys from hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain }, signatureTransaction) => {
-        return chain.TransactionBuilder.fromApi(signatureTransaction).legacy_signatureKeys[0];
-      }, signatureTransaction);
-
-      expect(retVal).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
-    });
-
-    test('Should be able to calculate sig digest from hive chain interface', async ({ waxTest }) => {
+    test('Should be able to calculate from api properties from hive chain interface with serialization sensitive transaction provided', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).sigDigest;
+        const tx = chain.TransactionBuilder.fromApi(serialization_sensitive_transaction);
+
+        return {
+          sigDigest: tx.sigDigest,
+          legacySigDigest: tx.legacy_sigDigest,
+          id: tx.id,
+          legacyId: tx.legacy_id
+        };
       }, serialization_sensitive_transaction);
 
-      expect(retVal).toBe('8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9');
-    });
-
-    test('Should be able to calculate legacy sig digest from hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).legacy_sigDigest;
-      }, serialization_sensitive_transaction);
-
-      expect(retVal).toBe('7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe');
-    });
-
-    test('Should be able to calculate id from hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).id;
-      }, serialization_sensitive_transaction);
-
-      expect(retVal).toBe('3725c81634f152011e2043eb7119911b953d4267');
-    });
-
-    test('Should be able to calculate legacy id from hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-        return chain.TransactionBuilder.fromApi(serialization_sensitive_transaction).legacy_id;
-      }, serialization_sensitive_transaction);
-
-      expect(retVal).toBe('7f34699e9eea49d1bcc10c88f96e38897839ece3');
-    });
-
-    test('Should be able to get transaction signing status from hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain }, signatureTransaction) => {
-        return chain.TransactionBuilder.fromApi(signatureTransaction).isSigned();
-      }, signatureTransaction);
-
-      expect(retVal).toBe(true);
+      expect(retVal.sigDigest).toBe('8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9');
+      expect(retVal.legacySigDigest).toBe('7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe');
+      expect(retVal.id).toBe('3725c81634f152011e2043eb7119911b953d4267');
+      expect(retVal.legacyId).toBe('7f34699e9eea49d1bcc10c88f96e38897839ece3');
     });
 
     test('Should be able to get transaction key references from hive chain interafce', async({ waxTest }) => {
@@ -396,6 +376,32 @@ test.describe('Wax object interface chain tests', () => {
 
       expect(retVal).toHaveLength(5);
       expect(retVal[0].block_id).toBe('000066b76f6014ae4ab9407552d7859911cf5cad');
+    });
+
+    test('Should be able to find accounts from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.database_api.find_accounts({ accounts: ['thatcryptodave'] })).accounts[0];
+      });
+
+      expect(retVal).toHaveProperty('active');
+      expect(retVal).toHaveProperty('owner');
+      expect(retVal).toHaveProperty('posting');
+    });
+
+    test('Should be able to get dynamic global properties from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.database_api.get_dynamic_global_properties({})).id;
+      });
+
+      expect(retVal).toBe(0);
+    });
+
+    test('Should be able to get verify authority from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain, wax }, signatureTransaction) => {
+        return (await chain.api.database_api.verify_authority({ trx: signatureTransaction, pack: wax.TTransactionPackType.HF_26 })).valid;
+      }, signatureTransaction);
+
+      expect(retVal).toBe(true);
     });
 
     test('Should be able to change endpointUrl property', async ({ waxTest }) => {

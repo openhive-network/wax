@@ -56,7 +56,7 @@ export const legacyApiTransaction = JSON.stringify({
   signatures: [],
 });
 
-export const signatureTransaction = JSON.stringify({
+export const signatureTransaction = {
   expiration: "2024-02-21T06:55:40",
   extensions: [],
   operations: [
@@ -75,7 +75,7 @@ export const signatureTransaction = JSON.stringify({
   ],
   ref_block_num: 26295,
   ref_block_prefix: 26859167
-});
+};
 
 /// See Hive mainnet block 80021416, trx_id: 7f34699e9eea49d1bcc10c88f96e38897839ece3
 export const serialization_sensitive_transaction = JSON.stringify({
