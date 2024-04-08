@@ -158,8 +158,8 @@ crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) co
 
   FC_ASSERT( loaded.has_value(), "Could not load the crypto memo content from given string", (value) );
 
-  const std::string from = loaded->from.to_base58();
-  const std::string to = loaded->to.to_base58();
+  const std::string from = fc::ecc::public_key::to_base58(loaded->from, false);
+  const std::string to = fc::ecc::public_key::to_base58(loaded->to, false);
 
   fc::crypto_data::content crypto_obj{ std::move(loaded.value()) };
 
@@ -170,8 +170,8 @@ std::string foundation::cpp_crypto_memo_dump_string(const crypto_memo& value) co
 {
   auto memo_obj = hive::protocol::crypto_memo{};
 
-  const fc::ecc::public_key from = fc::ecc::public_key::from_base58( value.from );
-  const fc::ecc::public_key to = fc::ecc::public_key::from_base58( value.to );
+  const fc::ecc::public_key from = fc::ecc::public_key::from_base58( value.from, false );
+  const fc::ecc::public_key to = fc::ecc::public_key::from_base58( value.to, false );
 
   const hive::protocol::crypto_memo::memo_content encoded = memo_obj.build_from_base58_content(from, to, value.content);
 

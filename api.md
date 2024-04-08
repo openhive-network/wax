@@ -67,11 +67,13 @@
 ## Interfaces
 
 - [ICommunityProps](#interfacesicommunitypropsmd)
+- [IEncryptedTransactionBuilder](#interfacesiencryptedtransactionbuildermd)
 - [IFormatFunctionArguments](#interfacesiformatfunctionargumentsmd)
 - [IHiveAssetData](#interfacesihiveassetdatamd)
 - [IHiveChainInterface](#interfacesihivechaininterfacemd)
 - [IManabarData](#interfacesimanabardatamd)
 - [ITransactionBuilder](#interfacesitransactionbuildermd)
+- [ITransactionBuilderBase](#interfacesitransactionbuilderbasemd)
 - [ITransactionBuilderConstructor](#interfacesitransactionbuilderconstructormd)
 - [IWaxBaseInterface](#interfacesiwaxbaseinterfacemd)
 - [IWaxCustomFormatter](#interfacesiwaxcustomformattermd)
@@ -389,7 +391,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:431
+wasm/lib/interfaces.ts:481
 
 ___
 
@@ -415,7 +417,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:503
 
 ## Variables
 
@@ -10405,6 +10407,501 @@ Community title
 wasm/lib/detailed/custom_jsons/community.ts:58
 
 
+<a name="interfacesiencryptedtransactionbuildermd"></a>
+
+# Interface: IEncryptedTransactionBuilder
+
+## Hierarchy
+
+- [`ITransactionBuilderBase`](#interfacesitransactionbuilderbasemd)
+
+  ↳ **`IEncryptedTransactionBuilder`**
+
+## Accessors
+
+### id
+
+• `get` **id**(): `string`
+
+Generates id of the transaction (HF26 serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Inherited from
+
+ITransactionBuilderBase.id
+
+#### Defined in
+
+wasm/lib/interfaces.ts:103
+
+___
+
+### legacy\_id
+
+• `get` **legacy_id**(): `string`
+
+Generates id of the transaction (legacy serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_id
+
+#### Defined in
+
+wasm/lib/interfaces.ts:114
+
+___
+
+### legacy\_sigDigest
+
+• `get` **legacy_sigDigest**(): `string`
+
+Generates digest of the transaction for signing (legacy serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_sigDigest
+
+#### Defined in
+
+wasm/lib/interfaces.ts:94
+
+___
+
+### legacy\_signatureKeys
+
+• `get` **legacy_signatureKeys**(): `string`[]
+
+Returns signature keys from the transaction signatures (legacy serialization form is used).
+
+#### Returns
+
+`string`[]
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_signatureKeys
+
+#### Defined in
+
+wasm/lib/interfaces.ts:134
+
+___
+
+### sigDigest
+
+• `get` **sigDigest**(): `string`
+
+Generates digest of the transaction for signing (HF26 serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Inherited from
+
+ITransactionBuilderBase.sigDigest
+
+#### Defined in
+
+wasm/lib/interfaces.ts:83
+
+___
+
+### signatureKeys
+
+• `get` **signatureKeys**(): `string`[]
+
+Returns signature keys from the transaction signatures
+
+#### Returns
+
+`string`[]
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Inherited from
+
+ITransactionBuilderBase.signatureKeys
+
+#### Defined in
+
+wasm/lib/interfaces.ts:123
+
+## Methods
+
+### build
+
+▸ **build**(`wallet`, `publicKey`): [`transaction`](#transaction)
+
+Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
+
+#### Returns
+
+[`transaction`](#transaction)
+
+signed protobuf transaction object
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:181
+
+▸ **build**(`signature`): [`transaction`](#transaction)
+
+Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `signature` | `string` | signature to add |
+
+#### Returns
+
+[`transaction`](#transaction)
+
+signed protobuf transaction object
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:192
+
+▸ **build**(): [`transaction`](#transaction)
+
+Returns the proto transaction. Applies the transaction expiration time.
+
+#### Returns
+
+[`transaction`](#transaction)
+
+transaction
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:201
+
+___
+
+### isSigned
+
+▸ **isSigned**(): `boolean`
+
+Checks if underlying transaction has been already signed at least one time (after [sign](#sign) or [build](#build))
+
+#### Returns
+
+`boolean`
+
+either true or false based on the signatures amount
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[isSigned](#issigned)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:169
+
+___
+
+### push
+
+▸ **push**(`op`): [`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+Pushes given operation to the operations array in the transaction
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `op` | [`operation`](#operation) \| `IBuiltHiveAppsOperation` \| [`HiveAppsOperation`](#classeshiveappsoperationmd)\<`any`, `object`\> | operation to append to the transaction (can be hive apps operation) |
+
+#### Returns
+
+[`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+current transaction builder instance
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:284
+
+___
+
+### sign
+
+▸ **sign**(`wallet`, `publicKey`): `string`
+
+Signs the transaction using given public key. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
+
+#### Returns
+
+`string`
+
+transaction signature signed using given key
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[sign](#sign)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:162
+
+___
+
+### stopEncrypt
+
+▸ **stopEncrypt**(): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+Stops encryption chain
+
+#### Returns
+
+[`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+current transaction builder instance
+
+#### Defined in
+
+wasm/lib/interfaces.ts:291
+
+___
+
+### toApi
+
+▸ **toApi**(): `string`
+
+Converts the created transaction into the Hive API-form string
+
+#### Returns
+
+`string`
+
+transaction in Hive API-form
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toApi](#toapi)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:210
+
+___
+
+### toLegacyApi
+
+▸ **toLegacyApi**(): `string`
+
+Converts the created transaction into the Hive API-legacy form JSON string.
+
+Legacy form differs in few aspects to regular (HF26) one:
+- for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
+- asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
+
+Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
+produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
+In general, preferred way of generating transactions is HF-26 form (default in this library).
+
+This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
+
+#### Returns
+
+`string`
+
+transaction in Legacy Hive API-form
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toLegacyApi](#tolegacyapi)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:231
+
+___
+
+### toString
+
+▸ **toString**(): `string`
+
+Converts transaction object into the protobuf JSON string
+
+#### Returns
+
+`string`
+
+protobuf JSON string
+
+**`Throws`**
+
+on any Wax API-related error including validation error
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toString](#tostring)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:150
+
+___
+
+### useBuilder
+
+▸ **useBuilder**\<`TBuilder`\>(`builderConstructor`, `builderFn`, `...constructorArgs`): [`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+Uses given builder to construct operations and push them to the current instance of the transaction builder
+
+#### Type parameters
+
+| Name | Type |
+| :------ | :------ |
+| `TBuilder` | extends (...`args`: `any`[]) => `any` |
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `builderConstructor` | `TBuilder` | Builder constructor (class) |
+| `builderFn` | (`builder`: [`TInterfaceOperationBuilder`](#tinterfaceoperationbuilder)\<`InstanceType`\<`TBuilder`\>\>) => `void` | Lambda function for your builder configuration |
+| `...constructorArgs` | `ConstructorParameters`\<`TBuilder`\> | Optional arguments to pass to the builder constructor |
+
+#### Returns
+
+[`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+current transaction builder instance
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:304
+
+___
+
+### validate
+
+▸ **validate**(): `void`
+
+Validates current transaction. Throws on error
+
+#### Returns
+
+`void`
+
+**`Throws`**
+
+on any Wax API-related error including validation error
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[validate](#validate)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:141
+
+
 <a name="interfacesiformatfunctionargumentsmd"></a>
 
 # Interface: IFormatFunctionArguments\<TSource, TTarget\>
@@ -10473,7 +10970,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:300
+wasm/lib/interfaces.ts:350
 
 ___
 
@@ -10491,7 +10988,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:307
+wasm/lib/interfaces.ts:357
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -10516,7 +11013,7 @@ wasm/lib/interfaces.ts:307
 
 #### Defined in
 
-wasm/lib/interfaces.ts:313
+wasm/lib/interfaces.ts:363
 
 ___
 
@@ -10526,7 +11023,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:530
+wasm/lib/interfaces.ts:580
 
 ___
 
@@ -10540,7 +11037,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:315
+wasm/lib/interfaces.ts:365
 
 ___
 
@@ -10580,7 +11077,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:316
+wasm/lib/interfaces.ts:366
 
 ## Accessors
 
@@ -10598,7 +11095,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:311
+wasm/lib/interfaces.ts:361
 
 ___
 
@@ -10614,7 +11111,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:492
+wasm/lib/interfaces.ts:542
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -10632,7 +11129,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:487
+wasm/lib/interfaces.ts:537
 
 ## Methods
 
@@ -10663,7 +11160,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:402
+wasm/lib/interfaces.ts:452
 
 ___
 
@@ -10688,7 +11185,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:518
+wasm/lib/interfaces.ts:568
 
 ___
 
@@ -10719,7 +11216,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:418
+wasm/lib/interfaces.ts:468
 
 ___
 
@@ -10744,7 +11241,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:528
+wasm/lib/interfaces.ts:578
 
 ___
 
@@ -10773,7 +11270,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:386
+wasm/lib/interfaces.ts:436
 
 ___
 
@@ -10793,7 +11290,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:423
+wasm/lib/interfaces.ts:473
 
 ___
 
@@ -10824,7 +11321,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:376
+wasm/lib/interfaces.ts:426
 
 ___
 
@@ -10851,7 +11348,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:482
+wasm/lib/interfaces.ts:532
 
 ___
 
@@ -10881,7 +11378,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:501
+wasm/lib/interfaces.ts:551
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -10901,7 +11398,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:508
+wasm/lib/interfaces.ts:558
 
 ___
 
@@ -10929,7 +11426,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:331
+wasm/lib/interfaces.ts:381
 
 ___
 
@@ -10962,7 +11459,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:364
+wasm/lib/interfaces.ts:414
 
 ___
 
@@ -10994,7 +11491,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:470
+wasm/lib/interfaces.ts:520
 
 ___
 
@@ -11016,7 +11513,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:323
+wasm/lib/interfaces.ts:373
 
 ___
 
@@ -11044,7 +11541,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:345
+wasm/lib/interfaces.ts:395
 
 ___
 
@@ -11072,7 +11569,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:338
+wasm/lib/interfaces.ts:388
 
 ___
 
@@ -11100,7 +11597,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:352
+wasm/lib/interfaces.ts:402
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -11148,6 +11645,12 @@ wasm/lib/interfaces.ts:50
 
 # Interface: ITransactionBuilder
 
+## Hierarchy
+
+- [`ITransactionBuilderBase`](#interfacesitransactionbuilderbasemd)
+
+  ↳ **`ITransactionBuilder`**
+
 ## Accessors
 
 ### id
@@ -11164,9 +11667,13 @@ Generates id of the transaction (HF26 serialization form is used).
 
 on any Wax API-related error
 
+#### Inherited from
+
+ITransactionBuilderBase.id
+
 #### Defined in
 
-wasm/lib/interfaces.ts:130
+wasm/lib/interfaces.ts:103
 
 ___
 
@@ -11186,9 +11693,13 @@ on any Wax API-related error
 
 **`Deprecated`**
 
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_id
+
 #### Defined in
 
-wasm/lib/interfaces.ts:141
+wasm/lib/interfaces.ts:114
 
 ___
 
@@ -11208,9 +11719,13 @@ on any Wax API-related error
 
 **`Deprecated`**
 
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_sigDigest
+
 #### Defined in
 
-wasm/lib/interfaces.ts:121
+wasm/lib/interfaces.ts:94
 
 ___
 
@@ -11230,9 +11745,13 @@ on any Wax API-related error
 
 **`Deprecated`**
 
+#### Inherited from
+
+ITransactionBuilderBase.legacy\_signatureKeys
+
 #### Defined in
 
-wasm/lib/interfaces.ts:161
+wasm/lib/interfaces.ts:134
 
 ___
 
@@ -11250,9 +11769,13 @@ Generates digest of the transaction for signing (HF26 serialization form is used
 
 on any Wax API-related error
 
+#### Inherited from
+
+ITransactionBuilderBase.sigDigest
+
 #### Defined in
 
-wasm/lib/interfaces.ts:110
+wasm/lib/interfaces.ts:83
 
 ___
 
@@ -11270,9 +11793,13 @@ Returns signature keys from the transaction signatures
 
 on any Wax API-related error
 
+#### Inherited from
+
+ITransactionBuilderBase.signatureKeys
+
 #### Defined in
 
-wasm/lib/interfaces.ts:150
+wasm/lib/interfaces.ts:123
 
 ## Methods
 
@@ -11299,9 +11826,13 @@ signed protobuf transaction object
 
 on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:208
+wasm/lib/interfaces.ts:181
 
 ▸ **build**(`signature`): [`transaction`](#transaction)
 
@@ -11323,9 +11854,13 @@ signed protobuf transaction object
 
 on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:219
+wasm/lib/interfaces.ts:192
 
 ▸ **build**(): [`transaction`](#transaction)
 
@@ -11341,9 +11876,13 @@ transaction
 
 on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[build](#build)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:228
+wasm/lib/interfaces.ts:201
 
 ___
 
@@ -11359,9 +11898,13 @@ Checks if underlying transaction has been already signed at least one time (afte
 
 either true or false based on the signatures amount
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[isSigned](#issigned)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:196
+wasm/lib/interfaces.ts:169
 
 ___
 
@@ -11389,7 +11932,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:84
+wasm/lib/interfaces.ts:244
 
 ___
 
@@ -11416,9 +11959,38 @@ transaction signature signed using given key
 
 on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[sign](#sign)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:189
+wasm/lib/interfaces.ts:162
+
+___
+
+### startEncrypt
+
+▸ **startEncrypt**(`from`, `to?`): [`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+Starts encryption chain
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `from` | `string` | First key to encrypt operations |
+| `to?` | `string` | Optional second key to encrypt operations |
+
+#### Returns
+
+[`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+current transaction builder instance
+
+#### Defined in
+
+wasm/lib/interfaces.ts:254
 
 ___
 
@@ -11438,9 +12010,13 @@ transaction in Hive API-form
 
 on any Wax API-related error
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toApi](#toapi)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:237
+wasm/lib/interfaces.ts:210
 
 ___
 
@@ -11472,9 +12048,13 @@ on any Wax API-related error
 
 **`Deprecated`**
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toLegacyApi](#tolegacyapi)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:258
+wasm/lib/interfaces.ts:231
 
 ___
 
@@ -11494,9 +12074,13 @@ protobuf JSON string
 
 on any Wax API-related error including validation error
 
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[toString](#tostring)
+
 #### Defined in
 
-wasm/lib/interfaces.ts:177
+wasm/lib/interfaces.ts:150
 
 ___
 
@@ -11532,7 +12116,366 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:97
+wasm/lib/interfaces.ts:267
+
+___
+
+### validate
+
+▸ **validate**(): `void`
+
+Validates current transaction. Throws on error
+
+#### Returns
+
+`void`
+
+**`Throws`**
+
+on any Wax API-related error including validation error
+
+#### Inherited from
+
+[ITransactionBuilderBase](#interfacesitransactionbuilderbasemd).[validate](#validate)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:141
+
+
+<a name="interfacesitransactionbuilderbasemd"></a>
+
+# Interface: ITransactionBuilderBase
+
+## Hierarchy
+
+- **`ITransactionBuilderBase`**
+
+  ↳ [`ITransactionBuilder`](#interfacesitransactionbuildermd)
+
+  ↳ [`IEncryptedTransactionBuilder`](#interfacesiencryptedtransactionbuildermd)
+
+## Accessors
+
+### id
+
+• `get` **id**(): `string`
+
+Generates id of the transaction (HF26 serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:103
+
+___
+
+### legacy\_id
+
+• `get` **legacy_id**(): `string`
+
+Generates id of the transaction (legacy serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Defined in
+
+wasm/lib/interfaces.ts:114
+
+___
+
+### legacy\_sigDigest
+
+• `get` **legacy_sigDigest**(): `string`
+
+Generates digest of the transaction for signing (legacy serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Defined in
+
+wasm/lib/interfaces.ts:94
+
+___
+
+### legacy\_signatureKeys
+
+• `get` **legacy_signatureKeys**(): `string`[]
+
+Returns signature keys from the transaction signatures (legacy serialization form is used).
+
+#### Returns
+
+`string`[]
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Defined in
+
+wasm/lib/interfaces.ts:134
+
+___
+
+### sigDigest
+
+• `get` **sigDigest**(): `string`
+
+Generates digest of the transaction for signing (HF26 serialization form is used).
+
+#### Returns
+
+`string`
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:83
+
+___
+
+### signatureKeys
+
+• `get` **signatureKeys**(): `string`[]
+
+Returns signature keys from the transaction signatures
+
+#### Returns
+
+`string`[]
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:123
+
+## Methods
+
+### build
+
+▸ **build**(`wallet`, `publicKey`): [`transaction`](#transaction)
+
+Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
+
+#### Returns
+
+[`transaction`](#transaction)
+
+signed protobuf transaction object
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Defined in
+
+wasm/lib/interfaces.ts:181
+
+▸ **build**(`signature`): [`transaction`](#transaction)
+
+Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `signature` | `string` | signature to add |
+
+#### Returns
+
+[`transaction`](#transaction)
+
+signed protobuf transaction object
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Defined in
+
+wasm/lib/interfaces.ts:192
+
+▸ **build**(): [`transaction`](#transaction)
+
+Returns the proto transaction. Applies the transaction expiration time.
+
+#### Returns
+
+[`transaction`](#transaction)
+
+transaction
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Defined in
+
+wasm/lib/interfaces.ts:201
+
+___
+
+### isSigned
+
+▸ **isSigned**(): `boolean`
+
+Checks if underlying transaction has been already signed at least one time (after [sign](#sign) or [build](#build))
+
+#### Returns
+
+`boolean`
+
+either true or false based on the signatures amount
+
+#### Defined in
+
+wasm/lib/interfaces.ts:169
+
+___
+
+### sign
+
+▸ **sign**(`wallet`, `publicKey`): `string`
+
+Signs the transaction using given public key. Applies the transaction expiration time
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `wallet` | `IBeekeeperUnlockedWallet` | unlocked wallet to be used for signing (overrides default Wax Base wallet) |
+| `publicKey` | `string` | publicKey for signing (should be available in the wallet) |
+
+#### Returns
+
+`string`
+
+transaction signature signed using given key
+
+**`Throws`**
+
+on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+
+#### Defined in
+
+wasm/lib/interfaces.ts:162
+
+___
+
+### toApi
+
+▸ **toApi**(): `string`
+
+Converts the created transaction into the Hive API-form string
+
+#### Returns
+
+`string`
+
+transaction in Hive API-form
+
+**`Throws`**
+
+on any Wax API-related error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:210
+
+___
+
+### toLegacyApi
+
+▸ **toLegacyApi**(): `string`
+
+Converts the created transaction into the Hive API-legacy form JSON string.
+
+Legacy form differs in few aspects to regular (HF26) one:
+- for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
+- asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
+
+Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
+produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
+In general, preferred way of generating transactions is HF-26 form (default in this library).
+
+This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
+
+#### Returns
+
+`string`
+
+transaction in Legacy Hive API-form
+
+**`Throws`**
+
+on any Wax API-related error
+
+**`Deprecated`**
+
+#### Defined in
+
+wasm/lib/interfaces.ts:231
+
+___
+
+### toString
+
+▸ **toString**(): `string`
+
+Converts transaction object into the protobuf JSON string
+
+#### Returns
+
+`string`
+
+protobuf JSON string
+
+**`Throws`**
+
+on any Wax API-related error including validation error
+
+#### Defined in
+
+wasm/lib/interfaces.ts:150
 
 ___
 
@@ -11552,7 +12495,7 @@ on any Wax API-related error including validation error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:168
+wasm/lib/interfaces.ts:141
 
 
 <a name="interfacesitransactionbuilderconstructormd"></a>
@@ -11580,7 +12523,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:273
+wasm/lib/interfaces.ts:323
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -11598,7 +12541,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:280
+wasm/lib/interfaces.ts:330
 
 ## Methods
 
@@ -11626,7 +12569,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:291
+wasm/lib/interfaces.ts:341
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -11647,7 +12590,7 @@ wasm/lib/interfaces.ts:291
 
 #### Defined in
 
-wasm/lib/interfaces.ts:313
+wasm/lib/interfaces.ts:363
 
 ___
 
@@ -11657,7 +12600,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:315
+wasm/lib/interfaces.ts:365
 
 ___
 
@@ -11693,7 +12636,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:316
+wasm/lib/interfaces.ts:366
 
 ## Accessors
 
@@ -11707,7 +12650,7 @@ wasm/lib/interfaces.ts:316
 
 #### Defined in
 
-wasm/lib/interfaces.ts:311
+wasm/lib/interfaces.ts:361
 
 ## Methods
 
@@ -11734,7 +12677,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:402
+wasm/lib/interfaces.ts:452
 
 ___
 
@@ -11761,7 +12704,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:418
+wasm/lib/interfaces.ts:468
 
 ___
 
@@ -11786,7 +12729,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:386
+wasm/lib/interfaces.ts:436
 
 ___
 
@@ -11802,7 +12745,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:423
+wasm/lib/interfaces.ts:473
 
 ___
 
@@ -11829,7 +12772,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:376
+wasm/lib/interfaces.ts:426
 
 ___
 
@@ -11853,7 +12796,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:331
+wasm/lib/interfaces.ts:381
 
 ___
 
@@ -11882,7 +12825,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:364
+wasm/lib/interfaces.ts:414
 
 ___
 
@@ -11900,7 +12843,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:323
+wasm/lib/interfaces.ts:373
 
 ___
 
@@ -11924,7 +12867,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:345
+wasm/lib/interfaces.ts:395
 
 ___
 
@@ -11948,7 +12891,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:338
+wasm/lib/interfaces.ts:388
 
 ___
 
@@ -11972,7 +12915,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:352
+wasm/lib/interfaces.ts:402
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

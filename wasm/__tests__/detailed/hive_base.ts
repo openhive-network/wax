@@ -223,6 +223,48 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
+  test('Should be able to create encrypted operations using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ chain, beekeeper }) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      tx.startEncrypt(publicKey).push({
+        transfer: {
+          amount: chain.hive(100),
+          from_account: "gtg",
+          to_account: "initminer",
+          memo: "This should be encrypted"
+        }
+      }).stopEncrypt().startEncrypt(publicKey).push({
+        transfer: {
+          amount: chain.hive(120),
+          from_account: "initminer",
+          to_account: "gtg",
+          memo: "This also should be encrypted"
+        }
+      });
+
+      const operations = tx.build(wallet, publicKey).operations;
+
+      const encrypted1 = operations[0].transfer!.memo;
+      const encrypted2 = operations[1].transfer!.memo;
+
+      return {
+        encrypted: [ encrypted1, encrypted2 ],
+        decrypted: [ chain.decrypt(wallet, encrypted1), chain.decrypt(wallet, encrypted2) ]
+      };
+    });
+
+    expect(retVal.encrypted[0].startsWith("#")).toBeTruthy();
+    expect(retVal.encrypted[1].startsWith("#")).toBeTruthy();
+    expect(retVal.decrypted[0]).toBe("This should be encrypted");
+    expect(retVal.decrypted[1]).toBe("This also should be encrypted");
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

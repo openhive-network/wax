@@ -1,13 +1,28 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
+import type { IEncryptedTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 import { BuiltHiveAppsOperation } from "./operation_builder";
+import { EncryptionVisitor } from "./encryption_visitor.js";
+import { WaxError } from "../errors.js";
 
-export class TransactionBuilder implements ITransactionBuilder {
+type TIndexBeginEncryption = {
+  from: string;
+  to: string;
+  begin: number;
+  end?: number;
+};
+
+type TIndexEndEncryption = TIndexBeginEncryption & {
+  end: number;
+};
+
+type TIndexKeeperNode = TIndexBeginEncryption | TIndexEndEncryption;
+
+export class TransactionBuilder implements ITransactionBuilder, IEncryptedTransactionBuilder {
   private target: transaction;
 
   private expirationTime?: TTimestamp;
@@ -15,6 +30,8 @@ export class TransactionBuilder implements ITransactionBuilder {
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return this.api.proto.cpp_get_tapos_data(hex);
   }
+
+  private indexKeeper: Array<TIndexKeeperNode> = [];
 
   public constructor(
     public readonly api: WaxBaseApi,
@@ -96,6 +113,23 @@ export class TransactionBuilder implements ITransactionBuilder {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
+  public startEncrypt(from: string, to?: string | undefined): TransactionBuilder {
+    this.indexKeeper.push({ from, to: to ?? from, begin: this.target.operations.length });
+
+    return this;
+  }
+
+  public stopEncrypt(): TransactionBuilder {
+    const index = this.indexKeeper.at(-1);
+    if(index === undefined)
+      throw new WaxError("Mismatch in index types - stopEncrypt called before startEncrypt");
+
+    index.end = this.target.operations.length;
+
+    return this;
+  }
+
+
   public useBuilder<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
     builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
@@ -166,7 +200,18 @@ export class TransactionBuilder implements ITransactionBuilder {
       this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
+  private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
+    for(const index of this.indexKeeper)
+      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
+        const visitor = new EncryptionVisitor((data: string) => this.api.encrypt(wallet, data, index.from, index.to));
+
+        visitor.accept(this.target.operations[i]);
+      }
+  }
+
   public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString {
+    this.encryptOperations(wallet);
+
     const sig = wallet.signDigest(publicKey as TPublicKey, this.sigDigest);
 
     this.target.signatures.push(sig);

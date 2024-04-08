@@ -71,34 +71,7 @@ export interface IWaxOptionsChain extends IWaxOptions {
   apiEndpoint: string;
 }
 
-export interface ITransactionBuilder {
-  /**
-   * Pushes given operation to the operations array in the transaction
-   *
-   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
-   *
-   * @returns {ITransactionBuilder} current transaction builder instance
-   *
-   * @throws {WaxError} on any Wax API-related error
-   */
-  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
-
-  /**
-   * Uses given builder to construct operations and push them to the current instance of the transaction builder
-   *
-   * @param {TBuilder} builderConstructor Builder constructor (class)
-   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void} builderFn Lambda function for your builder configuration
-   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
-   *
-   * @returns {ITransactionBuilder} current transaction builder instance
-   *
-   * @throws {WaxError} on any Wax API-related error
-   */
-  useBuilder<TBuilder extends new (...args: any[]) => any>(
-    builderConstructor: TBuilder,
-    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
-    ...constructorArgs: ConstructorParameters<TBuilder>
-  ): ITransactionBuilder;
+export interface ITransactionBuilderBase {
 
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
@@ -256,6 +229,83 @@ export interface ITransactionBuilder {
    * @deprecated
    */
   toLegacyApi(): string;
+}
+
+export interface ITransactionBuilder extends ITransactionBuilderBase {
+  /**
+   * Pushes given operation to the operations array in the transaction
+   *
+   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   *
+   * @returns {ITransactionBuilder} current transaction builder instance
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
+
+  /**
+   * Starts encryption chain
+   *
+   * @param {string} from First key to encrypt operations
+   * @param {string} to Optional second key to encrypt operations
+   *
+   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   */
+  startEncrypt(from: string, to?: string): IEncryptedTransactionBuilder;
+
+  /**
+   * Uses given builder to construct operations and push them to the current instance of the transaction builder
+   *
+   * @param {TBuilder} builderConstructor Builder constructor (class)
+   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>) => void} builderFn Lambda function for your builder configuration
+   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
+   *
+   * @returns {ITransactionBuilder} current transaction builder instance
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  useBuilder<TBuilder extends new (...args: any[]) => any>(
+    builderConstructor: TBuilder,
+    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
+    ...constructorArgs: ConstructorParameters<TBuilder>
+  ): ITransactionBuilder;
+}
+
+export interface IEncryptedTransactionBuilder extends ITransactionBuilderBase {
+  /**
+   * Pushes given operation to the operations array in the transaction
+   *
+   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   *
+   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptedTransactionBuilder;
+
+  /**
+   * Stops encryption chain
+   *
+   * @returns {ITransactionBuilder} current transaction builder instance
+   */
+  stopEncrypt(): ITransactionBuilder;
+
+  /**
+   * Uses given builder to construct operations and push them to the current instance of the transaction builder
+   *
+   * @param {TBuilder} builderConstructor Builder constructor (class)
+   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>) => void} builderFn Lambda function for your builder configuration
+   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
+   *
+   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  useBuilder<TBuilder extends new (...args: any[]) => any>(
+    builderConstructor: TBuilder,
+    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
+    ...constructorArgs: ConstructorParameters<TBuilder>
+  ): IEncryptedTransactionBuilder;
 }
 
 export interface ITransactionBuilderConstructor {
