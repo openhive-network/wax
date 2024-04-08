@@ -404,6 +404,14 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe(true);
     });
 
+    test('Should be able to find rc accounts from hive chain interafce', async({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return (await chain.api.rc_api.find_rc_accounts({ accounts: ['thatcryptodave'] })).rc_accounts[0].account;
+      });
+
+      expect(retVal).toBe('thatcryptodave');
+    });
+
     test('Should be able to change endpointUrl property', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         chain.endpointUrl = "https://best.honey.provider";
