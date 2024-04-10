@@ -19,7 +19,7 @@ class CommentBuilder extends OperationBuilder {
     format: ECommentFormat.MIXED
   };
 
-  private extendDefaultJsonMetadata(optionalJsonMeta: { app?: string } = {}): void {
+  private extendDefaultJsonMetadata(optionalJsonMeta: { app?: string }): void {
     const apps = [ `${process.env.npm_package_name}/${process.env.npm_package_version}` ];
     if(typeof optionalJsonMeta.app === "string")
       apps.unshift(optionalJsonMeta.app);
@@ -27,11 +27,8 @@ class CommentBuilder extends OperationBuilder {
     Object.assign(this.jsonMetadata, optionalJsonMeta, { app: apps.join(", ") });
   }
 
-  protected constructor(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title: string = "") {
+  protected constructor(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata: object, permlink: string, title: string) {
     super();
-
-    if(permlink === undefined)
-      permlink = `re-${parentAuthor}-${Date.now()}`;
 
     this.comment = comment.fromPartial({
       parent_author: parentAuthor,
@@ -308,7 +305,7 @@ class CommentBuilder extends OperationBuilder {
  */
 export class ReplyBuilder extends CommentBuilder {
   public constructor(parentAuthor: TAccountName, parentPermlink: string, author: TAccountName, body: string, jsonMetadata?: object, permlink?: string, title: string = "") {
-    super(parentAuthor, parentPermlink, author, body, jsonMetadata, permlink, title);
+    super(parentAuthor, parentPermlink, author, body, jsonMetadata ?? {}, permlink ?? `re-${parentAuthor}-${Date.now()}`, title);
 
     if(parentAuthor.length === 0)
       throw new WaxError('No parent author specified in the reply builder');
@@ -322,8 +319,8 @@ export class ReplyBuilder extends CommentBuilder {
  * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
  */
 export class ArticleBuilder extends CommentBuilder {
-  public constructor(author: TAccountName, permlink: string, title: string, body: string, jsonMetadata?: object) {
-    super('', '', author, body, jsonMetadata, permlink, title);
+  public constructor(author: TAccountName, title: string, body: string, jsonMetadata?: object, permlink?: string) {
+    super('', '', author, body, jsonMetadata ?? {}, permlink ?? `${author}-${Date.now()}`, title);
   }
 
   /**

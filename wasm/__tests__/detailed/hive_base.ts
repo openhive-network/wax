@@ -128,8 +128,8 @@ test.describe('Wax object interface foundation tests', () => {
             precision: 3
           },
           memo: "",
-          recurrence: 0,
-          executions: 0,
+          recurrence: 24,
+          executions: 2,
           extensions: [
             { recurrent_transfer_pair_id: { pair_id: 100 } }
           ]
@@ -145,8 +145,8 @@ test.describe('Wax object interface foundation tests', () => {
             precision: 3
           },
           memo: "",
-          recurrence: 0,
-          executions: 0,
+          recurrence: 24,
+          executions: 2,
           extensions: []
         }
       }
@@ -172,8 +172,8 @@ test.describe('Wax object interface foundation tests', () => {
             precision: 3
           },
           memo: "",
-          recurrence: 0,
-          executions: 0,
+          recurrence: 24,
+          executions: 2,
           extensions: []
         }
       }

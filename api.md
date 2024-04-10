@@ -3943,17 +3943,17 @@ Same as the comment builder base, but requires user to set the category (parent 
 
 ### constructor
 
-• **new ArticleBuilder**(`author`, `permlink`, `title`, `body`, `jsonMetadata?`): [`ArticleBuilder`](#classesarticlebuildermd)
+• **new ArticleBuilder**(`author`, `title`, `body`, `jsonMetadata?`, `permlink?`): [`ArticleBuilder`](#classesarticlebuildermd)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
 | `author` | `string` |
-| `permlink` | `string` |
 | `title` | `string` |
 | `body` | `string` |
 | `jsonMetadata?` | `object` |
+| `permlink?` | `string` |
 
 #### Returns
 
@@ -3965,7 +3965,7 @@ CommentBuilder.constructor
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:325
+wasm/lib/detailed/operation_factories/comment.ts:322
 
 ## Properties
 
@@ -4049,7 +4049,7 @@ CommentBuilder.addBeneficiaries
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:219
+wasm/lib/detailed/operation_factories/comment.ts:216
 
 ___
 
@@ -4078,7 +4078,7 @@ CommentBuilder.addBeneficiary
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:192
+wasm/lib/detailed/operation_factories/comment.ts:189
 
 ___
 
@@ -4106,7 +4106,7 @@ CommentBuilder.pushImages
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:127
+wasm/lib/detailed/operation_factories/comment.ts:124
 
 ___
 
@@ -4134,7 +4134,7 @@ CommentBuilder.pushLinks
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:146
+wasm/lib/detailed/operation_factories/comment.ts:143
 
 ___
 
@@ -4167,7 +4167,7 @@ CommentBuilder.pushMetadataProperty
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:71
+wasm/lib/detailed/operation_factories/comment.ts:68
 
 ___
 
@@ -4195,7 +4195,7 @@ CommentBuilder.pushTags
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:95
+wasm/lib/detailed/operation_factories/comment.ts:92
 
 ___
 
@@ -4245,7 +4245,7 @@ CommentBuilder.setAllowCurationRewards
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:266
+wasm/lib/detailed/operation_factories/comment.ts:263
 
 ___
 
@@ -4277,7 +4277,7 @@ CommentBuilder.setAllowVotes
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:282
+wasm/lib/detailed/operation_factories/comment.ts:279
 
 ___
 
@@ -4305,7 +4305,7 @@ CommentBuilder.setAlternativeAuthor
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:114
+wasm/lib/detailed/operation_factories/comment.ts:111
 
 ___
 
@@ -4329,7 +4329,7 @@ ready to build transaction builder
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:336
+wasm/lib/detailed/operation_factories/comment.ts:333
 
 ___
 
@@ -4357,7 +4357,7 @@ CommentBuilder.setDescription
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:165
+wasm/lib/detailed/operation_factories/comment.ts:162
 
 ___
 
@@ -4385,7 +4385,7 @@ CommentBuilder.setFormat
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:178
+wasm/lib/detailed/operation_factories/comment.ts:175
 
 ___
 
@@ -4417,7 +4417,7 @@ CommentBuilder.setMaxAcceptedPayout
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:234
+wasm/lib/detailed/operation_factories/comment.ts:231
 
 ___
 
@@ -4449,7 +4449,7 @@ CommentBuilder.setPercentHbd
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:250
+wasm/lib/detailed/operation_factories/comment.ts:247
 
 
 <a name="classesbroadcasttransactionrequestmd"></a>
@@ -8070,8 +8070,8 @@ wasm/lib/detailed/custom_jsons/follow.ts:14
 | `to` | `string` | `undefined` |
 | `amount` | [`asset`](#asset) | `undefined` |
 | `memo` | `string` | `""` |
-| `recurrence` | `number` | `0` |
-| `executions` | `number` | `0` |
+| `recurrence` | `number` | `24` |
+| `executions` | `number` | `2` |
 
 #### Returns
 
@@ -8166,8 +8166,8 @@ wasm/lib/detailed/operation_builder.ts:49
 | `to` | `string` | `undefined` |
 | `pairId` | `number` | `undefined` |
 | `memo` | `string` | `""` |
-| `recurrence` | `number` | `0` |
-| `executions` | `number` | `0` |
+| `recurrence` | `number` | `24` |
+| `executions` | `number` | `2` |
 
 #### Returns
 
@@ -8324,7 +8324,7 @@ CommentBuilder.constructor
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:310
+wasm/lib/detailed/operation_factories/comment.ts:307
 
 ## Properties
 
@@ -8408,7 +8408,7 @@ CommentBuilder.addBeneficiaries
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:219
+wasm/lib/detailed/operation_factories/comment.ts:216
 
 ___
 
@@ -8437,7 +8437,7 @@ CommentBuilder.addBeneficiary
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:192
+wasm/lib/detailed/operation_factories/comment.ts:189
 
 ___
 
@@ -8465,7 +8465,7 @@ CommentBuilder.pushImages
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:127
+wasm/lib/detailed/operation_factories/comment.ts:124
 
 ___
 
@@ -8493,7 +8493,7 @@ CommentBuilder.pushLinks
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:146
+wasm/lib/detailed/operation_factories/comment.ts:143
 
 ___
 
@@ -8526,7 +8526,7 @@ CommentBuilder.pushMetadataProperty
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:71
+wasm/lib/detailed/operation_factories/comment.ts:68
 
 ___
 
@@ -8554,7 +8554,7 @@ CommentBuilder.pushTags
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:95
+wasm/lib/detailed/operation_factories/comment.ts:92
 
 ___
 
@@ -8604,7 +8604,7 @@ CommentBuilder.setAllowCurationRewards
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:266
+wasm/lib/detailed/operation_factories/comment.ts:263
 
 ___
 
@@ -8636,7 +8636,7 @@ CommentBuilder.setAllowVotes
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:282
+wasm/lib/detailed/operation_factories/comment.ts:279
 
 ___
 
@@ -8664,7 +8664,7 @@ CommentBuilder.setAlternativeAuthor
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:114
+wasm/lib/detailed/operation_factories/comment.ts:111
 
 ___
 
@@ -8692,7 +8692,7 @@ CommentBuilder.setDescription
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:165
+wasm/lib/detailed/operation_factories/comment.ts:162
 
 ___
 
@@ -8720,7 +8720,7 @@ CommentBuilder.setFormat
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:178
+wasm/lib/detailed/operation_factories/comment.ts:175
 
 ___
 
@@ -8752,7 +8752,7 @@ CommentBuilder.setMaxAcceptedPayout
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:234
+wasm/lib/detailed/operation_factories/comment.ts:231
 
 ___
 
@@ -8784,7 +8784,7 @@ CommentBuilder.setPercentHbd
 
 #### Defined in
 
-wasm/lib/detailed/operation_factories/comment.ts:250
+wasm/lib/detailed/operation_factories/comment.ts:247
 
 
 <a name="classesresourcecreditsoperationmd"></a>
