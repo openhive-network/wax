@@ -6,7 +6,7 @@ import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.
 export class RecurrentTransferBuilder extends OperationBuilder {
   protected readonly recurrentTransfer: recurrent_transfer;
 
-  public constructor(from: TAccountName, to: TAccountName, amount: asset, memo: string = "", recurrence: number = 0, executions: number = 0) {
+  public constructor(from: TAccountName, to: TAccountName, amount: asset, memo: string = "", recurrence: number = 24, executions: number = 2) {
     super();
 
     this.recurrentTransfer = recurrent_transfer.fromPartial({
@@ -30,7 +30,7 @@ export class RecurrentTransferBuilder extends OperationBuilder {
 }
 
 export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
-  public constructor(from: TAccountName, to: TAccountName, pairId: number, memo: string = "", recurrence: number = 0, executions: number = 0) {
+  public constructor(from: TAccountName, to: TAccountName, pairId: number, memo: string = "", recurrence: number = 24, executions: number = 2) {
     super(from, to, {} as asset, memo, recurrence, executions);
 
     if(typeof pairId === "number")
