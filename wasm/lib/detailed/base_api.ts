@@ -46,6 +46,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.proto.cpp_vests(long.low, long.high) as NaiAsset;
   }
 
+  public vestsToHp(vests: number | string | BigInt | Long, totalVestingFundHive: number | string | BigInt | Long, totalVestingShares: number | string | BigInt | Long): NaiAsset {
+    return this.proto.cpp_vests_to_hp(this.vests(vests), this.hive(totalVestingFundHive), this.vests(totalVestingShares)) as NaiAsset;
+  }
+
+  public hbdToHive(hbd: number | string | BigInt | Long, base: number | string | BigInt | Long, quote: number | string | BigInt | Long): NaiAsset {
+    return this.proto.cpp_hbd_to_hive(this.hbd(hbd), this.hbd(base), this.hive(quote)) as NaiAsset;
+  }
+
   public extract(res: result): string {
     if(res.value !== this.wax.error_code.ok)
       throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
