@@ -2,6 +2,8 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
+import type { ArticleBuilder, ReplyBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./detailed/operation_factories";
+import type { CommunityOperationBuilder, FollowOperationBuilder, ResourceCreditsOperationBuilder } from "./detailed/custom_jsons";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
@@ -71,7 +73,7 @@ export interface IWaxOptionsChain extends IWaxOptions {
   apiEndpoint: string;
 }
 
-export interface ITransactionBuilderBase {
+interface ITransactionBuilderBase {
 
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
@@ -152,6 +154,8 @@ export interface ITransactionBuilderBase {
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
    *
+   * Encrypts operations if any were created using {@link IEncryptingTransactionBuilder} interface
+   *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
@@ -170,6 +174,8 @@ export interface ITransactionBuilderBase {
 
   /**
    * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
+   *
+   * Encrypts operations if any were created using {@link IEncryptingTransactionBuilder} interface
    *
    * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
@@ -231,6 +237,24 @@ export interface ITransactionBuilderBase {
   toLegacyApi(): string;
 }
 
+/**
+ * Default Transaction Builder interface for adding operations, using builders and retrieving base information about transaction,
+ * like id, sigDigest and signingKeys. Example usage:
+ *
+ * @example Base transaction builder usage
+ * ```typescript
+ * const tx = new waxFoundation.TransactionBuilder();
+ *
+ * tx.push({
+ *   vote: {
+ *     voter: "otom",
+ *     author: "c0ff33a",
+ *     permlink: "ewxhnjbj",
+ *     weight: 2200
+ *   }
+ * });
+ * ```
+ */
 export interface ITransactionBuilder extends ITransactionBuilderBase {
   /**
    * Pushes given operation to the operations array in the transaction
@@ -246,12 +270,15 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
   /**
    * Starts encryption chain
    *
-   * @param {string} from First key to encrypt operations
-   * @param {string} to Optional second key to encrypt operations
+   * Remember that in order to encrypt operations with given {@link mainEncryptionKey} and optional {@link otherEncryptionKey}
+   * you have to import those keys into the wallet passed to the {@link ITransactionBuilderBase.sign} or {@link ITransactionBuilderBase.build} method
    *
-   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
+   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
+   *
+   * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    */
-  startEncrypt(from: string, to?: string): IEncryptedTransactionBuilder;
+  startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): IEncryptingTransactionBuilder;
 
   /**
    * Uses given builder to construct operations and push them to the current instance of the transaction builder
@@ -263,6 +290,16 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    * @returns {ITransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
+   *
+   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}
+   * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
+   *
+   * @example Building article
+   * ```typescript
+   *  tx.useBuilder(ArticleBuilder, builder => {
+   *      builder.setCategory('blog');
+   *  }, 'gtg', 'My first post', '# Hello world!');
+   * ```
    */
   useBuilder<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
@@ -271,20 +308,49 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
   ): ITransactionBuilder;
 }
 
-export interface IEncryptedTransactionBuilder extends ITransactionBuilderBase {
+/**
+ * Same as {@link ITransactionBuilder}, but marks operations as encrypted using given keys, which will be encrypted upon
+ * {@link ITransactionBuilderBase.sign} or {@link ITransactionBuilderBase.build}.
+ *
+ * Note: We are not able to encrypt all operations.
+ * We are currently supporting:
+ * - Encryption of `body` in comment operation
+ * - Encryption of `json` in custom_json operation
+ * - Encryption of `memo` in transfer operation
+ * - Encryption of `memo` in transfer_to_savings operation
+ * - Encryption of `memo` in transfer_from_savings operation
+ * - Encryption of `memo` in recurrent_transfer operation
+ *
+ * @example Base encrypting transaction builder usage
+ * ```typescript
+ * const tx = new waxFoundation.TransactionBuilder();
+ *
+ * tx.startEncrypt(myPublicKey).push({
+ *    transfer: {
+ *      amount: chain.hive(100),
+ *      from_account: "gtg",
+ *      to_account: "initminer",
+ *      memo: "This should be encrypted"
+ *    }
+ * }).stopEncrypt();
+ * ```
+ */
+export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
   /**
    * Pushes given operation to the operations array in the transaction
    *
    * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
    *
-   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptedTransactionBuilder;
+  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptingTransactionBuilder;
 
   /**
    * Stops encryption chain
+   *
+   * Note: This call is optional if you are not going to push any other decrypted operations
    *
    * @returns {ITransactionBuilder} current transaction builder instance
    */
@@ -297,15 +363,25 @@ export interface IEncryptedTransactionBuilder extends ITransactionBuilderBase {
    * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>) => void} builderFn Lambda function for your builder configuration
    * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
    *
-   * @returns {IEncryptedTransactionBuilder} current transaction builder instance
+   * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
+   *
+   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}
+   * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
+   *
+   * @example Building article
+   * ```typescript
+   *  tx.useBuilder(ArticleBuilder, builder => {
+   *      builder.setCategory('blog');
+   *  }, 'gtg', 'My first post', '# Hello world!');
+   * ```
    */
   useBuilder<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
     builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
     ...constructorArgs: ConstructorParameters<TBuilder>
-  ): IEncryptedTransactionBuilder;
+  ): IEncryptingTransactionBuilder;
 }
 
 export interface ITransactionBuilderConstructor {

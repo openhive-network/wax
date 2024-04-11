@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
-import type { IEncryptedTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
+import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -10,8 +10,8 @@ import { EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 
 type TIndexBeginEncryption = {
-  from: string;
-  to: string;
+  mainEncryptionKey: TPublicKey;
+  otherEncryptionKey: TPublicKey;
   begin: number;
   end?: number;
 };
@@ -22,7 +22,7 @@ type TIndexEndEncryption = TIndexBeginEncryption & {
 
 type TIndexKeeperNode = TIndexBeginEncryption | TIndexEndEncryption;
 
-export class TransactionBuilder implements ITransactionBuilder, IEncryptedTransactionBuilder {
+export class TransactionBuilder implements ITransactionBuilder, IEncryptingTransactionBuilder {
   private target: transaction;
 
   private expirationTime?: TTimestamp;
@@ -113,8 +113,8 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptedTransa
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public startEncrypt(from: string, to?: string | undefined): TransactionBuilder {
-    this.indexKeeper.push({ from, to: to ?? from, begin: this.target.operations.length });
+  public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): TransactionBuilder {
+    this.indexKeeper.push({ mainEncryptionKey, otherEncryptionKey: otherEncryptionKey ?? mainEncryptionKey, begin: this.target.operations.length });
 
     return this;
   }
@@ -203,7 +203,7 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptedTransa
   private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
-        const visitor = new EncryptionVisitor((data: string) => this.api.encrypt(wallet, data, index.from, index.to));
+        const visitor = new EncryptionVisitor((data: string) => this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey));
 
         visitor.accept(this.target.operations[i]);
       }
