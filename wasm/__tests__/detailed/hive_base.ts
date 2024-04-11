@@ -265,6 +265,40 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.decrypted[1]).toBe("This also should be encrypted");
   });
 
+  test('Should be able to decrypt operations using transaction builder interface', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ chain, beekeeper }) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      tx.startEncrypt(publicKey).push({
+        transfer: {
+          amount: chain.hive(100),
+          from_account: "gtg",
+          to_account: "initminer",
+          memo: "This should be encrypted"
+        }
+      });
+
+      const operations = tx.build(wallet, publicKey).operations;
+
+      const encrypted = operations[0].transfer!.memo;
+
+      const decrypted = tx.decrypt(wallet);
+
+      return {
+        encrypted,
+        decrypted: decrypted.operations[0].transfer!.memo
+      };
+    });
+
+    expect(retVal.encrypted.startsWith("#")).toBeTruthy();
+    expect(retVal.decrypted).toBe("This should be encrypted");
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

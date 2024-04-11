@@ -136,6 +136,17 @@ interface ITransactionBuilderBase {
   get legacy_signatureKeys(): Array<THexString>;
 
   /**
+   * Decrypts all underlying encrypted operations
+   *
+   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for decryption
+   *
+   * @returns {transaction} protobuf transaction object
+   *
+   * @throws {WaxError} on any Wax API-related error including validation error
+   */
+  decrypt(wallet: IBeekeeperUnlockedWallet): transaction;
+
+  /**
    * Validates current transaction. Throws on error
    *
    * @throws {WaxError} on any Wax API-related error including validation error
@@ -156,7 +167,7 @@ interface ITransactionBuilderBase {
    *
    * Encrypts operations if any were created using {@link IEncryptingTransactionBuilder} interface
    *
-   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
+   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
    * @returns {THexString} transaction signature signed using given key
@@ -177,7 +188,7 @@ interface ITransactionBuilderBase {
    *
    * Encrypts operations if any were created using {@link IEncryptingTransactionBuilder} interface
    *
-   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing (overrides default Wax Base wallet)
+   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
    * @returns {transaction} signed protobuf transaction object
@@ -191,7 +202,7 @@ interface ITransactionBuilderBase {
    *
    * @param {THexString} signature signature to add
    *
-   * @returns {transaction} signed protobuf transaction object
+   * @returns {transaction} protobuf transaction object
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */

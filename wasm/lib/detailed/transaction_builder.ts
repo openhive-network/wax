@@ -6,7 +6,7 @@ import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
 import { BuiltHiveAppsOperation } from "./operation_builder";
-import { EncryptionVisitor } from "./encryption_visitor.js";
+import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 
 type TIndexBeginEncryption = {
@@ -200,10 +200,24 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
       this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
+  public decrypt(wallet: IBeekeeperUnlockedWallet): transaction {
+    const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
+      if(data.startsWith('#'))
+        return this.api.decrypt(wallet, data)
+
+      return data;
+    });
+
+    for(const op of this.target.operations)
+      visitor.accept(op);
+
+    return this.target;
+  }
+
   private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
-        const visitor = new EncryptionVisitor((data: string) => this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey));
+        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey));
 
         visitor.accept(this.target.operations[i]);
       }
