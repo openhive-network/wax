@@ -204,6 +204,16 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBeTruthy();
     });
 
+    test('Try to get custom endpointApi and chainId', async({ waxTest }) => {
+      const retVal = await waxTest.withConfig({ apiEndpoint: 'https://test.com', chainId: 'test chain id' }, async({ chain }) => {
+          const endpointApi = chain.endpointUrl;
+
+          return endpointApi;
+        });
+
+      expect(retVal).toBe('https://test.com');
+    });
+
     test('Should be able to transmit protobuf transaction using hive chain interface', async ({ waxTest }) => {
       const retVal = await waxTest(async({ beekeeper, chain, wax }, protoVoteOp) => {
         // Create wallet:

@@ -1,7 +1,7 @@
 // We only want to import types here!
 import type { IBeekeeperInstance } from "@hive/beekeeper/web";
 import type Wax from "../../dist/bundle/web-full.js";
-import type { IWaxBaseInterface, IHiveChainInterface } from "../../dist/bundle/web-full.js";
+import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/web-full.js";
 import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.web.js";
 
 type TMainModuleFn = () => Promise<MainModule>;
@@ -23,6 +23,7 @@ export interface IWasmGlobals {
 declare global {
   function createWaxTestFor(env: TEnvType): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
+  var waxConfig: IWaxOptionsChain | undefined;
 }
 
 // Use function as we later extract the function name in the jest-helpers
@@ -37,7 +38,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   // Initialize data
   const bk = await beekeeper.default() as IBeekeeperInstance;
   const wx = await wax.createWaxFoundation();
-  const chain = await wax.createHiveChain();
+  const chain = await wax.createHiveChain(globalThis.waxConfig);
 
   // Provide results
   return {
