@@ -217,7 +217,9 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
   private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
-        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey));
+        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
+          return this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey, this.target.ref_block_prefix);
+        });
 
         visitor.accept(this.target.operations[i]);
       }

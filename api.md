@@ -390,7 +390,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:568
+wasm/lib/interfaces.ts:570
 
 ___
 
@@ -416,7 +416,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:590
+wasm/lib/interfaces.ts:592
 
 ## Variables
 
@@ -10759,7 +10759,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:359
+wasm/lib/interfaces.ts:360
 
 ___
 
@@ -10814,7 +10814,7 @@ current transaction builder instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:368
+wasm/lib/interfaces.ts:369
 
 ___
 
@@ -10954,7 +10954,7 @@ Building article
 
 #### Defined in
 
-wasm/lib/interfaces.ts:391
+wasm/lib/interfaces.ts:392
 
 ___
 
@@ -11049,7 +11049,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:437
+wasm/lib/interfaces.ts:438
 
 ___
 
@@ -11067,7 +11067,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:444
+wasm/lib/interfaces.ts:445
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -11092,7 +11092,7 @@ wasm/lib/interfaces.ts:444
 
 #### Defined in
 
-wasm/lib/interfaces.ts:450
+wasm/lib/interfaces.ts:451
 
 ___
 
@@ -11102,7 +11102,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:667
+wasm/lib/interfaces.ts:669
 
 ___
 
@@ -11116,7 +11116,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:452
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -11156,7 +11156,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:454
 
 ## Accessors
 
@@ -11174,7 +11174,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:449
 
 ___
 
@@ -11190,7 +11190,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:629
+wasm/lib/interfaces.ts:631
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -11208,7 +11208,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:624
+wasm/lib/interfaces.ts:626
 
 ## Methods
 
@@ -11239,7 +11239,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:539
+wasm/lib/interfaces.ts:541
 
 ___
 
@@ -11264,7 +11264,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:655
+wasm/lib/interfaces.ts:657
 
 ___
 
@@ -11295,7 +11295,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:555
+wasm/lib/interfaces.ts:557
 
 ___
 
@@ -11320,7 +11320,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:665
+wasm/lib/interfaces.ts:667
 
 ___
 
@@ -11349,7 +11349,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:523
+wasm/lib/interfaces.ts:525
 
 ___
 
@@ -11369,13 +11369,13 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:560
+wasm/lib/interfaces.ts:562
 
 ___
 
 ### encrypt
 
-▸ **encrypt**(`wallet`, `content`, `from`, `to?`): `string`
+▸ **encrypt**(`wallet`, `content`, `mainEncryptionKey`, `otherEncryptionKey?`, `nonce?`): `string`
 
 Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
 
@@ -11383,10 +11383,11 @@ Encrypts given data using two keys and dumps result to the encrypted string in `
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported from and to keys |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported mainEncryptionKey and otherEncryptionKey keys |
 | `content` | `string` | Content to be encoded |
-| `from` | `string` | first public key used for encryption |
-| `to?` | `string` | second public key used for encryption |
+| `mainEncryptionKey` | `string` | First key to encrypt operations |
+| `otherEncryptionKey?` | `string` | Optional second key to encrypt operations |
+| `nonce?` | `number` | optional nonce to be explicitly specified for encryption |
 
 #### Returns
 
@@ -11400,7 +11401,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:513
+wasm/lib/interfaces.ts:515
 
 ___
 
@@ -11427,7 +11428,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:619
+wasm/lib/interfaces.ts:621
 
 ___
 
@@ -11457,7 +11458,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:638
+wasm/lib/interfaces.ts:640
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -11477,7 +11478,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:645
+wasm/lib/interfaces.ts:647
 
 ___
 
@@ -11505,7 +11506,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:468
+wasm/lib/interfaces.ts:469
 
 ___
 
@@ -11538,7 +11539,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:501
+wasm/lib/interfaces.ts:502
 
 ___
 
@@ -11570,7 +11571,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:607
+wasm/lib/interfaces.ts:609
 
 ___
 
@@ -11592,7 +11593,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:460
+wasm/lib/interfaces.ts:461
 
 ___
 
@@ -11620,7 +11621,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:482
+wasm/lib/interfaces.ts:483
 
 ___
 
@@ -11648,7 +11649,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:475
+wasm/lib/interfaces.ts:476
 
 ___
 
@@ -11676,7 +11677,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:489
+wasm/lib/interfaces.ts:490
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -12105,7 +12106,7 @@ ___
 
 ### startEncrypt
 
-▸ **startEncrypt**(`mainEncryptionKey`, `otherEncryptionKey?`): [`IEncryptingTransactionBuilder`](#interfacesiencryptingtransactionbuildermd)
+▸ **startEncrypt**(`mainEncryptionKey`, `otherEncryptionKey?`, `nonce?`): [`IEncryptingTransactionBuilder`](#interfacesiencryptingtransactionbuildermd)
 
 Starts encryption chain
 
@@ -12118,6 +12119,7 @@ you have to import those keys into the wallet passed to the [ITransactionBuilder
 | :------ | :------ | :------ |
 | `mainEncryptionKey` | `string` | First key to encrypt operations |
 | `otherEncryptionKey?` | `string` | Optional second key to encrypt operations |
+| `nonce?` | `number` | optional nonce to be explicitly specified for encryption |
 
 #### Returns
 
@@ -12127,7 +12129,7 @@ current transaction builder instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:292
+wasm/lib/interfaces.ts:293
 
 ___
 
@@ -12267,7 +12269,7 @@ Building article
 
 #### Defined in
 
-wasm/lib/interfaces.ts:315
+wasm/lib/interfaces.ts:316
 
 ___
 
@@ -12319,7 +12321,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:410
+wasm/lib/interfaces.ts:411
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -12337,7 +12339,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:417
+wasm/lib/interfaces.ts:418
 
 ## Methods
 
@@ -12365,7 +12367,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:428
+wasm/lib/interfaces.ts:429
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -12386,7 +12388,7 @@ wasm/lib/interfaces.ts:428
 
 #### Defined in
 
-wasm/lib/interfaces.ts:450
+wasm/lib/interfaces.ts:451
 
 ___
 
@@ -12396,7 +12398,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:452
+wasm/lib/interfaces.ts:453
 
 ___
 
@@ -12432,7 +12434,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:454
 
 ## Accessors
 
@@ -12446,7 +12448,7 @@ wasm/lib/interfaces.ts:453
 
 #### Defined in
 
-wasm/lib/interfaces.ts:448
+wasm/lib/interfaces.ts:449
 
 ## Methods
 
@@ -12473,7 +12475,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:539
+wasm/lib/interfaces.ts:541
 
 ___
 
@@ -12500,7 +12502,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:555
+wasm/lib/interfaces.ts:557
 
 ___
 
@@ -12525,7 +12527,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:523
+wasm/lib/interfaces.ts:525
 
 ___
 
@@ -12541,13 +12543,13 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:560
+wasm/lib/interfaces.ts:562
 
 ___
 
 ### encrypt
 
-▸ **encrypt**(`wallet`, `content`, `from`, `to?`): `string`
+▸ **encrypt**(`wallet`, `content`, `mainEncryptionKey`, `otherEncryptionKey?`, `nonce?`): `string`
 
 Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
 
@@ -12555,10 +12557,11 @@ Encrypts given data using two keys and dumps result to the encrypted string in `
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported from and to keys |
+| `wallet` | `IBeekeeperUnlockedWallet` | Wallet with imported mainEncryptionKey and otherEncryptionKey keys |
 | `content` | `string` | Content to be encoded |
-| `from` | `string` | first public key used for encryption |
-| `to?` | `string` | second public key used for encryption |
+| `mainEncryptionKey` | `string` | First key to encrypt operations |
+| `otherEncryptionKey?` | `string` | Optional second key to encrypt operations |
+| `nonce?` | `number` | optional nonce to be explicitly specified for encryption |
 
 #### Returns
 
@@ -12568,7 +12571,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:513
+wasm/lib/interfaces.ts:515
 
 ___
 
@@ -12592,7 +12595,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:468
+wasm/lib/interfaces.ts:469
 
 ___
 
@@ -12621,7 +12624,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:501
+wasm/lib/interfaces.ts:502
 
 ___
 
@@ -12639,7 +12642,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:460
+wasm/lib/interfaces.ts:461
 
 ___
 
@@ -12663,7 +12666,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:482
+wasm/lib/interfaces.ts:483
 
 ___
 
@@ -12687,7 +12690,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:475
+wasm/lib/interfaces.ts:476
 
 ___
 
@@ -12711,7 +12714,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:489
+wasm/lib/interfaces.ts:490
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

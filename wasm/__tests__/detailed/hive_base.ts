@@ -224,7 +224,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create encrypted operations using transaction builder interface', async ({ waxTest }) => {
-    const retVal = await waxTest.dynamic(async({ chain, beekeeper }) => {
+    const retVal = await waxTest(async({ chain, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -259,14 +259,14 @@ test.describe('Wax object interface foundation tests', () => {
       };
     });
 
-    expect(retVal.encrypted[0].startsWith("#")).toBeTruthy();
-    expect(retVal.encrypted[1].startsWith("#")).toBeTruthy();
+    expect(retVal.encrypted[0]).toBe("#5P5bvgpUUGTskb98shuYBTpSMqfoTBev6Ay2xo9UgMF3Rj5uhFSqwVLb4LZkmCcodBdQUgEspA1t2dByaMVAjyJFZN767GRGxGDtx2r3sQtui9kFEWPGcxXYvWZLxAxDJmgtqc4wUsgNKYe5kZPPQSHg");
+    expect(retVal.encrypted[1]).toBe("#5P5bvgpUUGTskb98siFoASHTSKsjZmsqW38CFKJxtVdCB9bFvnqwexhDDB2eNvCfxCMTeAjAsqxA3HDsTqEKqNiA6ve41UqYudCWtqXYrVM3dPf8m4E3hVp2grEPmDYa3GhSakAw7bxgfiYVXzcbS1ni");
     expect(retVal.decrypted[0]).toBe("This should be encrypted");
     expect(retVal.decrypted[1]).toBe("This also should be encrypted");
   });
 
   test('Should be able to decrypt operations using transaction builder interface', async ({ waxTest }) => {
-    const retVal = await waxTest.dynamic(async({ chain, beekeeper }) => {
+    const retVal = await waxTest(async({ chain, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -295,7 +295,7 @@ test.describe('Wax object interface foundation tests', () => {
       };
     });
 
-    expect(retVal.encrypted.startsWith("#")).toBeTruthy();
+    expect(retVal.encrypted).toBe("#5P5bvgpUUGTskb98shuYBTpSMqfoTBev6Ay2xo9UgMF3Rj5uhFSqwVLb4LZkmCcodBdQUgEspA1t2dByaMVAjyJFZN767GRGxGDtx2r3sQtui9kFEWPGcxXYvWZLxAxDJmgtqc4wUsgNKYe5kZPPQSHg");
     expect(retVal.decrypted).toBe("This should be encrypted");
   });
 

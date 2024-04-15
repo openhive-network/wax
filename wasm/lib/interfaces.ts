@@ -503,14 +503,15 @@ export interface IWaxBaseInterface {
   /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
-   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link from} and {@link to} keys
+   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys
    * @param {string} content Content to be encoded
-   * @param {TPublicKey} from first public key used for encryption
-   * @param {?TPublicKey} to second public key used for encryption
+   * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
+   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
+   * @param {?number} nonce optional nonce to be explicitly specified for encryption
    *
    * @returns {string} Encrypted content
    */
-  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, from: TPublicKey, to?: TPublicKey): string;
+  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
 
   /**
    * Decrypts given data from the encrypted string in `#encrypted` format
