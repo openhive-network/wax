@@ -254,7 +254,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:589
+wasm/lib/interfaces.ts:608
 
 ___
 
@@ -400,7 +400,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:569
+wasm/lib/interfaces.ts:588
 
 ___
 
@@ -426,7 +426,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:597
+wasm/lib/interfaces.ts:616
 
 ## Variables
 
@@ -541,7 +541,7 @@ ___
 
 wasm/lib/proto/account_update2.ts:53
 
-wasm/lib/proto/account_update2.ts:68
+wasm/lib/proto/account_update2.ts:77
 
 ___
 
@@ -11192,7 +11192,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:674
+wasm/lib/interfaces.ts:693
 
 ___
 
@@ -11280,7 +11280,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:636
+wasm/lib/interfaces.ts:655
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -11298,7 +11298,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:631
+wasm/lib/interfaces.ts:650
 
 ## Methods
 
@@ -11329,7 +11329,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:559
 
 ___
 
@@ -11354,7 +11354,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:662
+wasm/lib/interfaces.ts:681
 
 ___
 
@@ -11385,7 +11385,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:556
+wasm/lib/interfaces.ts:575
 
 ___
 
@@ -11410,7 +11410,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:672
+wasm/lib/interfaces.ts:691
 
 ___
 
@@ -11439,7 +11439,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:524
+wasm/lib/interfaces.ts:543
 
 ___
 
@@ -11459,7 +11459,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:561
+wasm/lib/interfaces.ts:580
 
 ___
 
@@ -11491,7 +11491,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:514
+wasm/lib/interfaces.ts:533
 
 ___
 
@@ -11518,7 +11518,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:626
+wasm/lib/interfaces.ts:645
 
 ___
 
@@ -11548,7 +11548,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:645
+wasm/lib/interfaces.ts:664
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -11568,7 +11568,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:652
+wasm/lib/interfaces.ts:671
 
 ___
 
@@ -11629,7 +11629,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:501
+wasm/lib/interfaces.ts:520
 
 ___
 
@@ -11661,7 +11661,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:614
+wasm/lib/interfaces.ts:633
 
 ___
 
@@ -11712,6 +11712,36 @@ HBD in nai form
 #### Defined in
 
 wasm/lib/interfaces.ts:482
+
+___
+
+### hbdToHive
+
+▸ **hbdToHive**(`hbd`, `base`, `quote`): [`NaiAsset`](#classesnaiassetmd)
+
+Converts HBD to HIVE in nai form
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `hbd` | `string` \| `number` \| `BigInt` \| `Long` | HBD asset |
+| `base` | `string` \| `number` \| `BigInt` \| `Long` | HBD asset price base |
+| `quote` | `string` \| `number` \| `BigInt` \| `Long` | HIVE asset price quote |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HBD in nai form
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[hbdToHive](#hbdtohive)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:507
 
 ___
 
@@ -11768,6 +11798,36 @@ VESTS in nai form
 #### Defined in
 
 wasm/lib/interfaces.ts:489
+
+___
+
+### vestsToHp
+
+▸ **vestsToHp**(`vests`, `totalVestingFundHive`, `totalVestingShares`): [`NaiAsset`](#classesnaiassetmd)
+
+Converts VESTS to HP in nai form
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `vests` | `string` \| `number` \| `BigInt` \| `Long` | VESTS asset |
+| `totalVestingFundHive` | `string` \| `number` \| `BigInt` \| `Long` | HIVE assest total vesting fund |
+| `totalVestingShares` | `string` \| `number` \| `BigInt` \| `Long` | VESTS asset total shares |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+VESTS in nai form
+
+#### Inherited from
+
+[IWaxBaseInterface](#interfacesiwaxbaseinterfacemd).[vestsToHp](#veststohp)
+
+#### Defined in
+
+wasm/lib/interfaces.ts:498
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -12564,7 +12624,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:540
+wasm/lib/interfaces.ts:559
 
 ___
 
@@ -12591,7 +12651,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:556
+wasm/lib/interfaces.ts:575
 
 ___
 
@@ -12616,7 +12676,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:524
+wasm/lib/interfaces.ts:543
 
 ___
 
@@ -12632,7 +12692,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:561
+wasm/lib/interfaces.ts:580
 
 ___
 
@@ -12660,7 +12720,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:514
+wasm/lib/interfaces.ts:533
 
 ___
 
@@ -12713,7 +12773,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:501
+wasm/lib/interfaces.ts:520
 
 ___
 
@@ -12756,6 +12816,32 @@ HBD in nai form
 #### Defined in
 
 wasm/lib/interfaces.ts:482
+
+___
+
+### hbdToHive
+
+▸ **hbdToHive**(`hbd`, `base`, `quote`): [`NaiAsset`](#classesnaiassetmd)
+
+Converts HBD to HIVE in nai form
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `hbd` | `string` \| `number` \| `BigInt` \| `Long` | HBD asset |
+| `base` | `string` \| `number` \| `BigInt` \| `Long` | HBD asset price base |
+| `quote` | `string` \| `number` \| `BigInt` \| `Long` | HIVE asset price quote |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+HBD in nai form
+
+#### Defined in
+
+wasm/lib/interfaces.ts:507
 
 ___
 
@@ -12804,6 +12890,32 @@ VESTS in nai form
 #### Defined in
 
 wasm/lib/interfaces.ts:489
+
+___
+
+### vestsToHp
+
+▸ **vestsToHp**(`vests`, `totalVestingFundHive`, `totalVestingShares`): [`NaiAsset`](#classesnaiassetmd)
+
+Converts VESTS to HP in nai form
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `vests` | `string` \| `number` \| `BigInt` \| `Long` | VESTS asset |
+| `totalVestingFundHive` | `string` \| `number` \| `BigInt` \| `Long` | HIVE assest total vesting fund |
+| `totalVestingShares` | `string` \| `number` \| `BigInt` \| `Long` | VESTS asset total shares |
+
+#### Returns
+
+[`NaiAsset`](#classesnaiassetmd)
+
+VESTS in nai form
+
+#### Defined in
+
+wasm/lib/interfaces.ts:498
 
 
 <a name="interfacesiwaxcustomformattermd"></a>
@@ -13559,7 +13671,7 @@ ___
 
 ### active
 
-• `Optional` **active**: [`authority`](#authority)
+• **active**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -13589,7 +13701,7 @@ ___
 
 ### owner
 
-• `Optional` **owner**: [`authority`](#authority)
+• **owner**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -13599,7 +13711,7 @@ ___
 
 ### posting
 
-• `Optional` **posting**: [`authority`](#authority)
+• **posting**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -13697,7 +13809,7 @@ ___
 
 ### active
 
-• `Optional` **active**: [`authority`](#authority)
+• **active**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -13727,7 +13839,7 @@ ___
 
 ### memo\_key
 
-• `Optional` **memo\_key**: `string`
+• **memo\_key**: `string`
 
 #### Defined in
 
@@ -13737,7 +13849,7 @@ ___
 
 ### owner
 
-• `Optional` **owner**: [`authority`](#authority)
+• **owner**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -13747,7 +13859,7 @@ ___
 
 ### posting
 
-• `Optional` **posting**: [`authority`](#authority)
+• **posting**: `undefined` \| [`authority`](#authority)
 
 #### Defined in
 
@@ -18871,7 +18983,7 @@ wasm/lib/proto/pow.ts:16
 
 ### new\_owner\_key
 
-• `Optional` **new\_owner\_key**: `string`
+• **new\_owner\_key**: `string`
 
 #### Defined in
 

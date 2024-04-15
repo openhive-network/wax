@@ -41,6 +41,30 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
+  test('Should be able to convert VESTS to HP', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.vestsToHp(10, 1, 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "1",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to convert HBD to HIVE', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.hbdToHive(10, 1, 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "100",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
   test('Should be able to convert API asset to the proper custom asset data', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       const asset = base.getAsset({
