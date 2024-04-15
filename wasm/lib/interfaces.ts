@@ -489,6 +489,25 @@ export interface IWaxBaseInterface {
   vests(amount: number | string | BigInt | Long): NaiAsset;
 
   /**
+   * Converts VESTS to HP in nai form
+   * @param {number | string | BigInt | Long} vests VESTS asset
+   * @param {number | string | BigInt | Long} totalVestingFundHive HIVE assest total vesting fund
+   * @param {number | string | BigInt | Long} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} VESTS in nai form
+   */
+  vestsToHp(vests: number | string | BigInt | Long, totalVestingFundHive: number | string | BigInt | Long, totalVestingShares: number | string | BigInt | Long): NaiAsset
+
+  /**
+   * Converts HBD to HIVE in nai form
+   * @param {number | string | BigInt | Long} hbd HBD asset
+   * @param {number | string | BigInt | Long} base HBD asset price base
+   * @param {number | string | BigInt | Long} quote HIVE asset price quote
+   * @returns {NaiAsset} HBD in nai form
+   */
+  hbdToHive(hbd: number | string | BigInt | Long, base: number | string | BigInt | Long, quote: number | string | BigInt | Long): NaiAsset
+
+
+  /**
    * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
    *
    * @param {THexString} sigDigest digest data in hexadecimal format
