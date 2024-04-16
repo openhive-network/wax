@@ -7,6 +7,9 @@ type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: A
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 export interface IWaxedTest {
+  apiEndpointUrl: string;
+  chainId: string;
+
   /**
    * Runs given function in both environments: web and Node.js
    * Created specifically for testing the wax code - base and chain
@@ -67,7 +70,12 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
 };
 
 export const test = base.extend<IWaxedTest>({
-  waxTest: async({ page }, use) => {
+  apiEndpointUrl: ["", {option: true}],
+  chainId: ["", { option: true}],
+
+  waxTest: async({ page, apiEndpointUrl, chainId }, use) => {
+    globalThis.apiEndpointUrl = apiEndpointUrl;
+    globalThis.chainId = chainId;
     use(envTestFor(page, createWaxTestFor));
   },
   wasmTest: async({ page }, use) => {
