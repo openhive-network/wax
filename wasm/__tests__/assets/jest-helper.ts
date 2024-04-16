@@ -45,11 +45,15 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
   page: Page,
   globalFunction: (env: TEnvType) => Promise<GlobalType>
 ): IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'] => {
+
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args): Promise<R> => {
-    const webData = await page.evaluate(async({ args, globalFunction, webFn }) => {
+
+    const webData = await page.evaluate(async({ args, globalFunction, webFn, customApiEndpointUrl, customChainId }) => {
       eval(`window.webEvalFn = ${webFn};`);
+      globalThis.apiEndpointUrl = customApiEndpointUrl;
+      globalThis.chainId = customChainId;
       return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web'), ...args);
-    }, { args, globalFunction: globalFunction.name, webFn: fn.toString() });
+    }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customApiEndpointUrl: globalThis.apiEndpointUrl, customChainId: globalThis.chainId });
     let nodeData = await fn(await (globalFunction as Function)('node'), ...args);
 
     if(typeof nodeData === "object") // Remove prototype data from the node result to match webData
