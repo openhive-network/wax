@@ -25,6 +25,9 @@ declare global {
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
 }
 
+globalThis.apiEndpointUrl = '';
+globalThis.chainId = '';
+
 // Use function as we later extract the function name in the jest-helpers
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   const locWax = env === "web" ? "../../dist/bundle/web-full.js" : "../../dist/bundle/node.js";
@@ -37,7 +40,20 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   // Initialize data
   const bk = await beekeeper.default() as IBeekeeperInstance;
   const wx = await wax.createWaxFoundation();
-  const chain = await wax.createHiveChain();
+
+  let chain:IHiveChainInterface;
+
+  if(globalThis.apiEndpointUrl !== '' && globalThis.chainId !== '')
+  {
+    console.log(`Using custom apiEndpointUrl: ${globalThis.apiEndpointUrl}`);
+    console.log(`Using custom chainId: ${globalThis.chainId}`);
+
+    chain = await wax.createHiveChain({apiEndpoint: globalThis.apiEndpointUrl, chainId: globalThis.chainId});
+  }
+  else
+  {
+    chain = await wax.createHiveChain();
+  }
 
   // Provide results
   return {
