@@ -390,7 +390,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:570
+wasm/lib/interfaces.ts:569
 
 ___
 
@@ -416,7 +416,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:592
+wasm/lib/interfaces.ts:591
 
 ## Variables
 
@@ -5997,7 +5997,7 @@ wasm/lib/detailed/api/block_api/get_block.ts:16
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:114
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:132
 
 ___
 
@@ -6007,7 +6007,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:53
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:56
 
 ___
 
@@ -6027,7 +6027,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:129
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:150
 
 ___
 
@@ -6037,7 +6037,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:92
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:101
 
 ___
 
@@ -6048,6 +6048,16 @@ ___
 #### Defined in
 
 wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:49
+
+___
+
+### current\_remove\_threshold
+
+• **current\_remove\_threshold**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:52
 
 ___
 
@@ -6077,7 +6087,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:108
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:126
 
 ___
 
@@ -6087,7 +6097,17 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:143
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:164
+
+___
+
+### early\_voting\_seconds
+
+• **early\_voting\_seconds**: `string` \| `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:167
 
 ___
 
@@ -6097,7 +6117,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:79
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:82
 
 ___
 
@@ -6107,7 +6127,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:82
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:85
 
 ___
 
@@ -6117,7 +6137,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:120
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:138
 
 ___
 
@@ -6127,7 +6147,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:117
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:135
 
 ___
 
@@ -6177,7 +6197,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:126
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:147
 
 ___
 
@@ -6187,7 +6207,37 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:101
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:110
+
+___
+
+### max\_consecutive\_recurrent\_transfer\_failures
+
+• **max\_consecutive\_recurrent\_transfer\_failures**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:113
+
+___
+
+### max\_open\_recurrent\_transfers
+
+• **max\_open\_recurrent\_transfers**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:116
+
+___
+
+### max\_recurrent\_transfer\_end\_date
+
+• **max\_recurrent\_transfer\_end\_date**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:119
 
 ___
 
@@ -6197,7 +6247,37 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:85
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:88
+
+___
+
+### mid\_voting\_seconds
+
+• **mid\_voting\_seconds**: `string` \| `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:91
+
+___
+
+### min\_recurrent\_transfers\_recurrence
+
+• **min\_recurrent\_transfers\_recurrence**: `number`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:94
+
+___
+
+### next\_daily\_maintenance\_time
+
+• **next\_daily\_maintenance\_time**: `string`
+
+#### Defined in
+
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:141
 
 ___
 
@@ -6207,7 +6287,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:123
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:144
 
 ___
 
@@ -6227,7 +6307,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:98
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:107
 
 ___
 
@@ -6237,7 +6317,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:76
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:79
 
 ___
 
@@ -6247,7 +6327,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:72
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:75
 
 ___
 
@@ -6257,7 +6337,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:95
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:104
 
 ___
 
@@ -6267,7 +6347,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:89
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:98
 
 ___
 
@@ -6277,7 +6357,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:111
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:129
 
 ___
 
@@ -6287,7 +6367,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:147
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:171
 
 ___
 
@@ -6297,7 +6377,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:136
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:157
 
 ___
 
@@ -6307,7 +6387,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:140
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:161
 
 ___
 
@@ -6317,7 +6397,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:105
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:123
 
 ___
 
@@ -6347,7 +6427,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:65
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:68
 
 ___
 
@@ -6357,7 +6437,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:68
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:71
 
 ___
 
@@ -6367,7 +6447,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:57
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:60
 
 ___
 
@@ -6377,7 +6457,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:61
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:64
 
 ___
 
@@ -6387,7 +6467,7 @@ ___
 
 #### Defined in
 
-wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:132
+wasm/lib/detailed/api/database_api/get_dynamic_global_properties.ts:153
 
 ___
 
@@ -10759,7 +10839,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:360
+wasm/lib/interfaces.ts:359
 
 ___
 
@@ -10814,7 +10894,7 @@ current transaction builder instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:369
+wasm/lib/interfaces.ts:368
 
 ___
 
@@ -10954,7 +11034,7 @@ Building article
 
 #### Defined in
 
-wasm/lib/interfaces.ts:392
+wasm/lib/interfaces.ts:391
 
 ___
 
@@ -11049,7 +11129,7 @@ Asset amount
 
 #### Defined in
 
-wasm/lib/interfaces.ts:438
+wasm/lib/interfaces.ts:437
 
 ___
 
@@ -11067,7 +11147,7 @@ Asset symbol
 
 #### Defined in
 
-wasm/lib/interfaces.ts:445
+wasm/lib/interfaces.ts:444
 
 
 <a name="interfacesihivechaininterfacemd"></a>
@@ -11092,7 +11172,7 @@ wasm/lib/interfaces.ts:445
 
 #### Defined in
 
-wasm/lib/interfaces.ts:451
+wasm/lib/interfaces.ts:450
 
 ___
 
@@ -11102,7 +11182,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:669
+wasm/lib/interfaces.ts:668
 
 ___
 
@@ -11116,7 +11196,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:452
 
 ___
 
@@ -11156,7 +11236,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:454
+wasm/lib/interfaces.ts:453
 
 ## Accessors
 
@@ -11174,7 +11254,7 @@ IWaxBaseInterface.TransactionBuilder
 
 #### Defined in
 
-wasm/lib/interfaces.ts:449
+wasm/lib/interfaces.ts:448
 
 ___
 
@@ -11190,7 +11270,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:631
+wasm/lib/interfaces.ts:630
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -11208,7 +11288,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:626
+wasm/lib/interfaces.ts:625
 
 ## Methods
 
@@ -11239,7 +11319,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:541
+wasm/lib/interfaces.ts:540
 
 ___
 
@@ -11264,7 +11344,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:657
+wasm/lib/interfaces.ts:656
 
 ___
 
@@ -11295,7 +11375,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:557
+wasm/lib/interfaces.ts:556
 
 ___
 
@@ -11320,7 +11400,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:667
+wasm/lib/interfaces.ts:666
 
 ___
 
@@ -11349,7 +11429,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:525
+wasm/lib/interfaces.ts:524
 
 ___
 
@@ -11369,7 +11449,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:562
+wasm/lib/interfaces.ts:561
 
 ___
 
@@ -11401,7 +11481,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:515
+wasm/lib/interfaces.ts:514
 
 ___
 
@@ -11428,7 +11508,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:621
+wasm/lib/interfaces.ts:620
 
 ___
 
@@ -11458,7 +11538,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:640
+wasm/lib/interfaces.ts:639
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -11478,7 +11558,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:647
+wasm/lib/interfaces.ts:646
 
 ___
 
@@ -11506,7 +11586,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:469
+wasm/lib/interfaces.ts:468
 
 ___
 
@@ -11539,7 +11619,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:502
+wasm/lib/interfaces.ts:501
 
 ___
 
@@ -11571,7 +11651,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:609
+wasm/lib/interfaces.ts:608
 
 ___
 
@@ -11593,7 +11673,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:461
+wasm/lib/interfaces.ts:460
 
 ___
 
@@ -11621,7 +11701,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:483
+wasm/lib/interfaces.ts:482
 
 ___
 
@@ -11649,7 +11729,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:476
+wasm/lib/interfaces.ts:475
 
 ___
 
@@ -11677,7 +11757,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:490
+wasm/lib/interfaces.ts:489
 
 
 <a name="interfacesimanabardatamd"></a>
@@ -12106,7 +12186,7 @@ ___
 
 ### startEncrypt
 
-▸ **startEncrypt**(`mainEncryptionKey`, `otherEncryptionKey?`, `nonce?`): [`IEncryptingTransactionBuilder`](#interfacesiencryptingtransactionbuildermd)
+▸ **startEncrypt**(`mainEncryptionKey`, `otherEncryptionKey?`): [`IEncryptingTransactionBuilder`](#interfacesiencryptingtransactionbuildermd)
 
 Starts encryption chain
 
@@ -12119,7 +12199,6 @@ you have to import those keys into the wallet passed to the [ITransactionBuilder
 | :------ | :------ | :------ |
 | `mainEncryptionKey` | `string` | First key to encrypt operations |
 | `otherEncryptionKey?` | `string` | Optional second key to encrypt operations |
-| `nonce?` | `number` | optional nonce to be explicitly specified for encryption |
 
 #### Returns
 
@@ -12129,7 +12208,7 @@ current transaction builder instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:293
+wasm/lib/interfaces.ts:292
 
 ___
 
@@ -12269,7 +12348,7 @@ Building article
 
 #### Defined in
 
-wasm/lib/interfaces.ts:316
+wasm/lib/interfaces.ts:315
 
 ___
 
@@ -12321,7 +12400,7 @@ Constructs a new Transaction Builder object with given data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:411
+wasm/lib/interfaces.ts:410
 
 • **new ITransactionBuilderConstructor**(`protoTransaction`): [`ITransactionBuilder`](#interfacesitransactionbuildermd)
 
@@ -12339,7 +12418,7 @@ Constructs a new Transaction Builder object with ready protobuf transaction
 
 #### Defined in
 
-wasm/lib/interfaces.ts:418
+wasm/lib/interfaces.ts:417
 
 ## Methods
 
@@ -12367,7 +12446,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:429
+wasm/lib/interfaces.ts:428
 
 
 <a name="interfacesiwaxbaseinterfacemd"></a>
@@ -12388,7 +12467,7 @@ wasm/lib/interfaces.ts:429
 
 #### Defined in
 
-wasm/lib/interfaces.ts:451
+wasm/lib/interfaces.ts:450
 
 ___
 
@@ -12398,7 +12477,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:453
+wasm/lib/interfaces.ts:452
 
 ___
 
@@ -12434,7 +12513,7 @@ formatter.waxify`Hello, ${"alice"}! My account value is ${naiObject}`
 
 #### Defined in
 
-wasm/lib/interfaces.ts:454
+wasm/lib/interfaces.ts:453
 
 ## Accessors
 
@@ -12448,7 +12527,7 @@ wasm/lib/interfaces.ts:454
 
 #### Defined in
 
-wasm/lib/interfaces.ts:449
+wasm/lib/interfaces.ts:448
 
 ## Methods
 
@@ -12475,7 +12554,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:541
+wasm/lib/interfaces.ts:540
 
 ___
 
@@ -12502,7 +12581,7 @@ Full regeneration timestamp (in seconds)
 
 #### Defined in
 
-wasm/lib/interfaces.ts:557
+wasm/lib/interfaces.ts:556
 
 ___
 
@@ -12527,7 +12606,7 @@ Decoded content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:525
+wasm/lib/interfaces.ts:524
 
 ___
 
@@ -12543,7 +12622,7 @@ Deletes the created wax proto_protocol instance
 
 #### Defined in
 
-wasm/lib/interfaces.ts:562
+wasm/lib/interfaces.ts:561
 
 ___
 
@@ -12571,7 +12650,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:515
+wasm/lib/interfaces.ts:514
 
 ___
 
@@ -12595,7 +12674,7 @@ asset data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:469
+wasm/lib/interfaces.ts:468
 
 ___
 
@@ -12624,7 +12703,7 @@ on any Wax API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:502
+wasm/lib/interfaces.ts:501
 
 ___
 
@@ -12642,7 +12721,7 @@ application version
 
 #### Defined in
 
-wasm/lib/interfaces.ts:461
+wasm/lib/interfaces.ts:460
 
 ___
 
@@ -12666,7 +12745,7 @@ HBD in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:483
+wasm/lib/interfaces.ts:482
 
 ___
 
@@ -12690,7 +12769,7 @@ HIVE in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:476
+wasm/lib/interfaces.ts:475
 
 ___
 
@@ -12714,7 +12793,7 @@ VESTS in nai form
 
 #### Defined in
 
-wasm/lib/interfaces.ts:490
+wasm/lib/interfaces.ts:489
 
 
 <a name="interfacesiwaxcustomformattermd"></a>

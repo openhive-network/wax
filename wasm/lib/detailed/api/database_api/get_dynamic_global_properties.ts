@@ -48,6 +48,9 @@ export class GetDynamicGlobalPropertiesResponse {
   @ValidateNested()
   public current_hbd_supply!: NaiAsset;
 
+  @IsNumber()
+  public current_remove_threshold!: number;
+
   @Type(() => NaiAsset)
   @ValidateNested()
   public confidential_hbd_supply!: NaiAsset;
@@ -84,6 +87,12 @@ export class GetDynamicGlobalPropertiesResponse {
   @IsNumber()
   public maximum_block_size!: number;
 
+  @Validate(IsNumberOrStringNumber)
+  public mid_voting_seconds!: number | string;
+
+  @IsNumber()
+  public min_recurrent_transfers_recurrence!: number;
+
   @IsNumber()
   @IsOptional()
   public required_actions_partition_percent?: number;
@@ -99,6 +108,15 @@ export class GetDynamicGlobalPropertiesResponse {
 
   @IsNumber()
   public last_irreversible_block_num!: number;
+
+  @IsNumber()
+  public max_consecutive_recurrent_transfer_failures!: number;
+
+  @IsNumber()
+  public max_open_recurrent_transfers!: number;
+
+  @IsNumber()
+  public max_recurrent_transfer_end_date!: number;
 
   @IsOptional()
   @IsNumber()
@@ -118,6 +136,9 @@ export class GetDynamicGlobalPropertiesResponse {
 
   @IsNumber()
   public hbd_start_percent!: number;
+
+  @IsDateString()
+  public next_daily_maintenance_time!: string;
 
   @IsDateString()
   public next_maintenance_time!: string;
@@ -141,6 +162,9 @@ export class GetDynamicGlobalPropertiesResponse {
 
   @IsNumber()
   public downvote_pool_percent!: number;
+
+  @Validate(IsNumberOrStringNumber)
+  public early_voting_seconds!: number | string;
 
   @Type(() => NaiAsset)
   @ValidateNested()
