@@ -564,31 +564,37 @@ export interface IWaxBaseInterface {
 /**
  * @internal
  */
-export type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
+type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
 
 export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly result: TRes; };
 
 /**
  * @internal
  */
-export type YourApiData<YourTypes> = {
-  [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; }
+type YourApiData<YourTypes> = {
+  readonly [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; }
     ? (params: ParamsType) => Promise<ResultType>
     : (YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; } ? (params: ParamsType) => Promise<ResultType> : never);
+} & {
+  /**
+   * New url to set per API. Pass `undefined` to reset for all instances specific to given API
+   */
+  set endpointUrl (newUrl: string | undefined);
+  /**
+   * Retrieves the url used for calls to the specified API
+   */
+  get endpointUrl (): string;
 };
 
-/**
- * @internal
- */
-export interface IHiveApi {
-  account_by_key_api: Readonly<ApiData<'account_by_key_api'>>;
-  block_api: Readonly<ApiData<'block_api'>>;
-  database_api: Readonly<ApiData<'database_api'>>;
-  network_broadcast_api: Readonly<ApiData<'network_broadcast_api'>>;
-  rc_api: Readonly<ApiData<'rc_api'>>;
-}
+export type TDefaultHiveApi = Readonly<{
+  account_by_key_api: ApiData<'account_by_key_api'>;
+  block_api: ApiData<'block_api'>;
+  database_api: ApiData<'database_api'>;
+  network_broadcast_api: ApiData<'network_broadcast_api'>;
+  rc_api: ApiData<'rc_api'>;
+}>;
 
-export type TWaxExtended<YourApi> = IHiveChainInterface & { api: IHiveApi & { [k in keyof YourApi]: Readonly<YourApiData<YourApi[k]>> } };
+export type TWaxExtended<YourApi> = IHiveChainInterface & { readonly api: TDefaultHiveApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
@@ -665,5 +671,5 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    */
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
 
-  readonly api: Readonly<IHiveApi>;
+  readonly api: TDefaultHiveApi;
 }

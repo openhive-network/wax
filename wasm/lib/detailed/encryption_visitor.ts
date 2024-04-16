@@ -24,7 +24,7 @@ export class EncryptionVisitor extends OperationVisitor {
     op.memo = this.cryptographicFunction(op.memo);
   }
 
-  private static CustomJsonEncryptionKey = "encrypted";
+  private static readonly CustomJsonEncryptionKey = "encrypted";
 
   public custom_json(op: custom_json): void {
     if(this.encryptionType === EEncryptionType.ENCRYPT)

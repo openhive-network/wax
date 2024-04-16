@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hive/beekeeper";
-import type { IHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
@@ -19,9 +19,11 @@ export enum EManabarType {
 }
 
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
-  public api!: IHiveApi;
+  public api!: TDefaultHiveApi;
 
-  private localTypes = HiveApiTypes;
+  private localTypes = {} as typeof HiveApiTypes;
+
+  private static readonly EndpointUrlKey = "endpointUrl";
 
   public constructor(
     public readonly wax: MainModule,
@@ -31,7 +33,29 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   ) {
     super(wax, chainId);
 
+    // Create a deep copy of the object to assert the immutability of the next instances of the object
+    for(const apiType in HiveApiTypes) {
+      this.localTypes[apiType] = {};
+      for(const endpoint in HiveApiTypes[apiType])
+        this.localTypes[apiType] = { ...HiveApiTypes[apiType][endpoint] };
+    }
+
     this.initializeApi();
+  }
+
+  private getEndpointUrlForApi(apiType: string): string {
+    return this.localTypes[apiType]?.[HiveChainApi.EndpointUrlKey] ?? this.apiEndpoint;
+  }
+  private setEndpointUrlForApi(apiType: string, newValue: string | undefined, found = false): boolean {
+    const api = this.localTypes[apiType];
+
+    if(this.originator !== null)
+      found ||= this.originator.setEndpointUrlForApi(apiType, newValue, found);
+
+    if(api === undefined)
+      return found;
+
+    return Boolean(api[HiveChainApi.EndpointUrlKey] = newValue ?? this.apiEndpoint);
   }
 
   private initializeApi(): void {
@@ -44,14 +68,23 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     const parseJSON = (response: Response) => response.json();
 
-    this.api = new Proxy({} as IHiveApi, {
+    this.api = new Proxy({} as TDefaultHiveApi, {
       get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
+          set: (_target: any, property: string, newValue: any, _receiver: any) => {
+            if(property === HiveChainApi.EndpointUrlKey)
+              return this.setEndpointUrlForApi(propertyParent, newValue);
+
+            return false;
+          },
           get: (_target: any, property: string, _receiver: any) => {
             /* // We want to let users extend wax with interfaces only and those are not compiled into JS objects, so this assertion is no longer suitable for us:
             if(typeof this.localTypes[propertyParent] !== 'object')
               throw new WaxError(`Api "${propertyParent}" has not been implemented yet or does not exist`);
             */
+
+            if(property === HiveChainApi.EndpointUrlKey)
+              return this.getEndpointUrlForApi(propertyParent);
 
             return async(params: object) => {
               const method = `${propertyParent}.${property}`;
@@ -67,7 +100,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               if(typeof this.localTypes[propertyParent]?.[property] === 'object')
                 await validateOrReject(isPlainObj(params) ? plainToInstance(this.localTypes[propertyParent][property].params, params) : params);
 
-              const data = await fetch(this.apiEndpoint, {
+              const data = await fetch(this.getEndpointUrlForApi(propertyParent), {
                 method: "POST",
                 body: JSON.stringify({
                   jsonrpc: "2.0",

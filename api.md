@@ -248,6 +248,16 @@ wasm/lib/detailed/custom_jsons/community.ts:4
 
 ___
 
+### TDefaultHiveApi
+
+Ƭ **TDefaultHiveApi**: `Readonly`\<\{ `account_by_key_api`: `ApiData`\<``"account_by_key_api"``\> ; `block_api`: `ApiData`\<``"block_api"``\> ; `database_api`: `ApiData`\<``"database_api"``\> ; `network_broadcast_api`: `ApiData`\<``"network_broadcast_api"``\> ; `rc_api`: `ApiData`\<``"rc_api"``\>  }\>
+
+#### Defined in
+
+wasm/lib/interfaces.ts:589
+
+___
+
 ### TFormatFunction
 
 Ƭ **TFormatFunction**\<`T`\>: (`args`: [`IFormatFunctionArguments`](#interfacesiformatfunctionargumentsmd)\<`T`\>) => `string` \| `any`
@@ -406,7 +416,7 @@ ___
 
 ### TWaxExtended
 
-Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: `IHiveApi` & \{ [k in keyof YourApi]: Readonly\<YourApiData\<YourApi[k]\>\> }  }
+Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: [`TDefaultHiveApi`](#tdefaulthiveapi) & \{ [k in keyof YourApi]: YourApiData\<YourApi[k]\> }  }
 
 #### Type parameters
 
@@ -416,7 +426,7 @@ ___
 
 #### Defined in
 
-wasm/lib/interfaces.ts:591
+wasm/lib/interfaces.ts:597
 
 ## Variables
 
@@ -11178,11 +11188,11 @@ ___
 
 ### api
 
-• `Readonly` **api**: `Readonly`\<`IHiveApi`\>
+• `Readonly` **api**: `Readonly`\<\{ `account_by_key_api`: `ApiData`\<``"account_by_key_api"``\> ; `block_api`: `ApiData`\<``"block_api"``\> ; `database_api`: `ApiData`\<``"database_api"``\> ; `network_broadcast_api`: `ApiData`\<``"network_broadcast_api"``\> ; `rc_api`: `ApiData`\<``"rc_api"``\>  }\>
 
 #### Defined in
 
-wasm/lib/interfaces.ts:668
+wasm/lib/interfaces.ts:674
 
 ___
 
@@ -11270,7 +11280,7 @@ Allows to query for endpoint url used to perform API calls.
 
 #### Defined in
 
-wasm/lib/interfaces.ts:630
+wasm/lib/interfaces.ts:636
 
 • `set` **endpointUrl**(`endpoint`): `void`
 
@@ -11288,7 +11298,7 @@ Allows to override default endpoint URL used to call RPC APIs initially configur
 
 #### Defined in
 
-wasm/lib/interfaces.ts:625
+wasm/lib/interfaces.ts:631
 
 ## Methods
 
@@ -11344,7 +11354,7 @@ Manabar data
 
 #### Defined in
 
-wasm/lib/interfaces.ts:656
+wasm/lib/interfaces.ts:662
 
 ___
 
@@ -11400,7 +11410,7 @@ Full regeneration time
 
 #### Defined in
 
-wasm/lib/interfaces.ts:666
+wasm/lib/interfaces.ts:672
 
 ___
 
@@ -11508,7 +11518,7 @@ Encrypted content
 
 #### Defined in
 
-wasm/lib/interfaces.ts:620
+wasm/lib/interfaces.ts:626
 
 ___
 
@@ -11538,7 +11548,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:639
+wasm/lib/interfaces.ts:645
 
 ▸ **extend**\<`YourApi`\>(): [`TWaxExtended`](#twaxextended)\<`YourApi`\>
 
@@ -11558,7 +11568,7 @@ Wax Hive chain instance containing extended api
 
 #### Defined in
 
-wasm/lib/interfaces.ts:646
+wasm/lib/interfaces.ts:652
 
 ___
 
@@ -11651,7 +11661,7 @@ on any Hive API-related error
 
 #### Defined in
 
-wasm/lib/interfaces.ts:608
+wasm/lib/interfaces.ts:614
 
 ___
 
