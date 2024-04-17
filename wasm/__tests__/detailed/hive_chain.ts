@@ -421,6 +421,15 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("https://best.honey.provider");
     });
 
+    test('Should be able to set custom endpointUrl property on database api', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        chain.api.database_api.endpointUrl = "https://best.honey.provider";
+        return chain.api.database_api.endpointUrl;
+      });
+
+      expect(retVal).toBe("https://best.honey.provider");
+    });
+
     test('Should be able to change endpointUrl property on both: extended and base chain objects', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         const customExtendedTypes = {};
@@ -428,6 +437,18 @@ test.describe('Wax object interface chain tests', () => {
 
         extendedHiveChain.endpointUrl = "https://best.honey.provider";
         return [chain.endpointUrl, extendedHiveChain.endpointUrl];
+      });
+
+      expect(retVal).toStrictEqual(["https://best.honey.provider", "https://best.honey.provider"]);
+    });
+
+    test('Should be able to set custom endpointUrl property on both: extended and base chain objects on database api', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        const customExtendedTypes = {};
+        const extendedHiveChain = chain.extend(customExtendedTypes);
+
+        extendedHiveChain.api.database_api.endpointUrl = "https://best.honey.provider";
+        return [chain.api.database_api.endpointUrl, extendedHiveChain.api.database_api.endpointUrl];
       });
 
       expect(retVal).toStrictEqual(["https://best.honey.provider", "https://best.honey.provider"]);
