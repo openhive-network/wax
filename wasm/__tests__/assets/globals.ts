@@ -1,7 +1,7 @@
 // We only want to import types here!
 import type { IBeekeeperInstance } from "@hive/beekeeper/web";
 import type Wax from "../../dist/bundle/web-full.js";
-import type { IWaxBaseInterface, IHiveChainInterface } from "../../dist/bundle/web-full.js";
+import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/web-full.js";
 import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.web.js";
 
 type TMainModuleFn = () => Promise<MainModule>;
@@ -23,10 +23,8 @@ export interface IWasmGlobals {
 declare global {
   function createWaxTestFor(env: TEnvType): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
+  var config: IWaxOptionsChain | undefined;
 }
-
-globalThis.apiEndpointUrl = '';
-globalThis.chainId = '';
 
 // Use function as we later extract the function name in the jest-helpers
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
@@ -41,19 +39,16 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   const bk = await beekeeper.default() as IBeekeeperInstance;
   const wx = await wax.createWaxFoundation();
 
-  let chain:IHiveChainInterface;
+  let chain: IHiveChainInterface;
 
-  if(globalThis.apiEndpointUrl !== '' && globalThis.chainId !== '')
-  {
-    console.log(`Using custom apiEndpointUrl: ${globalThis.apiEndpointUrl}`);
-    console.log(`Using custom chainId: ${globalThis.chainId}`);
-
-    chain = await wax.createHiveChain({apiEndpoint: globalThis.apiEndpointUrl, chainId: globalThis.chainId});
-  }
-  else
-  {
+  if(globalThis.config === undefined)
     chain = await wax.createHiveChain();
+  else {
+    chain = await wax.createHiveChain(globalThis.config);
+
+    console.log(`Using custom config: API endpoint: ${globalThis.config.apiEndpoint}, chain id: ${globalThis.config.chainId}`);
   }
+
 
   // Provide results
   return {

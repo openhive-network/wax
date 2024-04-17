@@ -26,31 +26,25 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
-  test('Should be able to use different options', async ({ waxTest, apiEndpointUrl, chainId }) => {
+  test('Should be able to use different options', async ({ waxTest, config }) => {
+    expect(config).toBeDefined;
+
     const retVal = await waxTest(async({ wax, chain }) => {
-      
-      console.log(`Passed custom apiEndpointUrl is: ${apiEndpointUrl}`);
-      console.log(`Passed custom chainId is: ${chainId}`);
-    
+      const myChain = await wax.createHiveChain(config);
+      const chainEndpointUrl = chain.endpointUrl;
 
-      const myChain = await wax.createHiveChain({apiEndpoint: apiEndpointUrl, chainId: chainId});
-
-      if(myChain.endpointUrl !== apiEndpointUrl) {
-        console.warn('Custom chain Endpoints are NOT matching !!!');
-      }
-
-      if(chain.endpointUrl !== apiEndpointUrl) {
-        console.warn('Standard chain Endpoints are NOT matching !!!');
-      }
+      const myChainEndpointUrl = myChain.endpointUrl;
 
       return {
-        effective_endpointUrl: myChain.endpointUrl,
-        effective_chainId: chainId
+        myChainEndpointUrl,
+        chainEndpointUrl
       };
     });
 
-    expect(retVal.effective_endpointUrl).toEqual('http://use.me.now');
-    expect(retVal.effective_chainId).toEqual('42');
+    expect(retVal.myChainEndpointUrl).toBe('http://use.me.now');
+    expect(config!.chainId).toBe('42');
+    expect(retVal.myChainEndpointUrl).toBe(config!.apiEndpoint);
+    expect(retVal.chainEndpointUrl).toBe(config!.apiEndpoint);
    });
 
    test.afterAll(async () => {

@@ -18,8 +18,10 @@ export default defineConfig<IWaxedTest>({
       testMatch: "hive_chain_custom_opts*",
       use:
       {
-        apiEndpointUrl: "http://use.me.now",
-        chainId: "42"
+        config: {
+          apiEndpoint: "http://use.me.now",
+          chainId: "42"
+        }
       }
     }
 
