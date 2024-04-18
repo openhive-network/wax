@@ -416,7 +416,7 @@ ___
 
 ### TWaxExtended
 
-Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: [`TDefaultHiveApi`](#tdefaulthiveapi) & \{ [k in keyof YourApi]: YourApiData\<YourApi[k]\> }  }
+Ƭ **TWaxExtended**\<`YourApi`\>: [`IHiveChainInterface`](#interfacesihivechaininterfacemd) & \{ `api`: [`TDefaultHiveApi`](#tdefaulthiveapi) & \{ readonly [k in keyof YourApi]: YourApiData\<YourApi[k]\> }  }
 
 #### Type parameters
 

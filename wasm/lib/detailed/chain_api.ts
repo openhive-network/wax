@@ -116,17 +116,13 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
               let result = data.result;
 
-              if(typeof this.localTypes[propertyParent]?.[property] === 'object') {
-                if(typeof data.result !== 'object')
+              if(typeof this.localTypes[propertyParent]?.[property] === 'object' && !Array.isArray(result)) {
+                if(typeof result !== 'object')
                   throw new WaxChainApiError('No result found in the Hive API response', data);
 
-                result = plainToInstance(this.localTypes[propertyParent][property].result, data.result) as object;
+                result = plainToInstance(this.localTypes[propertyParent][property].result, result) as object;
 
-                if(Array.isArray(result))
-                  for(const node of result)
-                    await validateOrReject(node);
-                else
-                  await validateOrReject(result);
+                await validateOrReject(result);
               }
 
               return result;
