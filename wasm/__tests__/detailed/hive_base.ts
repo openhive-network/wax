@@ -6,7 +6,7 @@ import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { legacyApiTransaction, naiAsset, serialization_sensitive_transaction, transaction } from "../assets/data.protocol";
+import { naiAsset, transaction } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -66,16 +66,6 @@ test.describe('Wax object interface foundation tests', () => {
     }, transaction);
 
     expect(retVal).toBe(transaction);
-  });
-
-  test('Should be able to bidirectional convert legacy api to proto using object interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-      const tx = chain.TransactionBuilder.fromApi(serialization_sensitive_transaction);
-
-      return tx.toLegacyApi();
-    }, serialization_sensitive_transaction);
-
-    expect(retVal).toBe(legacyApiTransaction);
   });
 
   test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {

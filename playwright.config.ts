@@ -19,8 +19,8 @@ export default defineConfig<IWaxedTest>({
       use:
       {
         config: {
-          apiEndpoint: "http://use.me.now",
-          chainId: "42"
+          apiEndpoint: "https://api.hive.blog/",
+          chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
     }
