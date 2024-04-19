@@ -27,7 +27,12 @@ export default defineConfig<IWaxedTest>({
     {
       name: "wax_regression_tests",
       testDir: ".wasm/dist",
-      testMatch: "regression_hive_operations*",
+      testMatch: "regression_hive_operations*"
+    },
+    {
+      name: "wax_testsuite_protocol_benchmarks",
+      testDir: "./wasm/dist",
+      testMatch: "protocol_benchmarks*"
     }
   ],
   // Run your local dev server before starting the tests

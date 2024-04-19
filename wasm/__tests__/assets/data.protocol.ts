@@ -464,3 +464,58 @@ export const customCommunityJsonsTransaction = {
     }
   ]
 };
+
+export const specificBenchmarkTransaction = {
+  transfer: {
+    from_account: "oneplus7",
+    to_account: "kryptogames",
+    amount: naiAsset,
+    memo: "Roll under 50 4d434bd943616"
+  },
+  vote: {
+    voter: "otom",
+    author: "c0ff33a",
+    permlink: "ewxhnjbj",
+    weight: 2200
+  },
+  custom_json: {
+    required_auths: [],
+    required_posting_auths: [
+      "initminer"
+    ],
+    id: "follow",
+    json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
+  },
+  account_witness_vote: {
+    account: "initminer",
+    witness: "initminer",
+    approve: true
+  },
+  feed_publish: {
+    publisher: "gtg",
+    exchange_rate: {
+      base: { nai: "@@000000013", amount: "337", precision: 3 },
+      quote: { nai: "@@000000013", amount: "1", precision: 3 }
+    }
+  },
+  claim_account: {
+    fee: { nai: "@@000000021", amount: "0", precision: 3 },
+    creator: "gtg",
+    extensions: []
+  },
+  claim_reward_balance: {
+    account: "gtg",
+    reward_hbd: { nai: "@@000000013", amount: "0", precision: 3 },
+    reward_hive: { nai: "@@000000021", amount: "0", precision: 3 },
+    reward_vests: { nai: "@@000000037", amount: "524461404202", precision: 6 }
+  },
+  comment: {
+    body: "`aria2c` looks interesting. `lftp` is great about not redownloading files that haven't been modified so once that fat 1.8TB download is done, no need to send that through the pipes anymore, just the incremental stuff.",
+    title: "",
+    author: "rishi556",
+    permlink: "re-gtg-scddr6",
+    json_metadata: "{\"tags\":[\"hive-139531\"],\"app\":\"peakd/2024.4.3\"}",
+    parent_author: "gtg",
+    parent_permlink: "scdbbz"
+  }
+};

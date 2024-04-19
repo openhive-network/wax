@@ -13,6 +13,7 @@
     "build:test": "tsc --project wasm/configs/tsconfig.tests.json",
     "pretest": "playwright install chromium",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite --project=wax_testsuite_custom_chain_options --project=wax_regression_tests",
+    "benchmark": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "cd examples/ts && pnpm install --frozen-lockfile && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
     "postpack": "mv _README.md README.md"

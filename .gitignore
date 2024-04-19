@@ -27,6 +27,7 @@ eggs/
 .eggs/
 lib/
 !wasm/lib
+benchmark-data
 lib64/
 parts/
 sdist/
