@@ -612,7 +612,7 @@ type YourApiData<YourTypes> = {
     : (YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; } ? (params: ParamsType) => Promise<ResultType> : never);
 } & {
   /**
-   * New url to set per API. Pass `undefined` to reset for all instances specific to given API
+   * New url to set per API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.apiEndpoint})
    */
   set endpointUrl (newUrl: string | undefined);
   /**

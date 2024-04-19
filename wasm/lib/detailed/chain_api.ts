@@ -9,6 +9,7 @@ import { validateOrReject } from "class-validator";
 import { WaxError, WaxChainApiError } from "../errors.js";
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
+import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
 
 import Long from "long";
 
@@ -18,8 +19,18 @@ export enum EManabarType {
   RC = 2
 }
 
+type TRequestInterceptor = (data: IRequestOptions) => IRequestOptions;
+type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetailedResponseData<any>;
+
+export type TChainCaller = ((params: object) => Promise<any>) & {
+  apiType: string;
+  withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
+};
+
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: TDefaultHiveApi;
+
+  private readonly requestHelper = new RequestHelper();
 
   private localTypes = {} as typeof HiveApiTypes;
 
@@ -43,6 +54,17 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     this.initializeApi();
   }
 
+  private requestInterceptor: (data: IRequestOptions) => IRequestOptions = (data: IRequestOptions) => data;
+  private responseInterceptor: (data: IDetailedResponseData<any>) => IDetailedResponseData<any> = (data: IDetailedResponseData<any>) => data;
+
+  public withProxy(requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor): HiveChainApi {
+    const newInstance = this.extend();
+    newInstance.requestInterceptor = requestInterceptor;
+    newInstance.responseInterceptor = responseInterceptor;
+
+    return newInstance;
+  }
+
   private getEndpointUrlForApi(apiType: string): string {
     return this.localTypes[apiType]?.[HiveChainApi.EndpointUrlKey] ?? this.apiEndpoint;
   }
@@ -59,15 +81,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private initializeApi(): void {
-    const checkStatus = (response: Response) => {
-      if(response.status >= 200 && response.status < 300)
-        return response;
-
-      throw new WaxChainApiError(response.statusText, response );
-    };
-
-    const parseJSON = (response: Response) => response.json();
-
     this.api = new Proxy({} as TDefaultHiveApi, {
       get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
@@ -77,7 +90,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
             return false;
           },
-          get: (_target: any, property: string, _receiver: any) => {
+          get: (_target: any, property: string, _receiver: any): TChainCaller | string => {
             /* // We want to let users extend wax with interfaces only and those are not compiled into JS objects, so this assertion is no longer suitable for us:
             if(typeof this.localTypes[propertyParent] !== 'object')
               throw new WaxError(`Api "${propertyParent}" has not been implemented yet or does not exist`);
@@ -86,7 +99,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
             if(property === HiveChainApi.EndpointUrlKey)
               return this.getEndpointUrlForApi(propertyParent);
 
-            return async(params: object) => {
+            const performCall = async(params: object, requestInterceptor: TRequestInterceptor = this.requestInterceptor, responseInterceptor: TResponseInterceptor = this.responseInterceptor): Promise<any> => {
               const method = `${propertyParent}.${property}`;
 
               /* // We want to let users extend wax with interfaces only and those are not compiled into JS objects, so this assertion is no longer suitable for us:
@@ -100,21 +113,22 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               if(typeof this.localTypes[propertyParent]?.[property] === 'object')
                 await validateOrReject(isPlainObj(params) ? plainToInstance(this.localTypes[propertyParent][property].params, params) : params);
 
-              const data = await fetch(this.getEndpointUrlForApi(propertyParent), {
-                method: "POST",
-                body: JSON.stringify({
+              const data = responseInterceptor(await this.requestHelper.request<{ error?: object; result?: object; }>(requestInterceptor({
+                method: 'POST',
+                responseType: 'json',
+                url: this.getEndpointUrlForApi(propertyParent),
+                data: JSON.stringify({
                   jsonrpc: "2.0",
                   method,
                   params,
                   id: 1
                 })
-              }).then(checkStatus)
-                .then(parseJSON);
+              }))) as IDetailedResponseData<{ error?: object | undefined; result: object; }>;
 
-              if(typeof data.error === 'object')
-                throw new WaxChainApiError('Error sending request to the Hive API', data.error);
+              if(typeof data.response.error === 'object')
+                throw new WaxChainApiError('Error sending request to the Hive API', data.response.error);
 
-              let result = data.result;
+              let result = data.response.result;
 
               if(typeof this.localTypes[propertyParent]?.[property] === 'object' && !Array.isArray(result)) {
                 if(typeof result !== 'object')
@@ -127,6 +141,13 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
               return result;
             };
+
+            const caller: TChainCaller = function(params: object) { return performCall(params); };
+            Object.defineProperty(caller, "name", { value: property }); // Dynamically set function name to the property we are calling
+            caller.apiType = propertyParent;
+            caller.withProxy = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => performCall(params, requestInterceptor, responseInterceptor);
+
+            return caller;
           }
         });
       }
@@ -144,7 +165,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return this.apiEndpoint;
   }
 
-  public extend<YourApi>(extendedHiveApiData?: YourApi): TWaxExtended<YourApi> {
+  public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this);
 
     if(typeof extendedHiveApiData === "object")
@@ -154,7 +175,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
           ...extendedHiveApiData[methodName]
         };
 
-    return newApi as unknown as TWaxExtended<YourApi>;
+    return newApi as unknown as HiveChainApi & TWaxExtended<YourApi>;
   }
 
   public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {

@@ -37,6 +37,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
+    "@types/events": "^3.0.3",
     "@types/node": "^20.10.6",
     "concat-md": "^0.5.1",
     "http-server": "^14.1.1",
@@ -56,6 +57,7 @@
     "@hiveio/beekeeper": "1.27.5-rc7-stable.240530185524",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "events": "^3.3.0",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5",
     "reflect-metadata": "^0.1.13"
