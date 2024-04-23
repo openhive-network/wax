@@ -63,10 +63,10 @@ export const change_recovery_account = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.account_to_recover !== "") {
+        if (message.account_to_recover !== undefined) {
             obj.account_to_recover = message.account_to_recover;
         }
-        if (message.new_recovery_account !== "") {
+        if (message.new_recovery_account !== undefined) {
             obj.new_recovery_account = message.new_recovery_account;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {

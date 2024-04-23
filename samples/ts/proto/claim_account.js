@@ -64,7 +64,7 @@ export const claim_account = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
         if (message.fee !== undefined) {

@@ -50,7 +50,7 @@ export const liquidity_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
         if (message.payout !== undefined) {

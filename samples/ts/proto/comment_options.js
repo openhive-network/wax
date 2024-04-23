@@ -50,10 +50,10 @@ export const beneficiary_route_type = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.weight !== 0) {
+        if (message.weight !== undefined) {
             obj.weight = Math.round(message.weight);
         }
         return obj;
@@ -291,22 +291,22 @@ export const comment_options = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         if (message.max_accepted_payout !== undefined) {
             obj.max_accepted_payout = asset.toJSON(message.max_accepted_payout);
         }
-        if (message.percent_hbd !== 0) {
+        if (message.percent_hbd !== undefined) {
             obj.percent_hbd = Math.round(message.percent_hbd);
         }
-        if (message.allow_votes === true) {
+        if (message.allow_votes !== undefined) {
             obj.allow_votes = message.allow_votes;
         }
-        if (message.allow_curation_rewards === true) {
+        if (message.allow_curation_rewards !== undefined) {
             obj.allow_curation_rewards = message.allow_curation_rewards;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {

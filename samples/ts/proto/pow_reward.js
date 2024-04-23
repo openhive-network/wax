@@ -50,7 +50,7 @@ export const pow_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.worker !== "") {
+        if (message.worker !== undefined) {
             obj.worker = message.worker;
         }
         if (message.reward !== undefined) {

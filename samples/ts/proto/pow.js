@@ -71,16 +71,16 @@ export const pow_work = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.worker !== "") {
+        if (message.worker !== undefined) {
             obj.worker = message.worker;
         }
-        if (message.input !== "") {
+        if (message.input !== undefined) {
             obj.input = message.input;
         }
-        if (message.signature !== "") {
+        if (message.signature !== undefined) {
             obj.signature = message.signature;
         }
-        if (message.work !== "") {
+        if (message.work !== undefined) {
             obj.work = message.work;
         }
         return obj;
@@ -176,13 +176,13 @@ export const pow = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.worker_account !== "") {
+        if (message.worker_account !== undefined) {
             obj.worker_account = message.worker_account;
         }
-        if (message.block_id !== "") {
+        if (message.block_id !== undefined) {
             obj.block_id = message.block_id;
         }
-        if (message.nonce !== "0") {
+        if (message.nonce !== undefined) {
             obj.nonce = message.nonce;
         }
         if (message.work !== undefined) {

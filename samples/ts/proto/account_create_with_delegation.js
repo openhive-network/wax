@@ -152,10 +152,10 @@ export const account_create_with_delegation = {
         if (message.delegation !== undefined) {
             obj.delegation = asset.toJSON(message.delegation);
         }
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
-        if (message.new_account_name !== "") {
+        if (message.new_account_name !== undefined) {
             obj.new_account_name = message.new_account_name;
         }
         if (message.owner !== undefined) {
@@ -167,10 +167,10 @@ export const account_create_with_delegation = {
         if (message.posting !== undefined) {
             obj.posting = authority.toJSON(message.posting);
         }
-        if (message.memo_key !== "") {
+        if (message.memo_key !== undefined) {
             obj.memo_key = message.memo_key;
         }
-        if (message.json_metadata !== "") {
+        if (message.json_metadata !== undefined) {
             obj.json_metadata = message.json_metadata;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {

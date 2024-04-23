@@ -49,10 +49,10 @@ export const delete_comment = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         return obj;

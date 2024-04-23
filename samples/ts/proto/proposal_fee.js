@@ -70,13 +70,13 @@ export const proposal_fee = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
-        if (message.treasury !== "") {
+        if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
-        if (message.proposal_id !== 0) {
+        if (message.proposal_id !== undefined) {
             obj.proposal_id = Math.round(message.proposal_id);
         }
         if (message.fee !== undefined) {

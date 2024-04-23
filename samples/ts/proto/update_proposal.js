@@ -40,7 +40,7 @@ export const update_proposal_end_date = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.end_date !== "") {
+        if (message.end_date !== undefined) {
             obj.end_date = message.end_date;
         }
         return obj;
@@ -219,19 +219,19 @@ export const update_proposal = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.proposal_id !== "0") {
+        if (message.proposal_id !== undefined) {
             obj.proposal_id = message.proposal_id;
         }
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
         if (message.daily_pay !== undefined) {
             obj.daily_pay = asset.toJSON(message.daily_pay);
         }
-        if (message.subject !== "") {
+        if (message.subject !== undefined) {
             obj.subject = message.subject;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {

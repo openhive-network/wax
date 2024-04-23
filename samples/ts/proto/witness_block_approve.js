@@ -49,10 +49,10 @@ export const witness_block_approve = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.witness !== "") {
+        if (message.witness !== undefined) {
             obj.witness = message.witness;
         }
-        if (message.block_id !== "") {
+        if (message.block_id !== undefined) {
             obj.block_id = message.block_id;
         }
         return obj;

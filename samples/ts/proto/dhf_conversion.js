@@ -60,7 +60,7 @@ export const dhf_conversion = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.treasury !== "") {
+        if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
         if (message.hive_amount_in !== undefined) {

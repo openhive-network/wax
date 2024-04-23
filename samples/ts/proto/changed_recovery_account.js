@@ -59,13 +59,13 @@ export const changed_recovery_account = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.old_recovery_account !== "") {
+        if (message.old_recovery_account !== undefined) {
             obj.old_recovery_account = message.old_recovery_account;
         }
-        if (message.new_recovery_account !== "") {
+        if (message.new_recovery_account !== undefined) {
             obj.new_recovery_account = message.new_recovery_account;
         }
         return obj;

@@ -49,10 +49,10 @@ export const limit_order_cancel = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.orderid !== 0) {
+        if (message.orderid !== undefined) {
             obj.orderid = Math.round(message.orderid);
         }
         return obj;

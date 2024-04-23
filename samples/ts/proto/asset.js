@@ -59,13 +59,13 @@ export const asset = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.amount !== "") {
+        if (message.amount !== undefined) {
             obj.amount = message.amount;
         }
-        if (message.precision !== 0) {
+        if (message.precision !== undefined) {
             obj.precision = Math.round(message.precision);
         }
-        if (message.nai !== "") {
+        if (message.nai !== undefined) {
             obj.nai = message.nai;
         }
         return obj;

@@ -39,7 +39,7 @@ export const recurrent_transfer_pair_id = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.pair_id !== 0) {
+        if (message.pair_id !== undefined) {
             obj.pair_id = Math.round(message.pair_id);
         }
         return obj;
@@ -236,22 +236,22 @@ export const recurrent_transfer = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
         }
-        if (message.memo !== "") {
+        if (message.memo !== undefined) {
             obj.memo = message.memo;
         }
-        if (message.recurrence !== 0) {
+        if (message.recurrence !== undefined) {
             obj.recurrence = Math.round(message.recurrence);
         }
-        if (message.executions !== 0) {
+        if (message.executions !== undefined) {
             obj.executions = Math.round(message.executions);
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {

@@ -110,10 +110,10 @@ export const author_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         if (message.hbd_payout !== undefined) {
@@ -128,7 +128,7 @@ export const author_reward = {
         if (message.curators_vesting_payout !== undefined) {
             obj.curators_vesting_payout = asset.toJSON(message.curators_vesting_payout);
         }
-        if (message.payout_must_be_claimed === true) {
+        if (message.payout_must_be_claimed !== undefined) {
             obj.payout_must_be_claimed = message.payout_must_be_claimed;
         }
         return obj;

@@ -49,10 +49,10 @@ export const proxy_cleared = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.proxy !== "") {
+        if (message.proxy !== undefined) {
             obj.proxy = message.proxy;
         }
         return obj;

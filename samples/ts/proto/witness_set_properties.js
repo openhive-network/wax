@@ -71,7 +71,7 @@ export const witness_set_properties = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
         if (message.props) {
@@ -150,10 +150,10 @@ export const witness_set_properties_PropsEntry = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.key !== "") {
+        if (message.key !== undefined) {
             obj.key = message.key;
         }
-        if (message.value !== "") {
+        if (message.value !== undefined) {
             obj.value = message.value;
         }
         return obj;

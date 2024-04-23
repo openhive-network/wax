@@ -37,7 +37,7 @@ export const expired_account_notification = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
         return obj;

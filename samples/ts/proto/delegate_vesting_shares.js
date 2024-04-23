@@ -60,10 +60,10 @@ export const delegate_vesting_shares = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.delegator !== "") {
+        if (message.delegator !== undefined) {
             obj.delegator = message.delegator;
         }
-        if (message.delegatee !== "") {
+        if (message.delegatee !== undefined) {
             obj.delegatee = message.delegatee;
         }
         if (message.vesting_shares !== undefined) {

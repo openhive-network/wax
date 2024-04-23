@@ -61,13 +61,13 @@ export const pow2_input = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.worker_account !== "") {
+        if (message.worker_account !== undefined) {
             obj.worker_account = message.worker_account;
         }
-        if (message.prev_block !== "") {
+        if (message.prev_block !== undefined) {
             obj.prev_block = message.prev_block;
         }
-        if (message.nonce !== "0") {
+        if (message.nonce !== undefined) {
             obj.nonce = message.nonce;
         }
         return obj;
@@ -135,7 +135,7 @@ export const pow2_pow = {
         if (message.input !== undefined) {
             obj.input = pow2_input.toJSON(message.input);
         }
-        if (message.pow_summary !== 0) {
+        if (message.pow_summary !== undefined) {
             obj.pow_summary = Math.round(message.pow_summary);
         }
         return obj;
@@ -231,13 +231,13 @@ export const equihash_proof = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.n !== 0) {
+        if (message.n !== undefined) {
             obj.n = Math.round(message.n);
         }
-        if (message.k !== 0) {
+        if (message.k !== undefined) {
             obj.k = Math.round(message.k);
         }
-        if (message.seed !== "") {
+        if (message.seed !== undefined) {
             obj.seed = message.seed;
         }
         if ((_a = message.inputs) === null || _a === void 0 ? void 0 : _a.length) {
@@ -332,10 +332,10 @@ export const equihash_pow = {
         if (message.proof !== undefined) {
             obj.proof = equihash_proof.toJSON(message.proof);
         }
-        if (message.prev_block !== "") {
+        if (message.prev_block !== undefined) {
             obj.prev_block = message.prev_block;
         }
-        if (message.pow_summary !== 0) {
+        if (message.pow_summary !== undefined) {
             obj.pow_summary = Math.round(message.pow_summary);
         }
         return obj;
@@ -486,7 +486,7 @@ export const pow2 = {
         if (message.work !== undefined) {
             obj.work = pow2_work.toJSON(message.work);
         }
-        if (message.new_owner_key !== "") {
+        if (message.new_owner_key !== undefined) {
             obj.new_owner_key = message.new_owner_key;
         }
         if (message.props !== undefined) {

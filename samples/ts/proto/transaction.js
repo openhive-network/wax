@@ -94,13 +94,13 @@ export const transaction = {
     toJSON(message) {
         var _a, _b, _c;
         const obj = {};
-        if (message.ref_block_num !== 0) {
+        if (message.ref_block_num !== undefined) {
             obj.ref_block_num = Math.round(message.ref_block_num);
         }
-        if (message.ref_block_prefix !== 0) {
+        if (message.ref_block_prefix !== undefined) {
             obj.ref_block_prefix = Math.round(message.ref_block_prefix);
         }
-        if (message.expiration !== "") {
+        if (message.expiration !== undefined) {
             obj.expiration = message.expiration;
         }
         if ((_a = message.operations) === null || _a === void 0 ? void 0 : _a.length) {

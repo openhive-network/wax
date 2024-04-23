@@ -69,16 +69,16 @@ export const vote = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.voter !== "") {
+        if (message.voter !== undefined) {
             obj.voter = message.voter;
         }
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if (message.weight !== 0) {
+        if (message.weight !== undefined) {
             obj.weight = Math.round(message.weight);
         }
         return obj;

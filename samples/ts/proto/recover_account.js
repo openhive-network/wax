@@ -78,7 +78,7 @@ export const recover_account = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.account_to_recover !== "") {
+        if (message.account_to_recover !== undefined) {
             obj.account_to_recover = message.account_to_recover;
         }
         if (message.new_owner_authority !== undefined) {

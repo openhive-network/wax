@@ -76,10 +76,10 @@ export const request_account_recovery = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.recovery_account !== "") {
+        if (message.recovery_account !== undefined) {
             obj.recovery_account = message.recovery_account;
         }
-        if (message.account_to_recover !== "") {
+        if (message.account_to_recover !== undefined) {
             obj.account_to_recover = message.account_to_recover;
         }
         if (message.new_owner_authority !== undefined) {

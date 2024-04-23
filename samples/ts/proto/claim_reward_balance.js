@@ -70,7 +70,7 @@ export const claim_reward_balance = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
         if (message.reward_hive !== undefined) {

@@ -49,10 +49,10 @@ export const cancel_transfer_from_savings = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.request_id !== 0) {
+        if (message.request_id !== undefined) {
             obj.request_id = Math.round(message.request_id);
         }
         return obj;

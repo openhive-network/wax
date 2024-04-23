@@ -37,7 +37,7 @@ export const hardfork = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.hardfork_id !== 0) {
+        if (message.hardfork_id !== undefined) {
             obj.hardfork_id = Math.round(message.hardfork_id);
         }
         return obj;

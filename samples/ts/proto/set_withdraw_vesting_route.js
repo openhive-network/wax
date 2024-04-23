@@ -69,16 +69,16 @@ export const set_withdraw_vesting_route = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from_account = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to_account = message.to_account;
         }
-        if (message.percent !== 0) {
+        if (message.percent !== undefined) {
             obj.percent = Math.round(message.percent);
         }
-        if (message.auto_vest === true) {
+        if (message.auto_vest !== undefined) {
             obj.auto_vest = message.auto_vest;
         }
         return obj;

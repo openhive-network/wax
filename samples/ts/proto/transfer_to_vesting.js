@@ -60,10 +60,10 @@ export const transfer_to_vesting = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
         if (message.amount !== undefined) {

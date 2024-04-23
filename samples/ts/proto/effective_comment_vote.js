@@ -109,22 +109,22 @@ export const effective_comment_vote = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.voter !== "") {
+        if (message.voter !== undefined) {
             obj.voter = message.voter;
         }
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if (message.weight !== "0") {
+        if (message.weight !== undefined) {
             obj.weight = message.weight;
         }
-        if (message.rshares !== "0") {
+        if (message.rshares !== undefined) {
             obj.rshares = message.rshares;
         }
-        if (message.total_vote_weight !== "0") {
+        if (message.total_vote_weight !== undefined) {
             obj.total_vote_weight = message.total_vote_weight;
         }
         if (message.pending_payout !== undefined) {

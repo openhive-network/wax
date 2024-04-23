@@ -50,7 +50,7 @@ export const dhf_funding = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.treasury !== "") {
+        if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
         if (message.additional_funds !== undefined) {

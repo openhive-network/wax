@@ -80,19 +80,19 @@ export const curation_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.curator !== "") {
+        if (message.curator !== undefined) {
             obj.curator = message.curator;
         }
         if (message.reward !== undefined) {
             obj.reward = asset.toJSON(message.reward);
         }
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if (message.payout_must_be_claimed === true) {
+        if (message.payout_must_be_claimed !== undefined) {
             obj.payout_must_be_claimed = message.payout_must_be_claimed;
         }
         return obj;

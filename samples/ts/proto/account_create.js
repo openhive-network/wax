@@ -123,10 +123,10 @@ export const account_create = {
         if (message.fee !== undefined) {
             obj.fee = asset.toJSON(message.fee);
         }
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
-        if (message.new_account_name !== "") {
+        if (message.new_account_name !== undefined) {
             obj.new_account_name = message.new_account_name;
         }
         if (message.owner !== undefined) {
@@ -138,10 +138,10 @@ export const account_create = {
         if (message.posting !== undefined) {
             obj.posting = authority.toJSON(message.posting);
         }
-        if (message.memo_key !== "") {
+        if (message.memo_key !== undefined) {
             obj.memo_key = message.memo_key;
         }
-        if (message.json_metadata !== "") {
+        if (message.json_metadata !== undefined) {
             obj.json_metadata = message.json_metadata;
         }
         return obj;

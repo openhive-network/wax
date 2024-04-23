@@ -60,10 +60,10 @@ export const limit_order_cancelled = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.seller !== "") {
+        if (message.seller !== undefined) {
             obj.seller = message.seller;
         }
-        if (message.orderid !== 0) {
+        if (message.orderid !== undefined) {
             obj.orderid = Math.round(message.orderid);
         }
         if (message.amount_back !== undefined) {

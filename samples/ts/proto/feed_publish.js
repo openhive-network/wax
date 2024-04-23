@@ -50,7 +50,7 @@ export const feed_publish = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.publisher !== "") {
+        if (message.publisher !== undefined) {
             obj.publisher = message.publisher;
         }
         if (message.exchange_rate !== undefined) {

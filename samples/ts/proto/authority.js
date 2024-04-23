@@ -75,7 +75,7 @@ export const authority = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.weight_threshold !== 0) {
+        if (message.weight_threshold !== undefined) {
             obj.weight_threshold = Math.round(message.weight_threshold);
         }
         if (message.account_auths) {
@@ -165,10 +165,10 @@ export const authority_AccountAuthsEntry = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.key !== "") {
+        if (message.key !== undefined) {
             obj.key = message.key;
         }
-        if (message.value !== 0) {
+        if (message.value !== undefined) {
             obj.value = Math.round(message.value);
         }
         return obj;
@@ -229,10 +229,10 @@ export const authority_KeyAuthsEntry = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.key !== "") {
+        if (message.key !== undefined) {
             obj.key = message.key;
         }
-        if (message.value !== 0) {
+        if (message.value !== undefined) {
             obj.value = Math.round(message.value);
         }
         return obj;

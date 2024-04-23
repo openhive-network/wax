@@ -50,7 +50,7 @@ export const producer_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.producer !== "") {
+        if (message.producer !== undefined) {
             obj.producer = message.producer;
         }
         if (message.vesting_shares !== undefined) {

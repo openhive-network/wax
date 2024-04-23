@@ -60,10 +60,10 @@ export const collateralized_convert_immediate_conversion = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.requestid !== 0) {
+        if (message.requestid !== undefined) {
             obj.requestid = Math.round(message.requestid);
         }
         if (message.hbd_out !== undefined) {

@@ -83,13 +83,13 @@ export const update_proposal_votes = {
     toJSON(message) {
         var _a, _b;
         const obj = {};
-        if (message.voter !== "") {
+        if (message.voter !== undefined) {
             obj.voter = message.voter;
         }
         if ((_a = message.proposal_ids) === null || _a === void 0 ? void 0 : _a.length) {
             obj.proposal_ids = message.proposal_ids;
         }
-        if (message.approve === true) {
+        if (message.approve !== undefined) {
             obj.approve = message.approve;
         }
         if ((_b = message.extensions) === null || _b === void 0 ? void 0 : _b.length) {

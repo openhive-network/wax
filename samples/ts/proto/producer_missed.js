@@ -37,7 +37,7 @@ export const producer_missed = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.producer !== "") {
+        if (message.producer !== undefined) {
             obj.producer = message.producer;
         }
         return obj;

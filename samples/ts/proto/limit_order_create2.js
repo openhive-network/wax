@@ -98,22 +98,22 @@ export const limit_order_create2 = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.orderid !== 0) {
+        if (message.orderid !== undefined) {
             obj.orderid = Math.round(message.orderid);
         }
         if (message.amount_to_sell !== undefined) {
             obj.amount_to_sell = asset.toJSON(message.amount_to_sell);
         }
-        if (message.fill_or_kill === true) {
+        if (message.fill_or_kill !== undefined) {
             obj.fill_or_kill = message.fill_or_kill;
         }
         if (message.exchange_rate !== undefined) {
             obj.exchange_rate = price.toJSON(message.exchange_rate);
         }
-        if (message.expiration !== "") {
+        if (message.expiration !== undefined) {
             obj.expiration = message.expiration;
         }
         return obj;

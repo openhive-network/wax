@@ -78,10 +78,10 @@ export const custom_json = {
         if ((_b = message.required_posting_auths) === null || _b === void 0 ? void 0 : _b.length) {
             obj.required_posting_auths = message.required_posting_auths;
         }
-        if (message.id !== "") {
+        if (message.id !== undefined) {
             obj.id = message.id;
         }
-        if (message.json !== "") {
+        if (message.json !== undefined) {
             obj.json = message.json;
         }
         return obj;

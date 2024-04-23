@@ -108,13 +108,13 @@ export const comment_benefactor_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.benefactor !== "") {
+        if (message.benefactor !== undefined) {
             obj.benefactor = message.benefactor;
         }
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         if (message.hbd_payout !== undefined) {
@@ -126,7 +126,7 @@ export const comment_benefactor_reward = {
         if (message.vesting_payout !== undefined) {
             obj.vesting_payout = asset.toJSON(message.vesting_payout);
         }
-        if (message.payout_must_be_claimed === true) {
+        if (message.payout_must_be_claimed !== undefined) {
             obj.payout_must_be_claimed = message.payout_must_be_claimed;
         }
         return obj;

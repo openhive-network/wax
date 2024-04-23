@@ -49,10 +49,10 @@ export const decline_voting_rights = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.decline === true) {
+        if (message.decline !== undefined) {
             obj.decline = message.decline;
         }
         return obj;

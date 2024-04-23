@@ -50,7 +50,7 @@ export const return_vesting_delegation = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
         if (message.vesting_shares !== undefined) {

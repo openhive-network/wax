@@ -59,13 +59,13 @@ export const account_witness_vote = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.witness !== "") {
+        if (message.witness !== undefined) {
             obj.witness = message.witness;
         }
-        if (message.approve === true) {
+        if (message.approve !== undefined) {
             obj.approve = message.approve;
         }
         return obj;

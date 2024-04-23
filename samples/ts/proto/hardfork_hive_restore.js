@@ -70,10 +70,10 @@ export const hardfork_hive_restore = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.treasury !== "") {
+        if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
         if (message.hbd_transferred !== undefined) {

@@ -37,7 +37,7 @@ export const shutdown_witness = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
         return obj;

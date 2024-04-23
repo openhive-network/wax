@@ -72,10 +72,10 @@ export const account_created = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.new_account_name !== "") {
+        if (message.new_account_name !== undefined) {
             obj.new_account_name = message.new_account_name;
         }
-        if (message.creator !== "") {
+        if (message.creator !== undefined) {
             obj.creator = message.creator;
         }
         if (message.initial_vesting_shares !== undefined) {

@@ -113,10 +113,10 @@ export const hardfork_hive = {
     toJSON(message) {
         var _a;
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
-        if (message.treasury !== "") {
+        if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
         if ((_a = message.other_affected_accounts) === null || _a === void 0 ? void 0 : _a.length) {

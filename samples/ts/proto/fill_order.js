@@ -97,19 +97,19 @@ export const fill_order = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.current_owner !== "") {
+        if (message.current_owner !== undefined) {
             obj.current_owner = message.current_owner;
         }
-        if (message.current_orderid !== 0) {
+        if (message.current_orderid !== undefined) {
             obj.current_orderid = Math.round(message.current_orderid);
         }
         if (message.current_pays !== undefined) {
             obj.current_pays = asset.toJSON(message.current_pays);
         }
-        if (message.open_owner !== "") {
+        if (message.open_owner !== undefined) {
             obj.open_owner = message.open_owner;
         }
-        if (message.open_orderid !== 0) {
+        if (message.open_orderid !== undefined) {
             obj.open_orderid = Math.round(message.open_orderid);
         }
         if (message.open_pays !== undefined) {

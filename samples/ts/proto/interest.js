@@ -62,13 +62,13 @@ export const interest = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
         if (message.interest !== undefined) {
             obj.interest = asset.toJSON(message.interest);
         }
-        if (message.is_saved_into_hbd_balance === true) {
+        if (message.is_saved_into_hbd_balance !== undefined) {
             obj.is_saved_into_hbd_balance = message.is_saved_into_hbd_balance;
         }
         return obj;

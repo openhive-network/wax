@@ -113,16 +113,16 @@ export const comment_reward = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
         if (message.payout !== undefined) {
             obj.payout = asset.toJSON(message.payout);
         }
-        if (message.author_rewards !== "0") {
+        if (message.author_rewards !== undefined) {
             obj.author_rewards = message.author_rewards;
         }
         if (message.total_payout_value !== undefined) {

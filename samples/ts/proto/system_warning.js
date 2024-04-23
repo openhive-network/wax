@@ -37,7 +37,7 @@ export const system_warning = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.message !== "") {
+        if (message.message !== undefined) {
             obj.message = message.message;
         }
         return obj;

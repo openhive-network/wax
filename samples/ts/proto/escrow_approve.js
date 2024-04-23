@@ -89,22 +89,22 @@ export const escrow_approve = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
-        if (message.agent !== "") {
+        if (message.agent !== undefined) {
             obj.agent = message.agent;
         }
-        if (message.who !== "") {
+        if (message.who !== undefined) {
             obj.who = message.who;
         }
-        if (message.escrow_id !== 0) {
+        if (message.escrow_id !== undefined) {
             obj.escrow_id = Math.round(message.escrow_id);
         }
-        if (message.approve === true) {
+        if (message.approve !== undefined) {
             obj.approve = message.approve;
         }
         return obj;

@@ -70,16 +70,16 @@ export const transfer_to_savings = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
         }
-        if (message.memo !== "") {
+        if (message.memo !== undefined) {
             obj.memo = message.memo;
         }
         return obj;

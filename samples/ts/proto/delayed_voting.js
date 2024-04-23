@@ -50,10 +50,10 @@ export const delayed_voting = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.voter !== "") {
+        if (message.voter !== undefined) {
             obj.voter = message.voter;
         }
-        if (message.votes !== "0") {
+        if (message.votes !== undefined) {
             obj.votes = message.votes;
         }
         return obj;

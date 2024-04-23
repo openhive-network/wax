@@ -63,10 +63,10 @@ export const custom = {
         if ((_a = message.required_auths) === null || _a === void 0 ? void 0 : _a.length) {
             obj.required_auths = message.required_auths;
         }
-        if (message.id !== 0) {
+        if (message.id !== undefined) {
             obj.id = Math.round(message.id);
         }
-        if (message.data !== "") {
+        if (message.data !== undefined) {
             obj.data = message.data;
         }
         return obj;

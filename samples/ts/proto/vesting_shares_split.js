@@ -64,7 +64,7 @@ export const vesting_shares_split = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
         if (message.vesting_shares_before_split !== undefined) {

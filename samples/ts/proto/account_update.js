@@ -90,7 +90,7 @@ export const account_update = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.account !== "") {
+        if (message.account !== undefined) {
             obj.account = message.account;
         }
         if (message.owner !== undefined) {
@@ -102,10 +102,10 @@ export const account_update = {
         if (message.posting !== undefined) {
             obj.posting = authority.toJSON(message.posting);
         }
-        if (message.memo_key !== "") {
+        if (message.memo_key !== undefined) {
             obj.memo_key = message.memo_key;
         }
-        if (message.json_metadata !== "") {
+        if (message.json_metadata !== undefined) {
             obj.json_metadata = message.json_metadata;
         }
         return obj;

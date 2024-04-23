@@ -80,19 +80,19 @@ export const fill_recurrent_transfer = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
         }
-        if (message.memo !== "") {
+        if (message.memo !== undefined) {
             obj.memo = message.memo;
         }
-        if (message.remaining_executions !== 0) {
+        if (message.remaining_executions !== undefined) {
             obj.remaining_executions = Math.round(message.remaining_executions);
         }
         return obj;

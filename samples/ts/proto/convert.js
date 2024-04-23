@@ -60,10 +60,10 @@ export const convert = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.requestid !== 0) {
+        if (message.requestid !== undefined) {
             obj.requestid = Math.round(message.requestid);
         }
         if (message.amount !== undefined) {

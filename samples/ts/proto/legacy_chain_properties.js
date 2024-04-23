@@ -65,10 +65,10 @@ export const legacy_chain_properties = {
         if (message.account_creation_fee !== undefined) {
             obj.account_creation_fee = asset.toJSON(message.account_creation_fee);
         }
-        if (message.maximum_block_size !== 0) {
+        if (message.maximum_block_size !== undefined) {
             obj.maximum_block_size = Math.round(message.maximum_block_size);
         }
-        if (message.hbd_interest_rate !== 0) {
+        if (message.hbd_interest_rate !== undefined) {
             obj.hbd_interest_rate = Math.round(message.hbd_interest_rate);
         }
         return obj;

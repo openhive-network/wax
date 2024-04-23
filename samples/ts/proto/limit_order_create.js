@@ -97,10 +97,10 @@ export const limit_order_create = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.orderid !== 0) {
+        if (message.orderid !== undefined) {
             obj.orderid = Math.round(message.orderid);
         }
         if (message.amount_to_sell !== undefined) {
@@ -109,10 +109,10 @@ export const limit_order_create = {
         if (message.min_to_receive !== undefined) {
             obj.min_to_receive = asset.toJSON(message.min_to_receive);
         }
-        if (message.fill_or_kill === true) {
+        if (message.fill_or_kill !== undefined) {
             obj.fill_or_kill = message.fill_or_kill;
         }
-        if (message.expiration !== "") {
+        if (message.expiration !== undefined) {
             obj.expiration = message.expiration;
         }
         return obj;

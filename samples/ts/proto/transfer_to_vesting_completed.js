@@ -72,10 +72,10 @@ export const transfer_to_vesting_completed = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from_account = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to_account = message.to_account;
         }
         if (message.hive_vested !== undefined) {

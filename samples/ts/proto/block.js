@@ -51,10 +51,10 @@ export const hardfork_version_vote = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.hf_version !== "") {
+        if (message.hf_version !== undefined) {
             obj.hf_version = message.hf_version;
         }
-        if (message.hf_time !== "") {
+        if (message.hf_time !== undefined) {
             obj.hf_time = message.hf_time;
         }
         return obj;
@@ -302,31 +302,31 @@ export const block = {
     toJSON(message) {
         var _a, _b, _c;
         const obj = {};
-        if (message.previous !== "") {
+        if (message.previous !== undefined) {
             obj.previous = message.previous;
         }
-        if (message.timestamp !== "") {
+        if (message.timestamp !== undefined) {
             obj.timestamp = message.timestamp;
         }
-        if (message.witness !== "") {
+        if (message.witness !== undefined) {
             obj.witness = message.witness;
         }
-        if (message.transaction_merkle_root !== "") {
+        if (message.transaction_merkle_root !== undefined) {
             obj.transaction_merkle_root = message.transaction_merkle_root;
         }
         if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
             obj.extensions = message.extensions.map((e) => block_header_extensions.toJSON(e));
         }
-        if (message.witness_signature !== "") {
+        if (message.witness_signature !== undefined) {
             obj.witness_signature = message.witness_signature;
         }
         if ((_b = message.transactions) === null || _b === void 0 ? void 0 : _b.length) {
             obj.transactions = message.transactions.map((e) => transaction.toJSON(e));
         }
-        if (message.block_id !== "") {
+        if (message.block_id !== undefined) {
             obj.block_id = message.block_id;
         }
-        if (message.signing_key !== "") {
+        if (message.signing_key !== undefined) {
             obj.signing_key = message.signing_key;
         }
         if ((_c = message.transaction_ids) === null || _c === void 0 ? void 0 : _c.length) {

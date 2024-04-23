@@ -99,25 +99,25 @@ export const comment = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.parent_author !== "") {
+        if (message.parent_author !== undefined) {
             obj.parent_author = message.parent_author;
         }
-        if (message.parent_permlink !== "") {
+        if (message.parent_permlink !== undefined) {
             obj.parent_permlink = message.parent_permlink;
         }
-        if (message.author !== "") {
+        if (message.author !== undefined) {
             obj.author = message.author;
         }
-        if (message.permlink !== "") {
+        if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if (message.title !== "") {
+        if (message.title !== undefined) {
             obj.title = message.title;
         }
-        if (message.body !== "") {
+        if (message.body !== undefined) {
             obj.body = message.body;
         }
-        if (message.json_metadata !== "") {
+        if (message.json_metadata !== undefined) {
             obj.json_metadata = message.json_metadata;
         }
         return obj;

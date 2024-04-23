@@ -141,16 +141,16 @@ export const escrow_transfer = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
-        if (message.agent !== "") {
+        if (message.agent !== undefined) {
             obj.agent = message.agent;
         }
-        if (message.escrow_id !== 0) {
+        if (message.escrow_id !== undefined) {
             obj.escrow_id = Math.round(message.escrow_id);
         }
         if (message.hbd_amount !== undefined) {
@@ -162,13 +162,13 @@ export const escrow_transfer = {
         if (message.fee !== undefined) {
             obj.fee = asset.toJSON(message.fee);
         }
-        if (message.ratification_deadline !== "") {
+        if (message.ratification_deadline !== undefined) {
             obj.ratification_deadline = message.ratification_deadline;
         }
-        if (message.escrow_expiration !== "") {
+        if (message.escrow_expiration !== undefined) {
             obj.escrow_expiration = message.escrow_expiration;
         }
-        if (message.json_meta !== "") {
+        if (message.json_meta !== undefined) {
             obj.json_meta = message.json_meta;
         }
         return obj;

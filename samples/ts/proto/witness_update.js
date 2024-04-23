@@ -81,13 +81,13 @@ export const witness_update = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.owner !== "") {
+        if (message.owner !== undefined) {
             obj.owner = message.owner;
         }
-        if (message.url !== "") {
+        if (message.url !== undefined) {
             obj.url = message.url;
         }
-        if (message.block_signing_key !== "") {
+        if (message.block_signing_key !== undefined) {
             obj.block_signing_key = message.block_signing_key;
         }
         if (message.props !== undefined) {

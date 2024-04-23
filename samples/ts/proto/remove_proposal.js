@@ -73,7 +73,7 @@ export const remove_proposal = {
     toJSON(message) {
         var _a, _b;
         const obj = {};
-        if (message.proposal_owner !== "") {
+        if (message.proposal_owner !== undefined) {
             obj.proposal_owner = message.proposal_owner;
         }
         if ((_a = message.proposal_ids) === null || _a === void 0 ? void 0 : _a.length) {

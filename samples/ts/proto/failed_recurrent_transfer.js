@@ -108,25 +108,25 @@ export const failed_recurrent_transfer = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== "") {
+        if (message.from_account !== undefined) {
             obj.from = message.from_account;
         }
-        if (message.to_account !== "") {
+        if (message.to_account !== undefined) {
             obj.to = message.to_account;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
         }
-        if (message.memo !== "") {
+        if (message.memo !== undefined) {
             obj.memo = message.memo;
         }
-        if (message.consecutive_failures !== 0) {
+        if (message.consecutive_failures !== undefined) {
             obj.consecutive_failures = Math.round(message.consecutive_failures);
         }
-        if (message.remaining_executions !== 0) {
+        if (message.remaining_executions !== undefined) {
             obj.remaining_executions = Math.round(message.remaining_executions);
         }
-        if (message.deleted === true) {
+        if (message.deleted !== undefined) {
             obj.deleted = message.deleted;
         }
         return obj;
