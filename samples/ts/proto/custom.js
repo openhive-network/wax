@@ -52,9 +52,11 @@ export const custom = {
     },
     fromJSON(object) {
         return {
-            required_auths: Array.isArray(object === null || object === void 0 ? void 0 : object.required_auths) ? object.required_auths.map((e) => String(e)) : [],
-            id: isSet(object.id) ? Number(object.id) : 0,
-            data: isSet(object.data) ? String(object.data) : "",
+            required_auths: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.required_auths)
+                ? object.required_auths.map((e) => globalThis.String(e))
+                : [],
+            id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+            data: isSet(object.data) ? globalThis.String(object.data) : "",
         };
     },
     toJSON(message) {

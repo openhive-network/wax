@@ -107,12 +107,12 @@ export const escrow_release = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
-            agent: isSet(object.agent) ? String(object.agent) : "",
-            who: isSet(object.who) ? String(object.who) : "",
-            receiver: isSet(object.receiver) ? String(object.receiver) : "",
-            escrow_id: isSet(object.escrow_id) ? Number(object.escrow_id) : 0,
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
+            who: isSet(object.who) ? globalThis.String(object.who) : "",
+            receiver: isSet(object.receiver) ? globalThis.String(object.receiver) : "",
+            escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
             hbd_amount: isSet(object.hbd_amount) ? asset.fromJSON(object.hbd_amount) : undefined,
             hive_amount: isSet(object.hive_amount) ? asset.fromJSON(object.hive_amount) : undefined,
         };

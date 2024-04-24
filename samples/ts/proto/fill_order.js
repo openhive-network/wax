@@ -87,11 +87,11 @@ export const fill_order = {
     },
     fromJSON(object) {
         return {
-            current_owner: isSet(object.current_owner) ? String(object.current_owner) : "",
-            current_orderid: isSet(object.current_orderid) ? Number(object.current_orderid) : 0,
+            current_owner: isSet(object.current_owner) ? globalThis.String(object.current_owner) : "",
+            current_orderid: isSet(object.current_orderid) ? globalThis.Number(object.current_orderid) : 0,
             current_pays: isSet(object.current_pays) ? asset.fromJSON(object.current_pays) : undefined,
-            open_owner: isSet(object.open_owner) ? String(object.open_owner) : "",
-            open_orderid: isSet(object.open_orderid) ? Number(object.open_orderid) : 0,
+            open_owner: isSet(object.open_owner) ? globalThis.String(object.open_owner) : "",
+            open_orderid: isSet(object.open_orderid) ? globalThis.Number(object.open_orderid) : 0,
             open_pays: isSet(object.open_pays) ? asset.fromJSON(object.open_pays) : undefined,
         };
     },

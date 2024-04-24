@@ -61,12 +61,14 @@ export const custom_json = {
     },
     fromJSON(object) {
         return {
-            required_auths: Array.isArray(object === null || object === void 0 ? void 0 : object.required_auths) ? object.required_auths.map((e) => String(e)) : [],
-            required_posting_auths: Array.isArray(object === null || object === void 0 ? void 0 : object.required_posting_auths)
-                ? object.required_posting_auths.map((e) => String(e))
+            required_auths: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.required_auths)
+                ? object.required_auths.map((e) => globalThis.String(e))
                 : [],
-            id: isSet(object.id) ? String(object.id) : "",
-            json: isSet(object.json) ? String(object.json) : "",
+            required_posting_auths: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.required_posting_auths)
+                ? object.required_posting_auths.map((e) => globalThis.String(e))
+                : [],
+            id: isSet(object.id) ? globalThis.String(object.id) : "",
+            json: isSet(object.json) ? globalThis.String(object.json) : "",
         };
     },
     toJSON(message) {

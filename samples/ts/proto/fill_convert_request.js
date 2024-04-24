@@ -62,8 +62,8 @@ export const fill_convert_request = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
-            requestid: isSet(object.requestid) ? Number(object.requestid) : 0,
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+            requestid: isSet(object.requestid) ? globalThis.Number(object.requestid) : 0,
             amount_in: isSet(object.amount_in) ? asset.fromJSON(object.amount_in) : undefined,
             amount_out: isSet(object.amount_out) ? asset.fromJSON(object.amount_out) : undefined,
         };

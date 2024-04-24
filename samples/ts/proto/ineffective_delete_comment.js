@@ -43,8 +43,8 @@ export const ineffective_delete_comment = {
     },
     fromJSON(object) {
         return {
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
         };
     },
     toJSON(message) {

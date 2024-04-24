@@ -62,8 +62,8 @@ export const fill_vesting_withdraw = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from_account) ? String(object.from_account) : "",
-            to_account: isSet(object.to_account) ? String(object.to_account) : "",
+            from_account: isSet(object.from_account) ? globalThis.String(object.from_account) : "",
+            to_account: isSet(object.to_account) ? globalThis.String(object.to_account) : "",
             withdrawn: isSet(object.withdrawn) ? asset.fromJSON(object.withdrawn) : undefined,
             deposited: isSet(object.deposited) ? asset.fromJSON(object.deposited) : undefined,
         };

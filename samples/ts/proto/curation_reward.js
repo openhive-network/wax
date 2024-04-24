@@ -19,7 +19,7 @@ export const curation_reward = {
         if (message.permlink !== "") {
             writer.uint32(34).string(message.permlink);
         }
-        if (message.payout_must_be_claimed === true) {
+        if (message.payout_must_be_claimed !== false) {
             writer.uint32(40).bool(message.payout_must_be_claimed);
         }
         return writer;
@@ -71,11 +71,13 @@ export const curation_reward = {
     },
     fromJSON(object) {
         return {
-            curator: isSet(object.curator) ? String(object.curator) : "",
+            curator: isSet(object.curator) ? globalThis.String(object.curator) : "",
             reward: isSet(object.reward) ? asset.fromJSON(object.reward) : undefined,
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            payout_must_be_claimed: isSet(object.payout_must_be_claimed) ? Boolean(object.payout_must_be_claimed) : false,
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            payout_must_be_claimed: isSet(object.payout_must_be_claimed)
+                ? globalThis.Boolean(object.payout_must_be_claimed)
+                : false,
         };
     },
     toJSON(message) {

@@ -33,7 +33,7 @@ export const hardfork = {
         return message;
     },
     fromJSON(object) {
-        return { hardfork_id: isSet(object.hardfork_id) ? Number(object.hardfork_id) : 0 };
+        return { hardfork_id: isSet(object.hardfork_id) ? globalThis.Number(object.hardfork_id) : 0 };
     },
     toJSON(message) {
         const obj = {};

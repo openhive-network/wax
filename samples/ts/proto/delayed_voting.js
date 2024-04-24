@@ -44,8 +44,8 @@ export const delayed_voting = {
     },
     fromJSON(object) {
         return {
-            voter: isSet(object.voter) ? String(object.voter) : "",
-            votes: isSet(object.votes) ? String(object.votes) : "0",
+            voter: isSet(object.voter) ? globalThis.String(object.voter) : "",
+            votes: isSet(object.votes) ? globalThis.String(object.votes) : "0",
         };
     },
     toJSON(message) {

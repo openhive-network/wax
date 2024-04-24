@@ -24,7 +24,7 @@ export const limit_order_create2 = {
         if (message.amount_to_sell !== undefined) {
             asset.encode(message.amount_to_sell, writer.uint32(26).fork()).ldelim();
         }
-        if (message.fill_or_kill === true) {
+        if (message.fill_or_kill !== false) {
             writer.uint32(32).bool(message.fill_or_kill);
         }
         if (message.exchange_rate !== undefined) {
@@ -88,12 +88,12 @@ export const limit_order_create2 = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
-            orderid: isSet(object.orderid) ? Number(object.orderid) : 0,
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+            orderid: isSet(object.orderid) ? globalThis.Number(object.orderid) : 0,
             amount_to_sell: isSet(object.amount_to_sell) ? asset.fromJSON(object.amount_to_sell) : undefined,
-            fill_or_kill: isSet(object.fill_or_kill) ? Boolean(object.fill_or_kill) : false,
+            fill_or_kill: isSet(object.fill_or_kill) ? globalThis.Boolean(object.fill_or_kill) : false,
             exchange_rate: isSet(object.exchange_rate) ? price.fromJSON(object.exchange_rate) : undefined,
-            expiration: isSet(object.expiration) ? String(object.expiration) : "",
+            expiration: isSet(object.expiration) ? globalThis.String(object.expiration) : "",
         };
     },
     toJSON(message) {

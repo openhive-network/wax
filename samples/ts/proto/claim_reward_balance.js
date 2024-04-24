@@ -62,7 +62,7 @@ export const claim_reward_balance = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
             reward_hive: isSet(object.reward_hive) ? asset.fromJSON(object.reward_hive) : undefined,
             reward_hbd: isSet(object.reward_hbd) ? asset.fromJSON(object.reward_hbd) : undefined,
             reward_vests: isSet(object.reward_vests) ? asset.fromJSON(object.reward_vests) : undefined,

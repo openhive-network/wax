@@ -53,7 +53,7 @@ export const vesting_shares_split = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
             vesting_shares_before_split: isSet(object.vesting_shares_before_split)
                 ? asset.fromJSON(object.vesting_shares_before_split)
                 : undefined,

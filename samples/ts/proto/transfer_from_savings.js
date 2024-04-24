@@ -71,11 +71,11 @@ export const transfer_from_savings = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            request_id: isSet(object.request_id) ? Number(object.request_id) : 0,
-            to_account: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            request_id: isSet(object.request_id) ? globalThis.Number(object.request_id) : 0,
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
-            memo: isSet(object.memo) ? String(object.memo) : "",
+            memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
         };
     },
     toJSON(message) {

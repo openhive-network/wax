@@ -16,7 +16,7 @@ export const update_proposal_votes = {
             writer.int64(v);
         }
         writer.ldelim();
-        if (message.approve === true) {
+        if (message.approve !== false) {
             writer.uint32(24).bool(message.approve);
         }
         for (const v of message.extensions) {
@@ -72,10 +72,12 @@ export const update_proposal_votes = {
     },
     fromJSON(object) {
         return {
-            voter: isSet(object.voter) ? String(object.voter) : "",
-            proposal_ids: Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids) ? object.proposal_ids.map((e) => String(e)) : [],
-            approve: isSet(object.approve) ? Boolean(object.approve) : false,
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            voter: isSet(object.voter) ? globalThis.String(object.voter) : "",
+            proposal_ids: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids)
+                ? object.proposal_ids.map((e) => globalThis.String(e))
+                : [],
+            approve: isSet(object.approve) ? globalThis.Boolean(object.approve) : false,
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

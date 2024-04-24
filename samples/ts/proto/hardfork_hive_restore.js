@@ -62,8 +62,8 @@ export const hardfork_hive_restore = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            treasury: isSet(object.treasury) ? String(object.treasury) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
             hbd_transferred: isSet(object.hbd_transferred) ? asset.fromJSON(object.hbd_transferred) : undefined,
             hive_transferred: isSet(object.hive_transferred) ? asset.fromJSON(object.hive_transferred) : undefined,
         };

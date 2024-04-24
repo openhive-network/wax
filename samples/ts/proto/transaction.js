@@ -81,14 +81,18 @@ export const transaction = {
     },
     fromJSON(object) {
         return {
-            ref_block_num: isSet(object.ref_block_num) ? Number(object.ref_block_num) : 0,
-            ref_block_prefix: isSet(object.ref_block_prefix) ? Number(object.ref_block_prefix) : 0,
-            expiration: isSet(object.expiration) ? String(object.expiration) : "",
-            operations: Array.isArray(object === null || object === void 0 ? void 0 : object.operations) ? object.operations.map((e) => operation.fromJSON(e)) : [],
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            ref_block_num: isSet(object.ref_block_num) ? globalThis.Number(object.ref_block_num) : 0,
+            ref_block_prefix: isSet(object.ref_block_prefix) ? globalThis.Number(object.ref_block_prefix) : 0,
+            expiration: isSet(object.expiration) ? globalThis.String(object.expiration) : "",
+            operations: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.operations)
+                ? object.operations.map((e) => operation.fromJSON(e))
+                : [],
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
-            signatures: Array.isArray(object === null || object === void 0 ? void 0 : object.signatures) ? object.signatures.map((e) => String(e)) : [],
+            signatures: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.signatures)
+                ? object.signatures.map((e) => globalThis.String(e))
+                : [],
         };
     },
     toJSON(message) {

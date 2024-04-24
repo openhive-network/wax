@@ -62,8 +62,8 @@ export const account_created = {
     },
     fromJSON(object) {
         return {
-            new_account_name: isSet(object.new_account_name) ? String(object.new_account_name) : "",
-            creator: isSet(object.creator) ? String(object.creator) : "",
+            new_account_name: isSet(object.new_account_name) ? globalThis.String(object.new_account_name) : "",
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
             initial_vesting_shares: isSet(object.initial_vesting_shares)
                 ? asset.fromJSON(object.initial_vesting_shares)
                 : undefined,

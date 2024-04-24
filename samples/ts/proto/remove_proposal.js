@@ -63,9 +63,11 @@ export const remove_proposal = {
     },
     fromJSON(object) {
         return {
-            proposal_owner: isSet(object.proposal_owner) ? String(object.proposal_owner) : "",
-            proposal_ids: Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids) ? object.proposal_ids.map((e) => String(e)) : [],
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            proposal_owner: isSet(object.proposal_owner) ? globalThis.String(object.proposal_owner) : "",
+            proposal_ids: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.proposal_ids)
+                ? object.proposal_ids.map((e) => globalThis.String(e))
+                : [],
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

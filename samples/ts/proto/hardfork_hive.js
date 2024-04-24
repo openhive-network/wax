@@ -97,10 +97,10 @@ export const hardfork_hive = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            treasury: isSet(object.treasury) ? String(object.treasury) : "",
-            other_affected_accounts: Array.isArray(object === null || object === void 0 ? void 0 : object.other_affected_accounts)
-                ? object.other_affected_accounts.map((e) => String(e))
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
+            other_affected_accounts: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.other_affected_accounts)
+                ? object.other_affected_accounts.map((e) => globalThis.String(e))
                 : [],
             hbd_transferred: isSet(object.hbd_transferred) ? asset.fromJSON(object.hbd_transferred) : undefined,
             hive_transferred: isSet(object.hive_transferred) ? asset.fromJSON(object.hive_transferred) : undefined,

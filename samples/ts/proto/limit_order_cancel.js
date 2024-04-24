@@ -43,8 +43,8 @@ export const limit_order_cancel = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
-            orderid: isSet(object.orderid) ? Number(object.orderid) : 0,
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+            orderid: isSet(object.orderid) ? globalThis.Number(object.orderid) : 0,
         };
     },
     toJSON(message) {

@@ -33,7 +33,7 @@ export const declined_voting_rights = {
         return message;
     },
     fromJSON(object) {
-        return { account: isSet(object.account) ? String(object.account) : "" };
+        return { account: isSet(object.account) ? globalThis.String(object.account) : "" };
     },
     toJSON(message) {
         const obj = {};

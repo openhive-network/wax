@@ -53,8 +53,8 @@ export const transfer_to_vesting = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
         };
     },

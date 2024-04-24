@@ -53,7 +53,7 @@ export const dhf_conversion = {
     },
     fromJSON(object) {
         return {
-            treasury: isSet(object.treasury) ? String(object.treasury) : "",
+            treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
             hive_amount_in: isSet(object.hive_amount_in) ? asset.fromJSON(object.hive_amount_in) : undefined,
             hbd_amount_out: isSet(object.hbd_amount_out) ? asset.fromJSON(object.hbd_amount_out) : undefined,
         };

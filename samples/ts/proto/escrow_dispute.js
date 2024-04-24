@@ -70,11 +70,11 @@ export const escrow_dispute = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
-            agent: isSet(object.agent) ? String(object.agent) : "",
-            who: isSet(object.who) ? String(object.who) : "",
-            escrow_id: isSet(object.escrow_id) ? Number(object.escrow_id) : 0,
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
+            who: isSet(object.who) ? globalThis.String(object.who) : "",
+            escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
         };
     },
     toJSON(message) {

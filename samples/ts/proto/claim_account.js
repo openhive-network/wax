@@ -54,9 +54,9 @@ export const claim_account = {
     },
     fromJSON(object) {
         return {
-            creator: isSet(object.creator) ? String(object.creator) : "",
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

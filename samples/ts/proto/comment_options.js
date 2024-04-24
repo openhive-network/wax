@@ -44,8 +44,8 @@ export const beneficiary_route_type = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            weight: isSet(object.weight) ? Number(object.weight) : 0,
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            weight: isSet(object.weight) ? globalThis.Number(object.weight) : 0,
         };
     },
     toJSON(message) {
@@ -102,7 +102,7 @@ export const comment_payout_beneficiaries = {
     },
     fromJSON(object) {
         return {
-            beneficiaries: Array.isArray(object === null || object === void 0 ? void 0 : object.beneficiaries)
+            beneficiaries: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.beneficiaries)
                 ? object.beneficiaries.map((e) => beneficiary_route_type.fromJSON(e))
                 : [],
         };
@@ -207,10 +207,10 @@ export const comment_options = {
         if (message.percent_hbd !== 0) {
             writer.uint32(32).uint32(message.percent_hbd);
         }
-        if (message.allow_votes === true) {
+        if (message.allow_votes !== false) {
             writer.uint32(40).bool(message.allow_votes);
         }
-        if (message.allow_curation_rewards === true) {
+        if (message.allow_curation_rewards !== false) {
             writer.uint32(48).bool(message.allow_curation_rewards);
         }
         for (const v of message.extensions) {
@@ -277,13 +277,15 @@ export const comment_options = {
     },
     fromJSON(object) {
         return {
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
             max_accepted_payout: isSet(object.max_accepted_payout) ? asset.fromJSON(object.max_accepted_payout) : undefined,
-            percent_hbd: isSet(object.percent_hbd) ? Number(object.percent_hbd) : 0,
-            allow_votes: isSet(object.allow_votes) ? Boolean(object.allow_votes) : false,
-            allow_curation_rewards: isSet(object.allow_curation_rewards) ? Boolean(object.allow_curation_rewards) : false,
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            percent_hbd: isSet(object.percent_hbd) ? globalThis.Number(object.percent_hbd) : 0,
+            allow_votes: isSet(object.allow_votes) ? globalThis.Boolean(object.allow_votes) : false,
+            allow_curation_rewards: isSet(object.allow_curation_rewards)
+                ? globalThis.Boolean(object.allow_curation_rewards)
+                : false,
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => comment_options_extension.fromJSON(e))
                 : [],
         };

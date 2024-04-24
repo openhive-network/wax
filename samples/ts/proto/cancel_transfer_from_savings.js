@@ -43,8 +43,8 @@ export const cancel_transfer_from_savings = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            request_id: isSet(object.request_id) ? Number(object.request_id) : 0,
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            request_id: isSet(object.request_id) ? globalThis.Number(object.request_id) : 0,
         };
     },
     toJSON(message) {

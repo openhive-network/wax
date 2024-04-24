@@ -58,7 +58,7 @@ export const authority = {
     },
     fromJSON(object) {
         return {
-            weight_threshold: isSet(object.weight_threshold) ? Number(object.weight_threshold) : 0,
+            weight_threshold: isSet(object.weight_threshold) ? globalThis.Number(object.weight_threshold) : 0,
             account_auths: isObject(object.account_auths)
                 ? Object.entries(object.account_auths).reduce((acc, [key, value]) => {
                     acc[key] = Number(value);
@@ -107,13 +107,13 @@ export const authority = {
         message.weight_threshold = (_a = object.weight_threshold) !== null && _a !== void 0 ? _a : 0;
         message.account_auths = Object.entries((_b = object.account_auths) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
-                acc[key] = Number(value);
+                acc[key] = globalThis.Number(value);
             }
             return acc;
         }, {});
         message.key_auths = Object.entries((_c = object.key_auths) !== null && _c !== void 0 ? _c : {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
-                acc[key] = Number(value);
+                acc[key] = globalThis.Number(value);
             }
             return acc;
         }, {});
@@ -161,7 +161,10 @@ export const authority_AccountAuthsEntry = {
         return message;
     },
     fromJSON(object) {
-        return { key: isSet(object.key) ? String(object.key) : "", value: isSet(object.value) ? Number(object.value) : 0 };
+        return {
+            key: isSet(object.key) ? globalThis.String(object.key) : "",
+            value: isSet(object.value) ? globalThis.Number(object.value) : 0,
+        };
     },
     toJSON(message) {
         const obj = {};
@@ -225,7 +228,10 @@ export const authority_KeyAuthsEntry = {
         return message;
     },
     fromJSON(object) {
-        return { key: isSet(object.key) ? String(object.key) : "", value: isSet(object.value) ? Number(object.value) : 0 };
+        return {
+            key: isSet(object.key) ? globalThis.String(object.key) : "",
+            value: isSet(object.value) ? globalThis.Number(object.value) : 0,
+        };
     },
     toJSON(message) {
         const obj = {};

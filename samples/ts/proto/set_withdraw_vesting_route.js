@@ -15,7 +15,7 @@ export const set_withdraw_vesting_route = {
         if (message.percent !== 0) {
             writer.uint32(24).uint32(message.percent);
         }
-        if (message.auto_vest === true) {
+        if (message.auto_vest !== false) {
             writer.uint32(32).bool(message.auto_vest);
         }
         return writer;
@@ -61,10 +61,10 @@ export const set_withdraw_vesting_route = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from_account) ? String(object.from_account) : "",
-            to_account: isSet(object.to_account) ? String(object.to_account) : "",
-            percent: isSet(object.percent) ? Number(object.percent) : 0,
-            auto_vest: isSet(object.auto_vest) ? Boolean(object.auto_vest) : false,
+            from_account: isSet(object.from_account) ? globalThis.String(object.from_account) : "",
+            to_account: isSet(object.to_account) ? globalThis.String(object.to_account) : "",
+            percent: isSet(object.percent) ? globalThis.Number(object.percent) : 0,
+            auto_vest: isSet(object.auto_vest) ? globalThis.Boolean(object.auto_vest) : false,
         };
     },
     toJSON(message) {

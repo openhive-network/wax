@@ -71,11 +71,11 @@ export const fill_recurrent_transfer = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
-            memo: isSet(object.memo) ? String(object.memo) : "",
-            remaining_executions: isSet(object.remaining_executions) ? Number(object.remaining_executions) : 0,
+            memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
+            remaining_executions: isSet(object.remaining_executions) ? globalThis.Number(object.remaining_executions) : 0,
         };
     },
     toJSON(message) {

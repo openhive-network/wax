@@ -33,7 +33,7 @@ export const failed_recurrent_transfer = {
         if (message.remaining_executions !== 0) {
             writer.uint32(48).uint32(message.remaining_executions);
         }
-        if (message.deleted === true) {
+        if (message.deleted !== false) {
             writer.uint32(56).bool(message.deleted);
         }
         return writer;
@@ -97,13 +97,13 @@ export const failed_recurrent_transfer = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
-            memo: isSet(object.memo) ? String(object.memo) : "",
-            consecutive_failures: isSet(object.consecutive_failures) ? Number(object.consecutive_failures) : 0,
-            remaining_executions: isSet(object.remaining_executions) ? Number(object.remaining_executions) : 0,
-            deleted: isSet(object.deleted) ? Boolean(object.deleted) : false,
+            memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
+            consecutive_failures: isSet(object.consecutive_failures) ? globalThis.Number(object.consecutive_failures) : 0,
+            remaining_executions: isSet(object.remaining_executions) ? globalThis.Number(object.remaining_executions) : 0,
+            deleted: isSet(object.deleted) ? globalThis.Boolean(object.deleted) : false,
         };
     },
     toJSON(message) {

@@ -44,7 +44,7 @@ export const feed_publish = {
     },
     fromJSON(object) {
         return {
-            publisher: isSet(object.publisher) ? String(object.publisher) : "",
+            publisher: isSet(object.publisher) ? globalThis.String(object.publisher) : "",
             exchange_rate: isSet(object.exchange_rate) ? price.fromJSON(object.exchange_rate) : undefined,
         };
     },

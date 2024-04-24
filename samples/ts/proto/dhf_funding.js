@@ -44,7 +44,7 @@ export const dhf_funding = {
     },
     fromJSON(object) {
         return {
-            treasury: isSet(object.treasury) ? String(object.treasury) : "",
+            treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
             additional_funds: isSet(object.additional_funds) ? asset.fromJSON(object.additional_funds) : undefined,
         };
     },

@@ -88,13 +88,13 @@ export const comment = {
     },
     fromJSON(object) {
         return {
-            parent_author: isSet(object.parent_author) ? String(object.parent_author) : "",
-            parent_permlink: isSet(object.parent_permlink) ? String(object.parent_permlink) : "",
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            title: isSet(object.title) ? String(object.title) : "",
-            body: isSet(object.body) ? String(object.body) : "",
-            json_metadata: isSet(object.json_metadata) ? String(object.json_metadata) : "",
+            parent_author: isSet(object.parent_author) ? globalThis.String(object.parent_author) : "",
+            parent_permlink: isSet(object.parent_permlink) ? globalThis.String(object.parent_permlink) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            title: isSet(object.title) ? globalThis.String(object.title) : "",
+            body: isSet(object.body) ? globalThis.String(object.body) : "",
+            json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
         };
     },
     toJSON(message) {

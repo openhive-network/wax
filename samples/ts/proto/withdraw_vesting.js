@@ -44,7 +44,7 @@ export const withdraw_vesting = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
             vesting_shares: isSet(object.vesting_shares) ? asset.fromJSON(object.vesting_shares) : undefined,
         };
     },

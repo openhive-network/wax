@@ -56,8 +56,8 @@ export const legacy_chain_properties = {
             account_creation_fee: isSet(object.account_creation_fee)
                 ? asset.fromJSON(object.account_creation_fee)
                 : undefined,
-            maximum_block_size: isSet(object.maximum_block_size) ? Number(object.maximum_block_size) : 0,
-            hbd_interest_rate: isSet(object.hbd_interest_rate) ? Number(object.hbd_interest_rate) : 0,
+            maximum_block_size: isSet(object.maximum_block_size) ? globalThis.Number(object.maximum_block_size) : 0,
+            hbd_interest_rate: isSet(object.hbd_interest_rate) ? globalThis.Number(object.hbd_interest_rate) : 0,
         };
     },
     toJSON(message) {

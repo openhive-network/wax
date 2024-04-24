@@ -9,7 +9,7 @@ export const decline_voting_rights = {
         if (message.account !== "") {
             writer.uint32(10).string(message.account);
         }
-        if (message.decline === true) {
+        if (message.decline !== false) {
             writer.uint32(16).bool(message.decline);
         }
         return writer;
@@ -43,8 +43,8 @@ export const decline_voting_rights = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            decline: isSet(object.decline) ? Boolean(object.decline) : false,
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            decline: isSet(object.decline) ? globalThis.Boolean(object.decline) : false,
         };
     },
     toJSON(message) {

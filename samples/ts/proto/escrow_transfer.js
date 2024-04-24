@@ -127,16 +127,16 @@ export const escrow_transfer = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
-            agent: isSet(object.agent) ? String(object.agent) : "",
-            escrow_id: isSet(object.escrow_id) ? Number(object.escrow_id) : 0,
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
+            escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
             hbd_amount: isSet(object.hbd_amount) ? asset.fromJSON(object.hbd_amount) : undefined,
             hive_amount: isSet(object.hive_amount) ? asset.fromJSON(object.hive_amount) : undefined,
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,
-            ratification_deadline: isSet(object.ratification_deadline) ? String(object.ratification_deadline) : "",
-            escrow_expiration: isSet(object.escrow_expiration) ? String(object.escrow_expiration) : "",
-            json_meta: isSet(object.json_meta) ? String(object.json_meta) : "",
+            ratification_deadline: isSet(object.ratification_deadline) ? globalThis.String(object.ratification_deadline) : "",
+            escrow_expiration: isSet(object.escrow_expiration) ? globalThis.String(object.escrow_expiration) : "",
+            json_meta: isSet(object.json_meta) ? globalThis.String(object.json_meta) : "",
         };
     },
     toJSON(message) {

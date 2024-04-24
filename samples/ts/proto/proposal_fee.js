@@ -62,9 +62,9 @@ export const proposal_fee = {
     },
     fromJSON(object) {
         return {
-            creator: isSet(object.creator) ? String(object.creator) : "",
-            treasury: isSet(object.treasury) ? String(object.treasury) : "",
-            proposal_id: isSet(object.proposal_id) ? Number(object.proposal_id) : 0,
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
+            treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
+            proposal_id: isSet(object.proposal_id) ? globalThis.Number(object.proposal_id) : 0,
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,
         };
     },

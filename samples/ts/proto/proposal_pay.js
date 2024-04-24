@@ -62,9 +62,9 @@ export const proposal_pay = {
     },
     fromJSON(object) {
         return {
-            proposal_id: isSet(object.proposal_id) ? Number(object.proposal_id) : 0,
-            receiver: isSet(object.receiver) ? String(object.receiver) : "",
-            payer: isSet(object.payer) ? String(object.payer) : "",
+            proposal_id: isSet(object.proposal_id) ? globalThis.Number(object.proposal_id) : 0,
+            receiver: isSet(object.receiver) ? globalThis.String(object.receiver) : "",
+            payer: isSet(object.payer) ? globalThis.String(object.payer) : "",
             payment: isSet(object.payment) ? asset.fromJSON(object.payment) : undefined,
         };
     },

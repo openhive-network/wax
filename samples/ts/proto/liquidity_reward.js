@@ -44,7 +44,7 @@ export const liquidity_reward = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
             payout: isSet(object.payout) ? asset.fromJSON(object.payout) : undefined,
         };
     },

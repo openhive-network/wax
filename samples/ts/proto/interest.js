@@ -13,7 +13,7 @@ export const interest = {
         if (message.interest !== undefined) {
             asset.encode(message.interest, writer.uint32(18).fork()).ldelim();
         }
-        if (message.is_saved_into_hbd_balance === true) {
+        if (message.is_saved_into_hbd_balance !== false) {
             writer.uint32(24).bool(message.is_saved_into_hbd_balance);
         }
         return writer;
@@ -53,10 +53,10 @@ export const interest = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
             interest: isSet(object.interest) ? asset.fromJSON(object.interest) : undefined,
             is_saved_into_hbd_balance: isSet(object.is_saved_into_hbd_balance)
-                ? Boolean(object.is_saved_into_hbd_balance)
+                ? globalThis.Boolean(object.is_saved_into_hbd_balance)
                 : false,
         };
     },

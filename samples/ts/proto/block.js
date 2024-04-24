@@ -45,8 +45,8 @@ export const hardfork_version_vote = {
     },
     fromJSON(object) {
         return {
-            hf_version: isSet(object.hf_version) ? String(object.hf_version) : "",
-            hf_time: isSet(object.hf_time) ? String(object.hf_time) : "",
+            hf_version: isSet(object.hf_version) ? globalThis.String(object.hf_version) : "",
+            hf_time: isSet(object.hf_time) ? globalThis.String(object.hf_time) : "",
         };
     },
     toJSON(message) {
@@ -122,7 +122,7 @@ export const block_header_extensions = {
     fromJSON(object) {
         return {
             void_t: isSet(object.void_t) ? void_t.fromJSON(object.void_t) : undefined,
-            version: isSet(object.version) ? String(object.version) : undefined,
+            version: isSet(object.version) ? globalThis.String(object.version) : undefined,
             hardfork_version_vote: isSet(object.hardfork_version_vote)
                 ? hardfork_version_vote.fromJSON(object.hardfork_version_vote)
                 : undefined,
@@ -283,20 +283,24 @@ export const block = {
     },
     fromJSON(object) {
         return {
-            previous: isSet(object.previous) ? String(object.previous) : "",
-            timestamp: isSet(object.timestamp) ? String(object.timestamp) : "",
-            witness: isSet(object.witness) ? String(object.witness) : "",
-            transaction_merkle_root: isSet(object.transaction_merkle_root) ? String(object.transaction_merkle_root) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            previous: isSet(object.previous) ? globalThis.String(object.previous) : "",
+            timestamp: isSet(object.timestamp) ? globalThis.String(object.timestamp) : "",
+            witness: isSet(object.witness) ? globalThis.String(object.witness) : "",
+            transaction_merkle_root: isSet(object.transaction_merkle_root)
+                ? globalThis.String(object.transaction_merkle_root)
+                : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => block_header_extensions.fromJSON(e))
                 : [],
-            witness_signature: isSet(object.witness_signature) ? String(object.witness_signature) : "",
-            transactions: Array.isArray(object === null || object === void 0 ? void 0 : object.transactions)
+            witness_signature: isSet(object.witness_signature) ? globalThis.String(object.witness_signature) : "",
+            transactions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.transactions)
                 ? object.transactions.map((e) => transaction.fromJSON(e))
                 : [],
-            block_id: isSet(object.block_id) ? String(object.block_id) : "",
-            signing_key: isSet(object.signing_key) ? String(object.signing_key) : "",
-            transaction_ids: Array.isArray(object === null || object === void 0 ? void 0 : object.transaction_ids) ? object.transaction_ids.map((e) => String(e)) : [],
+            block_id: isSet(object.block_id) ? globalThis.String(object.block_id) : "",
+            signing_key: isSet(object.signing_key) ? globalThis.String(object.signing_key) : "",
+            transaction_ids: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.transaction_ids)
+                ? object.transaction_ids.map((e) => globalThis.String(e))
+                : [],
         };
     },
     toJSON(message) {

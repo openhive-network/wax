@@ -53,8 +53,8 @@ export const limit_order_cancelled = {
     },
     fromJSON(object) {
         return {
-            seller: isSet(object.seller) ? String(object.seller) : "",
-            orderid: isSet(object.orderid) ? Number(object.orderid) : 0,
+            seller: isSet(object.seller) ? globalThis.String(object.seller) : "",
+            orderid: isSet(object.orderid) ? globalThis.Number(object.orderid) : 0,
             amount_back: isSet(object.amount_back) ? asset.fromJSON(object.amount_back) : undefined,
         };
     },

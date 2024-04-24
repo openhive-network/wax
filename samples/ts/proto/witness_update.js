@@ -72,9 +72,9 @@ export const witness_update = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
-            url: isSet(object.url) ? String(object.url) : "",
-            block_signing_key: isSet(object.block_signing_key) ? String(object.block_signing_key) : "",
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+            url: isSet(object.url) ? globalThis.String(object.url) : "",
+            block_signing_key: isSet(object.block_signing_key) ? globalThis.String(object.block_signing_key) : "",
             props: isSet(object.props) ? legacy_chain_properties.fromJSON(object.props) : undefined,
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,
         };

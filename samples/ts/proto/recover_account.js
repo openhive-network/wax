@@ -63,14 +63,14 @@ export const recover_account = {
     },
     fromJSON(object) {
         return {
-            account_to_recover: isSet(object.account_to_recover) ? String(object.account_to_recover) : "",
+            account_to_recover: isSet(object.account_to_recover) ? globalThis.String(object.account_to_recover) : "",
             new_owner_authority: isSet(object.new_owner_authority)
                 ? authority.fromJSON(object.new_owner_authority)
                 : undefined,
             recent_owner_authority: isSet(object.recent_owner_authority)
                 ? authority.fromJSON(object.recent_owner_authority)
                 : undefined,
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

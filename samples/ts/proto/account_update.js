@@ -3,7 +3,7 @@ import _m0 from "protobufjs/minimal.js";
 import { authority } from "./authority.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseaccount_update() {
-    return { account: "", owner: undefined, active: undefined, posting: undefined, memo_key: "", json_metadata: "" };
+    return { account: "", memo_key: "", json_metadata: "" };
 }
 export const account_update = {
     encode(message, writer = _m0.Writer.create()) {
@@ -80,12 +80,12 @@ export const account_update = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
             owner: isSet(object.owner) ? authority.fromJSON(object.owner) : undefined,
             active: isSet(object.active) ? authority.fromJSON(object.active) : undefined,
             posting: isSet(object.posting) ? authority.fromJSON(object.posting) : undefined,
-            memo_key: isSet(object.memo_key) ? String(object.memo_key) : "",
-            json_metadata: isSet(object.json_metadata) ? String(object.json_metadata) : "",
+            memo_key: isSet(object.memo_key) ? globalThis.String(object.memo_key) : "",
+            json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
         };
     },
     toJSON(message) {

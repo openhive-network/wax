@@ -49,10 +49,10 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface account_update2 {
     account: string;
-    owner: authority | undefined;
-    active: authority | undefined;
-    posting: authority | undefined;
-    memo_key: string;
+    owner?: authority | undefined;
+    active?: authority | undefined;
+    posting?: authority | undefined;
+    memo_key?: string | undefined;
     json_metadata: string;
     posting_json_metadata: string;
     extensions: future_extensions[];
@@ -290,7 +290,7 @@ export declare const account_update2: {
     } & { [K_25 in Exclude<keyof I_1, keyof account_update2>]: never; }>(object: I_1): account_update2;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-export type DeepPartial<T> = T extends Builtin ? T : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
+export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
     [K in keyof T]?: DeepPartial<T[K]>;
 } : Partial<T>;
 type KeysOfUnion<T> = T extends T ? keyof T : never;

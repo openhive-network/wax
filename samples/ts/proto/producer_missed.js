@@ -33,7 +33,7 @@ export const producer_missed = {
         return message;
     },
     fromJSON(object) {
-        return { producer: isSet(object.producer) ? String(object.producer) : "" };
+        return { producer: isSet(object.producer) ? globalThis.String(object.producer) : "" };
     },
     toJSON(message) {
         const obj = {};

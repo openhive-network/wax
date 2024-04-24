@@ -33,7 +33,7 @@ export const system_warning = {
         return message;
     },
     fromJSON(object) {
-        return { message: isSet(object.message) ? String(object.message) : "" };
+        return { message: isSet(object.message) ? globalThis.String(object.message) : "" };
     },
     toJSON(message) {
         const obj = {};

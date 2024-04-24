@@ -53,8 +53,8 @@ export const collateralized_convert = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
-            requestid: isSet(object.requestid) ? Number(object.requestid) : 0,
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
+            requestid: isSet(object.requestid) ? globalThis.Number(object.requestid) : 0,
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
         };
     },

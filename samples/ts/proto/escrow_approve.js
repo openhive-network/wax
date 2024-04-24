@@ -21,7 +21,7 @@ export const escrow_approve = {
         if (message.escrow_id !== 0) {
             writer.uint32(40).uint32(message.escrow_id);
         }
-        if (message.approve === true) {
+        if (message.approve !== false) {
             writer.uint32(48).bool(message.approve);
         }
         return writer;
@@ -79,12 +79,12 @@ export const escrow_approve = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
-            agent: isSet(object.agent) ? String(object.agent) : "",
-            who: isSet(object.who) ? String(object.who) : "",
-            escrow_id: isSet(object.escrow_id) ? Number(object.escrow_id) : 0,
-            approve: isSet(object.approve) ? Boolean(object.approve) : false,
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
+            who: isSet(object.who) ? globalThis.String(object.who) : "",
+            escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
+            approve: isSet(object.approve) ? globalThis.Boolean(object.approve) : false,
         };
     },
     toJSON(message) {

@@ -62,8 +62,8 @@ export const transfer_to_vesting_completed = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from_account) ? String(object.from_account) : "",
-            to_account: isSet(object.to_account) ? String(object.to_account) : "",
+            from_account: isSet(object.from_account) ? globalThis.String(object.from_account) : "",
+            to_account: isSet(object.to_account) ? globalThis.String(object.to_account) : "",
             hive_vested: isSet(object.hive_vested) ? asset.fromJSON(object.hive_vested) : undefined,
             vesting_shares_received: isSet(object.vesting_shares_received)
                 ? asset.fromJSON(object.vesting_shares_received)

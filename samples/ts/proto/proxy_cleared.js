@@ -43,8 +43,8 @@ export const proxy_cleared = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            proxy: isSet(object.proxy) ? String(object.proxy) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            proxy: isSet(object.proxy) ? globalThis.String(object.proxy) : "",
         };
     },
     toJSON(message) {

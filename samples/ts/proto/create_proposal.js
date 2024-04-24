@@ -108,14 +108,14 @@ export const create_proposal = {
     },
     fromJSON(object) {
         return {
-            creator: isSet(object.creator) ? String(object.creator) : "",
-            receiver: isSet(object.receiver) ? String(object.receiver) : "",
-            start_date: isSet(object.start_date) ? String(object.start_date) : "",
-            end_date: isSet(object.end_date) ? String(object.end_date) : "",
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
+            receiver: isSet(object.receiver) ? globalThis.String(object.receiver) : "",
+            start_date: isSet(object.start_date) ? globalThis.String(object.start_date) : "",
+            end_date: isSet(object.end_date) ? globalThis.String(object.end_date) : "",
             daily_pay: isSet(object.daily_pay) ? asset.fromJSON(object.daily_pay) : undefined,
-            subject: isSet(object.subject) ? String(object.subject) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

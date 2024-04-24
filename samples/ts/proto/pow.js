@@ -63,10 +63,10 @@ export const pow_work = {
     },
     fromJSON(object) {
         return {
-            worker: isSet(object.worker) ? String(object.worker) : "",
-            input: isSet(object.input) ? String(object.input) : "",
-            signature: isSet(object.signature) ? String(object.signature) : "",
-            work: isSet(object.work) ? String(object.work) : "",
+            worker: isSet(object.worker) ? globalThis.String(object.worker) : "",
+            input: isSet(object.input) ? globalThis.String(object.input) : "",
+            signature: isSet(object.signature) ? globalThis.String(object.signature) : "",
+            work: isSet(object.work) ? globalThis.String(object.work) : "",
         };
     },
     toJSON(message) {
@@ -167,9 +167,9 @@ export const pow = {
     },
     fromJSON(object) {
         return {
-            worker_account: isSet(object.worker_account) ? String(object.worker_account) : "",
-            block_id: isSet(object.block_id) ? String(object.block_id) : "",
-            nonce: isSet(object.nonce) ? String(object.nonce) : "0",
+            worker_account: isSet(object.worker_account) ? globalThis.String(object.worker_account) : "",
+            block_id: isSet(object.block_id) ? globalThis.String(object.block_id) : "",
+            nonce: isSet(object.nonce) ? globalThis.String(object.nonce) : "0",
             work: isSet(object.work) ? pow_work.fromJSON(object.work) : undefined,
             props: isSet(object.props) ? legacy_chain_properties.fromJSON(object.props) : undefined,
         };

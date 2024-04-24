@@ -4,16 +4,7 @@ import { authority } from "./authority.js";
 import { future_extensions } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseaccount_update2() {
-    return {
-        account: "",
-        owner: undefined,
-        active: undefined,
-        posting: undefined,
-        memo_key: "",
-        json_metadata: "",
-        posting_json_metadata: "",
-        extensions: [],
-    };
+    return { account: "", json_metadata: "", posting_json_metadata: "", extensions: [] };
 }
 export const account_update2 = {
     encode(message, writer = _m0.Writer.create()) {
@@ -29,7 +20,7 @@ export const account_update2 = {
         if (message.posting !== undefined) {
             authority.encode(message.posting, writer.uint32(34).fork()).ldelim();
         }
-        if (message.memo_key !== "") {
+        if (message.memo_key !== undefined && message.memo_key !== "STM1111111111111111111111111111111114T1Anm") {
             writer.uint32(42).string(message.memo_key);
         }
         if (message.json_metadata !== "") {
@@ -108,14 +99,14 @@ export const account_update2 = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
             owner: isSet(object.owner) ? authority.fromJSON(object.owner) : undefined,
             active: isSet(object.active) ? authority.fromJSON(object.active) : undefined,
             posting: isSet(object.posting) ? authority.fromJSON(object.posting) : undefined,
-            memo_key: isSet(object.memo_key) ? String(object.memo_key) : "",
-            json_metadata: isSet(object.json_metadata) ? String(object.json_metadata) : "",
-            posting_json_metadata: isSet(object.posting_json_metadata) ? String(object.posting_json_metadata) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            memo_key: isSet(object.memo_key) ? globalThis.String(object.memo_key) : undefined,
+            json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
+            posting_json_metadata: isSet(object.posting_json_metadata) ? globalThis.String(object.posting_json_metadata) : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
@@ -165,7 +156,7 @@ export const account_update2 = {
         message.posting = (object.posting !== undefined && object.posting !== null)
             ? authority.fromPartial(object.posting)
             : undefined;
-        message.memo_key = (_b = object.memo_key) !== null && _b !== void 0 ? _b : "";
+        message.memo_key = (_b = object.memo_key) !== null && _b !== void 0 ? _b : "STM1111111111111111111111111111111114T1Anm";
         message.json_metadata = (_c = object.json_metadata) !== null && _c !== void 0 ? _c : "";
         message.posting_json_metadata = (_d = object.posting_json_metadata) !== null && _d !== void 0 ? _d : "";
         message.extensions = ((_e = object.extensions) === null || _e === void 0 ? void 0 : _e.map((e) => future_extensions.fromPartial(e))) || [];

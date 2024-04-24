@@ -36,7 +36,7 @@ export const update_proposal_end_date = {
         return message;
     },
     fromJSON(object) {
-        return { end_date: isSet(object.end_date) ? String(object.end_date) : "" };
+        return { end_date: isSet(object.end_date) ? globalThis.String(object.end_date) : "" };
     },
     toJSON(message) {
         const obj = {};
@@ -206,12 +206,12 @@ export const update_proposal = {
     },
     fromJSON(object) {
         return {
-            proposal_id: isSet(object.proposal_id) ? String(object.proposal_id) : "0",
-            creator: isSet(object.creator) ? String(object.creator) : "",
+            proposal_id: isSet(object.proposal_id) ? globalThis.String(object.proposal_id) : "0",
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
             daily_pay: isSet(object.daily_pay) ? asset.fromJSON(object.daily_pay) : undefined,
-            subject: isSet(object.subject) ? String(object.subject) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => update_proposal_extension.fromJSON(e))
                 : [],
         };

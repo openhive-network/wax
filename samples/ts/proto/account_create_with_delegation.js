@@ -131,14 +131,14 @@ export const account_create_with_delegation = {
         return {
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,
             delegation: isSet(object.delegation) ? asset.fromJSON(object.delegation) : undefined,
-            creator: isSet(object.creator) ? String(object.creator) : "",
-            new_account_name: isSet(object.new_account_name) ? String(object.new_account_name) : "",
+            creator: isSet(object.creator) ? globalThis.String(object.creator) : "",
+            new_account_name: isSet(object.new_account_name) ? globalThis.String(object.new_account_name) : "",
             owner: isSet(object.owner) ? authority.fromJSON(object.owner) : undefined,
             active: isSet(object.active) ? authority.fromJSON(object.active) : undefined,
             posting: isSet(object.posting) ? authority.fromJSON(object.posting) : undefined,
-            memo_key: isSet(object.memo_key) ? String(object.memo_key) : "",
-            json_metadata: isSet(object.json_metadata) ? String(object.json_metadata) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            memo_key: isSet(object.memo_key) ? globalThis.String(object.memo_key) : "",
+            json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

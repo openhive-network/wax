@@ -53,9 +53,9 @@ export const change_recovery_account = {
     },
     fromJSON(object) {
         return {
-            account_to_recover: isSet(object.account_to_recover) ? String(object.account_to_recover) : "",
-            new_recovery_account: isSet(object.new_recovery_account) ? String(object.new_recovery_account) : "",
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            account_to_recover: isSet(object.account_to_recover) ? globalThis.String(object.account_to_recover) : "",
+            new_recovery_account: isSet(object.new_recovery_account) ? globalThis.String(object.new_recovery_account) : "",
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };

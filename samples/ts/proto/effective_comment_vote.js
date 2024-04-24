@@ -98,12 +98,12 @@ export const effective_comment_vote = {
     },
     fromJSON(object) {
         return {
-            voter: isSet(object.voter) ? String(object.voter) : "",
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            weight: isSet(object.weight) ? String(object.weight) : "0",
-            rshares: isSet(object.rshares) ? String(object.rshares) : "0",
-            total_vote_weight: isSet(object.total_vote_weight) ? String(object.total_vote_weight) : "0",
+            voter: isSet(object.voter) ? globalThis.String(object.voter) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            weight: isSet(object.weight) ? globalThis.String(object.weight) : "0",
+            rshares: isSet(object.rshares) ? globalThis.String(object.rshares) : "0",
+            total_vote_weight: isSet(object.total_vote_weight) ? globalThis.String(object.total_vote_weight) : "0",
             pending_payout: isSet(object.pending_payout) ? asset.fromJSON(object.pending_payout) : undefined,
         };
     },

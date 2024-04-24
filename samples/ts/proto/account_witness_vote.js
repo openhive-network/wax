@@ -12,7 +12,7 @@ export const account_witness_vote = {
         if (message.witness !== "") {
             writer.uint32(18).string(message.witness);
         }
-        if (message.approve === true) {
+        if (message.approve !== false) {
             writer.uint32(24).bool(message.approve);
         }
         return writer;
@@ -52,9 +52,9 @@ export const account_witness_vote = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            witness: isSet(object.witness) ? String(object.witness) : "",
-            approve: isSet(object.approve) ? Boolean(object.approve) : false,
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            witness: isSet(object.witness) ? globalThis.String(object.witness) : "",
+            approve: isSet(object.approve) ? globalThis.Boolean(object.approve) : false,
         };
     },
     toJSON(message) {

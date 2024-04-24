@@ -35,7 +35,7 @@ export const clear_null_account_balance = {
     },
     fromJSON(object) {
         return {
-            total_cleared: Array.isArray(object === null || object === void 0 ? void 0 : object.total_cleared)
+            total_cleared: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.total_cleared)
                 ? object.total_cleared.map((e) => asset.fromJSON(e))
                 : [],
         };

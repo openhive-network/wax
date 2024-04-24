@@ -44,7 +44,7 @@ export const producer_reward = {
     },
     fromJSON(object) {
         return {
-            producer: isSet(object.producer) ? String(object.producer) : "",
+            producer: isSet(object.producer) ? globalThis.String(object.producer) : "",
             vesting_shares: isSet(object.vesting_shares) ? asset.fromJSON(object.vesting_shares) : undefined,
         };
     },

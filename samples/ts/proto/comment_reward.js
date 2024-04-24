@@ -98,10 +98,10 @@ export const comment_reward = {
     },
     fromJSON(object) {
         return {
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
             payout: isSet(object.payout) ? asset.fromJSON(object.payout) : undefined,
-            author_rewards: isSet(object.author_rewards) ? String(object.author_rewards) : "0",
+            author_rewards: isSet(object.author_rewards) ? globalThis.String(object.author_rewards) : "0",
             total_payout_value: isSet(object.total_payout_value) ? asset.fromJSON(object.total_payout_value) : undefined,
             curator_payout_value: isSet(object.curator_payout_value)
                 ? asset.fromJSON(object.curator_payout_value)

@@ -33,7 +33,7 @@ export const author_reward = {
         if (message.curators_vesting_payout !== undefined) {
             asset.encode(message.curators_vesting_payout, writer.uint32(50).fork()).ldelim();
         }
-        if (message.payout_must_be_claimed === true) {
+        if (message.payout_must_be_claimed !== false) {
             writer.uint32(56).bool(message.payout_must_be_claimed);
         }
         return writer;
@@ -97,15 +97,17 @@ export const author_reward = {
     },
     fromJSON(object) {
         return {
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
             hbd_payout: isSet(object.hbd_payout) ? asset.fromJSON(object.hbd_payout) : undefined,
             hive_payout: isSet(object.hive_payout) ? asset.fromJSON(object.hive_payout) : undefined,
             vesting_payout: isSet(object.vesting_payout) ? asset.fromJSON(object.vesting_payout) : undefined,
             curators_vesting_payout: isSet(object.curators_vesting_payout)
                 ? asset.fromJSON(object.curators_vesting_payout)
                 : undefined,
-            payout_must_be_claimed: isSet(object.payout_must_be_claimed) ? Boolean(object.payout_must_be_claimed) : false,
+            payout_must_be_claimed: isSet(object.payout_must_be_claimed)
+                ? globalThis.Boolean(object.payout_must_be_claimed)
+                : false,
         };
     },
     toJSON(message) {

@@ -53,8 +53,8 @@ export const delegate_vesting_shares = {
     },
     fromJSON(object) {
         return {
-            delegator: isSet(object.delegator) ? String(object.delegator) : "",
-            delegatee: isSet(object.delegatee) ? String(object.delegatee) : "",
+            delegator: isSet(object.delegator) ? globalThis.String(object.delegator) : "",
+            delegatee: isSet(object.delegatee) ? globalThis.String(object.delegatee) : "",
             vesting_shares: isSet(object.vesting_shares) ? asset.fromJSON(object.vesting_shares) : undefined,
         };
     },

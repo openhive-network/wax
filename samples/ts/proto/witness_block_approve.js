@@ -43,8 +43,8 @@ export const witness_block_approve = {
     },
     fromJSON(object) {
         return {
-            witness: isSet(object.witness) ? String(object.witness) : "",
-            block_id: isSet(object.block_id) ? String(object.block_id) : "",
+            witness: isSet(object.witness) ? globalThis.String(object.witness) : "",
+            block_id: isSet(object.block_id) ? globalThis.String(object.block_id) : "",
         };
     },
     toJSON(message) {

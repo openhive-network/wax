@@ -35,7 +35,9 @@ export const consolidate_treasury_balance = {
     },
     fromJSON(object) {
         return {
-            total_moved: Array.isArray(object === null || object === void 0 ? void 0 : object.total_moved) ? object.total_moved.map((e) => asset.fromJSON(e)) : [],
+            total_moved: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.total_moved)
+                ? object.total_moved.map((e) => asset.fromJSON(e))
+                : [],
         };
     },
     toJSON(message) {

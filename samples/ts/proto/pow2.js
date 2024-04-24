@@ -54,9 +54,9 @@ export const pow2_input = {
     },
     fromJSON(object) {
         return {
-            worker_account: isSet(object.worker_account) ? String(object.worker_account) : "",
-            prev_block: isSet(object.prev_block) ? String(object.prev_block) : "",
-            nonce: isSet(object.nonce) ? String(object.nonce) : "0",
+            worker_account: isSet(object.worker_account) ? globalThis.String(object.worker_account) : "",
+            prev_block: isSet(object.prev_block) ? globalThis.String(object.prev_block) : "",
+            nonce: isSet(object.nonce) ? globalThis.String(object.nonce) : "0",
         };
     },
     toJSON(message) {
@@ -127,7 +127,7 @@ export const pow2_pow = {
     fromJSON(object) {
         return {
             input: isSet(object.input) ? pow2_input.fromJSON(object.input) : undefined,
-            pow_summary: isSet(object.pow_summary) ? Number(object.pow_summary) : 0,
+            pow_summary: isSet(object.pow_summary) ? globalThis.Number(object.pow_summary) : 0,
         };
     },
     toJSON(message) {
@@ -222,10 +222,10 @@ export const equihash_proof = {
     },
     fromJSON(object) {
         return {
-            n: isSet(object.n) ? Number(object.n) : 0,
-            k: isSet(object.k) ? Number(object.k) : 0,
-            seed: isSet(object.seed) ? String(object.seed) : "",
-            inputs: Array.isArray(object === null || object === void 0 ? void 0 : object.inputs) ? object.inputs.map((e) => Number(e)) : [],
+            n: isSet(object.n) ? globalThis.Number(object.n) : 0,
+            k: isSet(object.k) ? globalThis.Number(object.k) : 0,
+            seed: isSet(object.seed) ? globalThis.String(object.seed) : "",
+            inputs: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.inputs) ? object.inputs.map((e) => globalThis.Number(e)) : [],
         };
     },
     toJSON(message) {
@@ -320,8 +320,8 @@ export const equihash_pow = {
         return {
             input: isSet(object.input) ? pow2_input.fromJSON(object.input) : undefined,
             proof: isSet(object.proof) ? equihash_proof.fromJSON(object.proof) : undefined,
-            prev_block: isSet(object.prev_block) ? String(object.prev_block) : "",
-            pow_summary: isSet(object.pow_summary) ? Number(object.pow_summary) : 0,
+            prev_block: isSet(object.prev_block) ? globalThis.String(object.prev_block) : "",
+            pow_summary: isSet(object.pow_summary) ? globalThis.Number(object.pow_summary) : 0,
         };
     },
     toJSON(message) {
@@ -426,14 +426,14 @@ export const pow2_work = {
     },
 };
 function createBasepow2() {
-    return { work: undefined, new_owner_key: "", props: undefined };
+    return { work: undefined, props: undefined };
 }
 export const pow2 = {
     encode(message, writer = _m0.Writer.create()) {
         if (message.work !== undefined) {
             pow2_work.encode(message.work, writer.uint32(10).fork()).ldelim();
         }
-        if (message.new_owner_key !== "") {
+        if (message.new_owner_key !== undefined && message.new_owner_key !== "STM1111111111111111111111111111111114T1Anm") {
             writer.uint32(18).string(message.new_owner_key);
         }
         if (message.props !== undefined) {
@@ -477,7 +477,7 @@ export const pow2 = {
     fromJSON(object) {
         return {
             work: isSet(object.work) ? pow2_work.fromJSON(object.work) : undefined,
-            new_owner_key: isSet(object.new_owner_key) ? String(object.new_owner_key) : "",
+            new_owner_key: isSet(object.new_owner_key) ? globalThis.String(object.new_owner_key) : undefined,
             props: isSet(object.props) ? legacy_chain_properties.fromJSON(object.props) : undefined,
         };
     },
@@ -501,7 +501,7 @@ export const pow2 = {
         var _a;
         const message = createBasepow2();
         message.work = (object.work !== undefined && object.work !== null) ? pow2_work.fromPartial(object.work) : undefined;
-        message.new_owner_key = (_a = object.new_owner_key) !== null && _a !== void 0 ? _a : "";
+        message.new_owner_key = (_a = object.new_owner_key) !== null && _a !== void 0 ? _a : "STM1111111111111111111111111111111114T1Anm";
         message.props = (object.props !== undefined && object.props !== null)
             ? legacy_chain_properties.fromPartial(object.props)
             : undefined;

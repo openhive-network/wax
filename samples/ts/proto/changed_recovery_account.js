@@ -52,9 +52,9 @@ export const changed_recovery_account = {
     },
     fromJSON(object) {
         return {
-            account: isSet(object.account) ? String(object.account) : "",
-            old_recovery_account: isSet(object.old_recovery_account) ? String(object.old_recovery_account) : "",
-            new_recovery_account: isSet(object.new_recovery_account) ? String(object.new_recovery_account) : "",
+            account: isSet(object.account) ? globalThis.String(object.account) : "",
+            old_recovery_account: isSet(object.old_recovery_account) ? globalThis.String(object.old_recovery_account) : "",
+            new_recovery_account: isSet(object.new_recovery_account) ? globalThis.String(object.new_recovery_account) : "",
         };
     },
     toJSON(message) {

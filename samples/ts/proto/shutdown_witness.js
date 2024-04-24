@@ -33,7 +33,7 @@ export const shutdown_witness = {
         return message;
     },
     fromJSON(object) {
-        return { owner: isSet(object.owner) ? String(object.owner) : "" };
+        return { owner: isSet(object.owner) ? globalThis.String(object.owner) : "" };
     },
     toJSON(message) {
         const obj = {};

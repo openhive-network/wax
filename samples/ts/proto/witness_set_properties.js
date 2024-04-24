@@ -56,14 +56,14 @@ export const witness_set_properties = {
     },
     fromJSON(object) {
         return {
-            owner: isSet(object.owner) ? String(object.owner) : "",
+            owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
             props: isObject(object.props)
                 ? Object.entries(object.props).reduce((acc, [key, value]) => {
                     acc[key] = String(value);
                     return acc;
                 }, {})
                 : {},
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
@@ -97,7 +97,7 @@ export const witness_set_properties = {
         message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
         message.props = Object.entries((_b = object.props) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
-                acc[key] = String(value);
+                acc[key] = globalThis.String(value);
             }
             return acc;
         }, {});
@@ -146,7 +146,10 @@ export const witness_set_properties_PropsEntry = {
         return message;
     },
     fromJSON(object) {
-        return { key: isSet(object.key) ? String(object.key) : "", value: isSet(object.value) ? String(object.value) : "" };
+        return {
+            key: isSet(object.key) ? globalThis.String(object.key) : "",
+            value: isSet(object.value) ? globalThis.String(object.value) : "",
+        };
     },
     toJSON(message) {
         const obj = {};

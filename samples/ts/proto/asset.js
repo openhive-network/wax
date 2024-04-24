@@ -52,9 +52,9 @@ export const asset = {
     },
     fromJSON(object) {
         return {
-            amount: isSet(object.amount) ? String(object.amount) : "",
-            precision: isSet(object.precision) ? Number(object.precision) : 0,
-            nai: isSet(object.nai) ? String(object.nai) : "",
+            amount: isSet(object.amount) ? globalThis.String(object.amount) : "",
+            precision: isSet(object.precision) ? globalThis.Number(object.precision) : 0,
+            nai: isSet(object.nai) ? globalThis.String(object.nai) : "",
         };
     },
     toJSON(message) {

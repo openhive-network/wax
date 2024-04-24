@@ -35,7 +35,7 @@ export const recurrent_transfer_pair_id = {
         return message;
     },
     fromJSON(object) {
-        return { pair_id: isSet(object.pair_id) ? Number(object.pair_id) : 0 };
+        return { pair_id: isSet(object.pair_id) ? globalThis.Number(object.pair_id) : 0 };
     },
     toJSON(message) {
         const obj = {};
@@ -222,13 +222,13 @@ export const recurrent_transfer = {
     },
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? String(object.from) : "",
-            to_account: isSet(object.to) ? String(object.to) : "",
+            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
-            memo: isSet(object.memo) ? String(object.memo) : "",
-            recurrence: isSet(object.recurrence) ? Number(object.recurrence) : 0,
-            executions: isSet(object.executions) ? Number(object.executions) : 0,
-            extensions: Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
+            recurrence: isSet(object.recurrence) ? globalThis.Number(object.recurrence) : 0,
+            executions: isSet(object.executions) ? globalThis.Number(object.executions) : 0,
+            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
                 ? object.extensions.map((e) => recurrent_transfer_extension.fromJSON(e))
                 : [],
         };

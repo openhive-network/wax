@@ -44,7 +44,7 @@ export const pow_reward = {
     },
     fromJSON(object) {
         return {
-            worker: isSet(object.worker) ? String(object.worker) : "",
+            worker: isSet(object.worker) ? globalThis.String(object.worker) : "",
             reward: isSet(object.reward) ? asset.fromJSON(object.reward) : undefined,
         };
     },

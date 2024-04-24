@@ -61,10 +61,10 @@ export const vote = {
     },
     fromJSON(object) {
         return {
-            voter: isSet(object.voter) ? String(object.voter) : "",
-            author: isSet(object.author) ? String(object.author) : "",
-            permlink: isSet(object.permlink) ? String(object.permlink) : "",
-            weight: isSet(object.weight) ? Number(object.weight) : 0,
+            voter: isSet(object.voter) ? globalThis.String(object.voter) : "",
+            author: isSet(object.author) ? globalThis.String(object.author) : "",
+            permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
+            weight: isSet(object.weight) ? globalThis.Number(object.weight) : 0,
         };
     },
     toJSON(message) {
