@@ -541,7 +541,7 @@ ___
 
 wasm/lib/proto/account_update2.ts:53
 
-wasm/lib/proto/account_update2.ts:77
+wasm/lib/proto/account_update2.ts:68
 
 ___
 
@@ -13559,7 +13559,7 @@ ___
 
 ### active
 
-• **active**: `undefined` \| [`authority`](#authority)
+• `Optional` **active**: [`authority`](#authority)
 
 #### Defined in
 
@@ -13589,7 +13589,7 @@ ___
 
 ### owner
 
-• **owner**: `undefined` \| [`authority`](#authority)
+• `Optional` **owner**: [`authority`](#authority)
 
 #### Defined in
 
@@ -13599,7 +13599,7 @@ ___
 
 ### posting
 
-• **posting**: `undefined` \| [`authority`](#authority)
+• `Optional` **posting**: [`authority`](#authority)
 
 #### Defined in
 
@@ -13697,7 +13697,7 @@ ___
 
 ### active
 
-• **active**: `undefined` \| [`authority`](#authority)
+• `Optional` **active**: [`authority`](#authority)
 
 #### Defined in
 
@@ -13727,7 +13727,7 @@ ___
 
 ### memo\_key
 
-• **memo\_key**: `string`
+• `Optional` **memo\_key**: `string`
 
 #### Defined in
 
@@ -13737,7 +13737,7 @@ ___
 
 ### owner
 
-• **owner**: `undefined` \| [`authority`](#authority)
+• `Optional` **owner**: [`authority`](#authority)
 
 #### Defined in
 
@@ -13747,7 +13747,7 @@ ___
 
 ### posting
 
-• **posting**: `undefined` \| [`authority`](#authority)
+• `Optional` **posting**: [`authority`](#authority)
 
 #### Defined in
 
@@ -18871,7 +18871,7 @@ wasm/lib/proto/pow.ts:16
 
 ### new\_owner\_key
 
-• **new\_owner\_key**: `string`
+• `Optional` **new\_owner\_key**: `string`
 
 #### Defined in
 

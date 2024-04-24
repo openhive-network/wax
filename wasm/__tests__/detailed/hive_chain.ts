@@ -55,6 +55,69 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
 
+   test('Should be able to transmit article buiulder transaction using hive chain interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ beekeeper, chain, wax }) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setPercentHbd(0).setMaxAcceptedPayout(chain.hbd(0));
+      }, "me", "about you", "how r u", {}, "permlink1" );
+
+      tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+
+      console.log(tx.toApi());
+
+      return new wax.BroadcastTransactionRequest(tx);
+    });
+
+    retVal.trx.signatures.splice(0, 1); // We do not want to test signing here which will change due to json_metadata app version and name values
+
+    expect(retVal).toStrictEqual({
+      max_block_age: -1,
+      trx: {
+        operations: [
+          {
+            type: "comment_operation",
+            value: {
+              parent_author: "",
+              parent_permlink: "",
+              author: "me",
+              permlink: "permlink1",
+              title: "about you",
+              body: "how r u",
+              json_metadata: `{\"format\":\"markdown+html\",\"app\":\"${process.env.npm_package_name}/${process.env.npm_package_version}\"}`
+            }
+          },
+          {
+            type: "comment_options_operation",
+            value: {
+              author: "me",
+              permlink: "permlink1",
+              max_accepted_payout: {
+                amount: "0",
+                precision: 3,
+                nai: "@@000000013"
+              },
+              percent_hbd: 0,
+              allow_votes: true,
+              allow_curation_rewards: true
+            }
+          }
+         ],
+        extensions: [],
+        signatures: [],
+        ref_block_num: 51109,
+        ref_block_prefix: 2785934438,
+        expiration: '2023-08-01T15:38:48'
+      }
+    });
+  });
+
    test('Should be able to perform example API call', async ({ waxTest }) => {
      const retVal = await waxTest(async({ chain }) => {
       // https://developers.hive.io/apidefinitions/#account_by_key_api.get_key_references
