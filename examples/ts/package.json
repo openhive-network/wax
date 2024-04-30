@@ -1,5 +1,6 @@
 {
   "name": "examples",
+  "packageManager": "pnpm@9.0.6",
   "scripts": {
     "pretest": "playwright install",
     "test": "pnpx tsx index.ts"
@@ -16,7 +17,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hive/beekeeper": "~1.27.5-rc0-stable.766d1d7bd",
+    "@hive/beekeeper": "1.27.5-rc7-stable.240410185059",
     "@hive/wax": "file:../.."
   },
   "type": "module",
