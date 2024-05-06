@@ -16,14 +16,11 @@ pnpm create vue@latest .
 # Install all dependencies
 pnpm install
 
-# Set the @hive registry location to fetch hive-related packages from
-echo @hive:registry=https://gitlab.syncad.com/api/v4/packages/npm/ >> .npmrc
-
 # Add wax library (the dist-tag should be stable)
-pnpm add @hive/wax@stable
+pnpm add @hiveio/wax@stable
 ```
 
-### You can use the following code as a template for a simple App.vue code implementing wax:
+### You can use the following code as a template for a simple App.vue code implementing wax
 
 ```vue
 <template>
@@ -31,7 +28,7 @@ pnpm add @hive/wax@stable
 </template>
 
 <script lang="ts" setup>
-import { createWaxFoundation } from '@hive/wax';
+import { createWaxFoundation } from '@hiveio/wax';
 import { ref, onBeforeMount } from 'vue';
 
 const version = ref<string>();

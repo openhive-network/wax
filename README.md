@@ -55,13 +55,6 @@ Packages produced for Git protected tags will be versioned according to tag name
 
 All of the required TypeScript-related information is available in the [npm.ts.md](npm.ts.md) file
 
-### Publishing a NPM package
-
-Predefined package.json file has specified some dedicated placeholders to be replaced with actual informations before building a final form of a package and publishing it.
-To replace such placeholders with actual values please use `script/bump_npm_version.sh`.
-
-Warning: Commiting a package.json file without such placeholder definitions is disallowed. See scripts/precommit_hook.sh for placeholder verification details.
-
 ## Testing
 
 ### Python Testing

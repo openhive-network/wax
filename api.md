@@ -1,7 +1,7 @@
 
 <a name="_modulesmd"></a>
 
-# @hive/wax
+# @hiveio/wax
 
 ## Enumerations
 

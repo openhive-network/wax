@@ -13,9 +13,11 @@ Node.js 18 or higher is required.
 Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
+If you want to use development versions of our packages, set `@hiveio` scope to use our GitLab registry:
+
 ```bash
-echo @hive:registry=https://gitlab.syncad.com/api/v4/packages/npm/ >> .npmrc
-npm install @hive/wax
+echo @hiveio:registry=https://gitlab.syncad.com/api/v4/packages/npm/ >> .npmrc
+npm install @hiveio/wax
 ```
 
 ## Usage
@@ -23,7 +25,7 @@ npm install @hive/wax
 Wax is designed to work in web environment by default, so remember to use:
 
 ```ts
-import '@hive/wax/node';
+import '@hiveio/wax/node';
 ```
 
 import when you intend to work in the Node.js environment.
@@ -35,7 +37,7 @@ You may need to set `moduleResolution` to `Bundler` in your `tsconfig.json` in o
 #### Create a TransactionBuilder instance from api data
 
 ```js
-import { createWaxFoundation } from '@hive/wax';
+import { createWaxFoundation } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
@@ -60,7 +62,7 @@ console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 #### Add custom hive apps operations to the TransactionBuilder
 
 ```ts
-import { createWaxFoundation, FollowOperationBuilder } from '@hive/wax';
+import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
@@ -76,8 +78,8 @@ console.info(tx.toApi()); // Print the transaction in the API form
 #### Create a signed transaction
 
 ```js
-import { createHiveChain } from '@hive/wax';
-import beekeeperFactory from '@hive/beekeeper';
+import { createHiveChain } from '@hiveio/wax';
+import beekeeperFactory from '@hiveio/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
 
@@ -108,8 +110,8 @@ console.info(chain.waxify`${stx}`);
 #### Create a transaction and broadcast it using network_broadcast_api
 
 ```js
-import { createHiveChain, BroadcastTransactionRequest } from '@hive/wax';
-import beekeeperFactory from '@hive/beekeeper';
+import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
+import beekeeperFactory from '@hiveio/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
 
@@ -139,7 +141,7 @@ await chain.api.network_broadcast_api.broadcast_transaction(request);
 #### Use custom formatters to output data in specified format
 
 ```ts
-import { createHiveChain, IWaxBaseInterface, IFormatFunctionArguments, WaxFormattable } from '@hive/wax';
+import { createHiveChain, IWaxBaseInterface, IFormatFunctionArguments, WaxFormattable } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 const data = {
@@ -170,7 +172,7 @@ console.info(formatter.waxify`${data}`); // Print formatted data
 #### Calculate user manabar regeneration time
 
 ```ts
-import { createHiveChain } from '@hive/wax';
+import { createHiveChain } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
@@ -185,7 +187,7 @@ in order to use the [transaction_status_api.find_transaction](https://developers
 
 ```ts
 import { IsHexadecimal, IsDateString, IsString } from 'class-validator';
-import { createHiveChain, TWaxExtended } from '@hive/wax';
+import { createHiveChain, TWaxExtended } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 // https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-parameter_json
@@ -232,7 +234,7 @@ In this example we will extend the base Wax endpoints without creating any valid
 The goal is to extend the API interface using TypeScript interfaces-only in order to also use the [transaction_status_api.find_transaction](https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction) API:
 
 ```ts
-import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hive/wax';
+import { createHiveChain, TWaxApiRequest, TWaxExtended } from '@hiveio/wax';
 const chain = await createHiveChain();
 
 // https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-parameter_json
@@ -269,6 +271,15 @@ console.info(result); // { status: 'unknown' }
 ## API
 
 See API definition in [api.md](https://gitlab.syncad.com/hive/wax/-/blob/${CommitSHA}/api.md)
+
+## Publishing an NPM package
+
+Predefined package.json file has specified some dedicated placeholders to be replaced with actual informations before building a final form of a package and publishing it.
+To replace such placeholders with actual values please use [`scripts/bump_npm_version.sh`](scripts/bump_npm_version.sh).
+
+You will also need this file to specify the scope for bumping the `@hiveio` developer versions of our packages
+
+Warning: Commiting a package.json file without such placeholder definitions is disallowed. See [`scripts/precommit_hook.sh`](scripts/precommit_hook.sh) for placeholder verification details.
 
 ## Support and tests
 

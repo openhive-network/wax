@@ -1,5 +1,5 @@
 {
-  "name": "@hive/wax",
+  "name": "@hiveio/wax",
   "version": "0.0.1-LastGitTagPlaceholder.GitHashPlaceholder",
   "description": "Provides Hive Protocol features to JavaScript",
   "main": "wasm/dist/bundle/web.js",

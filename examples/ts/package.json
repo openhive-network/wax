@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@hive/beekeeper": "1.27.5-rc7-stable.240410185059",
-    "@hive/wax": "file:../.."
+    "@hiveio/wax": "file:../.."
   },
   "type": "module",
   "pnpm": {

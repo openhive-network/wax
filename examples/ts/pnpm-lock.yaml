@@ -11,7 +11,7 @@ importers:
       '@hive/beekeeper':
         specifier: 1.27.5-rc7-stable.240410185059
         version: 1.27.5-rc7-stable.240410185059
-      '@hive/wax':
+      '@hiveio/wax':
         specifier: file:../..
         version: file:../..
     devDependencies:
@@ -199,7 +199,7 @@ packages:
     resolution: {integrity: sha1-QZD2KOmBUJSfUiOIJCtX2HFMJWY=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc7-stable.240410185059.tgz}
     engines: {node: '>= 12'}
 
-  '@hive/wax@file:../..':
+  '@hiveio/wax@file:../..':
     resolution: {directory: ../.., type: directory}
     engines: {node: '>= 18'}
 
@@ -1306,7 +1306,7 @@ snapshots:
 
   '@hive/beekeeper@1.27.5-rc7-stable.240410185059': {}
 
-  '@hive/wax@file:../..':
+  '@hiveio/wax@file:../..':
     dependencies:
       '@hive/beekeeper': 1.27.5-rc7-stable.240410185059
       class-transformer: 0.5.1
