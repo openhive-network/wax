@@ -4,7 +4,7 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT_DIR="${SCRIPTPATH}/.."
 
 # registry.npmjs.org/
-REGISTRY_URL="${1:-gitlab.syncad.com/api/v4/groups/136/-/packages/npm/}"
+REGISTRY_URL="${1:-gitlab.syncad.com/api/v4/packages/npm/}"
 PUBLISH_TOKEN="${2:-}"
 SCOPE="${3:-@hiveio}"
 

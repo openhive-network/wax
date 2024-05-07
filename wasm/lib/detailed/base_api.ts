@@ -1,4 +1,4 @@
-import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
+import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
 import type { MainModule, proto_protocol, result } from "../wax_module";
 import type { NaiAsset } from "./api";

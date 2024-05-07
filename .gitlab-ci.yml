@@ -26,6 +26,7 @@ variables:
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
+  NPM_TOKEN: $CI_JOB_TOKEN
 
 image: "${CI_BASE_IMAGE}"
 
@@ -64,12 +65,8 @@ wax_wasm_package_generation:
   stage: build
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
-  variables:
-    PUBLISH_TOKEN: "$HIVE_GROUP_NPM_REGISTRY_TOKEN"
-    NPM_SCOPE: "@hiveio"
-    NPM_REGISTRY: "gitlab.syncad.com/api/v4/groups/${CI_PROJECT_NAMESPACE_ID}/-/packages/npm/"
   script:
-    - scripts/bump_npm_version.sh "$NPM_REGISTRY" "$PUBLISH_TOKEN" "$NPM_SCOPE"
+    - scripts/bump_npm_version.sh
   artifacts:
     paths:
       - "$CI_PROJECT_DIR/.npmrc"
@@ -287,9 +284,9 @@ deploy_wax_wasm_dev_package:
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
   variables:
-    PUBLISH_TOKEN: "$HIVE_GROUP_NPM_REGISTRY_TOKEN"
+    PUBLISH_TOKEN: "$NPM_TOKEN"
     NPM_SCOPE: "@hiveio"
-    NPM_REGISTRY: "gitlab.syncad.com/api/v4/groups/${CI_PROJECT_NAMESPACE_ID}/-/packages/npm/"
+    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/"
 
   script:
     - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1
@@ -308,8 +305,8 @@ deploy_wax_wasm_production_public_npm:
   # emscripten image can be used as it contains all needed tools.
   image: ${EMSCRIPTEN_IMAGE}
   variables:
-    PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN" # Add token variable here
-    NPM_SCOPE: "@hive-staging"
+    PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
+    NPM_SCOPE: "@hiveio"
     NPM_REGISTRY: "registry.npmjs.org/"
   script:
     - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1

@@ -15,7 +15,7 @@ const commonConfiguration = (env, packEntire = false) => ([
     plugins: [
       alias({
         entries: [
-          { find: '@hive/beekeeper', replacement: `@hive/beekeeper/${env}` },
+          { find: '@hiveio/beekeeper', replacement: `@hiveio/beekeeper/${env}` },
           { find: './build_wasm/wax.web.js', replacement: `build_wasm/wax.${env}.js` }
         ]
       }),

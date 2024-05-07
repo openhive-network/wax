@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@hive/beekeeper':
-        specifier: 1.27.5-rc7-stable.240410185059
-        version: 1.27.5-rc7-stable.240410185059
+      '@hiveio/beekeeper':
+        specifier: 1.27.5-rc8-240507135745
+        version: 1.27.5-rc8-240507135745
       '@hiveio/wax':
         specifier: file:../..
         version: file:../..
@@ -195,8 +195,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hive/beekeeper@1.27.5-rc7-stable.240410185059':
-    resolution: {integrity: sha1-QZD2KOmBUJSfUiOIJCtX2HFMJWY=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hive/beekeeper/-/@hive/beekeeper-1.27.5-rc7-stable.240410185059.tgz}
+  '@hiveio/beekeeper@1.27.5-rc8-240507135745':
+    resolution: {integrity: sha1-Z7zv7er+sLc0PF7BBOM53u0QwnU=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.5-rc8-240507135745.tgz}
     engines: {node: '>= 12'}
 
   '@hiveio/wax@file:../..':
@@ -1304,11 +1304,11 @@ snapshots:
   '@esbuild/win32-x64@0.19.11':
     optional: true
 
-  '@hive/beekeeper@1.27.5-rc7-stable.240410185059': {}
+  '@hiveio/beekeeper@1.27.5-rc8-240507135745': {}
 
   '@hiveio/wax@file:../..':
     dependencies:
-      '@hive/beekeeper': 1.27.5-rc7-stable.240410185059
+      '@hiveio/beekeeper': 1.27.5-rc8-240507135745
       class-transformer: 0.5.1
       class-validator: 0.14.0
       long: 5.2.3

@@ -1,6 +1,6 @@
 import { chromium, ChromiumBrowser, ConsoleMessage } from "playwright";
 import { test } from "../assets/jest-helper";
-import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
+import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
 import fs from "fs";
 import { expect } from "@playwright/test";
 import {

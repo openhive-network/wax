@@ -204,8 +204,9 @@ pyrightconfig.json
 build_wasm
 
 # Generated files
-.npmrc
-!examples/ts/.npmrc
+# Wee need .npmrc now for other npm GitLab packages from @hiveio scope
+# .npmrc
+# !examples/ts/.npmrc
 wasm/lib/proto
 dist
 node_modules

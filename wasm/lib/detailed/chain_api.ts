@@ -1,4 +1,4 @@
-import type { IBeekeeperUnlockedWallet } from "@hive/beekeeper";
+import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";

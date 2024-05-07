@@ -1,4 +1,4 @@
-import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hive/beekeeper";
+import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation } from "../protocol.js";

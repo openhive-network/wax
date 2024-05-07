@@ -1,4 +1,4 @@
-import type { TPublicKey } from "@hive/beekeeper";
+import type { TPublicKey } from "@hiveio/beekeeper";
 import { Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDateString, IsNumber, IsNumberString, IsString, Validate, ValidateNested } from "class-validator";
 
