@@ -23,8 +23,12 @@ export default defineConfig<IWaxedTest>({
           chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
+    },
+    {
+      name: "wax_regression_tests",
+      testDir: ".wasm/dist",
+      testMatch: "regression_hive_operations*",
     }
-
   ],
   // Run your local dev server before starting the tests
   webServer: {
