@@ -268,25 +268,20 @@ deploy_wheel_to_pypi:
   <<: *deploy_wheel_needs
 
 deploy_wax_wasm_dev_package:
-  extends: .job-defaults
+  extends: .npm_deploy_package_template
   stage: deploy
-  # emscripten image can be used as it contains all needed tools.
-  image: ${EMSCRIPTEN_IMAGE}
   variables:
-    PUBLISH_TOKEN: "$NPM_TOKEN"
-    NPM_SCOPE: "@hiveio"
-    NPM_REGISTRY: "gitlab.syncad.com/api/v4/projects/${CI_PROJECT_ID}/packages/npm/"
+    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    NPM_PACKAGE_SCOPE: "@hiveio"
 
-  script:
-    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1
-    - scripts/bump_npm_version.sh "$NPM_REGISTRY" "$PUBLISH_TOKEN" "$NPM_SCOPE"
-    - scripts/npm_publish.sh
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+  tags:
+    - public-runner-docker
 
 deploy_wax_wasm_production_public_npm:
   extends: .job-defaults
