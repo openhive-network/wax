@@ -196,22 +196,17 @@ test_wax_protobuf_python_examples:
     - public-runner-docker
 
 test_wax_wasm:
-  extends: .wasm_wax_test_base
+  extends: .npm_test_template
+  variables:
+    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+
   needs:
-    - job: wax_wasm_package_generation
-      artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
     - job: wax_wasm_build_tests
       artifacts: true
-  script:
-    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1
-    - npm run test
-  artifacts:
-    reports:
-      junit: results.xml
-    paths:
-      - "$CI_PROJECT_DIR/results.json"
+  tags:
+    - public-runner-docker
 
 test_wax_wasm_proto_pattern:
   extends: .wasm_wax_test_base
