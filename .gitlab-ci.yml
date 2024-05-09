@@ -61,24 +61,6 @@ verify_poetry_lock_sanity:
   tags:
     - public-runner-docker
 
-wax_wasm_package_generation:
-  extends: .job-defaults
-  stage: build
-  # emscripten image can be used as it contains all needed tools.
-  image: ${EMSCRIPTEN_IMAGE}
-  script:
-    - scripts/bump_npm_version.sh
-  artifacts:
-    paths:
-      - "$CI_PROJECT_DIR/.npmrc"
-      - "$CI_PROJECT_DIR/package.json"
-
-    when: always
-    expire_in: 1 week
-
-  tags:
-    - public-runner-docker
-
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
