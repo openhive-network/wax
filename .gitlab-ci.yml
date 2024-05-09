@@ -99,19 +99,15 @@ wax_wasm_proto_tsc_generation:
     - public-runner-docker
 
 wax_wasm_build_tests:
-  extends: .job-defaults
+  extends: .npm_process_built_package_tarball
   stage: build
-  # emscripten image can be used as it contains all needed tools.
-  image: ${EMSCRIPTEN_IMAGE}
+  variables:
+    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+
   needs:
-    - job: wax_wasm_package_generation
-      artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   script:
-    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1
-    - . "$NVM_DIR/nvm.sh"  # This loads nvm
-    - pnpm install --frozen-lockfile
     - npm run build:test
   artifacts:
     paths:
