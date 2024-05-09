@@ -80,29 +80,20 @@ wax_wasm_package_generation:
     - public-runner-docker
 
 wax_wasm_proto_tsc_generation:
-  extends: .job-defaults
+  extends: .npm_build_template
   stage: build
-  # emscripten image can be used as it contains all needed tools.
-  image: ${EMSCRIPTEN_IMAGE}
-  script:
-    - . "$NVM_DIR/nvm.sh"  # This loads nvm
-    - pnpm install --frozen-lockfile
-    - npm run build
-  after_script:
-    - npm pack --pack-destination "$CI_PROJECT_DIR/wasm/dist"
-  needs:
-    - job: wax_wasm_package_generation
-      artifacts: true
+  variables:
+    DIST_DIR: "$CI_PROJECT_DIR/wasm/dist"
+    NPM_PACKAGE_SCOPE: "@hiveio"
+    NPM_PACKAGE_NAME: "wax"
+
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/dist/lib/build_wasm/wax.web.js" # For base WASM tests
-      - "$CI_PROJECT_DIR/wasm/dist/lib/proto" # For protobuf pattern tests
-      - "$CI_PROJECT_DIR/wasm/dist/lib" # For Node.js tests
-      - "$CI_PROJECT_DIR/wasm/dist/bundle/web-full.js" # For web tests
-      - "$CI_PROJECT_DIR/wasm/dist/hiveio-wax-*.tgz" # Packed package tests
-
-    when: always
-    expire_in: 1 week
+      - "${DIST_DIR}/*.tgz"  # Built package
+      - "${DIST_DIR}/lib/build_wasm/wax.web.js" # For base WASM tests
+      - "${DIST_DIR}/lib/proto" # For protobuf pattern tests
+      - "${DIST_DIR}/lib" # For Node.js tests
+      - "${DIST_DIR}/bundle/web-full.js" # For web tests
 
   tags:
     - public-runner-docker
