@@ -284,25 +284,19 @@ deploy_wax_wasm_dev_package:
     - public-runner-docker
 
 deploy_wax_wasm_production_public_npm:
-  extends: .job-defaults
+  extends: .registry_npmjs_org_deploy_package_template
   stage: deploy
-  # emscripten image can be used as it contains all needed tools.
-  image: ${EMSCRIPTEN_IMAGE}
   variables:
-    PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
-    NPM_SCOPE: "@hiveio"
-    NPM_REGISTRY: "registry.npmjs.org/"
-  script:
-    - tar -xf "$CI_PROJECT_DIR"/wasm/dist/hiveio-wax-*.tgz --strip-components=1
-    - scripts/bump_npm_version.sh "$NPM_REGISTRY" "$PUBLISH_TOKEN" "$NPM_SCOPE"
-    - scripts/npm_publish.sh
+    NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
+    NPM_PACKAGE_NAME: "wax"
+    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-  rules:
-    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
-      when: manual
-      allow_failure: true
+
+  tags:
+    - public-runner-docker
