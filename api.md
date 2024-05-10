@@ -447,9 +447,9 @@ wasm/lib/interfaces.ts:625
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:30
+wasm/lib/proto/account_create.ts:24
 
-wasm/lib/proto/account_create.ts:54
+wasm/lib/proto/account_create.ts:48
 
 ___
 
@@ -470,9 +470,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:16
+wasm/lib/proto/account_create_with_delegation.ts:10
 
-wasm/lib/proto/account_create_with_delegation.ts:44
+wasm/lib/proto/account_create_with_delegation.ts:38
 
 ___
 
@@ -493,9 +493,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_created.ts:24
+wasm/lib/proto/account_created.ts:18
 
-wasm/lib/proto/account_created.ts:35
+wasm/lib/proto/account_created.ts:29
 
 ___
 
@@ -516,9 +516,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:32
+wasm/lib/proto/account_update.ts:26
 
-wasm/lib/proto/account_update.ts:45
+wasm/lib/proto/account_update.ts:39
 
 ___
 
@@ -539,9 +539,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:59
+wasm/lib/proto/account_update2.ts:53
 
-wasm/lib/proto/account_update2.ts:74
+wasm/lib/proto/account_update2.ts:68
 
 ___
 
@@ -562,9 +562,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_witness_proxy.ts:28
+wasm/lib/proto/account_witness_proxy.ts:22
 
-wasm/lib/proto/account_witness_proxy.ts:37
+wasm/lib/proto/account_witness_proxy.ts:31
 
 ___
 
@@ -585,9 +585,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_witness_vote.ts:27
+wasm/lib/proto/account_witness_vote.ts:21
 
-wasm/lib/proto/account_witness_vote.ts:37
+wasm/lib/proto/account_witness_vote.ts:31
 
 ___
 
@@ -608,9 +608,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/asset.ts:12
+wasm/lib/proto/asset.ts:6
 
-wasm/lib/proto/asset.ts:22
+wasm/lib/proto/asset.ts:16
 
 ___
 
@@ -631,9 +631,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:28
+wasm/lib/proto/author_reward.ts:22
 
-wasm/lib/proto/author_reward.ts:50
+wasm/lib/proto/author_reward.ts:44
 
 ___
 
@@ -654,9 +654,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/authority.ts:12
+wasm/lib/proto/authority.ts:6
 
-wasm/lib/proto/authority.ts:32
+wasm/lib/proto/authority.ts:26
 
 ___
 
@@ -677,9 +677,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:25
+wasm/lib/proto/block.ts:19
 
-wasm/lib/proto/block.ts:223
+wasm/lib/proto/block.ts:217
 
 ___
 
@@ -700,9 +700,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/cancel_transfer_from_savings.ts:18
+wasm/lib/proto/cancel_transfer_from_savings.ts:12
 
-wasm/lib/proto/cancel_transfer_from_savings.ts:27
+wasm/lib/proto/cancel_transfer_from_savings.ts:21
 
 ___
 
@@ -723,9 +723,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/change_recovery_account.ts:26
+wasm/lib/proto/change_recovery_account.ts:20
 
-wasm/lib/proto/change_recovery_account.ts:36
+wasm/lib/proto/change_recovery_account.ts:30
 
 ___
 
@@ -746,9 +746,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/changed_recovery_account.ts:20
+wasm/lib/proto/changed_recovery_account.ts:14
 
-wasm/lib/proto/changed_recovery_account.ts:30
+wasm/lib/proto/changed_recovery_account.ts:24
 
 ___
 
@@ -769,9 +769,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_account.ts:26
+wasm/lib/proto/claim_account.ts:20
 
-wasm/lib/proto/claim_account.ts:36
+wasm/lib/proto/claim_account.ts:30
 
 ___
 
@@ -792,9 +792,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_reward_balance.ts:24
+wasm/lib/proto/claim_reward_balance.ts:18
 
-wasm/lib/proto/claim_reward_balance.ts:35
+wasm/lib/proto/claim_reward_balance.ts:29
 
 ___
 
@@ -815,9 +815,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/clear_null_account_balance.ts:20
+wasm/lib/proto/clear_null_account_balance.ts:14
 
-wasm/lib/proto/clear_null_account_balance.ts:28
+wasm/lib/proto/clear_null_account_balance.ts:22
 
 ___
 
@@ -838,9 +838,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert.ts:23
+wasm/lib/proto/collateralized_convert.ts:17
 
-wasm/lib/proto/collateralized_convert.ts:33
+wasm/lib/proto/collateralized_convert.ts:27
 
 ___
 
@@ -861,9 +861,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert_immediate_conversion.ts:22
+wasm/lib/proto/collateralized_convert_immediate_conversion.ts:16
 
-wasm/lib/proto/collateralized_convert_immediate_conversion.ts:32
+wasm/lib/proto/collateralized_convert_immediate_conversion.ts:26
 
 ___
 
@@ -884,9 +884,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:44
+wasm/lib/proto/comment.ts:38
 
-wasm/lib/proto/comment.ts:58
+wasm/lib/proto/comment.ts:52
 
 ___
 
@@ -907,9 +907,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:28
+wasm/lib/proto/comment_benefactor_reward.ts:22
 
-wasm/lib/proto/comment_benefactor_reward.ts:50
+wasm/lib/proto/comment_benefactor_reward.ts:44
 
 ___
 
@@ -930,9 +930,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:61
+wasm/lib/proto/comment_options.ts:55
 
-wasm/lib/proto/comment_options.ts:282
+wasm/lib/proto/comment_options.ts:276
 
 ___
 
@@ -953,9 +953,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_payout_update.ts:20
+wasm/lib/proto/comment_payout_update.ts:14
 
-wasm/lib/proto/comment_payout_update.ts:29
+wasm/lib/proto/comment_payout_update.ts:23
 
 ___
 
@@ -976,9 +976,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:30
+wasm/lib/proto/comment_reward.ts:24
 
-wasm/lib/proto/comment_reward.ts:52
+wasm/lib/proto/comment_reward.ts:46
 
 ___
 
@@ -999,9 +999,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/consolidate_treasury_balance.ts:21
+wasm/lib/proto/consolidate_treasury_balance.ts:15
 
-wasm/lib/proto/consolidate_treasury_balance.ts:29
+wasm/lib/proto/consolidate_treasury_balance.ts:23
 
 ___
 
@@ -1022,9 +1022,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/convert.ts:21
+wasm/lib/proto/convert.ts:15
 
-wasm/lib/proto/convert.ts:31
+wasm/lib/proto/convert.ts:25
 
 ___
 
@@ -1045,9 +1045,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:31
+wasm/lib/proto/create_claimed_account.ts:25
 
-wasm/lib/proto/create_claimed_account.ts:55
+wasm/lib/proto/create_claimed_account.ts:49
 
 ___
 
@@ -1068,9 +1068,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:33
+wasm/lib/proto/create_proposal.ts:27
 
-wasm/lib/proto/create_proposal.ts:57
+wasm/lib/proto/create_proposal.ts:51
 
 ___
 
@@ -1091,9 +1091,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:25
+wasm/lib/proto/curation_reward.ts:19
 
-wasm/lib/proto/curation_reward.ts:37
+wasm/lib/proto/curation_reward.ts:31
 
 ___
 
@@ -1114,9 +1114,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom.ts:20
+wasm/lib/proto/custom.ts:14
 
-wasm/lib/proto/custom.ts:30
+wasm/lib/proto/custom.ts:24
 
 ___
 
@@ -1137,9 +1137,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom_json.ts:28
+wasm/lib/proto/custom_json.ts:22
 
-wasm/lib/proto/custom_json.ts:39
+wasm/lib/proto/custom_json.ts:33
 
 ___
 
@@ -1160,9 +1160,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/decline_voting_rights.ts:24
+wasm/lib/proto/decline_voting_rights.ts:18
 
-wasm/lib/proto/decline_voting_rights.ts:33
+wasm/lib/proto/decline_voting_rights.ts:27
 
 ___
 
@@ -1183,9 +1183,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/declined_voting_rights.ts:18
+wasm/lib/proto/declined_voting_rights.ts:12
 
-wasm/lib/proto/declined_voting_rights.ts:26
+wasm/lib/proto/declined_voting_rights.ts:20
 
 ___
 
@@ -1206,9 +1206,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delayed_voting.ts:22
+wasm/lib/proto/delayed_voting.ts:16
 
-wasm/lib/proto/delayed_voting.ts:31
+wasm/lib/proto/delayed_voting.ts:25
 
 ___
 
@@ -1229,9 +1229,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delegate_vesting_shares.ts:31
+wasm/lib/proto/delegate_vesting_shares.ts:25
 
-wasm/lib/proto/delegate_vesting_shares.ts:41
+wasm/lib/proto/delegate_vesting_shares.ts:35
 
 ___
 
@@ -1252,9 +1252,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delete_comment.ts:19
+wasm/lib/proto/delete_comment.ts:13
 
-wasm/lib/proto/delete_comment.ts:28
+wasm/lib/proto/delete_comment.ts:22
 
 ___
 
@@ -1275,9 +1275,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/dhf_conversion.ts:23
+wasm/lib/proto/dhf_conversion.ts:17
 
-wasm/lib/proto/dhf_conversion.ts:33
+wasm/lib/proto/dhf_conversion.ts:27
 
 ___
 
@@ -1298,9 +1298,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/dhf_funding.ts:22
+wasm/lib/proto/dhf_funding.ts:16
 
-wasm/lib/proto/dhf_funding.ts:31
+wasm/lib/proto/dhf_funding.ts:25
 
 ___
 
@@ -1321,9 +1321,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:27
+wasm/lib/proto/effective_comment_vote.ts:21
 
-wasm/lib/proto/effective_comment_vote.ts:49
+wasm/lib/proto/effective_comment_vote.ts:43
 
 ___
 
@@ -1344,9 +1344,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:27
+wasm/lib/proto/escrow_approve.ts:21
 
-wasm/lib/proto/escrow_approve.ts:40
+wasm/lib/proto/escrow_approve.ts:34
 
 ___
 
@@ -1367,9 +1367,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:24
+wasm/lib/proto/escrow_approved.ts:18
 
-wasm/lib/proto/escrow_approved.ts:36
+wasm/lib/proto/escrow_approved.ts:30
 
 ___
 
@@ -1390,9 +1390,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:22
+wasm/lib/proto/escrow_dispute.ts:16
 
-wasm/lib/proto/escrow_dispute.ts:34
+wasm/lib/proto/escrow_dispute.ts:28
 
 ___
 
@@ -1413,9 +1413,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:28
+wasm/lib/proto/escrow_rejected.ts:22
 
-wasm/lib/proto/escrow_rejected.ts:50
+wasm/lib/proto/escrow_rejected.ts:44
 
 ___
 
@@ -1436,9 +1436,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:30
+wasm/lib/proto/escrow_release.ts:24
 
-wasm/lib/proto/escrow_release.ts:54
+wasm/lib/proto/escrow_release.ts:48
 
 ___
 
@@ -1459,9 +1459,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:38
+wasm/lib/proto/escrow_transfer.ts:32
 
-wasm/lib/proto/escrow_transfer.ts:66
+wasm/lib/proto/escrow_transfer.ts:60
 
 ___
 
@@ -1482,9 +1482,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/expired_account_notification.ts:19
+wasm/lib/proto/expired_account_notification.ts:13
 
-wasm/lib/proto/expired_account_notification.ts:27
+wasm/lib/proto/expired_account_notification.ts:21
 
 ___
 
@@ -1505,9 +1505,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:28
+wasm/lib/proto/failed_recurrent_transfer.ts:22
 
-wasm/lib/proto/failed_recurrent_transfer.ts:50
+wasm/lib/proto/failed_recurrent_transfer.ts:44
 
 ___
 
@@ -1528,9 +1528,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/feed_publish.ts:22
+wasm/lib/proto/feed_publish.ts:16
 
-wasm/lib/proto/feed_publish.ts:31
+wasm/lib/proto/feed_publish.ts:25
 
 ___
 
@@ -1551,9 +1551,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:26
+wasm/lib/proto/fill_collateralized_convert_request.ts:20
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:38
+wasm/lib/proto/fill_collateralized_convert_request.ts:32
 
 ___
 
@@ -1574,9 +1574,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_convert_request.ts:22
+wasm/lib/proto/fill_convert_request.ts:16
 
-wasm/lib/proto/fill_convert_request.ts:33
+wasm/lib/proto/fill_convert_request.ts:27
 
 ___
 
@@ -1597,9 +1597,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:25
+wasm/lib/proto/fill_order.ts:19
 
-wasm/lib/proto/fill_order.ts:45
+wasm/lib/proto/fill_order.ts:39
 
 ___
 
@@ -1620,9 +1620,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:27
+wasm/lib/proto/fill_recurrent_transfer.ts:21
 
-wasm/lib/proto/fill_recurrent_transfer.ts:39
+wasm/lib/proto/fill_recurrent_transfer.ts:33
 
 ___
 
@@ -1643,9 +1643,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:24
+wasm/lib/proto/fill_transfer_from_savings.ts:18
 
-wasm/lib/proto/fill_transfer_from_savings.ts:36
+wasm/lib/proto/fill_transfer_from_savings.ts:30
 
 ___
 
@@ -1666,9 +1666,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_vesting_withdraw.ts:24
+wasm/lib/proto/fill_vesting_withdraw.ts:18
 
-wasm/lib/proto/fill_vesting_withdraw.ts:35
+wasm/lib/proto/fill_vesting_withdraw.ts:29
 
 ___
 
@@ -1689,9 +1689,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/future_extensions.ts:15
+wasm/lib/proto/future_extensions.ts:9
 
-wasm/lib/proto/future_extensions.ts:66
+wasm/lib/proto/future_extensions.ts:60
 
 ___
 
@@ -1712,9 +1712,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork.ts:18
+wasm/lib/proto/hardfork.ts:12
 
-wasm/lib/proto/hardfork.ts:26
+wasm/lib/proto/hardfork.ts:20
 
 ___
 
@@ -1735,9 +1735,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:25
+wasm/lib/proto/hardfork_hive.ts:19
 
-wasm/lib/proto/hardfork_hive.ts:47
+wasm/lib/proto/hardfork_hive.ts:41
 
 ___
 
@@ -1758,9 +1758,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive_restore.ts:25
+wasm/lib/proto/hardfork_hive_restore.ts:19
 
-wasm/lib/proto/hardfork_hive_restore.ts:36
+wasm/lib/proto/hardfork_hive_restore.ts:30
 
 ___
 
@@ -1781,9 +1781,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/ineffective_delete_comment.ts:21
+wasm/lib/proto/ineffective_delete_comment.ts:15
 
-wasm/lib/proto/ineffective_delete_comment.ts:30
+wasm/lib/proto/ineffective_delete_comment.ts:24
 
 ___
 
@@ -1804,9 +1804,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/interest.ts:23
+wasm/lib/proto/interest.ts:17
 
-wasm/lib/proto/interest.ts:33
+wasm/lib/proto/interest.ts:27
 
 ___
 
@@ -1827,9 +1827,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/legacy_chain_properties.ts:25
+wasm/lib/proto/legacy_chain_properties.ts:19
 
-wasm/lib/proto/legacy_chain_properties.ts:35
+wasm/lib/proto/legacy_chain_properties.ts:29
 
 ___
 
@@ -1850,9 +1850,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancel.ts:20
+wasm/lib/proto/limit_order_cancel.ts:14
 
-wasm/lib/proto/limit_order_cancel.ts:29
+wasm/lib/proto/limit_order_cancel.ts:23
 
 ___
 
@@ -1873,9 +1873,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancelled.ts:24
+wasm/lib/proto/limit_order_cancelled.ts:18
 
-wasm/lib/proto/limit_order_cancelled.ts:34
+wasm/lib/proto/limit_order_cancelled.ts:28
 
 ___
 
@@ -1896,9 +1896,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:33
+wasm/lib/proto/limit_order_create.ts:27
 
-wasm/lib/proto/limit_order_create.ts:53
+wasm/lib/proto/limit_order_create.ts:47
 
 ___
 
@@ -1919,9 +1919,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:29
+wasm/lib/proto/limit_order_create2.ts:23
 
-wasm/lib/proto/limit_order_create2.ts:49
+wasm/lib/proto/limit_order_create2.ts:43
 
 ___
 
@@ -1942,9 +1942,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/liquidity_reward.ts:22
+wasm/lib/proto/liquidity_reward.ts:16
 
-wasm/lib/proto/liquidity_reward.ts:31
+wasm/lib/proto/liquidity_reward.ts:25
 
 ___
 
@@ -1965,9 +1965,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:106
+wasm/lib/proto/operation.ts:100
 
-wasm/lib/proto/operation.ts:206
+wasm/lib/proto/operation.ts:200
 
 ___
 
@@ -1988,9 +1988,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:21
+wasm/lib/proto/pow.ts:15
 
-wasm/lib/proto/pow.ts:137
+wasm/lib/proto/pow.ts:131
 
 ___
 
@@ -2011,9 +2011,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow2.ts:44
+wasm/lib/proto/pow2.ts:38
 
-wasm/lib/proto/pow2.ts:519
+wasm/lib/proto/pow2.ts:513
 
 ___
 
@@ -2034,9 +2034,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow_reward.ts:21
+wasm/lib/proto/pow_reward.ts:15
 
-wasm/lib/proto/pow_reward.ts:30
+wasm/lib/proto/pow_reward.ts:24
 
 ___
 
@@ -2057,9 +2057,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/price.ts:28
+wasm/lib/proto/price.ts:22
 
-wasm/lib/proto/price.ts:37
+wasm/lib/proto/price.ts:31
 
 ___
 
@@ -2080,9 +2080,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/producer_missed.ts:19
+wasm/lib/proto/producer_missed.ts:13
 
-wasm/lib/proto/producer_missed.ts:27
+wasm/lib/proto/producer_missed.ts:21
 
 ___
 
@@ -2103,9 +2103,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/producer_reward.ts:20
+wasm/lib/proto/producer_reward.ts:14
 
-wasm/lib/proto/producer_reward.ts:29
+wasm/lib/proto/producer_reward.ts:23
 
 ___
 
@@ -2126,9 +2126,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_fee.ts:22
+wasm/lib/proto/proposal_fee.ts:16
 
-wasm/lib/proto/proposal_fee.ts:33
+wasm/lib/proto/proposal_fee.ts:27
 
 ___
 
@@ -2149,9 +2149,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_pay.ts:23
+wasm/lib/proto/proposal_pay.ts:17
 
-wasm/lib/proto/proposal_pay.ts:34
+wasm/lib/proto/proposal_pay.ts:28
 
 ___
 
@@ -2172,9 +2172,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proxy_cleared.ts:33
+wasm/lib/proto/proxy_cleared.ts:27
 
-wasm/lib/proto/proxy_cleared.ts:42
+wasm/lib/proto/proxy_cleared.ts:36
 
 ___
 
@@ -2195,9 +2195,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recover_account.ts:30
+wasm/lib/proto/recover_account.ts:24
 
-wasm/lib/proto/recover_account.ts:41
+wasm/lib/proto/recover_account.ts:35
 
 ___
 
@@ -2218,9 +2218,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:54
+wasm/lib/proto/recurrent_transfer.ts:48
 
-wasm/lib/proto/recurrent_transfer.ts:214
+wasm/lib/proto/recurrent_transfer.ts:208
 
 ___
 
@@ -2241,9 +2241,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/remove_proposal.ts:21
+wasm/lib/proto/remove_proposal.ts:15
 
-wasm/lib/proto/remove_proposal.ts:31
+wasm/lib/proto/remove_proposal.ts:25
 
 ___
 
@@ -2264,9 +2264,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/request_account_recovery.ts:54
+wasm/lib/proto/request_account_recovery.ts:48
 
-wasm/lib/proto/request_account_recovery.ts:65
+wasm/lib/proto/request_account_recovery.ts:59
 
 ___
 
@@ -2287,9 +2287,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/return_vesting_delegation.ts:21
+wasm/lib/proto/return_vesting_delegation.ts:15
 
-wasm/lib/proto/return_vesting_delegation.ts:30
+wasm/lib/proto/return_vesting_delegation.ts:24
 
 ___
 
@@ -2310,9 +2310,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:32
+wasm/lib/proto/set_withdraw_vesting_route.ts:26
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:43
+wasm/lib/proto/set_withdraw_vesting_route.ts:37
 
 ___
 
@@ -2333,9 +2333,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/shutdown_witness.ts:20
+wasm/lib/proto/shutdown_witness.ts:14
 
-wasm/lib/proto/shutdown_witness.ts:28
+wasm/lib/proto/shutdown_witness.ts:22
 
 ___
 
@@ -2356,9 +2356,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/system_warning.ts:28
+wasm/lib/proto/system_warning.ts:22
 
-wasm/lib/proto/system_warning.ts:36
+wasm/lib/proto/system_warning.ts:30
 
 ___
 
@@ -2379,9 +2379,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:14
+wasm/lib/proto/transaction.ts:8
 
-wasm/lib/proto/transaction.ts:28
+wasm/lib/proto/transaction.ts:22
 
 ___
 
@@ -2402,9 +2402,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer.ts:25
+wasm/lib/proto/transfer.ts:19
 
-wasm/lib/proto/transfer.ts:36
+wasm/lib/proto/transfer.ts:30
 
 ___
 
@@ -2425,9 +2425,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:22
+wasm/lib/proto/transfer_from_savings.ts:16
 
-wasm/lib/proto/transfer_from_savings.ts:34
+wasm/lib/proto/transfer_from_savings.ts:28
 
 ___
 
@@ -2448,9 +2448,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_savings.ts:27
+wasm/lib/proto/transfer_to_savings.ts:21
 
-wasm/lib/proto/transfer_to_savings.ts:38
+wasm/lib/proto/transfer_to_savings.ts:32
 
 ___
 
@@ -2471,9 +2471,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting.ts:26
+wasm/lib/proto/transfer_to_vesting.ts:20
 
-wasm/lib/proto/transfer_to_vesting.ts:36
+wasm/lib/proto/transfer_to_vesting.ts:30
 
 ___
 
@@ -2494,9 +2494,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:25
+wasm/lib/proto/transfer_to_vesting_completed.ts:19
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:36
+wasm/lib/proto/transfer_to_vesting_completed.ts:30
 
 ___
 
@@ -2517,9 +2517,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:36
+wasm/lib/proto/update_proposal.ts:30
 
-wasm/lib/proto/update_proposal.ts:187
+wasm/lib/proto/update_proposal.ts:181
 
 ___
 
@@ -2540,9 +2540,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal_votes.ts:32
+wasm/lib/proto/update_proposal_votes.ts:26
 
-wasm/lib/proto/update_proposal_votes.ts:43
+wasm/lib/proto/update_proposal_votes.ts:37
 
 ___
 
@@ -2563,9 +2563,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vesting_shares_split.ts:23
+wasm/lib/proto/vesting_shares_split.ts:17
 
-wasm/lib/proto/vesting_shares_split.ts:33
+wasm/lib/proto/vesting_shares_split.ts:27
 
 ___
 
@@ -2586,9 +2586,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vote.ts:55
+wasm/lib/proto/vote.ts:49
 
-wasm/lib/proto/vote.ts:66
+wasm/lib/proto/vote.ts:60
 
 ___
 
@@ -2609,9 +2609,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/withdraw_vesting.ts:28
+wasm/lib/proto/withdraw_vesting.ts:22
 
-wasm/lib/proto/withdraw_vesting.ts:37
+wasm/lib/proto/withdraw_vesting.ts:31
 
 ___
 
@@ -2632,9 +2632,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_block_approve.ts:20
+wasm/lib/proto/witness_block_approve.ts:14
 
-wasm/lib/proto/witness_block_approve.ts:29
+wasm/lib/proto/witness_block_approve.ts:23
 
 ___
 
@@ -2655,9 +2655,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_set_properties.ts:25
+wasm/lib/proto/witness_set_properties.ts:19
 
-wasm/lib/proto/witness_set_properties.ts:40
+wasm/lib/proto/witness_set_properties.ts:34
 
 ___
 
@@ -2678,9 +2678,9 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:30
+wasm/lib/proto/witness_update.ts:24
 
-wasm/lib/proto/witness_update.ts:42
+wasm/lib/proto/witness_update.ts:36
 
 ## Functions
 
@@ -13442,7 +13442,7 @@ Not authority, public memo key.
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:35
+wasm/lib/proto/account_create.ts:29
 
 ___
 
@@ -13452,7 +13452,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:32
+wasm/lib/proto/account_create.ts:26
 
 ___
 
@@ -13462,7 +13462,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:31
+wasm/lib/proto/account_create.ts:25
 
 ___
 
@@ -13472,7 +13472,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:38
+wasm/lib/proto/account_create.ts:32
 
 ___
 
@@ -13482,7 +13482,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:37
+wasm/lib/proto/account_create.ts:31
 
 ___
 
@@ -13492,7 +13492,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:33
+wasm/lib/proto/account_create.ts:27
 
 ___
 
@@ -13502,7 +13502,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:34
+wasm/lib/proto/account_create.ts:28
 
 ___
 
@@ -13512,7 +13512,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create.ts:36
+wasm/lib/proto/account_create.ts:30
 
 
 <a name="interfacesaccount_create_with_delegationmd"></a>
@@ -13529,7 +13529,7 @@ Deprecated.
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:22
+wasm/lib/proto/account_create_with_delegation.ts:16
 
 ___
 
@@ -13539,7 +13539,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:19
+wasm/lib/proto/account_create_with_delegation.ts:13
 
 ___
 
@@ -13549,7 +13549,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:18
+wasm/lib/proto/account_create_with_delegation.ts:12
 
 ___
 
@@ -13559,7 +13559,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:26
+wasm/lib/proto/account_create_with_delegation.ts:20
 
 ___
 
@@ -13569,7 +13569,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:17
+wasm/lib/proto/account_create_with_delegation.ts:11
 
 ___
 
@@ -13579,7 +13579,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:25
+wasm/lib/proto/account_create_with_delegation.ts:19
 
 ___
 
@@ -13589,7 +13589,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:24
+wasm/lib/proto/account_create_with_delegation.ts:18
 
 ___
 
@@ -13599,7 +13599,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:20
+wasm/lib/proto/account_create_with_delegation.ts:14
 
 ___
 
@@ -13609,7 +13609,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:21
+wasm/lib/proto/account_create_with_delegation.ts:15
 
 ___
 
@@ -13619,7 +13619,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_create_with_delegation.ts:23
+wasm/lib/proto/account_create_with_delegation.ts:17
 
 
 <a name="interfacesaccount_createdmd"></a>
@@ -13655,7 +13655,7 @@ account that initiated new account creation (genesis and mined accounts are thei
 
 #### Defined in
 
-wasm/lib/proto/account_created.ts:26
+wasm/lib/proto/account_created.ts:20
 
 ___
 
@@ -13665,7 +13665,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_created.ts:28
+wasm/lib/proto/account_created.ts:22
 
 ___
 
@@ -13675,7 +13675,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_created.ts:27
+wasm/lib/proto/account_created.ts:21
 
 ___
 
@@ -13685,7 +13685,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_created.ts:25
+wasm/lib/proto/account_created.ts:19
 
 
 <a name="interfacesaccount_updatemd"></a>
@@ -13735,7 +13735,7 @@ json_string; in order to update the {json_metadata}, the active authority is req
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:33
+wasm/lib/proto/account_update.ts:27
 
 ___
 
@@ -13745,7 +13745,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:35
+wasm/lib/proto/account_update.ts:29
 
 ___
 
@@ -13755,7 +13755,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:38
+wasm/lib/proto/account_update.ts:32
 
 ___
 
@@ -13765,7 +13765,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:37
+wasm/lib/proto/account_update.ts:31
 
 ___
 
@@ -13775,7 +13775,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:34
+wasm/lib/proto/account_update.ts:28
 
 ___
 
@@ -13785,7 +13785,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update.ts:36
+wasm/lib/proto/account_update.ts:30
 
 
 <a name="interfacesaccount_update2md"></a>
@@ -13873,7 +13873,7 @@ json_string; In order to update the { posting_json_metadata },
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:60
+wasm/lib/proto/account_update2.ts:54
 
 ___
 
@@ -13883,7 +13883,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:62
+wasm/lib/proto/account_update2.ts:56
 
 ___
 
@@ -13893,7 +13893,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:67
+wasm/lib/proto/account_update2.ts:61
 
 ___
 
@@ -13903,7 +13903,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:65
+wasm/lib/proto/account_update2.ts:59
 
 ___
 
@@ -13913,7 +13913,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:64
+wasm/lib/proto/account_update2.ts:58
 
 ___
 
@@ -13923,7 +13923,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:61
+wasm/lib/proto/account_update2.ts:55
 
 ___
 
@@ -13933,7 +13933,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:63
+wasm/lib/proto/account_update2.ts:57
 
 ___
 
@@ -13943,7 +13943,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_update2.ts:66
+wasm/lib/proto/account_update2.ts:60
 
 
 <a name="interfacesaccount_witness_proxymd"></a>
@@ -13976,7 +13976,7 @@ Account name. To remove the proxy, the parameter should be set empty.
 
 #### Defined in
 
-wasm/lib/proto/account_witness_proxy.ts:29
+wasm/lib/proto/account_witness_proxy.ts:23
 
 ___
 
@@ -13986,7 +13986,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_witness_proxy.ts:30
+wasm/lib/proto/account_witness_proxy.ts:24
 
 
 <a name="interfacesaccount_witness_votemd"></a>
@@ -14021,7 +14021,7 @@ To vote for the witness, the approve = true. To remove the vote, the approve = f
 
 #### Defined in
 
-wasm/lib/proto/account_witness_vote.ts:28
+wasm/lib/proto/account_witness_vote.ts:22
 
 ___
 
@@ -14031,7 +14031,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_witness_vote.ts:30
+wasm/lib/proto/account_witness_vote.ts:24
 
 ___
 
@@ -14041,7 +14041,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/account_witness_vote.ts:29
+wasm/lib/proto/account_witness_vote.ts:23
 
 
 <a name="interfacesassetmd"></a>
@@ -14056,7 +14056,7 @@ wasm/lib/proto/account_witness_vote.ts:29
 
 #### Defined in
 
-wasm/lib/proto/asset.ts:13
+wasm/lib/proto/asset.ts:7
 
 ___
 
@@ -14066,7 +14066,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/asset.ts:15
+wasm/lib/proto/asset.ts:9
 
 ___
 
@@ -14076,7 +14076,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/asset.ts:14
+wasm/lib/proto/asset.ts:8
 
 
 <a name="interfacesauthor_rewardmd"></a>
@@ -14128,7 +14128,7 @@ true if payouts require use of claim_reward_balance_operation
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:29
+wasm/lib/proto/author_reward.ts:23
 
 ___
 
@@ -14138,7 +14138,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:34
+wasm/lib/proto/author_reward.ts:28
 
 ___
 
@@ -14148,7 +14148,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:31
+wasm/lib/proto/author_reward.ts:25
 
 ___
 
@@ -14158,7 +14158,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:32
+wasm/lib/proto/author_reward.ts:26
 
 ___
 
@@ -14168,7 +14168,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:35
+wasm/lib/proto/author_reward.ts:29
 
 ___
 
@@ -14178,7 +14178,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:30
+wasm/lib/proto/author_reward.ts:24
 
 ___
 
@@ -14188,7 +14188,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/author_reward.ts:33
+wasm/lib/proto/author_reward.ts:27
 
 
 <a name="interfacesauthoritymd"></a>
@@ -14207,7 +14207,7 @@ wasm/lib/proto/author_reward.ts:33
 
 #### Defined in
 
-wasm/lib/proto/authority.ts:14
+wasm/lib/proto/authority.ts:8
 
 ___
 
@@ -14221,7 +14221,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/authority.ts:15
+wasm/lib/proto/authority.ts:9
 
 ___
 
@@ -14231,7 +14231,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/authority.ts:13
+wasm/lib/proto/authority.ts:7
 
 
 <a name="interfacesblockmd"></a>
@@ -14246,7 +14246,7 @@ wasm/lib/proto/authority.ts:13
 
 #### Defined in
 
-wasm/lib/proto/block.ts:33
+wasm/lib/proto/block.ts:27
 
 ___
 
@@ -14256,7 +14256,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:30
+wasm/lib/proto/block.ts:24
 
 ___
 
@@ -14266,7 +14266,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:26
+wasm/lib/proto/block.ts:20
 
 ___
 
@@ -14276,7 +14276,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:34
+wasm/lib/proto/block.ts:28
 
 ___
 
@@ -14286,7 +14286,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:27
+wasm/lib/proto/block.ts:21
 
 ___
 
@@ -14296,7 +14296,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:35
+wasm/lib/proto/block.ts:29
 
 ___
 
@@ -14306,7 +14306,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:29
+wasm/lib/proto/block.ts:23
 
 ___
 
@@ -14316,7 +14316,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:32
+wasm/lib/proto/block.ts:26
 
 ___
 
@@ -14326,7 +14326,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:28
+wasm/lib/proto/block.ts:22
 
 ___
 
@@ -14336,7 +14336,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/block.ts:31
+wasm/lib/proto/block.ts:25
 
 
 <a name="interfacescancel_transfer_from_savingsmd"></a>
@@ -14357,7 +14357,7 @@ Funds withdrawals from the savings can be canceled at any time before it is exec
 
 #### Defined in
 
-wasm/lib/proto/cancel_transfer_from_savings.ts:19
+wasm/lib/proto/cancel_transfer_from_savings.ts:13
 
 ___
 
@@ -14367,7 +14367,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/cancel_transfer_from_savings.ts:20
+wasm/lib/proto/cancel_transfer_from_savings.ts:14
 
 
 <a name="interfaceschange_recovery_accountmd"></a>
@@ -14396,7 +14396,7 @@ The operation is done with a 30 days (HIVE_OWNER_AUTH_RECOVERY_PERIOD) delay.
 
 #### Defined in
 
-wasm/lib/proto/change_recovery_account.ts:27
+wasm/lib/proto/change_recovery_account.ts:21
 
 ___
 
@@ -14406,7 +14406,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/change_recovery_account.ts:29
+wasm/lib/proto/change_recovery_account.ts:23
 
 ___
 
@@ -14416,7 +14416,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/change_recovery_account.ts:28
+wasm/lib/proto/change_recovery_account.ts:22
 
 
 <a name="interfaceschanged_recovery_accountmd"></a>
@@ -14446,7 +14446,7 @@ new recovery account
 
 #### Defined in
 
-wasm/lib/proto/changed_recovery_account.ts:21
+wasm/lib/proto/changed_recovery_account.ts:15
 
 ___
 
@@ -14456,7 +14456,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/changed_recovery_account.ts:23
+wasm/lib/proto/changed_recovery_account.ts:17
 
 ___
 
@@ -14466,7 +14466,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/changed_recovery_account.ts:22
+wasm/lib/proto/changed_recovery_account.ts:16
 
 
 <a name="interfacesclaim_accountmd"></a>
@@ -14500,7 +14500,7 @@ Not currently used.
 
 #### Defined in
 
-wasm/lib/proto/claim_account.ts:27
+wasm/lib/proto/claim_account.ts:21
 
 ___
 
@@ -14510,7 +14510,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_account.ts:29
+wasm/lib/proto/claim_account.ts:23
 
 ___
 
@@ -14520,7 +14520,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_account.ts:28
+wasm/lib/proto/claim_account.ts:22
 
 
 <a name="interfacesclaim_reward_balancemd"></a>
@@ -14556,7 +14556,7 @@ The amount of HP reward to be transferred to vesting balance.
 
 #### Defined in
 
-wasm/lib/proto/claim_reward_balance.ts:25
+wasm/lib/proto/claim_reward_balance.ts:19
 
 ___
 
@@ -14566,7 +14566,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_reward_balance.ts:27
+wasm/lib/proto/claim_reward_balance.ts:21
 
 ___
 
@@ -14576,7 +14576,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_reward_balance.ts:26
+wasm/lib/proto/claim_reward_balance.ts:20
 
 ___
 
@@ -14586,7 +14586,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/claim_reward_balance.ts:28
+wasm/lib/proto/claim_reward_balance.ts:22
 
 
 <a name="interfacesclear_null_account_balancemd"></a>
@@ -14609,7 +14609,7 @@ assets from 'null' account balances.
 
 #### Defined in
 
-wasm/lib/proto/clear_null_account_balance.ts:21
+wasm/lib/proto/clear_null_account_balance.ts:15
 
 
 <a name="interfacescollateralized_convertmd"></a>
@@ -14641,7 +14641,7 @@ Amount > 0, have to be in Hive.
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert.ts:26
+wasm/lib/proto/collateralized_convert.ts:20
 
 ___
 
@@ -14651,7 +14651,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert.ts:24
+wasm/lib/proto/collateralized_convert.ts:18
 
 ___
 
@@ -14661,7 +14661,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert.ts:25
+wasm/lib/proto/collateralized_convert.ts:19
 
 
 <a name="interfacescollateralized_convert_immediate_conversionmd"></a>
@@ -14695,7 +14695,7 @@ id of the conversion request
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert_immediate_conversion.ts:25
+wasm/lib/proto/collateralized_convert_immediate_conversion.ts:19
 
 ___
 
@@ -14705,7 +14705,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert_immediate_conversion.ts:23
+wasm/lib/proto/collateralized_convert_immediate_conversion.ts:17
 
 ___
 
@@ -14715,7 +14715,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/collateralized_convert_immediate_conversion.ts:24
+wasm/lib/proto/collateralized_convert_immediate_conversion.ts:18
 
 
 <a name="interfacescommentmd"></a>
@@ -14781,7 +14781,7 @@ There is no blockchain validation on json_metadata,
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:47
+wasm/lib/proto/comment.ts:41
 
 ___
 
@@ -14791,7 +14791,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:50
+wasm/lib/proto/comment.ts:44
 
 ___
 
@@ -14801,7 +14801,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:51
+wasm/lib/proto/comment.ts:45
 
 ___
 
@@ -14811,7 +14811,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:45
+wasm/lib/proto/comment.ts:39
 
 ___
 
@@ -14821,7 +14821,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:46
+wasm/lib/proto/comment.ts:40
 
 ___
 
@@ -14831,7 +14831,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:48
+wasm/lib/proto/comment.ts:42
 
 ___
 
@@ -14841,7 +14841,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment.ts:49
+wasm/lib/proto/comment.ts:43
 
 
 <a name="interfacescomment_benefactor_rewardmd"></a>
@@ -14893,7 +14893,7 @@ true if payouts require use of claim_reward_balance_operation
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:30
+wasm/lib/proto/comment_benefactor_reward.ts:24
 
 ___
 
@@ -14903,7 +14903,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:29
+wasm/lib/proto/comment_benefactor_reward.ts:23
 
 ___
 
@@ -14913,7 +14913,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:32
+wasm/lib/proto/comment_benefactor_reward.ts:26
 
 ___
 
@@ -14923,7 +14923,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:33
+wasm/lib/proto/comment_benefactor_reward.ts:27
 
 ___
 
@@ -14933,7 +14933,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:35
+wasm/lib/proto/comment_benefactor_reward.ts:29
 
 ___
 
@@ -14943,7 +14943,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:31
+wasm/lib/proto/comment_benefactor_reward.ts:25
 
 ___
 
@@ -14953,7 +14953,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_benefactor_reward.ts:34
+wasm/lib/proto/comment_benefactor_reward.ts:28
 
 
 <a name="interfacescomment_optionsmd"></a>
@@ -15022,7 +15022,7 @@ It may contain the list of the beneficiaries,
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:67
+wasm/lib/proto/comment_options.ts:61
 
 ___
 
@@ -15032,7 +15032,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:66
+wasm/lib/proto/comment_options.ts:60
 
 ___
 
@@ -15042,7 +15042,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:62
+wasm/lib/proto/comment_options.ts:56
 
 ___
 
@@ -15052,7 +15052,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:68
+wasm/lib/proto/comment_options.ts:62
 
 ___
 
@@ -15062,7 +15062,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:64
+wasm/lib/proto/comment_options.ts:58
 
 ___
 
@@ -15072,7 +15072,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:65
+wasm/lib/proto/comment_options.ts:59
 
 ___
 
@@ -15082,7 +15082,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_options.ts:63
+wasm/lib/proto/comment_options.ts:57
 
 
 <a name="interfacescomment_payout_updatemd"></a>
@@ -15109,7 +15109,7 @@ permlink of comment
 
 #### Defined in
 
-wasm/lib/proto/comment_payout_update.ts:21
+wasm/lib/proto/comment_payout_update.ts:15
 
 ___
 
@@ -15119,7 +15119,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_payout_update.ts:22
+wasm/lib/proto/comment_payout_update.ts:16
 
 
 <a name="interfacescomment_rewardmd"></a>
@@ -15172,7 +15172,7 @@ permlink of the comment
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:31
+wasm/lib/proto/comment_reward.ts:25
 
 ___
 
@@ -15182,7 +15182,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:34
+wasm/lib/proto/comment_reward.ts:28
 
 ___
 
@@ -15192,7 +15192,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:37
+wasm/lib/proto/comment_reward.ts:31
 
 ___
 
@@ -15202,7 +15202,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:36
+wasm/lib/proto/comment_reward.ts:30
 
 ___
 
@@ -15212,7 +15212,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:33
+wasm/lib/proto/comment_reward.ts:27
 
 ___
 
@@ -15222,7 +15222,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:32
+wasm/lib/proto/comment_reward.ts:26
 
 ___
 
@@ -15232,7 +15232,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/comment_reward.ts:35
+wasm/lib/proto/comment_reward.ts:29
 
 
 <a name="interfacesconsolidate_treasury_balancemd"></a>
@@ -15256,7 +15256,7 @@ type) and moved to NEW_HIVE_TREASURY_ACCOUNT ('hive.fund').
 
 #### Defined in
 
-wasm/lib/proto/consolidate_treasury_balance.ts:22
+wasm/lib/proto/consolidate_treasury_balance.ts:16
 
 
 <a name="interfacesconvertmd"></a>
@@ -15286,7 +15286,7 @@ Amount > 0, have to be in HBD.
 
 #### Defined in
 
-wasm/lib/proto/convert.ts:24
+wasm/lib/proto/convert.ts:18
 
 ___
 
@@ -15296,7 +15296,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/convert.ts:22
+wasm/lib/proto/convert.ts:16
 
 ___
 
@@ -15306,7 +15306,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/convert.ts:23
+wasm/lib/proto/convert.ts:17
 
 
 <a name="interfacescreate_claimed_accountmd"></a>
@@ -15352,7 +15352,7 @@ Not currently used.
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:35
+wasm/lib/proto/create_claimed_account.ts:29
 
 ___
 
@@ -15362,7 +15362,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:32
+wasm/lib/proto/create_claimed_account.ts:26
 
 ___
 
@@ -15372,7 +15372,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:39
+wasm/lib/proto/create_claimed_account.ts:33
 
 ___
 
@@ -15382,7 +15382,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:38
+wasm/lib/proto/create_claimed_account.ts:32
 
 ___
 
@@ -15392,7 +15392,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:37
+wasm/lib/proto/create_claimed_account.ts:31
 
 ___
 
@@ -15402,7 +15402,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:33
+wasm/lib/proto/create_claimed_account.ts:27
 
 ___
 
@@ -15412,7 +15412,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:34
+wasm/lib/proto/create_claimed_account.ts:28
 
 ___
 
@@ -15422,7 +15422,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_claimed_account.ts:36
+wasm/lib/proto/create_claimed_account.ts:30
 
 
 <a name="interfacescreate_proposalmd"></a>
@@ -15462,7 +15462,7 @@ Accounts can create/remove votes anytime.
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:34
+wasm/lib/proto/create_proposal.ts:28
 
 ___
 
@@ -15472,7 +15472,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:38
+wasm/lib/proto/create_proposal.ts:32
 
 ___
 
@@ -15482,7 +15482,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:37
+wasm/lib/proto/create_proposal.ts:31
 
 ___
 
@@ -15492,7 +15492,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:41
+wasm/lib/proto/create_proposal.ts:35
 
 ___
 
@@ -15502,7 +15502,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:40
+wasm/lib/proto/create_proposal.ts:34
 
 ___
 
@@ -15512,7 +15512,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:35
+wasm/lib/proto/create_proposal.ts:29
 
 ___
 
@@ -15522,7 +15522,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:36
+wasm/lib/proto/create_proposal.ts:30
 
 ___
 
@@ -15532,7 +15532,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/create_proposal.ts:39
+wasm/lib/proto/create_proposal.ts:33
 
 
 <a name="interfacescuration_rewardmd"></a>
@@ -15572,7 +15572,7 @@ true if payouts require use of claim_reward_balance_operation
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:28
+wasm/lib/proto/curation_reward.ts:22
 
 ___
 
@@ -15582,7 +15582,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:26
+wasm/lib/proto/curation_reward.ts:20
 
 ___
 
@@ -15592,7 +15592,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:30
+wasm/lib/proto/curation_reward.ts:24
 
 ___
 
@@ -15602,7 +15602,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:29
+wasm/lib/proto/curation_reward.ts:23
 
 ___
 
@@ -15612,7 +15612,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/curation_reward.ts:27
+wasm/lib/proto/curation_reward.ts:21
 
 
 <a name="interfacescustommd"></a>
@@ -15636,7 +15636,7 @@ The operation: custom_operation provides a generic way to add higher level proto
 
 #### Defined in
 
-wasm/lib/proto/custom.ts:23
+wasm/lib/proto/custom.ts:17
 
 ___
 
@@ -15646,7 +15646,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom.ts:22
+wasm/lib/proto/custom.ts:16
 
 ___
 
@@ -15656,7 +15656,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom.ts:21
+wasm/lib/proto/custom.ts:15
 
 
 <a name="interfacescustom_jsonmd"></a>
@@ -15693,7 +15693,7 @@ Must be a proper utf8 JSON string.
 
 #### Defined in
 
-wasm/lib/proto/custom_json.ts:31
+wasm/lib/proto/custom_json.ts:25
 
 ___
 
@@ -15703,7 +15703,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom_json.ts:32
+wasm/lib/proto/custom_json.ts:26
 
 ___
 
@@ -15713,7 +15713,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom_json.ts:29
+wasm/lib/proto/custom_json.ts:23
 
 ___
 
@@ -15723,7 +15723,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/custom_json.ts:30
+wasm/lib/proto/custom_json.ts:24
 
 
 <a name="interfacesdecline_voting_rightsmd"></a>
@@ -15752,7 +15752,7 @@ Account name.
 
 #### Defined in
 
-wasm/lib/proto/decline_voting_rights.ts:25
+wasm/lib/proto/decline_voting_rights.ts:19
 
 ___
 
@@ -15762,7 +15762,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/decline_voting_rights.ts:26
+wasm/lib/proto/decline_voting_rights.ts:20
 
 
 <a name="interfacesdeclined_voting_rightsmd"></a>
@@ -15784,7 +15784,7 @@ user who decided to decline his voting rights
 
 #### Defined in
 
-wasm/lib/proto/declined_voting_rights.ts:19
+wasm/lib/proto/declined_voting_rights.ts:13
 
 
 <a name="interfacesdelayed_votingmd"></a>
@@ -15812,7 +15812,7 @@ account with fairly fresh VESTS
 
 #### Defined in
 
-wasm/lib/proto/delayed_voting.ts:23
+wasm/lib/proto/delayed_voting.ts:17
 
 ___
 
@@ -15822,7 +15822,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delayed_voting.ts:24
+wasm/lib/proto/delayed_voting.ts:18
 
 
 <a name="interfacesdelegate_vesting_sharesmd"></a>
@@ -15862,7 +15862,7 @@ The amount of vesting shares to be delegated.
 
 #### Defined in
 
-wasm/lib/proto/delegate_vesting_shares.ts:33
+wasm/lib/proto/delegate_vesting_shares.ts:27
 
 ___
 
@@ -15872,7 +15872,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delegate_vesting_shares.ts:32
+wasm/lib/proto/delegate_vesting_shares.ts:26
 
 ___
 
@@ -15882,7 +15882,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delegate_vesting_shares.ts:34
+wasm/lib/proto/delegate_vesting_shares.ts:28
 
 
 <a name="interfacesdelete_commentmd"></a>
@@ -15908,7 +15908,7 @@ The identifier of the post or the comment.
 
 #### Defined in
 
-wasm/lib/proto/delete_comment.ts:20
+wasm/lib/proto/delete_comment.ts:14
 
 ___
 
@@ -15918,7 +15918,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/delete_comment.ts:21
+wasm/lib/proto/delete_comment.ts:15
 
 
 <a name="interfacesdhf_conversionmd"></a>
@@ -15950,7 +15950,7 @@ treasury (source of hive_amount_in and receiver of hbd_amount_out)
 
 #### Defined in
 
-wasm/lib/proto/dhf_conversion.ts:26
+wasm/lib/proto/dhf_conversion.ts:20
 
 ___
 
@@ -15960,7 +15960,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/dhf_conversion.ts:25
+wasm/lib/proto/dhf_conversion.ts:19
 
 ___
 
@@ -15970,7 +15970,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/dhf_conversion.ts:24
+wasm/lib/proto/dhf_conversion.ts:18
 
 
 <a name="interfacesdhf_fundingmd"></a>
@@ -15998,7 +15998,7 @@ treasury account (receiver of additional_funds)
 
 #### Defined in
 
-wasm/lib/proto/dhf_funding.ts:24
+wasm/lib/proto/dhf_funding.ts:18
 
 ___
 
@@ -16008,7 +16008,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/dhf_funding.ts:23
+wasm/lib/proto/dhf_funding.ts:17
 
 
 <a name="interfaceseffective_comment_votemd"></a>
@@ -16055,7 +16055,7 @@ sum of all vote weights on the target comment in the moment of casting current v
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:29
+wasm/lib/proto/effective_comment_vote.ts:23
 
 ___
 
@@ -16065,7 +16065,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:34
+wasm/lib/proto/effective_comment_vote.ts:28
 
 ___
 
@@ -16075,7 +16075,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:30
+wasm/lib/proto/effective_comment_vote.ts:24
 
 ___
 
@@ -16085,7 +16085,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:32
+wasm/lib/proto/effective_comment_vote.ts:26
 
 ___
 
@@ -16095,7 +16095,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:33
+wasm/lib/proto/effective_comment_vote.ts:27
 
 ___
 
@@ -16105,7 +16105,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:28
+wasm/lib/proto/effective_comment_vote.ts:22
 
 ___
 
@@ -16115,7 +16115,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/effective_comment_vote.ts:31
+wasm/lib/proto/effective_comment_vote.ts:25
 
 
 <a name="interfacesescrow_approvemd"></a>
@@ -16161,7 +16161,7 @@ approve = true; (approve = false explicitly rejects the escrow)
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:30
+wasm/lib/proto/escrow_approve.ts:24
 
 ___
 
@@ -16171,7 +16171,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:33
+wasm/lib/proto/escrow_approve.ts:27
 
 ___
 
@@ -16181,7 +16181,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:32
+wasm/lib/proto/escrow_approve.ts:26
 
 ___
 
@@ -16191,7 +16191,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:28
+wasm/lib/proto/escrow_approve.ts:22
 
 ___
 
@@ -16201,7 +16201,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:29
+wasm/lib/proto/escrow_approve.ts:23
 
 ___
 
@@ -16211,7 +16211,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approve.ts:31
+wasm/lib/proto/escrow_approve.ts:25
 
 
 <a name="interfacesescrow_approvedmd"></a>
@@ -16253,7 +16253,7 @@ id of escrow transfer
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:27
+wasm/lib/proto/escrow_approved.ts:21
 
 ___
 
@@ -16263,7 +16263,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:28
+wasm/lib/proto/escrow_approved.ts:22
 
 ___
 
@@ -16273,7 +16273,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:29
+wasm/lib/proto/escrow_approved.ts:23
 
 ___
 
@@ -16283,7 +16283,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:25
+wasm/lib/proto/escrow_approved.ts:19
 
 ___
 
@@ -16293,7 +16293,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_approved.ts:26
+wasm/lib/proto/escrow_approved.ts:20
 
 
 <a name="interfacesescrow_disputemd"></a>
@@ -16331,7 +16331,7 @@ Escrow identifier.
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:25
+wasm/lib/proto/escrow_dispute.ts:19
 
 ___
 
@@ -16341,7 +16341,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:27
+wasm/lib/proto/escrow_dispute.ts:21
 
 ___
 
@@ -16351,7 +16351,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:23
+wasm/lib/proto/escrow_dispute.ts:17
 
 ___
 
@@ -16361,7 +16361,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:24
+wasm/lib/proto/escrow_dispute.ts:18
 
 ___
 
@@ -16371,7 +16371,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_dispute.ts:26
+wasm/lib/proto/escrow_dispute.ts:20
 
 
 <a name="interfacesescrow_rejectedmd"></a>
@@ -16423,7 +16423,7 @@ id of cancelled escrow transfer
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:31
+wasm/lib/proto/escrow_rejected.ts:25
 
 ___
 
@@ -16433,7 +16433,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:32
+wasm/lib/proto/escrow_rejected.ts:26
 
 ___
 
@@ -16443,7 +16443,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:35
+wasm/lib/proto/escrow_rejected.ts:29
 
 ___
 
@@ -16453,7 +16453,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:29
+wasm/lib/proto/escrow_rejected.ts:23
 
 ___
 
@@ -16463,7 +16463,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:33
+wasm/lib/proto/escrow_rejected.ts:27
 
 ___
 
@@ -16473,7 +16473,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:34
+wasm/lib/proto/escrow_rejected.ts:28
 
 ___
 
@@ -16483,7 +16483,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_rejected.ts:30
+wasm/lib/proto/escrow_rejected.ts:24
 
 
 <a name="interfacesescrow_releasemd"></a>
@@ -16537,7 +16537,7 @@ The amount of HIVE to release.
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:33
+wasm/lib/proto/escrow_release.ts:27
 
 ___
 
@@ -16547,7 +16547,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:36
+wasm/lib/proto/escrow_release.ts:30
 
 ___
 
@@ -16557,7 +16557,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:31
+wasm/lib/proto/escrow_release.ts:25
 
 ___
 
@@ -16567,7 +16567,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:37
+wasm/lib/proto/escrow_release.ts:31
 
 ___
 
@@ -16577,7 +16577,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:38
+wasm/lib/proto/escrow_release.ts:32
 
 ___
 
@@ -16587,7 +16587,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:35
+wasm/lib/proto/escrow_release.ts:29
 
 ___
 
@@ -16597,7 +16597,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:32
+wasm/lib/proto/escrow_release.ts:26
 
 ___
 
@@ -16607,7 +16607,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_release.ts:34
+wasm/lib/proto/escrow_release.ts:28
 
 
 <a name="interfacesescrow_transfermd"></a>
@@ -16675,7 +16675,7 @@ json string.
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:41
+wasm/lib/proto/escrow_transfer.ts:35
 
 ___
 
@@ -16685,7 +16685,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:47
+wasm/lib/proto/escrow_transfer.ts:41
 
 ___
 
@@ -16695,7 +16695,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:42
+wasm/lib/proto/escrow_transfer.ts:36
 
 ___
 
@@ -16705,7 +16705,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:45
+wasm/lib/proto/escrow_transfer.ts:39
 
 ___
 
@@ -16715,7 +16715,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:39
+wasm/lib/proto/escrow_transfer.ts:33
 
 ___
 
@@ -16725,7 +16725,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:43
+wasm/lib/proto/escrow_transfer.ts:37
 
 ___
 
@@ -16735,7 +16735,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:44
+wasm/lib/proto/escrow_transfer.ts:38
 
 ___
 
@@ -16745,7 +16745,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:48
+wasm/lib/proto/escrow_transfer.ts:42
 
 ___
 
@@ -16755,7 +16755,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:46
+wasm/lib/proto/escrow_transfer.ts:40
 
 ___
 
@@ -16765,7 +16765,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/escrow_transfer.ts:40
+wasm/lib/proto/escrow_transfer.ts:34
 
 
 <a name="interfacesexpired_account_notificationmd"></a>
@@ -16788,7 +16788,7 @@ user whose governance votes were nullified
 
 #### Defined in
 
-wasm/lib/proto/expired_account_notification.ts:20
+wasm/lib/proto/expired_account_notification.ts:14
 
 
 <a name="interfacesfailed_recurrent_transfermd"></a>
@@ -16840,7 +16840,7 @@ true if whole recurrent transfer was discontinued due to too many consecutive fa
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:31
+wasm/lib/proto/failed_recurrent_transfer.ts:25
 
 ___
 
@@ -16850,7 +16850,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:33
+wasm/lib/proto/failed_recurrent_transfer.ts:27
 
 ___
 
@@ -16860,7 +16860,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:35
+wasm/lib/proto/failed_recurrent_transfer.ts:29
 
 ___
 
@@ -16870,7 +16870,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:29
+wasm/lib/proto/failed_recurrent_transfer.ts:23
 
 ___
 
@@ -16880,7 +16880,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:32
+wasm/lib/proto/failed_recurrent_transfer.ts:26
 
 ___
 
@@ -16890,7 +16890,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:34
+wasm/lib/proto/failed_recurrent_transfer.ts:28
 
 ___
 
@@ -16900,7 +16900,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/failed_recurrent_transfer.ts:30
+wasm/lib/proto/failed_recurrent_transfer.ts:24
 
 
 <a name="interfacesfeed_publishmd"></a>
@@ -16928,7 +16928,7 @@ How many HBD the 1 Hive should cost
 
 #### Defined in
 
-wasm/lib/proto/feed_publish.ts:24
+wasm/lib/proto/feed_publish.ts:18
 
 ___
 
@@ -16938,7 +16938,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/feed_publish.ts:23
+wasm/lib/proto/feed_publish.ts:17
 
 
 <a name="interfacesfill_collateralized_convert_requestmd"></a>
@@ -16982,7 +16982,7 @@ id of the request
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:29
+wasm/lib/proto/fill_collateralized_convert_request.ts:23
 
 ___
 
@@ -16992,7 +16992,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:30
+wasm/lib/proto/fill_collateralized_convert_request.ts:24
 
 ___
 
@@ -17002,7 +17002,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:31
+wasm/lib/proto/fill_collateralized_convert_request.ts:25
 
 ___
 
@@ -17012,7 +17012,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:27
+wasm/lib/proto/fill_collateralized_convert_request.ts:21
 
 ___
 
@@ -17022,7 +17022,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_collateralized_convert_request.ts:28
+wasm/lib/proto/fill_collateralized_convert_request.ts:22
 
 
 <a name="interfacesfill_convert_requestmd"></a>
@@ -17056,7 +17056,7 @@ id of the request.
 
 #### Defined in
 
-wasm/lib/proto/fill_convert_request.ts:25
+wasm/lib/proto/fill_convert_request.ts:19
 
 ___
 
@@ -17066,7 +17066,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_convert_request.ts:26
+wasm/lib/proto/fill_convert_request.ts:20
 
 ___
 
@@ -17076,7 +17076,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_convert_request.ts:23
+wasm/lib/proto/fill_convert_request.ts:17
 
 ___
 
@@ -17086,7 +17086,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_convert_request.ts:24
+wasm/lib/proto/fill_convert_request.ts:18
 
 
 <a name="interfacesfill_ordermd"></a>
@@ -17129,7 +17129,7 @@ id of waiting order
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:27
+wasm/lib/proto/fill_order.ts:21
 
 ___
 
@@ -17139,7 +17139,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:26
+wasm/lib/proto/fill_order.ts:20
 
 ___
 
@@ -17149,7 +17149,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:28
+wasm/lib/proto/fill_order.ts:22
 
 ___
 
@@ -17159,7 +17159,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:30
+wasm/lib/proto/fill_order.ts:24
 
 ___
 
@@ -17169,7 +17169,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:29
+wasm/lib/proto/fill_order.ts:23
 
 ___
 
@@ -17179,7 +17179,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_order.ts:31
+wasm/lib/proto/fill_order.ts:25
 
 
 <a name="interfacesfill_recurrent_transfermd"></a>
@@ -17224,7 +17224,7 @@ number of remaining pending transfers
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:30
+wasm/lib/proto/fill_recurrent_transfer.ts:24
 
 ___
 
@@ -17234,7 +17234,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:28
+wasm/lib/proto/fill_recurrent_transfer.ts:22
 
 ___
 
@@ -17244,7 +17244,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:31
+wasm/lib/proto/fill_recurrent_transfer.ts:25
 
 ___
 
@@ -17254,7 +17254,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:32
+wasm/lib/proto/fill_recurrent_transfer.ts:26
 
 ___
 
@@ -17264,7 +17264,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_recurrent_transfer.ts:29
+wasm/lib/proto/fill_recurrent_transfer.ts:23
 
 
 <a name="interfacesfill_transfer_from_savingsmd"></a>
@@ -17303,7 +17303,7 @@ memo attached to transfer request
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:27
+wasm/lib/proto/fill_transfer_from_savings.ts:21
 
 ___
 
@@ -17313,7 +17313,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:25
+wasm/lib/proto/fill_transfer_from_savings.ts:19
 
 ___
 
@@ -17323,7 +17323,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:29
+wasm/lib/proto/fill_transfer_from_savings.ts:23
 
 ___
 
@@ -17333,7 +17333,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:28
+wasm/lib/proto/fill_transfer_from_savings.ts:22
 
 ___
 
@@ -17343,7 +17343,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_transfer_from_savings.ts:26
+wasm/lib/proto/fill_transfer_from_savings.ts:20
 
 
 <a name="interfacesfill_vesting_withdrawmd"></a>
@@ -17379,7 +17379,7 @@ target of vesting route (potentially the same as from_account - receiver of depo
 
 #### Defined in
 
-wasm/lib/proto/fill_vesting_withdraw.ts:28
+wasm/lib/proto/fill_vesting_withdraw.ts:22
 
 ___
 
@@ -17389,7 +17389,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_vesting_withdraw.ts:25
+wasm/lib/proto/fill_vesting_withdraw.ts:19
 
 ___
 
@@ -17399,7 +17399,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_vesting_withdraw.ts:26
+wasm/lib/proto/fill_vesting_withdraw.ts:20
 
 ___
 
@@ -17409,7 +17409,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/fill_vesting_withdraw.ts:27
+wasm/lib/proto/fill_vesting_withdraw.ts:21
 
 
 <a name="interfacesfuture_extensionsmd"></a>
@@ -17424,7 +17424,7 @@ wasm/lib/proto/fill_vesting_withdraw.ts:27
 
 #### Defined in
 
-wasm/lib/proto/future_extensions.ts:16
+wasm/lib/proto/future_extensions.ts:10
 
 
 <a name="interfaceshardforkmd"></a>
@@ -17446,7 +17446,7 @@ number of hardfork
 
 #### Defined in
 
-wasm/lib/proto/hardfork.ts:19
+wasm/lib/proto/hardfork.ts:13
 
 
 <a name="interfaceshardfork_hivemd"></a>
@@ -17492,7 +17492,7 @@ delegatees that lost delegations from account - filled before pre notification
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:26
+wasm/lib/proto/hardfork_hive.ts:20
 
 ___
 
@@ -17502,7 +17502,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:29
+wasm/lib/proto/hardfork_hive.ts:23
 
 ___
 
@@ -17512,7 +17512,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:30
+wasm/lib/proto/hardfork_hive.ts:24
 
 ___
 
@@ -17522,7 +17522,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:28
+wasm/lib/proto/hardfork_hive.ts:22
 
 ___
 
@@ -17532,7 +17532,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:32
+wasm/lib/proto/hardfork_hive.ts:26
 
 ___
 
@@ -17542,7 +17542,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:27
+wasm/lib/proto/hardfork_hive.ts:21
 
 ___
 
@@ -17552,7 +17552,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive.ts:31
+wasm/lib/proto/hardfork_hive.ts:25
 
 
 <a name="interfaceshardfork_hive_restoremd"></a>
@@ -17592,7 +17592,7 @@ treasury, source of late airdrop
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive_restore.ts:26
+wasm/lib/proto/hardfork_hive_restore.ts:20
 
 ___
 
@@ -17602,7 +17602,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive_restore.ts:28
+wasm/lib/proto/hardfork_hive_restore.ts:22
 
 ___
 
@@ -17612,7 +17612,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive_restore.ts:29
+wasm/lib/proto/hardfork_hive_restore.ts:23
 
 ___
 
@@ -17622,7 +17622,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/hardfork_hive_restore.ts:27
+wasm/lib/proto/hardfork_hive_restore.ts:21
 
 
 <a name="interfacesineffective_delete_commentmd"></a>
@@ -17650,7 +17650,7 @@ permlink of attempted-delete comment
 
 #### Defined in
 
-wasm/lib/proto/ineffective_delete_comment.ts:22
+wasm/lib/proto/ineffective_delete_comment.ts:16
 
 ___
 
@@ -17660,7 +17660,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/ineffective_delete_comment.ts:23
+wasm/lib/proto/ineffective_delete_comment.ts:17
 
 
 <a name="interfacesinterestmd"></a>
@@ -17692,7 +17692,7 @@ true when liquid balance was modified (not happening after HF25)
 
 #### Defined in
 
-wasm/lib/proto/interest.ts:25
+wasm/lib/proto/interest.ts:19
 
 ___
 
@@ -17702,7 +17702,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/interest.ts:26
+wasm/lib/proto/interest.ts:20
 
 ___
 
@@ -17712,7 +17712,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/interest.ts:24
+wasm/lib/proto/interest.ts:18
 
 
 <a name="interfaceslegacy_chain_propertiesmd"></a>
@@ -17744,7 +17744,7 @@ This witnesses vote for the maximum_block_size which is used by the network to t
 
 #### Defined in
 
-wasm/lib/proto/legacy_chain_properties.ts:26
+wasm/lib/proto/legacy_chain_properties.ts:20
 
 ___
 
@@ -17754,7 +17754,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/legacy_chain_properties.ts:28
+wasm/lib/proto/legacy_chain_properties.ts:22
 
 ___
 
@@ -17764,7 +17764,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/legacy_chain_properties.ts:27
+wasm/lib/proto/legacy_chain_properties.ts:21
 
 
 <a name="interfaceslimit_order_cancelmd"></a>
@@ -17789,7 +17789,7 @@ The request_id provided by a user during creating a limit_order_create_operation
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancel.ts:22
+wasm/lib/proto/limit_order_cancel.ts:16
 
 ___
 
@@ -17799,7 +17799,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancel.ts:21
+wasm/lib/proto/limit_order_cancel.ts:15
 
 
 <a name="interfaceslimit_order_cancelledmd"></a>
@@ -17835,7 +17835,7 @@ id of the order
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancelled.ts:27
+wasm/lib/proto/limit_order_cancelled.ts:21
 
 ___
 
@@ -17845,7 +17845,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancelled.ts:26
+wasm/lib/proto/limit_order_cancelled.ts:20
 
 ___
 
@@ -17855,7 +17855,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_cancelled.ts:25
+wasm/lib/proto/limit_order_cancelled.ts:19
 
 
 <a name="interfaceslimit_order_createmd"></a>
@@ -17898,7 +17898,7 @@ If fill_or_kill = true, then the operation is executed immediately or it fails
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:36
+wasm/lib/proto/limit_order_create.ts:30
 
 ___
 
@@ -17908,7 +17908,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:39
+wasm/lib/proto/limit_order_create.ts:33
 
 ___
 
@@ -17918,7 +17918,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:38
+wasm/lib/proto/limit_order_create.ts:32
 
 ___
 
@@ -17928,7 +17928,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:37
+wasm/lib/proto/limit_order_create.ts:31
 
 ___
 
@@ -17938,7 +17938,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:35
+wasm/lib/proto/limit_order_create.ts:29
 
 ___
 
@@ -17948,7 +17948,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create.ts:34
+wasm/lib/proto/limit_order_create.ts:28
 
 
 <a name="interfaceslimit_order_create2md"></a>
@@ -17986,7 +17986,7 @@ If fill_or_kill = true, then the operation is executed immediately
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:32
+wasm/lib/proto/limit_order_create2.ts:26
 
 ___
 
@@ -17996,7 +17996,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:34
+wasm/lib/proto/limit_order_create2.ts:28
 
 ___
 
@@ -18006,7 +18006,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:35
+wasm/lib/proto/limit_order_create2.ts:29
 
 ___
 
@@ -18016,7 +18016,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:33
+wasm/lib/proto/limit_order_create2.ts:27
 
 ___
 
@@ -18026,7 +18026,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:31
+wasm/lib/proto/limit_order_create2.ts:25
 
 ___
 
@@ -18036,7 +18036,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/limit_order_create2.ts:30
+wasm/lib/proto/limit_order_create2.ts:24
 
 
 <a name="interfacesliquidity_rewardmd"></a>
@@ -18067,7 +18067,7 @@ market maker (receiver of payout)
 
 #### Defined in
 
-wasm/lib/proto/liquidity_reward.ts:23
+wasm/lib/proto/liquidity_reward.ts:17
 
 ___
 
@@ -18077,7 +18077,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/liquidity_reward.ts:24
+wasm/lib/proto/liquidity_reward.ts:18
 
 
 <a name="interfacesoperationmd"></a>
@@ -18095,7 +18095,7 @@ or it will trigger a hardfork.
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:116
+wasm/lib/proto/operation.ts:110
 
 ___
 
@@ -18105,7 +18105,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:145
+wasm/lib/proto/operation.ts:139
 
 ___
 
@@ -18115,7 +18115,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:187
+wasm/lib/proto/operation.ts:181
 
 ___
 
@@ -18125,7 +18125,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:117
+wasm/lib/proto/operation.ts:111
 
 ___
 
@@ -18135,7 +18135,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:147
+wasm/lib/proto/operation.ts:141
 
 ___
 
@@ -18145,7 +18145,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:120
+wasm/lib/proto/operation.ts:114
 
 ___
 
@@ -18155,7 +18155,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:119
+wasm/lib/proto/operation.ts:113
 
 ___
 
@@ -18165,7 +18165,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:158
+wasm/lib/proto/operation.ts:152
 
 ___
 
@@ -18175,7 +18175,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:141
+wasm/lib/proto/operation.ts:135
 
 ___
 
@@ -18185,7 +18185,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:133
+wasm/lib/proto/operation.ts:127
 
 ___
 
@@ -18195,7 +18195,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:183
+wasm/lib/proto/operation.ts:177
 
 ___
 
@@ -18205,7 +18205,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:129
+wasm/lib/proto/operation.ts:123
 
 ___
 
@@ -18215,7 +18215,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:143
+wasm/lib/proto/operation.ts:137
 
 ___
 
@@ -18225,7 +18225,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:172
+wasm/lib/proto/operation.ts:166
 
 ___
 
@@ -18235,7 +18235,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:152
+wasm/lib/proto/operation.ts:146
 
 ___
 
@@ -18245,7 +18245,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:195
+wasm/lib/proto/operation.ts:189
 
 ___
 
@@ -18255,7 +18255,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:108
+wasm/lib/proto/operation.ts:102
 
 ___
 
@@ -18265,7 +18265,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:170
+wasm/lib/proto/operation.ts:164
 
 ___
 
@@ -18275,7 +18275,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:126
+wasm/lib/proto/operation.ts:120
 
 ___
 
@@ -18285,7 +18285,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:168
+wasm/lib/proto/operation.ts:162
 
 ___
 
@@ -18295,7 +18295,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:160
+wasm/lib/proto/operation.ts:154
 
 ___
 
@@ -18305,7 +18305,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:178
+wasm/lib/proto/operation.ts:172
 
 ___
 
@@ -18315,7 +18315,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:115
+wasm/lib/proto/operation.ts:109
 
 ___
 
@@ -18325,7 +18325,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:130
+wasm/lib/proto/operation.ts:124
 
 ___
 
@@ -18335,7 +18335,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:148
+wasm/lib/proto/operation.ts:142
 
 ___
 
@@ -18345,7 +18345,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:159
+wasm/lib/proto/operation.ts:153
 
 ___
 
@@ -18355,7 +18355,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:122
+wasm/lib/proto/operation.ts:116
 
 ___
 
@@ -18365,7 +18365,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:125
+wasm/lib/proto/operation.ts:119
 
 ___
 
@@ -18375,7 +18375,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:142
+wasm/lib/proto/operation.ts:136
 
 ___
 
@@ -18385,7 +18385,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:199
+wasm/lib/proto/operation.ts:193
 
 ___
 
@@ -18395,7 +18395,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:177
+wasm/lib/proto/operation.ts:171
 
 ___
 
@@ -18405,7 +18405,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:144
+wasm/lib/proto/operation.ts:138
 
 ___
 
@@ -18415,7 +18415,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:124
+wasm/lib/proto/operation.ts:118
 
 ___
 
@@ -18425,7 +18425,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:181
+wasm/lib/proto/operation.ts:175
 
 ___
 
@@ -18435,7 +18435,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:174
+wasm/lib/proto/operation.ts:168
 
 ___
 
@@ -18445,7 +18445,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:179
+wasm/lib/proto/operation.ts:173
 
 ___
 
@@ -18455,7 +18455,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:138
+wasm/lib/proto/operation.ts:132
 
 ___
 
@@ -18465,7 +18465,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:196
+wasm/lib/proto/operation.ts:190
 
 ___
 
@@ -18475,7 +18475,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:135
+wasm/lib/proto/operation.ts:129
 
 ___
 
@@ -18485,7 +18485,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:197
+wasm/lib/proto/operation.ts:191
 
 ___
 
@@ -18495,7 +18495,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:136
+wasm/lib/proto/operation.ts:130
 
 ___
 
@@ -18505,7 +18505,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:134
+wasm/lib/proto/operation.ts:128
 
 ___
 
@@ -18515,7 +18515,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:182
+wasm/lib/proto/operation.ts:176
 
 ___
 
@@ -18525,7 +18525,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:191
+wasm/lib/proto/operation.ts:185
 
 ___
 
@@ -18535,7 +18535,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:114
+wasm/lib/proto/operation.ts:108
 
 ___
 
@@ -18545,7 +18545,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:188
+wasm/lib/proto/operation.ts:182
 
 ___
 
@@ -18557,7 +18557,7 @@ Virtual operations:
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:157
+wasm/lib/proto/operation.ts:151
 
 ___
 
@@ -18567,7 +18567,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:164
+wasm/lib/proto/operation.ts:158
 
 ___
 
@@ -18577,7 +18577,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:190
+wasm/lib/proto/operation.ts:184
 
 ___
 
@@ -18587,7 +18587,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:166
+wasm/lib/proto/operation.ts:160
 
 ___
 
@@ -18597,7 +18597,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:163
+wasm/lib/proto/operation.ts:157
 
 ___
 
@@ -18607,7 +18607,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:167
+wasm/lib/proto/operation.ts:161
 
 ___
 
@@ -18617,7 +18617,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:175
+wasm/lib/proto/operation.ts:169
 
 ___
 
@@ -18627,7 +18627,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:176
+wasm/lib/proto/operation.ts:170
 
 ___
 
@@ -18637,7 +18637,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:180
+wasm/lib/proto/operation.ts:174
 
 ___
 
@@ -18647,7 +18647,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:162
+wasm/lib/proto/operation.ts:156
 
 ___
 
@@ -18657,7 +18657,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:113
+wasm/lib/proto/operation.ts:107
 
 ___
 
@@ -18667,7 +18667,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:192
+wasm/lib/proto/operation.ts:186
 
 ___
 
@@ -18677,7 +18677,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:112
+wasm/lib/proto/operation.ts:106
 
 ___
 
@@ -18687,7 +18687,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:128
+wasm/lib/proto/operation.ts:122
 
 ___
 
@@ -18697,7 +18697,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:161
+wasm/lib/proto/operation.ts:155
 
 ___
 
@@ -18707,7 +18707,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:121
+wasm/lib/proto/operation.ts:115
 
 ___
 
@@ -18717,7 +18717,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:137
+wasm/lib/proto/operation.ts:131
 
 ___
 
@@ -18727,7 +18727,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:185
+wasm/lib/proto/operation.ts:179
 
 ___
 
@@ -18737,7 +18737,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:193
+wasm/lib/proto/operation.ts:187
 
 ___
 
@@ -18747,7 +18747,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:171
+wasm/lib/proto/operation.ts:165
 
 ___
 
@@ -18757,7 +18757,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:194
+wasm/lib/proto/operation.ts:188
 
 ___
 
@@ -18767,7 +18767,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:173
+wasm/lib/proto/operation.ts:167
 
 ___
 
@@ -18777,7 +18777,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:198
+wasm/lib/proto/operation.ts:192
 
 ___
 
@@ -18787,7 +18787,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:132
+wasm/lib/proto/operation.ts:126
 
 ___
 
@@ -18797,7 +18797,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:153
+wasm/lib/proto/operation.ts:147
 
 ___
 
@@ -18807,7 +18807,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:150
+wasm/lib/proto/operation.ts:144
 
 ___
 
@@ -18817,7 +18817,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:131
+wasm/lib/proto/operation.ts:125
 
 ___
 
@@ -18827,7 +18827,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:169
+wasm/lib/proto/operation.ts:163
 
 ___
 
@@ -18837,7 +18837,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:127
+wasm/lib/proto/operation.ts:121
 
 ___
 
@@ -18847,7 +18847,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:165
+wasm/lib/proto/operation.ts:159
 
 ___
 
@@ -18857,7 +18857,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:189
+wasm/lib/proto/operation.ts:183
 
 ___
 
@@ -18867,7 +18867,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:109
+wasm/lib/proto/operation.ts:103
 
 ___
 
@@ -18877,7 +18877,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:140
+wasm/lib/proto/operation.ts:134
 
 ___
 
@@ -18887,7 +18887,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:139
+wasm/lib/proto/operation.ts:133
 
 ___
 
@@ -18897,7 +18897,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:110
+wasm/lib/proto/operation.ts:104
 
 ___
 
@@ -18907,7 +18907,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:184
+wasm/lib/proto/operation.ts:178
 
 ___
 
@@ -18917,7 +18917,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:151
+wasm/lib/proto/operation.ts:145
 
 ___
 
@@ -18927,7 +18927,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:149
+wasm/lib/proto/operation.ts:143
 
 ___
 
@@ -18937,7 +18937,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:186
+wasm/lib/proto/operation.ts:180
 
 ___
 
@@ -18947,7 +18947,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:107
+wasm/lib/proto/operation.ts:101
 
 ___
 
@@ -18957,7 +18957,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:111
+wasm/lib/proto/operation.ts:105
 
 ___
 
@@ -18967,7 +18967,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:123
+wasm/lib/proto/operation.ts:117
 
 ___
 
@@ -18977,7 +18977,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:146
+wasm/lib/proto/operation.ts:140
 
 ___
 
@@ -18987,7 +18987,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/operation.ts:118
+wasm/lib/proto/operation.ts:112
 
 
 <a name="interfacespowmd"></a>
@@ -19002,7 +19002,7 @@ wasm/lib/proto/operation.ts:118
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:23
+wasm/lib/proto/pow.ts:17
 
 ___
 
@@ -19012,7 +19012,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:24
+wasm/lib/proto/pow.ts:18
 
 ___
 
@@ -19022,7 +19022,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:26
+wasm/lib/proto/pow.ts:20
 
 ___
 
@@ -19032,7 +19032,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:25
+wasm/lib/proto/pow.ts:19
 
 ___
 
@@ -19042,7 +19042,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow.ts:22
+wasm/lib/proto/pow.ts:16
 
 
 <a name="interfacespow2md"></a>
@@ -19057,7 +19057,7 @@ wasm/lib/proto/pow.ts:22
 
 #### Defined in
 
-wasm/lib/proto/pow2.ts:46
+wasm/lib/proto/pow2.ts:40
 
 ___
 
@@ -19067,7 +19067,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow2.ts:47
+wasm/lib/proto/pow2.ts:41
 
 ___
 
@@ -19077,7 +19077,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow2.ts:45
+wasm/lib/proto/pow2.ts:39
 
 
 <a name="interfacespow_rewardmd"></a>
@@ -19104,7 +19104,7 @@ Note: pow2_operation could be executed up to HF17 but mining rewards were stoppe
 
 #### Defined in
 
-wasm/lib/proto/pow_reward.ts:23
+wasm/lib/proto/pow_reward.ts:17
 
 ___
 
@@ -19114,7 +19114,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/pow_reward.ts:22
+wasm/lib/proto/pow_reward.ts:16
 
 
 <a name="interfacespricemd"></a>
@@ -19148,7 +19148,7 @@ represents an relative asset. Cannot have amount == 0, otherwise asertion fail.
 
 #### Defined in
 
-wasm/lib/proto/price.ts:29
+wasm/lib/proto/price.ts:23
 
 ___
 
@@ -19158,7 +19158,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/price.ts:30
+wasm/lib/proto/price.ts:24
 
 
 <a name="interfacesproducer_missedmd"></a>
@@ -19184,7 +19184,7 @@ witness that failed to produce his block on time
 
 #### Defined in
 
-wasm/lib/proto/producer_missed.ts:20
+wasm/lib/proto/producer_missed.ts:14
 
 
 <a name="interfacesproducer_rewardmd"></a>
@@ -19210,7 +19210,7 @@ witness (receiver of vesting_shares)
 
 #### Defined in
 
-wasm/lib/proto/producer_reward.ts:21
+wasm/lib/proto/producer_reward.ts:15
 
 ___
 
@@ -19220,7 +19220,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/producer_reward.ts:22
+wasm/lib/proto/producer_reward.ts:16
 
 
 <a name="interfacesproposal_feemd"></a>
@@ -19254,7 +19254,7 @@ id of proposal
 
 #### Defined in
 
-wasm/lib/proto/proposal_fee.ts:23
+wasm/lib/proto/proposal_fee.ts:17
 
 ___
 
@@ -19264,7 +19264,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_fee.ts:26
+wasm/lib/proto/proposal_fee.ts:20
 
 ___
 
@@ -19274,7 +19274,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_fee.ts:25
+wasm/lib/proto/proposal_fee.ts:19
 
 ___
 
@@ -19284,7 +19284,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_fee.ts:24
+wasm/lib/proto/proposal_fee.ts:18
 
 
 <a name="interfacesproposal_paymd"></a>
@@ -19319,7 +19319,7 @@ treasury account, source of payment
 
 #### Defined in
 
-wasm/lib/proto/proposal_pay.ts:26
+wasm/lib/proto/proposal_pay.ts:20
 
 ___
 
@@ -19329,7 +19329,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_pay.ts:27
+wasm/lib/proto/proposal_pay.ts:21
 
 ___
 
@@ -19339,7 +19339,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_pay.ts:24
+wasm/lib/proto/proposal_pay.ts:18
 
 ___
 
@@ -19349,7 +19349,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proposal_pay.ts:25
+wasm/lib/proto/proposal_pay.ts:19
 
 
 <a name="interfacesproxy_clearedmd"></a>
@@ -19389,7 +19389,7 @@ proxy user that facilitates voting on witnesses
 
 #### Defined in
 
-wasm/lib/proto/proxy_cleared.ts:34
+wasm/lib/proto/proxy_cleared.ts:28
 
 ___
 
@@ -19399,7 +19399,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/proxy_cleared.ts:35
+wasm/lib/proto/proxy_cleared.ts:29
 
 
 <a name="interfacesrecover_accountmd"></a>
@@ -19440,7 +19440,7 @@ Not currently used.
 
 #### Defined in
 
-wasm/lib/proto/recover_account.ts:31
+wasm/lib/proto/recover_account.ts:25
 
 ___
 
@@ -19450,7 +19450,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recover_account.ts:34
+wasm/lib/proto/recover_account.ts:28
 
 ___
 
@@ -19460,7 +19460,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recover_account.ts:32
+wasm/lib/proto/recover_account.ts:26
 
 ___
 
@@ -19470,7 +19470,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recover_account.ts:33
+wasm/lib/proto/recover_account.ts:27
 
 
 <a name="interfacesrecurrent_transfermd"></a>
@@ -19541,7 +19541,7 @@ Extensions. Since HF 28 it may contain the 'pair_id'.
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:57
+wasm/lib/proto/recurrent_transfer.ts:51
 
 ___
 
@@ -19551,7 +19551,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:60
+wasm/lib/proto/recurrent_transfer.ts:54
 
 ___
 
@@ -19561,7 +19561,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:61
+wasm/lib/proto/recurrent_transfer.ts:55
 
 ___
 
@@ -19571,7 +19571,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:55
+wasm/lib/proto/recurrent_transfer.ts:49
 
 ___
 
@@ -19581,7 +19581,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:58
+wasm/lib/proto/recurrent_transfer.ts:52
 
 ___
 
@@ -19591,7 +19591,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:59
+wasm/lib/proto/recurrent_transfer.ts:53
 
 ___
 
@@ -19601,7 +19601,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/recurrent_transfer.ts:56
+wasm/lib/proto/recurrent_transfer.ts:50
 
 
 <a name="interfacesremove_proposalmd"></a>
@@ -19624,7 +19624,7 @@ Using operation remove_proposal_operation, a user may remove proposals specified
 
 #### Defined in
 
-wasm/lib/proto/remove_proposal.ts:24
+wasm/lib/proto/remove_proposal.ts:18
 
 ___
 
@@ -19634,7 +19634,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/remove_proposal.ts:23
+wasm/lib/proto/remove_proposal.ts:17
 
 ___
 
@@ -19644,7 +19644,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/remove_proposal.ts:22
+wasm/lib/proto/remove_proposal.ts:16
 
 
 <a name="interfacesrequest_account_recoverymd"></a>
@@ -19709,7 +19709,7 @@ Not currently used.
 
 #### Defined in
 
-wasm/lib/proto/request_account_recovery.ts:56
+wasm/lib/proto/request_account_recovery.ts:50
 
 ___
 
@@ -19719,7 +19719,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/request_account_recovery.ts:58
+wasm/lib/proto/request_account_recovery.ts:52
 
 ___
 
@@ -19729,7 +19729,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/request_account_recovery.ts:57
+wasm/lib/proto/request_account_recovery.ts:51
 
 ___
 
@@ -19739,7 +19739,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/request_account_recovery.ts:55
+wasm/lib/proto/request_account_recovery.ts:49
 
 
 <a name="interfacesreturn_vesting_delegationmd"></a>
@@ -19766,7 +19766,7 @@ delegator (receiver of vesting_shares)
 
 #### Defined in
 
-wasm/lib/proto/return_vesting_delegation.ts:22
+wasm/lib/proto/return_vesting_delegation.ts:16
 
 ___
 
@@ -19776,7 +19776,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/return_vesting_delegation.ts:23
+wasm/lib/proto/return_vesting_delegation.ts:17
 
 
 <a name="interfacesset_withdraw_vesting_routemd"></a>
@@ -19821,7 +19821,7 @@ If auto_vest = true, then the amount of the Hive is immediately converted
 
 #### Defined in
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:36
+wasm/lib/proto/set_withdraw_vesting_route.ts:30
 
 ___
 
@@ -19831,7 +19831,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:33
+wasm/lib/proto/set_withdraw_vesting_route.ts:27
 
 ___
 
@@ -19841,7 +19841,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:35
+wasm/lib/proto/set_withdraw_vesting_route.ts:29
 
 ___
 
@@ -19851,7 +19851,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/set_withdraw_vesting_route.ts:34
+wasm/lib/proto/set_withdraw_vesting_route.ts:28
 
 
 <a name="interfacesshutdown_witnessmd"></a>
@@ -19878,7 +19878,7 @@ witness that was shut down
 
 #### Defined in
 
-wasm/lib/proto/shutdown_witness.ts:21
+wasm/lib/proto/shutdown_witness.ts:15
 
 
 <a name="interfacessystem_warningmd"></a>
@@ -19910,7 +19910,7 @@ warning message
 
 #### Defined in
 
-wasm/lib/proto/system_warning.ts:29
+wasm/lib/proto/system_warning.ts:23
 
 
 <a name="interfacestransactionmd"></a>
@@ -19925,7 +19925,7 @@ wasm/lib/proto/system_warning.ts:29
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:17
+wasm/lib/proto/transaction.ts:11
 
 ___
 
@@ -19935,7 +19935,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:19
+wasm/lib/proto/transaction.ts:13
 
 ___
 
@@ -19945,7 +19945,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:18
+wasm/lib/proto/transaction.ts:12
 
 ___
 
@@ -19955,7 +19955,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:15
+wasm/lib/proto/transaction.ts:9
 
 ___
 
@@ -19965,7 +19965,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:16
+wasm/lib/proto/transaction.ts:10
 
 ___
 
@@ -19977,7 +19977,7 @@ for signed_transaction
 
 #### Defined in
 
-wasm/lib/proto/transaction.ts:21
+wasm/lib/proto/transaction.ts:15
 
 
 <a name="interfacestransfermd"></a>
@@ -20024,7 +20024,7 @@ The memo is plain-text, any encryption on the memo is up to a higher level proto
 
 #### Defined in
 
-wasm/lib/proto/transfer.ts:28
+wasm/lib/proto/transfer.ts:22
 
 ___
 
@@ -20034,7 +20034,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer.ts:26
+wasm/lib/proto/transfer.ts:20
 
 ___
 
@@ -20044,7 +20044,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer.ts:29
+wasm/lib/proto/transfer.ts:23
 
 ___
 
@@ -20054,7 +20054,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer.ts:27
+wasm/lib/proto/transfer.ts:21
 
 
 <a name="interfacestransfer_from_savingsmd"></a>
@@ -20091,7 +20091,7 @@ Have to be UTF8,  must be shorter than 2048.
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:26
+wasm/lib/proto/transfer_from_savings.ts:20
 
 ___
 
@@ -20101,7 +20101,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:23
+wasm/lib/proto/transfer_from_savings.ts:17
 
 ___
 
@@ -20111,7 +20111,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:27
+wasm/lib/proto/transfer_from_savings.ts:21
 
 ___
 
@@ -20121,7 +20121,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:24
+wasm/lib/proto/transfer_from_savings.ts:18
 
 ___
 
@@ -20131,7 +20131,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_from_savings.ts:25
+wasm/lib/proto/transfer_from_savings.ts:19
 
 
 <a name="interfacestransfer_to_savingsmd"></a>
@@ -20170,7 +20170,7 @@ Have to be UTF8, must be shorter than 2048.
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_savings.ts:30
+wasm/lib/proto/transfer_to_savings.ts:24
 
 ___
 
@@ -20180,7 +20180,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_savings.ts:28
+wasm/lib/proto/transfer_to_savings.ts:22
 
 ___
 
@@ -20190,7 +20190,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_savings.ts:31
+wasm/lib/proto/transfer_to_savings.ts:25
 
 ___
 
@@ -20200,7 +20200,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_savings.ts:29
+wasm/lib/proto/transfer_to_savings.ts:23
 
 
 <a name="interfacestransfer_to_vestingmd"></a>
@@ -20235,7 +20235,7 @@ Must be HIVE, amount > 0.
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting.ts:29
+wasm/lib/proto/transfer_to_vesting.ts:23
 
 ___
 
@@ -20245,7 +20245,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting.ts:27
+wasm/lib/proto/transfer_to_vesting.ts:21
 
 ___
 
@@ -20255,7 +20255,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting.ts:28
+wasm/lib/proto/transfer_to_vesting.ts:22
 
 
 <a name="interfacestransfer_to_vesting_completedmd"></a>
@@ -20295,7 +20295,7 @@ account that gets power up (receiver of vesting_shares_received)
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:26
+wasm/lib/proto/transfer_to_vesting_completed.ts:20
 
 ___
 
@@ -20305,7 +20305,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:28
+wasm/lib/proto/transfer_to_vesting_completed.ts:22
 
 ___
 
@@ -20315,7 +20315,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:27
+wasm/lib/proto/transfer_to_vesting_completed.ts:21
 
 ___
 
@@ -20325,7 +20325,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/transfer_to_vesting_completed.ts:29
+wasm/lib/proto/transfer_to_vesting_completed.ts:23
 
 
 <a name="interfacesupdate_proposalmd"></a>
@@ -20356,7 +20356,7 @@ In order to update the proposal parameters, all parameters should be entered.
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:38
+wasm/lib/proto/update_proposal.ts:32
 
 ___
 
@@ -20366,7 +20366,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:39
+wasm/lib/proto/update_proposal.ts:33
 
 ___
 
@@ -20376,7 +20376,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:42
+wasm/lib/proto/update_proposal.ts:36
 
 ___
 
@@ -20386,7 +20386,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:41
+wasm/lib/proto/update_proposal.ts:35
 
 ___
 
@@ -20396,7 +20396,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:37
+wasm/lib/proto/update_proposal.ts:31
 
 ___
 
@@ -20406,7 +20406,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal.ts:40
+wasm/lib/proto/update_proposal.ts:34
 
 
 <a name="interfacesupdate_proposal_votesmd"></a>
@@ -20447,7 +20447,7 @@ To vote for the proposal, the approve = true.
 
 #### Defined in
 
-wasm/lib/proto/update_proposal_votes.ts:35
+wasm/lib/proto/update_proposal_votes.ts:29
 
 ___
 
@@ -20457,7 +20457,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal_votes.ts:36
+wasm/lib/proto/update_proposal_votes.ts:30
 
 ___
 
@@ -20467,7 +20467,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal_votes.ts:34
+wasm/lib/proto/update_proposal_votes.ts:28
 
 ___
 
@@ -20477,7 +20477,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/update_proposal_votes.ts:33
+wasm/lib/proto/update_proposal_votes.ts:27
 
 
 <a name="interfacesvesting_shares_splitmd"></a>
@@ -20509,7 +20509,7 @@ affected account (source of vesting_shares_before_split and receiver of vesting_
 
 #### Defined in
 
-wasm/lib/proto/vesting_shares_split.ts:24
+wasm/lib/proto/vesting_shares_split.ts:18
 
 ___
 
@@ -20519,7 +20519,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vesting_shares_split.ts:26
+wasm/lib/proto/vesting_shares_split.ts:20
 
 ___
 
@@ -20529,7 +20529,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vesting_shares_split.ts:25
+wasm/lib/proto/vesting_shares_split.ts:19
 
 
 <a name="interfacesvotemd"></a>
@@ -20597,7 +20597,7 @@ It defines how many percent of the non-used voting power a user wants to use.
 
 #### Defined in
 
-wasm/lib/proto/vote.ts:57
+wasm/lib/proto/vote.ts:51
 
 ___
 
@@ -20607,7 +20607,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vote.ts:58
+wasm/lib/proto/vote.ts:52
 
 ___
 
@@ -20617,7 +20617,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vote.ts:56
+wasm/lib/proto/vote.ts:50
 
 ___
 
@@ -20627,7 +20627,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/vote.ts:59
+wasm/lib/proto/vote.ts:53
 
 
 <a name="interfaceswithdraw_vestingmd"></a>
@@ -20661,7 +20661,7 @@ Amount of VESTS (HP)
 
 #### Defined in
 
-wasm/lib/proto/withdraw_vesting.ts:29
+wasm/lib/proto/withdraw_vesting.ts:23
 
 ___
 
@@ -20671,7 +20671,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/withdraw_vesting.ts:30
+wasm/lib/proto/withdraw_vesting.ts:24
 
 
 <a name="interfaceswitness_block_approvemd"></a>
@@ -20694,7 +20694,7 @@ This operation is used in the process of block_validity_vote
 
 #### Defined in
 
-wasm/lib/proto/witness_block_approve.ts:22
+wasm/lib/proto/witness_block_approve.ts:16
 
 ___
 
@@ -20704,7 +20704,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_block_approve.ts:21
+wasm/lib/proto/witness_block_approve.ts:15
 
 
 <a name="interfaceswitness_set_propertiesmd"></a>
@@ -20736,7 +20736,7 @@ There are the following properties available in the {props}:
 
 #### Defined in
 
-wasm/lib/proto/witness_set_properties.ts:28
+wasm/lib/proto/witness_set_properties.ts:22
 
 ___
 
@@ -20746,7 +20746,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_set_properties.ts:26
+wasm/lib/proto/witness_set_properties.ts:20
 
 ___
 
@@ -20760,7 +20760,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_set_properties.ts:27
+wasm/lib/proto/witness_set_properties.ts:21
 
 
 <a name="interfaceswitness_updatemd"></a>
@@ -20802,7 +20802,7 @@ The asset is validated (the format should be correct and should be expressed in 
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:33
+wasm/lib/proto/witness_update.ts:27
 
 ___
 
@@ -20812,7 +20812,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:35
+wasm/lib/proto/witness_update.ts:29
 
 ___
 
@@ -20822,7 +20822,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:31
+wasm/lib/proto/witness_update.ts:25
 
 ___
 
@@ -20832,7 +20832,7 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:34
+wasm/lib/proto/witness_update.ts:28
 
 ___
 
@@ -20842,4 +20842,4 @@ ___
 
 #### Defined in
 
-wasm/lib/proto/witness_update.ts:32
+wasm/lib/proto/witness_update.ts:26
