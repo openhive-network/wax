@@ -3,8 +3,8 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 
 import { test } from '../assets/jest-helper';
 
-import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper/node';
-import fs from 'fs';
+import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
+import fs from "fs";
 
 let browser!: ChromiumBrowser;
 
