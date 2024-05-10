@@ -33,6 +33,11 @@ export default defineConfig<IWaxedTest>({
       name: "wax_testsuite_protocol_benchmarks",
       testDir: "./wasm/dist",
       testMatch: "protocol_benchmarks*"
+    },
+    {
+      name: "wax_operation_factories",
+      testDir: "./wasm/dist",
+      testMatch: "operation_factories*"
     }
   ],
   // Run your local dev server before starting the tests
