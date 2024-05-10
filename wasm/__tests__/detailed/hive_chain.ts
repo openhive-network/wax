@@ -5,7 +5,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hive/beekeeper/node";
 import fs from "fs";
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { legacy_transaction_for_post_with_beneficiares, protoVoteOp } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
@@ -424,6 +424,16 @@ test.describe('Wax object interface chain tests', () => {
       });
 
       expect(retVal).toStrictEqual(["https://best.honey.provider", "https://api.hive.blog"]);
+    });
+
+    test('Should be able to convert legacy transaction for post with beneficiares', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }, legacy_transaction_for_post_with_beneficiares) => {
+        const tx = chain.TransactionBuilder.fromApi(legacy_transaction_for_post_with_beneficiares);
+
+        return tx.toLegacyApi();
+      }, legacy_transaction_for_post_with_beneficiares);
+
+      expect(retVal).toBe(legacy_transaction_for_post_with_beneficiares);
     });
 
   test.afterAll(async () => {

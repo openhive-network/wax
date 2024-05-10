@@ -88,6 +88,54 @@ export const serialization_sensitive_transaction = JSON.stringify({
   extensions: []
 });
 
+export const legacy_transaction_for_post_with_beneficiares = {
+  ref_block_num: 48625,
+  ref_block_prefix: 2272995617,
+  expiration: '2024-05-09T12:25:47',
+  operations: [
+    [
+      'comment',
+      {
+        parent_author: '',
+        parent_permlink: 'spam',
+        author: 'guest4test',
+        permlink: 'post-with-beneficiaries',
+        title: 'Post with beneficiaries',
+        body: 'Post with beneficiaries',
+        json_metadata:
+          '{"format":"markdown+html","app":"@hive/wax/0.3.8-240425134437","tags":["spam"],"summary":"Post with beneficiaries","image":[""]}',
+      },
+    ],
+    [
+      'comment_options',
+      {
+        author: 'guest4test',
+        permlink: 'post-with-beneficiaries',
+        max_accepted_payout: '1000000.000 HBD',
+        percent_hbd: 10000,
+        allow_votes: true,
+        allow_curation_rewards: true,
+        extensions: [
+          [
+            'comment_payout_beneficiaries',
+            {
+              beneficiaries: [
+                {
+                  account: 'guest4test7',
+                  weight: 40,
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    ],
+  ],
+  extensions: [],
+  signatures: [],
+};
+
+
 export const serialization_sensitive_transaction_proto: transactionT = {
   ref_block_num: 1959,
   ref_block_prefix: 3625727107,
