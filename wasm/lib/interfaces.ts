@@ -227,6 +227,15 @@ interface ITransactionBuilderBase {
   toApi(): string;
 
   /**
+   * Converts the created transaction into the Hive API-form JSON
+   *
+   * @returns {object} transaction in Hive API-form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  toApiJson(): object;
+
+  /**
    * Converts the created transaction into the Hive API-legacy form JSON string.
    *
    * Legacy form differs in few aspects to regular (HF26) one:

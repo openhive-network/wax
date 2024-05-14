@@ -93,6 +93,10 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     return serialized;
   }
 
+  public toApiJson(): object {
+    return JSON.parse(this.toApi());
+  }
+
   public toLegacyApi(): string {
     this.finalize();
 
