@@ -6,7 +6,7 @@ import alias from '@rollup/plugin-alias';
 
 const commonConfiguration = (env, packEntire = false) => ([
   {
-    input: `wasm/dist/lib/${env}.js`,
+    input: `wasm/dist/lib/index.js`,
     output: {
       format: 'es',
       name: 'wax',
@@ -15,8 +15,7 @@ const commonConfiguration = (env, packEntire = false) => ([
     plugins: [
       alias({
         entries: [
-          { find: '@hiveio/beekeeper', replacement: `@hiveio/beekeeper/${env}` },
-          { find: './build_wasm/wax.web.js', replacement: `build_wasm/wax.${env}.js` }
+          { find: '@hiveio/beekeeper', replacement: `@hiveio/beekeeper/${env}` }
         ]
       }),
       replace({
@@ -39,7 +38,7 @@ const commonConfiguration = (env, packEntire = false) => ([
       commonjs()
     ]
   }, {
-    input: `wasm/dist/lib/${env}.d.ts`,
+    input: `wasm/dist/lib/index.d.ts`,
     output: [
       { file: `wasm/dist/bundle/${env}${packEntire ? '-full' : ''}.d.ts`, format: "es" }
     ],

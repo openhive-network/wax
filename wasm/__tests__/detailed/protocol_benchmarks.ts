@@ -2,11 +2,11 @@ import fs from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import WaxModule, { protocol } from '../../dist/lib/wax_module.node';
+import WaxModule, { protocol } from '../../dist/lib/wax_module.js';
 import { test } from '../assets/jest-helper';
 import { numToHighLow, specificBenchmarkTransaction, vote_operation } from "../assets/data.protocol";
 import { createHiveChain, IHiveChainInterface } from '../../dist/bundle/web-full';
-import { MainModule } from '../../dist/lib/wax_module';
+import { MainModule } from '../../dist/lib/wax_module.js';
 
 interface IBenchmarkData {
   functionName: string;

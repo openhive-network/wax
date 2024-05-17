@@ -35,7 +35,7 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
 TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions )
-TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions 
+TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
   -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
   -sEXCEPTION_STACK_TRACES=1
  )
@@ -64,13 +64,12 @@ function( DEFINE_WAX_TARGET_FOR env )
 
       target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
 
-      target_link_options( ${exec_wasm_name} PUBLIC 
+      target_link_options( ${exec_wasm_name} PUBLIC
         -sEXPORTED_RUNTIME_METHODS=["FS"]
         -sMODULARIZE=1
         -sSINGLE_FILE=1
         -sEXPORT_ES6=1
         -sINITIAL_MEMORY=67108864
-        -sENVIRONMENT="${env}"
       )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
       INSTALL( TARGETS ${exec_wasm_name}
@@ -92,13 +91,6 @@ function( DEFINE_WAX_TARGET_FOR env )
         )
 endfunction()
 
-DEFINE_WAX_TARGET_FOR(node)
-DEFINE_WAX_TARGET_FOR(web)
+DEFINE_WAX_TARGET_FOR(common)
 
-target_link_options( wax_wasm_node PUBLIC -sUSE_ES6_IMPORT_META=1 -sNODERAWFS=1 )
-target_link_libraries( wax_wasm_node PUBLIC nodefs.js )
-target_link_libraries( wax_ts_gen_node PUBLIC nodefs.js )
-
-target_link_options( wax_wasm_web PUBLIC -sUSE_ES6_IMPORT_META=0 )
-target_link_libraries( wax_wasm_web PUBLIC idbfs.js )
-target_link_libraries( wax_ts_gen_web PUBLIC idbfs.js )
+target_link_options( wax_wasm_common PUBLIC -sUSE_ES6_IMPORT_META=0 -sENVIRONMENT="web" )

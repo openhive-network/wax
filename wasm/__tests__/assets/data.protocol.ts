@@ -3,7 +3,7 @@
  */
 
 import Long from "long";
-import type { transaction as transactionT } from "../../dist/lib/web";
+import type { transaction as transactionT } from "../../dist/lib";
 
 /// Converts given number to the array of low and high number parts
 export const numToHighLow = (value: number | string | Long): [ number, number ] => {

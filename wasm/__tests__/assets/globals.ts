@@ -2,7 +2,7 @@
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle/web-full.js";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/web-full.js";
-import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.web.js";
+import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common.js";
 
 type TMainModuleFn = () => Promise<MainModule>;
 export type TEnvType = 'web' | 'node';
@@ -60,11 +60,9 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
 };
 
 // Use function as we later extract the function name in the jest-helpers
-globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
-  const locWasm = env === "web" ? "../../dist/lib/build_wasm/wax.web.js" : "../../dist/lib/build_wasm/wax.node.js";
-
+globalThis.createWasmTestFor = async function createWasmTestFor(_env: TEnvType) {
   // Import required libraries env-dependent
-  const wasm = await import(locWasm) as typeof import("../../dist/lib/build_wasm/wax.web.js");
+  const wasm = await import("../../dist/lib/build_wasm/wax.common.js");
 
   // Initialize data
   const provider = await (wasm as { default: TMainModuleFn }).default();

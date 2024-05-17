@@ -74,7 +74,7 @@ wax_wasm_proto_tsc_generation:
       - "${DIST_DIR}/*.tgz"  # Built package
       - "${CI_PROJECT_DIR}/wasm/lib/proto" # For documentation generator
       - "${CI_PROJECT_DIR}/wasm/lib/build_wasm" # For documentation generator
-      - "${DIST_DIR}/lib/build_wasm/wax.web.js" # For base WASM tests
+      - "${DIST_DIR}/lib/build_wasm/wax.common.js" # For base WASM tests
       - "${DIST_DIR}/lib/proto" # For protobuf pattern tests
       - "${DIST_DIR}/lib" # For Node.js tests
       - "${DIST_DIR}/bundle/web-full.js" # For web tests

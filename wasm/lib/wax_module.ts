@@ -1,18 +1,17 @@
-import type { MainModule } from './build_wasm/wax.web.js';
+import type { MainModule } from './build_wasm/wax.common.js';
 
 // Parse the main module
-import MainModuleFunction from './build_wasm/wax.web.js';
+import MainModuleFunction from './build_wasm/wax.common.js';
 
 export type {
   MainModule,
   error_code,
   json_asset,
-  crypto_memo,
   proto_protocol,
   protocol,
   protocol_foundation,
   result
-} from './build_wasm/wax.web.js';
+} from './build_wasm/wax.common.js';
 
 declare function waxmodule(): Promise<MainModule>;
 

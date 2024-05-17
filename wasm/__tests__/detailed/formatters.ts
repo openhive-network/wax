@@ -7,7 +7,7 @@ import fs from "fs";
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
-import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperation, WaxFormattable, operation } from '../../dist/lib/node';
+import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperation, WaxFormattable, operation } from '../../dist/lib';
 
 let browser!: ChromiumBrowser;
 
