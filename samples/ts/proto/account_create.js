@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { authority } from "./authority.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -16,96 +15,6 @@ function createBaseaccount_create() {
     };
 }
 export const account_create = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.fee !== undefined) {
-            asset.encode(message.fee, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.creator !== "") {
-            writer.uint32(18).string(message.creator);
-        }
-        if (message.new_account_name !== "") {
-            writer.uint32(26).string(message.new_account_name);
-        }
-        if (message.owner !== undefined) {
-            authority.encode(message.owner, writer.uint32(34).fork()).ldelim();
-        }
-        if (message.active !== undefined) {
-            authority.encode(message.active, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.posting !== undefined) {
-            authority.encode(message.posting, writer.uint32(50).fork()).ldelim();
-        }
-        if (message.memo_key !== "") {
-            writer.uint32(58).string(message.memo_key);
-        }
-        if (message.json_metadata !== "") {
-            writer.uint32(66).string(message.json_metadata);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseaccount_create();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.fee = asset.decode(reader, reader.uint32());
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.creator = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.new_account_name = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.owner = authority.decode(reader, reader.uint32());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.active = authority.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.posting = authority.decode(reader, reader.uint32());
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.memo_key = reader.string();
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-                    message.json_metadata = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             fee: isSet(object.fee) ? asset.fromJSON(object.fee) : undefined,

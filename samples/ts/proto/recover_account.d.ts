@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { authority } from "./authority.js";
 import { future_extensions } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -25,8 +24,6 @@ export interface recover_account {
     extensions: future_extensions[];
 }
 export declare const recover_account: {
-    encode(message: recover_account, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): recover_account;
     fromJSON(object: any): recover_account;
     toJSON(message: recover_account): unknown;
     create<I extends {

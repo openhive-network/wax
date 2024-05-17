@@ -1,91 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasecomment() {
     return { parent_author: "", parent_permlink: "", author: "", permlink: "", title: "", body: "", json_metadata: "" };
 }
 export const comment = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.parent_author !== "") {
-            writer.uint32(10).string(message.parent_author);
-        }
-        if (message.parent_permlink !== "") {
-            writer.uint32(18).string(message.parent_permlink);
-        }
-        if (message.author !== "") {
-            writer.uint32(26).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(34).string(message.permlink);
-        }
-        if (message.title !== "") {
-            writer.uint32(42).string(message.title);
-        }
-        if (message.body !== "") {
-            writer.uint32(50).string(message.body);
-        }
-        if (message.json_metadata !== "") {
-            writer.uint32(58).string(message.json_metadata);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasecomment();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.parent_author = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.parent_permlink = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.title = reader.string();
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.body = reader.string();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.json_metadata = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             parent_author: isSet(object.parent_author) ? globalThis.String(object.parent_author) : "",

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -26,8 +25,6 @@ export interface failed_recurrent_transfer {
     deleted: boolean;
 }
 export declare const failed_recurrent_transfer: {
-    encode(message: failed_recurrent_transfer, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): failed_recurrent_transfer;
     fromJSON(object: any): failed_recurrent_transfer;
     toJSON(message: failed_recurrent_transfer): unknown;
     create<I extends {

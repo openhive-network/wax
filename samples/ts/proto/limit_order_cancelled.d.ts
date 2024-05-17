@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -18,8 +17,6 @@ export interface limit_order_cancelled {
     amount_back: asset | undefined;
 }
 export declare const limit_order_cancelled: {
-    encode(message: limit_order_cancelled, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): limit_order_cancelled;
     fromJSON(object: any): limit_order_cancelled;
     toJSON(message: limit_order_cancelled): unknown;
     create<I extends {

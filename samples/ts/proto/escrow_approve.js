@@ -1,82 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_approve() {
     return { from_account: "", to_account: "", agent: "", who: "", escrow_id: 0, approve: false };
 }
 export const escrow_approve = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.from_account !== "") {
-            writer.uint32(10).string(message.from_account);
-        }
-        if (message.to_account !== "") {
-            writer.uint32(18).string(message.to_account);
-        }
-        if (message.agent !== "") {
-            writer.uint32(26).string(message.agent);
-        }
-        if (message.who !== "") {
-            writer.uint32(34).string(message.who);
-        }
-        if (message.escrow_id !== 0) {
-            writer.uint32(40).uint32(message.escrow_id);
-        }
-        if (message.approve !== false) {
-            writer.uint32(48).bool(message.approve);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseescrow_approve();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.from_account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.to_account = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.agent = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.who = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 40) {
-                        break;
-                    }
-                    message.escrow_id = reader.uint32();
-                    continue;
-                case 6:
-                    if (tag !== 48) {
-                        break;
-                    }
-                    message.approve = reader.bool();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             from_account: isSet(object.from) ? globalThis.String(object.from) : "",

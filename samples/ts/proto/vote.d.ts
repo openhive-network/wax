@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * A user may upvote or downvote a post or a comment.
@@ -50,8 +49,6 @@ export interface vote {
     weight: number;
 }
 export declare const vote: {
-    encode(message: vote, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): vote;
     fromJSON(object: any): vote;
     toJSON(message: vote): unknown;
     create<I extends {

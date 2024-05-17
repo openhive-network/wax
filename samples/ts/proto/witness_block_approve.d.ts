@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * This is an operation for witnesses.
@@ -13,8 +12,6 @@ export interface witness_block_approve {
     block_id: string;
 }
 export declare const witness_block_approve: {
-    encode(message: witness_block_approve, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): witness_block_approve;
     fromJSON(object: any): witness_block_approve;
     toJSON(message: witness_block_approve): unknown;
     create<I extends {

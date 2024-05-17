@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_rejected() {
@@ -14,87 +13,6 @@ function createBaseescrow_rejected() {
     };
 }
 export const escrow_rejected = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.from_account !== "") {
-            writer.uint32(10).string(message.from_account);
-        }
-        if (message.to_account !== "") {
-            writer.uint32(18).string(message.to_account);
-        }
-        if (message.agent !== "") {
-            writer.uint32(26).string(message.agent);
-        }
-        if (message.escrow_id !== 0) {
-            writer.uint32(32).uint32(message.escrow_id);
-        }
-        if (message.hbd_amount !== undefined) {
-            asset.encode(message.hbd_amount, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.hive_amount !== undefined) {
-            asset.encode(message.hive_amount, writer.uint32(50).fork()).ldelim();
-        }
-        if (message.fee !== undefined) {
-            asset.encode(message.fee, writer.uint32(58).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseescrow_rejected();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.from_account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.to_account = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.agent = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 32) {
-                        break;
-                    }
-                    message.escrow_id = reader.uint32();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.hbd_amount = asset.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.hive_amount = asset.decode(reader, reader.uint32());
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.fee = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             from_account: isSet(object.from) ? globalThis.String(object.from) : "",

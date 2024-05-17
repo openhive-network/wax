@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface asset {
     amount: string;
@@ -6,8 +5,6 @@ export interface asset {
     nai: string;
 }
 export declare const asset: {
-    encode(message: asset, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): asset;
     fromJSON(object: any): asset;
     toJSON(message: asset): unknown;
     create<I extends {

@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { void_t } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -7,33 +6,6 @@ function createBaserecurrent_transfer_pair_id() {
     return { pair_id: 0 };
 }
 export const recurrent_transfer_pair_id = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.pair_id !== 0) {
-            writer.uint32(8).uint32(message.pair_id);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaserecurrent_transfer_pair_id();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 8) {
-                        break;
-                    }
-                    message.pair_id = reader.uint32();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return { pair_id: isSet(object.pair_id) ? globalThis.Number(object.pair_id) : 0 };
     },
@@ -58,42 +30,6 @@ function createBaserecurrent_transfer_extension() {
     return {};
 }
 export const recurrent_transfer_extension = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.void_t !== undefined) {
-            void_t.encode(message.void_t, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.recurrent_transfer_pair_id !== undefined) {
-            recurrent_transfer_pair_id.encode(message.recurrent_transfer_pair_id, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaserecurrent_transfer_extension();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.void_t = void_t.decode(reader, reader.uint32());
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.recurrent_transfer_pair_id = recurrent_transfer_pair_id.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             void_t: isSet(object.void_t) ? void_t.fromJSON(object.void_t) : undefined,
@@ -139,87 +75,6 @@ function createBaserecurrent_transfer() {
     };
 }
 export const recurrent_transfer = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.from_account !== "") {
-            writer.uint32(10).string(message.from_account);
-        }
-        if (message.to_account !== "") {
-            writer.uint32(18).string(message.to_account);
-        }
-        if (message.amount !== undefined) {
-            asset.encode(message.amount, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.memo !== "") {
-            writer.uint32(34).string(message.memo);
-        }
-        if (message.recurrence !== 0) {
-            writer.uint32(40).uint32(message.recurrence);
-        }
-        if (message.executions !== 0) {
-            writer.uint32(48).uint32(message.executions);
-        }
-        for (const v of message.extensions) {
-            recurrent_transfer_extension.encode(v, writer.uint32(58).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaserecurrent_transfer();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.from_account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.to_account = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.amount = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.memo = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 40) {
-                        break;
-                    }
-                    message.recurrence = reader.uint32();
-                    continue;
-                case 6:
-                    if (tag !== 48) {
-                        break;
-                    }
-                    message.executions = reader.uint32();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.extensions.push(recurrent_transfer_extension.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             from_account: isSet(object.from) ? globalThis.String(object.from) : "",

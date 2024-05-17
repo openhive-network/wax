@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to block processing or selected operations.
@@ -20,8 +19,6 @@ export interface system_warning {
     message: string;
 }
 export declare const system_warning: {
-    encode(message: system_warning, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): system_warning;
     fromJSON(object: any): system_warning;
     toJSON(message: system_warning): unknown;
     create<I extends {

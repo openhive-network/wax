@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { price } from "./price.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -14,78 +13,6 @@ function createBaselimit_order_create2() {
     };
 }
 export const limit_order_create2 = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.owner !== "") {
-            writer.uint32(10).string(message.owner);
-        }
-        if (message.orderid !== 0) {
-            writer.uint32(16).uint32(message.orderid);
-        }
-        if (message.amount_to_sell !== undefined) {
-            asset.encode(message.amount_to_sell, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.fill_or_kill !== false) {
-            writer.uint32(32).bool(message.fill_or_kill);
-        }
-        if (message.exchange_rate !== undefined) {
-            price.encode(message.exchange_rate, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.expiration !== "") {
-            writer.uint32(50).string(message.expiration);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaselimit_order_create2();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.owner = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.orderid = reader.uint32();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.amount_to_sell = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 32) {
-                        break;
-                    }
-                    message.fill_or_kill = reader.bool();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.exchange_rate = price.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.expiration = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             owner: isSet(object.owner) ? globalThis.String(object.owner) : "",

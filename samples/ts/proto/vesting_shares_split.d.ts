@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -17,8 +16,6 @@ export interface vesting_shares_split {
     vesting_shares_after_split: asset | undefined;
 }
 export declare const vesting_shares_split: {
-    encode(message: vesting_shares_split, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): vesting_shares_split;
     fromJSON(object: any): vesting_shares_split;
     toJSON(message: vesting_shares_split): unknown;
     create<I extends {

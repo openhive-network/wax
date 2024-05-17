@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -25,8 +24,6 @@ export interface witness_set_properties_PropsEntry {
     value: string;
 }
 export declare const witness_set_properties: {
-    encode(message: witness_set_properties, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): witness_set_properties;
     fromJSON(object: any): witness_set_properties;
     toJSON(message: witness_set_properties): unknown;
     create<I extends {
@@ -81,8 +78,6 @@ export declare const witness_set_properties: {
     } & { [K_9 in Exclude<keyof I_1, keyof witness_set_properties>]: never; }>(object: I_1): witness_set_properties;
 };
 export declare const witness_set_properties_PropsEntry: {
-    encode(message: witness_set_properties_PropsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): witness_set_properties_PropsEntry;
     fromJSON(object: any): witness_set_properties_PropsEntry;
     toJSON(message: witness_set_properties_PropsEntry): unknown;
     create<I extends {

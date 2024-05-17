@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -14,8 +13,6 @@ export interface remove_proposal {
     extensions: future_extensions[];
 }
 export declare const remove_proposal: {
-    encode(message: remove_proposal, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): remove_proposal;
     fromJSON(object: any): remove_proposal;
     toJSON(message: remove_proposal): unknown;
     create<I extends {

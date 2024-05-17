@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -13,8 +12,6 @@ export interface consolidate_treasury_balance {
     total_moved: asset[];
 }
 export declare const consolidate_treasury_balance: {
-    encode(message: consolidate_treasury_balance, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): consolidate_treasury_balance;
     fromJSON(object: any): consolidate_treasury_balance;
     toJSON(message: consolidate_treasury_balance): unknown;
     create<I extends {

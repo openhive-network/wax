@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { account_create } from "./account_create.js";
 import { account_create_with_delegation } from "./account_create_with_delegation.js";
 import { account_created } from "./account_created.js";
@@ -188,8 +187,6 @@ export interface operation {
     declined_voting_rights?: declined_voting_rights | undefined;
 }
 export declare const operation: {
-    encode(message: operation, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): operation;
     fromJSON(object: any): operation;
     toJSON(message: operation): unknown;
     create<I extends {

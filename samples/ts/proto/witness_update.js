@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { legacy_chain_properties } from "./legacy_chain_properties.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -7,69 +6,6 @@ function createBasewitness_update() {
     return { owner: "", url: "", block_signing_key: "", props: undefined, fee: undefined };
 }
 export const witness_update = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.owner !== "") {
-            writer.uint32(10).string(message.owner);
-        }
-        if (message.url !== "") {
-            writer.uint32(18).string(message.url);
-        }
-        if (message.block_signing_key !== "") {
-            writer.uint32(26).string(message.block_signing_key);
-        }
-        if (message.props !== undefined) {
-            legacy_chain_properties.encode(message.props, writer.uint32(34).fork()).ldelim();
-        }
-        if (message.fee !== undefined) {
-            asset.encode(message.fee, writer.uint32(42).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasewitness_update();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.owner = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.url = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.block_signing_key = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.props = legacy_chain_properties.decode(reader, reader.uint32());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.fee = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             owner: isSet(object.owner) ? globalThis.String(object.owner) : "",

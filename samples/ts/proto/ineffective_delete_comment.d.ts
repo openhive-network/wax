@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to delete_comment_operation.
@@ -14,8 +13,6 @@ export interface ineffective_delete_comment {
     permlink: string;
 }
 export declare const ineffective_delete_comment: {
-    encode(message: ineffective_delete_comment, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): ineffective_delete_comment;
     fromJSON(object: any): ineffective_delete_comment;
     toJSON(message: ineffective_delete_comment): unknown;
     create<I extends {

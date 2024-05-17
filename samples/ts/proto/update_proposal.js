@@ -1,6 +1,4 @@
 /* eslint-disable */
-import Long from "long";
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { void_t } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -8,33 +6,6 @@ function createBaseupdate_proposal_end_date() {
     return { end_date: "" };
 }
 export const update_proposal_end_date = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.end_date !== "") {
-            writer.uint32(10).string(message.end_date);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseupdate_proposal_end_date();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.end_date = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return { end_date: isSet(object.end_date) ? globalThis.String(object.end_date) : "" };
     },
@@ -59,42 +30,6 @@ function createBaseupdate_proposal_extension() {
     return {};
 }
 export const update_proposal_extension = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.void_t !== undefined) {
-            void_t.encode(message.void_t, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.update_proposal_end_date !== undefined) {
-            update_proposal_end_date.encode(message.update_proposal_end_date, writer.uint32(18).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseupdate_proposal_extension();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.void_t = void_t.decode(reader, reader.uint32());
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.update_proposal_end_date = update_proposal_end_date.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             void_t: isSet(object.void_t) ? void_t.fromJSON(object.void_t) : undefined,
@@ -132,78 +67,6 @@ function createBaseupdate_proposal() {
     return { proposal_id: "0", creator: "", daily_pay: undefined, subject: "", permlink: "", extensions: [] };
 }
 export const update_proposal = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.proposal_id !== "0") {
-            writer.uint32(8).int64(message.proposal_id);
-        }
-        if (message.creator !== "") {
-            writer.uint32(18).string(message.creator);
-        }
-        if (message.daily_pay !== undefined) {
-            asset.encode(message.daily_pay, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.subject !== "") {
-            writer.uint32(34).string(message.subject);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(42).string(message.permlink);
-        }
-        for (const v of message.extensions) {
-            update_proposal_extension.encode(v, writer.uint32(50).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseupdate_proposal();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 8) {
-                        break;
-                    }
-                    message.proposal_id = longToString(reader.int64());
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.creator = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.daily_pay = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.subject = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.extensions.push(update_proposal_extension.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             proposal_id: isSet(object.proposal_id) ? globalThis.String(object.proposal_id) : "0",
@@ -256,13 +119,6 @@ export const update_proposal = {
         return message;
     },
 };
-function longToString(long) {
-    return long.toString();
-}
-if (_m0.util.Long !== Long) {
-    _m0.util.Long = Long;
-    _m0.configure();
-}
 function isSet(value) {
     return value !== null && value !== undefined;
 }

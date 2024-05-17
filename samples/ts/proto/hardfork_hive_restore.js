@@ -1,65 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasehardfork_hive_restore() {
     return { account: "", treasury: "", hbd_transferred: undefined, hive_transferred: undefined };
 }
 export const hardfork_hive_restore = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.account !== "") {
-            writer.uint32(10).string(message.account);
-        }
-        if (message.treasury !== "") {
-            writer.uint32(18).string(message.treasury);
-        }
-        if (message.hbd_transferred !== undefined) {
-            asset.encode(message.hbd_transferred, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.hive_transferred !== undefined) {
-            asset.encode(message.hive_transferred, writer.uint32(34).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasehardfork_hive_restore();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.treasury = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.hbd_transferred = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.hive_transferred = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             account: isSet(object.account) ? globalThis.String(object.account) : "",

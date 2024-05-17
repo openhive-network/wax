@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface authority {
     weight_threshold: number;
@@ -18,8 +17,6 @@ export interface authority_KeyAuthsEntry {
     value: number;
 }
 export declare const authority: {
-    encode(message: authority, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): authority;
     fromJSON(object: any): authority;
     toJSON(message: authority): unknown;
     create<I extends {
@@ -66,8 +63,6 @@ export declare const authority: {
     } & { [K_5 in Exclude<keyof I_1, keyof authority>]: never; }>(object: I_1): authority;
 };
 export declare const authority_AccountAuthsEntry: {
-    encode(message: authority_AccountAuthsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): authority_AccountAuthsEntry;
     fromJSON(object: any): authority_AccountAuthsEntry;
     toJSON(message: authority_AccountAuthsEntry): unknown;
     create<I extends {
@@ -86,8 +81,6 @@ export declare const authority_AccountAuthsEntry: {
     } & { [K_1 in Exclude<keyof I_1, keyof authority_AccountAuthsEntry>]: never; }>(object: I_1): authority_AccountAuthsEntry;
 };
 export declare const authority_KeyAuthsEntry: {
-    encode(message: authority_KeyAuthsEntry, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): authority_KeyAuthsEntry;
     fromJSON(object: any): authority_KeyAuthsEntry;
     toJSON(message: authority_KeyAuthsEntry): unknown;
     create<I extends {

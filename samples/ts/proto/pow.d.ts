@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { legacy_chain_properties } from "./legacy_chain_properties.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface pow_work {
@@ -15,8 +14,6 @@ export interface pow {
     props: legacy_chain_properties | undefined;
 }
 export declare const pow_work: {
-    encode(message: pow_work, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow_work;
     fromJSON(object: any): pow_work;
     toJSON(message: pow_work): unknown;
     create<I extends {
@@ -43,8 +40,6 @@ export declare const pow_work: {
     } & { [K_1 in Exclude<keyof I_1, keyof pow_work>]: never; }>(object: I_1): pow_work;
 };
 export declare const pow: {
-    encode(message: pow, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow;
     fromJSON(object: any): pow;
     toJSON(message: pow): unknown;
     create<I extends {

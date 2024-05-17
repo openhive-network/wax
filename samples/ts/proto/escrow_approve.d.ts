@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * The operation escrow_approve_operation is used to approve the escrow.
@@ -24,8 +23,6 @@ export interface escrow_approve {
     approve: boolean;
 }
 export declare const escrow_approve: {
-    encode(message: escrow_approve, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): escrow_approve;
     fromJSON(object: any): escrow_approve;
     toJSON(message: escrow_approve): unknown;
     create<I extends {

@@ -1,59 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasewitness_set_properties() {
     return { owner: "", props: {}, extensions: [] };
 }
 export const witness_set_properties = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.owner !== "") {
-            writer.uint32(10).string(message.owner);
-        }
-        Object.entries(message.props).forEach(([key, value]) => {
-            witness_set_properties_PropsEntry.encode({ key: key, value }, writer.uint32(18).fork()).ldelim();
-        });
-        for (const v of message.extensions) {
-            future_extensions.encode(v, writer.uint32(26).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasewitness_set_properties();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.owner = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    const entry2 = witness_set_properties_PropsEntry.decode(reader, reader.uint32());
-                    if (entry2.value !== undefined) {
-                        message.props[entry2.key] = entry2.value;
-                    }
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.extensions.push(future_extensions.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             owner: isSet(object.owner) ? globalThis.String(object.owner) : "",
@@ -109,42 +60,6 @@ function createBasewitness_set_properties_PropsEntry() {
     return { key: "", value: "" };
 }
 export const witness_set_properties_PropsEntry = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== "") {
-            writer.uint32(18).string(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasewitness_set_properties_PropsEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.key = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.value = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             key: isSet(object.key) ? globalThis.String(object.key) : "",

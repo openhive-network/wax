@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseauthor_reward() {
@@ -14,87 +13,6 @@ function createBaseauthor_reward() {
     };
 }
 export const author_reward = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.author !== "") {
-            writer.uint32(10).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(18).string(message.permlink);
-        }
-        if (message.hbd_payout !== undefined) {
-            asset.encode(message.hbd_payout, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.hive_payout !== undefined) {
-            asset.encode(message.hive_payout, writer.uint32(34).fork()).ldelim();
-        }
-        if (message.vesting_payout !== undefined) {
-            asset.encode(message.vesting_payout, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.curators_vesting_payout !== undefined) {
-            asset.encode(message.curators_vesting_payout, writer.uint32(50).fork()).ldelim();
-        }
-        if (message.payout_must_be_claimed !== false) {
-            writer.uint32(56).bool(message.payout_must_be_claimed);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseauthor_reward();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.hbd_payout = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.hive_payout = asset.decode(reader, reader.uint32());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.vesting_payout = asset.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.curators_vesting_payout = asset.decode(reader, reader.uint32());
-                    continue;
-                case 7:
-                    if (tag !== 56) {
-                        break;
-                    }
-                    message.payout_must_be_claimed = reader.bool();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             author: isSet(object.author) ? globalThis.String(object.author) : "",

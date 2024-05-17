@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -19,8 +18,6 @@ export interface fill_vesting_withdraw {
     deposited: asset | undefined;
 }
 export declare const fill_vesting_withdraw: {
-    encode(message: fill_vesting_withdraw, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): fill_vesting_withdraw;
     fromJSON(object: any): fill_vesting_withdraw;
     toJSON(message: fill_vesting_withdraw): unknown;
     create<I extends {

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -14,8 +13,6 @@ export interface return_vesting_delegation {
     vesting_shares: asset | undefined;
 }
 export declare const return_vesting_delegation: {
-    encode(message: return_vesting_delegation, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): return_vesting_delegation;
     fromJSON(object: any): return_vesting_delegation;
     toJSON(message: return_vesting_delegation): unknown;
     create<I extends {

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -19,8 +18,6 @@ export interface account_created {
     initial_delegation: asset | undefined;
 }
 export declare const account_created: {
-    encode(message: account_created, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): account_created;
     fromJSON(object: any): account_created;
     toJSON(message: account_created): unknown;
     create<I extends {

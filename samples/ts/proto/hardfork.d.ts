@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to block processing.
@@ -10,8 +9,6 @@ export interface hardfork {
     hardfork_id: number;
 }
 export declare const hardfork: {
-    encode(message: hardfork, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): hardfork;
     fromJSON(object: any): hardfork;
     toJSON(message: hardfork): unknown;
     create<I extends {

@@ -1,74 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasetransfer_from_savings() {
     return { from_account: "", request_id: 0, to_account: "", amount: undefined, memo: "" };
 }
 export const transfer_from_savings = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.from_account !== "") {
-            writer.uint32(10).string(message.from_account);
-        }
-        if (message.request_id !== 0) {
-            writer.uint32(16).uint32(message.request_id);
-        }
-        if (message.to_account !== "") {
-            writer.uint32(26).string(message.to_account);
-        }
-        if (message.amount !== undefined) {
-            asset.encode(message.amount, writer.uint32(34).fork()).ldelim();
-        }
-        if (message.memo !== "") {
-            writer.uint32(42).string(message.memo);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasetransfer_from_savings();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.from_account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.request_id = reader.uint32();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.to_account = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.amount = asset.decode(reader, reader.uint32());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.memo = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             from_account: isSet(object.from) ? globalThis.String(object.from) : "",

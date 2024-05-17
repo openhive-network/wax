@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -17,8 +16,6 @@ export interface interest {
     is_saved_into_hbd_balance: boolean;
 }
 export declare const interest: {
-    encode(message: interest, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): interest;
     fromJSON(object: any): interest;
     toJSON(message: interest): unknown;
     create<I extends {

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -19,8 +18,6 @@ export interface legacy_chain_properties {
     hbd_interest_rate: number;
 }
 export declare const legacy_chain_properties: {
-    encode(message: legacy_chain_properties, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): legacy_chain_properties;
     fromJSON(object: any): legacy_chain_properties;
     toJSON(message: legacy_chain_properties): unknown;
     create<I extends {

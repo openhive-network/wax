@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * The operation custom_json_operation works similar as custom_operation,
@@ -23,8 +22,6 @@ export interface custom_json {
     json: string;
 }
 export declare const custom_json: {
-    encode(message: custom_json, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): custom_json;
     fromJSON(object: any): custom_json;
     toJSON(message: custom_json): unknown;
     create<I extends {

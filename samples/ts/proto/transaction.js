@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 import { operation } from "./operation.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -7,78 +6,6 @@ function createBasetransaction() {
     return { ref_block_num: 0, ref_block_prefix: 0, expiration: "", operations: [], extensions: [], signatures: [] };
 }
 export const transaction = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.ref_block_num !== 0) {
-            writer.uint32(8).uint32(message.ref_block_num);
-        }
-        if (message.ref_block_prefix !== 0) {
-            writer.uint32(16).uint32(message.ref_block_prefix);
-        }
-        if (message.expiration !== "") {
-            writer.uint32(26).string(message.expiration);
-        }
-        for (const v of message.operations) {
-            operation.encode(v, writer.uint32(34).fork()).ldelim();
-        }
-        for (const v of message.extensions) {
-            future_extensions.encode(v, writer.uint32(42).fork()).ldelim();
-        }
-        for (const v of message.signatures) {
-            writer.uint32(50).string(v);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasetransaction();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 8) {
-                        break;
-                    }
-                    message.ref_block_num = reader.uint32();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.ref_block_prefix = reader.uint32();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.expiration = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.operations.push(operation.decode(reader, reader.uint32()));
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.extensions.push(future_extensions.decode(reader, reader.uint32()));
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.signatures.push(reader.string());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             ref_block_num: isSet(object.ref_block_num) ? globalThis.Number(object.ref_block_num) : 0,

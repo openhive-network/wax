@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface beneficiary_route_type {
@@ -56,8 +55,6 @@ export interface comment_options {
     extensions: comment_options_extension[];
 }
 export declare const beneficiary_route_type: {
-    encode(message: beneficiary_route_type, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): beneficiary_route_type;
     fromJSON(object: any): beneficiary_route_type;
     toJSON(message: beneficiary_route_type): unknown;
     create<I extends {
@@ -76,8 +73,6 @@ export declare const beneficiary_route_type: {
     } & { [K_1 in Exclude<keyof I_1, keyof beneficiary_route_type>]: never; }>(object: I_1): beneficiary_route_type;
 };
 export declare const comment_payout_beneficiaries: {
-    encode(message: comment_payout_beneficiaries, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): comment_payout_beneficiaries;
     fromJSON(object: any): comment_payout_beneficiaries;
     toJSON(message: comment_payout_beneficiaries): unknown;
     create<I extends {
@@ -122,8 +117,6 @@ export declare const comment_payout_beneficiaries: {
     } & { [K_5 in Exclude<keyof I_1, "beneficiaries">]: never; }>(object: I_1): comment_payout_beneficiaries;
 };
 export declare const comment_options_extension: {
-    encode(message: comment_options_extension, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): comment_options_extension;
     fromJSON(object: any): comment_options_extension;
     toJSON(message: comment_options_extension): unknown;
     create<I extends {
@@ -186,8 +179,6 @@ export declare const comment_options_extension: {
     } & { [K_7 in Exclude<keyof I_1, "comment_payout_beneficiaries">]: never; }>(object: I_1): comment_options_extension;
 };
 export declare const comment_options: {
-    encode(message: comment_options, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): comment_options;
     fromJSON(object: any): comment_options;
     toJSON(message: comment_options): unknown;
     create<I extends {

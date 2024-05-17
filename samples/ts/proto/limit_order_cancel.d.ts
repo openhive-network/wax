@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Cancels an order (limit_order_create_operation or limit_order_create2_operation)
@@ -13,8 +12,6 @@ export interface limit_order_cancel {
     orderid: number;
 }
 export declare const limit_order_cancel: {
-    encode(message: limit_order_cancel, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): limit_order_cancel;
     fromJSON(object: any): limit_order_cancel;
     toJSON(message: limit_order_cancel): unknown;
     create<I extends {

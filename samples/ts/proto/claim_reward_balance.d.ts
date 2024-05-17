@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -19,8 +18,6 @@ export interface claim_reward_balance {
     reward_vests: asset | undefined;
 }
 export declare const claim_reward_balance: {
-    encode(message: claim_reward_balance, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): claim_reward_balance;
     fromJSON(object: any): claim_reward_balance;
     toJSON(message: claim_reward_balance): unknown;
     create<I extends {

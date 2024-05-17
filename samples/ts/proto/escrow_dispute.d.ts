@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * The operation  escrow_dispute_operation is used to raise the dispute. It may be used by { from } or { to } accounts.
@@ -18,8 +17,6 @@ export interface escrow_dispute {
     escrow_id: number;
 }
 export declare const escrow_dispute: {
-    encode(message: escrow_dispute, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): escrow_dispute;
     fromJSON(object: any): escrow_dispute;
     toJSON(message: escrow_dispute): unknown;
     create<I extends {

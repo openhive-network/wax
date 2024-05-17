@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -16,8 +15,6 @@ export interface collateralized_convert_immediate_conversion {
     hbd_out: asset | undefined;
 }
 export declare const collateralized_convert_immediate_conversion: {
-    encode(message: collateralized_convert_immediate_conversion, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): collateralized_convert_immediate_conversion;
     fromJSON(object: any): collateralized_convert_immediate_conversion;
     toJSON(message: collateralized_convert_immediate_conversion): unknown;
     create<I extends {

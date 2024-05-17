@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { void_t } from "./future_extensions.js";
 import { transaction } from "./transaction.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -24,8 +23,6 @@ export interface block {
     transaction_ids: string[];
 }
 export declare const hardfork_version_vote: {
-    encode(message: hardfork_version_vote, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): hardfork_version_vote;
     fromJSON(object: any): hardfork_version_vote;
     toJSON(message: hardfork_version_vote): unknown;
     create<I extends {
@@ -44,8 +41,6 @@ export declare const hardfork_version_vote: {
     } & { [K_1 in Exclude<keyof I_1, keyof hardfork_version_vote>]: never; }>(object: I_1): hardfork_version_vote;
 };
 export declare const block_header_extensions: {
-    encode(message: block_header_extensions, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): block_header_extensions;
     fromJSON(object: any): block_header_extensions;
     toJSON(message: block_header_extensions): unknown;
     create<I extends {
@@ -86,8 +81,6 @@ export declare const block_header_extensions: {
     } & { [K_5 in Exclude<keyof I_1, keyof block_header_extensions>]: never; }>(object: I_1): block_header_extensions;
 };
 export declare const block: {
-    encode(message: block, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): block;
     fromJSON(object: any): block;
     toJSON(message: block): unknown;
     create<I extends {

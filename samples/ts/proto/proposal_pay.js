@@ -1,65 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseproposal_pay() {
     return { proposal_id: 0, receiver: "", payer: "", payment: undefined };
 }
 export const proposal_pay = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.proposal_id !== 0) {
-            writer.uint32(8).uint32(message.proposal_id);
-        }
-        if (message.receiver !== "") {
-            writer.uint32(18).string(message.receiver);
-        }
-        if (message.payer !== "") {
-            writer.uint32(26).string(message.payer);
-        }
-        if (message.payment !== undefined) {
-            asset.encode(message.payment, writer.uint32(34).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseproposal_pay();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 8) {
-                        break;
-                    }
-                    message.proposal_id = reader.uint32();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.receiver = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.payer = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.payment = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             proposal_id: isSet(object.proposal_id) ? globalThis.Number(object.proposal_id) : 0,

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * There are the following custom operations: custom_operation, custom_json_operation and custom_binary (currently is disabled).
@@ -14,8 +13,6 @@ export interface custom {
     data: string;
 }
 export declare const custom: {
-    encode(message: custom, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): custom;
     fromJSON(object: any): custom;
     toJSON(message: custom): unknown;
     create<I extends {

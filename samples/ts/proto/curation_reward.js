@@ -1,74 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasecuration_reward() {
     return { curator: "", reward: undefined, author: "", permlink: "", payout_must_be_claimed: false };
 }
 export const curation_reward = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.curator !== "") {
-            writer.uint32(10).string(message.curator);
-        }
-        if (message.reward !== undefined) {
-            asset.encode(message.reward, writer.uint32(18).fork()).ldelim();
-        }
-        if (message.author !== "") {
-            writer.uint32(26).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(34).string(message.permlink);
-        }
-        if (message.payout_must_be_claimed !== false) {
-            writer.uint32(40).bool(message.payout_must_be_claimed);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasecuration_reward();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.curator = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.reward = asset.decode(reader, reader.uint32());
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 40) {
-                        break;
-                    }
-                    message.payout_must_be_claimed = reader.bool();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             curator: isSet(object.curator) ? globalThis.String(object.curator) : "",

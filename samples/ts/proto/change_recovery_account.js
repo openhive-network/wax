@@ -1,56 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasechange_recovery_account() {
     return { account_to_recover: "", new_recovery_account: "", extensions: [] };
 }
 export const change_recovery_account = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.account_to_recover !== "") {
-            writer.uint32(10).string(message.account_to_recover);
-        }
-        if (message.new_recovery_account !== "") {
-            writer.uint32(18).string(message.new_recovery_account);
-        }
-        for (const v of message.extensions) {
-            future_extensions.encode(v, writer.uint32(26).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasechange_recovery_account();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.account_to_recover = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.new_recovery_account = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.extensions.push(future_extensions.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             account_to_recover: isSet(object.account_to_recover) ? globalThis.String(object.account_to_recover) : "",

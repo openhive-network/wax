@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -21,8 +20,6 @@ export interface curation_reward {
     payout_must_be_claimed: boolean;
 }
 export declare const curation_reward: {
-    encode(message: curation_reward, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): curation_reward;
     fromJSON(object: any): curation_reward;
     toJSON(message: curation_reward): unknown;
     create<I extends {

@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { authority } from "./authority.js";
 import { future_extensions } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -7,96 +6,6 @@ function createBaseaccount_update2() {
     return { account: "", json_metadata: "", posting_json_metadata: "", extensions: [] };
 }
 export const account_update2 = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.account !== "") {
-            writer.uint32(10).string(message.account);
-        }
-        if (message.owner !== undefined) {
-            authority.encode(message.owner, writer.uint32(18).fork()).ldelim();
-        }
-        if (message.active !== undefined) {
-            authority.encode(message.active, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.posting !== undefined) {
-            authority.encode(message.posting, writer.uint32(34).fork()).ldelim();
-        }
-        if (message.memo_key !== undefined && message.memo_key !== "STM1111111111111111111111111111111114T1Anm") {
-            writer.uint32(42).string(message.memo_key);
-        }
-        if (message.json_metadata !== "") {
-            writer.uint32(50).string(message.json_metadata);
-        }
-        if (message.posting_json_metadata !== "") {
-            writer.uint32(58).string(message.posting_json_metadata);
-        }
-        for (const v of message.extensions) {
-            future_extensions.encode(v, writer.uint32(66).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseaccount_update2();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.owner = authority.decode(reader, reader.uint32());
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.active = authority.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.posting = authority.decode(reader, reader.uint32());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.memo_key = reader.string();
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.json_metadata = reader.string();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.posting_json_metadata = reader.string();
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-                    message.extensions.push(future_extensions.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             account: isSet(object.account) ? globalThis.String(object.account) : "",

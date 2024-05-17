@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -15,8 +14,6 @@ export interface dhf_funding {
     additional_funds: asset | undefined;
 }
 export declare const dhf_funding: {
-    encode(message: dhf_funding, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): dhf_funding;
     fromJSON(object: any): dhf_funding;
     toJSON(message: dhf_funding): unknown;
     create<I extends {

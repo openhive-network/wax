@@ -1,64 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseset_withdraw_vesting_route() {
     return { from_account: "", to_account: "", percent: 0, auto_vest: false };
 }
 export const set_withdraw_vesting_route = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.from_account !== "") {
-            writer.uint32(10).string(message.from_account);
-        }
-        if (message.to_account !== "") {
-            writer.uint32(18).string(message.to_account);
-        }
-        if (message.percent !== 0) {
-            writer.uint32(24).uint32(message.percent);
-        }
-        if (message.auto_vest !== false) {
-            writer.uint32(32).bool(message.auto_vest);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseset_withdraw_vesting_route();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.from_account = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.to_account = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 24) {
-                        break;
-                    }
-                    message.percent = reader.uint32();
-                    continue;
-                case 4:
-                    if (tag !== 32) {
-                        break;
-                    }
-                    message.auto_vest = reader.bool();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             from_account: isSet(object.from_account) ? globalThis.String(object.from_account) : "",

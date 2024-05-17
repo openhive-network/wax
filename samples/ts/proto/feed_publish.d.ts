@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { price } from "./price.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -15,8 +14,6 @@ export interface feed_publish {
     exchange_rate: price | undefined;
 }
 export declare const feed_publish: {
-    encode(message: feed_publish, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): feed_publish;
     fromJSON(object: any): feed_publish;
     toJSON(message: feed_publish): unknown;
     create<I extends {

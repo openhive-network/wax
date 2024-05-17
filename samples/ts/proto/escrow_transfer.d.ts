@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -39,8 +38,6 @@ export interface escrow_transfer {
     json_meta: string;
 }
 export declare const escrow_transfer: {
-    encode(message: escrow_transfer, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): escrow_transfer;
     fromJSON(object: any): escrow_transfer;
     toJSON(message: escrow_transfer): unknown;
     create<I extends {

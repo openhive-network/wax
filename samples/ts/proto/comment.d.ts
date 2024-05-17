@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Using comment operation a user may create a post or a comment.
@@ -42,8 +41,6 @@ export interface comment {
     json_metadata: string;
 }
 export declare const comment: {
-    encode(message: comment, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): comment;
     fromJSON(object: any): comment;
     toJSON(message: comment): unknown;
     create<I extends {

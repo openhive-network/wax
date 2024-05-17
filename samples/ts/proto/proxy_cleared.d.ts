@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * There are 4 cases( 4 operations ) that can generate `proxy_cleared_operation` virtual operation:
@@ -26,8 +25,6 @@ export interface proxy_cleared {
     proxy: string;
 }
 export declare const proxy_cleared: {
-    encode(message: proxy_cleared, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): proxy_cleared;
     fromJSON(object: any): proxy_cleared;
     toJSON(message: proxy_cleared): unknown;
     create<I extends {

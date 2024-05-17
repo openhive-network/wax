@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to governance voting: account_witness_vote_operation, account_witness_proxy_operation and update_proposal_votes_operation.
@@ -11,8 +10,6 @@ export interface expired_account_notification {
     account: string;
 }
 export declare const expired_account_notification: {
-    encode(message: expired_account_notification, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): expired_account_notification;
     fromJSON(object: any): expired_account_notification;
     toJSON(message: expired_account_notification): unknown;
     create<I extends {

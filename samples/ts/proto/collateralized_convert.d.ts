@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -17,8 +16,6 @@ export interface collateralized_convert {
     amount: asset | undefined;
 }
 export declare const collateralized_convert: {
-    encode(message: collateralized_convert, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): collateralized_convert;
     fromJSON(object: any): collateralized_convert;
     toJSON(message: collateralized_convert): unknown;
     create<I extends {

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -22,8 +21,6 @@ export interface fill_order {
     open_pays: asset | undefined;
 }
 export declare const fill_order: {
-    encode(message: fill_order, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): fill_order;
     fromJSON(object: any): fill_order;
     toJSON(message: fill_order): unknown;
     create<I extends {

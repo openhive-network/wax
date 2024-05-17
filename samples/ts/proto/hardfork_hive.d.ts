@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -23,8 +22,6 @@ export interface hardfork_hive {
     total_hive_from_vests: asset | undefined;
 }
 export declare const hardfork_hive: {
-    encode(message: hardfork_hive, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): hardfork_hive;
     fromJSON(object: any): hardfork_hive;
     toJSON(message: hardfork_hive): unknown;
     create<I extends {

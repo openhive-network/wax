@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -29,8 +28,6 @@ export interface escrow_release {
     hive_amount: asset | undefined;
 }
 export declare const escrow_release: {
-    encode(message: escrow_release, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): escrow_release;
     fromJSON(object: any): escrow_release;
     toJSON(message: escrow_release): unknown;
     create<I extends {

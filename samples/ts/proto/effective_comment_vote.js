@@ -1,6 +1,4 @@
 /* eslint-disable */
-import Long from "long";
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseeffective_comment_vote() {
@@ -15,87 +13,6 @@ function createBaseeffective_comment_vote() {
     };
 }
 export const effective_comment_vote = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.voter !== "") {
-            writer.uint32(10).string(message.voter);
-        }
-        if (message.author !== "") {
-            writer.uint32(18).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(26).string(message.permlink);
-        }
-        if (message.weight !== "0") {
-            writer.uint32(32).uint64(message.weight);
-        }
-        if (message.rshares !== "0") {
-            writer.uint32(40).int64(message.rshares);
-        }
-        if (message.total_vote_weight !== "0") {
-            writer.uint32(48).uint64(message.total_vote_weight);
-        }
-        if (message.pending_payout !== undefined) {
-            asset.encode(message.pending_payout, writer.uint32(58).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseeffective_comment_vote();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.voter = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 32) {
-                        break;
-                    }
-                    message.weight = longToString(reader.uint64());
-                    continue;
-                case 5:
-                    if (tag !== 40) {
-                        break;
-                    }
-                    message.rshares = longToString(reader.int64());
-                    continue;
-                case 6:
-                    if (tag !== 48) {
-                        break;
-                    }
-                    message.total_vote_weight = longToString(reader.uint64());
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.pending_payout = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             voter: isSet(object.voter) ? globalThis.String(object.voter) : "",
@@ -150,13 +67,6 @@ export const effective_comment_vote = {
         return message;
     },
 };
-function longToString(long) {
-    return long.toString();
-}
-if (_m0.util.Long !== Long) {
-    _m0.util.Long = Long;
-    _m0.configure();
-}
 function isSet(value) {
     return value !== null && value !== undefined;
 }

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { authority } from "./authority.js";
 import { future_extensions } from "./future_extensions.js";
@@ -17,8 +16,6 @@ export interface account_create_with_delegation {
     extensions: future_extensions[];
 }
 export declare const account_create_with_delegation: {
-    encode(message: account_create_with_delegation, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): account_create_with_delegation;
     fromJSON(object: any): account_create_with_delegation;
     toJSON(message: account_create_with_delegation): unknown;
     create<I extends {

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -24,8 +23,6 @@ export interface effective_comment_vote {
     pending_payout: asset | undefined;
 }
 export declare const effective_comment_vote: {
-    encode(message: effective_comment_vote, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): effective_comment_vote;
     fromJSON(object: any): effective_comment_vote;
     toJSON(message: effective_comment_vote): unknown;
     create<I extends {

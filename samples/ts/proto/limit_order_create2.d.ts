@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { price } from "./price.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -26,8 +25,6 @@ export interface limit_order_create2 {
     expiration: string;
 }
 export declare const limit_order_create2: {
-    encode(message: limit_order_create2, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): limit_order_create2;
     fromJSON(object: any): limit_order_create2;
     toJSON(message: limit_order_create2): unknown;
     create<I extends {

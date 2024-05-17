@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * A user may vote for a witness or proposal directly (using an operation: account_witness_vote_operation or update_proposal_votes_operation)
@@ -21,8 +20,6 @@ export interface account_witness_proxy {
     proxy: string;
 }
 export declare const account_witness_proxy: {
-    encode(message: account_witness_proxy, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): account_witness_proxy;
     fromJSON(object: any): account_witness_proxy;
     toJSON(message: account_witness_proxy): unknown;
     create<I extends {

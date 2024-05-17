@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface void_t {
 }
@@ -6,16 +5,12 @@ export interface future_extensions {
     void_t?: void_t | undefined;
 }
 export declare const void_t: {
-    encode(_: void_t, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): void_t;
     fromJSON(_: any): void_t;
     toJSON(_: void_t): unknown;
     create<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(base?: I | undefined): void_t;
     fromPartial<I_1 extends {} & {} & { [K_1 in Exclude<keyof I_1, never>]: never; }>(_: I_1): void_t;
 };
 export declare const future_extensions: {
-    encode(message: future_extensions, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): future_extensions;
     fromJSON(object: any): future_extensions;
     toJSON(message: future_extensions): unknown;
     create<I extends {

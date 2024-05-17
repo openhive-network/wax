@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * A user may vote for a witness directly using an operation:
@@ -21,8 +20,6 @@ export interface account_witness_vote {
     approve: boolean;
 }
 export declare const account_witness_vote: {
-    encode(message: account_witness_vote, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): account_witness_vote;
     fromJSON(object: any): account_witness_vote;
     toJSON(message: account_witness_vote): unknown;
     create<I extends {

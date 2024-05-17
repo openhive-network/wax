@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to comment_operation.
@@ -13,8 +12,6 @@ export interface comment_payout_update {
     permlink: string;
 }
 export declare const comment_payout_update: {
-    encode(message: comment_payout_update, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): comment_payout_update;
     fromJSON(object: any): comment_payout_update;
     toJSON(message: comment_payout_update): unknown;
     create<I extends {

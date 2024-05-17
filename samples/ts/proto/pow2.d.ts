@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { legacy_chain_properties } from "./legacy_chain_properties.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 export interface pow2_input {
@@ -32,8 +31,6 @@ export interface pow2 {
     props: legacy_chain_properties | undefined;
 }
 export declare const pow2_input: {
-    encode(message: pow2_input, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow2_input;
     fromJSON(object: any): pow2_input;
     toJSON(message: pow2_input): unknown;
     create<I extends {
@@ -56,8 +53,6 @@ export declare const pow2_input: {
     } & { [K_1 in Exclude<keyof I_1, keyof pow2_input>]: never; }>(object: I_1): pow2_input;
 };
 export declare const pow2_pow: {
-    encode(message: pow2_pow, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow2_pow;
     fromJSON(object: any): pow2_pow;
     toJSON(message: pow2_pow): unknown;
     create<I extends {
@@ -100,8 +95,6 @@ export declare const pow2_pow: {
     } & { [K_3 in Exclude<keyof I_1, keyof pow2_pow>]: never; }>(object: I_1): pow2_pow;
 };
 export declare const equihash_proof: {
-    encode(message: equihash_proof, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): equihash_proof;
     fromJSON(object: any): equihash_proof;
     toJSON(message: equihash_proof): unknown;
     create<I extends {
@@ -128,8 +121,6 @@ export declare const equihash_proof: {
     } & { [K_3 in Exclude<keyof I_1, keyof equihash_proof>]: never; }>(object: I_1): equihash_proof;
 };
 export declare const equihash_pow: {
-    encode(message: equihash_pow, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): equihash_pow;
     fromJSON(object: any): equihash_pow;
     toJSON(message: equihash_pow): unknown;
     create<I extends {
@@ -210,8 +201,6 @@ export declare const equihash_pow: {
     } & { [K_7 in Exclude<keyof I_1, keyof equihash_pow>]: never; }>(object: I_1): equihash_pow;
 };
 export declare const pow2_work: {
-    encode(message: pow2_work, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow2_work;
     fromJSON(object: any): pow2_work;
     toJSON(message: pow2_work): unknown;
     create<I extends {
@@ -382,8 +371,6 @@ export declare const pow2_work: {
     } & { [K_13 in Exclude<keyof I_1, keyof pow2_work>]: never; }>(object: I_1): pow2_work;
 };
 export declare const pow2: {
-    encode(message: pow2, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): pow2;
     fromJSON(object: any): pow2;
     toJSON(message: pow2): unknown;
     create<I extends {

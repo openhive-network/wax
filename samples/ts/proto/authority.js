@@ -1,61 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseauthority() {
     return { weight_threshold: 0, account_auths: {}, key_auths: {} };
 }
 export const authority = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.weight_threshold !== 0) {
-            writer.uint32(8).uint32(message.weight_threshold);
-        }
-        Object.entries(message.account_auths).forEach(([key, value]) => {
-            authority_AccountAuthsEntry.encode({ key: key, value }, writer.uint32(18).fork()).ldelim();
-        });
-        Object.entries(message.key_auths).forEach(([key, value]) => {
-            authority_KeyAuthsEntry.encode({ key: key, value }, writer.uint32(26).fork()).ldelim();
-        });
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseauthority();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 8) {
-                        break;
-                    }
-                    message.weight_threshold = reader.uint32();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    const entry2 = authority_AccountAuthsEntry.decode(reader, reader.uint32());
-                    if (entry2.value !== undefined) {
-                        message.account_auths[entry2.key] = entry2.value;
-                    }
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    const entry3 = authority_KeyAuthsEntry.decode(reader, reader.uint32());
-                    if (entry3.value !== undefined) {
-                        message.key_auths[entry3.key] = entry3.value;
-                    }
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             weight_threshold: isSet(object.weight_threshold) ? globalThis.Number(object.weight_threshold) : 0,
@@ -124,42 +72,6 @@ function createBaseauthority_AccountAuthsEntry() {
     return { key: "", value: 0 };
 }
 export const authority_AccountAuthsEntry = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== 0) {
-            writer.uint32(16).uint32(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseauthority_AccountAuthsEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.key = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.value = reader.uint32();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             key: isSet(object.key) ? globalThis.String(object.key) : "",
@@ -191,42 +103,6 @@ function createBaseauthority_KeyAuthsEntry() {
     return { key: "", value: 0 };
 }
 export const authority_KeyAuthsEntry = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.key !== "") {
-            writer.uint32(10).string(message.key);
-        }
-        if (message.value !== 0) {
-            writer.uint32(16).uint32(message.value);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseauthority_KeyAuthsEntry();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.key = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.value = reader.uint32();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             key: isSet(object.key) ? globalThis.String(object.key) : "",

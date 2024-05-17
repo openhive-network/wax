@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { void_t } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -50,8 +49,6 @@ export interface recurrent_transfer {
     extensions: recurrent_transfer_extension[];
 }
 export declare const recurrent_transfer_pair_id: {
-    encode(message: recurrent_transfer_pair_id, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer_pair_id;
     fromJSON(object: any): recurrent_transfer_pair_id;
     toJSON(message: recurrent_transfer_pair_id): unknown;
     create<I extends {
@@ -66,8 +63,6 @@ export declare const recurrent_transfer_pair_id: {
     } & { [K_1 in Exclude<keyof I_1, "pair_id">]: never; }>(object: I_1): recurrent_transfer_pair_id;
 };
 export declare const recurrent_transfer_extension: {
-    encode(message: recurrent_transfer_extension, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer_extension;
     fromJSON(object: any): recurrent_transfer_extension;
     toJSON(message: recurrent_transfer_extension): unknown;
     create<I extends {
@@ -98,8 +93,6 @@ export declare const recurrent_transfer_extension: {
     } & { [K_5 in Exclude<keyof I_1, keyof recurrent_transfer_extension>]: never; }>(object: I_1): recurrent_transfer_extension;
 };
 export declare const recurrent_transfer: {
-    encode(message: recurrent_transfer, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): recurrent_transfer;
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;
     create<I extends {

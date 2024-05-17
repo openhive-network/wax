@@ -1,38 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseconsolidate_treasury_balance() {
     return { total_moved: [] };
 }
 export const consolidate_treasury_balance = {
-    encode(message, writer = _m0.Writer.create()) {
-        for (const v of message.total_moved) {
-            asset.encode(v, writer.uint32(10).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseconsolidate_treasury_balance();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.total_moved.push(asset.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             total_moved: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.total_moved)

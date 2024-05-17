@@ -1,6 +1,4 @@
 /* eslint-disable */
-import Long from "long";
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasecomment_reward() {
@@ -15,87 +13,6 @@ function createBasecomment_reward() {
     };
 }
 export const comment_reward = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.author !== "") {
-            writer.uint32(10).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(18).string(message.permlink);
-        }
-        if (message.payout !== undefined) {
-            asset.encode(message.payout, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.author_rewards !== "0") {
-            writer.uint32(32).int64(message.author_rewards);
-        }
-        if (message.total_payout_value !== undefined) {
-            asset.encode(message.total_payout_value, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.curator_payout_value !== undefined) {
-            asset.encode(message.curator_payout_value, writer.uint32(50).fork()).ldelim();
-        }
-        if (message.beneficiary_payout_value !== undefined) {
-            asset.encode(message.beneficiary_payout_value, writer.uint32(58).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasecomment_reward();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.payout = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 32) {
-                        break;
-                    }
-                    message.author_rewards = longToString(reader.int64());
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.total_payout_value = asset.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.curator_payout_value = asset.decode(reader, reader.uint32());
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.beneficiary_payout_value = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             author: isSet(object.author) ? globalThis.String(object.author) : "",
@@ -161,13 +78,6 @@ export const comment_reward = {
         return message;
     },
 };
-function longToString(long) {
-    return long.toString();
-}
-if (_m0.util.Long !== Long) {
-    _m0.util.Long = Long;
-    _m0.configure();
-}
 function isSet(value) {
     return value !== null && value !== undefined;
 }

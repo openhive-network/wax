@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { future_extensions } from "./future_extensions.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -16,96 +15,6 @@ function createBasecreate_proposal() {
     };
 }
 export const create_proposal = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.creator !== "") {
-            writer.uint32(10).string(message.creator);
-        }
-        if (message.receiver !== "") {
-            writer.uint32(18).string(message.receiver);
-        }
-        if (message.start_date !== "") {
-            writer.uint32(26).string(message.start_date);
-        }
-        if (message.end_date !== "") {
-            writer.uint32(34).string(message.end_date);
-        }
-        if (message.daily_pay !== undefined) {
-            asset.encode(message.daily_pay, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.subject !== "") {
-            writer.uint32(50).string(message.subject);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(58).string(message.permlink);
-        }
-        for (const v of message.extensions) {
-            future_extensions.encode(v, writer.uint32(66).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasecreate_proposal();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.creator = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.receiver = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.start_date = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.end_date = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.daily_pay = asset.decode(reader, reader.uint32());
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.subject = reader.string();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-                    message.extensions.push(future_extensions.decode(reader, reader.uint32()));
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             creator: isSet(object.creator) ? globalThis.String(object.creator) : "",

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { void_t } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -30,8 +29,6 @@ export interface update_proposal {
     extensions: update_proposal_extension[];
 }
 export declare const update_proposal_end_date: {
-    encode(message: update_proposal_end_date, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): update_proposal_end_date;
     fromJSON(object: any): update_proposal_end_date;
     toJSON(message: update_proposal_end_date): unknown;
     create<I extends {
@@ -46,8 +43,6 @@ export declare const update_proposal_end_date: {
     } & { [K_1 in Exclude<keyof I_1, "end_date">]: never; }>(object: I_1): update_proposal_end_date;
 };
 export declare const update_proposal_extension: {
-    encode(message: update_proposal_extension, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): update_proposal_extension;
     fromJSON(object: any): update_proposal_extension;
     toJSON(message: update_proposal_extension): unknown;
     create<I extends {
@@ -78,8 +73,6 @@ export declare const update_proposal_extension: {
     } & { [K_5 in Exclude<keyof I_1, keyof update_proposal_extension>]: never; }>(object: I_1): update_proposal_extension;
 };
 export declare const update_proposal: {
-    encode(message: update_proposal, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): update_proposal;
     fromJSON(object: any): update_proposal;
     toJSON(message: update_proposal): unknown;
     create<I extends {

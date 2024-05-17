@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -23,8 +22,6 @@ export interface fill_recurrent_transfer {
     remaining_executions: number;
 }
 export declare const fill_recurrent_transfer: {
-    encode(message: fill_recurrent_transfer, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): fill_recurrent_transfer;
     fromJSON(object: any): fill_recurrent_transfer;
     toJSON(message: fill_recurrent_transfer): unknown;
     create<I extends {

@@ -1,7 +1,5 @@
-package/wasm/dist/bundle/node.js
-package/wasm/dist/bundle/web.js
+package/wasm/dist/bundle/index.js
 package/package.json
 package/LICENSE.md
 package/README.md
-package/wasm/dist/bundle/node.d.ts
-package/wasm/dist/bundle/web.d.ts
+package/wasm/dist/bundle/index.d.ts

@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasefill_order() {
@@ -13,78 +12,6 @@ function createBasefill_order() {
     };
 }
 export const fill_order = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.current_owner !== "") {
-            writer.uint32(10).string(message.current_owner);
-        }
-        if (message.current_orderid !== 0) {
-            writer.uint32(16).uint32(message.current_orderid);
-        }
-        if (message.current_pays !== undefined) {
-            asset.encode(message.current_pays, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.open_owner !== "") {
-            writer.uint32(34).string(message.open_owner);
-        }
-        if (message.open_orderid !== 0) {
-            writer.uint32(40).uint32(message.open_orderid);
-        }
-        if (message.open_pays !== undefined) {
-            asset.encode(message.open_pays, writer.uint32(50).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasefill_order();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.current_owner = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.current_orderid = reader.uint32();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.current_pays = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.open_owner = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 40) {
-                        break;
-                    }
-                    message.open_orderid = reader.uint32();
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.open_pays = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             current_owner: isSet(object.current_owner) ? globalThis.String(object.current_owner) : "",

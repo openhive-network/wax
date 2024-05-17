@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to block processing.
@@ -11,8 +10,6 @@ export interface producer_missed {
     producer: string;
 }
 export declare const producer_missed: {
-    encode(message: producer_missed, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): producer_missed;
     fromJSON(object: any): producer_missed;
     toJSON(message: producer_missed): unknown;
     create<I extends {

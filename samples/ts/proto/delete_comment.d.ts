@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * The post or comment may be deleted by the author. If the post or comment is deleted, the {permlink} may be reused.
@@ -12,8 +11,6 @@ export interface delete_comment {
     permlink: string;
 }
 export declare const delete_comment: {
-    encode(message: delete_comment, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): delete_comment;
     fromJSON(object: any): delete_comment;
     toJSON(message: delete_comment): unknown;
     create<I extends {

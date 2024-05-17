@@ -1,56 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasedelegate_vesting_shares() {
     return { delegator: "", delegatee: "", vesting_shares: undefined };
 }
 export const delegate_vesting_shares = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.delegator !== "") {
-            writer.uint32(10).string(message.delegator);
-        }
-        if (message.delegatee !== "") {
-            writer.uint32(18).string(message.delegatee);
-        }
-        if (message.vesting_shares !== undefined) {
-            asset.encode(message.vesting_shares, writer.uint32(26).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasedelegate_vesting_shares();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.delegator = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.delegatee = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.vesting_shares = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             delegator: isSet(object.delegator) ? globalThis.String(object.delegator) : "",

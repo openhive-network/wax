@@ -1,64 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasevote() {
     return { voter: "", author: "", permlink: "", weight: 0 };
 }
 export const vote = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.voter !== "") {
-            writer.uint32(82).string(message.voter);
-        }
-        if (message.author !== "") {
-            writer.uint32(90).string(message.author);
-        }
-        if (message.permlink !== "") {
-            writer.uint32(98).string(message.permlink);
-        }
-        if (message.weight !== 0) {
-            writer.uint32(104).uint32(message.weight);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasevote();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 10:
-                    if (tag !== 82) {
-                        break;
-                    }
-                    message.voter = reader.string();
-                    continue;
-                case 11:
-                    if (tag !== 90) {
-                        break;
-                    }
-                    message.author = reader.string();
-                    continue;
-                case 12:
-                    if (tag !== 98) {
-                        break;
-                    }
-                    message.permlink = reader.string();
-                    continue;
-                case 13:
-                    if (tag !== 104) {
-                        break;
-                    }
-                    message.weight = reader.uint32();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             voter: isSet(object.voter) ? globalThis.String(object.voter) : "",

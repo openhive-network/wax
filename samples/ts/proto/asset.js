@@ -1,55 +1,9 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseasset() {
     return { amount: "", precision: 0, nai: "" };
 }
 export const asset = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.amount !== "") {
-            writer.uint32(10).string(message.amount);
-        }
-        if (message.precision !== 0) {
-            writer.uint32(16).uint32(message.precision);
-        }
-        if (message.nai !== "") {
-            writer.uint32(26).string(message.nai);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseasset();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.amount = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 16) {
-                        break;
-                    }
-                    message.precision = reader.uint32();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.nai = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             amount: isSet(object.amount) ? globalThis.String(object.amount) : "",

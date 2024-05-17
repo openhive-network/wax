@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Using the operation decline_voting_rights_operation, a user may decide to decline
@@ -17,8 +16,6 @@ export interface decline_voting_rights {
     decline: boolean;
 }
 export declare const decline_voting_rights: {
-    encode(message: decline_voting_rights, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): decline_voting_rights;
     fromJSON(object: any): decline_voting_rights;
     toJSON(message: decline_voting_rights): unknown;
     create<I extends {

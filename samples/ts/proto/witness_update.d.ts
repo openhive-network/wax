@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 import { legacy_chain_properties } from "./legacy_chain_properties.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -26,8 +25,6 @@ export interface witness_update {
     fee: asset | undefined;
 }
 export declare const witness_update: {
-    encode(message: witness_update, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): witness_update;
     fromJSON(object: any): witness_update;
     toJSON(message: witness_update): unknown;
     create<I extends {

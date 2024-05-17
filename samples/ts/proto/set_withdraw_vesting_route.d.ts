@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * The operation set_withdraw_vesting_route_operation allows a user to decide where
@@ -27,8 +26,6 @@ export interface set_withdraw_vesting_route {
     auto_vest: boolean;
 }
 export declare const set_withdraw_vesting_route: {
-    encode(message: set_withdraw_vesting_route, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): set_withdraw_vesting_route;
     fromJSON(object: any): set_withdraw_vesting_route;
     toJSON(message: set_withdraw_vesting_route): unknown;
     create<I extends {

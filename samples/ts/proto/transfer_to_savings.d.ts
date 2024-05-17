@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -22,8 +21,6 @@ export interface transfer_to_savings {
     memo: string;
 }
 export declare const transfer_to_savings: {
-    encode(message: transfer_to_savings, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): transfer_to_savings;
     fromJSON(object: any): transfer_to_savings;
     toJSON(message: transfer_to_savings): unknown;
     create<I extends {

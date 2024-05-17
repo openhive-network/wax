@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { future_extensions } from "./future_extensions.js";
 import { operation } from "./operation.js";
 export declare const protobufPackage = "hive.protocol.buffers";
@@ -12,8 +11,6 @@ export interface transaction {
     signatures: string[];
 }
 export declare const transaction: {
-    encode(message: transaction, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): transaction;
     fromJSON(object: any): transaction;
     toJSON(message: transaction): unknown;
     create<I extends {

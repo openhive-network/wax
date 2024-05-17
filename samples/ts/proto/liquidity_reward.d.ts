@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -15,8 +14,6 @@ export interface liquidity_reward {
     payout: asset | undefined;
 }
 export declare const liquidity_reward: {
-    encode(message: liquidity_reward, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): liquidity_reward;
     fromJSON(object: any): liquidity_reward;
     toJSON(message: liquidity_reward): unknown;
     create<I extends {

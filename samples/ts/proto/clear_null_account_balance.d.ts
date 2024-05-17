@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
@@ -12,8 +11,6 @@ export interface clear_null_account_balance {
     total_cleared: asset[];
 }
 export declare const clear_null_account_balance: {
-    encode(message: clear_null_account_balance, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): clear_null_account_balance;
     fromJSON(object: any): clear_null_account_balance;
     toJSON(message: clear_null_account_balance): unknown;
     create<I extends {

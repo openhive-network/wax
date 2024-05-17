@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Funds withdrawals from the savings can be canceled at any time before it is executed.
@@ -11,8 +10,6 @@ export interface cancel_transfer_from_savings {
     request_id: number;
 }
 export declare const cancel_transfer_from_savings: {
-    encode(message: cancel_transfer_from_savings, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): cancel_transfer_from_savings;
     fromJSON(object: any): cancel_transfer_from_savings;
     toJSON(message: cancel_transfer_from_savings): unknown;
     create<I extends {

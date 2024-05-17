@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to transfer_to_vesting_operation.
@@ -14,8 +13,6 @@ export interface delayed_voting {
     votes: string;
 }
 export declare const delayed_voting: {
-    encode(message: delayed_voting, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): delayed_voting;
     fromJSON(object: any): delayed_voting;
     toJSON(message: delayed_voting): unknown;
     create<I extends {

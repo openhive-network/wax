@@ -1,65 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseaccount_created() {
     return { new_account_name: "", creator: "", initial_vesting_shares: undefined, initial_delegation: undefined };
 }
 export const account_created = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.new_account_name !== "") {
-            writer.uint32(10).string(message.new_account_name);
-        }
-        if (message.creator !== "") {
-            writer.uint32(18).string(message.creator);
-        }
-        if (message.initial_vesting_shares !== undefined) {
-            asset.encode(message.initial_vesting_shares, writer.uint32(26).fork()).ldelim();
-        }
-        if (message.initial_delegation !== undefined) {
-            asset.encode(message.initial_delegation, writer.uint32(34).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseaccount_created();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.new_account_name = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.creator = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.initial_vesting_shares = asset.decode(reader, reader.uint32());
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.initial_delegation = asset.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             new_account_name: isSet(object.new_account_name) ? globalThis.String(object.new_account_name) : "",

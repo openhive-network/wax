@@ -1,5 +1,4 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal.js";
 import { void_t } from "./future_extensions.js";
 import { transaction } from "./transaction.js";
 export const protobufPackage = "hive.protocol.buffers";
@@ -7,42 +6,6 @@ function createBasehardfork_version_vote() {
     return { hf_version: "", hf_time: "" };
 }
 export const hardfork_version_vote = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.hf_version !== "") {
-            writer.uint32(10).string(message.hf_version);
-        }
-        if (message.hf_time !== "") {
-            writer.uint32(18).string(message.hf_time);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBasehardfork_version_vote();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.hf_version = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.hf_time = reader.string();
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             hf_version: isSet(object.hf_version) ? globalThis.String(object.hf_version) : "",
@@ -74,51 +37,6 @@ function createBaseblock_header_extensions() {
     return {};
 }
 export const block_header_extensions = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.void_t !== undefined) {
-            void_t.encode(message.void_t, writer.uint32(10).fork()).ldelim();
-        }
-        if (message.version !== undefined) {
-            writer.uint32(18).string(message.version);
-        }
-        if (message.hardfork_version_vote !== undefined) {
-            hardfork_version_vote.encode(message.hardfork_version_vote, writer.uint32(26).fork()).ldelim();
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseblock_header_extensions();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.void_t = void_t.decode(reader, reader.uint32());
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.version = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.hardfork_version_vote = hardfork_version_vote.decode(reader, reader.uint32());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             void_t: isSet(object.void_t) ? void_t.fromJSON(object.void_t) : undefined,
@@ -173,114 +91,6 @@ function createBaseblock() {
     };
 }
 export const block = {
-    encode(message, writer = _m0.Writer.create()) {
-        if (message.previous !== "") {
-            writer.uint32(10).string(message.previous);
-        }
-        if (message.timestamp !== "") {
-            writer.uint32(18).string(message.timestamp);
-        }
-        if (message.witness !== "") {
-            writer.uint32(26).string(message.witness);
-        }
-        if (message.transaction_merkle_root !== "") {
-            writer.uint32(34).string(message.transaction_merkle_root);
-        }
-        for (const v of message.extensions) {
-            block_header_extensions.encode(v, writer.uint32(42).fork()).ldelim();
-        }
-        if (message.witness_signature !== "") {
-            writer.uint32(50).string(message.witness_signature);
-        }
-        for (const v of message.transactions) {
-            transaction.encode(v, writer.uint32(58).fork()).ldelim();
-        }
-        if (message.block_id !== "") {
-            writer.uint32(66).string(message.block_id);
-        }
-        if (message.signing_key !== "") {
-            writer.uint32(74).string(message.signing_key);
-        }
-        for (const v of message.transaction_ids) {
-            writer.uint32(82).string(v);
-        }
-        return writer;
-    },
-    decode(input, length) {
-        const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-        let end = length === undefined ? reader.len : reader.pos + length;
-        const message = createBaseblock();
-        while (reader.pos < end) {
-            const tag = reader.uint32();
-            switch (tag >>> 3) {
-                case 1:
-                    if (tag !== 10) {
-                        break;
-                    }
-                    message.previous = reader.string();
-                    continue;
-                case 2:
-                    if (tag !== 18) {
-                        break;
-                    }
-                    message.timestamp = reader.string();
-                    continue;
-                case 3:
-                    if (tag !== 26) {
-                        break;
-                    }
-                    message.witness = reader.string();
-                    continue;
-                case 4:
-                    if (tag !== 34) {
-                        break;
-                    }
-                    message.transaction_merkle_root = reader.string();
-                    continue;
-                case 5:
-                    if (tag !== 42) {
-                        break;
-                    }
-                    message.extensions.push(block_header_extensions.decode(reader, reader.uint32()));
-                    continue;
-                case 6:
-                    if (tag !== 50) {
-                        break;
-                    }
-                    message.witness_signature = reader.string();
-                    continue;
-                case 7:
-                    if (tag !== 58) {
-                        break;
-                    }
-                    message.transactions.push(transaction.decode(reader, reader.uint32()));
-                    continue;
-                case 8:
-                    if (tag !== 66) {
-                        break;
-                    }
-                    message.block_id = reader.string();
-                    continue;
-                case 9:
-                    if (tag !== 74) {
-                        break;
-                    }
-                    message.signing_key = reader.string();
-                    continue;
-                case 10:
-                    if (tag !== 82) {
-                        break;
-                    }
-                    message.transaction_ids.push(reader.string());
-                    continue;
-            }
-            if ((tag & 7) === 4 || tag === 0) {
-                break;
-            }
-            reader.skipType(tag & 7);
-        }
-        return message;
-    },
     fromJSON(object) {
         return {
             previous: isSet(object.previous) ? globalThis.String(object.previous) : "",

@@ -1,4 +1,3 @@
-import _m0 from "protobufjs/minimal.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to change_recovery_account_operation.
@@ -14,8 +13,6 @@ export interface changed_recovery_account {
     new_recovery_account: string;
 }
 export declare const changed_recovery_account: {
-    encode(message: changed_recovery_account, writer?: _m0.Writer): _m0.Writer;
-    decode(input: _m0.Reader | Uint8Array, length?: number): changed_recovery_account;
     fromJSON(object: any): changed_recovery_account;
     toJSON(message: changed_recovery_account): unknown;
     create<I extends {
