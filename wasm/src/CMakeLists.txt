@@ -65,11 +65,13 @@ function( DEFINE_WAX_TARGET_FOR env )
       target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
 
       target_link_options( ${exec_wasm_name} PUBLIC
-        -sEXPORTED_RUNTIME_METHODS=["FS"]
         -sMODULARIZE=1
         -sSINGLE_FILE=1
         -sEXPORT_ES6=1
         -sINITIAL_MEMORY=67108864
+        # Decreases runtime performance for 50kB decrease in packed .tgz code size
+        # --closure 1
+        # -Os
       )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
       INSTALL( TARGETS ${exec_wasm_name}
@@ -93,4 +95,4 @@ endfunction()
 
 DEFINE_WAX_TARGET_FOR(common)
 
-target_link_options( wax_wasm_common PUBLIC -sUSE_ES6_IMPORT_META=0 -sENVIRONMENT="web" )
+target_link_options( wax_wasm_common PUBLIC -sUSE_ES6_IMPORT_META=1 -sENVIRONMENT="web,node" )

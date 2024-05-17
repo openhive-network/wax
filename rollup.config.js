@@ -22,6 +22,9 @@ const commonConfiguration = (env, packEntire = false) => ([
         'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
         'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
         'process': null,
+        'process.versions': null,
+        'process.argv': "[]",
+        'process.versions.node': null,
         'process.env': null,
         preventAssignment: true
       }),
