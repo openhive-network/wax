@@ -3,6 +3,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
+import terser from '@rollup/plugin-terser';
 
 const commonConfiguration = (env, packEntire = false) => ([
   {
@@ -38,7 +39,8 @@ const commonConfiguration = (env, packEntire = false) => ([
           'build_wasm'
         ]
       }),
-      commonjs()
+      commonjs(),
+      terser()
     ]
   }, {
     input: `wasm/dist/lib/index.d.ts`,
