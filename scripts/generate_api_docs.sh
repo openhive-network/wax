@@ -11,7 +11,7 @@ DOCUMENTATION_URL=${3}
 
 OUTPUT_DIR=${4:-wasm/dist/docs}
 
-INPUT_FILE=wasm/lib/web.ts
+INPUT_FILE=wasm/lib/index.ts
 
 # When using TypeScript, we are restricted to a specific typedoc and typedoc-plugin-markdown versions
 # https://typedoc.org/guides/installation/#requirements

@@ -5,19 +5,19 @@ import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
 import terser from '@rollup/plugin-terser';
 
-const commonConfiguration = (env, packEntire = false) => ([
+const commonConfiguration = packEntire => ([
   {
     input: `wasm/dist/lib/index.js`,
     output: {
       format: 'es',
       name: 'wax',
-      file: `wasm/dist/bundle/${env}${packEntire ? '-full' : ''}.js`
+      file: `wasm/dist/bundle/index${packEntire ? '-full' : ''}.js`
     },
     plugins: [
       alias({
-        entries: [
-          { find: '@hiveio/beekeeper', replacement: `@hiveio/beekeeper/${env}` }
-        ]
+        entries: packEntire ? [
+          { find: '@hiveio/beekeeper', replacement: "@hiveio/beekeeper/web" }
+        ] : []
       }),
       replace({
         'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
@@ -30,8 +30,8 @@ const commonConfiguration = (env, packEntire = false) => ([
         preventAssignment: true
       }),
       nodeResolve({
-        preferBuiltins: env !== "web",
-        browser: env === "web",
+        preferBuiltins: false,
+        browser: true,
         modulePaths: [
           'wasm/dist/lib'
         ],
@@ -45,7 +45,7 @@ const commonConfiguration = (env, packEntire = false) => ([
   }, {
     input: `wasm/dist/lib/index.d.ts`,
     output: [
-      { file: `wasm/dist/bundle/${env}${packEntire ? '-full' : ''}.d.ts`, format: "es" }
+      { file: `wasm/dist/bundle/index${packEntire ? '-full' : ''}.d.ts`, format: "es" }
     ],
     plugins: [
       dts()
@@ -54,7 +54,6 @@ const commonConfiguration = (env, packEntire = false) => ([
 ]);
 
 export default [
-  ...commonConfiguration('node'),
-  ...commonConfiguration('web'),
-  ...commonConfiguration('web', true)
+  ...commonConfiguration(false),
+  ...commonConfiguration(true)
 ];

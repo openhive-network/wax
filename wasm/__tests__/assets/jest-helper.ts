@@ -2,7 +2,7 @@ import { Page, test as base, expect } from '@playwright/test';
 
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals, TEnvType } from './globals';
-import { IWaxOptionsChain } from '../../dist/bundle/web-full';
+import { IWaxOptionsChain } from '../../dist/bundle/index-full';
 
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);

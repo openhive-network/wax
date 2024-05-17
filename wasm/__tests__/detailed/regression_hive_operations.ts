@@ -52,7 +52,7 @@ import {
   withdraw_vesting,
   witness_set_properties,
   witness_update
-} from "../../dist/bundle/web-full";
+} from "../../dist/bundle/index-full";
 
 let browser!: ChromiumBrowser;
 

@@ -77,7 +77,7 @@ wax_wasm_proto_tsc_generation:
       - "${DIST_DIR}/lib/build_wasm/wax.common.js" # For base WASM tests
       - "${DIST_DIR}/lib/proto" # For protobuf pattern tests
       - "${DIST_DIR}/lib" # For Node.js tests
-      - "${DIST_DIR}/bundle/web-full.js" # For web tests
+      - "${DIST_DIR}/bundle/index-full.js" # For web tests
 
   tags:
     - public-runner-docker

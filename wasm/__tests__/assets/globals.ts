@@ -1,7 +1,7 @@
 // We only want to import types here!
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
-import type Wax from "../../dist/bundle/web-full.js";
-import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/web-full.js";
+import type Wax from "../../dist/bundle/index-full.js";
+import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/index-full.js";
 import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common.js";
 
 type TMainModuleFn = () => Promise<MainModule>;
@@ -28,11 +28,11 @@ declare global {
 
 // Use function as we later extract the function name in the jest-helpers
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
-  const locWax = env === "web" ? "../../dist/bundle/web-full.js" : "../../dist/bundle/node.js";
+  const locWax = env === "web" ? "../../dist/bundle/index-full.js" : "../../dist/bundle/index.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
   // Import required libraries env-dependent
-  const wax = await import(locWax) as typeof import("../../dist/bundle/web-full.js");
+  const wax = await import(locWax) as typeof import("../../dist/bundle/index-full.js");
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
   // Initialize data
