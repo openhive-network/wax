@@ -35,7 +35,7 @@
     },
     "./node": {
       "import": {
-        "types": "./wasm/dist/bundle/node.d.ts",
+        "types": "./wasm/dist/bundle/web.d.ts",
         "default": "./wasm/dist/bundle/node.js"
       }
     },
@@ -75,7 +75,6 @@
     "LICENSE.md",
     "README.md",
     "wasm/dist/bundle/node.js",
-    "wasm/dist/bundle/node.d.ts",
     "wasm/dist/bundle/web.js",
     "wasm/dist/bundle/web.d.ts"
   ],
