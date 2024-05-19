@@ -1,1 +1,5 @@
-git_playground4fw
+test:
+  script: 
+    - echo ${CI_PROJECT_URL}
+  tags:
+    - public-runner-docker
