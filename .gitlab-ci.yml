@@ -1,5 +1,6 @@
 test:
   script: 
     - echo ${CI_PROJECT_URL}
+    - echo ${CI_REPOSITORY_URL}
   tags:
     - public-runner-docker
