@@ -20,6 +20,19 @@ export class RecurrentTransferBuilder extends OperationBuilder {
   }
 
   /**
+   * Removes recurrent transfer with the previously set pair id
+   *
+   * @returns {this} itself
+   */
+  public generateRemoval(): this {
+    this.requireApi();
+
+    this.recurrentTransfer.amount = { ...this.api!.ASSETS.HIVE, amount: "0" };
+
+    return this;
+  }
+
+  /**
    * @internal
    */
   public override build(): IBuiltHiveAppsOperation {
@@ -30,8 +43,11 @@ export class RecurrentTransferBuilder extends OperationBuilder {
 }
 
 export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
-  public constructor(from: TAccountName, to: TAccountName, pairId: number, memo: string = "", recurrence: number = 24, executions: number = 2) {
-    super(from, to, {} as asset, memo, recurrence, executions);
+  public constructor(from: TAccountName, to: TAccountName, pairId: number, amount?: asset | undefined, memo: string = "", recurrence: number = 24, executions: number = 2) {
+    super(from, to, amount as asset, memo, recurrence, executions);
+
+    if (amount === undefined)
+      this.generateRemoval();
 
     if(typeof pairId === "number")
       this.addPairId(pairId);
@@ -50,19 +66,6 @@ export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
         pair_id: pairId
       }
     });
-
-    return this;
-  }
-
-  /**
-   * Removes recurrent transfer with the previously set pair id
-   *
-   * @returns {RecurrentTransferPairIdBuilder} itself
-   */
-  public generateRemoval(): RecurrentTransferPairIdBuilder {
-    this.requireApi();
-
-    this.recurrentTransfer.amount = { ...this.api!.ASSETS.HIVE, amount: "0" };
 
     return this;
   }
