@@ -125,7 +125,7 @@ test.describe('Wax object interface foundation tests', () => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
       tx.useBuilder(wax.RecurrentTransferPairIdBuilder, builder => {
         builder.generateRemoval();
-      }, "initminer", "gtg", 100);
+      }, "initminer", "gtg", 100, { amount: '100', nai: '@@000000021', precision: 3 });
       tx.useBuilder(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
 
       return tx.build().operations;
