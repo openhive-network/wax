@@ -162,21 +162,6 @@ test_wax_protobuf_python_examples:
     - cd $CI_PROJECT_DIR
     - ./examples/python/run_example.sh
 
-.wasm_wax_test_base:
-  extends: .job-defaults
-  stage: test
-  # emscripten image can be used as it contains all needed tools (node and npm).
-  image: ${EMSCRIPTEN_IMAGE}
-  variables:
-    FF_NETWORK_PER_BUILD: 1
-
-  before_script:
-    - . "$NVM_DIR/nvm.sh"  # This loads nvm
-    - pnpm install --frozen-lockfile
-
-  tags:
-    - public-runner-docker
-
 test_wax_wasm:
   extends: .npm_test_template
   variables:
