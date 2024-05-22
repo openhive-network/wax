@@ -9,7 +9,7 @@
   "scripts": {
     "prebuild": "husky install && sh scripts/compile_proto_ts.sh && rimraf wasm/dist",
     "build": "wasm/build_wasm_wax.sh && tsc",
-    "postbuild": "rollup -c && scripts/generate_api_docs.sh",
+    "postbuild": "rollup -c",
     "build:test": "tsc --project wasm/configs/tsconfig.tests.json",
     "pretest": "playwright install chromium",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite --project=wax_testsuite_custom_chain_options --project=wax_regression_tests --project=wax_operation_factories",
@@ -74,7 +74,6 @@
   "files": [
     "LICENSE.md",
     "README.md",
-    "api.md",
     "wasm/dist/bundle/node.js",
     "wasm/dist/bundle/node.d.ts",
     "wasm/dist/bundle/web.js",
