@@ -1,16 +1,18 @@
 #!/bin/bash
-
 set -e
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT_DIR="${SCRIPTPATH}/.."
 
-# When using TypeScript 4.4.4, we are restricted to a specific typedoc and typedoc-plugin-markdown versions
+OUTPUT_DIR=wasm/dist/docs
+INPUT_FILE=wasm/lib/web.ts
+
+# When using TypeScript, we are restricted to a specific typedoc and typedoc-plugin-markdown versions
 # https://typedoc.org/guides/installation/#requirements
 pushd "${PROJECT_DIR}"
-mkdir -vp build
-pnpm exec typedoc --plugin typedoc-plugin-markdown --theme markdown --excludeInternal --hideBreadcrumbs --hideInPageTOC --out wasm/dist/docs wasm/lib/web.ts
-mv wasm/dist/docs/modules.md wasm/dist/docs/_modules.md
-rm wasm/dist/docs/README.md
-pnpm exec concat-md --decrease-title-levels wasm/dist/docs > api.md
+
+mkdir -vp "${OUTPUT_DIR}"
+
+pnpm exec typedoc --readme npm.ts.md --plugin typedoc-plugin-markdown --plugin typedoc-gitlab-wiki-theme --tsconfig tsconfig.json --out "${OUTPUT_DIR}" "${INPUT_FILE}"
+
 popd
