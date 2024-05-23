@@ -37,5 +37,5 @@ fi
 
 if [[ " ${STAGED_FILES[*]} " =~ " npm.ts.md " ]];
 then
-  (grep "\${CommitSHA}" npm.ts.md 1>/dev/null) || (echo "Commit sha placeholder in npm.ts.md is broken - preventing commit." && exit 4)
+  (grep "\${GEN_DOC_URL}" npm.ts.md 1>/dev/null) || (echo "Generated documentation URL placeholder in npm.ts.md is broken - preventing commit." && exit 4)
 fi
