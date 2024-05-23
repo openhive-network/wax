@@ -73,14 +73,14 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       typedoc:
-        specifier: 0.25.3
-        version: 0.25.3(typescript@5.2.2)
+        specifier: 0.25.13
+        version: 0.25.13(typescript@5.2.2)
       typedoc-gitlab-wiki-theme:
         specifier: ^2.0.0
-        version: 2.0.0(typedoc-plugin-markdown@4.0.0(typedoc@0.25.3(typescript@5.2.2)))
+        version: 2.0.0(typedoc-plugin-markdown@4.0.0(typedoc@0.25.13(typescript@5.2.2)))
       typedoc-plugin-markdown:
         specifier: 4.0.0
-        version: 4.0.0(typedoc@0.25.3(typescript@5.2.2))
+        version: 4.0.0(typedoc@0.25.13(typescript@5.2.2))
       typescript:
         specifier: 5.2.2
         version: 5.2.2
@@ -757,8 +757,8 @@ packages:
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
-  jsonc-parser@3.2.0:
-    resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
+  jsonc-parser@3.2.1:
+    resolution: {integrity: sha512-AilxAyFOAcK5wA1+LeaySVBrHsGQvUFCDWXKpZjzaL0PqW+xfBOttn8GNtWKFWqneyMZj41MWF9Kl6iPWLwgOA==}
 
   kind-of@6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}
@@ -902,8 +902,8 @@ packages:
     resolution: {integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==}
     engines: {node: '>=10'}
 
-  minimatch@9.0.3:
-    resolution: {integrity: sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==}
+  minimatch@9.0.4:
+    resolution: {integrity: sha512-KqWh+VchfxcMNRAJjj2tnsSJdNbHsVgnkBhTNrW7AjVo6OvLtxw8zfT9oLw1JSohlFzJ8jCoTgaoXvJ+kHt6fw==}
     engines: {node: '>=16 || 14 >=14.17'}
 
   minimist-options@4.1.0:
@@ -1103,8 +1103,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  shiki@0.14.5:
-    resolution: {integrity: sha512-1gCAYOcmCFONmErGTrS1fjzJLA7MGZmKzrBNX7apqSwhyITJg2O102uFzXUeBxNnEkDA9vHIKLyeKq0V083vIw==}
+  shiki@0.14.7:
+    resolution: {integrity: sha512-dNPAPrxSc87ua2sKJ3H5dQ/6ZaY8RNnaAqK+t0eG7p0Soi2ydiqbGOTaZCqaYvA/uZYfS1LJnemt3Q+mSfcPCg==}
 
   side-channel@1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
@@ -1221,12 +1221,12 @@ packages:
     peerDependencies:
       typedoc: 0.25.x
 
-  typedoc@0.25.3:
-    resolution: {integrity: sha512-Ow8Bo7uY1Lwy7GTmphRIMEo6IOZ+yYUyrc8n5KXIZg1svpqhZSWgni2ZrDhe+wLosFS8yswowUzljTAV/3jmWw==}
+  typedoc@0.25.13:
+    resolution: {integrity: sha512-pQqiwiJ+Z4pigfOnnysObszLiU3mVLWAExSPf+Mu06G/qsc3wzbuM56SZQvONhHLncLUhYzOVkjFFpFfL5AzhQ==}
     engines: {node: '>= 16'}
     hasBin: true
     peerDependencies:
-      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x
+      typescript: 4.6.x || 4.7.x || 4.8.x || 4.9.x || 5.0.x || 5.1.x || 5.2.x || 5.3.x || 5.4.x
 
   typescript@5.2.2:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
@@ -1769,7 +1769,7 @@ snapshots:
     dependencies:
       foreground-child: 3.1.1
       jackspeak: 2.3.6
-      minimatch: 9.0.3
+      minimatch: 9.0.4
       minipass: 7.0.3
       path-scurry: 1.10.1
 
@@ -1931,7 +1931,7 @@ snapshots:
 
   json-parse-even-better-errors@2.3.1: {}
 
-  jsonc-parser@3.2.0: {}
+  jsonc-parser@3.2.1: {}
 
   kind-of@6.0.3: {}
 
@@ -2126,7 +2126,7 @@ snapshots:
     dependencies:
       brace-expansion: 2.0.1
 
-  minimatch@9.0.3:
+  minimatch@9.0.4:
     dependencies:
       brace-expansion: 2.0.1
 
@@ -2357,10 +2357,10 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  shiki@0.14.5:
+  shiki@0.14.7:
     dependencies:
       ansi-sequence-parser: 1.1.1
-      jsonc-parser: 3.2.0
+      jsonc-parser: 3.2.1
       vscode-oniguruma: 1.7.0
       vscode-textmate: 8.0.0
 
@@ -2462,20 +2462,20 @@ snapshots:
 
   type-fest@0.8.1: {}
 
-  typedoc-gitlab-wiki-theme@2.0.0(typedoc-plugin-markdown@4.0.0(typedoc@0.25.3(typescript@5.2.2))):
+  typedoc-gitlab-wiki-theme@2.0.0(typedoc-plugin-markdown@4.0.0(typedoc@0.25.13(typescript@5.2.2))):
     dependencies:
-      typedoc-plugin-markdown: 4.0.0(typedoc@0.25.3(typescript@5.2.2))
+      typedoc-plugin-markdown: 4.0.0(typedoc@0.25.13(typescript@5.2.2))
 
-  typedoc-plugin-markdown@4.0.0(typedoc@0.25.3(typescript@5.2.2)):
+  typedoc-plugin-markdown@4.0.0(typedoc@0.25.13(typescript@5.2.2)):
     dependencies:
-      typedoc: 0.25.3(typescript@5.2.2)
+      typedoc: 0.25.13(typescript@5.2.2)
 
-  typedoc@0.25.3(typescript@5.2.2):
+  typedoc@0.25.13(typescript@5.2.2):
     dependencies:
       lunr: 2.3.9
       marked: 4.3.0
-      minimatch: 9.0.3
-      shiki: 0.14.5
+      minimatch: 9.0.4
+      shiki: 0.14.7
       typescript: 5.2.2
 
   typescript@5.2.2: {}

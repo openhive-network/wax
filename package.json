@@ -57,7 +57,7 @@
     "rollup-plugin-dts": "^6.1.0",
     "ts-proto": "^1.172.0",
     "tslib": "^2.6.2",
-    "typedoc": "0.25.3",
+    "typedoc": "0.25.13",
     "typedoc-gitlab-wiki-theme": "^2.0.0",
     "typedoc-plugin-markdown": "4.0.0",
     "typescript": "5.2.2"
