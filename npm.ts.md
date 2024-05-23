@@ -270,12 +270,12 @@ console.info(result); // { status: 'unknown' }
 
 ## API
 
-See API definition in [api.md](https://gitlab.syncad.com/hive/wax/-/blob/${CommitSHA}/api.md)
+See API documentation at [project WIKI](${GEN_DOC_URL})
 
 ## Publishing an NPM package
 
 Predefined package.json file has specified some dedicated placeholders to be replaced with actual informations before building a final form of a package and publishing it.
-To replace such placeholders with actual values please use [`scripts/bump_npm_version.sh`](scripts/bump_npm_version.sh).
+Best to use CI build procedure to build package, which replace such placeholders with actual values [`see npm_generate_version.sh`](https://gitlab.syncad.com/hive/common-ci-configuration/-/blob/develop/scripts/bash/npm-helpers/npm_generate_version.sh?ref_type=heads).
 
 You will also need this file to specify the scope for bumping the `@hiveio` developer versions of our packages
 
@@ -321,4 +321,4 @@ npm run examples
 
 ## License
 
-See license in the [LICENSE.md](https://gitlab.syncad.com/hive/wax/-/blob/${CommitSHA}/LICENSE.md) file
+See license in the [LICENSE.md](https://gitlab.syncad.com/hive/wax/-/blob/develop/LICENSE.md?ref_type=heads) file
