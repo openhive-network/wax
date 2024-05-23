@@ -7,7 +7,10 @@ PROJECT_DIR="${SCRIPTPATH}/.."
 REPO_URL="${1:?Missing repository url}"
 REVISION_INFO="${2:?Missing argument pointing git revision}"
 
-OUTPUT_DIR=wasm/dist/docs
+DOCUMENTATION_URL=${3}
+
+OUTPUT_DIR=${4:-wasm/dist/docs}
+
 INPUT_FILE=wasm/lib/web.ts
 
 # When using TypeScript, we are restricted to a specific typedoc and typedoc-plugin-markdown versions
@@ -25,5 +28,10 @@ pnpm exec typedoc --includeVersion \
   --tsconfig tsconfig.json \
   --out "${OUTPUT_DIR}" \
   "${INPUT_FILE}"
+
+  if [[ -n "${DOCUMENTATION_URL}" ]]; then
+    echo "Attempting to replace generated documentation url placeholder: ${DOCUMENTATION_URL}"
+    sed -i "s<\${GEN_DOC_URL}<${DOCUMENTATION_URL}<g" npm.ts.md
+  fi
 
 popd
