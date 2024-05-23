@@ -113,7 +113,7 @@ generate_docs:
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   script:
-    - scripts/generate_api_docs.sh
+    - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
