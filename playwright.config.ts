@@ -38,6 +38,11 @@ export default defineConfig<IWaxedTest>({
       name: "wax_operation_factories",
       testDir: "./wasm/dist",
       testMatch: "operation_factories*"
+    },
+    {
+      name: "wax_encrypted_operations",
+      testDir: "./wasm/dist",
+      testMatch: "encrypted_operations*"
     }
   ],
   // Run your local dev server before starting the tests
