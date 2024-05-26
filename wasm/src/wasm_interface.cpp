@@ -125,7 +125,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       ;
 
   value_object<crypto_memo>("crypto_memo")
-      .field("from", &crypto_memo::from)
+      .field("from", &crypto_memo::_from)
       .field("to", &crypto_memo::to)
       .field("content", &crypto_memo::content)
       ;
