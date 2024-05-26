@@ -5,7 +5,7 @@ from libcpp.set cimport set as cppset
 from cython.operator cimport dereference, preincrement
 
 from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection
+from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo
 
 def return_python_result(foo):
     @wraps(foo)
@@ -275,6 +275,27 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
       posting_accounts=op,
       active_accounts=oa,
       owner_accounts=oo
+    )
+
+def encode_encrypted_memo(encrypted_content: string, main_encryption_key: string, other_encryption_key: string = '') -> string:
+    cdef protocol obj
+    cdef crypto_memo data_to_encode
+    data_to_encode._from = main_encryption_key
+    if other_encryption_key == '':
+      other_encryption_key = main_encryption_key
+
+    data_to_encode.to = other_encryption_key
+    data_to_encode.content = encrypted_content
+    encoded_memo = obj.cpp_crypto_memo_dump_string(data_to_encode)
+    return encoded_memo
+
+def decode_encrypted_memo(encoded_memo: string) -> python_encrypted_memo:
+    cdef protocol obj
+    decoded = obj.cpp_crypto_memo_from_string(encoded_memo)
+    return python_encrypted_memo(
+      main_encryption_key=decoded._from,
+      other_encryption_key = decoded.to,
+      encrypted_content = decoded.content
     )
 
 def verify_exception_handling(throw_type: int) -> None:

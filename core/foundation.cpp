@@ -170,7 +170,7 @@ std::string foundation::cpp_crypto_memo_dump_string(const crypto_memo& value) co
 {
   auto memo_obj = hive::protocol::crypto_memo{};
 
-  const fc::ecc::public_key from = fc::ecc::public_key::from_base58( value.from, false );
+  const fc::ecc::public_key from = fc::ecc::public_key::from_base58( value._from, false );
   const fc::ecc::public_key to = fc::ecc::public_key::from_base58( value.to, false );
 
   const hive::protocol::crypto_memo::memo_content encoded = memo_obj.build_from_base58_content(from, to, value.content);

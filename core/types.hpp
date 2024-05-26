@@ -33,7 +33,7 @@ struct crypto_memo
   /** Base58 encoded string representing a PUBLIC key identifying a PRIVATE key used for encryption.
   *   Does NOT contain prefix (STM)
   */
-  std::string from;
+  std::string _from;
   /** Base58 encoded string representing a second PUBLIC key used used at encryption.
       Allows to use also this second PRIVATE key to decrypt the content.
   *   Does NOT contain prefix (STM)
@@ -46,7 +46,7 @@ struct crypto_memo
 
   crypto_memo() = default;
   crypto_memo(const std::string& from, const std::string& to, const std::string& content)
-    : from(from), to(to), content(content) {}
+    : _from(from), to(to), content(content) {}
 };
 
 struct ref_block_data

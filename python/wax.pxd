@@ -36,6 +36,18 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
          account_set active_accounts
          account_set owner_accounts
 
+    cdef cppclass crypto_memo:
+         crypto_memo() except +
+
+         # base58 encoded public key, used for encryption (encryption is performed by matching private key)
+         string _from
+
+         # base58 encoded public key, used for encryption (additionally allows decryption by using matching private key)
+         string to
+
+         # base58 encoded encrypted content
+         string content
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -60,6 +72,9 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares )
         result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
         required_authority_collection cpp_collect_transaction_required_authorities( string transaction ) except +
+
+        crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
+        string cpp_crypto_memo_dump_string(crypto_memo value) except +
 
         void cpp_throws(int type) except +
 
