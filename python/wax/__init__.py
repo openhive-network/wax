@@ -36,7 +36,9 @@ from .wax import (
     calculate_vests_to_hp,
     calculate_hbd_to_hive,
     get_transaction_required_authorities,
-    verify_exception_handling
+    verify_exception_handling,
+    encode_encrypted_memo,
+    decode_encrypted_memo
 )
 
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection
@@ -85,4 +87,6 @@ __all__ = [
     "calculate_hbd_to_hive",
     "get_transaction_required_authorities",
     "verify_exception_handling",
+    "encode_encrypted_memo",
+    "decode_encrypted_memo",
 ]
