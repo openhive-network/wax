@@ -277,7 +277,7 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
       owner_accounts=oo
     )
 
-def encode_encrypted_memo(encrypted_content: string, main_encryption_key: string, other_encryption_key: string = '') -> string:
+def encode_encrypted_memo(encrypted_content: string, main_encryption_key: string, other_encryption_key: string = b'') -> string:
     cdef protocol obj
     cdef crypto_memo data_to_encode
     data_to_encode._from = main_encryption_key
