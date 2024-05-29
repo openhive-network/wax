@@ -9,7 +9,6 @@ import { IEncryptingTransactionBuilder } from '../../dist/bundle/index-full';
 
 import {
   utilFunctionTest,
-  chain,
   commentOp,
   convertOp,
   customJsonOp,
@@ -17,7 +16,7 @@ import {
   transferFromSavingsOp,
   transferOp,
   transferToSavingsOp,
-  voteOp
+  voteOp,
 } from '../assets/data.encryption-operations';
 
 let browser!: ChromiumBrowser;
@@ -44,17 +43,7 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(commentOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      comment: {
-        author: 'gtg',
-        body: 'Test comment body',
-        json_metadata: '{}',
-        parent_author: 'gtg',
-        parent_permlink: 'test-comment',
-        permlink: 'test-comment-2',
-        title: 'Test comment',
-      },
-    });
+    expect(retVal.operations[0]).toEqual(commentOp);
   });
 
   test('Should be able to encrypt transaction with transfer operation', async () => {
@@ -62,14 +51,7 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(transferOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      transfer: {
-        from_account: 'gtg',
-        to_account: 'initminer',
-        amount: chain.hive(100),
-        memo: 'This should be encrypted',
-      },
-    });
+    expect(retVal.operations[0]).toEqual(transferOp);
   });
 
   test('Should be able to encrypt transaction with custom json operation', async () => {
@@ -77,14 +59,7 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(customJsonOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      custom_json: {
-        required_auths: ['gtg'],
-        required_posting_auths: ['gtg'],
-        id: 'custom_json',
-        json: '{}',
-      },
-    });
+    expect(retVal.operations[0]).toEqual(customJsonOp);
   });
 
   test('Should be able to encrypt transaction with transfer to savings operation', async () => {
@@ -92,14 +67,7 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(transferToSavingsOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      transfer_to_savings: {
-        from_account: 'gtg',
-        to_account: 'savings',
-        amount: chain.hive(100),
-        memo: 'This should be encrypted',
-      },
-    });
+    expect(retVal.operations[0]).toEqual(transferToSavingsOp);
   });
 
   test('Should be able to encrypt transaction with transfer from savings operation', async () => {
@@ -107,15 +75,7 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(transferFromSavingsOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      transfer_from_savings: {
-        from_account: 'savings',
-        request_id: 1,
-        to_account: 'gtg',
-        amount: chain.hive(100),
-        memo: 'This should be encrypted',
-      },
-    });
+    expect(retVal.operations[0]).toEqual(transferFromSavingsOp);
   });
 
   test('Should be able to encrypt transaction with recurrent transfer operation', async () => {
@@ -123,85 +83,15 @@ test.describe('Wax encrypted operations tests', () => {
       tx.push(recurrentTransferOp);
     });
 
-    expect(retVal.operations[0]).toEqual({
-      recurrent_transfer: {
-        from_account: 'gtg',
-        to_account: 'initminer',
-        amount: chain.hive(100),
-        memo: 'This should be encrypted',
-        recurrence: 1,
-        executions: 1,
-        extensions: [],
-      },
-    });
+    expect(retVal.operations[0]).toEqual(recurrentTransferOp);
   });
 
   test('Should be able to encrypt transaction with different operations', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx
-        .push(recurrentTransferOp)
-        .push(convertOp)
-        .push(transferToSavingsOp)
-        .push(voteOp)
-        .push(commentOp)
-        .push(transferOp);
+      tx.push(recurrentTransferOp).push(convertOp).push(transferToSavingsOp).push(voteOp).push(commentOp).push(transferOp);
     });
 
-    expect(retVal.operations).toEqual([
-      {
-        recurrent_transfer: {
-          from_account: 'gtg',
-          to_account: 'initminer',
-          amount: chain.hive(100),
-          memo: 'This should be encrypted',
-          recurrence: 1,
-          executions: 1,
-          extensions: [],
-        },
-      },
-      {
-        convert: {
-          owner: 'gtg',
-          requestid: 1,
-          amount: chain.hive(100),
-        },
-      },
-      {
-        transfer_to_savings: {
-          from_account: 'gtg',
-          to_account: 'savings',
-          amount: chain.hive(100),
-          memo: 'This should be encrypted',
-        },
-      },
-      {
-        vote: {
-          voter: 'gtg',
-          author: 'initminer',
-          permlink: 'test-permlink',
-          weight: 100,
-        },
-      },
-      {
-        comment: {
-          parent_author: 'gtg',
-          parent_permlink: 'test-comment',
-          author: 'gtg',
-          permlink: 'test-comment-2',
-          title: 'Test comment',
-          body: 'Test comment body',
-          json_metadata: '{}',
-        },
-      },
-      {
-        transfer: {
-          from_account: 'gtg',
-          to_account: 'initminer',
-          amount: chain.hive(100),
-          memo: 'This should be encrypted',
-        },
-      },
-    ]);
+    expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp]);
   });
 
   test('Should be able to encrypt some specific operations in transaction with a barren keys pair at the end', async () => {

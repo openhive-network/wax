@@ -1,6 +1,30 @@
-import { createHiveChain } from "../../dist/bundle/index-full";
+import { createHiveChain, IEncryptingTransactionBuilder, transaction } from '../../dist/bundle/index-full';
+import beekeeperFactory from '@hiveio/beekeeper';
 
 const chain = await createHiveChain();
+const beekeeper = await beekeeperFactory();
+
+export const utilFunctionTest = async (
+  txOperationsLambda: (tx: IEncryptingTransactionBuilder) => void,
+  otherEncryptionKey?: string
+): Promise<transaction> => {
+  const session = beekeeper.createSession('salt');
+  const { wallet } = await session.createWallet('w0');
+
+  const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+  const tx =
+    otherEncryptionKey === undefined
+      ? new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27').startEncrypt(key)
+      : new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27').startEncrypt(key, otherEncryptionKey);
+  txOperationsLambda(tx);
+
+  tx.stopEncrypt();
+
+  tx.build(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+
+  return tx.decrypt(wallet);
+};
 
 export const commentOp = {
   comment: {
@@ -74,6 +98,445 @@ export const voteOp = {
 
 export const convertOp = {
   convert: {
+    owner: 'gtg',
+    requestid: 1,
+    amount: chain.hive(100),
+  },
+};
+
+export const transferToVestingOp = {
+  transfer_to_vesting: {
+    from_account: 'gtg',
+    to_account: 'initminer',
+    amount: chain.hive(100),
+  },
+};
+
+export const withdrawVestingOp = {
+  withdraw_vesting: {
+    account: 'gtg',
+    vesting_shares: chain.vests(100),
+  },
+};
+
+export const limitOrderCreateOp = {
+  limit_order_create: {
+    owner: 'gtg',
+    orderid: 1,
+    amount_to_sell: chain.hive(100),
+    min_to_receive: chain.hive(50),
+    fill_or_kill: false,
+    expiration: '2023-11-09T21:51:27',
+  },
+};
+
+export const limitOrderCancelOp = {
+  limit_order_cancel: {
+    owner: 'gtg',
+    orderid: 1,
+  },
+};
+
+export const feedPublishOp = {
+  feed_publish: {
+    publisher: 'gtg',
+    exchange_rate: {
+      base: chain.hive(100),
+      quote: chain.hive(50),
+    },
+  },
+};
+
+export const accountCreateOp = {
+  account_create: {
+    fee: chain.hive(100),
+    creator: 'gtg',
+    new_account_name: 'initminer',
+    owner: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    posting: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    memo_key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX',
+    json_metadata: '{}',
+  },
+};
+
+export const accountUpdateOp = {
+  account_update: {
+    account: 'gtg',
+    owner: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    posting: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    memo_key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX',
+    json_metadata: '{}',
+  },
+};
+
+export const witnessUpdateOp = {
+  witness_update: {
+    owner: 'gtg',
+    url: 'http://example.com',
+    block_signing_key: '5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78',
+    props: {
+      account_creation_fee: chain.hive(100),
+      maximum_block_size: 2000,
+      hbd_interest_rate: 100,
+    },
+    fee: chain.hive(100),
+  },
+};
+
+export const accountWitnessVoteOp = {
+  account_witness_vote: {
+    account: 'gtg',
+    witness: 'initminer',
+    approve: true,
+  },
+};
+
+export const accountWitnessProxyOp = {
+  account_witness_proxy: {
+    account: 'gtg',
+    proxy: 'initminer',
+  },
+};
+
+export const powOp = {
+  pow: {
+    worker_account: 'initminer',
+    block_id: '1',
+    nonce: 'test nonce',
+    work: {
+      worker: 'initminer',
+      input: 'test input',
+      signature: '1f6ad21ddf9f57f1a94c1462185744cb0ea779ec1e99899f2556a3ce02b18d1b810fcddaccb349a53037798aea8023909447df756db461235ba5b63984d515c977',
+      work: 'test work',
+    },
+    props: {
+      account_creation_fee: chain.hive(100),
+      maximum_block_size: 10,
+      hbd_interest_rate: 10,
+    },
+  },
+};
+
+export const customOp = {
+  custom: {
+    required_auths: ['gtg'],
+    id: 1,
+    data: 'test data',
+  },
+};
+
+export const witnessBlockApproveOp = {
+  witness_block_approve: {
+    witness: 'initminer',
+    block_id: '1',
+  },
+};
+
+export const deleteCommentOp = {
+  delete_comment: {
+    author: 'gtg',
+    permlink: 'test-permlink',
+  },
+};
+
+export const commentOptionsOp = {
+  comment_options: {
+    author: 'gtg',
+    permlink: 'test-permlink',
+    max_accepted_payout: chain.hive(100),
+    percent_hbd: 10,
+    allow_votes: true,
+    allow_curation_rewards: true,
+    extensions: [],
+  },
+};
+
+export const setWithdrawVestingRouteOp = {
+  set_withdraw_vesting_route: {
+    from_account: 'gtg',
+    to_account: 'initminer',
+    percent: 10,
+    auto_vest: true,
+  },
+};
+
+export const limitOrderCreate2Op = {
+  limit_order_create2: {
+    owner: 'gtg',
+    orderid: 1,
+    amount_to_sell: chain.hive(100),
+    fill_or_kill: false,
+    exchange_rate: {
+      base: chain.hive(100),
+      quote: chain.hive(50),
+    },
+    expiration: '2023-11-09T21:51:27',
+  },
+};
+
+export const claimAccountOp = {
+  claim_account: {
+    creator: 'gtg',
+    fee: chain.hive(100),
+    extensions: [],
+  },
+};
+
+export const createClaimedAccountOp = {
+  create_claimed_account: {
+    creator: 'gtg',
+    new_account_name: 'initminer',
+    owner: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    posting: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    memo_key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX',
+    json_metadata: '{}',
+    extensions: [],
+  },
+};
+
+export const requestAccountRecoveryOp = {
+  request_account_recovery: {
+    recovery_account: 'gtg',
+    account_to_recover: 'initminer',
+    new_owner_authority: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    extensions: [],
+  },
+};
+
+export const changeRecoveryAccountOp = {
+  change_recovery_account: {
+    account_to_recover: 'gtg',
+    new_recovery_account: 'initminer',
+    extensions: [],
+  },
+};
+
+export const escrowTransferOp = {
+  escrow_transfer: {
+    from_account: 'initminer',
+    to_account: 'gtg',
+    agent: 'gtg',
+    escrow_id: 100,
+    hbd_amount: chain.hbd(100),
+    hive_amount: chain.hive(100),
+    fee: chain.hive(100),
+    ratification_deadline: '2023-11-09T21:51:27',
+    escrow_expiration: '2023-11-09T21:51:27',
+    json_meta: '{}',
+  },
+};
+
+export const escrowDisputeOp = {
+  escrow_dispute: {
+    from_account: 'initminer',
+    to_account: 'gtg',
+    agent: 'gtg',
+    who: 'gtg',
+    escrow_id: 100,
+  },
+};
+
+export const escrowReleaseOp = {
+  escrow_release: {
+    from_account: 'initminer',
+    to_account: 'gtg',
+    agent: 'gtg',
+    who: 'gtg',
+    receiver: 'gtg',
+    escrow_id: 100,
+    hbd_amount: chain.hbd(100),
+    hive_amount: chain.hive(100),
+  },
+};
+
+export const escrowApproveOp = {
+  escrow_approve: {
+    from_account: 'initminer',
+    to_account: 'gtg',
+    agent: 'gtg',
+    who: 'gtg',
+    escrow_id: 100,
+    approve: true,
+  },
+};
+
+export const cancelTransferFromSavingsOp = {
+  cancel_transfer_from_savings: {
+    from_account: 'gtg',
+    request_id: 1,
+  },
+};
+
+export const declineVotingRightsOp = {
+  decline_voting_rights: {
+    account: 'gtg',
+    decline: true,
+  },
+};
+
+export const claimRewardBalanceOp = {
+  claim_reward_balance: {
+    account: 'gtg',
+    reward_hive: chain.hive(100),
+    reward_hbd: chain.hbd(100),
+    reward_vests: chain.vests(100),
+  },
+};
+
+export const delegateVestingSharesOp = {
+  delegate_vesting_shares: {
+    delegator: 'gtg',
+    delegatee: 'initminer',
+    vesting_shares: chain.vests(100),
+  },
+};
+
+export const accountCreateWithDelegationOp = {
+  account_create_with_delegation: {
+    fee: chain.hive(100),
+    delegation: chain.hive(50),
+    creator: 'gtg',
+    new_account_name: 'initminer',
+    owner: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    posting: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    memo_key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX',
+    json_metadata: '{}',
+    extensions: [],
+  },
+};
+
+export const witnessSetPropertiesOp = {
+  witness_set_properties: {
+    owner: 'gtg',
+    props: { key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX' },
+    extensions: [],
+  },
+};
+
+export const accountUpdate2Op = {
+  account_update2: {
+    account: 'gtg',
+    owner: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    active: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    posting: {
+      weight_threshold: 1,
+      account_auths: {},
+      key_auths: {},
+    },
+    memo_key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX',
+    json_metadata: '{}',
+    posting_json_metadata: '{}',
+    extensions: [],
+  },
+};
+
+export const createProposalOp = {
+  create_proposal: {
+    creator: 'initminer',
+    receiver: 'gtg',
+    start_date: '2023-11-09T21:51:27',
+    end_date: '2023-11-10T21:51:27',
+    daily_pay: chain.hive(100),
+    subject: 'Test subject',
+    permlink: 'test-permlink',
+    extensions: [],
+  },
+};
+
+export const updateProposalVotesOp = {
+  update_proposal_votes: {
+    voter: 'gtg',
+    proposal_ids: ['1'],
+    approve: true,
+    extensions: [],
+  },
+};
+
+export const removeProposalOp = {
+  remove_proposal: {
+    proposal_owner: 'initminer',
+    proposal_ids: ['1'],
+    extensions: [],
+  },
+};
+
+export const updateProposalOp = {
+  update_proposal: {
+    proposal_id: '1',
+    creator: 'initminer',
+    daily_pay: chain.hive(100),
+    subject: 'Test subject',
+    permlink: 'test-permlink',
+    extensions: [],
+  },
+};
+
+export const collateralizedConvertOp = {
+  collateralized_convert: {
     owner: 'gtg',
     requestid: 1,
     amount: chain.hive(100),
