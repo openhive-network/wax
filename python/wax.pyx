@@ -5,7 +5,7 @@ from libcpp.set cimport set as cppset
 from cython.operator cimport dereference, preincrement
 
 from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo
+from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo, python_private_key_data
 
 def return_python_result(foo):
     @wraps(foo)
@@ -99,6 +99,16 @@ def generate_private_key() -> python_result:
     cdef protocol obj
     response =  obj.cpp_generate_private_key()
     return response.value, response.content, response.exception_message
+
+def generate_password_based_private_key(account: string, role: string, password: string) -> python_private_key_data:
+    cdef protocol obj
+    pkd = obj.cpp_generate_private_key(account, role, password)
+    return python_private_key_data(pkd.wif_private_key, pkd.associated_public_key)
+
+def suggest_brain_key() -> python_private_key_data:
+    cdef protocol obj
+    bki = obj.cpp_suggest_brain_key()
+    return python_private_key_data(bki.wif_private_key, bki.associated_public_key)
 
 @return_python_result
 def calculate_public_key(wif: bytes) -> python_result:

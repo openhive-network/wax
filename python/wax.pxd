@@ -48,6 +48,13 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
          # base58 encoded encrypted content
          string content
 
+    cdef cppclass private_key_data:
+        private_key_data() except +
+
+        string wif_private_key
+        string associated_public_key
+
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -59,6 +66,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_deserialize_transaction( string transaction )
         result cpp_calculate_public_key( string wif )
         result cpp_generate_private_key()
+        private_key_data cpp_generate_private_key(string account, string role, string password) except +
+        private_key_data cpp_suggest_brain_key() except +
         result cpp_get_public_key_from_signature( string digest, string signature )
         result cpp_calculate_manabar_full_regeneration_time( int now, long max_mana, long current_mana, int last_update_time )
         result cpp_calculate_current_manabar_value( int now, long max_mana, long current_mana, int last_update_time )

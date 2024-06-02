@@ -40,3 +40,10 @@ class python_encrypted_memo:
     other_encryption_key: string
     # base58 encoded encrypted content
     encrypted_content: string
+
+@dataclass
+class python_private_key_data:
+  wif_private_key: string
+  # base58 string pointing the public key associated to the private key specified above
+  associated_public_key: string
+
