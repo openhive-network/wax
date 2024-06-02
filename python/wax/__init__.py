@@ -15,6 +15,8 @@ from .wax import (
     calculate_legacy_transaction_id,
     general_asset,
     generate_private_key,
+    generate_password_based_private_key,
+    suggest_brain_key,
     hbd,
     hive,
     proto_to_api,
@@ -41,7 +43,7 @@ from .wax import (
     decode_encrypted_memo
 )
 
-from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection
+from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data
 
 __version__ = "0.0.0"
 
@@ -51,6 +53,7 @@ __all__ = [
     "python_json_asset",
     "python_ref_block_data",
     "python_required_authority_collection",
+    "python_private_key_data",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -60,6 +63,8 @@ __all__ = [
     "validate_operation",
     "validate_transaction",
     "generate_private_key",
+    "generate_password_based_private_key",
+    "suggest_brain_key",
     "calculate_public_key",
     "calculate_manabar_full_regeneration_time",
     "calculate_current_manabar_value",
