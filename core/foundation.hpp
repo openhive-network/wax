@@ -13,6 +13,9 @@ public:
   result cpp_calculate_public_key(const std::string& wif);
   result cpp_generate_private_key();
 
+  private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password);
+  brain_key_data cpp_suggest_brain_key();
+
   ///  Allows to retrieve public key in WIF format from the signature and digest in hexadecimal format
   result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
 
