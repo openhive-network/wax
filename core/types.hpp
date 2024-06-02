@@ -17,6 +17,12 @@ struct result
   result() noexcept = default;
 };
 
+struct private_key_data
+{
+  std::string wif_private_key;
+  std::string associated_public_key;
+};
+
 struct json_asset
 {
   std::string amount;
