@@ -9,6 +9,7 @@
 #include <string>
 
 #include <hive/protocol/asset.hpp>
+#include <hive/protocol/key_utils.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/crypto_memo.hpp>
 
@@ -123,6 +124,28 @@ result foundation::cpp_generate_private_key()
   {
     _result.content = fc::ecc::private_key::generate().key_to_wif();
   });
+}
+
+private_key_data foundation::cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password)
+{
+  private_key_data ret_val;
+  const auto private_key_data = hive::protocol::generate_private_key_from_password(account, role, password);
+  ret_val.associated_public_key = fc::ecc::public_key::to_base58(private_key_data.first, false);
+  ret_val.wif_private_key = private_key_data.second;
+
+  return ret_val;
+}
+
+private_key_data foundation::cpp_suggest_brain_key()
+{
+  private_key_data ret_val;
+
+  const auto bki = hive::protocol::suggest_brain_key();
+
+  ret_val.associated_public_key = fc::ecc::public_key::to_base58(bki.pub_key, false);
+  ret_val.wif_private_key = bki.wif_priv_key;
+
+  return ret_val;
 }
 
 result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
