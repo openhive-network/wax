@@ -462,6 +462,13 @@ export interface IWaxBaseInterface {
   readonly waxify: IWaxExtendableFormatter['waxify'];
 
   /**
+   * Retrieves the public key address prefix
+   *
+   * @returns {string} public key prefix
+   */
+  get addressPrefix (): string;
+
+  /**
    * Retrieves the bundled package version string
    *
    * @returns {string} application version

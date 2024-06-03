@@ -92,6 +92,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public get addressPrefix(): string {
+    return this.proto.cpp_get_address_prefix() as string;
+  }
+
   public getVersion(): string {
     return process.env.npm_package_version as string;
   }

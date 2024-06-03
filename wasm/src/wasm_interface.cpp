@@ -71,6 +71,9 @@ result cpp_calculate_public_key(const std::string& wif)
 ref_block_data cpp_get_tapos_data(const std::string& block_id)
 { return foundation::cpp_get_tapos_data(block_id); }
 
+std::string cpp_get_address_prefix()
+{ return HIVE_ADDRESS_PREFIX; }
+
 result cpp_calculate_hp_apr(
   const uint32_t head_block_num,
   const uint16_t vesting_reward_percent,
@@ -137,6 +140,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
+    .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
