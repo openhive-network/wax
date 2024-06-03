@@ -53,7 +53,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.5-rc7-stable.240510204534",
+    "@hiveio/beekeeper": "1.27.5-rc7-stable.240530185524",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "long": "^5.2.3",

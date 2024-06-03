@@ -105,7 +105,7 @@ test.describe('Wax object interface foundation tests', () => {
       // Create signed transaction
       tx.push(protoVoteOp).validate();
 
-      const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
       return {
         sig: stx.signatures[0],

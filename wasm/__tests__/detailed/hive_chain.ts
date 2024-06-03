@@ -43,7 +43,7 @@ test.describe('Wax object interface chain tests', () => {
       // Create signed transaction
       tx.push(protoVoteOp).validate();
 
-      const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
       return {
         sig: stx.signatures[0],
@@ -68,7 +68,7 @@ test.describe('Wax object interface chain tests', () => {
         builder.setPercentHbd(0).setMaxAcceptedPayout(chain.hbd(0));
       }, "me", "about you", "how r u", {}, "permlink1" );
 
-      tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
       console.log(tx.toApi());
 
@@ -146,7 +146,7 @@ test.describe('Wax object interface chain tests', () => {
         // Create signed transaction
         tx.push(protoVoteOp).validate();
 
-        const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
         return stx;
       }, protoVoteOp);
@@ -275,7 +275,7 @@ test.describe('Wax object interface chain tests', () => {
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.push(protoVoteOp).build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        tx.push(protoVoteOp).build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
         return new wax.BroadcastTransactionRequest(tx);
       }, protoVoteOp);

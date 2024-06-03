@@ -86,7 +86,7 @@ const chain = await createHiveChain();
 // Initialize the wallet
 const session = bk.createSession("salt");
 const { wallet } = await session.createWallet("w0");
-await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
 // Create transaction
 const tx = await chain.getTransactionBuilder();
@@ -102,7 +102,7 @@ tx.push({
 }).validate();
 
 // Build and sign the transaction object
-const stx = tx.build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+const stx = tx.build(wallet, publicKey);
 
 console.info(chain.waxify`${stx}`);
 ```
@@ -118,7 +118,7 @@ const chain = await createHiveChain();
 // Initialize the wallet
 const session = bk.createSession("salt");
 const { wallet } = await session.createWallet("w0");
-await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
 const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
@@ -130,7 +130,7 @@ tx.push({
     permlink: "ewxhnjbj",
     weight: 2200
   }
-}).build(wallet, "5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+}).build(wallet, publicKey);
 
 const request = new BroadcastTransactionRequest(tx);
 
