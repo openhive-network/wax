@@ -1,29 +1,62 @@
-import { createHiveChain, IEncryptingTransactionBuilder, transaction } from '../../dist/bundle/index-full';
-import beekeeperFactory from '@hiveio/beekeeper';
+import { createHiveChain, IEncryptingTransactionBuilder, transaction, WaxError } from '../../dist/bundle/index-full';
+import { EncryptionVisitor, EEncryptionType } from '../../dist/lib/detailed/encryption_visitor.js';
+import beekeeperFactory, { TPublicKey } from '@hiveio/beekeeper';
 
 const chain = await createHiveChain();
 const beekeeper = await beekeeperFactory();
 
+const operationEncryptionTest = (shouldBeEncrypted: boolean): EncryptionVisitor => {
+  const encryptionVisitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
+    if (shouldBeEncrypted && !data.startsWith('#'))
+      throw new WaxError(`Expected encrypted operation data: ${data}`);
+
+    if (!shouldBeEncrypted && data.startsWith('#'))
+      throw new WaxError(`Expected non-encrypted operation data: ${data}`);
+
+    return data;
+  });
+
+  return encryptionVisitor;
+};
+
 export const utilFunctionTest = async (
-  txOperationsLambda: (tx: IEncryptingTransactionBuilder) => void,
-  otherEncryptionKey?: string
+  txOperationsLambda: (tx: IEncryptingTransactionBuilder, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
+  nonEncryptedOperationIndices: number[] = [],
+  otherEncryptionKey: boolean = false
 ): Promise<transaction> => {
   const session = beekeeper.createSession('salt');
   const { wallet } = await session.createWallet('w0');
 
   const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-  const tx =
-    otherEncryptionKey === undefined
-      ? new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27').startEncrypt(key)
-      : new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27').startEncrypt(key, otherEncryptionKey);
-  txOperationsLambda(tx);
+  const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-  tx.stopEncrypt();
+  const encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey] = [key];
 
-  tx.build(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+  if (otherEncryptionKey)
+    encryptionKeys.push(await wallet.importKey('5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG'));
 
-  return tx.decrypt(wallet);
+  let encryptingTx = tx.startEncrypt(...encryptionKeys);
+
+  txOperationsLambda(encryptingTx, encryptionKeys);
+
+  encryptingTx.stopEncrypt();
+
+  const builtTransaction = encryptingTx.build(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+
+  if (nonEncryptedOperationIndices.length > 0) {
+    const nonEncryptedSet = new Set<number>(nonEncryptedOperationIndices);
+
+    for (let i = 0; i < builtTransaction.operations.length; ++i) {
+      const shouldBeEncrypted = !nonEncryptedSet.has(i); // If set object does not contain the index than the operation should be encrypted
+
+      const visitor = operationEncryptionTest(shouldBeEncrypted);
+
+      visitor.accept(builtTransaction.operations[i]);
+    }
+  }
+
+  return encryptingTx.decrypt(wallet);
 };
 
 export const commentOp = {
