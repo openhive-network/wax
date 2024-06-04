@@ -28,10 +28,7 @@ class custom_json(google.protobuf.message.Message):
     - pinned
     - follow
 
-    @param {string} required_auths
-    @param {string} required_posting_auths
-    @param {string} id - Must be less than 32 characters long.
-    @param {string} json - Must be a proper utf8 JSON string.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/18_custom_json.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -41,11 +38,15 @@ class custom_json(google.protobuf.message.Message):
     ID_FIELD_NUMBER: builtins.int
     JSON_FIELD_NUMBER: builtins.int
     @property
-    def required_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def required_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """@param {string} required_auths"""
     @property
-    def required_posting_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def required_posting_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """@param {string} required_posting_auths"""
     id: builtins.str
+    """@param {string} id - Must be less than 32 characters long."""
     json: builtins.str
+    """@param {string} json - Must be a proper utf8 JSON string."""
     def __init__(
         self,
         *,

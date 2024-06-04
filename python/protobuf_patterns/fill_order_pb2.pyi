@@ -20,13 +20,6 @@ class fill_order(google.protobuf.message.Message):
     """Related to limit_order_create_operation and limit_order_create2_operation.
     Generated during one of above operations when order on internal market is partially or fully matched
     (each match generates separate vop).
-
-    @param {string} current_owner - user that recently created order (taker - receiver of open_pays)
-    @param {number} current_orderid - id of fresh order
-    @param {asset} current_pays - (HIVE or HBD) amount paid to open_owner
-    @param {string} open_owner - user that had his order on the market (maker - receiver of current_pays)
-    @param {number} open_orderid - id of waiting order
-    @param {asset} open_pays - (HBD or HIVE) amount paid to current_owner
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -38,13 +31,19 @@ class fill_order(google.protobuf.message.Message):
     OPEN_ORDERID_FIELD_NUMBER: builtins.int
     OPEN_PAYS_FIELD_NUMBER: builtins.int
     current_owner: builtins.str
+    """@param {string} current_owner - user that recently created order (taker - receiver of open_pays)"""
     current_orderid: builtins.int
+    """@param {number} current_orderid - id of fresh order"""
     @property
-    def current_pays(self) -> asset_pb2.asset: ...
+    def current_pays(self) -> asset_pb2.asset:
+        """@param {asset} current_pays - (HIVE or HBD) amount paid to open_owner"""
     open_owner: builtins.str
+    """@param {string} open_owner - user that had his order on the market (maker - receiver of current_pays)"""
     open_orderid: builtins.int
+    """@param {number} open_orderid - id of waiting order"""
     @property
-    def open_pays(self) -> asset_pb2.asset: ...
+    def open_pays(self) -> asset_pb2.asset:
+        """@param {asset} open_pays - (HBD or HIVE) amount paid to current_owner"""
     def __init__(
         self,
         *,

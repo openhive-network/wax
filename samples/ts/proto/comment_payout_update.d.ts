@@ -3,12 +3,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to comment_operation.
  * Generated during block processing after cashout time passes even if there are no rewards.
  * Note: prior to HF17 comment could have multiple cashout windows.
- *
- * @param {string} author - author of comment
- * @param {string} permlink - permlink of comment
  */
 export interface comment_payout_update {
+    /** @param {string} author - author of comment */
     author: string;
+    /** @param {string} permlink - permlink of comment */
     permlink: string;
 }
 export declare const comment_payout_update: {

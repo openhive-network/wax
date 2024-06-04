@@ -19,11 +19,6 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class proposal_fee(google.protobuf.message.Message):
     """Related to create_proposal_operation.
     Generated every time above operation is executed. Supplements it with paid fee.
-
-    @param {string} creator - user that created proposal (source of fee)
-    @param {string} treasury - treasury account (receiver of fee)
-    @param {number} proposal_id - id of proposal
-    @param {asset} fee - (HBD) amount paid for proposal [should actually be part of create_proposal_operation but it's too late now]
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,10 +28,14 @@ class proposal_fee(google.protobuf.message.Message):
     PROPOSAL_ID_FIELD_NUMBER: builtins.int
     FEE_FIELD_NUMBER: builtins.int
     creator: builtins.str
+    """@param {string} creator - user that created proposal (source of fee)"""
     treasury: builtins.str
+    """@param {string} treasury - treasury account (receiver of fee)"""
     proposal_id: builtins.int
+    """@param {number} proposal_id - id of proposal"""
     @property
-    def fee(self) -> asset_pb2.asset: ...
+    def fee(self) -> asset_pb2.asset:
+        """@param {asset} fee - (HBD) amount paid for proposal [should actually be part of create_proposal_operation but it's too late now]"""
     def __init__(
         self,
         *,

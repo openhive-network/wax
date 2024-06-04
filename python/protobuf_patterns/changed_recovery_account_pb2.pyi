@@ -18,10 +18,6 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class changed_recovery_account(google.protobuf.message.Message):
     """Related to change_recovery_account_operation.
     Generated during block processing after wait period for the recovery account change has passed and the change became active.
-
-    @param {string} account - used that requested recovery accout change
-    @param {string} old_recovery_account - previous recovery account
-    @param {string} new_recovery_account - new recovery account
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -30,8 +26,11 @@ class changed_recovery_account(google.protobuf.message.Message):
     OLD_RECOVERY_ACCOUNT_FIELD_NUMBER: builtins.int
     NEW_RECOVERY_ACCOUNT_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - used that requested recovery accout change"""
     old_recovery_account: builtins.str
+    """@param {string} old_recovery_account - previous recovery account"""
     new_recovery_account: builtins.str
+    """@param {string} new_recovery_account - new recovery account"""
     def __init__(
         self,
         *,

@@ -5,12 +5,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated during block processing to indicate reward paid to the market makers on internal HIVE<->HBD market.
  * No longer active after HF12.
  * @see fill_order_operation
- *
- * @param {string} owner - market maker (receiver of payout)
- * @param {asset} payout - (HIVE) reward for provided liquidity
  */
 export interface liquidity_reward {
+    /** @param {string} owner - market maker (receiver of payout) */
     owner: string;
+    /** @param {asset} payout - (HIVE) reward for provided liquidity */
     payout: asset | undefined;
 }
 export declare const liquidity_reward: {

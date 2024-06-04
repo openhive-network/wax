@@ -24,11 +24,7 @@ class witness_set_properties(google.protobuf.message.Message):
     The whole list of properties is available here:
     https://gitlab.syncad.com/hive/hive/-/blob/master/doc/witness_parameters.md.
 
-    @param {string} owner - Witness account name.
-    @param {map<string, string>} props - There are the following properties available in the {props}: 
-                                         account_creation_fee, account_subsidy_budget, account_subsidy_decay,
-                                         maximum_block_size, hbd_interest_rate. hbd_exchange_rate, url and new_signing_key.
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/42_witness_set_properties.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -54,10 +50,16 @@ class witness_set_properties(google.protobuf.message.Message):
     PROPS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - Witness account name."""
     @property
-    def props(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.str]: ...
+    def props(self) -> google.protobuf.internal.containers.ScalarMap[builtins.str, builtins.str]:
+        """@param {map<string, string>} props - There are the following properties available in the {props}: 
+                                             account_creation_fee, account_subsidy_budget, account_subsidy_decay,
+                                             maximum_block_size, hbd_interest_rate. hbd_exchange_rate, url and new_signing_key.
+        """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

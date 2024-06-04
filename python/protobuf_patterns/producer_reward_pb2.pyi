@@ -19,9 +19,6 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class producer_reward(google.protobuf.message.Message):
     """Related to block processing.
     Generated during block processing every block for current witness.
-
-    @param {string} producer - witness (receiver of vesting_shares)
-    @param {asset} vesting_shares - (VESTS or HIVE) reward for block production (HIVE only during first 30 days after genesis)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -29,8 +26,10 @@ class producer_reward(google.protobuf.message.Message):
     PRODUCER_FIELD_NUMBER: builtins.int
     VESTING_SHARES_FIELD_NUMBER: builtins.int
     producer: builtins.str
+    """@param {string} producer - witness (receiver of vesting_shares)"""
     @property
-    def vesting_shares(self) -> asset_pb2.asset: ...
+    def vesting_shares(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares - (VESTS or HIVE) reward for block production (HIVE only during first 30 days after genesis)"""
     def __init__(
         self,
         *,

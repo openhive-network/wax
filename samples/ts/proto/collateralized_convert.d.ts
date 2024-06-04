@@ -6,13 +6,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * The price risk is cushioned by extra HIVE (HIVE_COLLATERAL_RATIO = 200 % ).
  * After actual conversion takes place the excess HIVE is returned to the owner.
  *
- * @param {string} owner - Account name.
- * @param {number} requestid - The number is given by a user. Should be unique for a user.
- * @param {asset} amount - Amount > 0, have to be in Hive.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/48_collateralized_convert.md?ref_type=heads
  */
 export interface collateralized_convert {
+    /** @param {string} owner - Account name. */
     owner: string;
+    /** @param {number} requestid - The number is given by a user. Should be unique for a user. */
     requestid: number;
+    /** @param {asset} amount - Amount > 0, have to be in Hive. */
     amount: asset | undefined;
 }
 export declare const collateralized_convert: {

@@ -19,8 +19,7 @@ class delete_comment(google.protobuf.message.Message):
     """The post or comment may be deleted by the author. If the post or comment is deleted, the {permlink} may be reused. 
     The delete doesn’t mean that the comment is removed from the blockchain.
 
-    @param {string} author - Account name, the author of the post or the comment.
-    @param {string} permlink - The identifier of the post or the comment.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/17_delete_comment.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -28,7 +27,9 @@ class delete_comment(google.protobuf.message.Message):
     AUTHOR_FIELD_NUMBER: builtins.int
     PERMLINK_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - Account name, the author of the post or the comment."""
     permlink: builtins.str
+    """@param {string} permlink - The identifier of the post or the comment."""
     def __init__(
         self,
         *,

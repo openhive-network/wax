@@ -8,23 +8,24 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * If there is a dispute regardless of expiration, the agent can release funds to either party
  * following whichever agreement was in place between the parties.
  *
- * @param {string} from_account - Account name.
- * @param {string} to_account - Account name.
- * @param {string} agent - Account name.
- * @param {string} who - The account that is attempting to release the funds.
- * @param {string} receiver - The account that should receive funds (might be {from}, might be {to}).
- * @param {number} escrow_id - Escrow indicator.
- * @param {asset} hbd_amount - The amount of HBD to release.
- * @param {asset} hive_amount - The amount of HIVE to release.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/29_escrow_release.md?ref_type=heads
  */
 export interface escrow_release {
+    /** @param {string} from_account - Account name. */
     from_account: string;
+    /** @param {string} to_account - Account name. */
     to_account: string;
+    /** @param {string} agent - Account name. */
     agent: string;
+    /** @param {string} who - The account that is attempting to release the funds. */
     who: string;
+    /** @param {string} receiver - The account that should receive funds (might be {from}, might be {to}). */
     receiver: string;
+    /** @param {number} escrow_id - Escrow indicator. */
     escrow_id: number;
+    /** @param {asset} hbd_amount - The amount of HBD to release. */
     hbd_amount: asset | undefined;
+    /** @param {asset} hive_amount - The amount of HIVE to release. */
     hive_amount: asset | undefined;
 }
 export declare const escrow_release: {

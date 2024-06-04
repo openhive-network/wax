@@ -28,8 +28,7 @@ class withdraw_vesting(google.protobuf.message.Message):
     If a user creates a new withdraw_vesting_operation when the old one is still processed,
     then the old withdraw_vesting_operation will be canceled and a new one will be processed.
 
-    @param {string} account - The account the funds are coming from.
-    @param {asset} vesting_shares - Amount of VESTS (HP)
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/04_withdraw_vesting.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -37,8 +36,10 @@ class withdraw_vesting(google.protobuf.message.Message):
     ACCOUNT_FIELD_NUMBER: builtins.int
     VESTING_SHARES_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - The account the funds are coming from."""
     @property
-    def vesting_shares(self) -> asset_pb2.asset: ...
+    def vesting_shares(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares - Amount of VESTS (HP)"""
     def __init__(
         self,
         *,

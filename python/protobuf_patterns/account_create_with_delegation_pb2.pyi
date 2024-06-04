@@ -21,7 +21,10 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class account_create_with_delegation(google.protobuf.message.Message):
-    """Deprecated."""
+    """Deprecated.
+
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/41_account_create_with_delegation.md?ref_type=heads
+    """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

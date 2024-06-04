@@ -3,12 +3,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Cancels an order (limit_order_create_operation or limit_order_create2_operation)
  * and returns the balance to the owner.
  *
- * @param {string} owner
- * @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
- *                           or limit_order_create2_operation.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/06_limit_order_cancel.md?ref_type=heads
  */
 export interface limit_order_cancel {
+    /** @param {string} owner */
     owner: string;
+    /**
+     * @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
+     *                           or limit_order_create2_operation.
+     */
     orderid: number;
 }
 export declare const limit_order_cancel: {

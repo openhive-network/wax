@@ -3,16 +3,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to create_proposal_operation.
  * Generated every time above operation is executed. Supplements it with paid fee.
- *
- * @param {string} creator - user that created proposal (source of fee)
- * @param {string} treasury - treasury account (receiver of fee)
- * @param {number} proposal_id - id of proposal
- * @param {asset} fee - (HBD) amount paid for proposal [should actually be part of create_proposal_operation but it's too late now]
  */
 export interface proposal_fee {
+    /** @param {string} creator - user that created proposal (source of fee) */
     creator: string;
+    /** @param {string} treasury - treasury account (receiver of fee) */
     treasury: string;
+    /** @param {number} proposal_id - id of proposal */
     proposal_id: number;
+    /** @param {asset} fee - (HBD) amount paid for proposal [should actually be part of create_proposal_operation but it's too late now] */
     fee: asset | undefined;
 }
 export declare const proposal_fee: {

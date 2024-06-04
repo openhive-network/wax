@@ -20,10 +20,6 @@ class collateralized_convert_immediate_conversion(google.protobuf.message.Messag
     """Related to collateralized_convert_operation.
     Generated every time above operation is executed. Contains amount of HBD received right when the transfer actually happens.
     @see fill_collateralized_convert_request
-
-    @param {string} owner - user that requested conversion (receiver of hbd_out)
-    @param {number} requested - id of the conversion request
-    @param {asset} hbd_out - (HBD) funds after conversion
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -32,9 +28,12 @@ class collateralized_convert_immediate_conversion(google.protobuf.message.Messag
     REQUESTID_FIELD_NUMBER: builtins.int
     HBD_OUT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - user that requested conversion (receiver of hbd_out)"""
     requestid: builtins.int
+    """@param {number} requested - id of the conversion request"""
     @property
-    def hbd_out(self) -> asset_pb2.asset: ...
+    def hbd_out(self) -> asset_pb2.asset:
+        """@param {asset} hbd_out - (HBD) funds after conversion"""
     def __init__(
         self,
         *,

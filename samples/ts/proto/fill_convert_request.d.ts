@@ -3,16 +3,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to convert_operation.
  * Generated during block processing after conversion delay passes and HBD is converted to HIVE.
- *
- * @param {string} owner - User that requested conversion (receiver of amount_out).
- * @param {number} requestid - id of the request.
- * @param {asset} amount_in - (HBD) source of conversion.
- * @param {asset} amount_out - (HIVE) effect of conversion.
  */
 export interface fill_convert_request {
+    /** @param {string} owner - User that requested conversion (receiver of amount_out). */
     owner: string;
+    /** @param {number} requestid - id of the request. */
     requestid: number;
+    /** @param {asset} amount_in - (HBD) source of conversion. */
     amount_in: asset | undefined;
+    /** @param {asset} amount_out - (HIVE) effect of conversion. */
     amount_out: asset | undefined;
 }
 export declare const fill_convert_request: {

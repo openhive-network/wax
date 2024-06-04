@@ -4,13 +4,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * This operation instructs the blockchain to start a conversion of HBD to Hive.
  * The funds are deposited after 3.5 days.
  *
- * @param {string} owner - Account name.
- * @param {number} requestid - The number is given by a user. Should be unique for a user.
- * @param {asset} amount - Amount > 0, have to be in HBD.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/08_convert.md?ref_type=heads
  */
 export interface convert {
+    /** @param {string} owner - Account name. */
     owner: string;
+    /** @param {number} requestid - The number is given by a user. Should be unique for a user. */
     requestid: number;
+    /** @param {asset} amount - Amount > 0, have to be in HBD. */
     amount: asset | undefined;
 }
 export declare const convert: {

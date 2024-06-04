@@ -25,9 +25,7 @@ class transfer_to_vesting(google.protobuf.message.Message):
     b.       Social voting power has (indirectly affects Increase curation rewards)
     c.       Resource Credit has
 
-    @param {string} from_account - The account the funds are coming from.
-    @param {string} to_account - The account the funds are going to. If null, then the same as 'from_account'.
-    @param {asset} amount - Must be HIVE, amount > 0.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/03_transfer_to_vesting.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,9 +34,12 @@ class transfer_to_vesting(google.protobuf.message.Message):
     TO_ACCOUNT_FIELD_NUMBER: builtins.int
     AMOUNT_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - The account the funds are coming from."""
     to_account: builtins.str
+    """@param {string} to_account - The account the funds are going to. If null, then the same as 'from_account'."""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - Must be HIVE, amount > 0."""
     def __init__(
         self,
         *,

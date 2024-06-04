@@ -3,10 +3,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to governance voting: account_witness_vote_operation, account_witness_proxy_operation and update_proposal_votes_operation.
  * Generated during block processing when user did not cast any governance vote for very long time. Such user is considered not
  * interested in governance and therefore his previous votes are nullified.
- *
- * @param {string} account - user whose governance votes were nullified
  */
 export interface expired_account_notification {
+    /** @param {string} account - user whose governance votes were nullified */
     account: string;
 }
 export declare const expired_account_notification: {

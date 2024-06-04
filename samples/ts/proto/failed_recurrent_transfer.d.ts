@@ -6,22 +6,21 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Note: failed transfers are not automatically repeated.
  * Note: if too many consecutive transfers fail, whole recurrent transfer operation is discontinued.
  * @see fill_recurrent_transfer
- *
- * @param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it)
- * @param {string} to_account - user that is target of transfer (would be receiver of amount, but no transfer actually happened)
- * @param {asset} amount - (HIVE of HBD) amount that was scheduled for transferred in current iteration but failed
- * @param {string} memo - memo attached to the transfer
- * @param {number} consecutive_failures - number of failed iterations
- * @param {number} remaining_executions - number of remaining pending transfers
- * @param {bool} deleted - true if whole recurrent transfer was discontinued due to too many consecutive failures
  */
 export interface failed_recurrent_transfer {
+    /** @param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it) */
     from_account: string;
+    /** @param {string} to_account - user that is target of transfer (would be receiver of amount, but no transfer actually happened) */
     to_account: string;
+    /** @param {asset} amount - (HIVE of HBD) amount that was scheduled for transferred in current iteration but failed */
     amount: asset | undefined;
+    /** @param {string} memo - memo attached to the transfer */
     memo: string;
+    /** @param {number} consecutive_failures - number of failed iterations */
     consecutive_failures: number;
+    /** @param {number} remaining_executions - number of remaining pending transfers */
     remaining_executions: number;
+    /** @param {bool} deleted - true if whole recurrent transfer was discontinued due to too many consecutive failures */
     deleted: boolean;
 }
 export declare const failed_recurrent_transfer: {

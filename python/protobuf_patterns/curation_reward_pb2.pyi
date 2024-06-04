@@ -21,12 +21,6 @@ class curation_reward(google.protobuf.message.Message):
     Generated during block processing after cashout time passes and comment is eligible for rewards (nonzero reward).
     Note: the reward is a fragment of curators' portion of comment reward depending on share of particular curator in overall
     curation power for the comment. Only generated when nonzero.
-
-    @param {string} curator - user that curated the comment (receiver of reward)
-    @param {asset} reward - (VESTS) curation reward
-    @param {string} author - author of curated comment
-    @param {string} permlink - permlink of curated comment
-    @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -37,11 +31,16 @@ class curation_reward(google.protobuf.message.Message):
     PERMLINK_FIELD_NUMBER: builtins.int
     PAYOUT_MUST_BE_CLAIMED_FIELD_NUMBER: builtins.int
     curator: builtins.str
+    """@param {string} curator - user that curated the comment (receiver of reward)"""
     @property
-    def reward(self) -> asset_pb2.asset: ...
+    def reward(self) -> asset_pb2.asset:
+        """@param {asset} reward - (VESTS) curation reward"""
     author: builtins.str
+    """@param {string} author - author of curated comment"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of curated comment"""
     payout_must_be_claimed: builtins.bool
+    """@param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation"""
     def __init__(
         self,
         *,

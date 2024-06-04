@@ -4,12 +4,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to pow_operation and pow2_operation.
  * Generated every time one of above operations is executed (up to HF16).
  * Note: pow2_operation could be executed up to HF17 but mining rewards were stopped after HF16.
- *
- * @param {string} worker - (potentially new) witness that calculated PoW (receiver of reward)
- * @param {asset} reward - (VESTS or HIVE) reward for work (HIVE only during first 30 days after genesis)
  */
 export interface pow_reward {
+    /** @param {string} worker - (potentially new) witness that calculated PoW (receiver of reward) */
     worker: string;
+    /** @param {asset} reward - (VESTS or HIVE) reward for work (HIVE only during first 30 days after genesis) */
     reward: asset | undefined;
 }
 export declare const pow_reward: {

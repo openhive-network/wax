@@ -2,10 +2,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to block processing.
  * Generated during block processing every time new hardfork is activated. Many related vops can follow.
- *
- * @param {number} hardfork_id - number of hardfork
  */
 export interface hardfork {
+    /** @param {number} hardfork_id - number of hardfork */
     hardfork_id: number;
 }
 export declare const hardfork: {

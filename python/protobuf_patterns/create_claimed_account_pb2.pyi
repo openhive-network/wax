@@ -24,17 +24,7 @@ class create_claimed_account(google.protobuf.message.Message):
     Pending claimed accounts (see claim_account_operation).
     After executing the operation create_claimed_account_operation, a new account is created.
 
-    @param {string} creator - An account who create a new account.
-    @param {string} new_account_name - Account name.
-                                       Valid account name may consist of many parts separated by a dot,
-                                       total may have up to 16 characters, parts have to start from a letter,
-                                       may be followed by numbers, or “-“.
-    @param {authority} owner
-    @param {authority} active
-    @param {authority} posting
-    @param {string} memo_key
-    @param {string} json_metadata - Json string.
-    @param {future_extensions} extensions - Not currently used.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/23_create_claimed_account.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -48,17 +38,29 @@ class create_claimed_account(google.protobuf.message.Message):
     JSON_METADATA_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     creator: builtins.str
+    """@param {string} creator - An account who create a new account."""
     new_account_name: builtins.str
+    """@param {string} new_account_name - Account name.
+                                       Valid account name may consist of many parts separated by a dot,
+                                       total may have up to 16 characters, parts have to start from a letter,
+                                       may be followed by numbers, or “-“.
+    """
     @property
-    def owner(self) -> authority_pb2.authority: ...
+    def owner(self) -> authority_pb2.authority:
+        """@param {authority} owner"""
     @property
-    def active(self) -> authority_pb2.authority: ...
+    def active(self) -> authority_pb2.authority:
+        """@param {authority} active"""
     @property
-    def posting(self) -> authority_pb2.authority: ...
+    def posting(self) -> authority_pb2.authority:
+        """@param {authority} posting"""
     memo_key: builtins.str
+    """@param {string} memo_key"""
     json_metadata: builtins.str
+    """@param {string} json_metadata - Json string."""
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions - Not currently used."""
     def __init__(
         self,
         *,

@@ -19,14 +19,13 @@ class expired_account_notification(google.protobuf.message.Message):
     """Related to governance voting: account_witness_vote_operation, account_witness_proxy_operation and update_proposal_votes_operation.
     Generated during block processing when user did not cast any governance vote for very long time. Such user is considered not
     interested in governance and therefore his previous votes are nullified.
-
-    @param {string} account - user whose governance votes were nullified
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     ACCOUNT_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - user whose governance votes were nullified"""
     def __init__(
         self,
         *,

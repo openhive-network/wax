@@ -4,17 +4,18 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Witnesses must vote on how to set certain chain properties to ensure a smooth
  * and well functioning network.  Any time owner is in the active set of witnesses these
  * properties will be used to control the blockchain configuration.
- *
- * @param {asset} account_creation_fee - This fee, paid in HIVE, is converted into VESTS for the new account.
- *                                       Accounts without vesting shares cannot earn usage rations and therefore are powerless.
- *                                       This minimum fee requires all accounts to have some kind of commitment
- *                                       to the network that includes the ability to vote and make transactions.
- * @param {number} maximum_block_size - This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity.
- * @param {number} hbd_interest_rate
  */
 export interface legacy_chain_properties {
+    /**
+     * @param {asset} account_creation_fee - This fee, paid in HIVE, is converted into VESTS for the new account.
+     *                                       Accounts without vesting shares cannot earn usage rations and therefore are powerless.
+     *                                       This minimum fee requires all accounts to have some kind of commitment
+     *                                       to the network that includes the ability to vote and make transactions.
+     */
     account_creation_fee: asset | undefined;
+    /** @param {number} maximum_block_size - This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity. */
     maximum_block_size: number;
+    /** @param {number} hbd_interest_rate */
     hbd_interest_rate: number;
 }
 export declare const legacy_chain_properties: {

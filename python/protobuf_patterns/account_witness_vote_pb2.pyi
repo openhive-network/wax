@@ -26,9 +26,7 @@ class account_witness_vote(google.protobuf.message.Message):
     is not executed in a HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD, the votes are removed and the virtual operation:
     expired_account_notification_operation is generated.
 
-    @param {string} account
-    @param {string} witness - Witness account.
-    @param {bool} approve - To vote for the witness, the approve = true. To remove the vote, the approve = false.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/12_account_witness_vote.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -37,8 +35,11 @@ class account_witness_vote(google.protobuf.message.Message):
     WITNESS_FIELD_NUMBER: builtins.int
     APPROVE_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account"""
     witness: builtins.str
+    """@param {string} witness - Witness account."""
     approve: builtins.bool
+    """@param {bool} approve - To vote for the witness, the approve = true. To remove the vote, the approve = false."""
     def __init__(
         self,
         *,

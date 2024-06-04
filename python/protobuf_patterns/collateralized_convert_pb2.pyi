@@ -22,9 +22,7 @@ class collateralized_convert(google.protobuf.message.Message):
     The price risk is cushioned by extra HIVE (HIVE_COLLATERAL_RATIO = 200 % ).
     After actual conversion takes place the excess HIVE is returned to the owner.
 
-    @param {string} owner - Account name.
-    @param {number} requestid - The number is given by a user. Should be unique for a user.
-    @param {asset} amount - Amount > 0, have to be in Hive.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/48_collateralized_convert.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,9 +31,12 @@ class collateralized_convert(google.protobuf.message.Message):
     REQUESTID_FIELD_NUMBER: builtins.int
     AMOUNT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - Account name."""
     requestid: builtins.int
+    """@param {number} requestid - The number is given by a user. Should be unique for a user."""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - Amount > 0, have to be in Hive."""
     def __init__(
         self,
         *,

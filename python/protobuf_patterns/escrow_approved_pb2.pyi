@@ -20,12 +20,6 @@ class escrow_approved(google.protobuf.message.Message):
     """Related to escrow_approve_operation.
     Generated when both agent and to accounts approved pending escrow transfer (agent receives fee).
     @see escrow_rejected
-
-    @param {string} from_account - user that initiated escrow transfer
-    @param {string} to_account - user that is target of pending escrow transfer
-    @param {string} agent - user that is an agent of pending escrow transfer (receiver of fee)
-    @param {number} escrow_id - id of escrow transfer
-    @param {asset} fee - (HIVE of HBD) fee paid to agent
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,11 +30,16 @@ class escrow_approved(google.protobuf.message.Message):
     ESCROW_ID_FIELD_NUMBER: builtins.int
     FEE_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that initiated escrow transfer"""
     to_account: builtins.str
+    """@param {string} to_account - user that is target of pending escrow transfer"""
     agent: builtins.str
+    """@param {string} agent - user that is an agent of pending escrow transfer (receiver of fee)"""
     escrow_id: builtins.int
+    """@param {number} escrow_id - id of escrow transfer"""
     @property
-    def fee(self) -> asset_pb2.asset: ...
+    def fee(self) -> asset_pb2.asset:
+        """@param {asset} fee - (HIVE of HBD) fee paid to agent"""
     def __init__(
         self,
         *,

@@ -27,9 +27,7 @@ class change_recovery_account(google.protobuf.message.Message):
     the operation should be created with {new_recovery_account} set to the old one.
     The operation is done with a 30 days (HIVE_OWNER_AUTH_RECOVERY_PERIOD) delay.
 
-    @param {string} account_to_recover
-    @param {string} new_recovery_account
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/26_change_recovery_account.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -38,9 +36,12 @@ class change_recovery_account(google.protobuf.message.Message):
     NEW_RECOVERY_ACCOUNT_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     account_to_recover: builtins.str
+    """@param {string} account_to_recover"""
     new_recovery_account: builtins.str
+    """@param {string} new_recovery_account"""
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

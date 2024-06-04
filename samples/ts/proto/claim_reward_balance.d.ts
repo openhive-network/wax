@@ -6,15 +6,16 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Rewards expressed in Hive and HBD are transferred to liquid balances, rewards in HP increase vesting balance.
  * When claimed, HP rewards are immediately active towards governance voting power (compare with transfer_to_vesting_operation).
  *
- * @param {string} account - Account name.
- * @param {asset} reward_hive - The amount of Hive reward to be transferred to liquid balance.
- * @param {asset} reward_hbd - The amount of HBD reward to be transferred to liquid balance
- * @param {asset} reward_vests - The amount of HP reward to be transferred to vesting balance.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/39_claim_reward_balance.md?ref_type=heads
  */
 export interface claim_reward_balance {
+    /** @param {string} account - Account name. */
     account: string;
+    /** @param {asset} reward_hive - The amount of Hive reward to be transferred to liquid balance. */
     reward_hive: asset | undefined;
+    /** @param {asset} reward_hbd - The amount of HBD reward to be transferred to liquid balance */
     reward_hbd: asset | undefined;
+    /** @param {asset} reward_vests - The amount of HP reward to be transferred to vesting balance. */
     reward_vests: asset | undefined;
 }
 export declare const claim_reward_balance: {

@@ -22,18 +22,7 @@ class account_update(google.protobuf.message.Message):
     After 30 days (HIVE_OWNER_AUTH_RECOVERY_PERIOD) using the account recovery process to change the owner authority is no longer possible.
     The operation account_update_operation allows changing authorities, it doesn’t allow changing the posting_json_metadata.
 
-    @param {string} account - Account name, it cannot be updated.
-    @param {authority} owner - In order to update the {owner}, the owner authority is required.
-                               It may be changed 2 times per hour.
-                               If a user provides a new authority, the old one will be deleted,
-                               but the deleted authority may be used up to 30 days in the process of the recovery account.
-    @param {authority} active - In order to update the {active}, the active authority is required.
-                                If a user provides a new authority, the old one will be deleted.
-    @param {authority} posting - In order to update the {posting}, the active authority is required.
-                                 If a user provides a new authority, the old one will be deleted.
-    @param {string} memo_key - In order to update the {memo_key}, active authority is required.
-                               If a user provides a new key, the old one will be deleted.
-    @param {string} json_metadata - json_string; in order to update the {json_metadata}, the active authority is required.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/10_account_update.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -45,14 +34,30 @@ class account_update(google.protobuf.message.Message):
     MEMO_KEY_FIELD_NUMBER: builtins.int
     JSON_METADATA_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - Account name, it cannot be updated."""
     @property
-    def owner(self) -> authority_pb2.authority: ...
+    def owner(self) -> authority_pb2.authority:
+        """@param {authority} owner - In order to update the {owner}, the owner authority is required.
+                                   It may be changed 2 times per hour.
+                                   If a user provides a new authority, the old one will be deleted,
+                                   but the deleted authority may be used up to 30 days in the process of the recovery account.
+        """
     @property
-    def active(self) -> authority_pb2.authority: ...
+    def active(self) -> authority_pb2.authority:
+        """@param {authority} active - In order to update the {active}, the active authority is required.
+                                    If a user provides a new authority, the old one will be deleted.
+        """
     @property
-    def posting(self) -> authority_pb2.authority: ...
+    def posting(self) -> authority_pb2.authority:
+        """@param {authority} posting - In order to update the {posting}, the active authority is required.
+                                     If a user provides a new authority, the old one will be deleted.
+        """
     memo_key: builtins.str
+    """@param {string} memo_key - In order to update the {memo_key}, active authority is required.
+                               If a user provides a new key, the old one will be deleted.
+    """
     json_metadata: builtins.str
+    """@param {string} json_metadata - json_string; in order to update the {json_metadata}, the active authority is required."""
     def __init__(
         self,
         *,

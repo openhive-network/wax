@@ -8,11 +8,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * During HIVE_OWNER_AUTH_RECOVERY_PERIOD days after creation, the operation may be canceled
  * using the operation declive_voting_rights_operation with {decline = false}.
  *
- * @param {string} account - Account name.
- * @param {bool} decline
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/36_decline_voting_rights.md?ref_type=heads
  */
 export interface decline_voting_rights {
+    /** @param {string} account - Account name. */
     account: string;
+    /** @param {bool} decline */
     decline: boolean;
 }
 export declare const decline_voting_rights: {

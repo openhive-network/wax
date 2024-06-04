@@ -21,9 +21,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class remove_proposal(google.protobuf.message.Message):
     """Using operation remove_proposal_operation, a user may remove proposals specified by given IDs.
 
-    @param {string} proposal_owner
-    @param {number} proposal_ids
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/46_remove_proposal.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -32,10 +30,13 @@ class remove_proposal(google.protobuf.message.Message):
     PROPOSAL_IDS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     proposal_owner: builtins.str
+    """@param {string} proposal_owner"""
     @property
-    def proposal_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
+    def proposal_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]:
+        """@param {number} proposal_ids"""
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

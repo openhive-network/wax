@@ -22,11 +22,6 @@ class hardfork_hive_restore(google.protobuf.message.Message):
     Note: the late airdrop did not apply properly since HIVE that the accounts should receive did not account for
     HIVE from converted VESTS. [how was it resolved?]
     @see hardfork_hive
-
-    @param {string} account - account to receive late airdrop (receiver of funds)
-    @param {string} treasury - treasury, source of late airdrop
-    @param {asset} hbd_transferred - (HBD) part of airdrop (equals related hardfork_hive_operation.hbd_transferred)
-    @param {asset} hive_transferred - (HIVE) part of airdrop (equals related hardfork_hive_operation.hive_transferred)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,11 +31,15 @@ class hardfork_hive_restore(google.protobuf.message.Message):
     HBD_TRANSFERRED_FIELD_NUMBER: builtins.int
     HIVE_TRANSFERRED_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """ @param {string} account - account to receive late airdrop (receiver of funds)"""
     treasury: builtins.str
+    """@param {string} treasury - treasury, source of late airdrop"""
     @property
-    def hbd_transferred(self) -> asset_pb2.asset: ...
+    def hbd_transferred(self) -> asset_pb2.asset:
+        """@param {asset} hbd_transferred - (HBD) part of airdrop (equals related hardfork_hive_operation.hbd_transferred)"""
     @property
-    def hive_transferred(self) -> asset_pb2.asset: ...
+    def hive_transferred(self) -> asset_pb2.asset:
+        """@param {asset} hive_transferred - (HIVE) part of airdrop (equals related hardfork_hive_operation.hive_transferred)"""
     def __init__(
         self,
         *,

@@ -23,14 +23,6 @@ class comment_reward(google.protobuf.message.Message):
     @see curation_reward_operation
     @see comment_benefactor_reward_operation
     @see author_reward_operation
-
-    @param {string} author - author of the comment
-    @param {string} permlink - permlink of the comment
-    @param {asset} payout - (HBD) total value of comment reward recalculated to HBD
-    @param {number} author_rewards - (HIVE satoshi) raw author reward (@see author_reward_operation) [is it needed?]
-    @param {asset} total_payout_value - (HBD) overall author reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
-    @param {asset} curator_payout_value - (HBD) overall curation reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
-    @param {asset} beneficiary_payout_value - (HBD) overall beneficiary reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -43,16 +35,23 @@ class comment_reward(google.protobuf.message.Message):
     CURATOR_PAYOUT_VALUE_FIELD_NUMBER: builtins.int
     BENEFICIARY_PAYOUT_VALUE_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - author of the comment"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of the comment"""
     @property
-    def payout(self) -> asset_pb2.asset: ...
+    def payout(self) -> asset_pb2.asset:
+        """@param {asset} payout - (HBD) total value of comment reward recalculated to HBD"""
     author_rewards: builtins.int
+    """@param {number} author_rewards - (HIVE satoshi) raw author reward (@see author_reward_operation) [is it needed?]"""
     @property
-    def total_payout_value(self) -> asset_pb2.asset: ...
+    def total_payout_value(self) -> asset_pb2.asset:
+        """@param {asset} total_payout_value - (HBD) overall author reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]"""
     @property
-    def curator_payout_value(self) -> asset_pb2.asset: ...
+    def curator_payout_value(self) -> asset_pb2.asset:
+        """@param {asset} curator_payout_value - (HBD) overall curation reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]"""
     @property
-    def beneficiary_payout_value(self) -> asset_pb2.asset: ...
+    def beneficiary_payout_value(self) -> asset_pb2.asset:
+        """@param {asset} beneficiary_payout_value - (HBD) overall beneficiary reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]"""
     def __init__(
         self,
         *,

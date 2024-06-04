@@ -50,13 +50,7 @@ class vote(google.protobuf.message.Message):
     A downvoting user doesn’t receive the curation reward.
     Downvoting may affect the author of the comment's reputation when a user who downvotes has a higher reputation than the author.
 
-    @param {string} voter - Account name.
-    @param {string} author - Account name, the author of the post or the comment.
-    @param {string} permlink - The identifier of the post or comment.
-    @param {number} weight - It defines how many percent of the non-used voting power a user wants to use. 
-                             Allowed values from -10000 (-100%) to 10000 (100%).
-                             Downvotes: from -10000 (-100%) to 0.
-                             Upvotes: from 0 to 10000 (100%).
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/00_vote.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -66,9 +60,17 @@ class vote(google.protobuf.message.Message):
     PERMLINK_FIELD_NUMBER: builtins.int
     WEIGHT_FIELD_NUMBER: builtins.int
     voter: builtins.str
+    """@param {string} voter - Account name."""
     author: builtins.str
+    """@param {string} author - Account name, the author of the post or the comment."""
     permlink: builtins.str
+    """@param {string} permlink - The identifier of the post or comment."""
     weight: builtins.int
+    """@param {number} weight - It defines how many percent of the non-used voting power a user wants to use. 
+                             Allowed values from -10000 (-100%) to 10000 (100%).
+                             Downvotes: from -10000 (-100%) to 0.
+                             Upvotes: from 0 to 10000 (100%).
+    """
     def __init__(
         self,
         *,

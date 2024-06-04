@@ -26,10 +26,6 @@ class price(google.protobuf.message.Message):
     1.25 USD us an asset specified as a qute
 
     can determine value of EUR against USD.
-
-    @param {asset} base - Represents a value of the price object to be expressed relatively to quote asset.
-                          Cannot have amount == 0 if you want to build valid price.
-    @param {asset} quote - represents an relative asset. Cannot have amount == 0, otherwise asertion fail.
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -37,9 +33,13 @@ class price(google.protobuf.message.Message):
     BASE_FIELD_NUMBER: builtins.int
     QUOTE_FIELD_NUMBER: builtins.int
     @property
-    def base(self) -> asset_pb2.asset: ...
+    def base(self) -> asset_pb2.asset:
+        """@param {asset} base - Represents a value of the price object to be expressed relatively to quote asset.
+                              Cannot have amount == 0 if you want to build valid price.
+        """
     @property
-    def quote(self) -> asset_pb2.asset: ...
+    def quote(self) -> asset_pb2.asset:
+        """@param {asset} quote - represents an relative asset. Cannot have amount == 0, otherwise asertion fail."""
     def __init__(
         self,
         *,

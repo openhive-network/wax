@@ -22,14 +22,6 @@ class failed_recurrent_transfer(google.protobuf.message.Message):
     Note: failed transfers are not automatically repeated.
     Note: if too many consecutive transfers fail, whole recurrent transfer operation is discontinued.
     @see fill_recurrent_transfer
-
-    @param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it)
-    @param {string} to_account - user that is target of transfer (would be receiver of amount, but no transfer actually happened)
-    @param {asset} amount - (HIVE of HBD) amount that was scheduled for transferred in current iteration but failed
-    @param {string} memo - memo attached to the transfer
-    @param {number} consecutive_failures - number of failed iterations
-    @param {number} remaining_executions - number of remaining pending transfers
-    @param {bool} deleted - true if whole recurrent transfer was discontinued due to too many consecutive failures
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,13 +34,20 @@ class failed_recurrent_transfer(google.protobuf.message.Message):
     REMAINING_EXECUTIONS_FIELD_NUMBER: builtins.int
     DELETED_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it)"""
     to_account: builtins.str
+    """@param {string} to_account - user that is target of transfer (would be receiver of amount, but no transfer actually happened)"""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - (HIVE of HBD) amount that was scheduled for transferred in current iteration but failed"""
     memo: builtins.str
+    """@param {string} memo - memo attached to the transfer"""
     consecutive_failures: builtins.int
+    """ @param {number} consecutive_failures - number of failed iterations"""
     remaining_executions: builtins.int
+    """ @param {number} remaining_executions - number of remaining pending transfers"""
     deleted: builtins.bool
+    """ @param {bool} deleted - true if whole recurrent transfer was discontinued due to too many consecutive failures"""
     def __init__(
         self,
         *,

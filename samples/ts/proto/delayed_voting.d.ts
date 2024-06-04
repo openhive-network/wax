@@ -4,12 +4,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated during block processing every time part of fairly fresh VESTS becomes active part of governance vote for the account.
  * Note: after account receives new VESTS there is a grace period before those VESTS are accounted for when
  * it comes to governance vote power. This vop is generated at the end of that period.
- *
- * @param {string} voter - account with fairly fresh VESTS
- * @param {number} votes - (VESTS satoshi) new governance vote power that just activated for voter
  */
 export interface delayed_voting {
+    /** @param {string} voter - account with fairly fresh VESTS */
     voter: string;
+    /** @param {number} votes - (VESTS satoshi) new governance vote power that just activated for voter */
     votes: string;
 }
 export declare const delayed_voting: {

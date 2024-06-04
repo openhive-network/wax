@@ -24,14 +24,7 @@ class escrow_release(google.protobuf.message.Message):
     If there is a dispute regardless of expiration, the agent can release funds to either party
     following whichever agreement was in place between the parties.
 
-    @param {string} from_account - Account name.
-    @param {string} to_account - Account name.
-    @param {string} agent - Account name.
-    @param {string} who - The account that is attempting to release the funds.
-    @param {string} receiver - The account that should receive funds (might be {from}, might be {to}).
-    @param {number} escrow_id - Escrow indicator.
-    @param {asset} hbd_amount - The amount of HBD to release.
-    @param {asset} hive_amount - The amount of HIVE to release.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/29_escrow_release.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -45,15 +38,23 @@ class escrow_release(google.protobuf.message.Message):
     HBD_AMOUNT_FIELD_NUMBER: builtins.int
     HIVE_AMOUNT_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - Account name."""
     to_account: builtins.str
+    """@param {string} to_account - Account name."""
     agent: builtins.str
+    """@param {string} agent - Account name."""
     who: builtins.str
+    """@param {string} who - The account that is attempting to release the funds."""
     receiver: builtins.str
+    """@param {string} receiver - The account that should receive funds (might be {from}, might be {to})."""
     escrow_id: builtins.int
+    """@param {number} escrow_id - Escrow indicator."""
     @property
-    def hbd_amount(self) -> asset_pb2.asset: ...
+    def hbd_amount(self) -> asset_pb2.asset:
+        """@param {asset} hbd_amount - The amount of HBD to release."""
     @property
-    def hive_amount(self) -> asset_pb2.asset: ...
+    def hive_amount(self) -> asset_pb2.asset:
+        """@param {asset} hive_amount - The amount of HIVE to release."""
     def __init__(
         self,
         *,

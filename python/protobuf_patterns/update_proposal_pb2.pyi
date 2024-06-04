@@ -62,12 +62,7 @@ class update_proposal(google.protobuf.message.Message):
     change subject, permlink and {end_date} (using {extensions}).
     In order to update the proposal parameters, all parameters should be entered.
 
-    @param {number} proposal_id
-    @param {string} creator
-    @param {asset} daily_pay
-    @param {string} subject
-    @param {string} permlink
-    @param {update_proposal_extension} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/47_update_proposal.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -79,13 +74,19 @@ class update_proposal(google.protobuf.message.Message):
     PERMLINK_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     proposal_id: builtins.int
+    """@param {number} proposal_id"""
     creator: builtins.str
+    """@param {string} creator"""
     @property
-    def daily_pay(self) -> asset_pb2.asset: ...
+    def daily_pay(self) -> asset_pb2.asset:
+        """@param {asset} daily_pay"""
     subject: builtins.str
+    """@param {string} subject"""
     permlink: builtins.str
+    """@param {string} permlinks"""
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___update_proposal_extension]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___update_proposal_extension]:
+        """@param {update_proposal_extension} extensions"""
     def __init__(
         self,
         *,

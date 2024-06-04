@@ -19,11 +19,7 @@ class escrow_dispute(google.protobuf.message.Message):
     """The operation  escrow_dispute_operation is used to raise the dispute. It may be used by { from } or { to } accounts.
     If there is a dispute, only {agent} may release the funds.
 
-    @param {string} from_account - Account name.
-    @param {string} to_account - Account name.
-    @param {string} agent - Account name.
-    @param {string} who - Account name. Either {to} or {agent}.
-    @param {number} escrow_id - Escrow identifier.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/28_escrow_dispute.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -34,10 +30,15 @@ class escrow_dispute(google.protobuf.message.Message):
     WHO_FIELD_NUMBER: builtins.int
     ESCROW_ID_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - Account name."""
     to_account: builtins.str
+    """@param {string} to_account - Account name."""
     agent: builtins.str
+    """@param {string} agent - Account name."""
     who: builtins.str
+    """@param {string} who - Account name. Either {to} or {agent}."""
     escrow_id: builtins.int
+    """@param {number} escrow_id - Escrow identifier."""
     def __init__(
         self,
         *,

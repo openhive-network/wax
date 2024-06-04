@@ -6,18 +6,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Note: HBD is transferred immediately during execution of above operation, this vop is generated after actual
  * price of conversion becomes known.
  * @see collateralized_convert_immediate_conversion
- *
- * @param {string} owner - user that requested conversion (receiver of excess_collateral)
- * @param {number} requestid - id of the request
- * @param {asset} amount_in - (HIVE) source of conversion (part of collateral)
- * @param {asset} amount_out - (HBD) result of conversion (already transferred to owner when request was made)
- * @param {asset} excess_collateral - (HIVE) unused part of collateral returned to owner
  */
 export interface fill_collateralized_convert_request {
+    /** @param {string} owner - user that requested conversion (receiver of excess_collateral) */
     owner: string;
+    /** @param {number} requestid - id of the request */
     requestid: number;
+    /** @param {asset} amount_in - (HIVE) source of conversion (part of collateral) */
     amount_in: asset | undefined;
+    /** @param {asset} amount_out - (HBD) result of conversion (already transferred to owner when request was made) */
     amount_out: asset | undefined;
+    /** @param {asset} excess_collateral - (HIVE) unused part of collateral returned to owner */
     excess_collateral: asset | undefined;
 }
 export declare const fill_collateralized_convert_request: {

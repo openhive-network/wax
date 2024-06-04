@@ -20,12 +20,6 @@ class fill_transfer_from_savings(google.protobuf.message.Message):
     """Related to transfer_from_savings_operation.
     Generated during block processing after savings withdraw time has passed and requested amount
     was transfered from savings to liquid balance.
-
-    @param {string} from_account - user that initiated transfer from savings
-    @param {string} to_account - user that was specified to receive funds (receiver of amount)
-    @param {asset} amount - (HIVE or HBD) funds transfered from savings
-    @param {number} request_id - id of transfer request
-    @param {string} memo - memo attached to transfer request
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,11 +30,16 @@ class fill_transfer_from_savings(google.protobuf.message.Message):
     REQUEST_ID_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that initiated transfer from savings"""
     to_account: builtins.str
+    """@param {string} to_account - user that was specified to receive funds (receiver of amount)"""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - (HIVE or HBD) funds transfered from savings"""
     request_id: builtins.int
+    """@param {number} request_id - id of transfer request"""
     memo: builtins.str
+    """@param {string} memo - memo attached to transfer request"""
     def __init__(
         self,
         *,

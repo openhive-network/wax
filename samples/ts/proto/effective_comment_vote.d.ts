@@ -4,22 +4,21 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to vote_operation.
  * Generated every time vote is cast for the first time or edited, but only as long as it is effective, that is,
  * the target comment was not yet cashed out.
- *
- * @param {string} voter - account that casts a vote
- * @param {string} author - author of comment voted on
- * @param {string} permlink - permlink of comment voted on
- * @param {number} weight - weight of vote depending on when vote was cast and with what power
- * @param {number} rshares - power of the vote
- * @param {number} total_vote_weight - sum of all vote weights on the target comment in the moment of casting current vote
- * @param {asset} pending_payout - (HBD) estimated reward on target comment; supplemented by AH RocksDB plugin
  */
 export interface effective_comment_vote {
+    /** @param {string} voter - account that casts a vote */
     voter: string;
+    /** @param {string} author - author of comment voted on */
     author: string;
+    /** @param {string} permlink - permlink of comment voted on */
     permlink: string;
+    /** @param {number} weight - weight of vote depending on when vote was cast and with what power */
     weight: string;
+    /** @param {number} rshares - power of the vote */
     rshares: string;
+    /** @param {number} total_vote_weight - sum of all vote weights on the target comment in the moment of casting current vote */
     total_vote_weight: string;
+    /** @param {asset} pending_payout - (HBD) estimated reward on target comment; supplemented by AH RocksDB plugin */
     pending_payout: asset | undefined;
 }
 export declare const effective_comment_vote: {

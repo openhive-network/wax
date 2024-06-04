@@ -10,13 +10,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * 1.25 USD us an asset specified as a qute
  *
  * can determine value of EUR against USD.
- *
- * @param {asset} base - Represents a value of the price object to be expressed relatively to quote asset.
- *                       Cannot have amount == 0 if you want to build valid price.
- * @param {asset} quote - represents an relative asset. Cannot have amount == 0, otherwise asertion fail.
  */
 export interface price {
+    /**
+     * @param {asset} base - Represents a value of the price object to be expressed relatively to quote asset.
+     *                       Cannot have amount == 0 if you want to build valid price.
+     */
     base: asset | undefined;
+    /** @param {asset} quote - represents an relative asset. Cannot have amount == 0, otherwise asertion fail. */
     quote: asset | undefined;
 }
 export declare const price: {

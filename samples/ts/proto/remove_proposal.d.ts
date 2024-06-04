@@ -3,13 +3,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Using operation remove_proposal_operation, a user may remove proposals specified by given IDs.
  *
- * @param {string} proposal_owner
- * @param {number} proposal_ids
- * @param {future_extensions} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/46_remove_proposal.md?ref_type=heads
  */
 export interface remove_proposal {
+    /** @param {string} proposal_owner */
     proposal_owner: string;
+    /** @param {number} proposal_ids */
     proposal_ids: string[];
+    /** @param {future_extensions} extensions */
     extensions: future_extensions[];
 }
 export declare const remove_proposal: {

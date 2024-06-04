@@ -10,15 +10,16 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * - pinned
  * - follow
  *
- * @param {string} required_auths
- * @param {string} required_posting_auths
- * @param {string} id - Must be less than 32 characters long.
- * @param {string} json - Must be a proper utf8 JSON string.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/18_custom_json.md?ref_type=heads
  */
 export interface custom_json {
+    /** @param {string} required_auths */
     required_auths: string[];
+    /** @param {string} required_posting_auths */
     required_posting_auths: string[];
+    /** @param {string} id - Must be less than 32 characters long. */
     id: string;
+    /** @param {string} json - Must be a proper utf8 JSON string. */
     json: string;
 }
 export declare const custom_json: {

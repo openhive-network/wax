@@ -20,14 +20,6 @@ class effective_comment_vote(google.protobuf.message.Message):
     """Related to vote_operation.
     Generated every time vote is cast for the first time or edited, but only as long as it is effective, that is,
     the target comment was not yet cashed out.
-
-    @param {string} voter - account that casts a vote
-    @param {string} author - author of comment voted on
-    @param {string} permlink - permlink of comment voted on
-    @param {number} weight - weight of vote depending on when vote was cast and with what power
-    @param {number} rshares - power of the vote
-    @param {number} total_vote_weight - sum of all vote weights on the target comment in the moment of casting current vote
-    @param {asset} pending_payout - (HBD) estimated reward on target comment; supplemented by AH RocksDB plugin
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -40,13 +32,20 @@ class effective_comment_vote(google.protobuf.message.Message):
     TOTAL_VOTE_WEIGHT_FIELD_NUMBER: builtins.int
     PENDING_PAYOUT_FIELD_NUMBER: builtins.int
     voter: builtins.str
+    """@param {string} voter - account that casts a vote"""
     author: builtins.str
+    """@param {string} author - author of comment voted on"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of comment voted on"""
     weight: builtins.int
+    """@param {number} weight - weight of vote depending on when vote was cast and with what power"""
     rshares: builtins.int
+    """@param {number} rshares - power of the vote"""
     total_vote_weight: builtins.int
+    """@param {number} total_vote_weight - sum of all vote weights on the target comment in the moment of casting current vote"""
     @property
-    def pending_payout(self) -> asset_pb2.asset: ...
+    def pending_payout(self) -> asset_pb2.asset:
+        """@param {asset} pending_payout - (HBD) estimated reward on target comment; supplemented by AH RocksDB plugin"""
     def __init__(
         self,
         *,

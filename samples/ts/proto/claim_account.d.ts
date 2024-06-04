@@ -7,15 +7,18 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * pending claimed accounts and later (using operation create_claimed_account_operation) a user may create a new account.
  * After executing the operation claim_account_operation, a new account is not created.
  *
- * @param {string} creator - Account name.
- * @param {asset} fee - The amount of fee for creating a new account is decided by the witnesses.
- *                      It may be paid in HIVE or in the Recourse Credit (RC).
- *                      If a user wants to pay a fee in RC, it should be set {fee= 0}.
- * @param {future_extensions} extensions - Not currently used.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/22_claim_account.md?ref_type=heads
  */
 export interface claim_account {
+    /** @param {string} creator - Account name. */
     creator: string;
+    /**
+     * @param {asset} fee - The amount of fee for creating a new account is decided by the witnesses.
+     *                      It may be paid in HIVE or in the Recourse Credit (RC).
+     *                      If a user wants to pay a fee in RC, it should be set {fee= 0}.
+     */
     fee: asset | undefined;
+    /** @param {future_extensions} extensions - Not currently used. */
     extensions: future_extensions[];
 }
 export declare const claim_account: {

@@ -24,11 +24,7 @@ class transfer_to_savings(google.protobuf.message.Message):
     Assuming an account can be recovered quickly, loss in such situations can be kept to a minimum
     Additionally for keeping Hive Dollars on the savings balance, the interests are calculated.
 
-    @param {string} from_account - The account the funds are coming from.
-    @param {string} to_account - The account the funds are going to.
-                                 The funds may be transferred to someone else savings balance.
-    @param {asset} amount - The allowed currency: HIVE and HBD, amount > 0.
-    @param {string} memo - Have to be UTF8, must be shorter than 2048.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/32_transfer_to_savings.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -38,10 +34,16 @@ class transfer_to_savings(google.protobuf.message.Message):
     AMOUNT_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - The account the funds are coming from."""
     to_account: builtins.str
+    """@param {string} to_account - The account the funds are going to.
+                                 The funds may be transferred to someone else savings balance.
+    """
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - The allowed currency: HIVE and HBD, amount > 0."""
     memo: builtins.str
+    """@param {string} memo - Have to be UTF8, must be shorter than 2048."""
     def __init__(
         self,
         *,

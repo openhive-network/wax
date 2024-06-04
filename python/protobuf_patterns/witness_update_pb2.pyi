@@ -25,13 +25,6 @@ class witness_update(google.protobuf.message.Message):
     If a user wants to become a witness, the operation witness_update_operation should be created.
     If the witness doesn’t want to be a witness any more, the operation witness_update_operation with empty { block_signing_key }
     should be created.
-
-    @param {string} owner - The witness who wants to update properties or a user who wants to become a witness.
-    @param {string} url - url to information about witness.
-    @param {string} block_signing_key - Public block signing key.
-    @param {legacy_chain_properties} props
-    @param {asset} fee - The asset is validated (the format should be correct and should be expressed in Hive),
-                         but the fee is currently ignored.
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,12 +35,19 @@ class witness_update(google.protobuf.message.Message):
     PROPS_FIELD_NUMBER: builtins.int
     FEE_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - The witness who wants to update properties or a user who wants to become a witness."""
     url: builtins.str
+    """@param {string} url - url to information about witness."""
     block_signing_key: builtins.str
+    """@param {string} block_signing_key - Public block signing key."""
     @property
-    def props(self) -> legacy_chain_properties_pb2.legacy_chain_properties: ...
+    def props(self) -> legacy_chain_properties_pb2.legacy_chain_properties:
+        """@param {legacy_chain_properties} props"""
     @property
-    def fee(self) -> asset_pb2.asset: ...
+    def fee(self) -> asset_pb2.asset:
+        """@param {asset} fee - The asset is validated (the format should be correct and should be expressed in Hive),
+                             but the fee is currently ignored.
+        """
     def __init__(
         self,
         *,

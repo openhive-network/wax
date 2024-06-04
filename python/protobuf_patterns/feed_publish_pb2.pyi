@@ -21,9 +21,7 @@ class feed_publish(google.protobuf.message.Message):
     The witnesses publish the exchange rate between Hive and HBD.
     Only the exchange rate published by the top 20 witnesses is used to define the exchange rate.
 
-    @param {string} publisher - The witness.
-    @param {price} exchange_rate - How many HBD the 1 Hive should cost
-                                   Example: "base":"0.345 HBD","quote":"1.000 HIVE"
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/07_feed_publish.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -31,8 +29,12 @@ class feed_publish(google.protobuf.message.Message):
     PUBLISHER_FIELD_NUMBER: builtins.int
     EXCHANGE_RATE_FIELD_NUMBER: builtins.int
     publisher: builtins.str
+    """ @param {string} publisher - The witness."""
     @property
-    def exchange_rate(self) -> price_pb2.price: ...
+    def exchange_rate(self) -> price_pb2.price:
+        """@param {price} exchange_rate - How many HBD the 1 Hive should cost
+                                       Example: "base":"0.345 HBD","quote":"1.000 HIVE"
+        """
     def __init__(
         self,
         *,

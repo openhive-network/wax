@@ -20,13 +20,6 @@ class legacy_chain_properties(google.protobuf.message.Message):
     """Witnesses must vote on how to set certain chain properties to ensure a smooth
     and well functioning network.  Any time owner is in the active set of witnesses these
     properties will be used to control the blockchain configuration.
-
-    @param {asset} account_creation_fee - This fee, paid in HIVE, is converted into VESTS for the new account.
-                                          Accounts without vesting shares cannot earn usage rations and therefore are powerless.
-                                          This minimum fee requires all accounts to have some kind of commitment
-                                          to the network that includes the ability to vote and make transactions.
-    @param {number} maximum_block_size - This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity.
-    @param {number} hbd_interest_rate
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -35,9 +28,16 @@ class legacy_chain_properties(google.protobuf.message.Message):
     MAXIMUM_BLOCK_SIZE_FIELD_NUMBER: builtins.int
     HBD_INTEREST_RATE_FIELD_NUMBER: builtins.int
     @property
-    def account_creation_fee(self) -> asset_pb2.asset: ...
+    def account_creation_fee(self) -> asset_pb2.asset:
+        """@param {asset} account_creation_fee - This fee, paid in HIVE, is converted into VESTS for the new account.
+                                              Accounts without vesting shares cannot earn usage rations and therefore are powerless.
+                                              This minimum fee requires all accounts to have some kind of commitment
+                                              to the network that includes the ability to vote and make transactions.
+        """
     maximum_block_size: builtins.int
+    """@param {number} maximum_block_size - This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity."""
     hbd_interest_rate: builtins.int
+    """@param {number} hbd_interest_rate"""
     def __init__(
         self,
         *,

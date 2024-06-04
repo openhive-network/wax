@@ -28,14 +28,13 @@ class system_warning(google.protobuf.message.Message):
        every operation that involves conversion from HBD to HIVE will give output amount that is smaller than real world value
      - noncanonical fee symbol used by witness [should disappear if it never happened as suggested by TODO message]
      - witnesses changed maximum block size
-
-    @param {string} message - warning message
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     MESSAGE_FIELD_NUMBER: builtins.int
     message: builtins.str
+    """@param {string} message - warning message"""
     def __init__(
         self,
         *,

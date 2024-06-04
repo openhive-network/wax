@@ -12,16 +12,19 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * is not executed in HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD, the votes are removed and the virtual operation:
  * expired_account_notification_operation is generated.
  *
- * @param {string} voter - Account name.
- * @param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored.
- * @param {bool} approve - To vote for the proposal, the approve = true.
- *                         To remove the vote, the approve = false.
- * @param {future_extensions} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/45_update_proposal_votes.md?ref_type=heads
  */
 export interface update_proposal_votes {
+    /** @param {string} voter - Account name. */
     voter: string;
+    /** @param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored. */
     proposal_ids: string[];
+    /**
+     * @param {bool} approve - To vote for the proposal, the approve = true.
+     *                         To remove the vote, the approve = false.
+     */
     approve: boolean;
+    /** @param {future_extensions} extensions */
     extensions: future_extensions[];
 }
 export declare const update_proposal_votes: {

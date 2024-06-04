@@ -18,8 +18,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class cancel_transfer_from_savings(google.protobuf.message.Message):
     """Funds withdrawals from the savings can be canceled at any time before it is executed.
 
-    @param {string} from_account
-    @param {number} request_id
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/34_cancel_transfer_from_savings.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -27,7 +26,9 @@ class cancel_transfer_from_savings(google.protobuf.message.Message):
     FROM_ACCOUNT_FIELD_NUMBER: builtins.int
     REQUEST_ID_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account"""
     request_id: builtins.int
+    """@param {number} request_id"""
     def __init__(
         self,
         *,

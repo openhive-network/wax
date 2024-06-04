@@ -9,13 +9,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * b.       Social voting power has (indirectly affects Increase curation rewards)
  * c.       Resource Credit has
  *
- * @param {string} from_account - The account the funds are coming from.
- * @param {string} to_account - The account the funds are going to. If null, then the same as 'from_account'.
- * @param {asset} amount - Must be HIVE, amount > 0.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/03_transfer_to_vesting.md?ref_type=heads
  */
 export interface transfer_to_vesting {
+    /** @param {string} from_account - The account the funds are coming from. */
     from_account: string;
+    /** @param {string} to_account - The account the funds are going to. If null, then the same as 'from_account'. */
     to_account: string;
+    /** @param {asset} amount - Must be HIVE, amount > 0. */
     amount: asset | undefined;
 }
 export declare const transfer_to_vesting: {

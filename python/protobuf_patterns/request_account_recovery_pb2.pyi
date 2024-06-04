@@ -52,12 +52,7 @@ class request_account_recovery(google.protobuf.message.Message):
     The operation: request_account_recovery is valid HIVE_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD hours and
     if after HIVE_ACCOUNT_RECOVERY_REQUEST_EXPIRATION_PERIOD  hours there is no response (operation: recover_account_operation) it is expired.
 
-    @param {string} recovery_account - The account that may create a request for account recovery.
-                                       It is important to keep it actual.
-    @param {string} account_to_recover - The account to be recovered.
-    @param {authority} new_owner_authority - The new owner authority – the public, not private key.
-                                             The new authority should be satisfiable.
-    @param {future_extensions} extensions - Not currently used.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/24_request_account_recovery.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -67,11 +62,19 @@ class request_account_recovery(google.protobuf.message.Message):
     NEW_OWNER_AUTHORITY_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     recovery_account: builtins.str
+    """@param {string} recovery_account - The account that may create a request for account recovery.
+                                       It is important to keep it actual.
+    """
     account_to_recover: builtins.str
+    """@param {string} account_to_recover - The account to be recovered."""
     @property
-    def new_owner_authority(self) -> authority_pb2.authority: ...
+    def new_owner_authority(self) -> authority_pb2.authority:
+        """@param {authority} new_owner_authority - The new owner authority – the public, not private key.
+                                                 The new authority should be satisfiable.
+        """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions - Not currently used."""
     def __init__(
         self,
         *,

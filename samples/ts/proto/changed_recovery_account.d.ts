@@ -2,14 +2,13 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to change_recovery_account_operation.
  * Generated during block processing after wait period for the recovery account change has passed and the change became active.
- *
- * @param {string} account - used that requested recovery accout change
- * @param {string} old_recovery_account - previous recovery account
- * @param {string} new_recovery_account - new recovery account
  */
 export interface changed_recovery_account {
+    /** @param {string} account - used that requested recovery accout change */
     account: string;
+    /** @param {string} old_recovery_account - previous recovery account */
     old_recovery_account: string;
+    /** @param {string} new_recovery_account - new recovery account */
     new_recovery_account: string;
 }
 export declare const changed_recovery_account: {

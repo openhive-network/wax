@@ -20,9 +20,7 @@ class convert(google.protobuf.message.Message):
     """This operation instructs the blockchain to start a conversion of HBD to Hive.  
     The funds are deposited after 3.5 days.
 
-    @param {string} owner - Account name.
-    @param {number} requestid - The number is given by a user. Should be unique for a user.
-    @param {asset} amount - Amount > 0, have to be in HBD.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/08_convert.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -31,9 +29,12 @@ class convert(google.protobuf.message.Message):
     REQUESTID_FIELD_NUMBER: builtins.int
     AMOUNT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - Account name."""
     requestid: builtins.int
+    """@param {number} requestid - The number is given by a user. Should be unique for a user."""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - Amount > 0, have to be in HBD."""
     def __init__(
         self,
         *,

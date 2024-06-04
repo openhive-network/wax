@@ -4,10 +4,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to block processing.
  * Generated during block processing potentially every block, but only if nonzero assets were burned. Triggered by removal of all
  * assets from 'null' account balances.
- *
- * @param {asset} total_cleared - (HIVE, VESTS or HBD) nonzero assets burned on 'null' account
  */
 export interface clear_null_account_balance {
+    /** @param {asset} total_cleared - (HIVE, VESTS or HBD) nonzero assets burned on 'null' account */
     total_cleared: asset[];
 }
 export declare const clear_null_account_balance: {

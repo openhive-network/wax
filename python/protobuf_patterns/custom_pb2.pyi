@@ -21,9 +21,7 @@ class custom(google.protobuf.message.Message):
     """There are the following custom operations: custom_operation, custom_json_operation and custom_binary (currently is disabled).
     The operation: custom_operation provides a generic way to add higher level protocols on top of witness consensus operations.
 
-    @param {string} required_auths
-    @param {number} id
-    @param {string} data
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/15_custom.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -32,9 +30,12 @@ class custom(google.protobuf.message.Message):
     ID_FIELD_NUMBER: builtins.int
     DATA_FIELD_NUMBER: builtins.int
     @property
-    def required_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def required_auths(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """@param {string} required_auths"""
     id: builtins.int
+    """@param {number} id"""
     data: builtins.str
+    """@param {string} data"""
     def __init__(
         self,
         *,

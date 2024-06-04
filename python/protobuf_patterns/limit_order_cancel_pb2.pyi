@@ -19,9 +19,7 @@ class limit_order_cancel(google.protobuf.message.Message):
     """Cancels an order (limit_order_create_operation or limit_order_create2_operation)
     and returns the balance to the owner.
 
-    @param {string} owner
-    @param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
-                              or limit_order_create2_operation.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/06_limit_order_cancel.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -29,7 +27,11 @@ class limit_order_cancel(google.protobuf.message.Message):
     OWNER_FIELD_NUMBER: builtins.int
     ORDERID_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner"""
     orderid: builtins.int
+    """@param {number} orderid - The request_id provided by a user during creating a limit_order_create_operation
+                              or limit_order_create2_operation.
+    """
     def __init__(
         self,
         *,

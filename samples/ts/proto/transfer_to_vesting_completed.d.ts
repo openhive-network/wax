@@ -6,16 +6,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Note: power up immediately increases mana regeneration and vote power for comments, but there is a grace period before
  * it activates as governance vote power.
  * @see delayed_voting
- *
- * @param {string} from_account - account that executed power up (source of hive_vested)
- * @param {string} to_account - account that gets power up (receiver of vesting_shares_received)
- * @param {asset} hive_vested - (HIVE) liquid funds being turned into VESTS
- * @param {asset} vesting_shares_received - (VESTS) result of power up
  */
 export interface transfer_to_vesting_completed {
+    /** @param {string} from_account - account that executed power up (source of hive_vested) */
     from_account: string;
+    /** @param {string} to_account - account that gets power up (receiver of vesting_shares_received) */
     to_account: string;
+    /** @param {asset} hive_vested - (HIVE) liquid funds being turned into VESTS */
     hive_vested: asset | undefined;
+    /** @param {asset} vesting_shares_received - (VESTS) result of power up */
     vesting_shares_received: asset | undefined;
 }
 export declare const transfer_to_vesting_completed: {

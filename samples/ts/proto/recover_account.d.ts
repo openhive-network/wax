@@ -10,17 +10,20 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * the old one (maybe compromised) and the new one (see request_account_recovery).
  * There must be at least 60 minutes (HIVE_OWNER_UPDATE_LIMIT) between executions of operation recover_account_operation.
  *
- * @param {string} account_to_recover - The account to be recovered.
- * @param {authority} new_owner_authority - The new owner authority as specified in the request account recovery operation.
- * @param {authority} recent_owner_authority - A previous owner's authority, may be compromised.
- *                                             If the operation change_recovery_account_operation was generated,
- *                                             it has not been yet 30 days since its creation.
- * @param {future_extensions} extensions - Not currently used.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/25_recover_account.md?ref_type=heads
  */
 export interface recover_account {
+    /** @param {string} account_to_recover - The account to be recovered. */
     account_to_recover: string;
+    /** @param {authority} new_owner_authority - The new owner authority as specified in the request account recovery operation. */
     new_owner_authority: authority | undefined;
+    /**
+     * @param {authority} recent_owner_authority - A previous owner's authority, may be compromised.
+     *                                             If the operation change_recovery_account_operation was generated,
+     *                                             it has not been yet 30 days since its creation.
+     */
     recent_owner_authority: authority | undefined;
+    /** @param {future_extensions} extensions - Not currently used. */
     extensions: future_extensions[];
 }
 export declare const recover_account: {

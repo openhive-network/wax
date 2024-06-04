@@ -22,10 +22,7 @@ class claim_reward_balance(google.protobuf.message.Message):
     Rewards expressed in Hive and HBD are transferred to liquid balances, rewards in HP increase vesting balance.
     When claimed, HP rewards are immediately active towards governance voting power (compare with transfer_to_vesting_operation).
 
-    @param {string} account - Account name.
-    @param {asset} reward_hive - The amount of Hive reward to be transferred to liquid balance.
-    @param {asset} reward_hbd - The amount of HBD reward to be transferred to liquid balance
-    @param {asset} reward_vests - The amount of HP reward to be transferred to vesting balance.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/39_claim_reward_balance.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -35,12 +32,16 @@ class claim_reward_balance(google.protobuf.message.Message):
     REWARD_HBD_FIELD_NUMBER: builtins.int
     REWARD_VESTS_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - Account name."""
     @property
-    def reward_hive(self) -> asset_pb2.asset: ...
+    def reward_hive(self) -> asset_pb2.asset:
+        """@param {asset} reward_hive - The amount of Hive reward to be transferred to liquid balance."""
     @property
-    def reward_hbd(self) -> asset_pb2.asset: ...
+    def reward_hbd(self) -> asset_pb2.asset:
+        """@param {asset} reward_hbd - The amount of HBD reward to be transferred to liquid balance"""
     @property
-    def reward_vests(self) -> asset_pb2.asset: ...
+    def reward_vests(self) -> asset_pb2.asset:
+        """@param {asset} reward_vests - The amount of HP reward to be transferred to vesting balance."""
     def __init__(
         self,
         *,

@@ -22,14 +22,6 @@ class comment_benefactor_reward(google.protobuf.message.Message):
     Note: the reward is a fragment of the author portion of comment reward depending on share assigned to benefactor
     in comment options (can be zero due to rounding).
     @see author_reward
-
-    @param {string} benefactor - user assigned to receive share of author reward (receiver of payouts)
-    @param {string} author - author of the comment
-    @param {string} permlink - permlink of the comment
-    @param {asset} hbd_payout - (HBD) part of reward
-    @param {asset} hive_payout - (HIVE) part of reward
-    @param {asset} vesting_payout - (VESTS) part of reward
-    @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,15 +34,22 @@ class comment_benefactor_reward(google.protobuf.message.Message):
     VESTING_PAYOUT_FIELD_NUMBER: builtins.int
     PAYOUT_MUST_BE_CLAIMED_FIELD_NUMBER: builtins.int
     benefactor: builtins.str
+    """@param {string} benefactor - user assigned to receive share of author reward (receiver of payouts)"""
     author: builtins.str
+    """@param {string} author - author of the comment"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of the comment"""
     @property
-    def hbd_payout(self) -> asset_pb2.asset: ...
+    def hbd_payout(self) -> asset_pb2.asset:
+        """@param {asset} hbd_payout - (HBD) part of reward"""
     @property
-    def hive_payout(self) -> asset_pb2.asset: ...
+    def hive_payout(self) -> asset_pb2.asset:
+        """@param {asset} hive_payout - (HIVE) part of reward"""
     @property
-    def vesting_payout(self) -> asset_pb2.asset: ...
+    def vesting_payout(self) -> asset_pb2.asset:
+        """@param {asset} vesting_payout - (VESTS) part of reward"""
     payout_must_be_claimed: builtins.bool
+    """@param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation"""
     def __init__(
         self,
         *,

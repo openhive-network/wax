@@ -21,10 +21,6 @@ class dhf_conversion(google.protobuf.message.Message):
     When user transferred HIVE to treasury the amount is immediately converted to HBD and this vops is generated.
     Also generated during block processing every day during daily proposal maintenance.
     Note: portion of HIVE on treasury balance is converted to HBD and thus increases funds available for proposals.
-
-    @param {string} treasury - treasury (source of hive_amount_in and receiver of hbd_amount_out)
-    @param {asset} hive_amount_in - (HIVE) source of conversion
-    @param {asset} hbd_amount_out - (HBD) effect of conversion
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,10 +29,13 @@ class dhf_conversion(google.protobuf.message.Message):
     HIVE_AMOUNT_IN_FIELD_NUMBER: builtins.int
     HBD_AMOUNT_OUT_FIELD_NUMBER: builtins.int
     treasury: builtins.str
+    """@param {string} treasury - treasury (source of hive_amount_in and receiver of hbd_amount_out)"""
     @property
-    def hive_amount_in(self) -> asset_pb2.asset: ...
+    def hive_amount_in(self) -> asset_pb2.asset:
+        """@param {asset} hive_amount_in - (HIVE) source of conversion"""
     @property
-    def hbd_amount_out(self) -> asset_pb2.asset: ...
+    def hbd_amount_out(self) -> asset_pb2.asset:
+        """@param {asset} hbd_amount_out - (HBD) effect of conversion"""
     def __init__(
         self,
         *,

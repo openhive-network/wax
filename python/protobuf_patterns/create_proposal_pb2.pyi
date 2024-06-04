@@ -29,14 +29,7 @@ class create_proposal(google.protobuf.message.Message):
     Every hour all active proposals are processed and taking into consideration a current number of votes payments are done.
     Accounts can create/remove votes anytime.
 
-    @param {string} creator
-    @param {string} receiver
-    @param {string} start_date
-    @param {string} end_date
-    @param {asset} daily_pay
-    @param {string} subject
-    @param {string} permlink
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/44_create_proposal.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -50,15 +43,23 @@ class create_proposal(google.protobuf.message.Message):
     PERMLINK_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     creator: builtins.str
+    """@param {string} creator"""
     receiver: builtins.str
+    """@param {string} receiver"""
     start_date: builtins.str
+    """@param {string} start_date"""
     end_date: builtins.str
+    """@param {asset} end_date"""
     @property
-    def daily_pay(self) -> asset_pb2.asset: ...
+    def daily_pay(self) -> asset_pb2.asset:
+        """@param {asset} daily_pay"""
     subject: builtins.str
+    """@param {string} subject"""
     permlink: builtins.str
+    """@param {string} permlink"""
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

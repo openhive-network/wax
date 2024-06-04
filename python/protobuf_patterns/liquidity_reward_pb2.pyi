@@ -21,9 +21,6 @@ class liquidity_reward(google.protobuf.message.Message):
     Generated during block processing to indicate reward paid to the market makers on internal HIVE<->HBD market.
     No longer active after HF12.
     @see fill_order_operation
-
-    @param {string} owner - market maker (receiver of payout)
-    @param {asset} payout - (HIVE) reward for provided liquidity
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -31,8 +28,10 @@ class liquidity_reward(google.protobuf.message.Message):
     OWNER_FIELD_NUMBER: builtins.int
     PAYOUT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - market maker (receiver of payout)"""
     @property
-    def payout(self) -> asset_pb2.asset: ...
+    def payout(self) -> asset_pb2.asset:
+        """@param {asset} payout - (HIVE) reward for provided liquidity"""
     def __init__(
         self,
         *,

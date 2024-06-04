@@ -12,11 +12,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * If a user creates a new withdraw_vesting_operation when the old one is still processed,
  * then the old withdraw_vesting_operation will be canceled and a new one will be processed.
  *
- * @param {string} account - The account the funds are coming from.
- * @param {asset} vesting_shares - Amount of VESTS (HP)
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/04_withdraw_vesting.md?ref_type=heads
  */
 export interface withdraw_vesting {
+    /** @param {string} account - The account the funds are coming from. */
     account: string;
+    /** @param {asset} vesting_shares - Amount of VESTS (HP) */
     vesting_shares: asset | undefined;
 }
 export declare const withdraw_vesting: {

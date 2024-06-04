@@ -2,10 +2,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * It's related to `decline_voting_rights_operation` and generated after `HIVE_OWNER_AUTH_RECOVERY_PERIOD` interval.
  * Then some actions are done and after that `declined_voting_rights_operation` is created.
- *
- * @param {string} account - user who decided to decline his voting rights
  */
 export interface declined_voting_rights {
+    /** @param {string} account - user who decided to decline his voting rights */
     account: string;
 }
 export declare const declined_voting_rights: {

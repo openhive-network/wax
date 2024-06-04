@@ -30,11 +30,7 @@ class update_proposal_votes(google.protobuf.message.Message):
     is not executed in HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD, the votes are removed and the virtual operation:
     expired_account_notification_operation is generated.
 
-    @param {string} voter - Account name.
-    @param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored.
-    @param {bool} approve - To vote for the proposal, the approve = true.
-                            To remove the vote, the approve = false.
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/45_update_proposal_votes.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -44,11 +40,17 @@ class update_proposal_votes(google.protobuf.message.Message):
     APPROVE_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     voter: builtins.str
+    """@param {string} voter - Account name."""
     @property
-    def proposal_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
+    def proposal_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]:
+        """@param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored."""
     approve: builtins.bool
+    """@param {bool} approve - To vote for the proposal, the approve = true.
+                            To remove the vote, the approve = false.
+    """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

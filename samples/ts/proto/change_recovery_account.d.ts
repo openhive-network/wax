@@ -9,13 +9,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * the operation should be created with {new_recovery_account} set to the old one.
  * The operation is done with a 30 days (HIVE_OWNER_AUTH_RECOVERY_PERIOD) delay.
  *
- * @param {string} account_to_recover
- * @param {string} new_recovery_account
- * @param {future_extensions} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/26_change_recovery_account.md?ref_type=heads
  */
 export interface change_recovery_account {
+    /** @param {string} account_to_recover */
     account_to_recover: string;
+    /** @param {string} new_recovery_account */
     new_recovery_account: string;
+    /** @param {future_extensions} extensions */
     extensions: future_extensions[];
 }
 export declare const change_recovery_account: {

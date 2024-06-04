@@ -4,14 +4,13 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to collateralized_convert_operation.
  * Generated every time above operation is executed. Contains amount of HBD received right when the transfer actually happens.
  * @see fill_collateralized_convert_request
- *
- * @param {string} owner - user that requested conversion (receiver of hbd_out)
- * @param {number} requested - id of the conversion request
- * @param {asset} hbd_out - (HBD) funds after conversion
  */
 export interface collateralized_convert_immediate_conversion {
+    /** @param {string} owner - user that requested conversion (receiver of hbd_out) */
     owner: string;
+    /** @param {number} requested - id of the conversion request */
     requestid: number;
+    /** @param {asset} hbd_out - (HBD) funds after conversion */
     hbd_out: asset | undefined;
 }
 export declare const collateralized_convert_immediate_conversion: {

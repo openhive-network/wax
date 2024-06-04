@@ -20,9 +20,6 @@ class pow_reward(google.protobuf.message.Message):
     """Related to pow_operation and pow2_operation.
     Generated every time one of above operations is executed (up to HF16).
     Note: pow2_operation could be executed up to HF17 but mining rewards were stopped after HF16.
-
-    @param {string} worker - (potentially new) witness that calculated PoW (receiver of reward)
-    @param {asset} reward - (VESTS or HIVE) reward for work (HIVE only during first 30 days after genesis)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -30,8 +27,10 @@ class pow_reward(google.protobuf.message.Message):
     WORKER_FIELD_NUMBER: builtins.int
     REWARD_FIELD_NUMBER: builtins.int
     worker: builtins.str
+    """@param {string} worker - (potentially new) witness that calculated PoW (receiver of reward)"""
     @property
-    def reward(self) -> asset_pb2.asset: ...
+    def reward(self) -> asset_pb2.asset:
+        """@param {asset} reward - (VESTS or HIVE) reward for work (HIVE only during first 30 days after genesis)"""
     def __init__(
         self,
         *,

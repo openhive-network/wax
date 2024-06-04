@@ -22,12 +22,6 @@ class fill_collateralized_convert_request(google.protobuf.message.Message):
     Note: HBD is transferred immediately during execution of above operation, this vop is generated after actual
     price of conversion becomes known.
     @see collateralized_convert_immediate_conversion
-
-    @param {string} owner - user that requested conversion (receiver of excess_collateral)
-    @param {number} requestid - id of the request
-    @param {asset} amount_in - (HIVE) source of conversion (part of collateral)
-    @param {asset} amount_out - (HBD) result of conversion (already transferred to owner when request was made)
-    @param {asset} excess_collateral - (HIVE) unused part of collateral returned to owner
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -38,13 +32,18 @@ class fill_collateralized_convert_request(google.protobuf.message.Message):
     AMOUNT_OUT_FIELD_NUMBER: builtins.int
     EXCESS_COLLATERAL_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - user that requested conversion (receiver of excess_collateral)"""
     requestid: builtins.int
+    """@param {number} requestid - id of the request"""
     @property
-    def amount_in(self) -> asset_pb2.asset: ...
+    def amount_in(self) -> asset_pb2.asset:
+        """@param {asset} amount_in - (HIVE) source of conversion (part of collateral)"""
     @property
-    def amount_out(self) -> asset_pb2.asset: ...
+    def amount_out(self) -> asset_pb2.asset:
+        """@param {asset} amount_out - (HBD) result of conversion (already transferred to owner when request was made)"""
     @property
-    def excess_collateral(self) -> asset_pb2.asset: ...
+    def excess_collateral(self) -> asset_pb2.asset:
+        """@param {asset} excess_collateral - (HIVE) unused part of collateral returned to owner"""
     def __init__(
         self,
         *,

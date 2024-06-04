@@ -20,11 +20,7 @@ class vesting_shares_split(google.protobuf.message.Message):
     """Related to hardfork 1.
     Generated for every account with nonzero vesting balance.
     Note: due to too small precision of VESTS asset it was increased by 6 digits, meaning all underlying
-    amounts had to be multiplied by million.
-
-    @param {string} owner - affected account (source of vesting_shares_before_split and receiver of vesting_shares_after_split)
-    @param {asset} vesting_shares_before_split - (VESTS) balance before split
-    @param {asset} vesting_shares_after_split - (VESTS) balance after split
+    amounts had to be multiplied by million.s
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,10 +29,13 @@ class vesting_shares_split(google.protobuf.message.Message):
     VESTING_SHARES_BEFORE_SPLIT_FIELD_NUMBER: builtins.int
     VESTING_SHARES_AFTER_SPLIT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - affected account (source of vesting_shares_before_split and receiver of vesting_shares_after_split)"""
     @property
-    def vesting_shares_before_split(self) -> asset_pb2.asset: ...
+    def vesting_shares_before_split(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares_before_split - (VESTS) balance before split"""
     @property
-    def vesting_shares_after_split(self) -> asset_pb2.asset: ...
+    def vesting_shares_after_split(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares_after_split - (VESTS) balance after split"""
     def __init__(
         self,
         *,

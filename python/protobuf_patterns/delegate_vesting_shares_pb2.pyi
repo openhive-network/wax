@@ -29,10 +29,7 @@ class delegate_vesting_shares(google.protobuf.message.Message):
     should be created with {vesting_shares = 0}. When a delegation is removed, the delegated vesting shares
     are frozen for five days (HIVE_DELEGATION_RETURN_PERIOD_HF20) to prevent voting twice.
 
-    @param {string} delegator - The account delegating vesting shares.
-    @param {string} delegatee - The account receiving vesting shares.
-    @param {asset} vesting_shares - The amount of vesting shares to be delegated.
-                                    Minimal amount = 1/3 of the fee for creating a new account.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/40_delegate_vesting_shares.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -41,9 +38,14 @@ class delegate_vesting_shares(google.protobuf.message.Message):
     DELEGATEE_FIELD_NUMBER: builtins.int
     VESTING_SHARES_FIELD_NUMBER: builtins.int
     delegator: builtins.str
+    """@param {string} delegator - The account delegating vesting shares."""
     delegatee: builtins.str
+    """@param {string} delegatee - The account receiving vesting shares."""
     @property
-    def vesting_shares(self) -> asset_pb2.asset: ...
+    def vesting_shares(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares - The amount of vesting shares to be delegated.
+                                        Minimal amount = 1/3 of the fee for creating a new account.
+        """
     def __init__(
         self,
         *,

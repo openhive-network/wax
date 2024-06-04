@@ -23,10 +23,7 @@ class transfer(google.protobuf.message.Message):
     Memo for the transaction can be encrypted if message is started with '#'.
     Private Memo Key must already be in the wallet for encrypted memo to work.
 
-    @param {string} from_account - The account the funds are coming from.
-    @param {string} to_account - The account the funds are going to.
-    @param {asset} amount - The amount of asset to transfer from @ref from_account to @ref to_account, the allowed currency: HIVE and HBD.
-    @param {string} memo - The memo is plain-text, any encryption on the memo is up to a higher level protocol, must be shorter than 2048.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/02_transfer.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,10 +33,14 @@ class transfer(google.protobuf.message.Message):
     AMOUNT_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - The account the funds are coming from."""
     to_account: builtins.str
+    """@param {string} to_account - The account the funds are going to."""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - The amount of asset to transfer from @ref from_account to @ref to_account, the allowed currency: HIVE and HBD."""
     memo: builtins.str
+    """@param {string} memo - The memo is plain-text, any encryption on the memo is up to a higher level protocol, must be shorter than 2048."""
     def __init__(
         self,
         *,

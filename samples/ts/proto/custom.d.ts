@@ -3,13 +3,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * There are the following custom operations: custom_operation, custom_json_operation and custom_binary (currently is disabled).
  * The operation: custom_operation provides a generic way to add higher level protocols on top of witness consensus operations.
  *
- * @param {string} required_auths
- * @param {number} id
- * @param {string} data
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/15_custom.md?ref_type=heads
  */
 export interface custom {
+    /** @param {string} required_auths */
     required_auths: string[];
+    /** @param {number} id */
     id: number;
+    /** @param {string} data */
     data: string;
 }
 export declare const custom: {

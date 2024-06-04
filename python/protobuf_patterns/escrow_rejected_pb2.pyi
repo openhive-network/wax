@@ -22,14 +22,6 @@ class escrow_rejected(google.protobuf.message.Message):
     It can happen with explicit rejection with use of first operation. Can also happen during block processing when either
     agent or to account failed to approve before ratification deadline.
     @see escrow_approved
-
-    @param {string} from_account - user that initiated escrow transfer (receiver of all the funds)
-    @param {string} to_account - user that was target of cancelled escrow transfer
-    @param {string} agent - user that was designated as agent of cancelled escrow transfer
-    @param {number} escrow_id - id of cancelled escrow transfer
-    @param {asset} hbd_amount - (HBD) funds from cancelled escrow transfer (same amount as in escrow_transfer_operation)
-    @param {asset} hive_amount - (HIVE) funds from cancelled escrow transfer (same amount as in escrow_transfer_operation)
-    @param {asset} fee - (HIVE of HBD) fee from cancelled escrow transfer (same amount as in escrow_transfer_operation)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,15 +34,22 @@ class escrow_rejected(google.protobuf.message.Message):
     HIVE_AMOUNT_FIELD_NUMBER: builtins.int
     FEE_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that initiated escrow transfer (receiver of all the funds)"""
     to_account: builtins.str
+    """@param {string} to_account - user that was target of cancelled escrow transfer"""
     agent: builtins.str
+    """@param {string} agent - user that was designated as agent of cancelled escrow transfer"""
     escrow_id: builtins.int
+    """@param {number} escrow_id - id of cancelled escrow transfer"""
     @property
-    def hbd_amount(self) -> asset_pb2.asset: ...
+    def hbd_amount(self) -> asset_pb2.asset:
+        """@param {asset} hbd_amount - (HBD) funds from cancelled escrow transfer (same amount as in escrow_transfer_operation)"""
     @property
-    def hive_amount(self) -> asset_pb2.asset: ...
+    def hive_amount(self) -> asset_pb2.asset:
+        """@param {asset} hive_amount - (HIVE) funds from cancelled escrow transfer (same amount as in escrow_transfer_operation)"""
     @property
-    def fee(self) -> asset_pb2.asset: ...
+    def fee(self) -> asset_pb2.asset:
+        """@param {asset} fee - (HIVE of HBD) fee from cancelled escrow transfer (same amount as in escrow_transfer_operation)"""
     def __init__(
         self,
         *,

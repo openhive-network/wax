@@ -22,15 +22,14 @@ class clear_null_account_balance(google.protobuf.message.Message):
     """Related to block processing.
     Generated during block processing potentially every block, but only if nonzero assets were burned. Triggered by removal of all
     assets from 'null' account balances.
-
-    @param {asset} total_cleared - (HIVE, VESTS or HBD) nonzero assets burned on 'null' account
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     TOTAL_CLEARED_FIELD_NUMBER: builtins.int
     @property
-    def total_cleared(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[asset_pb2.asset]: ...
+    def total_cleared(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[asset_pb2.asset]:
+        """@param {asset} total_cleared - (HIVE, VESTS or HBD) nonzero assets burned on 'null' account"""
     def __init__(
         self,
         *,

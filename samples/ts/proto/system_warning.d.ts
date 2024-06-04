@@ -12,10 +12,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  *    every operation that involves conversion from HBD to HIVE will give output amount that is smaller than real world value
  *  - noncanonical fee symbol used by witness [should disappear if it never happened as suggested by TODO message]
  *  - witnesses changed maximum block size
- *
- * @param {string} message - warning message
  */
 export interface system_warning {
+    /** @param {string} message - warning message */
     message: string;
 }
 export declare const system_warning: {

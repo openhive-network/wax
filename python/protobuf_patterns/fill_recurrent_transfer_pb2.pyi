@@ -23,12 +23,6 @@ class fill_recurrent_transfer(google.protobuf.message.Message):
     Note: in case of accumulation of very big amount of recurrent transfers to be executed in particular block, some
     are going to be postponed to next block(s) and so will be generation of this vop.
     @see failed_recurrent_transfer
-
-    @param {string} from_account - user that initiated the transfer (source of amount)
-    @param {string} to_account - user that is target of transfer (receiver of amount)
-    @param {asset} amount - (HIVE of HBD) amount transferred in current iteration
-    @param {string} memo - memo attached to the transfer
-    @param {number} remaining_executions - number of remaining pending transfers
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -39,11 +33,16 @@ class fill_recurrent_transfer(google.protobuf.message.Message):
     MEMO_FIELD_NUMBER: builtins.int
     REMAINING_EXECUTIONS_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that initiated the transfer (source of amount)"""
     to_account: builtins.str
+    """@param {string} to_account - user that is target of transfer (receiver of amount)"""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - (HIVE of HBD) amount transferred in current iteration"""
     memo: builtins.str
+    """@param {string} memo - memo attached to the transfer"""
     remaining_executions: builtins.int
+    """@param {number} remaining_executions - number of remaining pending transferss"""
     def __init__(
         self,
         *,

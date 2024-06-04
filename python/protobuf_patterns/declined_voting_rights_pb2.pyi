@@ -18,14 +18,13 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class declined_voting_rights(google.protobuf.message.Message):
     """It's related to `decline_voting_rights_operation` and generated after `HIVE_OWNER_AUTH_RECOVERY_PERIOD` interval.
     Then some actions are done and after that `declined_voting_rights_operation` is created.
-
-    @param {string} account - user who decided to decline his voting rights
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     ACCOUNT_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - user who decided to decline his voting rights"""
     def __init__(
         self,
         *,

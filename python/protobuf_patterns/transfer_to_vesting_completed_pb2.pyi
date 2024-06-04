@@ -22,11 +22,6 @@ class transfer_to_vesting_completed(google.protobuf.message.Message):
     Note: power up immediately increases mana regeneration and vote power for comments, but there is a grace period before
     it activates as governance vote power.
     @see delayed_voting
-
-    @param {string} from_account - account that executed power up (source of hive_vested)
-    @param {string} to_account - account that gets power up (receiver of vesting_shares_received)
-    @param {asset} hive_vested - (HIVE) liquid funds being turned into VESTS
-    @param {asset} vesting_shares_received - (VESTS) result of power up
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -36,11 +31,15 @@ class transfer_to_vesting_completed(google.protobuf.message.Message):
     HIVE_VESTED_FIELD_NUMBER: builtins.int
     VESTING_SHARES_RECEIVED_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - account that executed power up (source of hive_vested)"""
     to_account: builtins.str
+    """@param {string} to_account - account that gets power up (receiver of vesting_shares_received)"""
     @property
-    def hive_vested(self) -> asset_pb2.asset: ...
+    def hive_vested(self) -> asset_pb2.asset:
+        """@param {asset} hive_vested - (HIVE) liquid funds being turned into VESTS"""
     @property
-    def vesting_shares_received(self) -> asset_pb2.asset: ...
+    def vesting_shares_received(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares_received - (VESTS) result of power up"""
     def __init__(
         self,
         *,

@@ -78,33 +78,7 @@ class comment_options(google.protobuf.message.Message):
     it is usually in the same transaction with the operation: comment_operation.
     If a comment has received any votes, only the parameter {percent_hbd} may be changed.
 
-    @param {string} author - Account name, the author of the comment.
-    @param {string} permlink - The identifier of the comment.
-    @param {asset} max_accepted_payout - The maximum value of payout in HBD.
-                                         Default value: max_accepted_payout = asset( 1000000000, HBD_SYMBOL ).
-                                         The allowed value should be less than the default value.
-                                         If max_accepted_payout = 0, then voters and authors will not receive the payout.
-    @param {number} percent_hbd - By default the author reward is paid 50% HP and 50 % HBD.
-                                  In some rare situations, instead of HBD, the Hive may be paid.
-                                  percent_hbd = HIVE_100_PERCENT means that 100 % of HBD part is paid in HBD.
-                                  A user may decide how many percent of HBD (from 50 %) they wants to receive in the HBD,
-                                  the rest will be paid out in HP.
-                                  Default value: percent_hbd = HIVE_100_PERCENT.
-                                  The allowed value should be less than the default value.
-                                  This is the only parameter that can be modified after the comment receives any vote.
-    @param {bool} allow_votes - The flag that allows to decide whether the comment may receive a vote.
-                                Default value: allow_votes = true.
-    @param {bool} allow_curation_rewards - The flag that allows to decide whether the voters for the comment should
-                                           receive the curation rewards. Rewards return to the reward fund.
-                                           Default value: allow_curation_rewards = true.
-    @param {comment_options_extension} extensions - It may contain the list of the beneficiaries,
-                                                    the accounts that should receive the author reward.
-                                                    The list consists of the account name and the weight of the shares in the author reward.
-                                                    If the sum of the weights is less than 100%,
-                                                    the rest of the reward is received by the author.
-                                                    It should be defined less than 128 accounts.
-                                                    The allowed range of the weight is from 0 to 10000 (0 – 100%).
-                                                    The beneficiaries should be listed in alphabetical order, no duplicates.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/19_comment_options.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -117,14 +91,45 @@ class comment_options(google.protobuf.message.Message):
     ALLOW_CURATION_REWARDS_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - Account name, the author of the comment."""
     permlink: builtins.str
     @property
-    def max_accepted_payout(self) -> asset_pb2.asset: ...
+    def max_accepted_payout(self) -> asset_pb2.asset:
+        """@param {asset} max_accepted_payout - The maximum value of payout in HBD.
+                                             Default value: max_accepted_payout = asset( 1000000000, HBD_SYMBOL ).
+                                             The allowed value should be less than the default value.
+                                             If max_accepted_payout = 0, then voters and authors will not receive the payout.
+        """
     percent_hbd: builtins.int
+    """@param {number} percent_hbd - By default the author reward is paid 50% HP and 50 % HBD.
+                                  In some rare situations, instead of HBD, the Hive may be paid.
+                                  percent_hbd = HIVE_100_PERCENT means that 100 % of HBD part is paid in HBD.
+                                  A user may decide how many percent of HBD (from 50 %) they wants to receive in the HBD,
+                                  the rest will be paid out in HP.
+                                  Default value: percent_hbd = HIVE_100_PERCENT.
+                                  The allowed value should be less than the default value.
+                                  This is the only parameter that can be modified after the comment receives any vote.
+    """
     allow_votes: builtins.bool
+    """@param {bool} allow_votes - The flag that allows to decide whether the comment may receive a vote.
+                                Default value: allow_votes = true.
+    """
     allow_curation_rewards: builtins.bool
+    """@param {bool} allow_curation_rewards - The flag that allows to decide whether the voters for the comment should
+                                           receive the curation rewards. Rewards return to the reward fund.
+                                           Default value: allow_curation_rewards = true.
+    """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___comment_options_extension]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___comment_options_extension]:
+        """@param {comment_options_extension} extensions - It may contain the list of the beneficiaries,
+                                                        the accounts that should receive the author reward.
+                                                        The list consists of the account name and the weight of the shares in the author reward.
+                                                        If the sum of the weights is less than 100%,
+                                                        the rest of the reward is received by the author.
+                                                        It should be defined less than 128 accounts.
+                                                        The allowed range of the weight is from 0 to 10000 (0 – 100%).
+                                                        The beneficiaries should be listed in alphabetical order, no duplicates.
+        """
     def __init__(
         self,
         *,

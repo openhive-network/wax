@@ -23,12 +23,7 @@ class escrow_approve(google.protobuf.message.Message):
     of them explicitly rejected the escrow, the escrow is rejected.
     If {agent} and {to} have approved the escrow, the {fee} is transferred from temporary balance to {agent} account.
 
-    @param {string} from_account - Account name.
-    @param {string} to_account - Account name.
-    @param {string} agent - Account name.
-    @param {string} who - Account name. Either {to} or {agent}.
-    @param {number} escrow_id - Escrow identifier.
-    @param {bool} approve - approve = true; (approve = false explicitly rejects the escrow)
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/31_escrow_approve.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -40,11 +35,17 @@ class escrow_approve(google.protobuf.message.Message):
     ESCROW_ID_FIELD_NUMBER: builtins.int
     APPROVE_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - Account name."""
     to_account: builtins.str
+    """@param {string} to_account - Account name."""
     agent: builtins.str
+    """@param {string} agent - Account name."""
     who: builtins.str
+    """@param {string} who - Account name. Either {to} or {agent}."""
     escrow_id: builtins.int
+    """@param {number} escrow_id - Escrow identifier."""
     approve: builtins.bool
+    """@param {bool} approve - approve = true; (approve = false explicitly rejects the escrow)"""
     def __init__(
         self,
         *,

@@ -4,18 +4,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to escrow_approve_operation.
  * Generated when both agent and to accounts approved pending escrow transfer (agent receives fee).
  * @see escrow_rejected
- *
- * @param {string} from_account - user that initiated escrow transfer
- * @param {string} to_account - user that is target of pending escrow transfer
- * @param {string} agent - user that is an agent of pending escrow transfer (receiver of fee)
- * @param {number} escrow_id - id of escrow transfer
- * @param {asset} fee - (HIVE of HBD) fee paid to agent
  */
 export interface escrow_approved {
+    /** @param {string} from_account - user that initiated escrow transfer */
     from_account: string;
+    /** @param {string} to_account - user that is target of pending escrow transfer */
     to_account: string;
+    /** @param {string} agent - user that is an agent of pending escrow transfer (receiver of fee) */
     agent: string;
+    /** @param {number} escrow_id - id of escrow transfer */
     escrow_id: number;
+    /** @param {asset} fee - (HIVE of HBD) fee paid to agent */
     fee: asset | undefined;
 }
 export declare const escrow_approved: {

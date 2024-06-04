@@ -20,9 +20,6 @@ class return_vesting_delegation(google.protobuf.message.Message):
     """Related to delegate_vesting_shares_operation.
     Generated during block processing when process of returning removed or lowered vesting delegation is finished (after return period
     passed) and delegator received back his vests.
-
-    @param {string} account - delegator (receiver of vesting_shares)
-    @param {asset} vesting_shares - (VESTS) returned delegation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -30,8 +27,10 @@ class return_vesting_delegation(google.protobuf.message.Message):
     ACCOUNT_FIELD_NUMBER: builtins.int
     VESTING_SHARES_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - delegator (receiver of vesting_shares)"""
     @property
-    def vesting_shares(self) -> asset_pb2.asset: ...
+    def vesting_shares(self) -> asset_pb2.asset:
+        """@param {asset} vesting_shares - (VESTS) returned delegation"""
     def __init__(
         self,
         *,

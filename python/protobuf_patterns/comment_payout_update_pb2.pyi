@@ -19,9 +19,6 @@ class comment_payout_update(google.protobuf.message.Message):
     """Related to comment_operation.
     Generated during block processing after cashout time passes even if there are no rewards.
     Note: prior to HF17 comment could have multiple cashout windows.
-
-    @param {string} author - author of comment
-    @param {string} permlink - permlink of comment
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -29,7 +26,9 @@ class comment_payout_update(google.protobuf.message.Message):
     AUTHOR_FIELD_NUMBER: builtins.int
     PERMLINK_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - author of comment"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of comment"""
     def __init__(
         self,
         *,

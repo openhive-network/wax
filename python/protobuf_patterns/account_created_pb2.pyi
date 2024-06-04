@@ -21,11 +21,6 @@ class account_created(google.protobuf.message.Message):
     account_create_operation, account_create_with_delegation_operation, pow_operation, pow2_operation and create_claimed_account_operation.
     Generated every time one of above operations results in creation of new account (account is always created except for pow/pow2).
     Note: vops for genesis accounts are generated at the start of block #1.
-
-    @param {string} new_account_name - newly created account (receiver of initial_vesting_shares)
-    @param {string} creator - account that initiated new account creation (genesis and mined accounts are their own creators)
-    @param {asset} initial_vesting_shares - (VESTS) amount of initial vesting on new account (converted from creation fee prior to HF20)
-    @param {asset} initial_delegation - (VESTS) amount of extra voting power on new account due to delegation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -35,11 +30,15 @@ class account_created(google.protobuf.message.Message):
     INITIAL_VESTING_SHARES_FIELD_NUMBER: builtins.int
     INITIAL_DELEGATION_FIELD_NUMBER: builtins.int
     new_account_name: builtins.str
+    """@param {string} new_account_name - newly created account (receiver of initial_vesting_shares)"""
     creator: builtins.str
+    """@param {string} creator - account that initiated new account creation (genesis and mined accounts are their own creators)"""
     @property
-    def initial_vesting_shares(self) -> asset_pb2.asset: ...
+    def initial_vesting_shares(self) -> asset_pb2.asset:
+        """@param {asset} initial_vesting_shares - (VESTS) amount of initial vesting on new account (converted from creation fee prior to HF20)"""
     @property
-    def initial_delegation(self) -> asset_pb2.asset: ...
+    def initial_delegation(self) -> asset_pb2.asset:
+        """@param {asset} initial_delegation - (VESTS) amount of extra voting power on new account due to delegation"""
     def __init__(
         self,
         *,

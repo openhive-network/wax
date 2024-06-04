@@ -22,30 +22,7 @@ class comment(google.protobuf.message.Message):
     The parent of the comment may be a post or a comment.
     Users may comment their own comments.
 
-    @param {string} parent_author - Account name, the author of the commented post or comment. 
-                                    If the operation creates a post, it is empty.
-                                    It cannot be modified.
-    @param {string} parent_permlink - The identifier of the commented post or comment.
-                                      When a user creates a post, it may contain the identifier of the community
-                                      (e.g. hive-174695) or main tag (e.g. travel).
-                                      It cannot be modified.
-    @param {string} author - Account name, the author of the post or the comment.
-                             It cannot be modified.
-    @param {string} permlink - Unique to the author, the identifier of the post or comment.
-                               It cannot be modified.
-    @param {string} title - The title of the submitted post, in case of the comment, is often empty.
-                            It may be modified.
-    @param {string} body - The content of the post or the comment.
-                           It may be modified.
-    @param {string} json_metadata - There is no blockchain validation on json_metadata,
-                                    but the structure has been established by the community.
-                                    From the blockchain point of view it is a json file.
-                                    For the second layer, the following keys may be used:
-                                    - app, e.g. peakd/2023.2.3
-                                    - format, e.g. markdown
-                                    - tags, e.g. photography
-                                    - users
-                                    - images
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/01_comment.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -58,12 +35,43 @@ class comment(google.protobuf.message.Message):
     BODY_FIELD_NUMBER: builtins.int
     JSON_METADATA_FIELD_NUMBER: builtins.int
     parent_author: builtins.str
+    """@param {string} parent_author - Account name, the author of the commented post or comment. 
+                                    If the operation creates a post, it is empty.
+                                    It cannot be modified.
+    """
     parent_permlink: builtins.str
+    """@param {string} parent_permlink - The identifier of the commented post or comment.
+                                      When a user creates a post, it may contain the identifier of the community
+                                      (e.g. hive-174695) or main tag (e.g. travel).
+                                      It cannot be modified.
+    """
     author: builtins.str
+    """@param {string} author - Account name, the author of the post or the comment.
+                             It cannot be modified.
+    """
     permlink: builtins.str
+    """@param {string} permlink - Unique to the author, the identifier of the post or comment.
+                               It cannot be modified.
+    """
     title: builtins.str
+    """@param {string} title - The title of the submitted post, in case of the comment, is often empty.
+                            It may be modified.
+    """
     body: builtins.str
+    """@param {string} body - The content of the post or the comment.
+                           It may be modified.
+    """
     json_metadata: builtins.str
+    """@param {string} json_metadata - There is no blockchain validation on json_metadata,
+                                    but the structure has been established by the community.
+                                    From the blockchain point of view it is a json file.
+                                    For the second layer, the following keys may be used:
+                                    - app, e.g. peakd/2023.2.3
+                                    - format, e.g. markdown
+                                    - tags, e.g. photography
+                                    - users
+                                    - images
+    """
     def __init__(
         self,
         *,

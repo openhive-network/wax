@@ -49,20 +49,7 @@ class account_update2(google.protobuf.message.Message):
     'account_name_1', weight = 1
     The above settings mean that at least two signatures are needed to post on behalf of this account.
 
-    @param {string} account - Account name, it cannot be updated.
-    @param {authority} owner - Optional. In order to update the {owner}, the owner authority is required.
-                               It may be changed 2 times per hour.
-                               If a user provides a new authority, the old one will be deleted.
-    @param {authority} active - Optional. In order to update the {active}, the active authority is required.
-                                If a user provides a new authority, the old one will be deleted.
-    @param {authority} posting - Optional. In order to update the {posting}, the active authority is required.
-                                 If a user provides a new authority, the old one will be deleted.
-    @param {string} memo_key - Optional. In order to update the {memo_key}, the active authority is required.
-                               If a user provides a new key, the old one will be deleted.
-    @param {string} json_metadata - json_string; In order to update the {json_metadata}, the active authority is required.
-    @param {string} posting_json_metadata - json_string; In order to update the { posting_json_metadata },
-                                            the posting authority is required.
-    @param {future_extensions} extensions
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/43_account_update2.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -76,17 +63,36 @@ class account_update2(google.protobuf.message.Message):
     POSTING_JSON_METADATA_FIELD_NUMBER: builtins.int
     EXTENSIONS_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - Account name, it cannot be updated."""
     @property
-    def owner(self) -> authority_pb2.authority: ...
+    def owner(self) -> authority_pb2.authority:
+        """@param {authority} owner - Optional. In order to update the {owner}, the owner authority is required.
+                                   It may be changed 2 times per hour.
+                                   If a user provides a new authority, the old one will be deleted.
+        """
     @property
-    def active(self) -> authority_pb2.authority: ...
+    def active(self) -> authority_pb2.authority:
+        """@param {authority} active - Optional. In order to update the {active}, the active authority is required.
+                                    If a user provides a new authority, the old one will be deleted.
+        """
     @property
-    def posting(self) -> authority_pb2.authority: ...
+    def posting(self) -> authority_pb2.authority:
+        """@param {authority} posting - Optional. In order to update the {posting}, the active authority is required.
+                                     If a user provides a new authority, the old one will be deleted.
+        """
     memo_key: builtins.str
+    """@param {string} memo_key - Optional. In order to update the {memo_key}, the active authority is required.
+                               If a user provides a new key, the old one will be deleted.
+    """
     json_metadata: builtins.str
+    """@param {string} json_metadata - json_string; In order to update the {json_metadata}, the active authority is required."""
     posting_json_metadata: builtins.str
+    """@param {string} posting_json_metadata - json_string; In order to update the { posting_json_metadata },
+                                            the posting authority is required.
+    """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]: ...
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[future_extensions_pb2.future_extensions]:
+        """@param {future_extensions} extensions"""
     def __init__(
         self,
         *,

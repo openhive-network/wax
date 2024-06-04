@@ -21,14 +21,6 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class hardfork_hive(google.protobuf.message.Message):
     """Related to hardfork 23 (HIVE inception hardfork).
     Generated for every account that did not receive HIVE airdrop.
-
-    @param {string} account - account excluded from airdrop (source of amounts for airdrop)
-    @param {string} treasury - treasury that received airdrop instead of account (receiver of funds)
-    @param {string} other_affected_accounts - delegatees that lost delegations from account - filled before pre notification
-    @param {asset} hbd_transferred - (HBD) part of airdrop to treasury (sourced from various HBD balances on account)
-    @param {asset} hive_transferred - (HIVE) part of airdrop to treasury (sourced from various HIVE balances on account)
-    @param {asset} vests_converted - (VESTS) sum of all sources of VESTS on account
-    @param {asset} total_hive_from_vests - (HIVE) part of airdrop to treasury (sourced from conversion of vests_converted)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -41,17 +33,24 @@ class hardfork_hive(google.protobuf.message.Message):
     VESTS_CONVERTED_FIELD_NUMBER: builtins.int
     TOTAL_HIVE_FROM_VESTS_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - account excluded from airdrop (source of amounts for airdrop)"""
     treasury: builtins.str
+    """@param {string} treasury - treasury that received airdrop instead of account (receiver of funds)"""
     @property
-    def other_affected_accounts(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def other_affected_accounts(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """@param {string} other_affected_accounts - delegatees that lost delegations from account - filled before pre notification"""
     @property
-    def hbd_transferred(self) -> asset_pb2.asset: ...
+    def hbd_transferred(self) -> asset_pb2.asset:
+        """@param {asset} hbd_transferred - (HBD) part of airdrop to treasury (sourced from various HBD balances on account)"""
     @property
-    def hive_transferred(self) -> asset_pb2.asset: ...
+    def hive_transferred(self) -> asset_pb2.asset:
+        """@param {asset} hive_transferred - (HIVE) part of airdrop to treasury (sourced from various HIVE balances on account)"""
     @property
-    def vests_converted(self) -> asset_pb2.asset: ...
+    def vests_converted(self) -> asset_pb2.asset:
+        """@param {asset} vests_converted - (VESTS) sum of all sources of VESTS on account"""
     @property
-    def total_hive_from_vests(self) -> asset_pb2.asset: ...
+    def total_hive_from_vests(self) -> asset_pb2.asset:
+        """@param {asset} total_hive_from_vests - (HIVE) part of airdrop to treasury (sourced from conversion of vests_converted)"""
     def __init__(
         self,
         *,

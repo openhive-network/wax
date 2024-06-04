@@ -4,10 +4,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated during block processing when witness is removed from active witnesses after it was detected he have missed
  * all blocks scheduled for him for last day. No longer active after HF20.
  * @see producer_missed_operation
- *
- * @param {string} owner - witness that was shut down
  */
 export interface shutdown_witness {
+    /** @param {string} owner - witness that was shut down */
     owner: string;
 }
 export declare const shutdown_witness: {

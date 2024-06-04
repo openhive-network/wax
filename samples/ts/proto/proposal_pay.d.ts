@@ -4,16 +4,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to create_proposal_operation.
  * Generated during block processing during proposal maintenance in batches
  * for each proposal that is chosen and receives funding.
- *
- * @param {number} proposal_id - id of chosen proposal
- * @param {string} receiver - account designated to receive funding (receiver of payment)
- * @param {string} payer - treasury account, source of payment
- * @param {asset} payment - (HBD) paid amount
  */
 export interface proposal_pay {
+    /** @param {number} proposal_id - id of chosen proposal */
     proposal_id: number;
+    /** @param {string} receiver - account designated to receive funding (receiver of payment) */
     receiver: string;
+    /** @param {string} payer - treasury account, source of payment */
     payer: string;
+    /** @param {asset} payment - (HBD) paid amount */
     payment: asset | undefined;
 }
 export declare const proposal_pay: {

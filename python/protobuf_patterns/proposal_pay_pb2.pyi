@@ -20,11 +20,6 @@ class proposal_pay(google.protobuf.message.Message):
     """Related to create_proposal_operation.
     Generated during block processing during proposal maintenance in batches
     for each proposal that is chosen and receives funding.
-
-    @param {number} proposal_id - id of chosen proposal
-    @param {string} receiver - account designated to receive funding (receiver of payment)
-    @param {string} payer - treasury account, source of payment
-    @param {asset} payment - (HBD) paid amount
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -34,10 +29,14 @@ class proposal_pay(google.protobuf.message.Message):
     PAYER_FIELD_NUMBER: builtins.int
     PAYMENT_FIELD_NUMBER: builtins.int
     proposal_id: builtins.int
+    """@param {number} proposal_id - id of chosen proposal"""
     receiver: builtins.str
+    """@param {string} receiver - account designated to receive funding (receiver of payment)"""
     payer: builtins.str
+    """@param {string} payer - treasury account, source of payment"""
     @property
-    def payment(self) -> asset_pb2.asset: ...
+    def payment(self) -> asset_pb2.asset:
+        """@param {asset} payment - (HBD) paid amount"""
     def __init__(
         self,
         *,

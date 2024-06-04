@@ -19,11 +19,6 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class fill_convert_request(google.protobuf.message.Message):
     """Related to convert_operation.
     Generated during block processing after conversion delay passes and HBD is converted to HIVE.
-
-    @param {string} owner - User that requested conversion (receiver of amount_out).
-    @param {number} requestid - id of the request.
-    @param {asset} amount_in - (HBD) source of conversion.
-    @param {asset} amount_out - (HIVE) effect of conversion.
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,11 +28,15 @@ class fill_convert_request(google.protobuf.message.Message):
     AMOUNT_IN_FIELD_NUMBER: builtins.int
     AMOUNT_OUT_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - User that requested conversion (receiver of amount_out)."""
     requestid: builtins.int
+    """@param {number} requestid - id of the request."""
     @property
-    def amount_in(self) -> asset_pb2.asset: ...
+    def amount_in(self) -> asset_pb2.asset:
+        """@param {asset} amount_in - (HBD) source of conversion."""
     @property
-    def amount_out(self) -> asset_pb2.asset: ...
+    def amount_out(self) -> asset_pb2.asset:
+        """@param {asset} amount_out - (HIVE) effect of conversion."""
     def __init__(
         self,
         *,

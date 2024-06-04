@@ -18,14 +18,13 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class hardfork(google.protobuf.message.Message):
     """Related to block processing.
     Generated during block processing every time new hardfork is activated. Many related vops can follow.
-
-    @param {number} hardfork_id - number of hardfork
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     HARDFORK_ID_FIELD_NUMBER: builtins.int
     hardfork_id: builtins.int
+    """ @param {number} hardfork_id - number of hardfork"""
     def __init__(
         self,
         *,

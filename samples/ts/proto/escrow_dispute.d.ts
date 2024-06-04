@@ -3,17 +3,18 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * The operation  escrow_dispute_operation is used to raise the dispute. It may be used by { from } or { to } accounts.
  * If there is a dispute, only {agent} may release the funds.
  *
- * @param {string} from_account - Account name.
- * @param {string} to_account - Account name.
- * @param {string} agent - Account name.
- * @param {string} who - Account name. Either {to} or {agent}.
- * @param {number} escrow_id - Escrow identifier.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/28_escrow_dispute.md?ref_type=heads
  */
 export interface escrow_dispute {
+    /** @param {string} from_account - Account name. */
     from_account: string;
+    /** @param {string} to_account - Account name. */
     to_account: string;
+    /** @param {string} agent - Account name. */
     agent: string;
+    /** @param {string} who - Account name. Either {to} or {agent}. */
     who: string;
+    /** @param {number} escrow_id - Escrow identifier. */
     escrow_id: number;
 }
 export declare const escrow_dispute: {

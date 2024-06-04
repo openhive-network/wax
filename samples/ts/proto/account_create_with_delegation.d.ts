@@ -2,7 +2,11 @@ import { asset } from "./asset.js";
 import { authority } from "./authority.js";
 import { future_extensions } from "./future_extensions.js";
 export declare const protobufPackage = "hive.protocol.buffers";
-/** Deprecated. */
+/**
+ * Deprecated.
+ *
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/41_account_create_with_delegation.md?ref_type=heads
+ */
 export interface account_create_with_delegation {
     fee: asset | undefined;
     delegation: asset | undefined;

@@ -5,14 +5,13 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * When user transferred HIVE to treasury the amount is immediately converted to HBD and this vops is generated.
  * Also generated during block processing every day during daily proposal maintenance.
  * Note: portion of HIVE on treasury balance is converted to HBD and thus increases funds available for proposals.
- *
- * @param {string} treasury - treasury (source of hive_amount_in and receiver of hbd_amount_out)
- * @param {asset} hive_amount_in - (HIVE) source of conversion
- * @param {asset} hbd_amount_out - (HBD) effect of conversion
  */
 export interface dhf_conversion {
+    /** @param {string} treasury - treasury (source of hive_amount_in and receiver of hbd_amount_out) */
     treasury: string;
+    /** @param {asset} hive_amount_in - (HIVE) source of conversion */
     hive_amount_in: asset | undefined;
+    /** @param {asset} hbd_amount_out - (HBD) effect of conversion */
     hbd_amount_out: asset | undefined;
 }
 export declare const dhf_conversion: {

@@ -4,11 +4,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * This operation is used in the process of block_validity_vote
  * (see https://hive.blog/hive-139531/@blocktrades/one-block-irreversibility-for-delegated-proof-of-stake-dpos).
  *
- * @param {string} witness
- * @param {string} block_id
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/16_witness_block_approve.md?ref_type=heads
  */
 export interface witness_block_approve {
+    /** @param {string} witness */
     witness: string;
+    /** @param {string} block_id */
     block_id: string;
 }
 export declare const witness_block_approve: {

@@ -4,12 +4,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated when delete_comment_operation was executed but ignored.
  * Note: prior to HF19 it was possible to execute delete on comment that had net positive votes. Such operation was ignored.
  * This is the moment this vop is generated.
- *
- * @param {string} author - author of attempted-delete comment
- * @param {string} permlink - permlink of attempted-delete comment
  */
 export interface ineffective_delete_comment {
+    /** @param {string} author - author of attempted-delete comment */
     author: string;
+    /** @param {string} permlink - permlink of attempted-delete comment */
     permlink: string;
 }
 export declare const ineffective_delete_comment: {

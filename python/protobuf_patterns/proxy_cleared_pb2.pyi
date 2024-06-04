@@ -32,9 +32,6 @@ class proxy_cleared(google.protobuf.message.Message):
     `update_proposal_votes_operation`, `account_witness_proxy_operation`, `account_witness_vote_operation`:
     After HF25 a vop `proxy_cleared_operation` is generated automatically after `HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD` time ( 365 days ).
     4) {"type":"proxy_cleared_operation","value":{"account":"ACCOUNT","proxy":"OLD-PROXY-ACCOUNT-NAME"}}
-
-    @param {string} account - user that sets/unsets a proxy
-    @param {string} proxy - proxy user that facilitates voting on witnesses
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,7 +39,9 @@ class proxy_cleared(google.protobuf.message.Message):
     ACCOUNT_FIELD_NUMBER: builtins.int
     PROXY_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - user that sets/unsets a proxy"""
     proxy: builtins.str
+    """@param {string} proxy - proxy user that facilitates voting on witnesses"""
     def __init__(
         self,
         *,

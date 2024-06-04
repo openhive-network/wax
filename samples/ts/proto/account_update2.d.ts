@@ -31,29 +31,40 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * 'account_name_1', weight = 1
  * The above settings mean that at least two signatures are needed to post on behalf of this account.
  *
- * @param {string} account - Account name, it cannot be updated.
- * @param {authority} owner - Optional. In order to update the {owner}, the owner authority is required.
- *                            It may be changed 2 times per hour.
- *                            If a user provides a new authority, the old one will be deleted.
- * @param {authority} active - Optional. In order to update the {active}, the active authority is required.
- *                             If a user provides a new authority, the old one will be deleted.
- * @param {authority} posting - Optional. In order to update the {posting}, the active authority is required.
- *                              If a user provides a new authority, the old one will be deleted.
- * @param {string} memo_key - Optional. In order to update the {memo_key}, the active authority is required.
- *                            If a user provides a new key, the old one will be deleted.
- * @param {string} json_metadata - json_string; In order to update the {json_metadata}, the active authority is required.
- * @param {string} posting_json_metadata - json_string; In order to update the { posting_json_metadata },
- *                                         the posting authority is required.
- * @param {future_extensions} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/43_account_update2.md?ref_type=heads
  */
 export interface account_update2 {
+    /** @param {string} account - Account name, it cannot be updated. */
     account: string;
+    /**
+     * @param {authority} owner - Optional. In order to update the {owner}, the owner authority is required.
+     *                            It may be changed 2 times per hour.
+     *                            If a user provides a new authority, the old one will be deleted.
+     */
     owner?: authority | undefined;
+    /**
+     * @param {authority} active - Optional. In order to update the {active}, the active authority is required.
+     *                             If a user provides a new authority, the old one will be deleted.
+     */
     active?: authority | undefined;
+    /**
+     * @param {authority} posting - Optional. In order to update the {posting}, the active authority is required.
+     *                              If a user provides a new authority, the old one will be deleted.
+     */
     posting?: authority | undefined;
+    /**
+     * @param {string} memo_key - Optional. In order to update the {memo_key}, the active authority is required.
+     *                            If a user provides a new key, the old one will be deleted.
+     */
     memo_key?: string | undefined;
+    /** @param {string} json_metadata - json_string; In order to update the {json_metadata}, the active authority is required. */
     json_metadata: string;
+    /**
+     * @param {string} posting_json_metadata - json_string; In order to update the { posting_json_metadata },
+     *                                         the posting authority is required.
+     */
     posting_json_metadata: string;
+    /** @param {future_extensions} extensions */
     extensions: future_extensions[];
 }
 export declare const account_update2: {

@@ -6,14 +6,13 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * filling limit order (second or third operation) when, after filling most of it, remaining funds are too small (would round
  * to zero when sold). Finally also generated during block processing for orders that reached expiration time without being filled.
  * @see fill_order
- *
- * @param {string} seller - user that placed an order (receiver of amount_back)
- * @param {number} orderid - id of the order
- * @param {asset} amount_back - (HIVE or HBD) remaining funds from original order that were not traded until cancellation
  */
 export interface limit_order_cancelled {
+    /** @param {string} seller - user that placed an order (receiver of amount_back) */
     seller: string;
+    /** @param {number} orderid - id of the order */
     orderid: number;
+    /** @param {asset} amount_back - (HIVE or HBD) remaining funds from original order that were not traded until cancellation */
     amount_back: asset | undefined;
 }
 export declare const limit_order_cancelled: {

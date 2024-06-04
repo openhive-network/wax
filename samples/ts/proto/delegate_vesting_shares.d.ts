@@ -13,14 +13,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * should be created with {vesting_shares = 0}. When a delegation is removed, the delegated vesting shares
  * are frozen for five days (HIVE_DELEGATION_RETURN_PERIOD_HF20) to prevent voting twice.
  *
- * @param {string} delegator - The account delegating vesting shares.
- * @param {string} delegatee - The account receiving vesting shares.
- * @param {asset} vesting_shares - The amount of vesting shares to be delegated.
- *                                 Minimal amount = 1/3 of the fee for creating a new account.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/40_delegate_vesting_shares.md?ref_type=heads
  */
 export interface delegate_vesting_shares {
+    /** @param {string} delegator - The account delegating vesting shares. */
     delegator: string;
+    /** @param {string} delegatee - The account receiving vesting shares. */
     delegatee: string;
+    /**
+     * @param {asset} vesting_shares - The amount of vesting shares to be delegated.
+     *                                 Minimal amount = 1/3 of the fee for creating a new account.
+     */
     vesting_shares: asset | undefined;
 }
 export declare const delegate_vesting_shares: {

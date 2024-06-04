@@ -4,15 +4,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to hardfork 1.
  * Generated for every account with nonzero vesting balance.
  * Note: due to too small precision of VESTS asset it was increased by 6 digits, meaning all underlying
- * amounts had to be multiplied by million.
- *
- * @param {string} owner - affected account (source of vesting_shares_before_split and receiver of vesting_shares_after_split)
- * @param {asset} vesting_shares_before_split - (VESTS) balance before split
- * @param {asset} vesting_shares_after_split - (VESTS) balance after split
+ * amounts had to be multiplied by million.s
  */
 export interface vesting_shares_split {
+    /** @param {string} owner - affected account (source of vesting_shares_before_split and receiver of vesting_shares_after_split) */
     owner: string;
+    /** @param {asset} vesting_shares_before_split - (VESTS) balance before split */
     vesting_shares_before_split: asset | undefined;
+    /** @param {asset} vesting_shares_after_split - (VESTS) balance after split */
     vesting_shares_after_split: asset | undefined;
 }
 export declare const vesting_shares_split: {

@@ -21,10 +21,6 @@ class interest(google.protobuf.message.Message):
     Generated when operation modified HBD balance and account received interest payment.
     Interest is stored in related balance (liquid when liquid was modified, savings when savings was modified).
     Note: since HF25 interest is not calculated nor paid on liquid balance.
-
-    @param {string} owner - user that had his HBD balance modified (receiver of interest)
-    @param {asset} interest - (HBD) amount of interest paid
-    @param {bool} is_saved_into_hbd_balance - true when liquid balance was modified (not happening after HF25)
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,9 +29,12 @@ class interest(google.protobuf.message.Message):
     INTEREST_FIELD_NUMBER: builtins.int
     IS_SAVED_INTO_HBD_BALANCE_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - user that had his HBD balance modified (receiver of interest)"""
     @property
-    def interest(self) -> asset_pb2.asset: ...
+    def interest(self) -> asset_pb2.asset:
+        """@param {asset} interest - (HBD) amount of interest paid"""
     is_saved_into_hbd_balance: builtins.bool
+    """@param {bool} is_saved_into_hbd_balance - true when liquid balance was modified (not happening after HF25)"""
     def __init__(
         self,
         *,

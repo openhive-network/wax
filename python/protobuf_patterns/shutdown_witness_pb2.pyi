@@ -20,14 +20,13 @@ class shutdown_witness(google.protobuf.message.Message):
     Generated during block processing when witness is removed from active witnesses after it was detected he have missed
     all blocks scheduled for him for last day. No longer active after HF20.
     @see producer_missed_operation
-
-    @param {string} owner - witness that was shut down
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     OWNER_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner - witness that was shut down"""
     def __init__(
         self,
         *,

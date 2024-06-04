@@ -19,14 +19,13 @@ class producer_missed(google.protobuf.message.Message):
     """Related to block processing.
     Generated during block processing when witness failed to produce his block on time.
     @see shutdown_witness
-
-    @param {string} producer - witness that failed to produce his block on time
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     PRODUCER_FIELD_NUMBER: builtins.int
     producer: builtins.str
+    """@param {string} producer - witness that failed to produce his block on time"""
     def __init__(
         self,
         *,

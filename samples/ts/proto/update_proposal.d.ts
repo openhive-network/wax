@@ -13,19 +13,20 @@ export interface update_proposal_extension {
  * change subject, permlink and {end_date} (using {extensions}).
  * In order to update the proposal parameters, all parameters should be entered.
  *
- * @param {number} proposal_id
- * @param {string} creator
- * @param {asset} daily_pay
- * @param {string} subject
- * @param {string} permlink
- * @param {update_proposal_extension} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/47_update_proposal.md?ref_type=heads
  */
 export interface update_proposal {
+    /** @param {number} proposal_id */
     proposal_id: string;
+    /** @param {string} creator */
     creator: string;
+    /** @param {asset} daily_pay */
     daily_pay: asset | undefined;
+    /** @param {string} subject */
     subject: string;
+    /** @param {string} permlinks */
     permlink: string;
+    /** @param {update_proposal_extension} extensions */
     extensions: update_proposal_extension[];
 }
 export declare const update_proposal_end_date: {

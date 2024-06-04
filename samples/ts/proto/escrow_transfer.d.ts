@@ -12,29 +12,32 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * If there is a dispute, the operation: escrow_dispute_operation should be used.
  * In case of the escrow releases, the operation: escrow_release_operation should be used.
  *
- * @param {string} from_account - Account name.
- * @param {string} to_account - Account name.
- * @param {string} agent - Account name.
- * @param {number} escrow_id - It is defined by the sender. It should be unique for { from }.
- * @param {asset} hbd_amount - Escrow amount.
- * @param {asset} hive_amount - Escrow amount.
- * @param {asset} fee - The fee amount depends on the agent. The fee is paid to the agent when approved.
- * @param {string} ratification_deadline - Time for approval for { to } and { agent }.
- *                                         If the escrow is not approved till { ratification_deadline },
- *                                         it will be rejected and all funds returned to { from }.
- * @param {string} escrow_expiration - See description of escrow_release_operation.
- * @param {string} json_meta - json string.
+ * Descritpion https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/27_escrow_transfer.md?ref_type=heads
  */
 export interface escrow_transfer {
+    /** @param {string} from_account - Account name. */
     from_account: string;
+    /** @param {string} to_account - Account name. */
     to_account: string;
+    /** @param {string} agent - Account name. */
     agent: string;
+    /** @param {number} escrow_id - It is defined by the sender. It should be unique for { from }. */
     escrow_id: number;
+    /** @param {asset} hbd_amount - Escrow amount. */
     hbd_amount: asset | undefined;
+    /** @param {asset} hive_amount - Escrow amount. */
     hive_amount: asset | undefined;
+    /** @param {asset} fee - The fee amount depends on the agent. The fee is paid to the agent when approved. */
     fee: asset | undefined;
+    /**
+     * @param {string} ratification_deadline - Time for approval for { to } and { agent }.
+     *                                         If the escrow is not approved till { ratification_deadline },
+     *                                         it will be rejected and all funds returned to { from }.
+     */
     ratification_deadline: string;
+    /** @param {string} escrow_expiration - See description of escrow_release_operation. */
     escrow_expiration: string;
+    /** @param {string} json_meta - json string. */
     json_meta: string;
 }
 export declare const escrow_transfer: {

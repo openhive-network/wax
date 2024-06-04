@@ -5,10 +5,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated during block processing potentially every block, but only if there is nonzero transfer. Transfer occurs
  * if there are assets on OBSOLETE_TREASURY_ACCOUNT ('steem.dao'). They are consolidated from all balances (per asset
  * type) and moved to NEW_HIVE_TREASURY_ACCOUNT ('hive.fund').
- *
- * @param {asset} total_moved - (HIVE, VESTS or HBD) funds moved from old to new treasury
  */
 export interface consolidate_treasury_balance {
+    /** @param {asset} total_moved - (HIVE, VESTS or HBD) funds moved from old to new treasury */
     total_moved: asset[];
 }
 export declare const consolidate_treasury_balance: {

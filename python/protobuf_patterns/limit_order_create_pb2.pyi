@@ -27,14 +27,7 @@ class limit_order_create(google.protobuf.message.Message):
     If there are two orders with the same price, the older one is matched.
     The operation is used by the markets see: https://wallet.hive.blog/market
 
-    @param {string} owner
-    @param {number} orderid - an ID assigned by owner, must be unique.
-    @param {asset} amount_to_sell
-    @param {asset} min_to_receive
-    @param {bool} fill_or_kill - If fill_or_kill = true, then the operation is executed immediately or it fails
-                                 (the operation is not added to the block). 
-                                 If fill_or_kill = false, then the order is valid till 'expiration'.
-    @param {string} expiration
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/05_limit_order_create.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -46,13 +39,22 @@ class limit_order_create(google.protobuf.message.Message):
     FILL_OR_KILL_FIELD_NUMBER: builtins.int
     EXPIRATION_FIELD_NUMBER: builtins.int
     owner: builtins.str
+    """@param {string} owner"""
     orderid: builtins.int
+    """@param {number} orderid - an ID assigned by owner, must be unique."""
     @property
-    def amount_to_sell(self) -> asset_pb2.asset: ...
+    def amount_to_sell(self) -> asset_pb2.asset:
+        """@param {asset} amount_to_sell"""
     @property
-    def min_to_receive(self) -> asset_pb2.asset: ...
+    def min_to_receive(self) -> asset_pb2.asset:
+        """@param {asset} min_to_receive"""
     fill_or_kill: builtins.bool
+    """@param {bool} fill_or_kill - If fill_or_kill = true, then the operation is executed immediately or it fails
+                                 (the operation is not added to the block). 
+                                 If fill_or_kill = false, then the order is valid till 'expiration'.
+    """
     expiration: builtins.str
+    """@param {string} expiration"""
     def __init__(
         self,
         *,

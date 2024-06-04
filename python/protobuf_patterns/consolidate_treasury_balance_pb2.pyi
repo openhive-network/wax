@@ -23,15 +23,14 @@ class consolidate_treasury_balance(google.protobuf.message.Message):
     Generated during block processing potentially every block, but only if there is nonzero transfer. Transfer occurs
     if there are assets on OBSOLETE_TREASURY_ACCOUNT ('steem.dao'). They are consolidated from all balances (per asset
     type) and moved to NEW_HIVE_TREASURY_ACCOUNT ('hive.fund').
-
-    @param {asset} total_moved - (HIVE, VESTS or HBD) funds moved from old to new treasury
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     TOTAL_MOVED_FIELD_NUMBER: builtins.int
     @property
-    def total_moved(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[asset_pb2.asset]: ...
+    def total_moved(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[asset_pb2.asset]:
+        """@param {asset} total_moved - (HIVE, VESTS or HBD) funds moved from old to new treasury"""
     def __init__(
         self,
         *,

@@ -3,12 +3,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to block processing.
  * Generated during block processing every block for current witness.
- *
- * @param {string} producer - witness (receiver of vesting_shares)
- * @param {asset} vesting_shares - (VESTS or HIVE) reward for block production (HIVE only during first 30 days after genesis)
  */
 export interface producer_reward {
+    /** @param {string} producer - witness (receiver of vesting_shares) */
     producer: string;
+    /** @param {asset} vesting_shares - (VESTS or HIVE) reward for block production (HIVE only during first 30 days after genesis) */
     vesting_shares: asset | undefined;
 }
 export declare const producer_reward: {

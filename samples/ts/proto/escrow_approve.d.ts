@@ -7,19 +7,20 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * of them explicitly rejected the escrow, the escrow is rejected.
  * If {agent} and {to} have approved the escrow, the {fee} is transferred from temporary balance to {agent} account.
  *
- * @param {string} from_account - Account name.
- * @param {string} to_account - Account name.
- * @param {string} agent - Account name.
- * @param {string} who - Account name. Either {to} or {agent}.
- * @param {number} escrow_id - Escrow identifier.
- * @param {bool} approve - approve = true; (approve = false explicitly rejects the escrow)
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/31_escrow_approve.md?ref_type=heads
  */
 export interface escrow_approve {
+    /** @param {string} from_account - Account name. */
     from_account: string;
+    /** @param {string} to_account - Account name. */
     to_account: string;
+    /** @param {string} agent - Account name. */
     agent: string;
+    /** @param {string} who - Account name. Either {to} or {agent}. */
     who: string;
+    /** @param {number} escrow_id - Escrow identifier. */
     escrow_id: number;
+    /** @param {bool} approve - approve = true; (approve = false explicitly rejects the escrow) */
     approve: boolean;
 }
 export declare const escrow_approve: {

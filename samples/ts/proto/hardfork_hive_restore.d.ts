@@ -6,16 +6,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Note: the late airdrop did not apply properly since HIVE that the accounts should receive did not account for
  * HIVE from converted VESTS. [how was it resolved?]
  * @see hardfork_hive
- *
- * @param {string} account - account to receive late airdrop (receiver of funds)
- * @param {string} treasury - treasury, source of late airdrop
- * @param {asset} hbd_transferred - (HBD) part of airdrop (equals related hardfork_hive_operation.hbd_transferred)
- * @param {asset} hive_transferred - (HIVE) part of airdrop (equals related hardfork_hive_operation.hive_transferred)
  */
 export interface hardfork_hive_restore {
+    /** @param {string} account - account to receive late airdrop (receiver of funds) */
     account: string;
+    /** @param {string} treasury - treasury, source of late airdrop */
     treasury: string;
+    /** @param {asset} hbd_transferred - (HBD) part of airdrop (equals related hardfork_hive_operation.hbd_transferred) */
     hbd_transferred: asset | undefined;
+    /** @param {asset} hive_transferred - (HIVE) part of airdrop (equals related hardfork_hive_operation.hive_transferred) */
     hive_transferred: asset | undefined;
 }
 export declare const hardfork_hive_restore: {

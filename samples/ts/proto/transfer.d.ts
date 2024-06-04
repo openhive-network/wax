@@ -7,15 +7,16 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Memo for the transaction can be encrypted if message is started with '#'.
  * Private Memo Key must already be in the wallet for encrypted memo to work.
  *
- * @param {string} from_account - The account the funds are coming from.
- * @param {string} to_account - The account the funds are going to.
- * @param {asset} amount - The amount of asset to transfer from @ref from_account to @ref to_account, the allowed currency: HIVE and HBD.
- * @param {string} memo - The memo is plain-text, any encryption on the memo is up to a higher level protocol, must be shorter than 2048.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/02_transfer.md?ref_type=heads
  */
 export interface transfer {
+    /** @param {string} from_account - The account the funds are coming from. */
     from_account: string;
+    /** @param {string} to_account - The account the funds are going to. */
     to_account: string;
+    /** @param {asset} amount - The amount of asset to transfer from @ref from_account to @ref to_account, the allowed currency: HIVE and HBD. */
     amount: asset | undefined;
+    /** @param {string} memo - The memo is plain-text, any encryption on the memo is up to a higher level protocol, must be shorter than 2048. */
     memo: string;
 }
 export declare const transfer: {

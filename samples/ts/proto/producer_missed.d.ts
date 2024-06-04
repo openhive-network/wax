@@ -3,10 +3,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to block processing.
  * Generated during block processing when witness failed to produce his block on time.
  * @see shutdown_witness
- *
- * @param {string} producer - witness that failed to produce his block on time
  */
 export interface producer_missed {
+    /** @param {string} producer - witness that failed to produce his block on time */
     producer: string;
 }
 export declare const producer_missed: {

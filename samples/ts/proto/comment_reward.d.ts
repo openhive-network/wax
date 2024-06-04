@@ -7,22 +7,21 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * @see curation_reward_operation
  * @see comment_benefactor_reward_operation
  * @see author_reward_operation
- *
- * @param {string} author - author of the comment
- * @param {string} permlink - permlink of the comment
- * @param {asset} payout - (HBD) total value of comment reward recalculated to HBD
- * @param {number} author_rewards - (HIVE satoshi) raw author reward (@see author_reward_operation) [is it needed?]
- * @param {asset} total_payout_value - (HBD) overall author reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
- * @param {asset} curator_payout_value - (HBD) overall curation reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
- * @param {asset} beneficiary_payout_value - (HBD) overall beneficiary reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?]
  */
 export interface comment_reward {
+    /** @param {string} author - author of the comment */
     author: string;
+    /** @param {string} permlink - permlink of the comment */
     permlink: string;
+    /** @param {asset} payout - (HBD) total value of comment reward recalculated to HBD */
     payout: asset | undefined;
+    /** @param {number} author_rewards - (HIVE satoshi) raw author reward (@see author_reward_operation) [is it needed?] */
     author_rewards: string;
+    /** @param {asset} total_payout_value - (HBD) overall author reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?] */
     total_payout_value: asset | undefined;
+    /** @param {asset} curator_payout_value - (HBD) overall curation reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?] */
     curator_payout_value: asset | undefined;
+    /** @param {asset} beneficiary_payout_value - (HBD) overall beneficiary reward (from multiple cashouts prior to HF17) recalculated to HBD [is it needed?] */
     beneficiary_payout_value: asset | undefined;
 }
 export declare const comment_reward: {

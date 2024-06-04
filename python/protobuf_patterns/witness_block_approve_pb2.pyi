@@ -20,8 +20,7 @@ class witness_block_approve(google.protobuf.message.Message):
     This operation is used in the process of block_validity_vote
     (see https://hive.blog/hive-139531/@blocktrades/one-block-irreversibility-for-delegated-proof-of-stake-dpos).
 
-    @param {string} witness
-    @param {string} block_id
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/16_witness_block_approve.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -29,7 +28,9 @@ class witness_block_approve(google.protobuf.message.Message):
     WITNESS_FIELD_NUMBER: builtins.int
     BLOCK_ID_FIELD_NUMBER: builtins.int
     witness: builtins.str
+    """@param {string} witness"""
     block_id: builtins.str
+    """@param {string} block_id"""
     def __init__(
         self,
         *,

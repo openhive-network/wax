@@ -34,18 +34,21 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * A downvoting user doesn’t receive the curation reward.
  * Downvoting may affect the author of the comment's reputation when a user who downvotes has a higher reputation than the author.
  *
- * @param {string} voter - Account name.
- * @param {string} author - Account name, the author of the post or the comment.
- * @param {string} permlink - The identifier of the post or comment.
- * @param {number} weight - It defines how many percent of the non-used voting power a user wants to use.
- *                          Allowed values from -10000 (-100%) to 10000 (100%).
- *                          Downvotes: from -10000 (-100%) to 0.
- *                          Upvotes: from 0 to 10000 (100%).
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/00_vote.md?ref_type=heads
  */
 export interface vote {
+    /** @param {string} voter - Account name. */
     voter: string;
+    /** @param {string} author - Account name, the author of the post or the comment. */
     author: string;
+    /** @param {string} permlink - The identifier of the post or comment. */
     permlink: string;
+    /**
+     * @param {number} weight - It defines how many percent of the non-used voting power a user wants to use.
+     *                          Allowed values from -10000 (-100%) to 10000 (100%).
+     *                          Downvotes: from -10000 (-100%) to 0.
+     *                          Upvotes: from 0 to 10000 (100%).
+     */
     weight: number;
 }
 export declare const vote: {

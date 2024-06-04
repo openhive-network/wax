@@ -16,12 +16,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * `update_proposal_votes_operation`, `account_witness_proxy_operation`, `account_witness_vote_operation`:
  * After HF25 a vop `proxy_cleared_operation` is generated automatically after `HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD` time ( 365 days ).
  * 4) {"type":"proxy_cleared_operation","value":{"account":"ACCOUNT","proxy":"OLD-PROXY-ACCOUNT-NAME"}}
- *
- * @param {string} account - user that sets/unsets a proxy
- * @param {string} proxy - proxy user that facilitates voting on witnesses
  */
 export interface proxy_cleared {
+    /** @param {string} account - user that sets/unsets a proxy */
     account: string;
+    /** @param {string} proxy - proxy user that facilitates voting on witnesses */
     proxy: string;
 }
 export declare const proxy_cleared: {

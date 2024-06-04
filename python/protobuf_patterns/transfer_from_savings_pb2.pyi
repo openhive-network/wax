@@ -19,11 +19,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class transfer_from_savings(google.protobuf.message.Message):
     """Funds withdrawals from the savings to an account take three days.
 
-    @param {string} from_account - Account name.
-    @param {number} request_id - The number is given by a user. Should be unique for a user.
-    @param {string} to_account - Account name.
-    @param {asset} amount - The allowed currency: HIVE and HBD, amount > 0.
-    @param {string} memo - Have to be UTF8,  must be shorter than 2048.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/33_transfer_from_savings.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -34,11 +30,16 @@ class transfer_from_savings(google.protobuf.message.Message):
     AMOUNT_FIELD_NUMBER: builtins.int
     MEMO_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - Account name."""
     request_id: builtins.int
+    """@param {number} request_id - The number is given by a user. Should be unique for a user."""
     to_account: builtins.str
+    """@param {string} to_account - Account name."""
     @property
-    def amount(self) -> asset_pb2.asset: ...
+    def amount(self) -> asset_pb2.asset:
+        """@param {asset} amount - The allowed currency: HIVE and HBD, amount > 0."""
     memo: builtins.str
+    """@param {string} memo - Have to be UTF8,  must be shorter than 2048."""
     def __init__(
         self,
         *,

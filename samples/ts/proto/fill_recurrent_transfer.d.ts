@@ -7,18 +7,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Note: in case of accumulation of very big amount of recurrent transfers to be executed in particular block, some
  * are going to be postponed to next block(s) and so will be generation of this vop.
  * @see failed_recurrent_transfer
- *
- * @param {string} from_account - user that initiated the transfer (source of amount)
- * @param {string} to_account - user that is target of transfer (receiver of amount)
- * @param {asset} amount - (HIVE of HBD) amount transferred in current iteration
- * @param {string} memo - memo attached to the transfer
- * @param {number} remaining_executions - number of remaining pending transfers
  */
 export interface fill_recurrent_transfer {
+    /** @param {string} from_account - user that initiated the transfer (source of amount) */
     from_account: string;
+    /** @param {string} to_account - user that is target of transfer (receiver of amount) */
     to_account: string;
+    /** @param {asset} amount - (HIVE of HBD) amount transferred in current iteration */
     amount: asset | undefined;
+    /** @param {string} memo - memo attached to the transfer */
     memo: string;
+    /** @param {number} remaining_executions - number of remaining pending transferss */
     remaining_executions: number;
 }
 export declare const fill_recurrent_transfer: {

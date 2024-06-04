@@ -2,11 +2,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Funds withdrawals from the savings can be canceled at any time before it is executed.
  *
- * @param {string} from_account
- * @param {number} request_id
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/34_cancel_transfer_from_savings.md?ref_type=heads
  */
 export interface cancel_transfer_from_savings {
+    /** @param {string} from_account */
     from_account: string;
+    /** @param {number} request_id */
     request_id: number;
 }
 export declare const cancel_transfer_from_savings: {

@@ -21,9 +21,6 @@ class dhf_funding(google.protobuf.message.Message):
     Generated during block processing every proposal maintenance period.
     Note: while the fund receives part of inflation every block, the amount is recorded aside and only when there are
     proposal payouts (when new funds matter), there is generation of this vop.
-
-    @param {string} treasury - treasury account (receiver of additional_funds)
-    @param {asset} additional_funds - (HBD) portion inflation accumulated since previous maintenance period
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -31,8 +28,10 @@ class dhf_funding(google.protobuf.message.Message):
     TREASURY_FIELD_NUMBER: builtins.int
     ADDITIONAL_FUNDS_FIELD_NUMBER: builtins.int
     treasury: builtins.str
+    """@param {string} treasury - treasury account (receiver of additional_funds)"""
     @property
-    def additional_funds(self) -> asset_pb2.asset: ...
+    def additional_funds(self) -> asset_pb2.asset:
+        """@param {asset} additional_funds - (HBD) portion inflation accumulated since previous maintenance period"""
     def __init__(
         self,
         *,

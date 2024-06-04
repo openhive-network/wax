@@ -24,8 +24,7 @@ class decline_voting_rights(google.protobuf.message.Message):
     During HIVE_OWNER_AUTH_RECOVERY_PERIOD days after creation, the operation may be canceled
     using the operation declive_voting_rights_operation with {decline = false}.
 
-    @param {string} account - Account name.
-    @param {bool} decline
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/36_decline_voting_rights.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -33,7 +32,9 @@ class decline_voting_rights(google.protobuf.message.Message):
     ACCOUNT_FIELD_NUMBER: builtins.int
     DECLINE_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account - Account name."""
     decline: builtins.bool
+    """@param {bool} decline"""
     def __init__(
         self,
         *,

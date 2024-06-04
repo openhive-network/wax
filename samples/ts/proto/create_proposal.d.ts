@@ -11,23 +11,24 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Every hour all active proposals are processed and taking into consideration a current number of votes payments are done.
  * Accounts can create/remove votes anytime.
  *
- * @param {string} creator
- * @param {string} receiver
- * @param {string} start_date
- * @param {string} end_date
- * @param {asset} daily_pay
- * @param {string} subject
- * @param {string} permlink
- * @param {future_extensions} extensions
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/44_create_proposal.md?ref_type=heads
  */
 export interface create_proposal {
+    /** @param {string} creator */
     creator: string;
+    /** @param {string} receiver */
     receiver: string;
+    /** @param {string} start_date */
     start_date: string;
+    /** @param {asset} end_date */
     end_date: string;
+    /** @param {asset} daily_pay */
     daily_pay: asset | undefined;
+    /** @param {string} subject */
     subject: string;
+    /** @param {string} permlink */
     permlink: string;
+    /** @param {future_extensions} extensions */
     extensions: future_extensions[];
 }
 export declare const create_proposal: {

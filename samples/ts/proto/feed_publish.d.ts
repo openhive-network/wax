@@ -5,12 +5,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * The witnesses publish the exchange rate between Hive and HBD.
  * Only the exchange rate published by the top 20 witnesses is used to define the exchange rate.
  *
- * @param {string} publisher - The witness.
- * @param {price} exchange_rate - How many HBD the 1 Hive should cost
- *                                Example: "base":"0.345 HBD","quote":"1.000 HIVE"
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/07_feed_publish.md?ref_type=heads
  */
 export interface feed_publish {
+    /** @param {string} publisher - The witness. */
     publisher: string;
+    /**
+     * @param {price} exchange_rate - How many HBD the 1 Hive should cost
+     *                                Example: "base":"0.345 HBD","quote":"1.000 HIVE"
+     */
     exchange_rate: price | undefined;
 }
 export declare const feed_publish: {

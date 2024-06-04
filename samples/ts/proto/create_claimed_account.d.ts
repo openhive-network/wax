@@ -6,26 +6,29 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Pending claimed accounts (see claim_account_operation).
  * After executing the operation create_claimed_account_operation, a new account is created.
  *
- * @param {string} creator - An account who create a new account.
- * @param {string} new_account_name - Account name.
- *                                    Valid account name may consist of many parts separated by a dot,
- *                                    total may have up to 16 characters, parts have to start from a letter,
- *                                    may be followed by numbers, or “-“.
- * @param {authority} owner
- * @param {authority} active
- * @param {authority} posting
- * @param {string} memo_key
- * @param {string} json_metadata - Json string.
- * @param {future_extensions} extensions - Not currently used.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/23_create_claimed_account.md?ref_type=heads
  */
 export interface create_claimed_account {
+    /** @param {string} creator - An account who create a new account. */
     creator: string;
+    /**
+     * @param {string} new_account_name - Account name.
+     *                                    Valid account name may consist of many parts separated by a dot,
+     *                                    total may have up to 16 characters, parts have to start from a letter,
+     *                                    may be followed by numbers, or “-“.
+     */
     new_account_name: string;
+    /** @param {authority} owner */
     owner: authority | undefined;
+    /** @param {authority} active */
     active: authority | undefined;
+    /** @param {authority} posting */
     posting: authority | undefined;
+    /** @param {string} memo_key */
     memo_key: string;
+    /** @param {string} json_metadata - Json string. */
     json_metadata: string;
+    /** @param {future_extensions} extensions - Not currently used. */
     extensions: future_extensions[];
 }
 export declare const create_claimed_account: {

@@ -20,9 +20,6 @@ class ineffective_delete_comment(google.protobuf.message.Message):
     Generated when delete_comment_operation was executed but ignored.
     Note: prior to HF19 it was possible to execute delete on comment that had net positive votes. Such operation was ignored.
     This is the moment this vop is generated.
-
-    @param {string} author - author of attempted-delete comment
-    @param {string} permlink - permlink of attempted-delete comment
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -30,7 +27,9 @@ class ineffective_delete_comment(google.protobuf.message.Message):
     AUTHOR_FIELD_NUMBER: builtins.int
     PERMLINK_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - author of attempted-delete comment"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of attempted-delete comment"""
     def __init__(
         self,
         *,

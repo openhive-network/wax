@@ -9,19 +9,20 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * If a user wants to become a witness, the operation witness_update_operation should be created.
  * If the witness doesn’t want to be a witness any more, the operation witness_update_operation with empty { block_signing_key }
  * should be created.
- *
- * @param {string} owner - The witness who wants to update properties or a user who wants to become a witness.
- * @param {string} url - url to information about witness.
- * @param {string} block_signing_key - Public block signing key.
- * @param {legacy_chain_properties} props
- * @param {asset} fee - The asset is validated (the format should be correct and should be expressed in Hive),
- *                      but the fee is currently ignored.
  */
 export interface witness_update {
+    /** @param {string} owner - The witness who wants to update properties or a user who wants to become a witness. */
     owner: string;
+    /** @param {string} url - url to information about witness. */
     url: string;
+    /** @param {string} block_signing_key - Public block signing key. */
     block_signing_key: string;
+    /** @param {legacy_chain_properties} props */
     props: legacy_chain_properties | undefined;
+    /**
+     * @param {asset} fee - The asset is validated (the format should be correct and should be expressed in Hive),
+     *                      but the fee is currently ignored.
+     */
     fee: asset | undefined;
 }
 export declare const witness_update: {

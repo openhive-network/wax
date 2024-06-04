@@ -21,11 +21,6 @@ class fill_vesting_withdraw(google.protobuf.message.Message):
     Generated during block processing in batches for each active withdraw route (including implied
     from_account(VESTS)->from_account(HIVE)) each time vesting withdrawal period passes.
     Note: not generated for implied route when all funds were already distributed along explicit routes
-
-    @param {string} from_account - user that activated power down
-    @param {string} to_account - target of vesting route (potentially the same as from_account - receiver of deposited)
-    @param {asset} withdraw - (VESTS) source amount
-    @param {asset} deposited - (HIVE or VESTS) [converted] target amount
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -35,11 +30,15 @@ class fill_vesting_withdraw(google.protobuf.message.Message):
     WITHDRAWN_FIELD_NUMBER: builtins.int
     DEPOSITED_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - user that activated power down"""
     to_account: builtins.str
+    """@param {string} to_account - target of vesting route (potentially the same as from_account - receiver of deposited)"""
     @property
-    def withdrawn(self) -> asset_pb2.asset: ...
+    def withdrawn(self) -> asset_pb2.asset:
+        """@param {asset} withdraw - (VESTS) source amount"""
     @property
-    def deposited(self) -> asset_pb2.asset: ...
+    def deposited(self) -> asset_pb2.asset:
+        """ @param {asset} deposited - (HIVE or VESTS) [converted] target amount"""
     def __init__(
         self,
         *,

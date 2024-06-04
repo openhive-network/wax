@@ -4,18 +4,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to transfer_from_savings_operation.
  * Generated during block processing after savings withdraw time has passed and requested amount
  * was transfered from savings to liquid balance.
- *
- * @param {string} from_account - user that initiated transfer from savings
- * @param {string} to_account - user that was specified to receive funds (receiver of amount)
- * @param {asset} amount - (HIVE or HBD) funds transfered from savings
- * @param {number} request_id - id of transfer request
- * @param {string} memo - memo attached to transfer request
  */
 export interface fill_transfer_from_savings {
+    /** @param {string} from_account - user that initiated transfer from savings */
     from_account: string;
+    /** @param {string} to_account - user that was specified to receive funds (receiver of amount) */
     to_account: string;
+    /** @param {asset} amount - (HIVE or HBD) funds transfered from savings */
     amount: asset | undefined;
+    /** @param {number} request_id - id of transfer request */
     request_id: number;
+    /** @param {string} memo - memo attached to transfer request */
     memo: string;
 }
 export declare const fill_transfer_from_savings: {

@@ -4,12 +4,11 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Related to delegate_vesting_shares_operation.
  * Generated during block processing when process of returning removed or lowered vesting delegation is finished (after return period
  * passed) and delegator received back his vests.
- *
- * @param {string} account - delegator (receiver of vesting_shares)
- * @param {asset} vesting_shares - (VESTS) returned delegation
  */
 export interface return_vesting_delegation {
+    /** @param {string} account - delegator (receiver of vesting_shares) */
     account: string;
+    /** @param {asset} vesting_shares - (VESTS) returned delegation */
     vesting_shares: asset | undefined;
 }
 export declare const return_vesting_delegation: {

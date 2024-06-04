@@ -22,10 +22,6 @@ class limit_order_cancelled(google.protobuf.message.Message):
     filling limit order (second or third operation) when, after filling most of it, remaining funds are too small (would round
     to zero when sold). Finally also generated during block processing for orders that reached expiration time without being filled.
     @see fill_order
-
-    @param {string} seller - user that placed an order (receiver of amount_back)
-    @param {number} orderid - id of the order
-    @param {asset} amount_back - (HIVE or HBD) remaining funds from original order that were not traded until cancellation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -34,9 +30,12 @@ class limit_order_cancelled(google.protobuf.message.Message):
     ORDERID_FIELD_NUMBER: builtins.int
     AMOUNT_BACK_FIELD_NUMBER: builtins.int
     seller: builtins.str
+    """@param {string} seller - user that placed an order (receiver of amount_back)"""
     orderid: builtins.int
+    """@param {number} orderid - id of the order"""
     @property
-    def amount_back(self) -> asset_pb2.asset: ...
+    def amount_back(self) -> asset_pb2.asset:
+        """@param {asset} amount_back - (HIVE or HBD) remaining funds from original order that were not traded until cancellation"""
     def __init__(
         self,
         *,

@@ -5,18 +5,17 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * Generated during block processing after cashout time passes and comment is eligible for rewards (nonzero reward).
  * Note: the reward is a fragment of curators' portion of comment reward depending on share of particular curator in overall
  * curation power for the comment. Only generated when nonzero.
- *
- * @param {string} curator - user that curated the comment (receiver of reward)
- * @param {asset} reward - (VESTS) curation reward
- * @param {string} author - author of curated comment
- * @param {string} permlink - permlink of curated comment
- * @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
  */
 export interface curation_reward {
+    /** @param {string} curator - user that curated the comment (receiver of reward) */
     curator: string;
+    /** @param {asset} reward - (VESTS) curation reward */
     reward: asset | undefined;
+    /** @param {string} author - author of curated comment */
     author: string;
+    /** @param {string} permlink - permlink of curated comment */
     permlink: string;
+    /** @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation */
     payout_must_be_claimed: boolean;
 }
 export declare const curation_reward: {

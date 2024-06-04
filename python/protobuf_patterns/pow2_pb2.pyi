@@ -19,6 +19,8 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
 class pow2_input(google.protobuf.message.Message):
+    """Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/30_pow2.md?ref_type=heads"""
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     WORKER_ACCOUNT_FIELD_NUMBER: builtins.int

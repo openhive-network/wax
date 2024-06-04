@@ -24,16 +24,7 @@ class set_withdraw_vesting_route(google.protobuf.message.Message):
     with the same { to_account} and with the {percent} = 0.
     A user may set up 10 { to_account } accounts.
 
-    @param {string} from_account - The account the funds are coming from.
-    @param {string} to_account - The account the funds are going to. A user may set up 10 accounts.
-    @param {number} percent - The percentage of the HP shares.
-                              If the sum of the setting shares is less than 100%,
-                              the rest is transferred to the liquid balance of { from_account }.
-                              Default value: percent = 0;
-    @param {bool} auto_vest - If auto_vest = true, then the amount of the Hive is immediately converted
-                              into HP on the { to_account } balance.
-                              If auto_vest = false, there is no conversion from Hive into HP.
-                              Default auto_vest = false;
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/20_set_withdraw_vesting_route.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -43,9 +34,21 @@ class set_withdraw_vesting_route(google.protobuf.message.Message):
     PERCENT_FIELD_NUMBER: builtins.int
     AUTO_VEST_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - The account the funds are coming from."""
     to_account: builtins.str
+    """@param {string} to_account - The account the funds are going to. A user may set up 10 accounts."""
     percent: builtins.int
+    """@param {number} percent - The percentage of the HP shares.
+                              If the sum of the setting shares is less than 100%,
+                              the rest is transferred to the liquid balance of { from_account }.
+                              Default value: percent = 0;
+    """
     auto_vest: builtins.bool
+    """@param {bool} auto_vest - If auto_vest = true, then the amount of the Hive is immediately converted
+                              into HP on the { to_account } balance.
+                              If auto_vest = false, there is no conversion from Hive into HP.
+                              Default auto_vest = false;
+    """
     def __init__(
         self,
         *,

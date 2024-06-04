@@ -28,18 +28,7 @@ class escrow_transfer(google.protobuf.message.Message):
     If there is a dispute, the operation: escrow_dispute_operation should be used.
     In case of the escrow releases, the operation: escrow_release_operation should be used.
 
-    @param {string} from_account - Account name.
-    @param {string} to_account - Account name.
-    @param {string} agent - Account name.
-    @param {number} escrow_id - It is defined by the sender. It should be unique for { from }.
-    @param {asset} hbd_amount - Escrow amount.
-    @param {asset} hive_amount - Escrow amount.
-    @param {asset} fee - The fee amount depends on the agent. The fee is paid to the agent when approved.
-    @param {string} ratification_deadline - Time for approval for { to } and { agent }.
-                                            If the escrow is not approved till { ratification_deadline },
-                                            it will be rejected and all funds returned to { from }.
-    @param {string} escrow_expiration - See description of escrow_release_operation.
-    @param {string} json_meta - json string.
+    Descritpion https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/27_escrow_transfer.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -55,18 +44,31 @@ class escrow_transfer(google.protobuf.message.Message):
     ESCROW_EXPIRATION_FIELD_NUMBER: builtins.int
     JSON_META_FIELD_NUMBER: builtins.int
     from_account: builtins.str
+    """@param {string} from_account - Account name."""
     to_account: builtins.str
+    """@param {string} to_account - Account name."""
     agent: builtins.str
+    """@param {string} agent - Account name."""
     escrow_id: builtins.int
+    """@param {number} escrow_id - It is defined by the sender. It should be unique for { from }."""
     @property
-    def hbd_amount(self) -> asset_pb2.asset: ...
+    def hbd_amount(self) -> asset_pb2.asset:
+        """@param {asset} hbd_amount - Escrow amount."""
     @property
-    def hive_amount(self) -> asset_pb2.asset: ...
+    def hive_amount(self) -> asset_pb2.asset:
+        """@param {asset} hive_amount - Escrow amount."""
     @property
-    def fee(self) -> asset_pb2.asset: ...
+    def fee(self) -> asset_pb2.asset:
+        """@param {asset} fee - The fee amount depends on the agent. The fee is paid to the agent when approved."""
     ratification_deadline: builtins.str
+    """@param {string} ratification_deadline - Time for approval for { to } and { agent }.
+                                            If the escrow is not approved till { ratification_deadline },
+                                            it will be rejected and all funds returned to { from }.
+    """
     escrow_expiration: builtins.str
+    """@param {string} escrow_expiration - See description of escrow_release_operation."""
     json_meta: builtins.str
+    """@param {string} json_meta - json string."""
     def __init__(
         self,
         *,

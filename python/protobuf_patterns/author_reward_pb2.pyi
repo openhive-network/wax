@@ -22,14 +22,6 @@ class author_reward(google.protobuf.message.Message):
     Note: the reward is the author portion of comment reward lowered by the rewards distributed towards beneficiaries
     (therefore it can be zero).
     @see comment_benefactor_reward_operation
-
-    @param {string} author - author of the comment (receiver of hbd_payout, hive_payout, vesting_payout)
-    @param {string} permlink - permlink of the comment
-    @param {asset} hbd_payout - (HBD) part of reward
-    @param {asset} hive_payout - (HIVE) part of reward
-    @param {asset} vesting_payout - (VESTS) part of reward
-    @param {asset} curators_vesting_payout - (VESTS) curators' portion of comment reward (@see curation_reward_operation)
-    @param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -42,16 +34,23 @@ class author_reward(google.protobuf.message.Message):
     CURATORS_VESTING_PAYOUT_FIELD_NUMBER: builtins.int
     PAYOUT_MUST_BE_CLAIMED_FIELD_NUMBER: builtins.int
     author: builtins.str
+    """@param {string} author - author of the comment (receiver of hbd_payout, hive_payout, vesting_payout)"""
     permlink: builtins.str
+    """@param {string} permlink - permlink of the comment"""
     @property
-    def hbd_payout(self) -> asset_pb2.asset: ...
+    def hbd_payout(self) -> asset_pb2.asset:
+        """@param {asset} hbd_payout - (HBD) part of reward"""
     @property
-    def hive_payout(self) -> asset_pb2.asset: ...
+    def hive_payout(self) -> asset_pb2.asset:
+        """@param {asset} hive_payout - (HIVE) part of reward"""
     @property
-    def vesting_payout(self) -> asset_pb2.asset: ...
+    def vesting_payout(self) -> asset_pb2.asset:
+        """@param {asset} vesting_payout - (VESTS) part of reward"""
     @property
-    def curators_vesting_payout(self) -> asset_pb2.asset: ...
+    def curators_vesting_payout(self) -> asset_pb2.asset:
+        """@param {asset} curators_vesting_payout - (VESTS) curators' portion of comment reward (@see curation_reward_operation)"""
     payout_must_be_claimed: builtins.bool
+    """@param {bool} payout_must_be_claimed - true if payouts require use of claim_reward_balance_operation"""
     def __init__(
         self,
         *,

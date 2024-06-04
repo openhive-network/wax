@@ -27,9 +27,7 @@ class account_witness_proxy(google.protobuf.message.Message):
     expired_account_notification_operation is generated.
     If the proxy was set and now it is removed, the additionally the virtual operation: proxy_cleared_operation is generated. 
 
-    @param {string} account
-    @param {string} proxy - Account name. To remove the proxy, the parameter should be set empty.
-                            Only one proxy may be set for an account.
+    Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/13_account_witness_proxy.md?ref_type=heads
     """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
@@ -37,7 +35,11 @@ class account_witness_proxy(google.protobuf.message.Message):
     ACCOUNT_FIELD_NUMBER: builtins.int
     PROXY_FIELD_NUMBER: builtins.int
     account: builtins.str
+    """@param {string} account"""
     proxy: builtins.str
+    """@param {string} proxy - Account name. To remove the proxy, the parameter should be set empty.
+                            Only one proxy may be set for an account.
+    """
     def __init__(
         self,
         *,

@@ -11,12 +11,15 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * expired_account_notification_operation is generated.
  * If the proxy was set and now it is removed, the additionally the virtual operation: proxy_cleared_operation is generated.
  *
- * @param {string} account
- * @param {string} proxy - Account name. To remove the proxy, the parameter should be set empty.
- *                         Only one proxy may be set for an account.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/13_account_witness_proxy.md?ref_type=heads
  */
 export interface account_witness_proxy {
+    /** @param {string} account */
     account: string;
+    /**
+     * @param {string} proxy - Account name. To remove the proxy, the parameter should be set empty.
+     *                         Only one proxy may be set for an account.
+     */
     proxy: string;
 }
 export declare const account_witness_proxy: {

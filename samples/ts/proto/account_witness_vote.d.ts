@@ -10,13 +10,14 @@ export declare const protobufPackage = "hive.protocol.buffers";
  * is not executed in a HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD, the votes are removed and the virtual operation:
  * expired_account_notification_operation is generated.
  *
- * @param {string} account
- * @param {string} witness - Witness account.
- * @param {bool} approve - To vote for the witness, the approve = true. To remove the vote, the approve = false.
+ * Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/12_account_witness_vote.md?ref_type=heads
  */
 export interface account_witness_vote {
+    /** @param {string} account */
     account: string;
+    /** @param {string} witness - Witness account. */
     witness: string;
+    /** @param {bool} approve - To vote for the witness, the approve = true. To remove the vote, the approve = false. */
     approve: boolean;
 }
 export declare const account_witness_vote: {
