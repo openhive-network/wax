@@ -43,8 +43,6 @@ class CommentBuilder extends OperationBuilder {
   }
 
   private ensureCommentOptionsCreated(): void {
-    this.requireApi();
-
     if(typeof this.commentOptions === "undefined")
       this.commentOptions = comment_options.fromPartial({
         author: this.comment.author,
@@ -52,7 +50,7 @@ class CommentBuilder extends OperationBuilder {
         allow_curation_rewards: true,
         allow_votes: true,
         percent_hbd: 10000,
-        max_accepted_payout: this.api!.hbd(1000000000)
+        max_accepted_payout: this.api.hbd(1000000000)
       });
   }
 

@@ -46,12 +46,21 @@ export class BuiltHiveAppsOperation implements IBuiltHiveAppsOperation {
 export class OperationBuilder {
   protected readonly builtOperations: BuiltHiveAppsOperation = new BuiltHiveAppsOperation();
 
-  protected requireApi(): void {
-    if(this.api === undefined)
+  private _api?: IWaxBaseInterface;
+
+  public get api (): IWaxBaseInterface {
+    if (this._api === undefined)
       throw new WaxError('Requested api object on builder, but builder has not been initialized using useBuilder');
+
+    return this._api;
   }
 
-  public api?: IWaxBaseInterface;
+  public set api (otherApi: IWaxBaseInterface) {
+    if (this._api !== undefined)
+      throw new WaxError('Builder has already been initialized with an api object');
+
+    this._api = otherApi;
+  }
 
   /**
    * @internal

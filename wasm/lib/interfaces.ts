@@ -2,7 +2,7 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
-import type { ArticleBuilder, ReplyBuilder, RecurrentTransferBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./detailed/operation_factories";
+import type { ArticleBuilder, ReplyBuilder, RecurrentTransferBuilder, WitnessSetPropertiesBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./detailed/operation_factories";
 import type { CommunityOperationBuilder, FollowOperationBuilder, ResourceCreditsOperationBuilder } from "./detailed/custom_jsons";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
@@ -311,7 +311,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    *
-   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}
+   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}, {@link WitnessSetPropertiesBuilder}
    * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
    *
    * @example Building article
@@ -387,7 +387,7 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    *
-   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}
+   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}, {@link WitnessSetPropertiesBuilder}
    * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
    *
    * @example Building article

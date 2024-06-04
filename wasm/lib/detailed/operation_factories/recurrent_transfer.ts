@@ -25,9 +25,7 @@ export class RecurrentTransferBuilder extends OperationBuilder {
    * @returns {this} itself
    */
   public generateRemoval(): this {
-    this.requireApi();
-
-    this.recurrentTransfer.amount = { ...this.api!.ASSETS.HIVE, amount: "0" };
+    this.recurrentTransfer.amount = { ...this.api.ASSETS.HIVE, amount: "0" };
 
     return this;
   }

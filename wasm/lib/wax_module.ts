@@ -10,7 +10,10 @@ export type {
   proto_protocol,
   protocol,
   protocol_foundation,
-  result
+  result,
+  price,
+  witness_set_properties_data,
+  witness_set_properties_serialized
 } from './build_wasm/wax.common.js';
 
 declare function waxmodule(): Promise<MainModule>;
