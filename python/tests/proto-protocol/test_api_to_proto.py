@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from google.protobuf.json_format import ParseDict
 
@@ -16,10 +17,13 @@ from utils.refs import (
 
 from wax import api_to_proto
 
-from wax.proto import transaction_pb2, block_pb2
+from wax.proto import transaction_pb2
 
-
+@pytest.mark.skip(reason="block.proto definition is ignored")
 def test_api_to_proto():
+    # moved here since code generation for block.proto is skipped
+    from wax.proto import block_pb2
+
     api_str = json.dumps(API_REF_TRANSACTION)
     proto = api_to_proto(api_str.encode())
     assert proto.status == proto.status.ok
