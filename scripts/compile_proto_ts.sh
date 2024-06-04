@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -e
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -13,6 +13,8 @@ fi
 
 mkdir -p "${OUTPUT_DIR}"
 
+GLOBIGNORE="${PROTO_DIR}/block.proto"
+
 protoc --plugin="${PROJECT_DIR}/node_modules/.bin/protoc-gen-ts_proto" \
   --ts_proto_opt=snakeToCamel=false \
   --ts_proto_opt=useOptional=all \
@@ -23,6 +25,6 @@ protoc --plugin="${PROJECT_DIR}/node_modules/.bin/protoc-gen-ts_proto" \
   --ts_proto_opt=importSuffix=.js \
   --ts_proto_opt=emitDefaultValues=json-methods \
   --ts_proto_opt=outputEncodeMethods=false \
-  -I="${PROTO_DIR}" "$PROTO_DIR"/*.proto
+  -I="${PROTO_DIR}" "${PROTO_DIR}"/*.proto
 
 echo "Files generated into the '${OUTPUT_DIR}' folder."

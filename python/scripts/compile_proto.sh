@@ -18,6 +18,8 @@ mkdir -vp "${OUTPUT_DIR}"
 echo "Install poetry dependencies."
 poetry -C ${PROJECT_DIR} install --no-root
 
+GLOBIGNORE="${PROTO_DIR}/block.proto"
+
 poetry -C ${PROJECT_DIR} run python3 -m grpc_tools.protoc \
 --python_out="${OUTPUT_DIR}"  \
 --mypy_out="${OUTPUT_DIR}" \
