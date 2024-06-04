@@ -91,6 +91,91 @@ json_asset foundation::cpp_vests(const int64_t amount)const
   return to_json_asset(hive::protocol::VEST_asset{ amount });
 }
 
+
+witness_set_properties_serialized foundation::cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const
+{
+  witness_set_properties_serialized result;
+
+  result.key = fc::to_hex(fc::raw::pack_to_vector(value.key));
+
+  if(value.new_signing_key.has_value())
+    result.new_signing_key = fc::to_hex(fc::raw::pack_to_vector(value.new_signing_key.value()));
+
+  if(value.account_creation_fee.has_value())
+    result.account_creation_fee = fc::to_hex(fc::raw::pack_to_vector(value.account_creation_fee.value()));
+
+  if(value.url.has_value())
+    result.url = fc::to_hex(fc::raw::pack_to_vector(value.url.value()));
+
+  if(value.hbd_exchange_rate.has_value())
+    result.hbd_exchange_rate = fc::to_hex(fc::raw::pack_to_vector(value.hbd_exchange_rate.value()));
+
+  if(value.maximum_block_size.has_value())
+    result.maximum_block_size = fc::to_hex(fc::raw::pack_to_vector(value.maximum_block_size.value()));
+
+  if(value.hbd_interest_rate.has_value())
+    result.hbd_interest_rate = fc::to_hex(fc::raw::pack_to_vector(value.hbd_interest_rate.value()));
+
+  if(value.account_subsidy_budget.has_value())
+    result.account_subsidy_budget = fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_budget.value()));
+
+  if(value.account_subsidy_decay.has_value())
+    result.account_subsidy_decay = fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_decay.value()));
+
+  return result;
+}
+
+namespace detail {
+  template <typename T>
+  void convert_from_hex(const std::string& data, std::optional<T>& load_to)
+  {
+    std::vector<char> loaded_hex_container;
+    loaded_hex_container.reserve(data.size() / 2);
+
+    fc::from_hex(data, loaded_hex_container.data(), loaded_hex_container.size());
+
+    T load_to_holder;
+
+    fc::raw::unpack_from_vector(loaded_hex_container, load_to_holder);
+
+    load_to = load_to_holder;
+  }
+
+}
+
+witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const
+{
+  witness_set_properties_data result;
+
+  result.key = fc::to_hex(fc::raw::pack_to_vector(value.key));
+
+  if(value.new_signing_key.has_value())
+    detail::convert_from_hex(value.new_signing_key.value(), result.new_signing_key);
+
+  if(value.account_creation_fee.has_value())
+    detail::convert_from_hex(value.account_creation_fee.value(), result.account_creation_fee);
+
+  if(value.url.has_value())
+    detail::convert_from_hex(value.url.value(), result.url);
+
+  if(value.hbd_exchange_rate.has_value())
+    detail::convert_from_hex(value.hbd_exchange_rate.value(), result.hbd_exchange_rate);
+
+  if(value.maximum_block_size.has_value())
+    detail::convert_from_hex(value.maximum_block_size.value(), result.maximum_block_size);
+
+  if(value.hbd_interest_rate.has_value())
+    detail::convert_from_hex(value.hbd_interest_rate.value(), result.hbd_interest_rate);
+
+  if(value.account_subsidy_budget.has_value())
+    detail::convert_from_hex(value.account_subsidy_budget.value(), result.account_subsidy_budget);
+
+  if(value.account_subsidy_decay.has_value())
+    detail::convert_from_hex(value.account_subsidy_decay.value(), result.account_subsidy_decay);
+
+  return result;
+}
+
 std::string foundation::cpp_asset_value(const json_asset& value) const
 {
   auto a = to_legacy_asset(value);
@@ -319,4 +404,32 @@ result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_n
 }
 
 } /// namespace cpp
+
+// Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,
+// we are using the ones for hive::protocol::asset and hive::protocol::price
+namespace fc { namespace raw {
+  template<typename Stream>
+  inline void pack( Stream& s, const cpp::json_asset& u )
+  { pack(s, cpp::to_asset(u)); }
+
+  template<typename Stream>
+  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d )
+  {
+    hive::protocol::asset tmp;
+    unpack(s, tmp, d + 1);
+    u = cpp::to_json_asset(tmp);
+  }
+
+  template<typename Stream>
+  inline void pack( Stream& s, const cpp::price& u )
+  { pack(s, hive::protocol::price{ cpp::to_asset(u.base), cpp::to_asset(u.quote) }); }
+
+  template<typename Stream>
+  inline void unpack( Stream& s, cpp::price& u, uint32_t d )
+  {
+    hive::protocol::price tmp;
+    unpack(s, tmp, d + 1);
+    u = { .base = cpp::to_json_asset(tmp.base), .quote = cpp::to_json_asset(tmp.quote) };
+  }
+} }
 

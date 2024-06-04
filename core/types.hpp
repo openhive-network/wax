@@ -43,6 +43,12 @@ struct json_asset
     : amount(_amount), precision(_precision), nai(_nai) {}
 };
 
+struct price
+{
+  json_asset base;
+  json_asset quote;
+};
+
 struct crypto_memo
 {
   /** Base58 encoded string representing a PUBLIC key identifying a PRIVATE key used for encryption.
@@ -68,6 +74,50 @@ struct ref_block_data
 {
   uint16_t ref_block_num;
   uint32_t ref_block_prefix;
+};
+
+struct witness_set_properties_data
+{
+  /** Witness key to match the current witness key */
+  std::string                key;
+  /** New witness key to set */
+  std::optional<std::string> new_signing_key;
+  /** HIVE maximum account creation fee */
+  std::optional<json_asset>  account_creation_fee;
+  /** New witness URL to set */
+  std::optional<std::string> url;
+  /** HBD to HIVE ratio proposed by the witness */
+  std::optional<price>       hbd_exchange_rate;
+  /** This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity */
+  std::optional<uint32_t>    maximum_block_size;
+  /** Rate of interest for holding HBD (in BPS - basis points) */
+  std::optional<uint16_t>    hbd_interest_rate;
+  /** How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account. */
+  std::optional<int32_t>     account_subsidy_budget;
+  /** What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring. */
+  std::optional<uint32_t>    account_subsidy_decay;
+};
+
+struct witness_set_properties_serialized
+{
+  /** Witness key to match the current witness key */
+  std::string                key;
+  /** New witness key to set */
+  std::optional<std::string> new_signing_key;
+  /** HIVE maximum account creation fee */
+  std::optional<std::string> account_creation_fee;
+  /** New witness URL to set */
+  std::optional<std::string> url;
+  /** HBD to HIVE ratio proposed by the witness */
+  std::optional<std::string> hbd_exchange_rate;
+  /** This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity */
+  std::optional<std::string> maximum_block_size;
+  /** Rate of interest for holding HBD (in BPS - basis points) */
+  std::optional<std::string> hbd_interest_rate;
+  /** How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account. */
+  std::optional<std::string> account_subsidy_budget;
+  /** What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring. */
+  std::optional<std::string> account_subsidy_decay;
 };
 
 struct required_authority_collection

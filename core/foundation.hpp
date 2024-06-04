@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <fc/reflect/reflect.hpp>
+
 namespace cpp {
 
 ///  Common base providing functionality independent on JSON format being used for parameter transport
@@ -23,6 +25,9 @@ public:
   json_asset cpp_hive(const int64_t amount)const;
   json_asset cpp_hbd(const int64_t amount)const;
   json_asset cpp_vests(const int64_t amount)const;
+
+  witness_set_properties_serialized cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const;
+  witness_set_properties_data cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const;
 
   std::string cpp_asset_value(const json_asset& value) const;
   std::string cpp_asset_symbol(const json_asset& value) const;
@@ -97,3 +102,18 @@ protected:
 };
 
 } /// namespace cpp
+
+namespace fc { namespace raw {
+  template<typename Stream>
+  inline void pack( Stream& s, const cpp::json_asset& u );
+  template<typename Stream>
+  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d );
+  template<typename Stream>
+  inline void pack( Stream& s, const cpp::price& u );
+  template<typename Stream>
+  inline void unpack( Stream& s, cpp::price& u, uint32_t d );
+} }
+
+// Note: This differs from the hive::protocol::asset struct in that it uses a string for the amount
+FC_REFLECT( cpp::json_asset, (amount)(precision)(nai) );
+FC_REFLECT( cpp::price, (base)(quote) );

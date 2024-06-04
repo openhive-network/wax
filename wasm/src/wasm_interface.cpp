@@ -44,6 +44,12 @@ json_asset cpp_hbd(const int32_t amount_low, const int32_t amount_high)const
 json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const 
 { return foundation::cpp_vests(join_lh(amount_low, amount_high)); }
 
+witness_set_properties_serialized cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const
+{ return foundation::cpp_serialize_witness_set_properties(value); }
+
+witness_set_properties_data cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const
+{ return foundation::cpp_deserialize_witness_set_properties(value); }
+
 std::string cpp_asset_value(const json_asset& value) const
 { return foundation::cpp_asset_value(value); }
 
@@ -138,6 +144,42 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
       ;
 
+  value_object<price>("price")
+      .field("base", &price::base)
+      .field("quote", &price::quote)
+      ;
+
+  register_optional<std::string>();
+  register_optional<uint32_t>();
+  register_optional<uint16_t>();
+  register_optional<int32_t>();
+  register_optional<json_asset>();
+  register_optional<price>();
+
+  value_object<witness_set_properties_data>("witness_set_properties_data")
+      .field("key",                     &witness_set_properties_data::key)
+      .field("new_signing_key",         &witness_set_properties_data::new_signing_key)
+      .field("account_creation_fee",    &witness_set_properties_data::account_creation_fee)
+      .field("url",                     &witness_set_properties_data::url)
+      .field("hbd_exchange_rate",       &witness_set_properties_data::hbd_exchange_rate)
+      .field("maximum_block_size",      &witness_set_properties_data::maximum_block_size)
+      .field("hbd_interest_rate",       &witness_set_properties_data::hbd_interest_rate)
+      .field("account_subsidy_budget",  &witness_set_properties_data::account_subsidy_budget)
+      .field("account_subsidy_decay",   &witness_set_properties_data::account_subsidy_decay)
+      ;
+
+  value_object<witness_set_properties_serialized>("witness_set_properties_serialized")
+      .field("key",                     &witness_set_properties_serialized::key)
+      .field("new_signing_key",         &witness_set_properties_serialized::new_signing_key)
+      .field("account_creation_fee",    &witness_set_properties_serialized::account_creation_fee)
+      .field("url",                     &witness_set_properties_serialized::url)
+      .field("hbd_exchange_rate",       &witness_set_properties_serialized::hbd_exchange_rate)
+      .field("maximum_block_size",      &witness_set_properties_serialized::maximum_block_size)
+      .field("hbd_interest_rate",       &witness_set_properties_serialized::hbd_interest_rate)
+      .field("account_subsidy_budget",  &witness_set_properties_serialized::account_subsidy_budget)
+      .field("account_subsidy_decay",   &witness_set_properties_serialized::account_subsidy_decay)
+      ;
+
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
     .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
@@ -150,6 +192,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_hive))
     .function("cpp_hbd", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_hbd))
     .function("cpp_vests", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_vests))
+
+    .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
+    .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
 
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
