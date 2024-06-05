@@ -1,7 +1,6 @@
-// Exports only the prootbuf definitions
+// Exports only the protobuf definitions
 
-// Transaction and block types
-export { block } from "./proto/block.js";
+// Transaction and general-operation types
 export { transaction } from "./proto/transaction.js";
 export { operation } from "./proto/operation.js";
 
