@@ -28,6 +28,55 @@ test.describe('Wax object interface foundation tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
+  test('Should be able to generate negative HIVE asset', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.hive(-300_000);
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: "-300000",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to generate negative HBD asset', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.hbd(-300_000);
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: "-300000",
+      nai: "@@000000013",
+      precision: 3
+    });
+  });
+
+  test('Should be able to generate negative VESTS asset', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.vests(-300_000000);
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: "-300000000",
+      nai: "@@000000037",
+      precision: 6
+    });
+  });
+
+  test('Should be able to convert API asset to the proper negative HIVE asset data', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, naiAsset) => {
+      const asset = base.getAsset({ ...naiAsset, amount: `-${naiAsset.amount}` });
+
+      return asset;
+    }, naiAsset);
+
+    expect(retVal).toStrictEqual({
+      amount: "-300.000",
+      symbol: "HIVE"
+    });
+  });
+
   test('Should be able to convert API asset to the proper HIVE asset data', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }, naiAsset) => {
       const asset = base.getAsset(naiAsset);
