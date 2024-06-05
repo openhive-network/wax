@@ -4,8 +4,6 @@
 
 #include <string>
 
-#include <fc/reflect/reflect.hpp>
-
 namespace cpp {
 
 ///  Common base providing functionality independent on JSON format being used for parameter transport
@@ -113,7 +111,3 @@ namespace fc { namespace raw {
   template<typename Stream>
   inline void unpack( Stream& s, cpp::price& u, uint32_t d );
 } }
-
-// Note: This differs from the hive::protocol::asset struct in that it uses a string for the amount
-FC_REFLECT( cpp::json_asset, (amount)(precision)(nai) );
-FC_REFLECT( cpp::price, (base)(quote) );

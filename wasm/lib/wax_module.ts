@@ -12,8 +12,7 @@ export type {
   protocol_foundation,
   result,
   price,
-  witness_set_properties_data,
-  witness_set_properties_serialized
+  witness_set_properties_data
 } from './build_wasm/wax.common.js';
 
 declare function waxmodule(): Promise<MainModule>;

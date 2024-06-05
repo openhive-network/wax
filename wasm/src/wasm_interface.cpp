@@ -155,6 +155,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<int32_t>();
   register_optional<json_asset>();
   register_optional<price>();
+  register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
+  register_map<std::string, std::string>("MapStringString");
 
   value_object<witness_set_properties_data>("witness_set_properties_data")
       .field("key",                     &witness_set_properties_data::key)
@@ -166,18 +168,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("hbd_interest_rate",       &witness_set_properties_data::hbd_interest_rate)
       .field("account_subsidy_budget",  &witness_set_properties_data::account_subsidy_budget)
       .field("account_subsidy_decay",   &witness_set_properties_data::account_subsidy_decay)
-      ;
-
-  value_object<witness_set_properties_serialized>("witness_set_properties_serialized")
-      .field("key",                     &witness_set_properties_serialized::key)
-      .field("new_signing_key",         &witness_set_properties_serialized::new_signing_key)
-      .field("account_creation_fee",    &witness_set_properties_serialized::account_creation_fee)
-      .field("url",                     &witness_set_properties_serialized::url)
-      .field("hbd_exchange_rate",       &witness_set_properties_serialized::hbd_exchange_rate)
-      .field("maximum_block_size",      &witness_set_properties_serialized::maximum_block_size)
-      .field("hbd_interest_rate",       &witness_set_properties_serialized::hbd_interest_rate)
-      .field("account_subsidy_budget",  &witness_set_properties_serialized::account_subsidy_budget)
-      .field("account_subsidy_decay",   &witness_set_properties_serialized::account_subsidy_decay)
       ;
 
   class_<foundation_wasm>("protocol_foundation")

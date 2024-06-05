@@ -141,12 +141,7 @@ export class WitnessSetPropertiesBuilder extends OperationBuilder {
    * @internal
    */
   public override build(): IBuiltHiveAppsOperation {
-    const props = (this.api as WaxBaseApi).serializeWitnessProps(this.props);
-
-    console.log(this.props, props);
-
-    for (const key in props)
-      this.witnessProps.props[key] = props[key];
+    this.witnessProps.props = (this.api as WaxBaseApi).serializeWitnessProps(this.props);
 
     this.push({ witness_set_properties: this.witnessProps });
 

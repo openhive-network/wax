@@ -1,6 +1,6 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
-import type { MainModule, proto_protocol, result, witness_set_properties_data, witness_set_properties_serialized } from "../wax_module";
+import type { MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
 import type { NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
@@ -28,8 +28,20 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.formatter.waxify.bind(this.formatter);
   }
 
-  public serializeWitnessProps(witnessProps: witness_set_properties_data): witness_set_properties_serialized {
-    return this.proto.cpp_serialize_witness_set_properties(witnessProps);
+  public serializeWitnessProps(witnessProps: witness_set_properties_data): Record<string, string> {
+    const propsSerialized = this.proto.cpp_serialize_witness_set_properties(witnessProps);
+    const propsKeys = propsSerialized.keys();
+
+    const keys: string[] = [];
+    for(let i = 0; i < propsKeys.size(); ++i)
+      keys.push(propsKeys.get(i) as string);
+
+    const props: Record<string, string> = {};
+
+    for(const key of keys)
+      props[key] = propsSerialized.get(key) as string;
+
+    return props;
   }
 
   public hive(amount: number | string | BigInt | Long): NaiAsset {

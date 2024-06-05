@@ -3,6 +3,7 @@
 #include "core/types.hpp"
 #include "core/utils.hpp"
 #include "fc/crypto/elliptic.hpp"
+#include <fc/reflect/reflect.hpp>
 
 #include <boost/lexical_cast.hpp>
 
@@ -96,82 +97,98 @@ witness_set_properties_serialized foundation::cpp_serialize_witness_set_properti
 {
   witness_set_properties_serialized result;
 
-  result.key = fc::to_hex(fc::raw::pack_to_vector(value.key));
+  result.emplace("key", fc::to_hex(fc::raw::pack_to_vector(value.key)));
 
   if(value.new_signing_key.has_value())
-    result.new_signing_key = fc::to_hex(fc::raw::pack_to_vector(value.new_signing_key.value()));
+    result.emplace("new_signing_key", fc::to_hex(fc::raw::pack_to_vector(value.new_signing_key.value())));
 
   if(value.account_creation_fee.has_value())
-    result.account_creation_fee = fc::to_hex(fc::raw::pack_to_vector(value.account_creation_fee.value()));
+    result.emplace("account_creation_fee", fc::to_hex(fc::raw::pack_to_vector(value.account_creation_fee.value())));
 
   if(value.url.has_value())
-    result.url = fc::to_hex(fc::raw::pack_to_vector(value.url.value()));
+    result.emplace("url", fc::to_hex(fc::raw::pack_to_vector(value.url.value())));
 
   if(value.hbd_exchange_rate.has_value())
-    result.hbd_exchange_rate = fc::to_hex(fc::raw::pack_to_vector(value.hbd_exchange_rate.value()));
+    result.emplace("hbd_exchange_rate", fc::to_hex(fc::raw::pack_to_vector(value.hbd_exchange_rate.value())));
 
   if(value.maximum_block_size.has_value())
-    result.maximum_block_size = fc::to_hex(fc::raw::pack_to_vector(value.maximum_block_size.value()));
+    result.emplace("maximum_block_size", fc::to_hex(fc::raw::pack_to_vector(value.maximum_block_size.value())));
 
   if(value.hbd_interest_rate.has_value())
-    result.hbd_interest_rate = fc::to_hex(fc::raw::pack_to_vector(value.hbd_interest_rate.value()));
+    result.emplace("hbd_interest_rate", fc::to_hex(fc::raw::pack_to_vector(value.hbd_interest_rate.value())));
 
   if(value.account_subsidy_budget.has_value())
-    result.account_subsidy_budget = fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_budget.value()));
+    result.emplace("account_subsidy_budget", fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_budget.value())));
 
   if(value.account_subsidy_decay.has_value())
-    result.account_subsidy_decay = fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_decay.value()));
+    result.emplace("account_subsidy_decay", fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_decay.value())));
 
   return result;
 }
 
 namespace detail {
   template <typename T>
-  void convert_from_hex(const std::string& data, std::optional<T>& load_to)
+  void convert_from_hex(const std::string& data, T& load_to)
   {
     std::vector<char> loaded_hex_container;
     loaded_hex_container.reserve(data.size() / 2);
 
     fc::from_hex(data, loaded_hex_container.data(), loaded_hex_container.size());
 
+    fc::raw::unpack_from_vector(loaded_hex_container, load_to);
+  }
+  template <typename T>
+  void convert_from_hex(const std::string& data, std::optional<T>& load_to)
+  {
     T load_to_holder;
 
-    fc::raw::unpack_from_vector(loaded_hex_container, load_to_holder);
+    convert_from_hex<T>(data, load_to_holder);
 
     load_to = load_to_holder;
   }
-
 }
 
 witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const
 {
   witness_set_properties_data result;
 
-  result.key = fc::to_hex(fc::raw::pack_to_vector(value.key));
+  auto itr = value.find("key");
 
-  if(value.new_signing_key.has_value())
-    detail::convert_from_hex(value.new_signing_key.value(), result.new_signing_key);
+  FC_ASSERT(itr == value.end(), "key is required in serialized data");
 
-  if(value.account_creation_fee.has_value())
-    detail::convert_from_hex(value.account_creation_fee.value(), result.account_creation_fee);
+  detail::convert_from_hex(itr->second, result.key);
 
-  if(value.url.has_value())
-    detail::convert_from_hex(value.url.value(), result.url);
+  itr = value.find("new_signing_key");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.new_signing_key);
 
-  if(value.hbd_exchange_rate.has_value())
-    detail::convert_from_hex(value.hbd_exchange_rate.value(), result.hbd_exchange_rate);
+  itr = value.find("account_creation_fee");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.account_creation_fee);
 
-  if(value.maximum_block_size.has_value())
-    detail::convert_from_hex(value.maximum_block_size.value(), result.maximum_block_size);
+  itr = value.find("url");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.url);
 
-  if(value.hbd_interest_rate.has_value())
-    detail::convert_from_hex(value.hbd_interest_rate.value(), result.hbd_interest_rate);
+  itr = value.find("hbd_exchange_rate");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.hbd_exchange_rate);
 
-  if(value.account_subsidy_budget.has_value())
-    detail::convert_from_hex(value.account_subsidy_budget.value(), result.account_subsidy_budget);
+  itr = value.find("maximum_block_size");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.maximum_block_size);
 
-  if(value.account_subsidy_decay.has_value())
-    detail::convert_from_hex(value.account_subsidy_decay.value(), result.account_subsidy_decay);
+  itr = value.find("hbd_interest_rate");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.hbd_interest_rate);
+
+  itr = value.find("account_subsidy_budget");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.account_subsidy_budget);
+
+  itr = value.find("account_subsidy_decay");
+  if(itr != value.end())
+    detail::convert_from_hex(itr->second, result.account_subsidy_decay);
 
   return result;
 }
@@ -432,4 +449,8 @@ namespace fc { namespace raw {
     u = { .base = cpp::to_json_asset(tmp.base), .quote = cpp::to_json_asset(tmp.quote) };
   }
 } }
+
+// Note: This differs from the hive::protocol::asset struct in that it uses a string for the amount
+FC_REFLECT( cpp::json_asset, (amount)(precision)(nai) );
+FC_REFLECT( cpp::price, (base)(quote) );
 
