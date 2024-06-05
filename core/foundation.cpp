@@ -260,7 +260,7 @@ result foundation::cpp_get_public_key_from_signature(const std::string& digest, 
 
     fc::from_hex(signature, reinterpret_cast<char*>(&*sig.begin()), sig.size());
 
-    _result.content = fc::ecc::public_key::to_base58(fc::ecc::public_key{ sig, d }, false);
+    _result.content = fc::ecc::public_key::to_base58_with_prefix(fc::ecc::public_key{ sig, d }, HIVE_ADDRESS_PREFIX);
   });
 }
 
