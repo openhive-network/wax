@@ -70,8 +70,8 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
       };
     }, signatureTransaction);
 
-    expect(retVal.signatureKeys).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
-    expect(retVal.legacySignatureKeys).toBe('5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+    expect(retVal.signatureKeys).toBe('STM5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
+    expect(retVal.legacySignatureKeys).toBe('STM5wJarof5LWBiQu2umDUWgg1xD5QHpKQC1Z97sE2aoQdwQ8DwMf');
     expect(retVal.isSigned).toBe(true);
 
   });
