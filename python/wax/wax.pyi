@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .wax_result import python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data
+from .wax_result import python_encrypted_memo, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data
 
 def validate_operation(operation: bytes) -> python_result: ...
 def validate_transaction(transaction: bytes) -> python_result: ...
