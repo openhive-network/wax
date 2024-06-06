@@ -426,6 +426,54 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual(["https://best.honey.provider", "https://api.hive.blog"]);
     });
 
+    test('Should be able to sign the transaction twice', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain, beekeeper }, protoVoteOp) => {
+        const session = beekeeper.createSession("salt");
+        const { wallet } = await session.createWallet("w0");
+
+        const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+        const otherKey = await wallet.importKey('5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG');
+
+        const tx = new chain.TransactionBuilder('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
+
+        tx.push(protoVoteOp);
+
+        tx.build(wallet, key);
+
+        return tx.build(wallet, otherKey);
+      }, protoVoteOp);
+
+      expect(retVal.signatures).toEqual([
+        '1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707',
+        '209e2e371495ae731486c46cad62786ebb4260a54e558c41393e4ee681047ee07b5f476133d1100e08a6b88220c62c372789efbeb17d465d1c65efb0e23f8f1e0b'
+      ]);
+    });
+
+    test('Should be able to sign the transaction twice on different transaction builder instances', async ({ waxTest }) => {
+      const retVal = await waxTest.dynamic(async({ chain, beekeeper }, protoVoteOp) => {
+        const session = beekeeper.createSession("salt");
+        const { wallet } = await session.createWallet("w0");
+
+        const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+        const otherKey = await wallet.importKey('5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG');
+
+        const txBuilder = new chain.TransactionBuilder('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
+
+        txBuilder.push(protoVoteOp);
+
+        txBuilder.build(wallet, key);
+
+        const otherTxBuilder = chain.TransactionBuilder.fromApi(txBuilder.toApi());
+
+        return otherTxBuilder.build(wallet, otherKey);
+      }, protoVoteOp);
+
+      expect(retVal.signatures).toEqual([
+        '1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707',
+        '209e2e371495ae731486c46cad62786ebb4260a54e558c41393e4ee681047ee07b5f476133d1100e08a6b88220c62c372789efbeb17d465d1c65efb0e23f8f1e0b'
+      ]);
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });
