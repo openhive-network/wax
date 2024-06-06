@@ -131,7 +131,7 @@ namespace detail {
   void convert_from_hex(const std::string& data, T& load_to)
   {
     std::vector<char> loaded_hex_container;
-    loaded_hex_container.reserve(data.size() / 2);
+    loaded_hex_container.resize(data.size() / 2);
 
     fc::from_hex(data, loaded_hex_container.data(), loaded_hex_container.size());
 
@@ -154,7 +154,7 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
 
   auto itr = value.find("key");
 
-  FC_ASSERT(itr == value.end(), "key is required in serialized data");
+  FC_ASSERT(itr != value.end(), "key is required in serialized data");
 
   detail::convert_from_hex(itr->second, result.key);
 
@@ -171,6 +171,9 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
     detail::convert_from_hex(itr->second, result.url);
 
   itr = value.find("hbd_exchange_rate");
+  if(itr == value.end())
+    itr = value.find("sbd_exchange_rate");
+
   if(itr != value.end())
     detail::convert_from_hex(itr->second, result.hbd_exchange_rate);
 
@@ -179,6 +182,9 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
     detail::convert_from_hex(itr->second, result.maximum_block_size);
 
   itr = value.find("hbd_interest_rate");
+  if(itr == value.end())
+    itr = value.find("sbd_interest_rate");
+
   if(itr != value.end())
     detail::convert_from_hex(itr->second, result.hbd_interest_rate);
 
