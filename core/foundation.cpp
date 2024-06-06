@@ -310,7 +310,7 @@ result foundation::cpp_calculate_public_key(const std::string& wif)
   {
     const auto private_key = fc::ecc::private_key::wif_to_key(wif);
     FC_ASSERT(private_key.valid(), "given string is not valid private key");
-    _result.content = fc::ecc::public_key::to_base58(private_key->get_public_key(), false/*is_sha256*/);
+    _result.content = fc::ecc::public_key::to_base58_with_prefix(private_key->get_public_key(), HIVE_ADDRESS_PREFIX);
   });
 }
 
