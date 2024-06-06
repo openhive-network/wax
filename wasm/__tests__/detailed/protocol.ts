@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, vote_operation } from "../assets/data.protocol";
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -287,7 +287,7 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("950");
   });
-  
+
   test('Should be able to calculate inflation rate for block 9_000_000', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, block_num) => {
       return protocol.cpp_calculate_inflation_rate_for_block(block_num);
@@ -296,7 +296,52 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("942");
   });
-  
+
+  test('Should be able to serialize witness properties and retrieve serialized data', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, witness_properties) => {
+      const propsSerialized = protocol.cpp_serialize_witness_set_properties(witness_properties);
+
+      const propsKeys = propsSerialized.keys();
+
+      const keys: string[] = [];
+      for(let i = 0; i < propsKeys.size(); ++i)
+        keys.push(propsKeys.get(i) as string);
+
+      const props: Record<string, string> = {};
+
+      for(const key of keys)
+        props[key] = propsSerialized.get(key) as string;
+
+      return props;
+    }, witness_properties);
+
+    expect(retVal).toStrictEqual({
+      account_creation_fee: "88130000000000002320bcbe",
+      account_subsidy_budget: "1d030000",
+      account_subsidy_decay: "b94c0500",
+      hbd_exchange_rate: "64000000000000000320bcbe64000000000000002320bcbe",
+      hbd_interest_rate: "e803",
+      key: "3553544d355271564241564e703575664d4365745174764c474c4a6f37756e58396e7943424d4d7254585257513969315a7a7a697a68",
+      maximum_block_size: "00000200",
+      new_signing_key: "3553544d365471534a61533161526a367036795a456f35786963583762764c6872666456716935546f4e724b78485533465242456457",
+      url: "0f68747470733a2f2f686976652e696f"
+    });
+  });
+
+  test('Should be able to serialize witness properties and then deserialize', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, witness_properties) => {
+      const propsSerialized = protocol.cpp_serialize_witness_set_properties(witness_properties);
+
+      const props = protocol.cpp_deserialize_witness_set_properties(propsSerialized);
+
+      console.log(props);
+
+      return props;
+    }, witness_properties);
+
+    expect(retVal).toStrictEqual(witness_properties);
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

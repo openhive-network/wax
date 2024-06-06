@@ -4,12 +4,40 @@
 
 import Long from "long";
 import type { transaction as transactionT } from "../../dist/lib";
+import type { witness_set_properties_data } from "../../dist/lib/wax_module";
 
 /// Converts given number to the array of low and high number parts
 export const numToHighLow = (value: number | string | Long): [ number, number ] => {
   const long = Long.fromValue(value);
 
   return [ long.low, long.high ];
+};
+
+export const witness_properties: witness_set_properties_data = {
+  key: 'STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh',
+  new_signing_key: 'STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW',
+  account_creation_fee: {
+    nai: "@@000000021",
+    precision: 3,
+    amount: "5000"
+  },
+  url: 'https://hive.io',
+  hbd_exchange_rate: {
+    base: {
+      "amount": "100",
+      "nai": "@@000000013",
+      "precision": 3
+    },
+    quote: {
+      "amount": "100",
+      "nai": "@@000000021",
+      "precision": 3
+    }
+  },
+  maximum_block_size: 131072,
+  hbd_interest_rate: 1000,
+  account_subsidy_budget: 797,
+  account_subsidy_decay: 347321
 };
 
 export const naiAsset = {
