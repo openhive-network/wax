@@ -128,6 +128,9 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     if(index === undefined)
       throw new WaxError("Mismatch in index types - stopEncrypt called before startEncrypt");
 
+    if (index.end !== undefined)
+      throw new WaxError(`Encryption on operation index: #${index.begin} for key: "${index.mainEncryptionKey}" already closed`);
+
     index.end = this.target.operations.length;
 
     return this;
