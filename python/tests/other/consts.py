@@ -8,6 +8,11 @@ MAINNET_CHAIN_ID: Final[bytes] = b"beeab0de0000000000000000000000000000000000000
 
 ENCODING = "utf-8"
 
+BASE_58_REGEX: Final[str] = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+
+PUBLIC_KEY_PATTERN = rf"^(?:STM)[{BASE_58_REGEX}]{{7,51}}$"
+PRIVATE_KEY_PATTERN = rf"^[{BASE_58_REGEX}]{{51}}$"
+
 
 def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
     """
