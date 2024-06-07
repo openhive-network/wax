@@ -677,6 +677,314 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
+  test('Should be able to set alternative author in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setAlternativeAuthor('initminer');
+      },
+      'gtg',
+      'Set alternative author',
+      'Set alternative author',
+      {},
+      'set-alternative-author');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set alternative author',
+          json_metadata: `{"format":"markdown+html","app":"${app}","author":"initminer"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'set-alternative-author',
+          title: 'Set alternative author'
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to push links in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.pushLinks('https://test.com', 'https://test2.com', 'http://test3.com');
+      },
+      'gtg',
+      'Push links',
+      'Push links',
+      {},
+      'push-links');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Push links',
+          json_metadata: `{"format":"markdown+html","app":"${app}","links":["https://test.com","https://test2.com","http://test3.com"]}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'push-links',
+          title: 'Push links'
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to set max accepted payout in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setMaxAcceptedPayout(chain.hive(100));
+      },
+      'gtg',
+      'Set max accepted payout',
+      'Set max accepted payout',
+      {},
+      'set-max-accepted-payout');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set max accepted payout',
+          json_metadata: `{"format":"markdown+html","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'set-max-accepted-payout',
+          title: 'Set max accepted payout'
+        }
+      },
+      {
+        type: 'comment_options_operation',
+        value: {
+          allow_curation_rewards: true,
+          allow_votes: true,
+          author: 'gtg',
+          max_accepted_payout: { amount: '100', nai: '@@000000021', precision: 3 },
+          percent_hbd: 10000,
+          permlink:'set-max-accepted-payout',
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to set allow curation rewards in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setAllowCurationRewards(false);
+      },
+      'gtg',
+      'Set allow curation rewards',
+      'Set allow curation rewards',
+      {},
+      'set-allow-curation-rewards');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set allow curation rewards',
+          json_metadata: `{"format":"markdown+html","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'set-allow-curation-rewards',
+          title: 'Set allow curation rewards'
+        }
+      },
+      {
+        type: 'comment_options_operation',
+        value: {
+          allow_curation_rewards: false,
+          allow_votes: true,
+          author: 'gtg',
+          max_accepted_payout: { amount: '1000000000', nai: '@@000000013', precision: 3 },
+          percent_hbd: 10000,
+          permlink:'set-allow-curation-rewards',
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to set allow votes in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setAllowVotes(false);
+      },
+      'gtg',
+      'Set allow votes',
+      'Set allow votes',
+      {},
+      'set-allow-votes');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set allow votes',
+          json_metadata: `{"format":"markdown+html","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'set-allow-votes',
+          title: 'Set allow votes'
+        }
+      },
+      {
+        type: 'comment_options_operation',
+        value: {
+          allow_curation_rewards: true,
+          allow_votes: false,
+          author: 'gtg',
+          max_accepted_payout: { amount: '1000000000', nai: '@@000000013', precision: 3 },
+          percent_hbd: 10000,
+          permlink:'set-allow-votes',
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to set format in ArticleBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setFormat(wax.ECommentFormat.MARKDOWN);
+      },
+      'gtg',
+      'Set format',
+      'Set format',
+      {},
+      'set-format');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set format',
+          json_metadata: `{"format":"markdown","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'set-format',
+          title: 'Set format'
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to push and set multiple properites', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder
+          .setAllowVotes(false)
+          .pushImages('test.png')
+          .pushLinks('https://test.com')
+          .pushTags('spam')
+          .setMaxAcceptedPayout(chain.hive(100))
+          .setPercentHbd(20)
+          .addBeneficiaries({ account: 'guest4test7', weight: 40 })
+          .setDescription('Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries');
+      },
+      'gtg',
+      'push and set multiple properites',
+      'push and set multiple properites',
+      {},
+      'push-and-set-multiple-properites');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'push and set multiple properites',
+          json_metadata: `{"format":"markdown+html","app":"${app}","image":["test.png"],"links":["https://test.com"],"tags":["spam"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}`,
+          parent_author: "",
+          parent_permlink: "",
+          permlink: 'push-and-set-multiple-properites',
+          title: 'push and set multiple properites'
+        }
+      },
+      {
+        type: 'comment_options_operation',
+        value: {
+          allow_curation_rewards: true,
+          allow_votes: false,
+          author: 'gtg',
+          extensions: [
+            {
+              type: 'comment_payout_beneficiaries',
+              value: {
+                beneficiaries: [
+                  {
+                    account: 'guest4test7',
+                    weight: 40
+                  }
+                ]
+              }
+            }
+          ],
+          max_accepted_payout: { amount: '100', nai: '@@000000021', precision: 3 },
+          percent_hbd: 20,
+          permlink:'push-and-set-multiple-properites',
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to retriev number of custom operations that will be push into the TransactionBuilder', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.ArticleBuilder, builder => {
+        builder.setDescription('build transaction');
+      },
+      'gtg',
+      'build transaction',
+      'build transaction',
+      {},
+      'build-transaction');
+
+      return tx.build.length;
+    });
+
+    expect(retVal).toStrictEqual(2);
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
