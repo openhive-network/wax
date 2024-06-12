@@ -102,9 +102,57 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
+  test('Should be able to convert VESTS to HP using NaiAssets', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.vestsToHp(base.vests(10), base.hive(10), base.vests(10));
+    });
+
+    expect(retVal).toEqual({
+      amount: "10",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to convert VESTS to HP using mixed params', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.vestsToHp(base.vests(10), 10, base.vests(10));
+    });
+
+    expect(retVal).toEqual({
+      amount: "10",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
   test('Should be able to convert HBD to HIVE', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.hbdToHive(10, 1, 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "100",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to convert HBD to HIVE using NaiAsset', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.hbdToHive(base.hbd(10), base.hbd(1), base.hive(10));
+    });
+
+    expect(retVal).toEqual({
+      amount: "100",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to convert HBD to HIVE using mixed params', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.hbdToHive(10, base.hbd(1), base.hive(10));
     });
 
     expect(retVal).toEqual({

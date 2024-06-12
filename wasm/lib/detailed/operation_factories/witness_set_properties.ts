@@ -4,6 +4,7 @@ import { type witness_set_properties_data } from "../../wax_module.js";
 import { type TPublicKey } from "@hiveio/beekeeper";
 import { WaxBaseApi } from "../base_api.js";
 import type Long from "long";
+import { isNaiAsset } from "../util/asset_util.js";
 
 export class WitnessSetPropertiesBuilder extends OperationBuilder {
   private readonly witnessProps: witness_set_properties;
@@ -54,8 +55,8 @@ export class WitnessSetPropertiesBuilder extends OperationBuilder {
    * @returns {WitnessSetPropertiesBuilder} itself
    */
   public setAccountCreationFee(fee: asset | Long | string | BigInt | number): this {
-    if (typeof fee !== "object" || "low" in fee)
-      fee = this.api.hive(fee);
+    if (!isNaiAsset(fee))
+      fee = this.api.hive(fee as Long | string | BigInt | number);
 
     this.props.account_creation_fee = fee as asset;
 

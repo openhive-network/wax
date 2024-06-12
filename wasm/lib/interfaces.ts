@@ -506,22 +506,19 @@ export interface IWaxBaseInterface {
 
   /**
    * Converts VESTS to HP in nai form
-   * @param {number | string | BigInt | Long} vests VESTS asset
-   * @param {number | string | BigInt | Long} totalVestingFundHive HIVE assest total vesting fund
-   * @param {number | string | BigInt | Long} totalVestingShares VESTS asset total shares
-   * @returns {NaiAsset} VESTS in nai form
+   * @param {NaiAsset} vests VESTS asset
+   * @param {NaiAsset} totalVestingFundHive HIVE assest total vesting fund
+   * @param {NaiAsset} totalVestingShares VESTS asset total shares
    */
-  vestsToHp(vests: number | string | BigInt | Long, totalVestingFundHive: number | string | BigInt | Long, totalVestingShares: number | string | BigInt | Long): NaiAsset
+  vestsToHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset
 
   /**
    * Converts HBD to HIVE in nai form
-   * @param {number | string | BigInt | Long} hbd HBD asset
-   * @param {number | string | BigInt | Long} base HBD asset price base
-   * @param {number | string | BigInt | Long} quote HIVE asset price quote
-   * @returns {NaiAsset} HBD in nai form
+   * @param {NaiAsset} hbd HBD asset
+   * @param {NaiAsset} base HBD asset price base
+   * @param {NaiAsset} quote HIVE asset price quote
    */
-  hbdToHive(hbd: number | string | BigInt | Long, base: number | string | BigInt | Long, quote: number | string | BigInt | Long): NaiAsset
-
+  hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset
 
   /**
    * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format

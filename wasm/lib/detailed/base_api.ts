@@ -9,6 +9,8 @@ import Long from "long";
 
 import { WaxFormatter } from "./formatters/waxify.js";
 
+import { isNaiAsset } from "./util/asset_util.js";
+
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
 
@@ -70,12 +72,38 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.proto.cpp_vests(long.low, long.high) as NaiAsset;
   }
 
-  public vestsToHp(vests: number | string | BigInt | Long, totalVestingFundHive: number | string | BigInt | Long, totalVestingShares: number | string | BigInt | Long): NaiAsset {
-    return this.proto.cpp_vests_to_hp(this.vests(vests), this.hive(totalVestingFundHive), this.vests(totalVestingShares)) as NaiAsset;
+  public vestsToHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
+    const vestsAsset = isNaiAsset(vests) ? vests as NaiAsset : this.vests(vests as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hive(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vests(totalVestingShares as number | string | BigInt | Long);
+
+    if (vestsAsset.nai !== this.ASSETS.VESTS.nai)
+      throw new WaxError('Invalid asset type for vests');
+
+    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for totalVestingFundHive');
+
+    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
+      throw new WaxError('Invalid asset type for totalVestingShares');
+
+    return this.proto.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
-  public hbdToHive(hbd: number | string | BigInt | Long, base: number | string | BigInt | Long, quote: number | string | BigInt | Long): NaiAsset {
-    return this.proto.cpp_hbd_to_hive(this.hbd(hbd), this.hbd(base), this.hive(quote)) as NaiAsset;
+  public hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
+    const hbdAsset = isNaiAsset(hbd) ? hbd as NaiAsset : this.hbd(hbd as number | string | BigInt | Long);
+    const baseAsset = isNaiAsset(base) ? base as NaiAsset : this.hbd(base as number | string | BigInt | Long);
+    const quoteAsset = isNaiAsset(quote) ? quote as NaiAsset : this.hive(quote as number | string | BigInt | Long);
+
+    if (hbdAsset.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for HBD');
+
+    if (baseAsset.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for base');
+
+    if (quoteAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for quote');
+
+    return this.proto.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset;
   }
 
   public extract(res: result): string {
