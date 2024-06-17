@@ -236,25 +236,33 @@ result foundation::cpp_generate_private_key()
 
 private_key_data foundation::cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password)
 {
-  private_key_data ret_val;
-  const auto private_key_data = hive::protocol::generate_private_key_from_password(account, role, password);
-  ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(private_key_data.first, HIVE_ADDRESS_PREFIX);
-  ret_val.wif_private_key = private_key_data.second;
+  return cpp::safe_exception_wrapper(
+    [&]() -> private_key_data {
+      private_key_data ret_val;
+      const auto private_key_data = hive::protocol::generate_private_key_from_password(account, role, password);
+      ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(private_key_data.first, HIVE_ADDRESS_PREFIX);
+      ret_val.wif_private_key = private_key_data.second;
 
-  return ret_val;
+      return ret_val;
+    }
+  );
 }
 
 brain_key_data foundation::cpp_suggest_brain_key()
 {
-  brain_key_data ret_val;
+  return cpp::safe_exception_wrapper(
+    []() ->brain_key_data {
+      brain_key_data ret_val;
 
-  const auto bki = hive::protocol::suggest_brain_key();
+      const auto bki = hive::protocol::suggest_brain_key();
 
-  ret_val.brain_key = bki.brain_priv_key;
-  ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(bki.pub_key, HIVE_ADDRESS_PREFIX);
-  ret_val.wif_private_key = bki.wif_priv_key;
+      ret_val.brain_key = bki.brain_priv_key;
+      ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(bki.pub_key, HIVE_ADDRESS_PREFIX);
+      ret_val.wif_private_key = bki.wif_priv_key;
 
-  return ret_val;
+      return ret_val;
+    }
+  );
 }
 
 result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
