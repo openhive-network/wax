@@ -408,6 +408,70 @@ test.describe('Wax object interface foundation tests', () => {
 
     expect(retVal.encrypted).toBe("#5P5bvgpUUGTskb98shuYBTpSMqfoTBev6Ay2xo9UgMF3Rj5uhFSqwVLb4LZkmCcodBdQUgEspA1t2dByaMVAjyJFZN767GRGxGDtx2r3sQtui9kFEWPGcxXYvWZLxAxDJmgtqc4wUsgNKYe5kZPPQSHg");
     expect(retVal.decrypted).toBe("This should be encrypted");
+  })
+
+  test('Should be able to calculate account HP', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateAccountHp(10, 10, 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "10",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate account HP with mixed params', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateAccountHp(10, base.hive(10), 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "10",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate witness votes HP', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateWitnessVotesHp(10, 10, 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "42949672970",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate witness votes HP with mixed params', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateWitnessVotesHp(10, base.hive(10), 10);
+    });
+
+    expect(retVal).toEqual({
+      amount: "42949672970",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate HP APR', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateHpApr(1_000_000, 1_500, 10, 10);
+    });
+
+    expect(retVal).toEqual(1.46);
+  });
+
+  test('Should be able to calculate HP APR with mixed params', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateHpApr(1_000_000, 1_500, base.hive(10), 10);
+    });
+
+    expect(retVal).toEqual(1.46);
   });
 
   test('Should be able to generate random private key using password', async ({ waxTest }) => {

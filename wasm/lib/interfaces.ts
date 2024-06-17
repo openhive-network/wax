@@ -623,6 +623,37 @@ export interface IWaxBaseInterface {
   calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number;
 
   /**
+   * Calculates account HP based on given vests, total vesting fund HIVE and total vesting shares
+   *
+   * @param {number | string | BigInt | Long | NaiAsset} vests VESTS asset
+   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund
+   * @param {number | string | BigInt | Long | NaiAsset} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} HP in nai form
+   */
+  calculateAccountHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset;
+
+  /**
+   * Calculates witness votes HP based on given votes, total vesting fund HIVE and total vesting shares
+   *
+   * @param {number} votes witness votes
+   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund
+   * @param {number | string | BigInt | Long | NaiAsset} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} HP in nai form
+   */
+  calculateWitnessVotesHp(votes: number, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset;
+
+  /**
+   * Calculate current HP APR
+   *
+   * @param {number} headBlockNum head block number
+   * @param {number} vestingRewardPercent vesting reward percent
+   * @param {number | string | BigInt | Long | NaiAsset} virtualSupply virtual supply
+   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund HIVE
+   * @returns {number} HP APR percent with 2 decimals
+   */
+  calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number;
+
+  /**
    * Deletes the created wax proto_protocol instance
    */
   delete(): void;

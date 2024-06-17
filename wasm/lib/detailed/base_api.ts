@@ -244,7 +244,45 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public calculateAccountHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
+    const vestsAsset = isNaiAsset(vests) ? vests as NaiAsset : this.vests(vests as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hive(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vests(totalVestingShares as number | string | BigInt | Long);
+
+    if (vestsAsset.nai !== this.ASSETS.VESTS.nai)
+      throw new WaxError('Invalid asset type for vests');
+
+    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for totalVestingFundHive');
+
+    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
+      throw new WaxError('Invalid asset type for totalVestingShares');
+
+    return this.proto.cpp_calculate_account_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
+  }
+
+  public calculateWitnessVotesHp(votes: number, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hive(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vests(totalVestingShares as number | string | BigInt | Long);
+
+    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for totalVestingFundHive');
+
+    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
+      throw new WaxError('Invalid asset type for totalVestingShares');
+
+    return this.proto.cpp_calculate_witness_votes_hp(votes, votes, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
+  }
+
+  public calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number {
+    const virtualSupplyAsset = isNaiAsset(virtualSupply) ? virtualSupply as NaiAsset : this.hive(virtualSupply as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hive(totalVestingFundHive as number | string | BigInt | Long);
+
+    return Number.parseFloat(this.extract(this.proto.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset)));
+  }
+
   public delete(): void {
     this.proto.delete();
   }
 }
+
