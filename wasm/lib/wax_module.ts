@@ -14,7 +14,9 @@ export type {
   price,
   witness_set_properties_data,
   MapStringString,
-  VectorString
+  VectorString,
+  private_key_data,
+  brain_key_data
 } from './build_wasm/wax.common.js';
 
 declare function waxmodule(): Promise<MainModule>;

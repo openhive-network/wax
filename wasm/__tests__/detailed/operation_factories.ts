@@ -259,8 +259,6 @@ test.describe('Wax operation factories tests', () => {
         builder.generateRemoval();
       }, 'alice', 'bob', 50, { amount: '0', precision: 3, nai: '@@000000021' }, 'monthly subscription', 24, 2);
 
-      console.log(JSON.stringify((tx as any).target));
-
       return tx.toLegacyApi();
     });
 

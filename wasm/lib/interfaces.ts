@@ -63,6 +63,15 @@ export interface IWaxOptions {
   chainId: string;
 }
 
+export interface IPrivateKeyData {
+  associatedPublicKey: string;
+  wifPrivateKey: string;
+}
+
+export interface IBrainKeyData extends IPrivateKeyData {
+  brainKey: string;
+}
+
 export interface IWaxOptionsChain extends IWaxOptions {
   /**
    * Endpoint for all of the API requests
@@ -531,6 +540,32 @@ export interface IWaxBaseInterface {
    * @throws {WaxError} on any Wax API-related error
    */
   getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString;
+
+  /**
+   * Suggests a safe brain key to use for creating your account.
+   * Returns a brain key and the corresponding private key and public key.
+   * Brain key is a long passphrase that provides enough entropy to generate cryptographic
+   * keys. This function will suggest a suitably random string that should
+   * be easy to write down (and, with effort, memorize).
+   *
+   * @returns {IBrainKeyData} Brain key data
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  suggestBrainKey(): IBrainKeyData;
+
+  /**
+   * Derives private key for a gien role from so-called Master Password
+   *
+   * @param {string} account the name of the account to retrieve key for
+   * @param {string} role active | owner | posting | memo
+   * @param {string} password the Master Password to derive key from
+   *
+   * @returns {IPrivateKeyData} Genrated private key along with the associated public key in WIF format
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData;
 
   /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format

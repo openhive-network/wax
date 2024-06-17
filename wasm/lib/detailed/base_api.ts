@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IHiveAssetData, IManabarData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
+import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransactionBuilderConstructor, IWaxBaseInterface, THexString } from "../interfaces";
 import type { MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
 import type { NaiAsset } from "./api";
 
@@ -223,6 +223,25 @@ export class WaxBaseApi implements IWaxBaseInterface {
       return Math.floor(Date.now() / 1000);
 
     return Number.parseInt(this.extract(this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxManaLH.low, maxManaLH.high, currentManaLH.low, currentManaLH.high, lastUpdateTime)));
+  }
+
+  public suggestBrainKey(): IBrainKeyData {
+    const data = this.proto.cpp_suggest_brain_key();
+
+    return {
+      associatedPublicKey: data.associated_public_key as string,
+      brainKey: data.brain_key as string,
+      wifPrivateKey: data.wif_private_key as string
+    };
+  }
+
+  public getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData {
+    const data = this.proto.cpp_generate_private_key_password_based(account, role, password);
+
+    return {
+      associatedPublicKey: data.associated_public_key as string,
+      wifPrivateKey: data.wif_private_key as string
+    };
   }
 
   public delete(): void {
