@@ -409,6 +409,7 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
 
 json_asset foundation::cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const
 {
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
   const hive::protocol::asset _hbd = to_asset(hbd);
   const hive::protocol::asset _base = to_asset(base);
   const hive::protocol::asset _quote = to_asset(quote);
@@ -419,10 +420,12 @@ json_asset foundation::cpp_hbd_to_hive(const json_asset &hbd, const json_asset& 
 
   const hive::protocol::asset hive = _hbd * hbd_to_hive_feed;
   return to_json_asset(hive);
+  });
 }
 
 json_asset foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
   const hive::protocol::asset _vests = to_asset(vests);
   const hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
   const hive::protocol::asset _total_vesting_shares = to_asset(total_vesting_shares);
@@ -433,6 +436,7 @@ json_asset foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset
 
   const hive::protocol::asset hp = _vests * vests_to_hive_feed;
   return to_json_asset(hp);
+  });
 }
 
 result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
