@@ -362,6 +362,25 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.decrypted).toBe("This should be encrypted");
   });
 
+  test('Should be able to generate random private key using password', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.getPrivateKeyFromPassword("gtg", "active", "verysecurepassword");
+    });
+
+    expect(retVal.associatedPublicKey).toBe("STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3");
+    expect(retVal.wifPrivateKey).toBe("5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12");
+  });
+
+  test('Should be able to suggest brain key', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.suggestBrainKey();
+    });
+
+    expect(retVal.associatedPublicKey).toHaveLength(53);
+    expect((retVal.brainKey as string).length).toBeGreaterThan(0);
+    expect(retVal.wifPrivateKey).toHaveLength(51);
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });

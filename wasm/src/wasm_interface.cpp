@@ -65,8 +65,14 @@ crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
 std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const
 { return foundation::cpp_crypto_memo_dump_string(value); }
 
-result cpp_generate_private_key() 
+brain_key_data cpp_suggest_brain_key()
+{ return foundation::cpp_suggest_brain_key(); }
+
+result cpp_generate_private_key()
 { return foundation::cpp_generate_private_key(); }
+
+private_key_data cpp_generate_private_key_password_based(const std::string& account, const std::string& role, const std::string& password)
+{ return foundation::cpp_generate_private_key(account, role, password); }
 
 result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
 { return foundation::cpp_get_public_key_from_signature(digest, signature); }
@@ -127,6 +133,17 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("exception_message", &result::exception_message)
       ;
 
+  value_object<brain_key_data>("brain_key_data")
+      .field("associated_public_key", &brain_key_data::associated_public_key)
+      .field("brain_key", &brain_key_data::brain_key)
+      .field("wif_private_key", &brain_key_data::wif_private_key)
+      ;
+
+  value_object<private_key_data>("private_key_data")
+      .field("associated_public_key", &private_key_data::associated_public_key)
+      .field("wif_private_key", &private_key_data::wif_private_key)
+      ;
+
   value_object<json_asset>("json_asset")
       .field("amount", &json_asset::amount)
       .field("precision", &json_asset::precision)
@@ -174,7 +191,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .constructor<>()
     .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
+    .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
+    .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
 
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:

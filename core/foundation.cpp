@@ -252,6 +252,8 @@ brain_key_data foundation::cpp_suggest_brain_key()
 {
   return cpp::safe_exception_wrapper(
     []() ->brain_key_data {
+      try {
+
       brain_key_data ret_val;
 
       const auto bki = hive::protocol::suggest_brain_key();
@@ -261,6 +263,7 @@ brain_key_data foundation::cpp_suggest_brain_key()
       ret_val.wif_private_key = bki.wif_priv_key;
 
       return ret_val;
+      } FC_CAPTURE_LOG_AND_RETHROW(())
     }
   );
 }

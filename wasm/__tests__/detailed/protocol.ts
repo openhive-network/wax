@@ -33,6 +33,25 @@ test.describe('WASM Protocol', () => {
     privateKey = retVal.content as string;
   });
 
+  test('Should be able to generate random private key using password', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }) => {
+      return protocol.cpp_generate_private_key_password_based("gtg", "active", "verysecurepassword");
+    });
+
+    expect(retVal.associated_public_key).toBe("STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3");
+    expect(retVal.wif_private_key).toBe("5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12");
+  });
+
+  test('Should be able to suggest brain key', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }) => {
+      return protocol.cpp_suggest_brain_key();
+    });
+
+    expect(retVal.associated_public_key).toHaveLength(53);
+    expect((retVal.brain_key as string).length).toBeGreaterThan(0);
+    expect(retVal.wif_private_key).toHaveLength(51);
+  });
+
   test('Should be able to calculate public key', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, privateKey) => {
       return protocol.cpp_calculate_public_key(privateKey);
@@ -333,8 +352,6 @@ test.describe('WASM Protocol', () => {
       const propsSerialized = protocol.cpp_serialize_witness_set_properties(witness_properties);
 
       const props = protocol.cpp_deserialize_witness_set_properties(propsSerialized);
-
-      console.log(props);
 
       return props;
     }, witness_properties);
