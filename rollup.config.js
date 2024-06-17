@@ -22,10 +22,8 @@ const commonConfiguration = packEntire => ([
       replace({
         'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
         'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
-        'process': null,
-        'process.versions': null,
-        'process.argv': "[]",
-        'process.versions.node': null,
+        // WASM requires process.argv[1] argument to be set. We can mock it in web browser environment:
+        'process.argv': '(typeof process=="object"&&typeof process.argv=="object"?process.argv:["",""])',
         'process.env': null,
         preventAssignment: true
       }),

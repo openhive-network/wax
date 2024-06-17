@@ -372,7 +372,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to suggest brain key', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ base }) => {
+    const retVal = await waxTest.dynamic(async({ base }) => {
       return base.suggestBrainKey();
     });
 

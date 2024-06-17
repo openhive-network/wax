@@ -34,7 +34,7 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to generate random private key using password', async ({ wasmTest }) => {
-    const retVal = await wasmTest.dynamic(({ protocol }) => {
+    const retVal = await wasmTest(({ protocol }) => {
       return protocol.cpp_generate_private_key_password_based("gtg", "active", "verysecurepassword");
     });
 
