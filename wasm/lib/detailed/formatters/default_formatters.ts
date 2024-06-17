@@ -1,10 +1,11 @@
 import type { ApiTransaction, NaiAsset } from "../api";
 import type { DeepReadonly, IFormatFunctionArguments, IWaxCustomFormatter, IWaxFormatterOptions } from "./types";
 import type { IWaxBaseInterface } from "../../interfaces";
-import type { custom_json, transaction } from "../../protocol";
+import type { custom_json, transaction, witness_set_properties } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
 import { CommunityOperation, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperation, ReblogOperation, ResourceCreditsOperation } from "../custom_jsons";
+import { WaxBaseApi } from "../base_api";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
   public constructor(
@@ -111,6 +112,31 @@ export class DefaultFormatters implements IWaxCustomFormatter {
       // Check the integrity of the custom operation
       if(typeof what === "string" && typeof follower === "string")
         return new FollowOperation(what as EFollowActions, follower, followingParsed);
+    } catch {}
+  }
+
+  @WaxFormattable({ matchProperty: "props" })
+  public witnessSetPropertiesPropsFormatter({ source }: IFormatFunctionArguments<witness_set_properties>): witness_set_properties | void {
+    try {
+      // Make sure we are deserializing the proper operation
+      if (!("owner" in source))
+        return;
+
+      const props: Array<[string, string]> = [];
+
+      if (Array.isArray(source.props)) // API type
+        props.push(...source.props);
+      else // Protobuf type
+        for (const key in source.props)
+          props.push([key, source.props[key]]);
+
+      const deserialized = (this.wax as WaxBaseApi).deserializeWitnessProps(props);
+
+      return { // Rewrite the operation with the deserialized props
+        extensions: [...(source.extensions || [])],
+        owner: source.owner,
+        props: deserialized as Record<string, any>
+      };
     } catch {}
   }
 }

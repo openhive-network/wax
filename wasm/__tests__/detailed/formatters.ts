@@ -6,7 +6,7 @@ import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 
-import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation } from "../assets/data.protocol";
+import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties } from "../assets/data.protocol";
 import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperation, WaxFormattable, operation } from '../../dist/lib';
 
 let browser!: ChromiumBrowser;
@@ -210,6 +210,16 @@ test.describe('Wax object interface formatters tests', () => {
       "0",
       "0"
     ]);
+  });
+
+  test('Should be able to format witness set properties operation using default formatters from hive chain interface', async({ waxTest }) => {
+    const retVal = await waxTest(({ chain }, serializedWitnessSetProperties) => {
+      const data = chain.formatter.format(serializedWitnessSetProperties);
+
+      return `${data.value.owner} set new signing key to ${data.value.props.new_signing_key}`;
+    }, serializedWitnessSetProperties);
+
+    expect(retVal).toBe("gtg set new signing key to STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW");
   });
 
   test('Should be able to format asset using default formatters from hive chain interface', async({ waxTest }) => {

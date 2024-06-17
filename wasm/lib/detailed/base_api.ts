@@ -7,7 +7,7 @@ import { WaxError } from '../errors.js';
 import { TransactionBuilder } from "./transaction_builder.js";
 import Long from "long";
 
-import { WaxFormatter } from "./formatters/waxify";
+import { WaxFormatter } from "./formatters/waxify.js";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -26,6 +26,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
     return this.formatter.waxify.bind(this.formatter);
+  }
+
+  public deserializeWitnessProps(serializedWitnessProps: Array<[string, string]>): witness_set_properties_data {
+    const map = new this.wax.MapStringString();
+    for (const [key, serializedValue] of serializedWitnessProps)
+      map.set(key, serializedValue);
+
+    return this.proto.cpp_deserialize_witness_set_properties(map);
   }
 
   public serializeWitnessProps(witnessProps: witness_set_properties_data): Record<string, string> {

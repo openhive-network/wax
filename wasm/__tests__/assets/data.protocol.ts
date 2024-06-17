@@ -13,6 +13,51 @@ export const numToHighLow = (value: number | string | Long): [ number, number ] 
   return [ long.low, long.high ];
 };
 
+export const serializedWitnessSetProperties = {
+  type: 'witness_set_properties_operation',
+  value: {
+    owner: 'gtg',
+    props: [
+      [
+        "account_creation_fee",
+        "88130000000000002320bcbe",
+      ],
+      [
+        "account_subsidy_budget",
+        "e8030000",
+      ],
+      [
+        "account_subsidy_decay",
+        "e8030000",
+      ],
+      [
+        "hbd_exchange_rate",
+        "e8030000000000000320bcbee8030000000000002320bcbe",
+      ],
+      [
+        "hbd_interest_rate",
+        "e803",
+      ],
+      [
+        "key",
+        "3553544d355271564241564e703575664d4365745174764c474c4a6f37756e58396e7943424d4d7254585257513969315a7a7a697a68",
+      ],
+      [
+        "maximum_block_size",
+        "e8030000",
+      ],
+      [
+        "new_signing_key",
+        "3553544d365471534a61533161526a367036795a456f35786963583762764c6872666456716935546f4e724b78485533465242456457",
+      ],
+      [
+        "url",
+        "0f68747470733a2f2f686976652e696f",
+      ]
+    ]
+  }
+};
+
 export const witness_properties: witness_set_properties_data = {
   key: 'STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh',
   new_signing_key: 'STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW',
