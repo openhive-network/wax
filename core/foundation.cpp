@@ -205,6 +205,7 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
 
 std::string foundation::cpp_asset_value(const json_asset& value) const
 {
+  return cpp::safe_exception_wrapper([&]() -> std::string {
   auto a = to_legacy_asset(value);
 
   /// FIXME optimize it by extending legacy_asset interface by providing function to just convert amount
@@ -215,10 +216,12 @@ std::string foundation::cpp_asset_value(const json_asset& value) const
   auto value_part = s.substr( 0, space_pos );
 
   return value_part;
+  });
 }
 
 std::string foundation::cpp_asset_symbol(const json_asset& value) const
 {
+  return cpp::safe_exception_wrapper([&]() -> std::string {
   auto a = to_legacy_asset(value);
   hive::protocol::legacy_asset la(a);
 
@@ -228,6 +231,7 @@ std::string foundation::cpp_asset_symbol(const json_asset& value) const
     return value.nai;
 
   return symbol;
+  });
 }
 
 result foundation::cpp_generate_private_key()
