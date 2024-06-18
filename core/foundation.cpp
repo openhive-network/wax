@@ -95,6 +95,7 @@ json_asset foundation::cpp_vests(const int64_t amount)const
 
 witness_set_properties_serialized foundation::cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const
 {
+  return cpp::safe_exception_wrapper([&]() ->witness_set_properties_serialized {
   witness_set_properties_serialized result;
 
   result.emplace("key", fc::to_hex(fc::raw::pack_to_vector(value.key)));
@@ -124,6 +125,7 @@ witness_set_properties_serialized foundation::cpp_serialize_witness_set_properti
     result.emplace("account_subsidy_decay", fc::to_hex(fc::raw::pack_to_vector(value.account_subsidy_decay.value())));
 
   return result;
+  });
 }
 
 namespace detail {
@@ -150,6 +152,7 @@ namespace detail {
 
 witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const
 {
+  return cpp::safe_exception_wrapper([&]() -> witness_set_properties_data {
   witness_set_properties_data result;
 
   auto itr = value.find("key");
@@ -197,6 +200,7 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
     detail::convert_from_hex(itr->second, result.account_subsidy_decay);
 
   return result;
+  });
 }
 
 std::string foundation::cpp_asset_value(const json_asset& value) const
