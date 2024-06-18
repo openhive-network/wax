@@ -58,6 +58,46 @@ export const serializedWitnessSetProperties = {
   }
 };
 
+
+/// https://explore.openhive.network/transaction/208ae2b74e32151a77e73c13b8324b07e5953d0f
+export const realSerializedWitnessSetProperties = {
+  type: 'witness_set_properties_operation',
+  value: {
+    "owner": "igormuba",
+    "props": [
+      ["hbd_exchange_rate", "11010000000000000353424400000000e80300000000000003535445454d0000"],
+      ["key", "029072da2e84ebd6eb520f944db3d1af718500b0f1ddf60e11e986f990acddd524"]],
+      "extensions": []
+  }
+};
+
+export const input_witness_properties: witness_set_properties_data = {
+  key: 'STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj',
+  new_signing_key: 'STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj',
+  hbd_exchange_rate: {
+    base: {
+      amount: "273",
+      nai: "@@000000013",
+      precision: 3
+    },
+    quote: {
+      amount: "1000",
+      nai: "@@000000021",
+      precision: 3
+    }
+  },
+  account_creation_fee: {
+    nai: "@@000000021",
+    precision: 3,
+    amount: "5000"
+  },
+  url: 'https://hive.io',
+  maximum_block_size: 131072,
+  hbd_interest_rate: 1000,
+  account_subsidy_budget: 797,
+  account_subsidy_decay: 347321
+};
+
 export const witness_properties: witness_set_properties_data = {
   key: 'STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh',
   new_signing_key: 'STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW',
