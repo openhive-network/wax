@@ -316,14 +316,14 @@ test.describe('WASM Protocol', () => {
     }, witness_properties);
 
     expect(retVal).toStrictEqual({
-      account_creation_fee: "88130000000000002320bcbe",
+      account_creation_fee: "881300000000000003535445454d0000",
       account_subsidy_budget: "1d030000",
       account_subsidy_decay: "b94c0500",
-      hbd_exchange_rate: "64000000000000000320bcbe64000000000000002320bcbe",
+      hbd_exchange_rate: "64000000000000000353424400000000640000000000000003535445454d0000",
       hbd_interest_rate: "e803",
-      key: "3553544d355271564241564e703575664d4365745174764c474c4a6f37756e58396e7943424d4d7254585257513969315a7a7a697a68",
+      key: "02472d6eb6d691b6de8b103b51ebdf4e128a523946d8cd03d6ded91b1497ee2e83",
       maximum_block_size: "00000200",
-      new_signing_key: "3553544d365471534a61533161526a367036795a456f35786963583762764c6872666456716935546f4e724b78485533465242456457",
+      new_signing_key: "02cf69b1f999d133ebbe178a8b4bbf4da356b264dfdc843b1c740378bff8f65b33",
       url: "0f68747470733a2f2f686976652e696f"
     });
   });
