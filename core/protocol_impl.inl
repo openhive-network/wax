@@ -138,6 +138,7 @@ template <class FoundationProvider>
 inline
 required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
 {
+  return cpp::safe_exception_wrapper([&]() -> required_authority_collection {
   const auto _transaction = get_transaction(transaction);
 
   typedef flat_set<hive::protocol::account_name_type> raw_account_set;
@@ -157,6 +158,7 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   /// ret_val.other_authorities = std::move(other_authorities);
 
   return ret_val;
+  });
 }
 
 } /// namespace cpp
