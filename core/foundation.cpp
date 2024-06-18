@@ -372,19 +372,14 @@ result foundation::cpp_calculate_current_manabar_value(const int32_t now, const 
 
 ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
 {
-  try
-  {
+  return cpp::safe_exception_wrapper([&]()-> ref_block_data {
     const hive::protocol::block_id_type id { block_id };
     hive::protocol::transaction tx;
 
     tx.set_reference_block(id);
 
     return { tx.ref_block_num, tx.ref_block_prefix };
-  }
-  catch(...)
-  {
-    return { 0, 0 };
-  }
+  });
 }
 
 result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const
