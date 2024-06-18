@@ -89,10 +89,15 @@ witness_set_properties_serialized foundation::cpp_serialize_witness_set_properti
   return cpp::safe_exception_wrapper([&]() ->witness_set_properties_serialized {
   witness_set_properties_serialized result;
 
-  result.emplace("key", fc::to_hex(fc::raw::pack_to_vector(value.key)));
+  auto key = fc::ecc::public_key::from_base58_with_prefix(value.key, HIVE_ADDRESS_PREFIX);
+
+  result.emplace("key", fc::to_hex(fc::raw::pack_to_vector(key)));
 
   if(value.new_signing_key.has_value())
-    result.emplace("new_signing_key", fc::to_hex(fc::raw::pack_to_vector(value.new_signing_key.value())));
+  {
+    key = fc::ecc::public_key::from_base58_with_prefix(value.new_signing_key.value(), HIVE_ADDRESS_PREFIX);
+    result.emplace("new_signing_key", fc::to_hex(fc::raw::pack_to_vector(key)));
+  }
 
   if(value.account_creation_fee.has_value())
     result.emplace("account_creation_fee", fc::to_hex(fc::raw::pack_to_vector(value.account_creation_fee.value())));
@@ -150,15 +155,26 @@ witness_set_properties_data foundation::cpp_deserialize_witness_set_properties(c
 
   FC_ASSERT(itr != value.end(), "key is required in serialized data");
 
-  detail::convert_from_hex(itr->second, result.key);
+  hive::protocol::public_key_type public_key;
+  detail::convert_from_hex(itr->second, public_key);
+
+  result.key = fc::ecc::public_key::to_base58_with_prefix(public_key, HIVE_ADDRESS_PREFIX);
 
   itr = value.find("new_signing_key");
   if(itr != value.end())
-    detail::convert_from_hex(itr->second, result.new_signing_key);
+  {
+    detail::convert_from_hex(itr->second, public_key);
+    result.new_signing_key = fc::ecc::public_key::to_base58_with_prefix(public_key, HIVE_ADDRESS_PREFIX);
+  }
 
   itr = value.find("account_creation_fee");
   if(itr != value.end())
-    detail::convert_from_hex(itr->second, result.account_creation_fee);
+  {
+    hive::protocol::asset actualFee;
+    detail::convert_from_hex(itr->second, actualFee);
+
+    result.account_creation_fee = to_json_asset(actualFee);
+  }
 
   itr = value.find("url");
   if(itr != value.end())
@@ -445,27 +461,50 @@ result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_n
 
 // Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,
 // we are using the ones for hive::protocol::asset and hive::protocol::price
+
+// WARNING this serialization primitives are used atm only in context of witness_set_properties operation and to be
+// compliant to hive::protocol behavior (and properties serialization) have enabled legacy serialization mode.
 namespace fc { namespace raw {
   template<typename Stream>
   inline void pack( Stream& s, const cpp::json_asset& u )
-  { pack(s, cpp::to_asset(u)); }
+  {
+    const auto actualAsset = cpp::to_asset(u);
+
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
+    pack(s, actualAsset);
+  }
 
   template<typename Stream>
   inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d )
   {
     hive::protocol::asset tmp;
+
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
     unpack(s, tmp, d + 1);
     u = cpp::to_json_asset(tmp);
   }
 
   template<typename Stream>
   inline void pack( Stream& s, const cpp::price& u )
-  { pack(s, hive::protocol::price{ cpp::to_asset(u.base), cpp::to_asset(u.quote) }); }
+  {
+    hive::protocol::price actualPrice { cpp::to_asset(u.base), cpp::to_asset(u.quote) };
+
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+    pack(s, actualPrice);
+  }
 
   template<typename Stream>
   inline void unpack( Stream& s, cpp::price& u, uint32_t d )
   {
     hive::protocol::price tmp;
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
     unpack(s, tmp, d + 1);
     u = { .base = cpp::to_json_asset(tmp.base), .quote = cpp::to_json_asset(tmp.quote) };
   }
