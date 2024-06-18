@@ -20,22 +20,13 @@ namespace cpp {
 
 json_asset to_json_asset(const hive::protocol::asset& asset)
 {
-  try
-  {
+  return cpp::safe_exception_wrapper([&]() ->json_asset {
     return {
       boost::lexical_cast<std::string>(asset.amount.value),
       /* uint64_t */ uint32_t(asset.symbol.decimals()),
       asset.symbol.to_nai_string()
     };
-  }
-  catch (...)
-  {
-    return {
-      "",
-      0,
-      ""
-    };
-  }
+  });
 }
 
 int64_t calculate_inflation_rate_for_block(const uint32_t block_num)
