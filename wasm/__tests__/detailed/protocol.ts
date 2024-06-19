@@ -121,10 +121,28 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toBe("0");
   });
 
-  test('Should be able to calculate the current manabar full regeneration time', async ({ wasmTest }) => {
+  test('Should be able to calculate manabar full regeneration time (relaxed)', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, ...args) => {
+      return protocol.cpp_calculate_manabar_full_regeneration_time(...args);
+    }, 0, ...numToHighLow(100), ...numToHighLow(100), 10);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("10");
+  });
+
+  test('Should be able to calculate the current manabar value', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
       return protocol.cpp_calculate_current_manabar_value(...args);
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 0);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("100");
+  });
+
+  test('Should be able to calculate the current manabar value (relaxed)', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, ...args) => {
+      return protocol.cpp_calculate_current_manabar_value(...args);
+    }, 0, ...numToHighLow(100), ...numToHighLow(100), 10);
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("100");
