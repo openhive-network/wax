@@ -45,8 +45,8 @@ public:
   */
   std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const;
 
-  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
-  result cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
+  result cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
+  result cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
 
   ref_block_data cpp_get_tapos_data(const std::string& block_id);
 

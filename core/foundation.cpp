@@ -352,16 +352,21 @@ result foundation::cpp_calculate_public_key(const std::string& wif)
   });
 }
 
-int64_t __current_manabar(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
+int64_t __current_manabar(int32_t* now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
 {
   using namespace hive::chain::util;
   const manabar_params params{ max_mana, HIVE_RC_REGEN_TIME };
+
+  /// patch now to match last_update_time and avoid assertions during misuse at client side
+  if(last_update_time > static_cast<uint32_t>(*now))
+    *now = static_cast<int32_t>(last_update_time);
+
   manabar manabar{ current_mana, last_update_time };
-  manabar.regenerate_mana(params, now);
+  manabar.regenerate_mana(params, *now);
   return manabar.current_mana;
 }
 
-result foundation::cpp_calculate_manabar_full_regeneration_time(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
+result foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
 {
   // safe is used because of detected issue with overflow
   using safe_uint128_t = fc::safe<fc::uint128_t>;
@@ -370,19 +375,20 @@ result foundation::cpp_calculate_manabar_full_regeneration_time(const int32_t no
   {
     const safe_uint128_t hive_rc_regen_time{ HIVE_RC_REGEN_TIME };
     const safe_uint128_t safe_max_mana{ max_mana };
+
+    const safe_uint128_t mana = __current_manabar(&now, max_mana, current_mana, last_update_time);
     const safe_uint128_t safe_now{ now };
 
-    const safe_uint128_t mana = __current_manabar(now, max_mana, current_mana, last_update_time);
     const safe_uint128_t time_to_regenerate_missing_mana = (safe_max_mana - mana) * hive_rc_regen_time / max_mana;
 
     _result.content = std::to_string((safe_now + time_to_regenerate_missing_mana).value);
   });
 }
 
-result foundation::cpp_calculate_current_manabar_value(const int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
+result foundation::cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
   return method_wrapper([&](result& _result)
   {
-    _result.content = std::to_string(__current_manabar(now, max_mana, current_mana, last_update_time));
+    _result.content = std::to_string(__current_manabar(&now, max_mana, current_mana, last_update_time));
   });
 }
 
