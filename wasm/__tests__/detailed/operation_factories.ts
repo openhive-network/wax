@@ -93,6 +93,200 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
+  test('Should be able to use WitnessSetPropertiesBuilder with url witness property', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain, wax }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+        builder.setUrl('https://steemit.com/steem/@therealwolf/witness-application-therealwolf-updated');
+      }, 'therealwolf', 'STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations[0]).toEqual({
+      type: 'witness_set_properties_operation',
+      value: {
+        owner: 'therealwolf',
+        props: [
+          [
+            "key",
+            "03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56",
+          ],
+          [
+            "url",
+            "4e68747470733a2f2f737465656d69742e636f6d2f737465656d2f407468657265616c776f6c662f7769746e6573732d6170706c69636174696f6e2d7468657265616c776f6c662d75706461746564",
+          ]
+        ]
+      }
+    });
+  });
+
+  test('Should be able to use WitnessSetPropertiesBuilder with budget and account fee witness properties', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain, wax }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+        builder
+          .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
+          .setAccountSubsidyBudget(700);
+      }, 'therealwolf', 'STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations[0]).toEqual({
+      type: 'witness_set_properties_operation',
+      value: {
+        owner: 'therealwolf',
+        props: [
+          [
+            "account_creation_fee",
+            "b80b00000000000003535445454d0000",
+          ],
+          [
+            "account_subsidy_budget",
+            "bc020000",
+          ],
+          [
+            "key",
+            "03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56"
+          ]
+        ]
+      }
+    });
+  });
+
+  test('Should be able to use WitnessSetPropertiesBuilder with deacy and budget witness properties', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain, wax }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+        builder
+          .setAccountSubsidyBudget(1)
+          .setAccountSubsidyDecay(64);
+      }, 'emrebeyler', 'STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations[0]).toEqual({
+      type: 'witness_set_properties_operation',
+      value: {
+        owner: 'emrebeyler',
+        props: [
+          [
+            "account_subsidy_budget",
+            "01000000",
+          ],
+          [
+            "account_subsidy_decay",
+            "40000000",
+          ],
+          [
+            "key",
+            "0249202c30b95aec7506ab719fd602256922b9ca86cc31e01499c4c6339c7292a3"
+          ]
+        ]
+      }
+    });
+  });
+
+  test('Should be able to use WitnessSetPropertiesBuilder with hbd exchange rate witness property', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain, wax }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+        builder
+          .setHBDExchangeRate({ amount: '424', precision: 3, nai: '@@000000013' }, { amount: '1000', precision: 3, nai: '@@000000021' });
+      }, 'ctrpch', 'STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations[0]).toEqual({
+      type: 'witness_set_properties_operation',
+      value: {
+        owner: 'ctrpch',
+        props: [
+          [
+            "hbd_exchange_rate",
+            "a8010000000000000353424400000000e80300000000000003535445454d0000",
+          ],
+          [
+            "key",
+            "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b"
+          ]
+        ]
+      }
+    });
+  });
+
+  test('Should be able to use WitnessSetPropertiesBuilder with all the specific witness properties', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain, wax }) => {
+      const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+        builder
+          .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
+          .setAccountSubsidyBudget(10000)
+          .setAccountSubsidyDecay(3307750)
+          .setHBDExchangeRate({ amount: '867', precision: 3, nai: '@@000000013' }, { amount: '1002', precision: 3, nai: '@@000000021' })
+          .setHBDInterestRate(0)
+          .setMaximumBlockSize(65536)
+          .setNewSigningKey('STM7FGmbPEooM5xbME7F2WUG41zGAh6WPzvHMQvTfABEHKfyuGUu7')
+          .setUrl('https://guiltyparties.com');
+      }, 'guiltyparties', 'STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU');
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations[0]).toEqual({
+      type: 'witness_set_properties_operation',
+      value: {
+        owner: 'guiltyparties',
+        props: [
+          [
+            "account_creation_fee",
+            "b80b00000000000003535445454d0000",
+          ],
+          [
+            "account_subsidy_budget",
+            "10270000"
+          ],
+          [
+            "account_subsidy_decay",
+            "e6783200"
+          ],
+          [
+            "hbd_exchange_rate",
+            "63030000000000000353424400000000ea0300000000000003535445454d0000"
+          ],
+          [
+            "hbd_interest_rate",
+            "0000"
+          ],
+          [
+            "key",
+            "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b"
+          ],
+          [
+            "maximum_block_size",
+            "00000100"
+          ],
+          [
+            "new_signing_key",
+            "033695262a25cd5646f7875db0536db3f1b3439d7c86274ec56cce01d91ab6611b"
+          ],
+          [
+            "url",
+            "1968747470733a2f2f6775696c7479706172746965732e636f6d"
+          ]
+        ]
+      }
+    });
+  });
+
   test('Should be able to initialize useBuilder on RecurrentTransferBuilder with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
