@@ -20,11 +20,15 @@ const commonConfiguration = packEntire => ([
         ] : []
       }),
       replace({
-        'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
-        'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
-        // WASM requires process.argv[1] argument to be set. We can mock it in web browser environment:
-        'process.argv': '(typeof process=="object"&&typeof process.argv=="object"?process.argv:["",""])',
-        'process.env': null,
+        delimiters: ['', ''],
+        values: {
+          'require("url").fileURLToPath(new URL("./",import.meta.url))': 'import.meta.url',
+          'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
+          'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
+          // WASM requires process.argv[1] argument to be set. We can mock it in web browser environment:
+          'process.argv': '(typeof process=="object"&&typeof process.argv=="object"?process.argv:["",""])',
+          'process.env': null
+        },
         preventAssignment: true
       }),
       nodeResolve({

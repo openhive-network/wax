@@ -8,7 +8,7 @@ declare type ExamplesWindow = typeof window & typeof globalThis & { exampleFinis
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const configFor = (name: string) => ({
+const configFor = (name: string): ConstructorParameters<typeof Parcel>[0] => ({
   entries: path.resolve(__dirname, `assets/${name}.html`),
   defaultConfig: '@parcel/config-default',
   mode: 'production',
@@ -19,7 +19,10 @@ const configFor = (name: string) => ({
 
 (async () => {
   const browser = await chromium.launch({
-    headless: true
+    headless: true,
+    args: [
+      '--disable-web-security', // Disable CORS - parcel generates helper functions in separate files that are loaded via file://
+    ],
   });
   const page = await browser.newPage();
   page.on('console', (msg: ConsoleMessage) => {
