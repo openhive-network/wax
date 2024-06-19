@@ -5,3 +5,9 @@ def test_calculate_manabar_full_regeneration_time():
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result == b'0'
+
+def test_calculate_manabar_full_regeneration_time_relaxed():
+    result = calculate_manabar_full_regeneration_time(0, 100, 100, 10)
+    assert result.status == result.status.ok
+    assert result.exception_message == b''
+    assert result.result == b'10'

@@ -5,3 +5,9 @@ def test_calculate_current_manabar_value():
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result == b'100'
+
+def test_calculate_current_manabar_value_relaxed():
+    result = calculate_current_manabar_value(0, 100, 100, 10)
+    assert result.status == result.status.ok
+    assert result.exception_message == b''
+    assert result.result == b'100'
