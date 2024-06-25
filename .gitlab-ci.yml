@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 5a291802a3fef7ca756bfb3f3c07c23cbe523c48
+    ref: a1f978c8532b15268b1cc985445844ec9bbb8cd8
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
