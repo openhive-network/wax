@@ -63,6 +63,10 @@
     "reflect-metadata": "^0.1.13"
   },
   "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": [
+    "blockchain",
+    "hive"
+  ],
   "files": [
     "LICENSE.md",
     "README.md",
