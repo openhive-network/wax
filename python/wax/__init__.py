@@ -40,10 +40,11 @@ from .wax import (
     get_transaction_required_authorities,
     verify_exception_handling,
     encode_encrypted_memo,
-    decode_encrypted_memo
+    decode_encrypted_memo,
+    serialize_witness_set_properties,
 )
 
-from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data, python_brain_key_data
+from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data, python_brain_key_data, python_witness_set_properties_data, python_witness_set_properties_serialized
 
 __version__ = "0.0.0"
 
@@ -55,6 +56,8 @@ __all__ = [
     "python_required_authority_collection",
     "python_private_key_data",
     "python_brain_key_data",
+    "python_witness_set_properties_data",
+    "python_witness_set_properties_serialized",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -95,4 +98,5 @@ __all__ = [
     "verify_exception_handling",
     "encode_encrypted_memo",
     "decode_encrypted_memo",
+    "serialize_witness_set_properties",
 ]

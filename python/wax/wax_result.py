@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
+from typing import TypeAlias, Optional
 
 class python_error_code(IntEnum):  # noqa: N801
     fail = 0
@@ -55,3 +56,17 @@ class python_brain_key_data:
     wif_private_key: string
     # base58 string pointing the public key associated to the private key specified above
     associated_public_key: string
+
+@dataclass
+class python_witness_set_properties_data:
+    key: string
+    new_signing_key: Optional[string]
+    account_creation_fee: Optional[string]
+    url: Optional[string]
+    hbd_exchange_rate: Optional[string]
+    maximum_block_size: Optional[string]
+    hbd_interest_rate: Optional[string]
+    account_subsidy_budget: Optional[string]
+    account_subsidy_decay: Optional[string]
+
+python_witness_set_properties_serialized: TypeAlias = dict[string, string]

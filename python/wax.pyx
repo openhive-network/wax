@@ -5,7 +5,7 @@ from libcpp.set cimport set as cppset
 from cython.operator cimport dereference, preincrement
 
 from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo, python_private_key_data, python_brain_key_data
+from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo, python_private_key_data, python_brain_key_data, python_witness_set_properties_data, python_witness_set_properties_serialized
 
 def return_python_result(foo):
     @wraps(foo)
@@ -307,6 +307,11 @@ def decode_encrypted_memo(encoded_memo: string) -> python_encrypted_memo:
       other_encryption_key = decoded.to,
       encrypted_content = decoded.content
     )
+
+def serialize_witness_set_properties(value: python_witness_set_properties_data) -> python_witness_set_properties_serialized:
+    cdef protocol obj
+    serialized = obj.cpp_serialize_witness_set_properties(value)
+    return serialized
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

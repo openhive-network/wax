@@ -1,4 +1,5 @@
 from libcpp.string cimport string
+from libcpp.map cimport map as cppmap
 from libcpp.set cimport set as cppset
 from libc.stdint cimport uint16_t, uint32_t
 
@@ -64,6 +65,20 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         # The public key associated to private key above (starts with HIVE_ADDRESS_PREFIX)
         string associated_public_key
 
+    cdef cppclass witness_set_properties_data:
+        witness_set_properties_data() except +
+
+        string key
+        string new_signing_key
+        string account_creation_fee
+        string url
+        string maximum_block_size
+        string hbd_interest_rate
+        string account_subsidy_budget
+        string account_subsidy_decay
+
+    ctypedef cppmap[string, string] witness_set_properties_serialized
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -93,6 +108,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
         string cpp_crypto_memo_dump_string(crypto_memo value) except +
+        witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
 
         void cpp_throws(int type) except +
 
