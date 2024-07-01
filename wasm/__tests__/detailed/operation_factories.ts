@@ -461,12 +461,12 @@ test.describe('Wax operation factories tests', () => {
       {
         amount: '0.000 HIVE',
         executions: 2,
-        extensions: [{
-          type: 'recurrent_transfer_pair_id',
-          value: {
+        extensions: [[
+          1,
+          {
             pair_id: 50
           }
-        }],
+        ]],
         from: 'alice',
         memo: 'monthly subscription',
         recurrence: 24,
@@ -549,7 +549,7 @@ test.describe('Wax operation factories tests', () => {
             allow_votes: true,
             allow_curation_rewards: true,
             extensions: [
-              [ "comment_payout_beneficiaries", { beneficiaries: [ { account: "guest4test7", weight: 40 } ] } ]
+              [ 0, { beneficiaries: [ { account: "guest4test7", weight: 40 } ] } ]
             ]
           }
         ]
