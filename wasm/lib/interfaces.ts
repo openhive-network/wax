@@ -223,8 +223,16 @@ interface ITransactionBuilderBase {
    * @returns {transaction} transaction
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   *
+   * @deprecated
    */
   build(): transaction;
+
+  /**
+   * Fills up constructed transaction object basing on preconfigured TAPOS. Also applies the transaction expiration time.
+   * @returns {transaction} protobuf transaction object
+   */
+  get transaction(): transaction;
 
   /**
    * Converts the created transaction into the Hive API-form string
