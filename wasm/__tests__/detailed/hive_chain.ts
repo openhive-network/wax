@@ -140,8 +140,8 @@ test.describe('Wax object interface chain tests', () => {
         const { wallet } = await session.createWallet("w0");
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-        // Create transaction
-        const tx = await chain.getTransactionBuilder();
+        // Create transaction builder
+        const tx = await chain.createTransactionBuilder();
 
         // Create signed transaction
         tx.push(protoVoteOp).validate();
