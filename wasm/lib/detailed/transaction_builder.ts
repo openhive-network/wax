@@ -86,8 +86,6 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
   }
 
   public toApi(): string {
-    this.finalize();
-
     const serialized = this.api.extract(this.api.proto.cpp_proto_to_api(this.toString()));
 
     return serialized;
@@ -98,21 +96,19 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
   }
 
   public toLegacyApi(): string {
-    this.finalize();
-
     const serialized = this.api.extract(this.api.proto.cpp_proto_to_legacy_api(this.toString()));
 
     return serialized;
   }
 
-  private finalize(): void {
+  private flushTransaction(): void {
     // Sign can be called before build, so ensure that we are applying the expiration time only once
     if(this.target.expiration.length === 0)
       this.applyExpiration();
   }
 
   public toString(): string {
-    this.finalize();
+    this.flushTransaction();
 
     return JSON.stringify(transaction.toJSON(this.target));
   }
@@ -253,7 +249,13 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     if(typeof walletOrSignature === 'object' && typeof publicKey !== 'undefined')
       this.sign(walletOrSignature, publicKey);
     else
-      this.finalize();
+      this.flushTransaction();
+
+    return this.target;
+  }
+
+  public get transaction(): transaction {
+    this.flushTransaction();
 
     return this.target;
   }
