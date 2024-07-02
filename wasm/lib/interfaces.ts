@@ -717,6 +717,12 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @throws {WaxError} on any Wax API-related error
    * @throws {WaxChainApiError} on any Hive API-related error
    */
+  createTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
+
+  /**
+   * Replaced by createTransactionBuilder
+   * @deprecated
+   */
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
 
   /**
