@@ -254,7 +254,7 @@ test.describe('Wax object interface chain tests', () => {
     test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain, wax }, protoVoteOp) => {
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.push(protoVoteOp).build();
+        tx.push(protoVoteOp).transaction;
 
         try {
           new wax.BroadcastTransactionRequest(tx);

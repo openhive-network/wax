@@ -324,7 +324,7 @@ test.describe('Wax object interface formatters tests', () => {
         .authorize("initminer")
         .build());
 
-      const built = tx.build();
+      const built = tx.transaction;
 
       return chain.formatter.format(
         built.operations
@@ -374,7 +374,7 @@ test.describe('Wax object interface formatters tests', () => {
           .authorize("gtg")
           .build());
 
-      const built = tx.build();
+      const built = tx.transaction;
 
       return chain.formatter.format(
         built.operations
@@ -530,7 +530,7 @@ test.describe('Wax object interface formatters tests', () => {
           .authorize("initminer")
           .build());
 
-      const built = tx.build();
+      const built = tx.transaction;
 
       return chain.formatter.format(
         built.operations

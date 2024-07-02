@@ -59,7 +59,7 @@ test.describe('WASM Protocol benchmarks', () => {
     protocol = new provider.protocol();
     chain = await createHiveChain();
 
-    transaction = JSON.stringify(new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48").push(specificBenchmarkTransaction).build());
+    transaction = JSON.stringify(new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48").push(specificBenchmarkTransaction).transaction);
   });
 
   test('Should be able to generate random private key', () =>  {
