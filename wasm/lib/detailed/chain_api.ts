@@ -181,12 +181,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return newApi as unknown as HiveChainApi & TWaxExtended<YourApi>;
   }
 
-  public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
+  public async createTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
     const head_block_id = await this.acquireTaposData(3000);
 
     const builder = new super.TransactionBuilder(head_block_id, expirationTime ?? "+1m");
 
     return builder;
+  }
+
+  public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
+    return await this.createTransactionBuilder(expirationTime);
   }
 
   private async acquireTaposData(taposLiveness: number): Promise<TBlockHash> {
