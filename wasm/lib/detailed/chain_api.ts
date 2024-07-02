@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended, TBlockHash } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
@@ -33,6 +33,9 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private readonly requestHelper = new RequestHelper();
 
   private localTypes = {} as typeof HiveApiTypes;
+
+  private taposCache: TBlockHash = '';
+  private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
 
   private static readonly EndpointUrlKey = "endpointUrl";
 
@@ -179,11 +182,22 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public async getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
-    const { head_block_id } = await this.api.database_api.get_dynamic_global_properties({});
+    const head_block_id = await this.acquireTaposData(3000);
 
     const builder = new super.TransactionBuilder(head_block_id, expirationTime ?? "+1m");
 
     return builder;
+  }
+
+  private async acquireTaposData(taposLiveness: number): Promise<TBlockHash> {
+    const now = Date.now();
+    if ((now - this.lastTaposCacheUpdate) >= taposLiveness) {
+      const { head_block_id } = await this.api.database_api.get_dynamic_global_properties({});
+      this.taposCache = head_block_id;
+      this.lastTaposCacheUpdate = now;
+    }
+
+    return this.taposCache;
   }
 
   private async getRcManabarForAccount(accountName: string): Promise<RcAccount> {
