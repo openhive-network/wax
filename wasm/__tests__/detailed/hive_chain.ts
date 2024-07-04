@@ -141,13 +141,14 @@ test.describe('Wax object interface chain tests', () => {
         const { wallet } = await session.createWallet("w0");
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-        // Create transaction builder
-        const tx = await chain.createTransactionBuilder();
+        // Create transaction
+        const tx = await chain.createTransaction();
 
-        // Create signed transaction
+        // Add operation and validate underlying Hive transaction
         tx.pushRawOperation(protoVoteOp).validate();
-
+        // Generate transaction signature using provided wallet containing private key matching to specified public one.
         tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        // get built transaction structure for further analysis
         const stx = tx.transaction;
 
         return stx;
