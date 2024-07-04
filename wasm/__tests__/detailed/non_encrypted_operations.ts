@@ -68,7 +68,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with vote operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(voteOp);
+      tx.pushRawOperation(voteOp);
     });
 
     expect(retVal.operations[0]).toEqual(voteOp);
@@ -76,7 +76,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with transfer to vesting operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(transferToVestingOp);
+      tx.pushRawOperation(transferToVestingOp);
     });
 
     expect(retVal.operations[0]).toEqual(transferToVestingOp);
@@ -84,7 +84,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with withdraw vesting operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(withdrawVestingOp);
+      tx.pushRawOperation(withdrawVestingOp);
     });
 
     expect(retVal.operations[0]).toEqual(withdrawVestingOp);
@@ -92,7 +92,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with limit order create operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(limitOrderCreateOp);
+      tx.pushRawOperation(limitOrderCreateOp);
     });
 
     expect(retVal.operations[0]).toEqual(limitOrderCreateOp);
@@ -100,7 +100,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with limit order cancel operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(limitOrderCancelOp);
+      tx.pushRawOperation(limitOrderCancelOp);
     });
 
     expect(retVal.operations[0]).toEqual(limitOrderCancelOp);
@@ -108,7 +108,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with feed publish operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(feedPublishOp);
+      tx.pushRawOperation(feedPublishOp);
     });
 
     expect(retVal.operations[0]).toEqual(feedPublishOp);
@@ -116,7 +116,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with convert operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(convertOp);
+      tx.pushRawOperation(convertOp);
     });
 
     expect(retVal.operations[0]).toEqual(convertOp);
@@ -124,7 +124,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account create operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountCreateOp);
+      tx.pushRawOperation(accountCreateOp);
     });
 
     expect(retVal.operations[0]).toEqual(accountCreateOp);
@@ -132,7 +132,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account update operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountUpdateOp);
+      tx.pushRawOperation(accountUpdateOp);
     });
 
     expect(retVal.operations[0]).toEqual(accountUpdateOp);
@@ -141,7 +141,7 @@ test.describe('Wax encrypted operations tests', () => {
   // XXX
   // test('Should be able to pass through encryption on transaction with witness update operation which does not support encryption', async () => {
   //   const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-  //     tx.push(witnessUpdateOp);
+  //     tx.pushRawOperation(witnessUpdateOp);
   //   });
 
   //   expect(retVal.operations[0]).toEqual(witnessUpdateOp);
@@ -149,7 +149,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account witness vote operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountWitnessVoteOp);
+      tx.pushRawOperation(accountWitnessVoteOp);
     });
 
     expect(retVal.operations[0]).toEqual(accountWitnessVoteOp);
@@ -157,7 +157,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account witness proxy operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountWitnessProxyOp);
+      tx.pushRawOperation(accountWitnessProxyOp);
     });
 
     expect(retVal.operations[0]).toEqual(accountWitnessProxyOp);
@@ -165,7 +165,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with witness block approve operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(witnessBlockApproveOp);
+      tx.pushRawOperation(witnessBlockApproveOp);
     });
 
     expect(retVal.operations[0]).toEqual(witnessBlockApproveOp);
@@ -173,7 +173,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with delete comment operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(deleteCommentOp);
+      tx.pushRawOperation(deleteCommentOp);
     });
 
     expect(retVal.operations[0]).toEqual(deleteCommentOp);
@@ -181,7 +181,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with comment options operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(commentOptionsOp);
+      tx.pushRawOperation(commentOptionsOp);
     });
 
     expect(retVal.operations[0]).toEqual(commentOptionsOp);
@@ -189,7 +189,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with set withdraw vesting route operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(setWithdrawVestingRouteOp);
+      tx.pushRawOperation(setWithdrawVestingRouteOp);
     });
 
     expect(retVal.operations[0]).toEqual(setWithdrawVestingRouteOp);
@@ -197,7 +197,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with limit order create 2 operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(limitOrderCreate2Op);
+      tx.pushRawOperation(limitOrderCreate2Op);
     });
 
     expect(retVal.operations[0]).toEqual(limitOrderCreate2Op);
@@ -205,7 +205,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with claim account operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(claimAccountOp);
+      tx.pushRawOperation(claimAccountOp);
     });
 
     expect(retVal.operations[0]).toEqual(claimAccountOp);
@@ -213,7 +213,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with create claimed account operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(createClaimedAccountOp);
+      tx.pushRawOperation(createClaimedAccountOp);
     });
 
     expect(retVal.operations[0]).toEqual(createClaimedAccountOp);
@@ -221,7 +221,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with request account recovery operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(requestAccountRecoveryOp);
+      tx.pushRawOperation(requestAccountRecoveryOp);
     });
 
     expect(retVal.operations[0]).toEqual(requestAccountRecoveryOp);
@@ -229,7 +229,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with change recovery account operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(changeRecoveryAccountOp);
+      tx.pushRawOperation(changeRecoveryAccountOp);
     });
 
     expect(retVal.operations[0]).toEqual(changeRecoveryAccountOp);
@@ -237,7 +237,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with escrow transfer operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(escrowTransferOp);
+      tx.pushRawOperation(escrowTransferOp);
     });
 
     expect(retVal.operations[0]).toEqual(escrowTransferOp);
@@ -245,7 +245,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with escrow dispute operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(escrowDisputeOp);
+      tx.pushRawOperation(escrowDisputeOp);
     });
 
     expect(retVal.operations[0]).toEqual(escrowDisputeOp);
@@ -253,7 +253,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with escrow release operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(escrowReleaseOp);
+      tx.pushRawOperation(escrowReleaseOp);
     });
 
     expect(retVal.operations[0]).toEqual(escrowReleaseOp);
@@ -261,7 +261,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with escrow approve operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(escrowApproveOp);
+      tx.pushRawOperation(escrowApproveOp);
     });
 
     expect(retVal.operations[0]).toEqual(escrowApproveOp);
@@ -269,7 +269,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with cancel transfer from savings operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(cancelTransferFromSavingsOp);
+      tx.pushRawOperation(cancelTransferFromSavingsOp);
     });
 
     expect(retVal.operations[0]).toEqual(cancelTransferFromSavingsOp);
@@ -277,7 +277,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with decline voting rights operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(declineVotingRightsOp);
+      tx.pushRawOperation(declineVotingRightsOp);
     });
 
     expect(retVal.operations[0]).toEqual(declineVotingRightsOp);
@@ -285,7 +285,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with claim reward balance operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(claimRewardBalanceOp);
+      tx.pushRawOperation(claimRewardBalanceOp);
     });
 
     expect(retVal.operations[0]).toEqual(claimRewardBalanceOp);
@@ -293,7 +293,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with delegate vesting shares operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(delegateVestingSharesOp);
+      tx.pushRawOperation(delegateVestingSharesOp);
     });
 
     expect(retVal.operations[0]).toEqual(delegateVestingSharesOp);
@@ -301,7 +301,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account create with delegation operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountCreateWithDelegationOp);
+      tx.pushRawOperation(accountCreateWithDelegationOp);
     });
 
     expect(retVal.operations[0]).toEqual(accountCreateWithDelegationOp);
@@ -310,7 +310,7 @@ test.describe('Wax encrypted operations tests', () => {
   // XXX
   // test('Should be able to pass through encryption on transaction with witness set properties operation which does not support encryption', async () => {
   //   const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-  //     tx.push(witnessSetPropertiesOp);
+  //     tx.pushRawOperation(witnessSetPropertiesOp);
   //   });
 
   //   expect(retVal.operations[0]).toEqual(witnessSetPropertiesOp);
@@ -318,7 +318,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with account update 2 operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(accountUpdate2Op);
+      tx.pushRawOperation(accountUpdate2Op);
     });
 
     expect(retVal.operations[0]).toEqual(accountUpdate2Op);
@@ -326,7 +326,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with create proposal operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(createProposalOp);
+      tx.pushRawOperation(createProposalOp);
     });
 
     expect(retVal.operations[0]).toEqual(createProposalOp);
@@ -334,7 +334,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with update proposal votes operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(updateProposalVotesOp);
+      tx.pushRawOperation(updateProposalVotesOp);
     });
 
     expect(retVal.operations[0]).toEqual(updateProposalVotesOp);
@@ -342,7 +342,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with remove proposal operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(removeProposalOp);
+      tx.pushRawOperation(removeProposalOp);
     });
 
     expect(retVal.operations[0]).toEqual(removeProposalOp);
@@ -350,7 +350,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with update proposal operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(updateProposalOp);
+      tx.pushRawOperation(updateProposalOp);
     });
 
     expect(retVal.operations[0]).toEqual(updateProposalOp);
@@ -358,7 +358,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to pass through encryption on transaction with collateralized converts operation which does not support encryption', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(collateralizedConvertOp);
+      tx.pushRawOperation(collateralizedConvertOp);
     });
 
     expect(retVal.operations[0]).toEqual(collateralizedConvertOp);

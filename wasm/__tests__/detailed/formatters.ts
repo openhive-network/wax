@@ -318,7 +318,7 @@ test.describe('Wax object interface formatters tests', () => {
     const retVal = await waxTest(async({ wax, base, chain }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.push(new wax.ResourceCreditsOperationBuilder()
+      tx.pushRawOperation(new wax.ResourceCreditsOperationBuilder()
         .delegate("initminer", 4127361273, "gtg", "null")
         .removeDelegation("initminer", "null")
         .authorize("initminer")
@@ -360,7 +360,7 @@ test.describe('Wax object interface formatters tests', () => {
     const retVal = await waxTest.dynamic(async({ base, wax, chain }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.push(
+      tx.pushRawOperation(
         new wax.CommunityOperationBuilder()
           .flagPost("mycomm", "gtg", "first-post", "note")
           .mutePost("mycomm", "gtg", "first-post", "note")
@@ -514,7 +514,7 @@ test.describe('Wax object interface formatters tests', () => {
     const retVal = await waxTest(async({ base, chain, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.push(
+      tx.pushRawOperation(
         new wax.FollowOperationBuilder()
           .followBlacklistBlog("initminer", "gtg", "null")
           .followMutedBlog("initminer", "gtg")
@@ -695,7 +695,7 @@ test.describe('Wax object interface formatters tests', () => {
     const formatter = chain.formatter.extend(HiveAppsOperationsFormatter);
 
     const tx = new chain.TransactionBuilder("04c507a8c7fe5be96be64ce7c86855e1806cbde3", "2023-11-09T21:51:27");
-    tx.push(
+    tx.pushRawOperation(
       new wax.ResourceCreditsOperationBuilder().removeDelegation("gtg", "initminer").authorize("gtg").build()
     );
 

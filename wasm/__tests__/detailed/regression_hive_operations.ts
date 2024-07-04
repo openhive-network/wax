@@ -86,7 +86,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { vote: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -124,7 +124,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { witness_update: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -167,7 +167,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { witness_set_properties: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -192,7 +192,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
         blockId: "123456789"
       } as operation;
 
-      tx.push(protoMessage).validate();
+      tx.pushRawOperation(protoMessage).validate();
 
       return tx.transaction.operations[0];
     });
@@ -214,7 +214,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { withdraw_vesting: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -248,7 +248,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { vesting_shares_split: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -292,7 +292,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { update_proposal: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -327,7 +327,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { update_proposal_votes: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -356,7 +356,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { transfer: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -388,7 +388,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { transfer_to_vesting: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -420,7 +420,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { transfer_to_savings: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -454,7 +454,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
     };
 
     const op: operation = { transfer_from_savings: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -501,7 +501,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { set_withdraw_vesting_route: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -530,7 +530,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { request_account_recovery: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -558,7 +558,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { remove_proposal: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -587,7 +587,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { recurrent_transfer: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -625,7 +625,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { recover_account: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -668,7 +668,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { pow: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -719,7 +719,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { pow2: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -770,7 +770,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { limit_order_create: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -822,7 +822,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { "limit_order_create2" : testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -862,7 +862,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { limit_order_cancel: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -891,7 +891,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { feed_publish: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -943,7 +943,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { escrow_transfer: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -998,7 +998,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { escrow_release: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1036,7 +1036,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { escrow_dispute: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1064,7 +1064,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { escrow_approve: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1089,7 +1089,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { delete_comment: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1115,7 +1115,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { delegate_vesting_shares: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1143,7 +1143,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { decline_voting_rights: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1165,7 +1165,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { custom: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1189,7 +1189,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { custom_json: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1222,7 +1222,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { create_proposal: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1273,7 +1273,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { create_claimed_account: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1317,7 +1317,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { convert: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1348,7 +1348,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { comment: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1386,7 +1386,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { comment_options: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1424,7 +1424,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { collateralized_convert: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1452,7 +1452,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { claim_reward_balance: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1480,7 +1480,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { claim_account: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1507,7 +1507,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { change_recovery_account: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1531,7 +1531,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { cancel_transfer_from_savings: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1553,7 +1553,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { account_witness_vote: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1577,7 +1577,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { account_witness_proxy: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1616,7 +1616,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = {account_update2: testedOp};
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1671,7 +1671,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { account_update: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1730,7 +1730,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = { account_create: testedOp };
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
@@ -1795,7 +1795,7 @@ test.describe('Wax transaction builder hive operations regression tests', () => 
       };
 
       const op: operation = {account_create_with_delegation: testedOp};
-      txB.push(op).validate();
+      txB.pushRawOperation(op).validate();
 
       return txB.transaction.operations[0];
     });

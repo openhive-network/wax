@@ -40,7 +40,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with comment operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(commentOp);
+      tx.pushRawOperation(commentOp);
     });
 
     expect(retVal.operations[0]).toEqual(commentOp);
@@ -48,7 +48,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(transferOp);
+      tx.pushRawOperation(transferOp);
     });
 
     expect(retVal.operations[0]).toEqual(transferOp);
@@ -56,7 +56,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with custom json operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(customJsonOp);
+      tx.pushRawOperation(customJsonOp);
     });
 
     expect(retVal.operations[0]).toEqual(customJsonOp);
@@ -64,7 +64,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer to savings operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(transferToSavingsOp);
+      tx.pushRawOperation(transferToSavingsOp);
     });
 
     expect(retVal.operations[0]).toEqual(transferToSavingsOp);
@@ -72,7 +72,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer from savings operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(transferFromSavingsOp);
+      tx.pushRawOperation(transferFromSavingsOp);
     });
 
     expect(retVal.operations[0]).toEqual(transferFromSavingsOp);
@@ -80,7 +80,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with recurrent transfer operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(recurrentTransferOp);
+      tx.pushRawOperation(recurrentTransferOp);
     });
 
     expect(retVal.operations[0]).toEqual(recurrentTransferOp);
@@ -88,7 +88,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with different operations', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(recurrentTransferOp).push(convertOp).push(transferToSavingsOp).push(voteOp).push(commentOp).push(transferOp);
+      tx.pushRawOperation(recurrentTransferOp).pushRawOperation(convertOp).pushRawOperation(transferToSavingsOp).pushRawOperation(voteOp).pushRawOperation(commentOp).pushRawOperation(transferOp);
     }, [1, 3]);
 
     expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp]);
@@ -96,7 +96,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with comment operation with different keys', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(commentOp);
+      tx.pushRawOperation(commentOp);
     }, [], true);
 
     expect(retVal.operations[0]).toEqual(commentOp);
@@ -104,7 +104,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with recurrent transfer operation with different keys', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(recurrentTransferOp);
+      tx.pushRawOperation(recurrentTransferOp);
     }, [], true);
 
     expect(retVal.operations[0]).toEqual(recurrentTransferOp);
@@ -112,7 +112,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer to savings operation with different keys', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
-      tx.push(transferToSavingsOp);
+      tx.pushRawOperation(transferToSavingsOp);
     }, [], true);
 
     expect(retVal.operations[0]).toEqual(transferToSavingsOp);
@@ -121,16 +121,16 @@ test.describe('Wax encrypted operations tests', () => {
   test('Should be able to encrypt transaction with different operations with different keys', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
       tx
-      .push(recurrentTransferOp)
+      .pushRawOperation(recurrentTransferOp)
       .stopEncrypt()
-      .push(convertOp)
+      .pushRawOperation(convertOp)
       .startEncrypt(encryptionKeys[0], encryptionKeys[1])
-      .push(transferToSavingsOp)
+      .pushRawOperation(transferToSavingsOp)
       .stopEncrypt()
-      .push(voteOp)
+      .pushRawOperation(voteOp)
       .startEncrypt(encryptionKeys[0], encryptionKeys[1])
-      .push(commentOp)
-      .push(transferOp);
+      .pushRawOperation(commentOp)
+      .pushRawOperation(transferOp);
     }, [1, 3], true);
 
     expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp]);
@@ -139,17 +139,17 @@ test.describe('Wax encrypted operations tests', () => {
   test('Should be able to encrypt some specific operations in transaction', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
       tx
-        .push(recurrentTransferOp)
+        .pushRawOperation(recurrentTransferOp)
         .stopEncrypt()
-        .push(convertOp)
-        .push(transferToSavingsOp)
-        .push(voteOp)
+        .pushRawOperation(convertOp)
+        .pushRawOperation(transferToSavingsOp)
+        .pushRawOperation(voteOp)
         .startEncrypt(encryptionKeys[0], encryptionKeys[1])
-        .push(commentOp)
+        .pushRawOperation(commentOp)
         .stopEncrypt()
-        .push(transferOp)
+        .pushRawOperation(transferOp)
         .startEncrypt(encryptionKeys[0])
-        .push(voteOp); // Test should end with startEncrypt statement to avoid complications and allow utilFunctionTest to stop encrypt by itself.
+        .pushRawOperation(voteOp); // Test should end with startEncrypt statement to avoid complications and allow utilFunctionTest to stop encrypt by itself.
     }, [1, 2, 3, 5]); // Index 6 is omited here to check if EncryptionVisitor will correctly avoid lambda call on this operation.
 
     expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp, voteOp]);
@@ -158,15 +158,15 @@ test.describe('Wax encrypted operations tests', () => {
   test('Should be able to encrypt some specific operations in transaction with a barren keys pair at the end', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
       tx
-        .push(recurrentTransferOp)
+        .pushRawOperation(recurrentTransferOp)
         .stopEncrypt()
-        .push(convertOp)
-        .push(transferToSavingsOp)
-        .push(voteOp)
+        .pushRawOperation(convertOp)
+        .pushRawOperation(transferToSavingsOp)
+        .pushRawOperation(voteOp)
         .startEncrypt(encryptionKeys[0], encryptionKeys[1])
-        .push(commentOp)
+        .pushRawOperation(commentOp)
         .stopEncrypt()
-        .push(transferOp)
+        .pushRawOperation(transferOp)
         .startEncrypt(encryptionKeys[0], encryptionKeys[1]);
     }, [1, 2, 3, 5], true);
 

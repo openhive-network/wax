@@ -200,7 +200,7 @@ test.describe('Wax object interface foundation tests', () => {
       const tx = new base.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
-      tx.push(protoVoteOp).validate();
+      tx.pushRawOperation(protoVoteOp).validate();
 
       const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
@@ -343,14 +343,14 @@ test.describe('Wax object interface foundation tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.startEncrypt(publicKey).push({
+      tx.startEncrypt(publicKey).pushRawOperation({
         transfer: {
           amount: chain.hive(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"
         }
-      }).stopEncrypt().startEncrypt(publicKey).push({
+      }).stopEncrypt().startEncrypt(publicKey).pushRawOperation({
         transfer: {
           amount: chain.hive(120),
           from_account: "initminer",
@@ -385,7 +385,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.startEncrypt(publicKey).push({
+      tx.startEncrypt(publicKey).pushRawOperation({
         transfer: {
           amount: chain.hive(100),
           from_account: "gtg",
