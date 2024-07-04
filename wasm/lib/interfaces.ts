@@ -282,7 +282,7 @@ interface ITransactionBuilderBase {
  * ```typescript
  * const tx = new waxFoundation.TransactionBuilder();
  *
- * tx.push({
+ * tx.pushRawOperation({
  *   vote: {
  *     voter: "otom",
  *     author: "c0ff33a",
@@ -302,7 +302,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
+  pushRawOperation(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
 
   /**
    * Starts encryption chain
@@ -333,12 +333,12 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    *
    * @example Building article
    * ```typescript
-   *  tx.useBuilder(ArticleBuilder, builder => {
+   *  tx.pushOperations(ArticleBuilder, builder => {
    *      builder.setCategory('blog');
    *  }, 'gtg', 'My first post', '# Hello world!');
    * ```
    */
-  useBuilder<TBuilder extends new (...args: any[]) => any>(
+  pushOperations<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
     builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
     ...constructorArgs: ConstructorParameters<TBuilder>
@@ -362,7 +362,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
  * ```typescript
  * const tx = new waxFoundation.TransactionBuilder();
  *
- * tx.startEncrypt(myPublicKey).push({
+ * tx.startEncrypt(myPublicKey).pushRawOperation({
  *    transfer: {
  *      amount: chain.hive(100),
  *      from_account: "gtg",
@@ -382,7 +382,7 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  push(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptingTransactionBuilder;
+  pushRawOperation(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptingTransactionBuilder;
 
   /**
    * Stops encryption chain
@@ -409,12 +409,12 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    *
    * @example Building article
    * ```typescript
-   *  tx.useBuilder(ArticleBuilder, builder => {
+   *  tx.pushOperations(ArticleBuilder, builder => {
    *      builder.setCategory('blog');
    *  }, 'gtg', 'My first post', '# Hello world!');
    * ```
    */
-  useBuilder<TBuilder extends new (...args: any[]) => any>(
+  pushOperations<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
     builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
     ...constructorArgs: ConstructorParameters<TBuilder>
