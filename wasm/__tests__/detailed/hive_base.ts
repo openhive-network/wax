@@ -220,10 +220,10 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, chain }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.useBuilder(wax.RecurrentTransferPairIdBuilder, builder => {
+      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
         builder.generateRemoval();
       }, "initminer", "gtg", 100, { amount: '100', nai: '@@000000021', precision: 3 });
-      tx.useBuilder(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
+      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
 
       return tx.transaction.operations;
     });
@@ -267,7 +267,7 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.useBuilder(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
+      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
 
       return tx.transaction.operations;
     });
@@ -294,8 +294,8 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48");
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink");
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48");
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink");
 
       return tx.build().operations;
     });

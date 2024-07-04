@@ -64,7 +64,7 @@ test.describe('Wax object interface chain tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setPercentHbd(0).setMaxAcceptedPayout(chain.hbd(0));
       }, "me", "about you", "how r u", {}, "permlink1" );
 

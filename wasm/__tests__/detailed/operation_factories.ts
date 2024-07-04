@@ -28,11 +28,11 @@ test.describe('Wax operation factories tests', () => {
     await page.goto('http://localhost:8080/wasm/__tests__/assets/test.html', { waitUntil: 'load' });
   });
 
-  test('Should be able to initialize useBuilder on WitnessSetPropertiesBuilder with basic witness_set_properties_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperations on WitnessSetPropertiesBuilder with basic witness_set_properties_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder
           .setNewSigningKey('STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW')
           .setAccountCreationFee(5000)
@@ -97,7 +97,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder.setUrl('https://steemit.com/steem/@therealwolf/witness-application-therealwolf-updated');
       }, 'therealwolf', 'STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC');
 
@@ -126,7 +126,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder
           .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
           .setAccountSubsidyBudget(700);
@@ -161,7 +161,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder
           .setAccountSubsidyBudget(1)
           .setAccountSubsidyDecay(64);
@@ -196,7 +196,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder
           .setHBDExchangeRate({ amount: '424', precision: 3, nai: '@@000000013' }, { amount: '1000', precision: 3, nai: '@@000000021' });
       }, 'ctrpch', 'STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU');
@@ -226,7 +226,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.WitnessSetPropertiesBuilder, builder => {
+      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
         builder
           .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
           .setAccountSubsidyBudget(10000)
@@ -287,11 +287,11 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to initialize useBuilder on RecurrentTransferBuilder with basic recurrent_transfer_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperations on RecurrentTransferBuilder with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.RecurrentTransferBuilder, () => {}, 'alice', 'bob', { amount: '100', precision: 3, nai: '@@000000013' }, 'thanks for the service');
+      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, 'alice', 'bob', { amount: '100', precision: 3, nai: '@@000000013' }, 'thanks for the service');
 
       return tx.toApi();
     });
@@ -317,7 +317,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.RecurrentTransferPairIdBuilder, () => {}, 'alice', 'bob', 12345, { amount: '100', nai: '@@000000021', precision: 3 }, 'monthly subscription', 24, 2);
+      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, () => {}, 'alice', 'bob', 12345, { amount: '100', nai: '@@000000021', precision: 3 }, 'monthly subscription', 24, 2);
 
       return tx.toApi();
     });
@@ -349,7 +349,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.RecurrentTransferPairIdBuilder, builder => {
+      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
         builder.generateRemoval();
       }, 'grace', 'henry', 24680, { amount: '0', precision: 3, nai: '@@000000021' });
 
@@ -374,7 +374,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui');
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui');
 
       return tx.toApi();
     });
@@ -395,7 +395,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
 
       return tx.toApi();
     });
@@ -422,7 +422,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', 1678917600000);
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', 1678917600000);
 
       return tx.toApi();
     });
@@ -449,7 +449,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.RecurrentTransferPairIdBuilder, builder => {
+      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
         builder.generateRemoval();
       }, 'alice', 'bob', 50, { amount: '0', precision: 3, nai: '@@000000021' }, 'monthly subscription', 24, 2);
 
@@ -479,7 +479,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
+      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
 
       return tx.toLegacyApi();
     });
@@ -506,7 +506,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ReplyBuilder, builder => {
+      tx.pushOperations(wax.ReplyBuilder, builder => {
         builder.addBeneficiaries({ account: 'guest4test7', weight: 40 })
         .pushTags("spam")
         .setDescription("Post with beneficiaries");
@@ -563,7 +563,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ReplyBuilder, builder => {
+      tx.pushOperations(wax.ReplyBuilder, builder => {
         builder.setPercentHbd(20)
           .pushTags("spam")
           .setDescription("Set percent");
@@ -610,7 +610,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ReplyBuilder, builder => {
+      tx.pushOperations(wax.ReplyBuilder, builder => {
         builder.pushImages('test2.png')
           .pushTags("spam")
           .pushImages("test.png")
@@ -647,7 +647,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setCategory('test-category')
           .pushTags("spam")
           .setDescription("Post with category");
@@ -681,7 +681,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setAlternativeAuthor('initminer');
       },
       'gtg',
@@ -713,7 +713,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.pushLinks('https://test.com', 'https://test2.com', 'http://test3.com');
       },
       'gtg',
@@ -745,7 +745,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setMaxAcceptedPayout(chain.hive(100));
       },
       'gtg',
@@ -788,7 +788,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setAllowCurationRewards(false);
       },
       'gtg',
@@ -831,7 +831,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setAllowVotes(false);
       },
       'gtg',
@@ -874,7 +874,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setFormat(wax.ECommentFormat.MARKDOWN);
       },
       'gtg',
@@ -906,7 +906,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder
           .setAllowVotes(false)
           .pushImages('test.png')
@@ -970,7 +970,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.useBuilder(wax.ArticleBuilder, builder => {
+      tx.pushOperations(wax.ArticleBuilder, builder => {
         builder.setDescription('build transaction');
       },
       'gtg',
