@@ -185,6 +185,16 @@ interface ITransactionBuilderBase {
    */
   sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
 
+/**
+   * Adds your signature to the internal signatures array inside underlying transaction.
+   *
+   * @param {THexString} signature signature to add
+   *
+   * @returns {THexString} added transaction signature
+   *
+ */
+  sign(signature: THexString): THexString;
+
   /**
    * Checks if underlying transaction has been already signed at least one time (after {@link sign} or {@link build})
    *
@@ -203,6 +213,8 @@ interface ITransactionBuilderBase {
    * @returns {transaction} signed protobuf transaction object
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   *
+   * @deprecated
    */
   build(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): transaction;
 
@@ -214,6 +226,8 @@ interface ITransactionBuilderBase {
    * @returns {transaction} protobuf transaction object
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   *
+   * @deprecated
    */
   build(signature: THexString): transaction;
 
