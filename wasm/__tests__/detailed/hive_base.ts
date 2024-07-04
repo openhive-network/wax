@@ -297,7 +297,7 @@ test.describe('Wax object interface foundation tests', () => {
       tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48");
       tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink");
 
-      return tx.build().operations;
+      return tx.transaction.operations;
     });
 
     expect(retVal).toStrictEqual([

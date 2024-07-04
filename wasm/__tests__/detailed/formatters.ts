@@ -700,7 +700,7 @@ test.describe('Wax object interface formatters tests', () => {
     );
 
     expect(
-      formatter.format(tx.build().operations)
+      formatter.format(tx.transaction.operations)
     ).toStrictEqual([
       "gtg delegated 0 to initminer"
     ]);
