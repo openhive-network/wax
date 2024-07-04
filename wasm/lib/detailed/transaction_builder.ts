@@ -228,10 +228,17 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
       }
   }
 
-  public sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString {
-    this.encryptOperations(wallet);
+  public sign(walletOrSignature: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): THexString {
+    if (typeof walletOrSignature === 'string') {
 
-    const sig = wallet.signDigest(publicKey as TPublicKey, this.sigDigest);
+      this.target.signatures.push(walletOrSignature);
+      return walletOrSignature;
+    }
+
+    this.flushTransaction();
+    this.encryptOperations(walletOrSignature);
+
+    const sig = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
 
     this.target.signatures.push(sig);
 
