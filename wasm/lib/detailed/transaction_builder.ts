@@ -133,7 +133,7 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
   }
 
 
-  public useBuilder<TBuilder extends new (...args: any[]) => any>(
+  public pushOperations<TBuilder extends new (...args: any[]) => any>(
     builderConstructor: TBuilder,
     builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
     ...constructorArgs: ConstructorParameters<TBuilder>
@@ -142,16 +142,16 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     builder.api = this.api;
     builderFn(builder);
 
-    this.push(builder.build() as BuiltHiveAppsOperation);
+    this.pushRawOperation(builder.build() as BuiltHiveAppsOperation);
 
     return this;
   }
 
-  public push(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TransactionBuilder {
+  public pushRawOperation(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TransactionBuilder {
     if("flushOperations" in op)
       op.flushOperations(this);
     else if("builder" in op)
-      this.push(op.builder.build() as BuiltHiveAppsOperation);
+      this.pushRawOperation(op.builder.build() as BuiltHiveAppsOperation);
     else
       this.target.operations.push(op);
 

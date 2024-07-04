@@ -39,7 +39,7 @@ export class BuiltHiveAppsOperation implements IBuiltHiveAppsOperation {
    * @internal
    */
   public flushOperations(tx: TransactionBuilder): void {
-    this.customJsonContainer.forEach(tx.push.bind(tx));
+    this.customJsonContainer.forEach(tx.pushRawOperation.bind(tx));
   }
 }
 
