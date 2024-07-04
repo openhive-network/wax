@@ -202,7 +202,7 @@ test.describe('Wax hive apps operations tests', () => {
       tx.pushRawOperation(new wax.ResourceCreditsOperationBuilder().removeDelegation("gtg", "initminer").authorize("gtg").build());
       tx.pushRawOperation(new wax.ResourceCreditsOperation("gtg", base.vests(0), [ "initminer" ]));
 
-      return tx.build().operations;
+      return tx.transaction.operations;
     });
 
     expect(retVal[0]).toStrictEqual(retVal[1]);

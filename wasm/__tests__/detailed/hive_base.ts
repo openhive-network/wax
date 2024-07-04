@@ -202,7 +202,8 @@ test.describe('Wax object interface foundation tests', () => {
       // Create signed transaction
       tx.pushRawOperation(protoVoteOp).validate();
 
-      const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.transaction;
 
       return {
         sig: stx.signatures[0],
@@ -359,7 +360,8 @@ test.describe('Wax object interface foundation tests', () => {
         }
       });
 
-      const operations = tx.build(wallet, publicKey).operations;
+      tx.sign(wallet, publicKey)
+      const operations = tx.transaction.operations;
 
       const encrypted1 = operations[0].transfer!.memo;
       const encrypted2 = operations[1].transfer!.memo;
@@ -394,7 +396,8 @@ test.describe('Wax object interface foundation tests', () => {
         }
       });
 
-      const operations = tx.build(wallet, publicKey).operations;
+      tx.sign(wallet, publicKey)
+      const operations = tx.transaction.operations;
 
       const encrypted = operations[0].transfer!.memo;
 

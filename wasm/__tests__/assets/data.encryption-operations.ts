@@ -42,7 +42,9 @@ export const utilFunctionTest = async (
 
   encryptingTx.stopEncrypt();
 
-  const builtTransaction = encryptingTx.build(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+  encryptingTx.sign(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+
+  const builtTransaction = encryptingTx.transaction;
 
   if (nonEncryptedOperationIndices.length > 0) {
     const nonEncryptedSet = new Set<number>(nonEncryptedOperationIndices);

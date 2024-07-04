@@ -43,7 +43,8 @@ test.describe('Wax object interface chain tests', () => {
       // Create signed transaction
       tx.pushRawOperation(protoVoteOp).validate();
 
-      const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.transaction;
 
       return {
         sig: stx.signatures[0],
@@ -68,7 +69,7 @@ test.describe('Wax object interface chain tests', () => {
         builder.setPercentHbd(0).setMaxAcceptedPayout(chain.hbd(0));
       }, "me", "about you", "how r u", {}, "permlink1" );
 
-      tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
       console.log(tx.toApi());
 
@@ -146,7 +147,8 @@ test.describe('Wax object interface chain tests', () => {
         // Create signed transaction
         tx.pushRawOperation(protoVoteOp).validate();
 
-        const stx = tx.build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        const stx = tx.transaction;
 
         return stx;
       }, protoVoteOp);
@@ -275,7 +277,7 @@ test.describe('Wax object interface chain tests', () => {
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.pushRawOperation(protoVoteOp).build(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        tx.pushRawOperation(protoVoteOp).sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
         return new wax.BroadcastTransactionRequest(tx);
       }, protoVoteOp);
@@ -438,9 +440,9 @@ test.describe('Wax object interface chain tests', () => {
 
         tx.pushRawOperation(protoVoteOp);
 
-        tx.build(wallet, key);
-
-        return tx.build(wallet, otherKey);
+        tx.sign(wallet, key);
+        tx.sign(wallet, otherKey);
+        return tx.transaction;
       }, protoVoteOp);
 
       expect(retVal.signatures).toEqual([
@@ -461,11 +463,11 @@ test.describe('Wax object interface chain tests', () => {
 
         txBuilder.pushRawOperation(protoVoteOp);
 
-        txBuilder.build(wallet, key);
+        txBuilder.sign(wallet, key);
 
         const otherTxBuilder = chain.TransactionBuilder.fromApi(txBuilder.toApi());
-
-        return otherTxBuilder.build(wallet, otherKey);
+        otherTxBuilder.sign(wallet, otherKey);
+        return otherTxBuilder.transaction;
       }, protoVoteOp);
 
       expect(retVal.signatures).toEqual([
