@@ -60,7 +60,8 @@
     "events": "^3.3.0",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "rollup-plugin-polyfill-node": "^0.13.0"
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "keywords": [

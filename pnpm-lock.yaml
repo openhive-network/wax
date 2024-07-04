@@ -29,6 +29,9 @@ importers:
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
+      rollup-plugin-polyfill-node:
+        specifier: ^0.13.0
+        version: 0.13.0(rollup@4.3.0)
     devDependencies:
       '@playwright/test':
         specifier: ^1.39.0
@@ -202,6 +205,15 @@ packages:
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.68.0||^3.0.0||^4.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+
+  '@rollup/plugin-inject@5.0.5':
+    resolution: {integrity: sha512-2+DEJbNBoPROPkgTDNe8/1YXWcqxbN5DTjASVIOx8HS+pITXushyNiBV56RB08zuptzz8gT3YfkqriTBVycepg==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
     peerDependenciesMeta:
       rollup:
         optional: true
@@ -1126,6 +1138,11 @@ packages:
       rollup: ^3.29.4 || ^4
       typescript: ^4.5 || ^5.0
 
+  rollup-plugin-polyfill-node@0.13.0:
+    resolution: {integrity: sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==}
+    peerDependencies:
+      rollup: ^1.20.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
+
   rollup@4.3.0:
     resolution: {integrity: sha512-scIi1NrKLDIYSPK66jjECtII7vIgdAMFmFo8h6qm++I6nN9qDSV35Ku6erzGVqYjx+lj+j5wkusRMr++8SyDZg==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
@@ -1488,6 +1505,14 @@ snapshots:
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
+      magic-string: 0.30.5
+    optionalDependencies:
+      rollup: 4.3.0
+
+  '@rollup/plugin-inject@5.0.5(rollup@4.3.0)':
+    dependencies:
+      '@rollup/pluginutils': 5.0.5(rollup@4.3.0)
+      estree-walker: 2.0.2
       magic-string: 0.30.5
     optionalDependencies:
       rollup: 4.3.0
@@ -2435,6 +2460,11 @@ snapshots:
       typescript: 5.2.2
     optionalDependencies:
       '@babel/code-frame': 7.22.13
+
+  rollup-plugin-polyfill-node@0.13.0(rollup@4.3.0):
+    dependencies:
+      '@rollup/plugin-inject': 5.0.5(rollup@4.3.0)
+      rollup: 4.3.0
 
   rollup@4.3.0:
     optionalDependencies:
