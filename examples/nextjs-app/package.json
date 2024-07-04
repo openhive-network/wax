@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@hiveio/wax": "file:hiveio-wax-0.0.1-LastGitTagPlaceholder.GitHashPlaceholder.tgz",
+    "@hiveio/wax": "file:../..",
     "next": "14.2.4",
     "react": "^18",
     "react-dom": "^18"
