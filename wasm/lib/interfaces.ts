@@ -322,7 +322,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    * Starts encryption chain
    *
    * Remember that in order to encrypt operations with given {@link mainEncryptionKey} and optional {@link otherEncryptionKey}
-   * you have to import those keys into the wallet passed to the {@link ITransactionBuilderBase.sign} or {@link ITransactionBuilderBase.build} method
+   * you have to import those keys into the wallet passed to the {@link ITransactionBuilderBase.sign} method
    *
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
    * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
@@ -361,7 +361,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
 
 /**
  * Same as {@link ITransactionBuilder}, but marks operations as encrypted using given keys, which will be encrypted upon
- * {@link ITransactionBuilderBase.sign} or {@link ITransactionBuilderBase.build}.
+ * {@link ITransactionBuilderBase.sign}.
  *
  * Note: We are not able to encrypt all operations.
  * We are currently supporting:
@@ -440,7 +440,7 @@ export interface ITransactionBuilderConstructor {
    * Constructs a new Transaction Builder object with given data
    *
    * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
-   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
+   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.sign} call or reading {@link ITransactionBuilder.transaction} property.
    *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
@@ -461,7 +461,7 @@ export interface ITransactionBuilderConstructor {
    *
    * @param {string|object} transactionObject transaction object to be converted
    *
-   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder.build})
+   * @returns {ITransactionBuilder} transaction builder containing ready to sign transaction (or to convert to protobuf structure using {@link ITransactionBuilder.transaction} property)
    *
    * @throws {WaxError} on any Wax API-related error
    */
@@ -718,23 +718,25 @@ export type TWaxExtended<YourApi> = IHiveChainInterface & { readonly api: TDefau
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
+   * Allows to start transaction preparing process.
+   *
    * Same as {@link IWaxBaseInterface.TransactionBuilder}, but pulls the reference block data from the remote
    *
-   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.build} call.
+   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.sign} call or reading {@link ITransactionBuilder.transaction} property.
    *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
    *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`.
    *                                     Expiration time will be applied when calling any non-push-related method in {@link ITransactionBuilder}
    *
-   * @returns {ITransactionBuilder} ready to use transaction builder interface
+   * @returns {ITransactionBuilder} ready to use transaction interface allowing to fill transaction with its contents like Hive operations
    *
    * @throws {WaxError} on any Wax API-related error
    * @throws {WaxChainApiError} on any Hive API-related error
    */
-  createTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
+  createTransaction(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
 
   /**
-   * Replaced by createTransactionBuilder
+   * Replaced by createTransaction
    * @deprecated
    */
   getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
