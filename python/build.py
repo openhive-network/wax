@@ -151,9 +151,10 @@ def build(setup_kwargs: dict[str, Any]) -> None:
                     Extension(
                         "wax", ["wax.pyx"],
                         include_dirs=['.', './..'],
+                        language="c++",
                     ),  # There has to be at least one extension, instead CustomBuild.run won't be called
                 ],
-                compiler_directives={'always_allow_keywords': True}
+                compiler_directives={'always_allow_keywords': True, 'language_level': '3str'}
             ),
             "cmdclass": {"build_ext": CustomBuild},
         }
