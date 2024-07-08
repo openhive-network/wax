@@ -22,6 +22,11 @@ class python_json_asset:  # noqa: N801
     nai: bytes
 
 @dataclass
+class python_price:
+    base: python_json_asset
+    quote: python_json_asset
+
+@dataclass
 class python_ref_block_data:  # noqa: N801
     ref_block_num: int
     ref_block_prefix: int
@@ -55,3 +60,24 @@ class python_brain_key_data:
     wif_private_key: string
     # base58 string pointing the public key associated to the private key specified above
     associated_public_key: string
+
+@dataclass
+class python_witness_set_properties_data:
+    # Witness key to match the current witness key. Obligatory
+    key: string
+    # New witness key to set
+    new_signing_key: string|None=None
+    # HIVE maximum account creation fee
+    account_creation_fee: python_json_asset|None=None
+    # New witness URL to set
+    url: string|None = None
+    # HBD to HIVE ratio proposed by the witness
+    hbd_exchange_rate: python_price|None=None
+    # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
+    maximum_block_size: int|None=None
+    # Rate of interest for holding HBD (in BPS - basis points)
+    hbd_interest_rate: int|None=None
+    # How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account.
+    account_subsidy_budget: int|None=None
+    # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring.
+    account_subsidy_decay: int|None=None
