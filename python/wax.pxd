@@ -1,6 +1,10 @@
+# tag: cpp17
+
 from libcpp.string cimport string
 from libcpp.set cimport set as cppset
-from libc.stdint cimport uint16_t, uint32_t
+from libcpp.map cimport map as cppmap
+from libcpp.optional cimport optional as cpp_optional
+from libc.stdint cimport uint16_t, uint32_t, int32_t
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef enum error_code:
@@ -21,6 +25,12 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string amount
         int precision
         string nai
+
+    cdef cppclass price:
+        price() except +
+
+        json_asset base
+        json_asset quote
 
     cdef cppclass ref_block_data:
         ref_block_data() noexcept
@@ -64,6 +74,29 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         # The public key associated to private key above (starts with HIVE_ADDRESS_PREFIX)
         string associated_public_key
 
+    cpdef cppclass witness_set_properties_data:
+        witness_set_properties_data() except +
+
+        string key
+        # New witness key to set
+        cpp_optional[string] new_signing_key
+        # HIVE maximum account creation fee
+        cpp_optional[json_asset]  account_creation_fee
+        # New witness URL to set
+        cpp_optional[string] url
+        # HBD to HIVE ratio proposed by the witness
+        cpp_optional[price]       hbd_exchange_rate
+        # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
+        cpp_optional[uint32_t]    maximum_block_size
+        # Rate of interest for holding HBD (in BPS - basis points)
+        cpp_optional[uint16_t]    hbd_interest_rate
+        # How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account.
+        cpp_optional[int32_t]     account_subsidy_budget
+        # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring.
+        cpp_optional[uint32_t]    account_subsidy_decay
+
+    ctypedef cppmap[string, string] witness_set_properties_serialized
+
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
@@ -93,6 +126,9 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
         string cpp_crypto_memo_dump_string(crypto_memo value) except +
+
+        witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
+        witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
 
         void cpp_throws(int type) except +
 
