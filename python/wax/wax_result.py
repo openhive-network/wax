@@ -64,13 +64,13 @@ class python_brain_key_data:
 @dataclass
 class python_witness_set_properties_data:
     # Witness key to match the current witness key. Obligatory
-    key: string
+    key: bytes
     # New witness key to set
-    new_signing_key: string|None=None
+    new_signing_key: bytes|None=None
     # HIVE maximum account creation fee
     account_creation_fee: python_json_asset|None=None
     # New witness URL to set
-    url: string|None = None
+    url: bytes|None = None
     # HBD to HIVE ratio proposed by the witness
     hbd_exchange_rate: python_price|None=None
     # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
