@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # tag: cpp17
 
 from libcpp.string cimport string

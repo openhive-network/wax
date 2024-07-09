@@ -154,7 +154,7 @@ def build(setup_kwargs: dict[str, Any]) -> None:
                         language="c++",
                     ),  # There has to be at least one extension, instead CustomBuild.run won't be called
                 ],
-                compiler_directives={'always_allow_keywords': True, 'language_level': '3str'}
+                compiler_directives={'always_allow_keywords': True, 'language_level': "3str", 'c_string_type': "bytes", 'c_string_encoding':"utf-8", 'emit_code_comments': True}
             ),
             "cmdclass": {"build_ext": CustomBuild},
         }

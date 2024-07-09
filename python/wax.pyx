@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # distutils: language = c++
 
 from functools import wraps
@@ -292,7 +293,7 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
       owner_accounts=oo
     )
 
-def encode_encrypted_memo(encrypted_content: string, main_encryption_key: string, other_encryption_key: string = b'') -> string:
+def encode_encrypted_memo(encrypted_content: bytes, main_encryption_key: bytes, other_encryption_key: bytes = b'') -> bytes:
     cdef protocol obj
     cdef crypto_memo data_to_encode
     data_to_encode._from = main_encryption_key
@@ -304,7 +305,7 @@ def encode_encrypted_memo(encrypted_content: string, main_encryption_key: string
     encoded_memo = obj.cpp_crypto_memo_dump_string(data_to_encode)
     return encoded_memo
 
-def decode_encrypted_memo(encoded_memo: string) -> python_encrypted_memo:
+def decode_encrypted_memo(encoded_memo: bytes) -> python_encrypted_memo:
     cdef protocol obj
     decoded = obj.cpp_crypto_memo_from_string(encoded_memo)
     return python_encrypted_memo(
@@ -313,7 +314,7 @@ def decode_encrypted_memo(encoded_memo: string) -> python_encrypted_memo:
       encrypted_content = decoded.content
     )
 
-def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[string, string]:
+def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[bytes, bytes]:
     cdef protocol obj
     cdef witness_set_properties_data _props_to_serialize
     _props_to_serialize.key = input_props.key
@@ -390,7 +391,7 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
     serialized_properties = obj.cpp_serialize_witness_set_properties(_props_to_serialize)
     return serialized_properties
 
-def deserialize_witness_set_properties(serialized_properties: dict[string, string]) -> python_witness_set_properties_data:
+def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]) -> python_witness_set_properties_data:
     cdef protocol obj
     cdef witness_set_properties_serialized _serialized_props
 
