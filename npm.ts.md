@@ -68,7 +68,7 @@ const wax = await createWaxFoundation();
 
 const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-tx.push(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").store());
+tx.pushRawOperation(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").store());
 
 console.info(tx.toApi()); // Print the transaction in the API form
 ```
@@ -89,10 +89,10 @@ const { wallet } = await session.createWallet("w0");
 const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
 // Create transaction
-const tx = await chain.getTransactionBuilder();
+const tx = await chain.createTransaction();
 
 // Add operations and validate
-tx.push({
+tx.pushRawOperation({
   vote: {
     voter: "otom",
     author: "c0ff33a",
@@ -102,8 +102,8 @@ tx.push({
 }).validate();
 
 // Build and sign the transaction object
-const stx = tx.build(wallet, publicKey);
-
+const stx = tx.sign(wallet, publicKey);
+// show preformatted signed transaction
 console.info(chain.waxify`${stx}`);
 ```
 
@@ -120,17 +120,18 @@ const session = bk.createSession("salt");
 const { wallet } = await session.createWallet("w0");
 const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+// Create transaction
+const tx = await chain.createTransaction();
 
 // Add operations
-tx.push({
+tx.pushRawOperation({
   vote: {
     voter: "otom",
     author: "c0ff33a",
     permlink: "ewxhnjbj",
     weight: 2200
   }
-}).build(wallet, publicKey);
+}).sign(wallet, publicKey);
 
 const request = new BroadcastTransactionRequest(tx);
 
