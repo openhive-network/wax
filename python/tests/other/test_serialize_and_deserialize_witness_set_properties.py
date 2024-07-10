@@ -97,7 +97,7 @@ def test_deserialize_witness_set_properties(props_to_serialize: dict) -> None:
     for key in props_to_serialize.keys():
         assert props_to_serialize[key] == getattr(
             deserialized_witness_set_properties, key
-        ).decode(ENCODING), f"Key {key} was not deserialized correctly"
+        ), f"Key {key} was not deserialized correctly"
 
 
 def test_maximum_block_size_parameter() -> None:
