@@ -15,7 +15,9 @@
     "pretest": "playwright install chromium",
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite --project=wax_testsuite_custom_chain_options --project=wax_regression_tests --project=wax_operation_factories --project=wax_encrypted_operations --project=wax_non_encrypted_operations",
     "benchmark": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
-    "examples": "cd examples/ts && pnpm install --frozen-lockfile && pnpm run test && cd ../..",
+    "examples": "run-s examples:*",
+    "examples:ts": "cd examples/ts && pnpm install --frozen-lockfile && pnpm run test && cd ../..",
+    "examples:nextjs-app": "cd examples/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
     "postpack": "mv _README.md README.md"
   },
@@ -42,6 +44,7 @@
     "concat-md": "^0.5.1",
     "http-server": "^14.1.1",
     "husky": "8.0.3",
+    "npm-run-all": "^4.1.5",
     "playwright": "^1.39.0",
     "rimraf": "^5.0.1",
     "rollup": "^4.3.0",
