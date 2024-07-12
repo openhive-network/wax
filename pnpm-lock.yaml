@@ -23,9 +23,6 @@ importers:
       long:
         specifier: ^5.2.3
         version: 5.2.3
-      protobufjs:
-        specifier: ^7.2.5
-        version: 7.2.5
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13
@@ -69,6 +66,9 @@ importers:
       playwright:
         specifier: ^1.39.0
         version: 1.39.0
+      protobufjs:
+        specifier: ^7.2.5
+        version: 7.2.5
       rimraf:
         specifier: ^5.0.1
         version: 5.0.5
