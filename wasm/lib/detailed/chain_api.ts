@@ -10,8 +10,10 @@ import { WaxError, WaxChainApiError } from "../errors.js";
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
+import { extractBracedStrings } from "./rest-api/utils.js";
 
 import Long from "long";
+import qs from 'qs';
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -30,9 +32,13 @@ export type TChainCaller = ((params: object) => Promise<any>) & {
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: TDefaultHiveApi;
 
+  public restApi!: any;
+
   private readonly requestHelper = new RequestHelper();
 
   private localTypes = {} as typeof HiveApiTypes;
+
+  private localRestTypes = {} as any;
 
   private taposCache: TBlockHash = '';
   private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
@@ -43,6 +49,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     public readonly wax: MainModule,
     public readonly chainId: string,
     private apiEndpoint: string,
+    private restApiEndpoint: string,
     private readonly originator: HiveChainApi|null
   ) {
     super(wax, chainId);
@@ -53,6 +60,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       for(const endpoint in HiveApiTypes[apiType])
         this.localTypes[apiType] = { ...HiveApiTypes[apiType][endpoint] };
     }
+
+    // TODO: Initialize localRestTypes here with typeof function checks
 
     this.initializeApi();
   }
@@ -84,6 +93,64 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private initializeApi(): void {
+    const that = this;
+    this.restApi = (() => {
+      const callFn = function(arg: object) {
+        let path = '/' + callFn.paths.filter(node => node.length).join('/');
+        const allToReplace = extractBracedStrings(path);
+
+        const reqImmutable = structuredClone(arg);
+
+        for(const toReplace of allToReplace) {
+          if (toReplace in reqImmutable)
+            path = path.replace(`{${toReplace}}`, String(arg[toReplace as keyof typeof reqImmutable]));
+          else
+            throw new Error('No ' + toReplace + ' in request');
+
+          delete reqImmutable[toReplace as keyof typeof reqImmutable];
+        }
+
+        const method = callFn.lastMethod;
+        const isQsReq = method === 'GET' || method === 'DELETE';
+
+        let body: string;
+        if (isQsReq)
+          body = qs.stringify(reqImmutable);
+        else
+          body = JSON.stringify(reqImmutable);
+
+        callFn.paths = [];
+        callFn.lastMethod = "GET";
+
+        // TODO: performCall
+      };
+      callFn.paths = [] as string[];
+      callFn.lastMethod = "GET";
+
+      const proxiedFunction = new Proxy(callFn, {
+        get(_target: any, property: string, _receiver: any) {
+          let currObj: Record<string, any> = that.localRestTypes;
+          for (const appendPath of callFn.paths)
+            currObj = currObj[appendPath as keyof typeof currObj];
+
+          if (currObj[property].urlPath === undefined)
+            callFn.paths.push(property);
+          else
+            callFn.paths.push(currObj[property].urlPath);
+
+          if (currObj[property].method !== undefined)
+            callFn.lastMethod = currObj[property].method;
+
+          return proxiedFunction;
+        },
+        apply(_target: any, _thisArg: any, argumentsList: [object]) {
+          return callFn(...argumentsList);
+        }
+      });
+
+      return proxiedFunction;
+    })();
+
     this.api = new Proxy({} as TDefaultHiveApi, {
       get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
@@ -169,7 +236,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi> {
-    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this);
+    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this.restApiEndpoint, this);
 
     if(typeof extendedHiveApiData === "object")
       for(const methodName in extendedHiveApiData)

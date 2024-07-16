@@ -8,6 +8,21 @@ import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
 import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
+import { GetLatestBlocksRequest, GetLatestBlocksResponse } from "./rest-api/index.js";
+
+export const HiveRestApiTypes = {
+  hafbe: {
+    blocks: {
+      latest: {
+        params: GetLatestBlocksRequest,
+        result: GetLatestBlocksResponse,
+        urlPath: "",
+        responseArray: true
+      }
+    }
+  }
+};
+
 export const HiveApiTypes = {
   account_by_key_api: {
     get_key_references: {

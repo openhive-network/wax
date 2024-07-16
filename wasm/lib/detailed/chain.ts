@@ -9,7 +9,8 @@ import { DEFAULT_WAX_OPTIONS } from "./base.js";
 
 export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
   ...DEFAULT_WAX_OPTIONS,
-  apiEndpoint: "https://api.hive.blog"
+  apiEndpoint: "https://api.hive.blog",
+  restApiEndpoint: "https://local.bc.fqdn.pl"
 }
 
 /**
@@ -28,7 +29,7 @@ export const createHiveChain = async(
 
   const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
 
-  const api = new HiveChainApi(waxProvider, apiOptions.chainId, apiOptions.apiEndpoint, null);
+  const api = new HiveChainApi(waxProvider, apiOptions.chainId, apiOptions.apiEndpoint, apiOptions.restApiEndpoint, null);
 
   return api;
 };
