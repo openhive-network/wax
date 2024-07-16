@@ -78,6 +78,14 @@ export interface IWaxOptionsChain extends IWaxOptions {
    * @type {string}
    */
   apiEndpoint: string;
+
+  /**
+   * Endpoint for all of the REST API requests
+   *
+   * @default "https://local.bc.fqdn.pl"
+   * @type {string}
+   */
+  restApiEndpoint: string;
 }
 
 interface ITransactionBase {
