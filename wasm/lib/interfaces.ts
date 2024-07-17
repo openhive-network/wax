@@ -4,7 +4,7 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
-import type { HiveApiTypes } from "./detailed/chain_api_data";
+import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
@@ -723,6 +723,33 @@ type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTy
 
 export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly result: TRes; };
 
+export type TWaxRestApiRequest<TReq, TRes> = {
+  readonly params: TReq;
+  readonly result: TRes;
+  readonly isArray?: boolean;
+  readonly method?: string;
+  readonly urlPath?: string
+};
+
+/**
+ * @internal
+ */
+type YourApiRestData<YourTypes> = {
+  readonly [P in keyof YourTypes]:
+  // First check for value type
+  (YourTypes[P] extends object ? (
+    // Check if isArray is set to true and request type
+    YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; responseArray: boolean }
+    ? (params: ParamsType) => Promise<ResultType[]>
+    : (
+      // Check if isArray is not present, but request type
+      YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType> }
+      ? (params: ParamsType) => Promise<ResultType>
+      : YourApiRestData<YourTypes[P]> // Perform nested check
+    )
+  ) : never);
+}; // TODO: Endpoint URL
+
 /**
  * @internal
  */
@@ -740,6 +767,8 @@ type YourApiData<YourTypes> = {
    */
   get endpointUrl (): string;
 };
+
+export type TDefaultRestApi = Readonly<YourApiRestData<typeof HiveRestApiTypes>>;
 
 export type TDefaultHiveApi = Readonly<{
   account_by_key_api: ApiData<'account_by_key_api'>;
@@ -829,4 +858,6 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
 
   readonly api: TDefaultHiveApi;
+
+  readonly restApi: TDefaultRestApi;
 }
