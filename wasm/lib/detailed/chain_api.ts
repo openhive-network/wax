@@ -8,7 +8,7 @@ import { validateOrReject } from "class-validator";
 
 import { WaxError, WaxChainApiError } from "../errors.js";
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
-import { HiveApiTypes } from "./chain_api_data.js";
+import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
 import { extractBracedStrings } from "./rest-api/utils.js";
 
@@ -29,6 +29,11 @@ export type TChainCaller = ((params: object) => Promise<any>) & {
   withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
 };
 
+export type TRestChainCaller = ((params: object) => Promise<any>) & {
+  paths: string[];
+  withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
+};
+
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: TDefaultHiveApi;
 
@@ -38,12 +43,14 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   private localTypes = {} as typeof HiveApiTypes;
 
-  private localRestTypes = {} as any;
+  private localRestTypes = {} as typeof HiveRestApiTypes;
 
   private taposCache: TBlockHash = '';
   private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
 
   private static readonly EndpointUrlKey = "endpointUrl";
+
+  private static readonly WithProxyKey = "withProxy";
 
   public constructor(
     public readonly wax: MainModule,
@@ -61,7 +68,22 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         this.localTypes[apiType] = { ...HiveApiTypes[apiType][endpoint] };
     }
 
-    // TODO: Initialize localRestTypes here with typeof function checks
+    const iterate = (thisObj: Record<string, any>, obj: Record<string, any>): void => {
+      if (typeof obj !== "object")
+        return;
+
+      for(const itKey in obj) {
+        if ("params" in obj[itKey])
+          thisObj[itKey] = obj[itKey];
+        else {
+          if (thisObj[itKey] === undefined)
+            thisObj[itKey] = {};
+
+          iterate(thisObj[itKey], obj[itKey]);
+        }
+      }
+    };
+    iterate(this.localRestTypes, HiveRestApiTypes);
 
     this.initializeApi();
   }
@@ -93,17 +115,23 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private initializeApi(): void {
-    const that = this;
     this.restApi = (() => {
-      const callFn = function(arg: object) {
+      const that = this;
+      const callFn = async function(params: object, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
+        // Helper function to determine if we have to convert plain object to the instance of the given request or not
+        const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
+
+        if(typeof callFn.config === 'object')
+          await validateOrReject(isPlainObj(params) ? plainToInstance((callFn.config as any).params, params) : params);
+
         let path = '/' + callFn.paths.filter(node => node.length).join('/');
         const allToReplace = extractBracedStrings(path);
 
-        const reqImmutable = structuredClone(arg);
+        const reqImmutable = structuredClone(params);
 
         for(const toReplace of allToReplace) {
           if (toReplace in reqImmutable)
-            path = path.replace(`{${toReplace}}`, String(arg[toReplace as keyof typeof reqImmutable]));
+            path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
           else
             throw new Error('No ' + toReplace + ' in request');
 
@@ -119,19 +147,60 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         else
           body = JSON.stringify(reqImmutable);
 
-        callFn.paths = [];
-        callFn.lastMethod = "GET";
+        const url = that.restApiEndpoint + path + (isQsReq ? '?' + body : '');
 
-        // TODO: performCall
+        const url = endpoint + path + (isQsReq ? (body.length === 0 ? '' : '?' + body) : '');
+
+        const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
+          method,
+          responseType: 'json',
+          url,
+          data: isQsReq ? undefined : JSON.stringify(reqImmutable)
+        }))) as IDetailedResponseData<object>;
+        let result = data.response;
+
+        if(typeof callFn.config === 'object') {
+          if(typeof result !== 'object')
+            throw new WaxChainApiError('No result found in the Hive API response', data);
+
+          result = plainToInstance((callFn.config as any).result, result) as object;
+
+          if (Array.isArray(result))
+            for(const node of result)
+              await validateOrReject(node);
+          else
+            await validateOrReject(result);
+        }
+
+        callFn.paths = [] as string[];
+        callFn.lastMethod = 'GET';
+        callFn.config = undefined;
+
+        return result;
       };
       callFn.paths = [] as string[];
       callFn.lastMethod = "GET";
+      callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
+      callFn[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
 
       const proxiedFunction = new Proxy(callFn, {
-        get(_target: any, property: string, _receiver: any) {
-          let currObj: Record<string, any> = that.localRestTypes;
-          for (const appendPath of callFn.paths)
-            currObj = currObj[appendPath as keyof typeof currObj];
+        get: (_target: any, property: string, _receiver: any): TRestChainCaller | string => {
+          if(property === HiveChainApi.EndpointUrlKey) {
+            const restApiUrl = this.getEndpointUrlForRestApi(callFn.paths);
+
+            callFn.paths = [] as string[];
+            callFn.lastMethod = 'GET';
+            callFn.config = undefined;
+
+            return restApiUrl;
+          }
+
+          if (property === HiveChainApi.WithProxyKey)
+            return callFn[HiveChainApi.WithProxyKey];
+
+          const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.paths);
+
+          callFn.config = currObj[property];
 
           if (currObj[property].urlPath === undefined)
             callFn.paths.push(property);
@@ -143,7 +212,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
           return proxiedFunction;
         },
-        apply(_target: any, _thisArg: any, argumentsList: [object]) {
+        apply: (_target: any, _thisArg: any, argumentsList: [object]) => {
           return callFn(...argumentsList);
         }
       });
@@ -215,7 +284,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
             const caller: TChainCaller = function(params: object) { return performCall(params); };
             Object.defineProperty(caller, "name", { value: property }); // Dynamically set function name to the property we are calling
             caller.apiType = propertyParent;
-            caller.withProxy = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => performCall(params, requestInterceptor, responseInterceptor);
+            caller[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => performCall(params, requestInterceptor, responseInterceptor);
 
             return caller;
           }
