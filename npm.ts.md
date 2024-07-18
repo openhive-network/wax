@@ -68,7 +68,7 @@ const wax = await createWaxFoundation();
 
 const tx = new wax.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-tx.pushRawOperation(new FollowOperationBuilder().followBlog("initminer", "gtg").authorize("intiminer").store());
+tx.pushOperation(new FollowOperationFactory().followBlog("initminer", "gtg").authorize("intiminer").store());
 
 console.info(tx.toApi()); // Print the transaction in the API form
 ```
@@ -92,7 +92,7 @@ const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTgin
 const tx = await chain.createTransaction();
 
 // Add operations and validate
-tx.pushRawOperation({
+tx.pushOperation({
   vote: {
     voter: "otom",
     author: "c0ff33a",
@@ -124,7 +124,7 @@ const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTgin
 const tx = await chain.createTransaction();
 
 // Add operations
-tx.pushRawOperation({
+tx.pushOperation({
   vote: {
     voter: "otom",
     author: "c0ff33a",

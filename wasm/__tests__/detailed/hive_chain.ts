@@ -41,7 +41,7 @@ test.describe('Wax object interface chain tests', () => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
-      tx.pushRawOperation(protoVoteOp).validate();
+      tx.pushOperation(protoVoteOp).validate();
 
       tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
       const stx = tx.transaction;
@@ -56,7 +56,7 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
 
-   test('Should be able to transmit article buiulder transaction using hive chain interface', async ({ waxTest }) => {
+   test('Should be able to transmit article builder transaction using hive chain interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ beekeeper, chain, wax }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
@@ -65,9 +65,15 @@ test.describe('Wax object interface chain tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setPercentHbd(0).setMaxAcceptedPayout(chain.hbd(0));
-      }, "me", "about you", "how r u", {}, "permlink1" );
+      tx.pushOperation(new wax.BlogPostOperation({
+        author: "me",
+        body: "how r u",
+        category: "test",
+        title: "about you",
+        permlink: "permlink1",
+        percentHbd: 0,
+        maxAcceptedPayout: chain.hbd(0)
+      }));
 
       tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
@@ -86,7 +92,7 @@ test.describe('Wax object interface chain tests', () => {
             type: "comment_operation",
             value: {
               parent_author: "",
-              parent_permlink: "",
+              parent_permlink: "test",
               author: "me",
               permlink: "permlink1",
               title: "about you",
@@ -145,7 +151,7 @@ test.describe('Wax object interface chain tests', () => {
         const tx = await chain.createTransaction();
 
         // Add operation and validate underlying Hive transaction
-        tx.pushRawOperation(protoVoteOp).validate();
+        tx.pushOperation(protoVoteOp).validate();
         // Generate transaction signature using provided wallet containing private key matching to specified public one.
         tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
         // get built transaction structure for further analysis
@@ -257,7 +263,7 @@ test.describe('Wax object interface chain tests', () => {
     test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain, wax }, protoVoteOp) => {
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.pushRawOperation(protoVoteOp).transaction;
+        tx.pushOperation(protoVoteOp).transaction;
 
         try {
           new wax.BroadcastTransactionRequest(tx);
@@ -278,7 +284,7 @@ test.describe('Wax object interface chain tests', () => {
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
         const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.pushRawOperation(protoVoteOp).sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        tx.pushOperation(protoVoteOp).sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
         return new wax.BroadcastTransactionRequest(tx);
       }, protoVoteOp);
@@ -439,7 +445,7 @@ test.describe('Wax object interface chain tests', () => {
 
         const tx = new chain.TransactionBuilder('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
 
-        tx.pushRawOperation(protoVoteOp);
+        tx.pushOperation(protoVoteOp);
 
         tx.sign(wallet, key);
         tx.sign(wallet, otherKey);
@@ -462,7 +468,7 @@ test.describe('Wax object interface chain tests', () => {
 
         const txBuilder = new chain.TransactionBuilder('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
 
-        txBuilder.pushRawOperation(protoVoteOp);
+        txBuilder.pushOperation(protoVoteOp);
 
         txBuilder.sign(wallet, key);
 

@@ -1,11 +1,11 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TInterfaceOperationBuilder, TTimestamp, TTransactionId } from "../interfaces";
+import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
-import { BuiltHiveAppsOperation } from "./operation_builder";
+import { AOperationFactory, BuiltHiveAppsOperation } from "./operation_builder";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 
@@ -132,27 +132,20 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     return this;
   }
 
+  private produceOperations(complexOperation: OperationBase): Transaction {
+    const builtOps = complexOperation.finalize(this);
 
-  public pushOperations<TBuilder extends new (...args: any[]) => any>(
-    builderConstructor: TBuilder,
-    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
-    ...constructorArgs: ConstructorParameters<TBuilder>
-  ): TransactionBuilder {
-    const builder = new builderConstructor(...constructorArgs);
-    builder.api = this.api;
-    builderFn(builder);
-
-    this.pushRawOperation(builder.build() as BuiltHiveAppsOperation);
+    this.target.operations.push(...builtOps);
 
     return this;
   }
 
-  public pushRawOperation(op: operation | BuiltHiveAppsOperation | HiveAppsOperation<any>): TransactionBuilder {
-    if("flushOperations" in op)
-      op.flushOperations(this);
-    else if("builder" in op)
-      this.pushRawOperation(op.builder.build() as BuiltHiveAppsOperation);
-    else
+  public pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): Transaction {
+    if("operation" in op) // Formatted complex operation (already built)
+      this.produceOperations(op.operation);
+    else if ("finalize" in op) // Complex operation (to be built)
+      this.produceOperations(op);
+    else // Standard raw-object operation
       this.target.operations.push(op);
 
     return this;

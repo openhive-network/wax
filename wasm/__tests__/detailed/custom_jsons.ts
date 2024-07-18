@@ -26,10 +26,10 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(protoVoteOp);
+      tx.pushOperation(protoVoteOp);
 
-      tx.pushRawOperation(
-        new wax.FollowOperationBuilder()
+      tx.pushOperation(
+        new wax.FollowOperation()
           .followBlog("initminer", "gtg")
           .authorize("initminer")
           .muteBlog("initminer", "spammer")
@@ -48,10 +48,10 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(protoVoteOp);
+      tx.pushOperation(protoVoteOp);
 
-      tx.pushRawOperation(
-        new wax.FollowOperationBuilder()
+      tx.pushOperation(
+        new wax.FollowOperation()
           .followBlog("initminer", "gtg")
           .muteBlog("initminer", "spammer")
           .resetBlogList(0, "initminer", "spammer")
@@ -69,8 +69,8 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(
-        new wax.FollowOperationBuilder()
+      tx.pushOperation(
+        new wax.FollowOperation()
           .followBlacklistBlog("initminer", "gtg")
           .followMutedBlog("initminer", "gtg")
           .resetAllBlog("initminer", "gtg")
@@ -94,8 +94,8 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(
-        new wax.CommunityOperationBuilder()
+      tx.pushOperation(
+        new wax.CommunityOperation()
           .flagPost("mycomm", "gtg", "first-post", "note")
           .mutePost("mycomm", "gtg", "first-post", "note")
           .pinPost("mycomm", "gtg", "first-post")
@@ -125,7 +125,7 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(new wax.FollowOperationBuilder()
+      tx.pushOperation(new wax.FollowOperation()
         .reblog("initminer", "gtg", "first-post")
         .authorize("initminer")
         .build());
@@ -156,7 +156,7 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(new wax.ResourceCreditsOperationBuilder()
+      tx.pushOperation(new wax.ResourceCreditsOperation()
         .delegate("initminer", 3000, "gtg")
         .authorize("initminer")
         .removeDelegation("initminer", "gtg")
@@ -199,8 +199,8 @@ test.describe('Wax hive apps operations tests', () => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushRawOperation(new wax.ResourceCreditsOperationBuilder().removeDelegation("gtg", "initminer").authorize("gtg").build());
-      tx.pushRawOperation(new wax.ResourceCreditsOperation("gtg", base.vests(0), [ "initminer" ]));
+      tx.pushOperation(new wax.ResourceCreditsOperation().removeDelegation("gtg", "initminer").authorize("gtg"));
+      tx.pushOperation(new wax.FormattedResourceCreditsOperation("gtg", base.vests(0), [ "initminer" ]));
 
       return tx.transaction.operations;
     });

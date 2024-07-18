@@ -1,70 +1,86 @@
 import type { TAccountName } from "../custom_jsons";
-import type { asset } from "../../protocol";
+import type { asset, operation } from "../../protocol";
 import { recurrent_transfer } from "../../proto/recurrent_transfer.js";
-import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.js";
+import { AOperationFactory, type IOperationFactorySink } from "../operation_builder.js";
 
-export class RecurrentTransferBuilder extends OperationBuilder {
+export interface IRecurrentTransferData {
+  /**
+   * Account to transfer asset from.
+   */
+  from: TAccountName;
+  /**
+   * Account to transfer asset to. Cannot set a transfer to yourself.
+   */
+  to: TAccountName;
+  /**
+   * The amount of asset to transfer.
+   * Allowed assets: **HIVE** and **HBD**.
+   */
+  amount: asset;
+  /**
+   * Must be shorter than 2048 characters.
+   *
+   * @default ""
+   */
+  memo?: string;
+  /**
+   * How often will the payment be triggered, unit: hours.
+   * The first transfer is executed immediately.
+   * The minimum value of the parameter is 24 h.
+   *
+   * @default 24
+   */
+  recurrence?: number;
+  /**
+   * How many times the recurrent payment will be executed.
+   * Executions must be at least 2, if you set executions to 1 the recurrent transfer will not be executed.
+   *
+   * @default 2
+   */
+  executions?: number;
+}
+
+
+export interface IRecurrentTransferPairIdData extends Omit<IRecurrentTransferData, 'amount'> {
+  amount?: asset;
+  pairId: number;
+}
+
+export class RecurrentTransferFactory extends AOperationFactory {
   protected readonly recurrentTransfer: recurrent_transfer;
 
-  public constructor(from: TAccountName, to: TAccountName, amount: asset, memo: string = "", recurrence: number = 24, executions: number = 2) {
-    super();
-
-    this.recurrentTransfer = recurrent_transfer.fromPartial({
-      from_account: from,
-      to_account: to,
-      amount,
-      executions,
-      recurrence,
-      memo
-    });
-  }
-
-  /**
-   * Removes recurrent transfer with the previously set pair id
-   *
-   * @returns {this} itself
-   */
-  public generateRemoval(): this {
-    this.recurrentTransfer.amount = { ...this.api.ASSETS.HIVE, amount: "0" };
-
-    return this;
-  }
+  private requiresRemoval = false;
 
   /**
    * @internal
    */
-  public override build(): IBuiltHiveAppsOperation {
-    this.push({ recurrent_transfer: this.recurrentTransfer });
+  public finalize(sink: IOperationFactorySink): Iterable<operation> {
+    if (this.requiresRemoval)
+      this.recurrentTransfer.amount = { ...sink.api.ASSETS.HIVE, amount: "0" };
 
-    return this.builtOperations;
-  }
-}
-
-export class RecurrentTransferPairIdBuilder extends RecurrentTransferBuilder {
-  public constructor(from: TAccountName, to: TAccountName, pairId: number, amount?: asset | undefined, memo: string = "", recurrence: number = 24, executions: number = 2) {
-    super(from, to, amount as asset, memo, recurrence, executions);
-
-    if (amount === undefined)
-      this.generateRemoval();
-
-    if(typeof pairId === "number")
-      this.addPairId(pairId);
+    return [{ recurrent_transfer: this.recurrentTransfer }];
   }
 
-  /**
-   * Adds pair id to the recurrent transfer
-   *
-   * @param {number} pairId Pair id to add to the recurrent transfer
-   *
-   * @returns {RecurrentTransferPairIdBuilder} itself
-   */
-  private addPairId(pairId: number): RecurrentTransferPairIdBuilder {
-    this.recurrentTransfer.extensions.push({
-      recurrent_transfer_pair_id: {
-        pair_id: pairId
-      }
+  public constructor(data: IRecurrentTransferData | IRecurrentTransferPairIdData) {
+    super();
+
+    this.recurrentTransfer = recurrent_transfer.fromPartial({
+      from_account: data.from,
+      to_account: data.to,
+      amount: "amount" in data ? data.amount : undefined,
+      executions: data.executions ?? 2,
+      recurrence: data.recurrence ?? 24,
+      memo: data.memo ?? ""
     });
 
-    return this;
+    if (data.amount === undefined)
+      this.requiresRemoval = true;
+
+    if("pairId" in data)
+      this.recurrentTransfer.extensions.push({
+        recurrent_transfer_pair_id: {
+          pair_id: data.pairId
+        }
+      });
   }
 }

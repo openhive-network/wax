@@ -1,6 +1,6 @@
 import { WaxError } from '../../errors.js';
 import Long from 'long';
-import { OperationBuilder } from '../operation_builder';
+import { OperationBuilder } from '../operation_builder.js';
 
 export type TAccountName = string;
 

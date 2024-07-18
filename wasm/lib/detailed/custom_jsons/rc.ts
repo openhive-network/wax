@@ -1,7 +1,7 @@
 import type { NaiAsset } from "../index";
 import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
 import Long from 'long';
-import { HiveAppsOperation } from "./index.js";
+import { HiveAppsOperation } from "./apps_operation.js";
 
 export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsOperationBuilder> {
   public constructor(

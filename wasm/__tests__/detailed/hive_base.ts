@@ -200,7 +200,7 @@ test.describe('Wax object interface foundation tests', () => {
       const tx = new base.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
-      tx.pushRawOperation(protoVoteOp).validate();
+      tx.pushOperation(protoVoteOp).validate();
 
       tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
       const stx = tx.transaction;
@@ -220,11 +220,13 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to create a recurrent transfer with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, chain }) => {
-      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
-        builder.generateRemoval();
-      }, "initminer", "gtg", 100, { amount: '100', nai: '@@000000021', precision: 3 });
-      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
+      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushOperation(new wax.RecurrentTransferOperation({
+        from: "initminer",
+        to: "gtg",
+        pairId: 100
+      }));
+      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: chain.hive(100) }));
 
       return tx.transaction.operations;
     });
@@ -267,8 +269,8 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
-      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, "initminer", "gtg", chain.hive(100));
+      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: chain.hive(100) }));
 
       return tx.transaction.operations;
     });
@@ -295,8 +297,9 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink", "2023-08-01T15:38:48");
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, 100, "initminer", chain.hive(0), "subject", "permlink");
+
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink" }));
 
       return tx.transaction.operations;
     });
@@ -344,14 +347,14 @@ test.describe('Wax object interface foundation tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.startEncrypt(publicKey).pushRawOperation({
+      tx.startEncrypt(publicKey).pushOperation({
         transfer: {
           amount: chain.hive(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"
         }
-      }).stopEncrypt().startEncrypt(publicKey).pushRawOperation({
+      }).stopEncrypt().startEncrypt(publicKey).pushOperation({
         transfer: {
           amount: chain.hive(120),
           from_account: "initminer",
@@ -387,7 +390,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.startEncrypt(publicKey).pushRawOperation({
+      tx.startEncrypt(publicKey).pushOperation({
         transfer: {
           amount: chain.hive(100),
           from_account: "gtg",

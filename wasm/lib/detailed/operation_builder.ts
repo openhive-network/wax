@@ -3,6 +3,10 @@ import type { ITransactionBuilder, IWaxBaseInterface } from '../interfaces';
 import type { TransactionBuilder } from './transaction_builder';
 import { WaxError } from '../errors';
 
+export interface IOperationFactorySink {
+  api: IWaxBaseInterface;
+}
+
 export interface IBuiltHiveAppsOperation {
   /**
    * Retrieves number of custom operations in the container that will be pushed into the TransactionBuilder
@@ -79,4 +83,8 @@ export class OperationBuilder {
   public build(): IBuiltHiveAppsOperation {
     return this.builtOperations;
   }
+}
+
+export abstract class AOperationFactory {
+  abstract finalize(sink: IOperationFactorySink): Iterable<operation>;
 }

@@ -2,18 +2,16 @@ import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
-import type { ArticleBuilder, ReplyBuilder, RecurrentTransferBuilder, WitnessSetPropertiesBuilder, RecurrentTransferPairIdBuilder, UpdateProposalBuilder } from "./detailed/operation_factories";
-import type { CommunityOperationBuilder, FollowOperationBuilder, ResourceCreditsOperationBuilder } from "./detailed/custom_jsons";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { HiveAppsOperation, NaiAsset } from "./detailed";
+import type { NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
-import { IBuiltHiveAppsOperation, OperationBuilder } from "./detailed/operation_builder";
-
-export type TInterfaceOperationBuilder<T> = T extends OperationBuilder ? (Omit<T, 'build'|'push'> & { api: IWaxBaseInterface }) : never;
+import type { OperationBase } from "./detailed/operation_builder";
+import type { BlogPostOperation, ReplyOperation, RecurrentTransferOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/operation_factories";
+import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/custom_jsons';
 
 export type TTimestamp = Date | number | string;
 
@@ -289,14 +287,21 @@ interface ITransactionBuilderBase {
 }
 
 /**
- * Default Transaction Builder interface for adding operations, using builders and retrieving base information about transaction,
- * like id, sigDigest and signingKeys. Example usage:
+ * TransactionBuilder allows you to push simple operations (as inline objects)
+ * or use dedicated operation factories
+ * (to create more complex operations or multiple blockchain transactions for specific scenarios)
+ * into underlying transaction.
+ * Furthermore, it allows to perform analysis of the transaction
+ * by examining its id (hash),
+ * evaluating the digest to calculate signatures
+ * or extracting public keys involved in the attached signatures.
  *
+ * Example usage:
  * @example Base transaction builder usage
  * ```typescript
  * const tx = new waxFoundation.TransactionBuilder();
  *
- * tx.pushRawOperation({
+ * tx.pushOperation({
  *   vote: {
  *     voter: "otom",
  *     author: "c0ff33a",
@@ -309,14 +314,52 @@ interface ITransactionBuilderBase {
 export interface ITransactionBuilder extends ITransactionBuilderBase {
   /**
    * Pushes given operation to the operations array in the transaction
+   * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
    *
-   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link AOperationFactory} class.
+   *
+   * @param {operation | HiveAppsFormattedOperation | OperationBase} op operation to append to the transaction (can be hive apps operation)
+   * or Class instance for a complex operation that will produce operations including given params
+   *
+   * @see Operation factories:
+   *  {@link BlogPostFactory} Creates a blog post. It requires the category on blog post to be set,
+   *  {@link ReplyFactory} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link RecurrentTransferFactory} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link UpdateProposalFactory} Creates an update proposal operation. You can optionally set the end date of the proposal,
+   *  {@link WitnessSetPropertiesFactory} Creates a witness set properties operation with automatic data serialization,
+   *
+   * @see Hive Apps operation factories:
+   *  {@link CommunityOperationFactory} Allows to manipulate the community options,
+   *  {@link FollowOperationFactory} Allows to manipulate the follow options,
+   *  {@link ResourceCreditsOperationFactory} Allows to delegate or remove delegation of resource credits to given account(s),
+   *
+   * @example Building blog post
+   * ```typescript
+   *  tx.pushOperation(new BlogPostOperation({
+   *    category: "test-category",
+   *    author: "gtg",
+   *    title: "Post with category",
+   *    body: "Post with category",
+   *    permlink: "post-with-category",
+   *    tags: ["spam"],
+   *    description: "Post with category"
+   *  }));
+   * ```
+   *
+   * @example Building recurrent transfer with pair id and automaically generated removal
+   * ```typescript
+   *  tx.pushOperation(new RecurrentTransferOperation({
+   *    from: "initminer",
+   *    to: "gtg",
+   *    pairId: 100
+   *  }));
+   * ```
    *
    * @returns {ITransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  pushRawOperation(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): ITransactionBuilder;
+  pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): ITransactionBuilder;
 
   /**
    * Starts encryption chain
@@ -329,34 +372,8 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    *
    * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    */
-  startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): IEncryptingTransactionBuilder;
+ startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): IEncryptingTransactionBuilder;
 
-  /**
-   * Uses given builder to construct operations and push them to the current instance of the transaction builder
-   *
-   * @param {TBuilder} builderConstructor Builder constructor (class)
-   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>) => void} builderFn Lambda function for your builder configuration
-   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
-   *
-   * @returns {ITransactionBuilder} current transaction builder instance
-   *
-   * @throws {WaxError} on any Wax API-related error
-   *
-   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}, {@link WitnessSetPropertiesBuilder}
-   * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
-   *
-   * @example Building article
-   * ```typescript
-   *  tx.pushOperations(ArticleBuilder, builder => {
-   *      builder.setCategory('blog');
-   *  }, 'gtg', 'My first post', '# Hello world!');
-   * ```
-   */
-  pushOperations<TBuilder extends new (...args: any[]) => any>(
-    builderConstructor: TBuilder,
-    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
-    ...constructorArgs: ConstructorParameters<TBuilder>
-  ): ITransactionBuilder;
 }
 
 /**
@@ -376,7 +393,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
  * ```typescript
  * const tx = new waxFoundation.TransactionBuilder();
  *
- * tx.startEncrypt(myPublicKey).pushRawOperation({
+ * tx.startEncrypt(myPublicKey).pushOperation({
  *    transfer: {
  *      amount: chain.hive(100),
  *      from_account: "gtg",
@@ -389,14 +406,52 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
 export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
   /**
    * Pushes given operation to the operations array in the transaction
+   * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
    *
-   * @param {operation | IBuiltHiveAppsOperation | HiveAppsOperation} op operation to append to the transaction (can be hive apps operation)
+   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link AOperationFactory} class.
+   *
+   * @param {operation | HiveAppsFormattedOperation | OperationBase} op operation to append to the transaction (can be hive apps operation)
+   * or Class instance for a complex operation that will produce operations including given params
+   *
+   * @see Operation factories:
+   *  {@link BlogPostFactory} Creates a blog post. It requires the category on blog post to be set,
+   *  {@link ReplyFactory} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link RecurrentTransferFactory} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link UpdateProposalFactory} Creates an update proposal operation. You can optionally set the end date of the proposal,
+   *  {@link WitnessSetPropertiesFactory} Creates a witness set properties operation with automatic data serialization,
+   *
+   * @see Hive Apps operation factories:
+   *  {@link CommunityOperationFactory} Allows to manipulate the community options,
+   *  {@link FollowOperationFactory} Allows to manipulate the follow options,
+   *  {@link ResourceCreditsOperationFactory} Allows to delegate or remove delegation of resource credits to given account(s),
+   *
+   * @example Building blog post
+   * ```typescript
+   *  tx.pushOperation(new BlogPostOperation({
+   *    category: "test-category",
+   *    author: "gtg",
+   *    title: "Post with category",
+   *    body: "Post with category",
+   *    permlink: "post-with-category",
+   *    tags: ["spam"],
+   *    description: "Post with category"
+   *  }));
+   * ```
+   *
+   * @example Building recurrent transfer with pair id and automaically generated removal
+   * ```typescript
+   *  tx.pushOperation(new RecurrentTransferOperation({
+   *    from: "initminer",
+   *    to: "gtg",
+   *    pairId: 100
+   *  }));
+   * ```
    *
    * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  pushRawOperation(op: operation | IBuiltHiveAppsOperation | HiveAppsOperation<any>): IEncryptingTransactionBuilder;
+  pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): IEncryptingTransactionBuilder;
 
   /**
    * Stops encryption chain
@@ -406,33 +461,6 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    * @returns {ITransactionBuilder} current transaction builder instance
    */
   stopEncrypt(): ITransactionBuilder;
-
-  /**
-   * Uses given builder to construct operations and push them to the current instance of the transaction builder
-   *
-   * @param {TBuilder} builderConstructor Builder constructor (class)
-   * @param {(builder: TInterfaceOperationBuilder<InstanceType<TBuilder>) => void} builderFn Lambda function for your builder configuration
-   * @param {ConstructorParameters<TBuilder>} constructorArgs Optional arguments to pass to the builder constructor
-   *
-   * @returns {IEncryptingTransactionBuilder} current transaction builder instance
-   *
-   * @throws {WaxError} on any Wax API-related error
-   *
-   * @see Operation factories: {@link ArticleBuilder}, {@link ReplyBuilder}, {@link RecurrentTransferPairIdBuilder}, {@link RecurrentTransferBuilder}, {@link UpdateProposalBuilder}, {@link WitnessSetPropertiesBuilder}
-   * @see Hive Apps operation builders: {@link CommunityOperationBuilder}, {@link FollowOperationBuilder}, {@link ResourceCreditsOperationBuilder}
-   *
-   * @example Building article
-   * ```typescript
-   *  tx.pushOperations(ArticleBuilder, builder => {
-   *      builder.setCategory('blog');
-   *  }, 'gtg', 'My first post', '# Hello world!');
-   * ```
-   */
-  pushOperations<TBuilder extends new (...args: any[]) => any>(
-    builderConstructor: TBuilder,
-    builderFn: (builder: TInterfaceOperationBuilder<InstanceType<TBuilder>>) => void,
-    ...constructorArgs: ConstructorParameters<TBuilder>
-  ): IEncryptingTransactionBuilder;
 }
 
 export interface ITransactionBuilderConstructor {
@@ -577,7 +605,7 @@ export interface IWaxBaseInterface {
   suggestBrainKey(): IBrainKeyData;
 
   /**
-   * Derives private key for a gien role from so-called Master Password
+   * Derives private key for a given role from so-called Master Password
    *
    * @param {string} account the name of the account to retrieve key for
    * @param {string} role active | owner | posting | memo

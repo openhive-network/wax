@@ -18,7 +18,7 @@ export interface IInstancesData {
 
 export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableFormatter {
   private matchers: Map<string, IMatchersData> = new Map();
-  private instances: Array<IInstancesData> = new Array();
+  private instances: IInstancesData[] = [];
 
   private constructor(
     protected readonly wax: IWaxBaseInterface,

@@ -1,33 +1,64 @@
-import type { asset } from "../../protocol";
+import { asset, operation } from "../../protocol.js";
 import type { TAccountName } from "../custom_jsons";
 import { update_proposal } from "../../proto/update_proposal.js";
-import { IBuiltHiveAppsOperation, OperationBuilder } from "../operation_builder.js";
+import { AOperationFactory, IOperationFactorySink } from "../operation_builder.js";
 
-export class UpdateProposalBuilder extends OperationBuilder {
+interface IUpdateProposalData {
+  /**
+   * The identifier of the proposal to be updated.
+   */
+  proposalId: string | number;
+  /**
+   * The account name of the proposal creator.
+   */
+  creator: TAccountName;
+  /**
+   * The daily pay of the proposal.
+   * **A user who created the proposal may modify it**.
+   */
+  dailyPay: asset;
+  /**
+   * The subject of the proposal.
+   * **A user who created the proposal may modify it**.
+   */
+  subject: string;
+  /**
+   * The permlink of the proposal.
+   * **A user who created the proposal may modify it**.
+   */
+  permlink: string;
+  /**
+   * The end date of the proposal.
+   * **A user who created the proposal may modify it**.
+   */
+  endDate?: number | string | Date;
+}
+
+export class UpdateProposalFactory extends AOperationFactory {
   private readonly updateProposal: update_proposal;
 
-  public constructor(proposalId: string | number, creator: TAccountName, dailyPay: asset, subject: string, permlink: string, endDate?: number | string | Date) {
+  public constructor(props: IUpdateProposalData) {
     super();
 
     this.updateProposal = update_proposal.fromPartial({
-      proposal_id: proposalId.toString(),
-      creator,
-      daily_pay: dailyPay,
-      subject,
-      permlink
+      proposal_id: props.proposalId.toString(),
+      creator: props.creator,
+      daily_pay: props.dailyPay,
+      subject: props.subject,
+      permlink: props.permlink
     });
 
-    if(typeof endDate !== "undefined")
-      this.addEndDate(endDate);
+    if(typeof props.endDate !== "undefined")
+      this.addEndDate(props.endDate);
   }
 
   /**
    * Adds end date to the update proposal
    *
    * @param {string | number | Date} endDate end date
-   * @returns {UpdateProposalBuilder} itself
+   * @returns {UpdateProposalFactory} itself
    */
-  private addEndDate(endDate: string | number | Date): UpdateProposalBuilder {
+  private addEndDate(endDate: string | number | Date): UpdateProposalFactory {
     if(typeof endDate === "string" && !endDate.endsWith("Z"))
       endDate += "Z";
 
@@ -43,9 +74,7 @@ export class UpdateProposalBuilder extends OperationBuilder {
   /**
    * @internal
    */
-  public override build(): IBuiltHiveAppsOperation {
-    this.push({ update_proposal: this.updateProposal });
-
-    return this.builtOperations;
+  public finalize(_sink: IOperationFactorySink): Iterable<operation> {
+    return [{ update_proposal: this.updateProposal }];
   }
 }

@@ -28,21 +28,22 @@ test.describe('Wax operation factories tests', () => {
     await page.goto('http://localhost:8080/wasm/__tests__/assets/test.html', { waitUntil: 'load' });
   });
 
-  test('Should be able to initialize pushOperations on WitnessSetPropertiesBuilder with basic witness_set_properties_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperation on WitnessSetPropertiesOperation with basic witness_set_properties_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder
-          .setNewSigningKey('STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW')
-          .setAccountCreationFee(5000)
-          .setAccountSubsidyBudget(1000)
-          .setAccountSubsidyDecay(1000)
-          .setHBDExchangeRate(1000, 1000)
-          .setHBDInterestRate(1000)
-          .setMaximumBlockSize(1000)
-          .setUrl('https://hive.io');
-      }, 'gtg', 'STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "gtg",
+        witnessSigningKey: "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
+        newSigningKey: "STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW",
+        accountCreationFee: 5000,
+        accountSubsidyBudget: 1000,
+        accountSubsidyDecay: 1000,
+        hbdExchangeRate: { base: 1000, quote: 1000 },
+        hbdInterestRate: 1000,
+        maximumBlockSize: 1000,
+        url: "https://hive.io"
+      }));
 
       return tx.toApi();
     });
@@ -93,13 +94,15 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesBuilder with url witness property', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesFactory with url witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder.setUrl('https://steemit.com/steem/@therealwolf/witness-application-therealwolf-updated');
-      }, 'therealwolf', 'STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "therealwolf",
+        witnessSigningKey: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC",
+        url: "https://steemit.com/steem/@therealwolf/witness-application-therealwolf-updated"
+      }));
 
       return tx.toApi();
     });
@@ -122,15 +125,16 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesBuilder with budget and account fee witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesFactory with budget and account fee witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder
-          .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
-          .setAccountSubsidyBudget(700);
-      }, 'therealwolf', 'STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "therealwolf",
+        witnessSigningKey: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC",
+        accountCreationFee: { amount: "3000", precision: 3, nai: "@@000000021" },
+        accountSubsidyBudget: 700
+      }));
 
       return tx.toApi();
     });
@@ -157,15 +161,16 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesBuilder with deacy and budget witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesFactory with deacy and budget witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder
-          .setAccountSubsidyBudget(1)
-          .setAccountSubsidyDecay(64);
-      }, 'emrebeyler', 'STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "emrebeyler",
+        witnessSigningKey: "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju",
+        accountSubsidyBudget: 1,
+        accountSubsidyDecay: 64
+      }));
 
       return tx.toApi();
     });
@@ -192,14 +197,15 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesBuilder with hbd exchange rate witness property', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesFactory with hbd exchange rate witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder
-          .setHBDExchangeRate({ amount: '424', precision: 3, nai: '@@000000013' }, { amount: '1000', precision: 3, nai: '@@000000021' });
-      }, 'ctrpch', 'STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "ctrpch",
+        witnessSigningKey: "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU",
+        hbdExchangeRate: { base: 424, quote: 1000 }
+      }));
 
       return tx.toApi();
     });
@@ -222,21 +228,22 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesBuilder with all the specific witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesFactory with all the specific witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.WitnessSetPropertiesBuilder, builder => {
-        builder
-          .setAccountCreationFee({ amount: '3000', precision: 3, nai: '@@000000021' })
-          .setAccountSubsidyBudget(10000)
-          .setAccountSubsidyDecay(3307750)
-          .setHBDExchangeRate({ amount: '867', precision: 3, nai: '@@000000013' }, { amount: '1002', precision: 3, nai: '@@000000021' })
-          .setHBDInterestRate(0)
-          .setMaximumBlockSize(65536)
-          .setNewSigningKey('STM7FGmbPEooM5xbME7F2WUG41zGAh6WPzvHMQvTfABEHKfyuGUu7')
-          .setUrl('https://guiltyparties.com');
-      }, 'guiltyparties', 'STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU');
+      tx.pushOperation(new wax.WitnessSetPropertiesOperation({
+        owner: "guiltyparties",
+        witnessSigningKey: "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU",
+        accountCreationFee: { amount: "3000", precision: 3, nai: "@@000000021" },
+        accountSubsidyBudget: 10000,
+        accountSubsidyDecay: 3307750,
+        hbdExchangeRate: { base: 867, quote: 1002 },
+        hbdInterestRate: 0,
+        maximumBlockSize: 65536,
+        newSigningKey: "STM7FGmbPEooM5xbME7F2WUG41zGAh6WPzvHMQvTfABEHKfyuGUu7",
+        url: "https://guiltyparties.com"
+      }));
 
       return tx.toApi();
     });
@@ -287,11 +294,18 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to initialize pushOperations on RecurrentTransferBuilder with basic recurrent_transfer_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperations on RecurrentTransferFactory with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.RecurrentTransferBuilder, () => {}, 'alice', 'bob', { amount: '100', precision: 3, nai: '@@000000013' }, 'thanks for the service');
+      tx.pushOperation(new wax.RecurrentTransferOperation({
+        from: "alice",
+        to: "bob",
+        amount: { amount: "100", precision: 3, nai: "@@000000013" },
+        recurrence: 24,
+        executions: 2,
+        memo: "thanks for the service"
+      }));
 
       return tx.toApi();
     });
@@ -313,11 +327,19 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferPairIdBuilder', async ({ waxTest }) => {
+  test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, () => {}, 'alice', 'bob', 12345, { amount: '100', nai: '@@000000021', precision: 3 }, 'monthly subscription', 24, 2);
+      tx.pushOperation(new wax.RecurrentTransferOperation({
+        from: "alice",
+        to: "bob",
+        pairId: 12345,
+        amount: { amount: "100", precision: 3, nai: "@@000000021" },
+        memo: "monthly subscription",
+        recurrence: 24,
+        executions: 2
+      }));
 
       return tx.toApi();
     });
@@ -349,9 +371,11 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
-        builder.generateRemoval();
-      }, 'grace', 'henry', 24680, { amount: '0', precision: 3, nai: '@@000000021' });
+      tx.pushOperation(new wax.RecurrentTransferOperation({
+        from: "grace",
+        to: "henry",
+        pairId: 24680
+      }));
 
       return tx.toApi();
     });
@@ -374,7 +398,13 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui');
+      tx.pushOperation(new wax.UpdateProposalOperation({
+        proposalId: "123",
+        creator: "alice",
+        dailyPay: { amount: "1000", precision: 3, nai: "@@000000013" },
+        subject: "Improve UI Design",
+        permlink: "improve-ui"
+      }));
 
       return tx.toApi();
     });
@@ -395,7 +425,14 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
+      tx.pushOperation(new wax.UpdateProposalOperation({
+        proposalId: "123",
+        creator: "alice",
+        dailyPay: { amount: "1000", precision: 3, nai: "@@000000013" },
+        subject: "Improve UI Design",
+        permlink: "improve-ui",
+        endDate: "2023-03-14"
+      }));
 
       return tx.toApi();
     });
@@ -422,7 +459,14 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', 1678917600000);
+      tx.pushOperation(new wax.UpdateProposalOperation({
+        proposalId: "123",
+        creator: "alice",
+        dailyPay: { amount: "1000", precision: 3, nai: "@@000000013" },
+        subject: "Improve UI Design",
+        permlink: "improve-ui",
+        endDate: 1678917600000
+      }));
 
       return tx.toApi();
     });
@@ -445,13 +489,18 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should add extensions using RecurrentTransferPairIdBuilder and convert to legacy api', async ({ waxTest }) => {
+  test('Should add extensions using RecurrentTransferFactory and convert to legacy api', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.RecurrentTransferPairIdBuilder, builder => {
-        builder.generateRemoval();
-      }, 'alice', 'bob', 50, { amount: '0', precision: 3, nai: '@@000000021' }, 'monthly subscription', 24, 2);
+      tx.pushOperation(new wax.RecurrentTransferOperation({
+        from: "alice",
+        to: "bob",
+        pairId: 50,
+        memo: "monthly subscription",
+        recurrence: 24,
+        executions: 2
+      }));
 
       return tx.toLegacyApi();
     });
@@ -479,7 +528,14 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.UpdateProposalBuilder, () => {}, '123', 'alice', { amount: '1000', precision: 3, nai: '@@000000013' }, 'Improve UI Design', 'improve-ui', '2023-03-14');
+      tx.pushOperation(new wax.UpdateProposalOperation({
+        proposalId: "123",
+        creator: 'alice',
+        dailyPay: { amount: '1000', precision: 3, nai: '@@000000013' },
+        subject: 'Improve UI Design',
+        permlink: 'improve-ui',
+        endDate: '2023-03-14'
+      }));
 
       return tx.toLegacyApi();
     });
@@ -506,18 +562,17 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ReplyBuilder, builder => {
-        builder.addBeneficiaries({ account: 'guest4test7', weight: 40 })
-        .pushTags("spam")
-        .setDescription("Post with beneficiaries");
-      },
-        'guest4test',
-        'spam',
-        'gtg',
-        'Post with beneficiaries',
-        {},
-        'post-with-beneficiaries',
-        'Post with beneficiares');
+      tx.pushOperation(new wax.ReplyOperation({
+        parentAuthor: "guest4test",
+        parentPermlink: "spam",
+        author: "gtg",
+        title: "Post with beneficiares",
+        body: "Post with beneficiaries",
+        permlink: "post-with-beneficiaries",
+        tags: ["spam"],
+        beneficiaries: [{ account: 'guest4test7', weight: 40 }],
+        description: "Post with beneficiaries"
+      }));
 
         return tx.toLegacyApi();
     });
@@ -559,22 +614,21 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to set percent HBD in ReplyBuilder', async ({ waxTest }) => {
+  test('Should be able to set percent HBD in ReplyFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ReplyBuilder, builder => {
-        builder.setPercentHbd(20)
-          .pushTags("spam")
-          .setDescription("Set percent");
-      },
-      'guest4test',
-      'spam',
-      'gtg',
-      'Set percent',
-      {},
-      'set-percent',
-      'set-percent');
+      tx.pushOperation(new wax.ReplyOperation({
+        parentAuthor: "guest4test",
+        parentPermlink: "spam",
+        author: "gtg",
+        title: "set-percent",
+        body: "Set percent",
+        permlink: "set-percent",
+        tags: ["spam"],
+        percentHbd: 20,
+        description: "Set percent"
+      }));
 
       return tx.toApi();
     });
@@ -610,19 +664,17 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ReplyBuilder, builder => {
-        builder.pushImages('test2.png')
-          .pushTags("spam")
-          .pushImages("test.png")
-          .setDescription("Push Images");
-      },
-      'guest4test',
-      'spam',
-      'gtg',
-      'Push images',
-      {},
-      'push-images',
-      'push-images');
+      tx.pushOperation(new wax.ReplyOperation({
+        parentAuthor: "guest4test",
+        parentPermlink: "spam",
+        author: "gtg",
+        title: "push-images",
+        body: "Push images",
+        permlink: "push-images",
+        tags: ["spam"],
+        images: ['test2.png', 'test.png'],
+        description: "Push Images"
+      }));
 
       return tx.toApi();
     });
@@ -633,7 +685,7 @@ test.describe('Wax operation factories tests', () => {
         value: {
           author: 'gtg',
           body: 'Push images',
-          json_metadata: `{"format":"markdown+html","app":"${app}","image":["test2.png","test.png"],"tags":["spam"],"description":"Push Images"}`,
+          json_metadata: `{"format":"markdown+html","app":"${app}","tags":["spam"],"image":["test2.png","test.png"],"description":"Push Images"}`,
           parent_author: 'guest4test',
           parent_permlink: 'spam',
           permlink: 'push-images',
@@ -643,20 +695,19 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set category in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set category in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setCategory('test-category')
-          .pushTags("spam")
-          .setDescription("Post with category");
-      },
-      'gtg',
-      'Post with category',
-      'Post with category',
-      {},
-      'post-with-category');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Post with category",
+        body: "Post with category",
+        permlink: "post-with-category",
+        tags: ["spam"],
+        description: "Post with category"
+      }));
 
       return tx.toApi();
     });
@@ -677,18 +728,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set alternative author in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set alternative author in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setAlternativeAuthor('initminer');
-      },
-      'gtg',
-      'Set alternative author',
-      'Set alternative author',
-      {},
-      'set-alternative-author');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set alternative author",
+        body: "Set alternative author",
+        permlink: "set-alternative-author",
+        alternativeAuthor: "initminer",
+      }));
 
       return tx.toApi();
     });
@@ -701,7 +752,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Set alternative author',
           json_metadata: `{"format":"markdown+html","app":"${app}","author":"initminer"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'set-alternative-author',
           title: 'Set alternative author'
         }
@@ -709,18 +760,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to push links in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to push links in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.pushLinks('https://test.com', 'https://test2.com', 'http://test3.com');
-      },
-      'gtg',
-      'Push links',
-      'Push links',
-      {},
-      'push-links');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Push links",
+        body: "Push links",
+        permlink: "push-links",
+        links: ['https://test.com', 'https://test2.com', 'http://test3.com'],
+      }));
 
       return tx.toApi();
     });
@@ -733,7 +784,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Push links',
           json_metadata: `{"format":"markdown+html","app":"${app}","links":["https://test.com","https://test2.com","http://test3.com"]}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'push-links',
           title: 'Push links'
         }
@@ -741,18 +792,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set max accepted payout in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set max accepted payout in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setMaxAcceptedPayout(chain.hive(100));
-      },
-      'gtg',
-      'Set max accepted payout',
-      'Set max accepted payout',
-      {},
-      'set-max-accepted-payout');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set max accepted payout",
+        body: "Set max accepted payout",
+        permlink: "set-max-accepted-payout",
+        maxAcceptedPayout: chain.hive(100),
+      }));
 
       return tx.toApi();
     });
@@ -765,7 +816,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Set max accepted payout',
           json_metadata: `{"format":"markdown+html","app":"${app}"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'set-max-accepted-payout',
           title: 'Set max accepted payout'
         }
@@ -784,18 +835,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set allow curation rewards in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set allow curation rewards in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setAllowCurationRewards(false);
-      },
-      'gtg',
-      'Set allow curation rewards',
-      'Set allow curation rewards',
-      {},
-      'set-allow-curation-rewards');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set allow curation rewards",
+        body: "Set allow curation rewards",
+        permlink: "set-allow-curation-rewards",
+        allowCurationRewards: false,
+      }));
 
       return tx.toApi();
     });
@@ -808,7 +859,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Set allow curation rewards',
           json_metadata: `{"format":"markdown+html","app":"${app}"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'set-allow-curation-rewards',
           title: 'Set allow curation rewards'
         }
@@ -827,18 +878,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set allow votes in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set allow votes in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setAllowVotes(false);
-      },
-      'gtg',
-      'Set allow votes',
-      'Set allow votes',
-      {},
-      'set-allow-votes');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set allow votes",
+        body: "Set allow votes",
+        permlink: "set-allow-votes",
+        allowVotes: false,
+      }));
 
       return tx.toApi();
     });
@@ -851,7 +902,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Set allow votes',
           json_metadata: `{"format":"markdown+html","app":"${app}"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'set-allow-votes',
           title: 'Set allow votes'
         }
@@ -870,18 +921,18 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set format in ArticleBuilder', async ({ waxTest }) => {
+  test('Should be able to set format in BlogPostFactory', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setFormat(wax.ECommentFormat.MARKDOWN);
-      },
-      'gtg',
-      'Set format',
-      'Set format',
-      {},
-      'set-format');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set format",
+        body: "Set format",
+        permlink: "set-format",
+        format: wax.ECommentFormat.MARKDOWN,
+      }));
 
       return tx.toApi();
     });
@@ -894,7 +945,7 @@ test.describe('Wax operation factories tests', () => {
           body: 'Set format',
           json_metadata: `{"format":"markdown","app":"${app}"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'set-format',
           title: 'Set format'
         }
@@ -906,22 +957,21 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder
-          .setAllowVotes(false)
-          .pushImages('test.png')
-          .pushLinks('https://test.com')
-          .pushTags('spam')
-          .setMaxAcceptedPayout(chain.hive(100))
-          .setPercentHbd(20)
-          .addBeneficiaries({ account: 'guest4test7', weight: 40 })
-          .setDescription('Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries');
-      },
-      'gtg',
-      'push and set multiple properites',
-      'push and set multiple properites',
-      {},
-      'push-and-set-multiple-properites');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "push and set multiple properites",
+        body: "push and set multiple properites",
+        permlink: "push-and-set-multiple-properites",
+        allowVotes: false,
+        images: ['test.png'],
+        links: ['https://test.com'],
+        tags: ['spam'],
+        maxAcceptedPayout: chain.hive(100),
+        percentHbd: 20,
+        beneficiaries: [{ account: 'guest4test7', weight: 40 }],
+        description: 'Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries'
+      }));
 
       return tx.toApi();
     });
@@ -932,9 +982,9 @@ test.describe('Wax operation factories tests', () => {
         value: {
           author: 'gtg',
           body: 'push and set multiple properites',
-          json_metadata: `{"format":"markdown+html","app":"${app}","image":["test.png"],"links":["https://test.com"],"tags":["spam"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}`,
+          json_metadata: `{"format":"markdown+html","app":"${app}","tags":["spam"],"image":["test.png"],"links":["https://test.com"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}`,
           parent_author: "",
-          parent_permlink: "",
+          parent_permlink: "test-category",
           permlink: 'push-and-set-multiple-properites',
           title: 'push and set multiple properites'
         }
@@ -970,14 +1020,14 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperations(wax.ArticleBuilder, builder => {
-        builder.setDescription('build transaction');
-      },
-      'gtg',
-      'build transaction',
-      'build transaction',
-      {},
-      'build-transaction');
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "build transaction",
+        body: "build transaction",
+        permlink: "build-transaction",
+        description: 'build transaction'
+      }));
 
       return tx.build.length;
     });
