@@ -35,8 +35,7 @@ test.describe('Wax hive apps operations tests', () => {
           .muteBlog("initminer", "spammer")
           .authorize("initminer")
           .resetBlogList(2, "initminer", "spammer")
-          .authorize("initminer")
-          .build());
+          .authorize("initminer"));
 
       return JSON.parse(tx.toApi());
     }, protoVoteOp);
@@ -56,8 +55,7 @@ test.describe('Wax hive apps operations tests', () => {
           .muteBlog("initminer", "spammer")
           .resetBlogList(0, "initminer", "spammer")
           .resetBlogList(1, "initminer", "spammer")
-          .authorize("initminer")
-          .build());
+          .authorize("initminer"));
 
       return JSON.parse(tx.toApi());
     }, protoVoteOp);
@@ -81,8 +79,7 @@ test.describe('Wax hive apps operations tests', () => {
           .unfollowBlacklistBlog("initminer", "gtg")
           .unfollowBlog("initminer", "gtg")
           .unfollowMutedBlog("initminer", "gtg")
-          .authorize("initminer")
-          .build());
+          .authorize("initminer"));
 
       return JSON.parse(tx.toApi());
     });
@@ -112,8 +109,7 @@ test.describe('Wax hive apps operations tests', () => {
             is_nsfw: false,
             lang: "en"
           })
-          .authorize("gtg")
-          .build());
+          .authorize("gtg"));
 
       return JSON.parse(tx.toApi());
     });
@@ -127,8 +123,7 @@ test.describe('Wax hive apps operations tests', () => {
 
       tx.pushOperation(new wax.FollowOperation()
         .reblog("initminer", "gtg", "first-post")
-        .authorize("initminer")
-        .build());
+        .authorize("initminer"));
 
       return JSON.parse(tx.toApi());
     });
@@ -160,8 +155,7 @@ test.describe('Wax hive apps operations tests', () => {
         .delegate("initminer", 3000, "gtg")
         .authorize("initminer")
         .removeDelegation("initminer", "gtg")
-        .authorize("initminer")
-        .build());
+        .authorize("initminer"));
 
       return JSON.parse(tx.toApi());
     });
@@ -193,19 +187,6 @@ test.describe('Wax hive apps operations tests', () => {
       ref_block_num: 1960,
       ref_block_prefix: 3915120327
     });
-  });
-
-  test('Should be able to create transaction with hive apps rc operation using both operation type and operation builder in transaction builder interface', async ({ waxTest }) => {
-    const retVal = await waxTest(({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
-
-      tx.pushOperation(new wax.ResourceCreditsOperation().removeDelegation("gtg", "initminer").authorize("gtg"));
-      tx.pushOperation(new wax.FormattedResourceCreditsOperation("gtg", base.vests(0), [ "initminer" ]));
-
-      return tx.transaction.operations;
-    });
-
-    expect(retVal[0]).toStrictEqual(retVal[1]);
   });
 
   test.afterAll(async () => {

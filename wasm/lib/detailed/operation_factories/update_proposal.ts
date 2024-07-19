@@ -1,7 +1,7 @@
 import { asset, operation } from "../../protocol.js";
-import type { TAccountName } from "../custom_jsons";
+import type { TAccountName } from "../custom_jsons/index.js";
 import { update_proposal } from "../../proto/update_proposal.js";
-import { AOperationFactory, IOperationFactorySink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_builder.js";
 
 interface IUpdateProposalData {
   /**
@@ -34,7 +34,7 @@ interface IUpdateProposalData {
   endDate?: number | string | Date;
 }
 
-export class UpdateProposalFactory extends AOperationFactory {
+export class UpdateProposalOperation extends OperationBase {
   private readonly updateProposal: update_proposal;
 
   public constructor(props: IUpdateProposalData) {
@@ -56,9 +56,9 @@ export class UpdateProposalFactory extends AOperationFactory {
    * Adds end date to the update proposal
    *
    * @param {string | number | Date} endDate end date
-   * @returns {UpdateProposalFactory} itself
+   * @returns {UpdateProposalOperation} itself
    */
-  private addEndDate(endDate: string | number | Date): UpdateProposalFactory {
+  private addEndDate(endDate: string | number | Date): UpdateProposalOperation {
     if(typeof endDate === "string" && !endDate.endsWith("Z"))
       endDate += "Z";
 
@@ -74,7 +74,7 @@ export class UpdateProposalFactory extends AOperationFactory {
   /**
    * @internal
    */
-  public finalize(_sink: IOperationFactorySink): Iterable<operation> {
+  public finalize(_sink: IOperationSink): Iterable<operation> {
     return [{ update_proposal: this.updateProposal }];
   }
 }

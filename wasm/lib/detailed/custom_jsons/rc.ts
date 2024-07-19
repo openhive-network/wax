@@ -1,37 +1,17 @@
 import type { NaiAsset } from "../index";
-import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
+import { HiveAppsOperation, TAccountName } from './factory.js';
 import Long from 'long';
-import { HiveAppsOperation } from "./apps_operation.js";
 
-export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsOperationBuilder> {
+export class ResourceCreditsOperationData {
   public constructor(
     public readonly from: TAccountName,
     public readonly rc: NaiAsset,
     public readonly delegatees: Array<TAccountName>
-  ) {
-    super();
-  }
-
-  public get builder(): HiveAppsOperationsBuilder<ResourceCreditsOperationBuilder> {
-    return new ResourceCreditsOperationBuilder(this);
-  }
+  ) {}
 }
 
-export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<ResourceCreditsOperationBuilder> {
+export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsOperation> {
   protected readonly id = "rc";
-
-  public constructor(hiveAppsOp?: ResourceCreditsOperation) {
-    super();
-
-    if(typeof hiveAppsOp === "undefined")
-      return;
-
-    const { delegatees: [ delegatee, ...otherDelegatees ], from, rc } = hiveAppsOp;
-
-    this.delegate(from, rc.amount, delegatee, ...otherDelegatees);
-
-    this.authorize(from);
-  }
 
   /**
    * Delegates resource credits to given account(s)
@@ -43,9 +23,9 @@ export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<R
    * @param {TAccountName[]} otherDelegatees optional list of other target accounts to delegate.
    *                                         In the standard node configuration there may be 100 delegatees at most.
    *
-   * @returns {ResourceCreditsOperationBuilder} itself
+   * @returns {ResourceCreditsOperation} itself
    */
-  public delegate(workingAccount: TAccountName, maxRc: string | number | Long, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperationBuilder {
+  public delegate(workingAccount: TAccountName, maxRc: string | number | Long, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperation {
     const delegatees = [ delegatee, ...otherDelegatees ];
 
     this.body.push([
@@ -69,9 +49,9 @@ export class ResourceCreditsOperationBuilder extends HiveAppsOperationsBuilder<R
    * @param {TAccountName} delegatee target account to remove the delegation from.
    * @param {TAccountName[]} otherDelegatees optional list of other target accounts to remove the delegation from.
    *
-   * @returns {ResourceCreditsOperationBuilder} itself
+   * @returns {ResourceCreditsOperation} itself
    */
-  public removeDelegation(workingAccount: TAccountName, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperationBuilder {
+  public removeDelegation(workingAccount: TAccountName, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperation {
     return this.delegate(workingAccount, 0, delegatee, ...otherDelegatees);
   }
 }

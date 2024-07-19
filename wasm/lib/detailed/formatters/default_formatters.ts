@@ -4,7 +4,7 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import type { custom_json, transaction, witness_set_properties } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
-import { CommunityOperation, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperation, ReblogOperation, ResourceCreditsOperation } from "../custom_jsons";
+import { CommunityOperationData, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperationData, ReblogOperationData, ResourceCreditsOperationData } from "../custom_jsons";
 import { WaxBaseApi } from "../base_api";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
@@ -48,7 +48,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "rc" })
-  public rcOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ResourceCreditsOperation | void {
+  public rcOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ResourceCreditsOperationData | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -59,7 +59,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Ensure that from is a string and delegatees is an array
       if(typeof from === "string" && Array.isArray(delegatees))
-        return new ResourceCreditsOperation(
+        return new ResourceCreditsOperationData(
           from,
           rc,
           delegatees
@@ -68,7 +68,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "community" })
-  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): CommunityOperation | void {
+  public communityOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): CommunityOperationData | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -79,7 +79,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Ensure that community and type are strings
       if(typeof data.community === "string" && typeof type === "string")
-        return new CommunityOperation(
+        return new CommunityOperationData(
           accounts,
           data.community,
           {
@@ -95,7 +95,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
   }
 
   @WaxFormattable({ matchProperty: "id", matchValue: "follow" })
-  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ReblogOperation | FollowOperation | void {
+  public followOperationFormatter({ source }: IFormatFunctionArguments<custom_json>): ReblogOperationData | FollowOperationData | void {
     try {
       const json = JSON.parse(source.json);
 
@@ -103,7 +103,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Return the reblog operation if detected and ensure all of its properties have a valid type
       if(type === EFollowOperationActions.REBLOG && typeof data.account === "string" && typeof data.author === "string" && typeof data.permlink === "string")
-        return new ReblogOperation(data.account, data.author, data.permlink);
+        return new ReblogOperationData(data.account, data.author, data.permlink);
 
       const { follower, following, what: [ what ] } = data;
 
@@ -111,7 +111,7 @@ export class DefaultFormatters implements IWaxCustomFormatter {
 
       // Check the integrity of the custom operation
       if(typeof what === "string" && typeof follower === "string")
-        return new FollowOperation(what as EFollowActions, follower, followingParsed);
+        return new FollowOperationData(what as EFollowActions, follower, followingParsed);
     } catch {}
   }
 

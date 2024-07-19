@@ -1,8 +1,8 @@
-import type { TAccountName } from "../custom_jsons/builder";
+import type { TAccountName } from "../custom_jsons/factory";
 import { operation, comment, asset } from "../../protocol.js";
 import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { WaxError } from "../../errors.js";
-import { AOperationFactory, IOperationFactorySink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_builder.js";
 import Long from "long";
 import { isNaiAsset } from "../util/asset_util.js";
 
@@ -132,7 +132,7 @@ export interface IArticleBuilder extends Omit<ICommentData, 'jsonMetadata' | 'pe
   permlink?: string;
 }
 
-class CommentFactory extends AOperationFactory {
+class CommentOperation extends OperationBase {
   protected readonly comment: comment;
   private commentOptions?: comment_options;
 
@@ -145,7 +145,7 @@ class CommentFactory extends AOperationFactory {
   /**
    * @internal
    */
-  public finalize(sink: IOperationFactorySink): Iterable<operation> {
+  public finalize(sink: IOperationSink): Iterable<operation> {
     // Apply cached json metadata before pushing the comment operation
     this.comment.json_metadata = JSON.stringify(this.jsonMetadata);
 
@@ -267,9 +267,9 @@ class CommentFactory extends AOperationFactory {
    * @param {?any} value value to be set (optional when passing the entire object)
    *
    * @throws {WaxError} if key already exists on the jsonmetadata object
-   * @returns {CommentFactory} itself
+   * @returns {CommentOperation} itself
    */
-  public pushMetadataProperty(keyOrObject: string | object, value?: any): CommentFactory {
+  public pushMetadataProperty(keyOrObject: string | object, value?: any): CommentOperation {
     const assign = (key: string, value: any) => {
       if(key in this.jsonMetadata)
         throw new WaxError("Key already exists on the json metadata object");
@@ -292,9 +292,9 @@ class CommentFactory extends AOperationFactory {
    * @param {TAccountName} account beneficiary account
    * @param {number} weight weight of the beneficiary account
    *
-   * @returns {CommentFactory} itself
+   * @returns {CommentOperation} itself
    */
-  private addBeneficiary(account: TAccountName, weight: number): CommentFactory {
+  private addBeneficiary(account: TAccountName, weight: number): CommentOperation {
     this.ensureCommentOptionsCreated();
 
     let beneficiary: comment_payout_beneficiaries | undefined;
@@ -318,7 +318,7 @@ class CommentFactory extends AOperationFactory {
 /**
  * Same as the comment builder base, but requires parentAuthor and parentPermlink to be set
  */
-export class ReplyFactory extends CommentFactory {
+export class ReplyOperation extends CommentOperation {
   public constructor(data: IReplyData) {
     super({
       ...data,
@@ -338,7 +338,7 @@ export class ReplyFactory extends CommentFactory {
 /**
  * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
  */
-export class BlogPostFactory extends CommentFactory {
+export class BlogPostOperation extends CommentOperation {
   public constructor(data: IArticleBuilder) {
     super({
       ...data,

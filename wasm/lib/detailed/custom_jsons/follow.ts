@@ -1,33 +1,20 @@
-import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
+import { HiveAppsOperation, TAccountName } from './factory.js';
 import { WaxError } from '../../errors.js';
-import { HiveAppsOperation } from "./apps_operation.js";
 
-export class ReblogOperation extends HiveAppsOperation<FollowOperationBuilder> {
+export class ReblogOperationData {
   public constructor(
     public readonly account: TAccountName,
     public readonly author: TAccountName,
     public readonly permlink: string
-  ) {
-    super();
-  }
-
-  public get builder(): HiveAppsOperationsBuilder<FollowOperationBuilder> {
-    return new FollowOperationBuilder(this);
-  }
+  ) {}
 }
 
-export class FollowOperation extends HiveAppsOperation<FollowOperationBuilder> {
+export class FollowOperationData {
   public constructor(
     public readonly action: EFollowActions,
     public readonly follower: TAccountName,
     public readonly following: Array<TAccountName>
-  ) {
-    super();
-  }
-
-  public get builder(): HiveAppsOperationsBuilder<FollowOperationBuilder> {
-    return new FollowOperationBuilder(this);
-  }
+  ) {}
 }
 
 export enum EFollowBlogAction {
@@ -59,40 +46,10 @@ export enum EFollowActions {
   RESET_MUTED_LIST = "reset_muted_list"
 }
 
-export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOperationBuilder> {
+export class FollowOperation extends HiveAppsOperation<FollowOperation> {
   protected readonly id = "follow";
 
-  public constructor(hiveAppsOp?: FollowOperation | ReblogOperation) {
-    super();
-
-    if(typeof hiveAppsOp === "undefined")
-      return;
-
-    let toAuthorize: TAccountName;
-
-    if("permlink" in hiveAppsOp)
-      this.body.push([
-        EFollowOperationActions.REBLOG,
-        {
-          account: (toAuthorize = hiveAppsOp.account),
-          author: hiveAppsOp.author,
-          permlink: hiveAppsOp.permlink
-        }
-      ]);
-    else
-      this.body.push([
-        EFollowOperationActions.FOLLOW,
-        {
-          follower: (toAuthorize = hiveAppsOp.follower),
-          following: hiveAppsOp.following,
-          what: [ hiveAppsOp.action ]
-        }
-      ]);
-
-    this.authorize(toAuthorize);
-  }
-
-  private followBodyBuilder(what: string, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  private followBodyBuilder(what: string, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     const following = otherBlogs.length > 0 ? [ blog, ...otherBlogs ] : blog;
 
     if(Array.isArray(following) && following.length > 100)
@@ -118,9 +75,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be followed
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public followBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public followBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.FOLLOW, workingAccount, blog, ...otherBlogs);
   }
 
@@ -132,9 +89,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be unfollowed
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public unfollowBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public unfollowBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.UNFOLLOW, workingAccount, blog, ...otherBlogs);
   }
 
@@ -146,9 +103,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be muted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public muteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public muteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.MUTE, workingAccount, blog, ...otherBlogs);
   }
 
@@ -160,9 +117,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be unmuted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public unmuteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public unmuteBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.unfollowBlog(workingAccount, blog, ...otherBlogs);
   }
 
@@ -174,9 +131,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to reset the blacklist list
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public resetBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.RESET_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -188,9 +145,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be blacklisted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public blacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public blacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -202,9 +159,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to reset the follow blacklist list
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public resetFollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetFollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.RESET_FOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -216,9 +173,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to follow blacklisted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public followBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public followBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.FOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -230,9 +187,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be unblacklisted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public unblacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public unblacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.UNBLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -244,9 +201,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to unfollow blacklisted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public unfollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public unfollowBlacklistBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.UNFOLLOW_BLACKLIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -258,9 +215,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to reset the follow blacklist list
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public resetFollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetFollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.RESET_FOLLOW_MUTED_LIST, workingAccount, blog, ...otherBlogs);
   }
 
@@ -272,9 +229,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to follow muted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public followMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public followMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.FOLLOW_MUTED, workingAccount, blog, ...otherBlogs);
   }
 
@@ -286,9 +243,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to unfollow muted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public unfollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public unfollowMutedBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.UNFOLLOW_MUTED, workingAccount, blog, ...otherBlogs);
   }
 
@@ -300,9 +257,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to reset the lists
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public resetAllBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetAllBlog(workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     return this.followBodyBuilder(EFollowActions.RESET_ALL_LISTS, workingAccount, blog, ...otherBlogs);
   }
 
@@ -316,7 +273,7 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} blog the blog account to be muted
    * @param {TAccountName[]} otherBlogs optional list of other blog accounts to be concatenated and build single list
    */
-  public resetBlogList(action: EFollowBlogAction, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperationBuilder {
+  public resetBlogList(action: EFollowBlogAction, workingAccount: TAccountName, blog: TAccountName, ...otherBlogs: TAccountName[]): FollowOperation {
     switch(action) {
       case EFollowBlogAction.FOLLOW_BLOG:
         this.followBodyBuilder(EFollowActions.RESET_FOLLOWING_LIST, workingAccount, blog, ...otherBlogs);
@@ -341,9 +298,9 @@ export class FollowOperationBuilder extends HiveAppsOperationsBuilder<FollowOper
    * @param {TAccountName} author account name of the author of the given post
    * @param {string} permlink permlink of the given post
    *
-   * @returns {FollowOperationBuilder} itself
+   * @returns {FollowOperation} itself
    */
-  public reblog(workingAccount: TAccountName, author: TAccountName, permlink: string): FollowOperationBuilder {
+  public reblog(workingAccount: TAccountName, author: TAccountName, permlink: string): FollowOperation {
     this.body.push([
       EFollowOperationActions.REBLOG,
       {

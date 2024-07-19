@@ -1,5 +1,4 @@
-import { HiveAppsOperation } from "./apps_operation.js";
-import { HiveAppsOperationsBuilder, TAccountName } from './builder.js';
+import { HiveAppsOperation, TAccountName } from './factory.js';
 
 export type TCommunityRules = {
   action: ECommunityOperationActions.FLAG_POST | ECommunityOperationActions.MUTE_POST | ECommunityOperationActions.UNMUTE_POST;
@@ -19,20 +18,14 @@ export type TCommunityRules = {
 } | {
   action: ECommunityOperationActions.UPDATE_PROPS;
   props: Readonly<ICommunityProps>;
-}
+};
 
-export class CommunityOperation extends HiveAppsOperation<CommunityOperationBuilder> {
+export class CommunityOperationData {
   public constructor(
     public readonly accounts: Array<TAccountName>,
     public readonly community: string,
     public readonly data: TCommunityRules
-  ) {
-    super();
-  }
-
-  public get builder(): HiveAppsOperationsBuilder<CommunityOperationBuilder> {
-    return new CommunityOperationBuilder(this);
-  }
+  ) {}
 }
 
 export enum ESupportedLanguages {
@@ -110,27 +103,8 @@ export enum ECommunityOperationActions {
   UNMUTE_POST = "unmutePost"
 }
 
-export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<CommunityOperationBuilder> {
+export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
   protected readonly id = "community";
-
-  public constructor(hiveAppsOp?: CommunityOperation) {
-    super();
-
-    if(typeof hiveAppsOp === "undefined")
-      return;
-
-    const { accounts, community, data: { action, ...otherData } } = hiveAppsOp;
-
-    this.body.push([
-      action,
-      {
-        community,
-        ...otherData
-      }
-    ]);
-
-    this.authorize(accounts);
-  }
 
   /**
    * Flags post on given community
@@ -140,9 +114,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} permlink post permlink to flag
    * @param {string} notes notes on the flag
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public flagPost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
+  public flagPost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.FLAG_POST,
       {
@@ -163,9 +137,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} account account to change the title
    * @param {string} title new account title
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public setUserTitle(community: string, account: TAccountName, title: string): CommunityOperationBuilder {
+  public setUserTitle(community: string, account: TAccountName, title: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.SET_USER_TITLE,
       {
@@ -183,9 +157,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    *
    * @param {string} community target community
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public subscribe(community: string): CommunityOperationBuilder {
+  public subscribe(community: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.SUBSCRIBE,
       {
@@ -201,9 +175,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    *
    * @param {string} community target community
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public unsubscribe(community: string): CommunityOperationBuilder {
+  public unsubscribe(community: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.UNSUBSCRIBE,
       {
@@ -221,9 +195,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} account author of the post to pin
    * @param {string} permlink post permlink to pin
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public pinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
+  public pinPost(community: string, account: TAccountName, permlink: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.PIN_POST,
       {
@@ -243,9 +217,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} account author of the post to pin
    * @param {string} permlink post permlink to pin
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public unpinPost(community: string, account: TAccountName, permlink: string): CommunityOperationBuilder {
+  public unpinPost(community: string, account: TAccountName, permlink: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.UNPIN_POST,
       {
@@ -264,9 +238,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} community target community
    * @param {ICommunityProps} props community props
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public updateProps(community: string, props: ICommunityProps): CommunityOperationBuilder {
+  public updateProps(community: string, props: ICommunityProps): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.UPDATE_PROPS,
       {
@@ -293,9 +267,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} permlink post permlink to mute
    * @param {string} notes notes on the mute
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public mutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
+  public mutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.MUTE_POST,
       {
@@ -317,9 +291,9 @@ export class CommunityOperationBuilder extends HiveAppsOperationsBuilder<Communi
    * @param {string} permlink post permlink to unmute
    * @param {string} notes notes on the unmute
    *
-   * @returns {CommunityOperationBuilder} itself
+   * @returns {CommunityOperation} itself
    */
-  public unmutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperationBuilder {
+  public unmutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
     this.body.push([
       ECommunityOperationActions.UNMUTE_POST,
       {

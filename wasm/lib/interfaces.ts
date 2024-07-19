@@ -316,22 +316,22 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    * Pushes given operation to the operations array in the transaction
    * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
    *
-   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link AOperationFactory} class.
+   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link OperationBase} class.
    *
-   * @param {operation | HiveAppsFormattedOperation | OperationBase} op operation to append to the transaction (can be hive apps operation)
+   * @param {operation | OperationBase} op operation to append to the transaction (can be hive apps operation)
    * or Class instance for a complex operation that will produce operations including given params
    *
-   * @see Operation factories:
-   *  {@link BlogPostFactory} Creates a blog post. It requires the category on blog post to be set,
-   *  {@link ReplyFactory} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link RecurrentTransferFactory} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
-   *  {@link UpdateProposalFactory} Creates an update proposal operation. You can optionally set the end date of the proposal,
-   *  {@link WitnessSetPropertiesFactory} Creates a witness set properties operation with automatic data serialization,
+   * @see Complex operations:
+   *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
+   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link RecurrentTransferOperation} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
+   *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
    *
-   * @see Hive Apps operation factories:
-   *  {@link CommunityOperationFactory} Allows to manipulate the community options,
-   *  {@link FollowOperationFactory} Allows to manipulate the follow options,
-   *  {@link ResourceCreditsOperationFactory} Allows to delegate or remove delegation of resource credits to given account(s),
+   * @see Hive Apps operations:
+   *  {@link CommunityOperation} Allows to manipulate the community options,
+   *  {@link FollowOperation} Allows to manipulate the follow options,
+   *  {@link ResourceCreditsOperation} Allows to delegate or remove delegation of resource credits to given account(s),
    *
    * @example Building blog post
    * ```typescript
@@ -359,7 +359,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): ITransactionBuilder;
+  pushOperation(op: operation | OperationBase): ITransactionBuilder;
 
   /**
    * Starts encryption chain
@@ -373,7 +373,6 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
    * @returns {IEncryptingTransactionBuilder} current transaction builder instance
    */
  startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): IEncryptingTransactionBuilder;
-
 }
 
 /**
@@ -408,22 +407,22 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    * Pushes given operation to the operations array in the transaction
    * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
    *
-   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link AOperationFactory} class.
+   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link OperationBase} class.
    *
-   * @param {operation | HiveAppsFormattedOperation | OperationBase} op operation to append to the transaction (can be hive apps operation)
+   * @param {operation | OperationBase} op operation to append to the transaction (can be hive apps operation)
    * or Class instance for a complex operation that will produce operations including given params
    *
-   * @see Operation factories:
-   *  {@link BlogPostFactory} Creates a blog post. It requires the category on blog post to be set,
-   *  {@link ReplyFactory} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link RecurrentTransferFactory} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
-   *  {@link UpdateProposalFactory} Creates an update proposal operation. You can optionally set the end date of the proposal,
-   *  {@link WitnessSetPropertiesFactory} Creates a witness set properties operation with automatic data serialization,
+   * @see Complex operations:
+   *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
+   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link RecurrentTransferOperation} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
+   *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
    *
-   * @see Hive Apps operation factories:
-   *  {@link CommunityOperationFactory} Allows to manipulate the community options,
-   *  {@link FollowOperationFactory} Allows to manipulate the follow options,
-   *  {@link ResourceCreditsOperationFactory} Allows to delegate or remove delegation of resource credits to given account(s),
+   * @see Hive Apps operations:
+   *  {@link CommunityOperation} Allows to manipulate the community options,
+   *  {@link FollowOperation} Allows to manipulate the follow options,
+   *  {@link ResourceCreditsOperation} Allows to delegate or remove delegation of resource credits to given account(s),
    *
    * @example Building blog post
    * ```typescript
@@ -451,7 +450,7 @@ export interface IEncryptingTransactionBuilder extends ITransactionBuilderBase {
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): IEncryptingTransactionBuilder;
+  pushOperation(op: operation | OperationBase): IEncryptingTransactionBuilder;
 
   /**
    * Stops encryption chain

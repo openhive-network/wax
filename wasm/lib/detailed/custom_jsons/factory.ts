@@ -1,10 +1,11 @@
 import { WaxError } from '../../errors.js';
 import Long from 'long';
-import { OperationBuilder } from '../operation_builder.js';
+import { OperationBase, type IOperationSink } from '../operation_builder.js';
+import { type operation } from '../../protocol.js';
 
 export type TAccountName = string;
 
-export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperationsBuilder<any, BodyT>, BodyT extends object = object> extends OperationBuilder {
+export abstract class HiveAppsOperation<ChildT extends HiveAppsOperation<any, BodyT>, BodyT extends object = object> extends OperationBase {
   /**
    * Object bodies to stringify in the final hive apps operation form - <i>Stage</i>
    *
@@ -18,6 +19,8 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
    * @type {string}
    */
   protected readonly abstract id: string;
+
+  protected ops: operation[] = [];
 
   /**
    * Authorizes the currently staged hive apps operation, commits it to the {@link BuiltHiveAppsOperation} instance and clears the stage
@@ -35,7 +38,7 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
       throw new WaxError("Missing authority");
 
     for(const body of this.body)
-      this.push({
+      this.ops.push({
         custom_json: {
           id: this.id,
           // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
@@ -49,5 +52,12 @@ export abstract class HiveAppsOperationsBuilder<ChildT extends HiveAppsOperation
     this.body.splice(0);
 
     return this as unknown as ChildT;
+  }
+
+  /**
+   * @internal
+   */
+  public finalize(_sink: IOperationSink): Iterable<operation> {
+    return this.ops;
   }
 }

@@ -1,7 +1,7 @@
-import type { TAccountName } from "../custom_jsons";
-import type { asset, operation } from "../../protocol";
+import type { TAccountName } from "../custom_jsons/index.js";
+import type { asset, operation } from "../../protocol.js";
 import { recurrent_transfer } from "../../proto/recurrent_transfer.js";
-import { AOperationFactory, type IOperationFactorySink } from "../operation_builder.js";
+import { OperationBase, type IOperationSink } from "../operation_builder.js";
 
 export interface IRecurrentTransferData {
   /**
@@ -46,7 +46,7 @@ export interface IRecurrentTransferPairIdData extends Omit<IRecurrentTransferDat
   pairId: number;
 }
 
-export class RecurrentTransferFactory extends AOperationFactory {
+export class RecurrentTransferOperation extends OperationBase {
   protected readonly recurrentTransfer: recurrent_transfer;
 
   private requiresRemoval = false;
@@ -54,7 +54,7 @@ export class RecurrentTransferFactory extends AOperationFactory {
   /**
    * @internal
    */
-  public finalize(sink: IOperationFactorySink): Iterable<operation> {
+  public finalize(sink: IOperationSink): Iterable<operation> {
     if (this.requiresRemoval)
       this.recurrentTransfer.amount = { ...sink.api.ASSETS.HIVE, amount: "0" };
 

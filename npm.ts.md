@@ -62,13 +62,13 @@ console.info(transaction.id); // "8e78947614be92e77f7db82237e523bdbd7a907b"
 #### Add custom hive apps operations to the Transaction
 
 ```ts
-import { createWaxFoundation, FollowOperationBuilder } from '@hiveio/wax';
+import { createWaxFoundation, FollowOperation } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
 const tx = new wax.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-tx.pushOperation(new FollowOperationFactory().followBlog("initminer", "gtg").authorize("intiminer").store());
+tx.pushOperation(new FollowOperation().followBlog("initminer", "gtg").authorize("intiminer").store());
 
 console.info(tx.toApi()); // Print the transaction in the API form
 ```

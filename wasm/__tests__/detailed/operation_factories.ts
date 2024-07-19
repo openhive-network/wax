@@ -94,7 +94,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesFactory with url witness property', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesOperation with url witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -125,7 +125,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesFactory with budget and account fee witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesOperation with budget and account fee witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -161,7 +161,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesFactory with deacy and budget witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesOperation with deacy and budget witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -197,7 +197,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesFactory with hbd exchange rate witness property', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesOperation with hbd exchange rate witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -228,7 +228,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to use WitnessSetPropertiesFactory with all the specific witness properties', async ({ waxTest }) => {
+  test('Should be able to use WitnessSetPropertiesOperation with all the specific witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -294,7 +294,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to initialize pushOperations on RecurrentTransferFactory with basic recurrent_transfer_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperations on RecurrentTransferOperation with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -327,7 +327,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferFactory', async ({ waxTest }) => {
+  test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -489,7 +489,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should add extensions using RecurrentTransferFactory and convert to legacy api', async ({ waxTest }) => {
+  test('Should add extensions using RecurrentTransferOperation and convert to legacy api', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -614,7 +614,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to set percent HBD in ReplyFactory', async ({ waxTest }) => {
+  test('Should be able to set percent HBD in ReplyOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -695,7 +695,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set category in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set category in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -728,7 +728,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set alternative author in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set alternative author in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -760,7 +760,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to push links in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to push links in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -792,7 +792,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set max accepted payout in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set max accepted payout in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -835,7 +835,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set allow curation rewards in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set allow curation rewards in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -878,7 +878,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set allow votes in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set allow votes in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -921,7 +921,7 @@ test.describe('Wax operation factories tests', () => {
     ]);
   });
 
-  test('Should be able to set format in BlogPostFactory', async ({ waxTest }) => {
+  test('Should be able to set format in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 

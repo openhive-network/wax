@@ -1,5 +1,5 @@
 import { asset, operation, witness_set_properties } from "../../protocol.js";
-import { AOperationFactory, IOperationFactorySink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_builder.js";
 import { type witness_set_properties_data } from "../../wax_module.js";
 import { type TPublicKey } from "@hiveio/beekeeper";
 import { WaxBaseApi } from "../base_api.js";
@@ -52,7 +52,7 @@ interface IWitnessSetPropertiesData {
   accountSubsidyDecay?: number;
 }
 
-export class WitnessSetPropertiesFactory extends AOperationFactory {
+export class WitnessSetPropertiesOperation extends OperationBase {
   private accountCreationFee?: TInternalAsset = undefined;
   private hbdExchangeRate?: { base: TInternalAsset; quote: TInternalAsset; } = undefined;
 
@@ -88,7 +88,7 @@ export class WitnessSetPropertiesFactory extends AOperationFactory {
   /**
    * @internal
    */
-  public finalize(sink: IOperationFactorySink): Iterable<operation> {
+  public finalize(sink: IOperationSink): Iterable<operation> {
     if (this.hbdExchangeRate !== undefined) {
       let base: asset, quote: asset;
       if (isNaiAsset(this.hbdExchangeRate.base))

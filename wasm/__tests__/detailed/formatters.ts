@@ -7,7 +7,7 @@ import fs from "fs";
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
-import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperation, WaxFormattable, operation } from '../../dist/lib';
+import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperationData, WaxFormattable, operation } from '../../dist/lib';
 
 let browser!: ChromiumBrowser;
 
@@ -321,8 +321,7 @@ test.describe('Wax object interface formatters tests', () => {
       tx.pushOperation(new wax.ResourceCreditsOperation()
         .delegate("initminer", 4127361273, "gtg", "null")
         .removeDelegation("initminer", "null")
-        .authorize("initminer")
-        .build());
+        .authorize("initminer"));
 
       const built = tx.transaction;
 
@@ -371,8 +370,7 @@ test.describe('Wax object interface formatters tests', () => {
           .unsubscribe("mycomm")
           .setUserTitle("mycomm", "gtg", "first-post")
           .updateProps("mycomm", { title: "Custom title" })
-          .authorize("gtg")
-          .build());
+          .authorize("gtg"));
 
       const built = tx.transaction;
 
@@ -527,8 +525,7 @@ test.describe('Wax object interface formatters tests', () => {
           .unfollowBlog("initminer", "gtg", "null")
           .unfollowMutedBlog("initminer", "gtg")
           .reblog("initminer", "gtg", "first-post")
-          .authorize("initminer")
-          .build());
+          .authorize("initminer"));
 
       const built = tx.transaction;
 
@@ -686,8 +683,8 @@ test.describe('Wax object interface formatters tests', () => {
     const { wax, chain } = await createWaxTestFor('node');
 
     class HiveAppsOperationsFormatter {
-      @wax.WaxFormattable({ matchInstanceOf: wax.ResourceCreditsOperation })
-      public rcOperationFormatter({ target }: IFormatFunctionArguments<operation, { custom_json: ResourceCreditsOperation }>) {
+      @wax.WaxFormattable({ matchInstanceOf: wax.ResourceCreditsOperationData })
+      public rcOperationFormatter({ target }: IFormatFunctionArguments<operation, { custom_json: ResourceCreditsOperationData }>) {
         return `${target.custom_json.from} delegated ${target.custom_json.rc.amount} to ${target.custom_json.delegatees.join(",")}`;
       }
     }

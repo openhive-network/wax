@@ -4,8 +4,7 @@ import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, TH
 import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
-import { HiveAppsOperation } from "./custom_jsons/apps_operation.js";
-import { AOperationFactory, BuiltHiveAppsOperation } from "./operation_builder";
+import { OperationBase } from "./operation_builder";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 
@@ -140,10 +139,8 @@ export class Transaction implements ITransactionBuilder, IEncryptingTransactionB
     return this;
   }
 
-  public pushOperation(op: operation | HiveAppsFormattedOperation<any> | OperationBase): Transaction {
-    if("operation" in op) // Formatted complex operation (already built)
-      this.produceOperations(op.operation);
-    else if ("finalize" in op) // Complex operation (to be built)
+  public pushOperation(op: operation | OperationBase): Transaction {
+    if ("finalize" in op) // Complex operation (to be built)
       this.produceOperations(op);
     else // Standard raw-object operation
       this.target.operations.push(op);

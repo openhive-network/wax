@@ -1,9 +1,9 @@
-import { createHiveChain, AOperationFactory, type IOperationFactorySink, type operation } from "@hiveio/wax";
+import { createHiveChain, OperationBase, type IOperationSink, type operation } from "@hiveio/wax";
 
 const getN = () => "Oylz1DjbRx";
 const generateTournament = () => "5ca24bbf92da6f69d749d2498919e9a04399063c";
 
-export class SplinterlandsGame extends AOperationFactory {
+export class SplinterlandsGame extends OperationBase {
   private readonly operations: operation[] = [];
 
   public constructor(
@@ -12,7 +12,7 @@ export class SplinterlandsGame extends AOperationFactory {
     super();
   }
 
-  public finalize(_sink: IOperationFactorySink): Iterable<operation> {
+  public finalize(_sink: IOperationSink): Iterable<operation> {
     return this.operations;
   }
 
