@@ -12,3 +12,4 @@ export * from './custom_jsons/index.js';
 export * from './operation_factories/index.js';
 export * from './util/index.js';
 export * from './healthchecker/index.js';
+export { IOperationFactorySink, AOperationFactory } from './operation_builder.js';

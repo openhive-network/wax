@@ -18,6 +18,7 @@
     "examples": "run-s examples:*",
     "examples:ts": "cd examples/ts && pnpm install --frozen-lockfile && pnpm run test && cd ../..",
     "examples:nextjs-app": "cd examples/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../..",
+    "examples:node-app": "cd examples/node-app && pnpm install --frozen-lockfile && pnpm run test && cd ../..",
     "prepack": "mv README.md _README.md && cp npm.ts.md README.md",
     "postpack": "mv _README.md README.md"
   },
