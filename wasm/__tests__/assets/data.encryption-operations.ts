@@ -29,7 +29,7 @@ export const utilFunctionTest = async (
 
   const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-  const tx = new chain.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+  const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
   const encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey] = [key];
 

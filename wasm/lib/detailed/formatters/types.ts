@@ -106,7 +106,7 @@ export interface IFormatFunctionArguments<TSource = object, TTarget = any> {
  *   if(!this.options.transaction.displayAsId)
  *     return target;
  *
- *   const { id } = this.wax.TransactionBuilder.fromApi(source);
+ *   const { id } = this.wax.Transaction.fromApi(source);
  *
  *   return id;
  * }

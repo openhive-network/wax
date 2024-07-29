@@ -40,9 +40,9 @@ export class DefaultFormatters implements IWaxCustomFormatter {
     let id: string;
 
     if((source.operations.length > 0 && "type" in source.operations[0]) || (source.extensions.length > 0 && "type" in source.extensions[0]))
-      ({ id } = this.wax.TransactionBuilder.fromApi(source));
+      ({ id } = this.wax.Transaction.fromApi(source));
     else
-      ({ id } = new this.wax.TransactionBuilder(source as transaction));
+      ({ id } = new this.wax.Transaction(source as transaction));
 
     return id;
   }

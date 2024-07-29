@@ -34,7 +34,7 @@
     (async () => {
       const wax = await createWaxFoundation();
 
-      const transaction = wax.TransactionBuilder.fromApi(apiData);
+      const transaction = wax.Transaction.fromApi(apiData);
       transaction.validate();
 
       window.exampleFinished = true; // Optional - just for our test purposes

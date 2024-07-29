@@ -287,7 +287,7 @@ interface ITransactionBuilderBase {
 }
 
 /**
- * TransactionBuilder allows you to push simple operations (as inline objects)
+ * Transaction allows you to push simple operations (as inline objects)
  * or use dedicated operation factories
  * (to create more complex operations or multiple blockchain transactions for specific scenarios)
  * into underlying transaction.
@@ -299,7 +299,7 @@ interface ITransactionBuilderBase {
  * Example usage:
  * @example Base transaction builder usage
  * ```typescript
- * const tx = new waxFoundation.TransactionBuilder();
+ * const tx = new waxFoundation.Transaction();
  *
  * tx.pushOperation({
  *   vote: {
@@ -391,7 +391,7 @@ export interface ITransactionBuilder extends ITransactionBuilderBase {
  *
  * @example Base encrypting transaction builder usage
  * ```typescript
- * const tx = new waxFoundation.TransactionBuilder();
+ * const tx = new waxFoundation.Transaction();
  *
  * tx.startEncrypt(myPublicKey).pushOperation({
  *    transfer: {
@@ -513,7 +513,7 @@ export interface IHiveAssetData {
 }
 
 export interface IWaxBaseInterface {
-  get TransactionBuilder(): ITransactionBuilderConstructor;
+  get Transaction(): ITransactionBuilderConstructor;
 
   readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
 
@@ -748,7 +748,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Allows to start transaction preparing process.
    *
-   * Same as {@link IWaxBaseInterface.TransactionBuilder}, but pulls the reference block data from the remote
+   * Same as {@link IWaxBaseInterface.Transaction}, but pulls the reference block data from the remote
    *
    * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransactionBuilder.sign} call or reading {@link ITransactionBuilder.transaction} property.
    *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
@@ -762,12 +762,6 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @throws {WaxChainApiError} on any Hive API-related error
    */
   createTransaction(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
-
-  /**
-   * Replaced by createTransaction
-   * @deprecated
-   */
-  getTransactionBuilder(expirationTime?: TTimestamp): Promise<ITransactionBuilder>;
 
   /**
    * Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format

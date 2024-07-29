@@ -316,7 +316,7 @@ test.describe('Wax object interface formatters tests', () => {
 
   test('Should be able to format custom JSON rc delegation operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ wax, base, chain }) => {
-      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.ResourceCreditsOperation()
         .delegate("initminer", 4127361273, "gtg", "null")
@@ -358,7 +358,7 @@ test.describe('Wax object interface formatters tests', () => {
 
   test('Should be able to format custom JSON community operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ base, wax, chain }) => {
-      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(
         new wax.CommunityOperation()
@@ -512,7 +512,7 @@ test.describe('Wax object interface formatters tests', () => {
 
   test('Should be able to format custom JSON follow operation using default formatter from the hive chain interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, chain, wax }) => {
-      const tx = new base.TransactionBuilder('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(
         new wax.FollowOperation()

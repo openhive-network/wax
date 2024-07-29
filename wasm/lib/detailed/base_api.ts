@@ -4,7 +4,7 @@ import type { MainModule, proto_protocol, result, witness_set_properties_data } 
 import type { NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
-import { TransactionBuilder } from "./transaction_builder.js";
+import { Transaction } from "./transaction_builder.js";
 import Long from "long";
 
 import { WaxFormatter } from "./formatters/waxify.js";
@@ -125,11 +125,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
-  public get TransactionBuilder(): ITransactionBuilderConstructor {
+  public get Transaction(): ITransactionBuilderConstructor {
     return Object.assign(
-      TransactionBuilder.bind(undefined, this),
+      Transaction.bind(undefined, this),
       {
-        fromApi: TransactionBuilder.fromApi.bind(undefined, this)
+        fromApi: Transaction.fromApi.bind(undefined, this)
       }
     );
   }

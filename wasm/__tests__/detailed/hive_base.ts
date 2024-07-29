@@ -181,7 +181,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to bidirectional convert api to proto using object interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }, transaction) => {
-      const tx = base.TransactionBuilder.fromApi(transaction);
+      const tx = base.Transaction.fromApi(transaction);
 
       return tx.toApi();
     }, transaction);
@@ -197,7 +197,7 @@ test.describe('Wax object interface foundation tests', () => {
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
       // Create transaction
-      const tx = new base.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new base.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
@@ -296,7 +296,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
-      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
       tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink" }));
@@ -345,7 +345,7 @@ test.describe('Wax object interface foundation tests', () => {
       const { wallet } = await session.createWallet("w0");
       const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {
@@ -388,7 +388,7 @@ test.describe('Wax object interface foundation tests', () => {
       const { wallet } = await session.createWallet("w0");
       const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-      const tx = new chain.TransactionBuilder("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {

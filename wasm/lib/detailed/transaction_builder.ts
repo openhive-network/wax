@@ -22,7 +22,7 @@ type TIndexEndEncryption = TIndexBeginEncryption & {
 
 type TIndexKeeperNode = TIndexBeginEncryption | TIndexEndEncryption;
 
-export class TransactionBuilder implements ITransactionBuilder, IEncryptingTransactionBuilder {
+export class Transaction implements ITransactionBuilder, IEncryptingTransactionBuilder {
   private target: transaction;
 
   private expirationTime?: TTimestamp;
@@ -74,7 +74,7 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     return this.calculateSignerPublicKeys(this.legacy_sigDigest);
   }
 
-  public static fromApi(api: WaxBaseApi, transactionObject: string | object): TransactionBuilder {
+  public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
     if(typeof transactionObject === 'object')
       transactionObject = JSON.stringify(transactionObject);
 
@@ -82,7 +82,7 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
 
     const tx = transaction.fromJSON(JSON.parse(serialized));
 
-    return new TransactionBuilder(api, tx);
+    return new Transaction(api, tx);
   }
 
   public toApi(): string {
@@ -113,13 +113,13 @@ export class TransactionBuilder implements ITransactionBuilder, IEncryptingTrans
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): TransactionBuilder {
+  public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): Transaction {
     this.indexKeeper.push({ mainEncryptionKey, otherEncryptionKey: otherEncryptionKey ?? mainEncryptionKey, begin: this.target.operations.length });
 
     return this;
   }
 
-  public stopEncrypt(): TransactionBuilder {
+  public stopEncrypt(): Transaction {
     const index = this.indexKeeper.at(-1);
     if(index === undefined)
       throw new WaxError("Mismatch in index types - stopEncrypt called before startEncrypt");
