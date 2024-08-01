@@ -5,6 +5,7 @@ from functools import wraps
 
 from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
+from libcpp.vector cimport vector
 from libcpp.optional cimport optional, make_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
@@ -447,6 +448,13 @@ def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]
       ret_val.account_subsidy_decay=int(deserialized_props.account_subsidy_decay.value())
 
     return ret_val
+
+cdef vector[string] retrieve_authorities_cb(string account_name, void* user_data):
+    return (<object>user_data)(account_name)
+
+def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[bytes], list[bytes]]) -> vector[string]:
+    cdef protocol obj
+    return obj.cpp_collect_signing_keys(transaction, retrieve_authorities_cb, <void*>(retrieve_authorities))
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

@@ -3,7 +3,9 @@
 #include "core/protocol_impl.hpp"
 
 #include "core/utils.hpp"
+#include "core/signing_keys_collector.hpp"
 
+#include <hive/protocol/authority.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/types.hpp>
@@ -158,6 +160,35 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   /// ret_val.other_authorities = std::move(other_authorities);
 
   return ret_val;
+  });
+}
+
+#include <iostream>
+
+template <class FoundationProvider>
+inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_user_data)
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    const auto tx = get_transaction(transaction);
+    signing_keys_collector::retrieve_authorities_t retrieve_authorities = [&] (const std::string& account)
+      {
+      ddump( ( account ) );
+      auto json_authorities = retrieve_authorities_cb(account, retrieve_authorities_user_data);
+      signing_keys_collector::authorities_t authorities {
+        fc::json::from_string(json_authorities[0], fc::json::format_validation_mode::full).as<hive::protocol::authority>(), // active
+        fc::json::from_string(json_authorities[1], fc::json::format_validation_mode::full).as<hive::protocol::authority>(), // owner
+        fc::json::from_string(json_authorities[2], fc::json::format_validation_mode::full).as<hive::protocol::authority>()  // posting
+        };
+      ddump( ( json_authorities[0] ) );
+      ddump( ( json_authorities[1] ) );
+      ddump( ( json_authorities[2] ) );
+      return authorities;
+      };
+    signing_keys_collector signing_keys_collector(retrieve_authorities);
+    std::vector<std::string> result = signing_keys_collector.collect_signing_keys(tx);
+
+    return result;
   });
 }
 

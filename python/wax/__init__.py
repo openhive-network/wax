@@ -42,7 +42,8 @@ from .wax import (
     encode_encrypted_memo,
     decode_encrypted_memo,
     serialize_witness_set_properties,
-    deserialize_witness_set_properties
+    deserialize_witness_set_properties,
+    collect_signing_keys,
 )
 
 from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data, python_brain_key_data, python_witness_set_properties_data
@@ -100,5 +101,5 @@ __all__ = [
     "decode_encrypted_memo",
     "serialize_witness_set_properties",
     "deserialize_witness_set_properties",
-
+    "collect_signing_keys",
 ]
