@@ -2,7 +2,8 @@
 
 #include "core/types.hpp"
 
-#include <set>
+#include <vector>
+#include <map>
 #include <string>
 
 namespace cpp {
@@ -44,6 +45,14 @@ public:
   *   Can throw on error.
   */
   required_authority_collection cpp_collect_transaction_required_authorities(const std::string& transaction);
+
+  /** Allows to collect signing keys from given transaction
+  *   Can throw on error.
+  */
+  using account_authorities_t = std::vector<std::string>;
+  using account_authorities_map_t = std::map<std::string, account_authorities_t>;
+  typedef account_authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);
+  std::vector<std::string> cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_user_data);
 };
 
 } /// namespace cpp

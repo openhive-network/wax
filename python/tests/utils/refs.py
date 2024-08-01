@@ -1188,3 +1188,135 @@ API_REF_BLOCK_NO_TRANSACTIONS = {
     "witness": "abit",
     "witness_signature": "1f72bd3f4b06e7dc6b156729f0fd7873163814972eecea9d77cb29bae11d0fea3865c814d11a58e818c2494ce19f4c3d4c3e17eab3b1465ebccb102c52c56472c0"
 }
+
+API_TRX_SIG1 = {
+  "ref_block_num": 48545,
+  "ref_block_prefix": 3455189990,
+  "extensions": [],
+  "expiration": "2024-08-06T10:44:15",
+  "operations": [
+    {
+      "type": "custom_json_operation",
+      "value": {
+        "id": "spkcc_report",
+        "json": "{\"hash\":\"QmaCuYgBnF5zEest8fyZ3KkbhQwsUCnX7AnC45qyyFaSSE\",\"block\":87801201,\"version\":\"v1.1.8\"}",
+        "required_auths": [
+          "brofund-witness"
+        ],
+        "required_posting_auths": []
+      }
+    }
+  ],
+  "signatures": [
+    "205accd7c54999ebccccb719d61af484931a97c862912e5bf8dfa0193f6d8a33fc35971fafc4a58fbdfb7df1dab1d20304867660f3c432584471cd4336f96052b7"
+  ]
+}
+
+API_TRX_SIG1_AUTHORITIES = {
+    "account_name": "brofund-witness",
+    "authorities": {
+      "owner": {
+        "key_auths": [
+          [
+            "STM79McmNPY35nkuk37crGF6irhz5CkrBgDvnH68Zav7sYkrz79ce",
+            1
+          ]
+        ],
+        "account_auths": [],
+        "weight_threshold": 1
+      },
+      "active": {
+        "key_auths": [
+          [
+            "STM5zw6KDtQiiJMhkdkFm8CXxPUEa2QyitHBhkCE1iMJEGmEfd5aE",
+            1
+          ]
+        ],
+        "account_auths": [],
+        "weight_threshold": 1
+      },
+      "posting": {
+        "key_auths": [
+          [
+            "STM8AaJXJfZ6gdSLKcVgMcNU6oEkuL7hcYxrqrUjN3Kwd2eHvXp4v",
+            1
+          ]
+        ],
+        "account_auths": [
+          [
+            "steemauto",
+            1
+          ],
+          [
+            "ecency.app",
+            1
+          ]
+        ],
+        "weight_threshold": 1
+      },
+      "memo": "STM6wUkXGebWb9qaHEc59CPARQmzZmwQNedZ3ukb53wGLBsehrZ2g",
+      "witness_signing": ""
+    }
+}
+
+API_TRX_SIG5 = {
+  "ref_block_num": 808,
+  "ref_block_prefix": 1359279161,
+  "extensions": [],
+  "expiration": "2024-08-02T12:09:03",
+  "operations": [
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "ecency",
+        "author": "el-panal",
+        "weight": 100,
+        "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+      }
+    },
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "ecency.stats",
+        "author": "el-panal",
+        "weight": 100,
+        "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+      }
+    },
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "esteem.app",
+        "author": "el-panal",
+        "weight": 100,
+        "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+      }
+    },
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "good-karma",
+        "author": "el-panal",
+        "weight": 100,
+        "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+      }
+    },
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "esteemapp",
+        "author": "el-panal",
+        "weight": 100,
+        "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+      }
+    }
+  ],
+  "signatures": [
+    "1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+    "20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+    "20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+    "2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a",
+    "205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5"
+  ]
+}
+

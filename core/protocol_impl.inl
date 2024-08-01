@@ -3,7 +3,9 @@
 #include "core/protocol_impl.hpp"
 
 #include "core/utils.hpp"
+#include "core/signing_keys_collector.hpp"
 
+#include <hive/protocol/authority.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/types.hpp>
@@ -158,6 +160,39 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   /// ret_val.other_authorities = std::move(other_authorities);
 
   return ret_val;
+  });
+}
+
+#include <iostream>
+
+template <class FoundationProvider>
+inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_user_data)
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    const auto tx = get_transaction(transaction);
+    signing_keys_collector::retrieve_authorities_t retrieve_authorities = [&] (const std::vector<std::string>& accounts)
+      {
+      auto json_authorities_map = retrieve_authorities_cb(accounts, retrieve_authorities_user_data);
+      signing_keys_collector::auths_map_t auths_map;
+      for (const auto& json_authorities : json_authorities_map)
+      {
+        signing_keys_collector::account_name_type account = json_authorities.first;
+        signing_keys_collector::authorities_t authorities {
+          fc::json::from_string(json_authorities.second[0], fc::json::format_validation_mode::full).as<hive::protocol::authority>(), // active
+          fc::json::from_string(json_authorities.second[1], fc::json::format_validation_mode::full).as<hive::protocol::authority>(), // owner
+          fc::json::from_string(json_authorities.second[2], fc::json::format_validation_mode::full).as<hive::protocol::authority>()  // posting
+          };
+        auths_map.emplace(account, authorities);
+      }
+
+      return auths_map;
+      };
+
+    signing_keys_collector signing_keys_collector(retrieve_authorities);
+    std::vector<std::string> result = signing_keys_collector.collect_signing_keys(tx);
+
+    return result;
   });
 }
 

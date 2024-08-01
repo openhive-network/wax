@@ -1,6 +1,17 @@
 from __future__ import annotations
 
-from .wax_result import python_encrypted_memo, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data, python_brain_key_data, python_witness_set_properties_data
+from typing import Callable
+
+from .wax_result import (
+    python_encrypted_memo,
+    python_json_asset,
+    python_result,
+    python_ref_block_data,
+    python_required_authority_collection,
+    python_private_key_data,
+    python_brain_key_data,
+    python_witness_set_properties_data,
+    )
 
 def validate_operation(operation: bytes) -> python_result: ...
 def validate_transaction(transaction: bytes) -> python_result: ...
@@ -69,3 +80,4 @@ def decode_encrypted_memo(encoded_memo: bytes) -> python_encrypted_memo: ...
 def verify_exception_handling( throw_type: int ) -> None: ...
 def serialize_witness_set_properties(input_properties: python_witness_set_properties_data): dict[bytes, bytes]
 def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]): python_witness_set_properties_data
+def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], map[bytes, list[bytes]]]) -> vector[string]: ...
