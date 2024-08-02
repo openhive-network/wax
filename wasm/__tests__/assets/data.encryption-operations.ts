@@ -1,4 +1,4 @@
-import { createHiveChain, IEncryptingTransactionBuilder, transaction, WaxError } from '../../dist/bundle/index-full';
+import { createHiveChain, IEncryptingTransaction, transaction, WaxError } from '../../dist/bundle/index-full';
 import { EncryptionVisitor, EEncryptionType } from '../../dist/lib/detailed/encryption_visitor.js';
 import beekeeperFactory, { TPublicKey } from '@hiveio/beekeeper';
 
@@ -20,7 +20,7 @@ const operationEncryptionTest = (shouldBeEncrypted: boolean): EncryptionVisitor 
 };
 
 export const utilFunctionTest = async (
-  txOperationsLambda: (tx: IEncryptingTransactionBuilder, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
+  txOperationsLambda: (tx: IEncryptingTransaction, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
 ): Promise<transaction> => {

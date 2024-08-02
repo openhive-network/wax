@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IEncryptingTransactionBuilder, ITransactionBuilder, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
 
 import { transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -21,7 +21,7 @@ type TIndexEndEncryption = TIndexBeginEncryption & {
 
 type TIndexKeeperNode = TIndexBeginEncryption | TIndexEndEncryption;
 
-export class Transaction implements ITransactionBuilder, IEncryptingTransactionBuilder {
+export class Transaction implements ITransaction, IEncryptingTransaction {
   private target: transaction;
 
   private expirationTime?: TTimestamp;

@@ -126,7 +126,7 @@ export interface IReplyData extends Omit<ICommentData, 'jsonMetadata' | 'permlin
   title?: string;
 }
 
-export interface IArticleBuilder extends Omit<ICommentData, 'jsonMetadata' | 'permlink' | 'parentAuthor' | 'parentPermlink'> {
+export interface IArticle extends Omit<ICommentData, 'jsonMetadata' | 'permlink' | 'parentAuthor' | 'parentPermlink'> {
   category: string;
   jsonMetadata?: object;
   permlink?: string;
@@ -316,7 +316,7 @@ class CommentOperation extends OperationBase {
 }
 
 /**
- * Same as the comment builder base, but requires parentAuthor and parentPermlink to be set
+ * Same as the comment base, but requires parentAuthor and parentPermlink to be set
  */
 export class ReplyOperation extends CommentOperation {
   public constructor(data: IReplyData) {
@@ -328,18 +328,18 @@ export class ReplyOperation extends CommentOperation {
     });
 
     if(data.parentAuthor.length === 0)
-      throw new WaxError('No parent author specified in the reply builder');
+      throw new WaxError('No parent author specified in the reply operation');
 
     if(data.parentPermlink.length === 0)
-      throw new WaxError('No parent permlink specified in the reply builder');
+      throw new WaxError('No parent permlink specified in the reply operation');
   }
 }
 
 /**
- * Same as the comment builder base, but requires user to set the category (parent permlink) on the comment
+ * Same as the comment base, but requires user to set the category (parent permlink) on the comment
  */
 export class BlogPostOperation extends CommentOperation {
-  public constructor(data: IArticleBuilder) {
+  public constructor(data: IArticle) {
     super({
       ...data,
       parentAuthor: '',

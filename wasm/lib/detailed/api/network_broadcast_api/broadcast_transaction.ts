@@ -1,13 +1,13 @@
 import { Type } from "class-transformer"
 import { IsNumber, ValidateNested } from "class-validator"
 
-import type { ITransactionBuilder } from "../../../interfaces";
+import type { ITransaction } from "../../../interfaces";
 
 import { ApiTransaction } from "../types/transaction.js";
 import { WaxError } from "../../../errors.js";
 
 export class BroadcastTransactionRequest {
-  public constructor(trx?: ITransactionBuilder) {
+  public constructor(trx?: ITransaction) {
     if(typeof trx === 'undefined')
       return;
 

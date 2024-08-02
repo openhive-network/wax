@@ -5,7 +5,7 @@ import { test } from '../assets/jest-helper';
 
 import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper/node';
 import fs from 'fs';
-import { IEncryptingTransactionBuilder } from '../../dist/bundle/index-full';
+import { IEncryptingTransaction } from '../../dist/bundle/index-full';
 
 import {
   utilFunctionTest,
@@ -39,7 +39,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with comment operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(commentOp);
     });
 
@@ -47,7 +47,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with transfer operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(transferOp);
     });
 
@@ -55,7 +55,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with custom json operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(customJsonOp);
     });
 
@@ -63,7 +63,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with transfer to savings operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(transferToSavingsOp);
     });
 
@@ -71,7 +71,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with transfer from savings operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(transferFromSavingsOp);
     });
 
@@ -79,7 +79,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with recurrent transfer operation', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(recurrentTransferOp);
     });
 
@@ -87,7 +87,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with different operations', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(recurrentTransferOp).pushOperation(convertOp).pushOperation(transferToSavingsOp).pushOperation(voteOp).pushOperation(commentOp).pushOperation(transferOp);
     }, [1, 3]);
 
@@ -95,7 +95,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with comment operation with different keys', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(commentOp);
     }, [], true);
 
@@ -103,7 +103,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with recurrent transfer operation with different keys', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(recurrentTransferOp);
     }, [], true);
 
@@ -111,7 +111,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with transfer to savings operation with different keys', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(transferToSavingsOp);
     }, [], true);
 
@@ -119,7 +119,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt transaction with different operations with different keys', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction, encryptionKeys) => {
       tx
       .pushOperation(recurrentTransferOp)
       .stopEncrypt()
@@ -137,7 +137,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt some specific operations in transaction', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction, encryptionKeys) => {
       tx
         .pushOperation(recurrentTransferOp)
         .stopEncrypt()
@@ -156,7 +156,7 @@ test.describe('Wax encrypted operations tests', () => {
   });
 
   test('Should be able to encrypt some specific operations in transaction with a barren keys pair at the end', async () => {
-    const retVal = await utilFunctionTest((tx: IEncryptingTransactionBuilder, encryptionKeys) => {
+    const retVal = await utilFunctionTest((tx: IEncryptingTransaction, encryptionKeys) => {
       tx
         .pushOperation(recurrentTransferOp)
         .stopEncrypt()

@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransactionBuilder, TTimestamp, TWaxExtended, TBlockHash } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
@@ -181,7 +181,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return newApi as unknown as HiveChainApi & TWaxExtended<YourApi>;
   }
 
-  public async createTransaction(expirationTime?: TTimestamp): Promise<ITransactionBuilder> {
+  public async createTransaction(expirationTime?: TTimestamp): Promise<ITransaction> {
     const head_block_id = await this.acquireTaposData(3000);
 
     const builder = new super.Transaction(head_block_id, expirationTime ?? "+1m");

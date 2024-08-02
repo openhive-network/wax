@@ -56,7 +56,7 @@ import {
 
 let browser!: ChromiumBrowser;
 
-test.describe('Wax transaction builder hive operations regression tests', () => {
+test.describe('Wax transaction hive operations regression tests', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch({
       headless: true

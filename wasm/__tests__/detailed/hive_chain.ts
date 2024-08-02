@@ -56,7 +56,7 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
 
-   test('Should be able to transmit article builder transaction using hive chain interface', async ({ waxTest }) => {
+   test('Should be able to transmit article transaction using hive chain interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ beekeeper, chain, wax }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
@@ -458,7 +458,7 @@ test.describe('Wax object interface chain tests', () => {
       ]);
     });
 
-    test('Should be able to sign the transaction twice on different transaction builder instances', async ({ waxTest }) => {
+    test('Should be able to sign the transaction twice on different transaction instances', async ({ waxTest }) => {
       const retVal = await waxTest.dynamic(async({ chain, beekeeper }, protoVoteOp) => {
         const session = beekeeper.createSession("salt");
         const { wallet } = await session.createWallet("w0");

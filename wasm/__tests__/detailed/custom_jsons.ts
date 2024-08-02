@@ -22,7 +22,7 @@ test.describe('Wax hive apps operations tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
-  test('Should be able to create transaction with hive apps follow operation using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create transaction with hive apps follow operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -43,7 +43,7 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction builder interface', async({ waxTest }) => {
+  test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -63,7 +63,7 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction builder interface', async({ waxTest }) => {
+  test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -87,7 +87,7 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customMultipleJsonsTransaction);
   });
 
-  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction builder interface', async({ waxTest }) => {
+  test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -117,7 +117,7 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customCommunityJsonsTransaction);
   });
 
-  test('Should be able to create transaction with hive apps reblog operation using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create transaction with hive apps reblog operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -147,7 +147,7 @@ test.describe('Wax hive apps operations tests', () => {
     });
   });
 
-  test('Should be able to create transaction with hive apps rc operation using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create transaction with hive apps rc operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 

@@ -394,7 +394,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should initialize update proposal builder with mandatory fields only', async ({ waxTest }) => {
+  test('Should initialize update proposal with mandatory fields only', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -421,7 +421,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should add endDate in update proposal builder when provided', async ({ waxTest }) => {
+  test('Should add endDate in update proposal when provided', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
@@ -455,7 +455,7 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should handle edge case in update proposal builder where endDate is given as timestamp', async ({ waxTest }) => {
+  test('Should handle edge case in update proposal where endDate is given as timestamp', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 

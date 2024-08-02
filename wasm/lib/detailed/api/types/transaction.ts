@@ -1,4 +1,4 @@
-import { type ITransactionBuilder } from "../../../interfaces.js";
+import { type ITransaction } from "../../../interfaces.js";
 import { Type, plainToInstance } from "class-transformer";
 import { Min, Max, IsDateString, IsInt, IsObject, IsString, ValidateNested } from "class-validator";
 
@@ -14,7 +14,7 @@ export class ApiTransaction {
   /**
    * Constructs new ApiTransaction object
    *
-   * @param {?object} apiTransaction optional API object either from the remote Node or {@link ITransactionBuilder.toApiJson}
+   * @param {?object} apiTransaction optional API object either from the remote Node or {@link ITransaction.toApiJson}
    *
    * @example
    * ```ts

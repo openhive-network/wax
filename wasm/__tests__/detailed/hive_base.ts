@@ -218,7 +218,7 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.signees[0]).toBe('STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
   });
 
-  test('Should be able to create a recurrent transfer with underlying extensions using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, chain }) => {
       const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
       tx.pushOperation(new wax.RecurrentTransferOperation({
@@ -267,7 +267,7 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
-  test('Should be able to create a recurrent transfer without any underlying extensions using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create a recurrent transfer without any underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
       const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
       tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: chain.hive(100) }));
@@ -294,7 +294,7 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
-  test('Should be able to create an update proposal with underlying extensions using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create an update proposal with underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, wax }) => {
       const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
@@ -338,7 +338,7 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
-  test('Should be able to create encrypted operations using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to create encrypted operations using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
@@ -381,7 +381,7 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.decrypted[1]).toBe("This also should be encrypted");
   });
 
-  test('Should be able to decrypt operations using transaction builder interface', async ({ waxTest }) => {
+  test('Should be able to decrypt operations using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
