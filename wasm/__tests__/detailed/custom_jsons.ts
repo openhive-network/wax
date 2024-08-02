@@ -87,6 +87,93 @@ test.describe('Wax hive apps operations tests', () => {
     expect(retVal).toStrictEqual(customMultipleJsonsTransaction);
   });
 
+  test('Should be able to create transaction with setting community user role using transaction interface', async({ waxTest }) => {
+    const retVal = await waxTest(async({ base, wax }) => {
+      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.pushOperation(
+        new wax.CommunityOperation()
+          .setRole('test-community', 'guest4test', wax.EAvailableCommunityRoles.OWNER)
+          .setRole('test-community', 'guest4test2', wax.EAvailableCommunityRoles.ADMIN)
+          .setRole('test-community', 'guest4test3', wax.EAvailableCommunityRoles.MOD)
+          .setRole('test-community', 'guest4test4', wax.EAvailableCommunityRoles.MEMBER)
+          .setRole('test-community', 'guest4test5', wax.EAvailableCommunityRoles.GUEST)
+          .setRole('test-community', 'guest4test6', wax.EAvailableCommunityRoles.MUTED)
+          .authorize("gtg")
+        );
+
+      return tx.toApiJson();
+    });
+
+    expect(retVal).toStrictEqual({
+      ref_block_num: 1960,
+      ref_block_prefix: 3915120327,
+      expiration: "2023-11-09T21:51:27",
+      operations: [
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test","role":"owner"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        },
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test2","role":"admin"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        },
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test3","role":"mod"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        },
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test4","role":"member"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        },
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test5","role":"guest"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        },
+        {
+          type: 'custom_json_operation',
+          value: {
+            id: 'community',
+            json: '["setRole",{"community":"test-community","account":"guest4test6","role":"muted"}]',
+            required_posting_auths: [
+              "gtg"
+            ]
+          }
+        }
+      ]
+    });
+  });
+
   test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
@@ -109,6 +196,7 @@ test.describe('Wax hive apps operations tests', () => {
             is_nsfw: false,
             lang: "en"
           })
+          .setRole("mycomm", "gtg", wax.EAvailableCommunityRoles.OWNER)
           .authorize("gtg"));
 
       return JSON.parse(tx.toApi());

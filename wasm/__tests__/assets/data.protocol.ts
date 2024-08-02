@@ -574,6 +574,16 @@ export const customCommunityJsonsTransaction = {
           "gtg"
         ]
       }
+    },
+    {
+      type: 'custom_json_operation',
+      value: {
+        id: 'community',
+        json: '["setRole",{"community":"mycomm","account":"gtg","role":"owner"}]',
+        required_posting_auths: [
+          "gtg"
+        ]
+      }
     }
   ]
 };
