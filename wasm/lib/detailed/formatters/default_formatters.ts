@@ -88,7 +88,8 @@ export class DefaultFormatters implements IWaxCustomFormatter {
             permlink: typeof data.permlink === "string" ? data.permlink : undefined,
             title: typeof data.title === "string" ? data.title : undefined,
             props: typeof data.props === "object" ? data.props : undefined,
-            notes: typeof data.notes === "string" ? data.notes : undefined
+            notes: typeof data.notes === "string" ? data.notes : undefined,
+            role: typeof data.role === "string" ? data.role : undefined
           }
         );
     } catch {}

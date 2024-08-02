@@ -12,6 +12,10 @@ export type TCommunityRules = {
 } | {
   action: ECommunityOperationActions.SUBSCRIBE | ECommunityOperationActions.UNSUBSCRIBE;
 } | {
+  action: ECommunityOperationActions.SET_ROLE;
+  account: TAccountName;
+  role: EAvailableCommunityRoles;
+} | {
   action: ECommunityOperationActions.SET_USER_TITLE;
   account: TAccountName;
   title: string;
@@ -94,6 +98,7 @@ export interface ICommunityProps {
 export enum ECommunityOperationActions {
   FLAG_POST = "flagPost",
   SET_USER_TITLE = "setUserTitle",
+  SET_ROLE = "setRole",
   SUBSCRIBE = "subscribe",
   UNSUBSCRIBE = "unsubscribe",
   PIN_POST = "pinPost",
@@ -103,6 +108,15 @@ export enum ECommunityOperationActions {
   UNMUTE_POST = "unmutePost"
 }
 
+export enum EAvailableCommunityRoles {
+  MUTED = "muted", // id -2
+  GUEST = "guest", // id 0
+  MEMBER = "member", // id 2
+  MOD = "mod", // id 4
+  ADMIN = "admin", // id 6
+  OWNER = "owner" // id 8
+}
+
 export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
   protected readonly id = "community";
 
@@ -110,7 +124,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * Flags post on given community
    *
    * @param {string} community target community
-   * @param {string} account author of the post to flag
+   * @param {TAccountName} account author of the post to flag
    * @param {string} permlink post permlink to flag
    * @param {string} notes notes on the flag
    *
@@ -131,10 +145,32 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
   }
 
   /**
+   * Updates the role for a community member
+   *
+   * @param {string} community target community
+   * @param {TAccountName} account community member update the role
+   * @param {string} role target role to apply to the community member
+   *
+   * @returns {CommunityOperation} itself
+   */
+  public setRole(community: string, account: TAccountName, role: EAvailableCommunityRoles): CommunityOperation {
+    this.body.push([
+      ECommunityOperationActions.SET_ROLE,
+      {
+        community,
+        account,
+        role
+      }
+    ]);
+
+    return this;
+  }
+
+  /**
    * Sets title on the user
    *
    * @param {string} community target community
-   * @param {string} account account to change the title
+   * @param {TAccountName} account account to change the title
    * @param {string} title new account title
    *
    * @returns {CommunityOperation} itself
@@ -192,7 +228,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * Pins given post on the community page
    *
    * @param {string} community target community
-   * @param {string} account author of the post to pin
+   * @param {TAccountName} account author of the post to pin
    * @param {string} permlink post permlink to pin
    *
    * @returns {CommunityOperation} itself
@@ -214,7 +250,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * Unpins given post from the community page
    *
    * @param {string} community target community
-   * @param {string} account author of the post to pin
+   * @param {TAccountName} account author of the post to pin
    * @param {string} permlink post permlink to pin
    *
    * @returns {CommunityOperation} itself
@@ -263,7 +299,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * Mutes post on given community
    *
    * @param {string} community target community
-   * @param {string} account author of the post to mute
+   * @param {TAccountName} account author of the post to mute
    * @param {string} permlink post permlink to mute
    * @param {string} notes notes on the mute
    *
@@ -287,7 +323,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * Unmutes post on given community
    *
    * @param {string} community target community
-   * @param {string} account author of the post to unmute
+   * @param {TAccountName} account author of the post to unmute
    * @param {string} permlink post permlink to unmute
    * @param {string} notes notes on the unmute
    *
