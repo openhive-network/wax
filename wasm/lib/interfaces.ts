@@ -82,7 +82,7 @@ export interface IWaxOptionsChain extends IWaxOptions {
   /**
    * Endpoint for all of the REST API requests
    *
-   * @default "https://local.bc.fqdn.pl"
+   * @default "https://api.syncad.com"
    * @type {string}
    */
   restApiEndpoint: string;

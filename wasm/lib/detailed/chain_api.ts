@@ -149,8 +149,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
         const url = that.restApiEndpoint + path + (isQsReq ? '?' + body : '');
 
-        const url = endpoint + path + (isQsReq ? (body.length === 0 ? '' : '?' + body) : '');
-
         const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
           method,
           responseType: 'json',

@@ -27,13 +27,18 @@ test.describe('Wax object interface chain REST API tests', () => {
   });
 
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain }) => {
+    const retVal = await waxTest.dynamic(async({ chain }) => {
       const blocks = await chain.restApi.hafbe.blocks.latest({ limit: 1000 });
 
       return blocks;
     });
 
-    expect(retVal).toStrictEqual({});
+    expect(retVal.length).toBeGreaterThan(0);
+    expect(typeof retVal[0].block_num).toBe("number");
+    expect(typeof retVal[0].witness).toBe("string");
+    expect(retVal[0].ops_count.length).toBeGreaterThan(0);
+    expect(typeof retVal[0].ops_count[0].count).toBe("number");
+    expect(typeof retVal[0].ops_count[0].op_type_id).toBe("number");
   });
 
     test.afterAll(async () => {

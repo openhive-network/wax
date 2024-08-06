@@ -10,7 +10,7 @@ import { DEFAULT_WAX_OPTIONS } from "./base.js";
 export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
   ...DEFAULT_WAX_OPTIONS,
   apiEndpoint: "https://api.hive.blog",
-  restApiEndpoint: "https://local.bc.fqdn.pl"
+  restApiEndpoint: "https://api.syncad.com"
 }
 
 /**
