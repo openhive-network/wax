@@ -147,8 +147,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
         const url = that.restApiEndpoint + path + (isQsReq ? '?' + body : '');
 
-        console.log('DJOINCMIO', method, url, isQsReq ? undefined : JSON.stringify(reqImmutable));
-
         const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
           method,
           responseType: 'json',
