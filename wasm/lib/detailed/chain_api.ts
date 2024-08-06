@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
@@ -11,6 +11,7 @@ import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
 import { extractBracedStrings } from "./rest-api/utils.js";
+import { iterate } from "./util/iterate.js";
 
 import Long from "long";
 import qs from 'qs';
@@ -68,21 +69,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         this.localTypes[apiType] = { ...HiveApiTypes[apiType][endpoint] };
     }
 
-    const iterate = (thisObj: Record<string, any>, obj: Record<string, any>): void => {
-      if (typeof obj !== "object")
-        return;
-
-      for(const itKey in obj) {
-        if ("params" in obj[itKey])
-          thisObj[itKey] = obj[itKey];
-        else {
-          if (thisObj[itKey] === undefined)
-            thisObj[itKey] = {};
-
-          iterate(thisObj[itKey], obj[itKey]);
-        }
-      }
-    };
     iterate(this.localRestTypes, HiveRestApiTypes);
 
     this.initializeApi();
@@ -313,6 +299,15 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         };
 
     return newApi as unknown as HiveChainApi & TWaxExtended<YourApi>;
+  }
+
+  public extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): HiveChainApi & TWaxRestExtended<YourRestApi> {
+    const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this.restApiEndpoint, this);
+
+    if(typeof extendedHiveRestApiData === "object")
+      iterate(newApi.localRestTypes, extendedHiveRestApiData as object);
+
+    return newApi as unknown as HiveChainApi & TWaxRestExtended<YourRestApi>;
   }
 
   public async createTransaction(expirationTime?: TTimestamp): Promise<ITransaction> {
