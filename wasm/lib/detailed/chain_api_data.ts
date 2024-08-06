@@ -9,9 +9,19 @@ import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api
 import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
 import { GetLatestBlocksRequest, GetLatestBlocksResponse } from "./rest-api/index.js";
+import { GetWitnessesRoot, GetWitnessesRootResponse } from "./rest-api/hafbe/witnesses/root.js";
 
 export const HiveRestApiTypes = {
   hafbe: {
+    witnesses: {
+      root: {
+        params: GetWitnessesRoot,
+        result: GetWitnessesRootResponse,
+        urlPath: "${accountName}",
+        responseArray: false
+
+      }
+    },
     blocks: {
       latest: {
         params: GetLatestBlocksRequest,
