@@ -73,6 +73,27 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(retVal.transaction_json !== null).toBeTruthy();
   });
 
+  test('Should be able to extend and perform REST API calls returning INT', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ chain }) => {
+      const extended = chain.extendRest({
+        hafbe: {
+          'block-numbers': {
+            headblock: {
+              params: undefined,
+              result: Number
+            }
+          }
+        }
+      });
+
+      const blockNum = await extended.restApi.hafbe['block-numbers'].headblock();
+
+      return blockNum;
+    });
+
+    expect(typeof retVal).toBe("number");
+  });
+
     test.afterAll(async () => {
     await browser.close();
   });

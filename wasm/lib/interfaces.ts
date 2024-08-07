@@ -739,12 +739,12 @@ type YourApiRestData<YourTypes> = {
   // First check for value type
   (YourTypes[P] extends object ? (
     // Check if isArray is set to true and request type
-    YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; responseArray: boolean }
-    ? (params: ParamsType) => Promise<ResultType[]>
+    YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; responseArray: boolean }
+    ? (ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>)
     : (
       // Check if isArray is not present, but request type
-      YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType> }
-      ? (params: ParamsType) => Promise<ResultType>
+      YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
+      ? (ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>)
       : YourApiRestData<YourTypes[P]> // Perform nested check
     )
   ) : never);

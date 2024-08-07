@@ -17,9 +17,7 @@ export const HiveRestApiTypes = {
       root: {
         params: GetWitnessesRoot,
         result: GetWitnessesRootResponse,
-        urlPath: "${accountName}",
-        responseArray: false
-
+        urlPath: "${accountName}"
       }
     },
     blocks: {
