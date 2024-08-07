@@ -146,19 +146,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
           if(result === undefined && (callFn.config as any).result !== undefined)
             throw new WaxChainApiError('No result found in the Hive API response', data);
 
-          if ((callFn.config as any).result === Number) {
-            if (Array.isArray(result))
-              result = result.map(node => Number(node));
-            else
-              result = Number(result);
-          } else if ((callFn.config as any).result === Boolean) {
-            if (Array.isArray(result))
-              result = result.map(node => Boolean(node));
-            else
-              result = Boolean(result);
-          } else if ((callFn.config as any).result === String) {
-            // We do not have to parse strings explicitly as they are already strings (even if in an array)
-          } else { // Parse any other result type which is a valid validator constructor
+          if ((callFn.config as any).result !== Number && (callFn.config as any).result !== Boolean && (callFn.config as any).result !== String) {
+            // Parse any other result type which is a valid validator constructor
             result = plainToInstance((callFn.config as any).result, result) as object;
 
             if (Array.isArray(result))
