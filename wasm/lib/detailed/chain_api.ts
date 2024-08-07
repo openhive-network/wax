@@ -103,26 +103,27 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private initializeApi(): void {
     this.restApi = (() => {
       const that = this;
-      const callFn = async function(params: object, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
+      const callFn = async function(params: object | undefined, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
         // Helper function to determine if we have to convert plain object to the instance of the given request or not
         const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
 
-        if(typeof callFn.config === 'object')
+        if(typeof callFn.config === 'object' && (callFn.config as any).params !== undefined && typeof params === "object")
           await validateOrReject(isPlainObj(params) ? plainToInstance((callFn.config as any).params, params) : params);
 
         let path = '/' + callFn.paths.filter(node => node.length).join('/');
         const allToReplace = extractBracedStrings(path);
 
-        const reqImmutable = structuredClone(params);
+        const reqImmutable = params === undefined ? undefined : structuredClone(params);
 
-        for(const toReplace of allToReplace) {
-          if (toReplace in reqImmutable)
-            path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
-          else
-            throw new Error('No ' + toReplace + ' in request');
+        if (typeof params === "object")
+          for(const toReplace of allToReplace) {
+            if (toReplace in (reqImmutable as object))
+              path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
+            else
+              throw new Error('No ' + toReplace + ' in request');
 
-          delete reqImmutable[toReplace as keyof typeof reqImmutable];
-        }
+            delete (reqImmutable as object)[toReplace as keyof typeof reqImmutable];
+          }
 
         const method = callFn.lastMethod;
         const isQsReq = method === 'GET' || method === 'DELETE';
@@ -141,19 +142,22 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
           url,
           data: isQsReq ? undefined : JSON.stringify(reqImmutable)
         }))) as IDetailedResponseData<object>;
-        let result = data.response;
+        let result: any = data.response;
 
         if(typeof callFn.config === 'object') {
-          if(typeof result !== 'object')
+          if(result === undefined && (callFn.config as any).result !== undefined)
             throw new WaxChainApiError('No result found in the Hive API response', data);
 
-          result = plainToInstance((callFn.config as any).result, result) as object;
+          if ((callFn.config as any).result !== Number && (callFn.config as any).result !== Boolean && (callFn.config as any).result !== String) {
+            // Parse any other result type which is a valid validator constructor
+            result = plainToInstance((callFn.config as any).result, result) as object;
 
-          if (Array.isArray(result))
-            for(const node of result)
-              await validateOrReject(node);
-          else
-            await validateOrReject(result);
+            if (Array.isArray(result))
+              for(const node of result)
+                await validateOrReject(node);
+            else
+              await validateOrReject(result);
+          }
         }
 
         callFn.paths = [] as string[];
