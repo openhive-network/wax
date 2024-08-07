@@ -57,7 +57,13 @@ const commonConfiguration = packEntire => ([
         ]
       }),
       commonjs(),
-      terser()
+      terser({
+        format: {
+          inline_script: false,
+          comments: false,
+          max_line_len: 100
+        }
+      })
     ]
   }, {
     input: `wasm/dist/lib/index.d.ts`,
