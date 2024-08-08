@@ -292,7 +292,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return this.apiEndpoint;
   }
 
-  public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi> {
+  public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi, this> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this.restApiEndpoint, this);
 
     if(typeof extendedHiveApiData === "object")
@@ -302,16 +302,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
           ...extendedHiveApiData[methodName]
         };
 
-    return newApi as unknown as HiveChainApi & TWaxExtended<YourApi>;
+    return newApi as unknown as HiveChainApi & TWaxExtended<YourApi, this>;
   }
 
-  public extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): HiveChainApi & TWaxRestExtended<YourRestApi> {
+  public extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this.restApiEndpoint, this);
 
     if(typeof extendedHiveRestApiData === "object")
       iterate(newApi.localRestTypes, extendedHiveRestApiData as object);
 
-    return newApi as unknown as HiveChainApi & TWaxRestExtended<YourRestApi>;
+    return newApi as unknown as HiveChainApi & TWaxRestExtended<YourRestApi, this>;
   }
 
   public async createTransaction(expirationTime?: TTimestamp): Promise<ITransaction> {

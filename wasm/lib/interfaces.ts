@@ -778,9 +778,9 @@ export type TDefaultHiveApi = Readonly<{
   rc_api: ApiData<'rc_api'>;
 }>;
 
-export type TWaxExtended<YourApi> = IHiveChainInterface & { readonly api: TDefaultHiveApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
+export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly api: TDefaultHiveApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
 
-export type TWaxRestExtended<YourRestApi> = IHiveChainInterface & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiRestData<YourRestApi[k]> } };
+export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiRestData<YourRestApi[k]> } };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
@@ -830,7 +830,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended api
    */
-  extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi>;
+  extend<YourApi>(extendedHiveApiData: YourApi): TWaxExtended<YourApi, this>;
 
   /**
    * Extends hive chain interface with your custom REST API definitions
@@ -839,7 +839,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended Rest api
    */
-  extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): TWaxRestExtended<YourRestApi>;
+  extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): TWaxRestExtended<YourRestApi, this>;
 
   /**
    * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)
