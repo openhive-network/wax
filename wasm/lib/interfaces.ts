@@ -740,7 +740,15 @@ type YourApiRestData<YourTypes> = {
   (YourTypes[P] extends object ? (
     // Check if isArray is set to true and request type
     YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; responseArray: boolean }
-    ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) & {
+    ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => infer ResultTypeConstr) ? (
+      ResultTypeConstr extends Number ? number : (ResultTypeConstr extends Boolean ? boolean : (ResultTypeConstr extends String ? string : ResultTypeConstr))
+    )[] : (
+      ResultType extends Number ? number : (ResultType extends Boolean ? boolean : (ResultType extends String ? string : ResultType))
+    )[])>) : (params: (ParamsType extends (new (...args: any) => infer ParamsTypeConstr) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? (
+      ResultTypeConstr extends Number ? number : (ResultTypeConstr extends Boolean ? boolean : (ResultTypeConstr extends String ? string : ResultTypeConstr))
+    )[] : (
+      ResultType extends Number ? number : (ResultType extends Boolean ? boolean : (ResultType extends String ? string : ResultType))
+    )[])>) & {
       /**
        * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
        */
@@ -753,7 +761,15 @@ type YourApiRestData<YourTypes> = {
     : (
       // Check if isArray is not present, but request type
       YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
-      ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) & {
+      ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => infer ResultTypeConstr) ? (
+        ResultTypeConstr extends Number ? number : (ResultTypeConstr extends Boolean ? boolean : (ResultTypeConstr extends String ? string : ResultTypeConstr))
+      ) : (
+        ResultType extends Number ? number : (ResultType extends Boolean ? boolean : (ResultType extends String ? string : ResultType))
+      ))>) : (params: (ParamsType extends (new (...args: any) => infer ParamsTypeConstr) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? (
+        ResultTypeConstr extends Number ? number : (ResultTypeConstr extends Boolean ? boolean : (ResultTypeConstr extends String ? string : ResultTypeConstr))
+      ) : (
+        ResultType extends Number ? number : (ResultType extends Boolean ? boolean : (ResultType extends String ? string : ResultType))
+      ))>) & {
         /**
          * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
          */

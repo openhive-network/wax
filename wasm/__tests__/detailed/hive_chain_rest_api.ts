@@ -86,7 +86,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const blockNum = await extended.restApi.hafbe['block-numbers'].headblock();
+      const blockNum: number = await extended.restApi.hafbe['block-numbers'].headblock();
 
       return blockNum;
     });
