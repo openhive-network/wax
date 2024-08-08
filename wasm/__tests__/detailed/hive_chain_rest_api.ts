@@ -94,6 +94,35 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(typeof retVal).toBe("number");
   });
 
+  test('Should be able to extend REST API, then extend standard API and keep all of the types', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      // First extend REST API
+      const extended1 = chain.extendRest({
+        a: {
+          b: {
+            params: undefined,
+            result: undefined
+          }
+        }
+      });
+
+      // Then extend standard Node API - types from extended REST API should be preserved
+      const extended2 = extended1.extend({
+        a: {
+          b: {
+            params: {},
+            result: {}
+          }
+        }
+      })
+
+      // This is more of a "static" compilation test - should compile successfully - tests if types has not been dropped
+      return typeof extended2.restApi.a.b;
+    });
+
+    expect(retVal).toBe("function");
+  });
+
     test.afterAll(async () => {
     await browser.close();
   });
