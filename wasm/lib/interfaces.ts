@@ -740,15 +740,51 @@ type YourApiRestData<YourTypes> = {
   (YourTypes[P] extends object ? (
     // Check if isArray is set to true and request type
     YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; responseArray: boolean }
-    ? (ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>)
+    ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr[] : ResultType[])>) & {
+      /**
+       * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
+       */
+      set endpointUrl (newUrl: string | undefined);
+      /**
+       * Retrieves the url used for calls to the specified REST API
+       */
+      get endpointUrl (): string;
+    })
     : (
       // Check if isArray is not present, but request type
       YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
-      ? (ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>)
-      : YourApiRestData<YourTypes[P]> // Perform nested check
+      ? ((ParamsType extends undefined ? (() => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) : (params: (ParamsType extends (new (...args: any) => Readonly<infer ParamsTypeConstr>) ? ParamsTypeConstr : ParamsType)) => Promise<(ResultType extends (new (...args: any) => Readonly<infer ResultTypeConstr>) ? ResultTypeConstr : ResultType)>) & {
+        /**
+         * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
+         */
+        set endpointUrl (newUrl: string | undefined);
+        /**
+         * Retrieves the url used for calls to the specified REST API
+         */
+        get endpointUrl (): string;
+      })
+      : (YourApiRestData<YourTypes[P]> & {
+        /**
+         * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
+         */
+        set endpointUrl (newUrl: string | undefined);
+        /**
+         * Retrieves the url used for calls to the specified REST API
+         */
+        get endpointUrl (): string;
+      }) // Perform nested check
     )
   ) : never);
-}; // TODO: Endpoint URL
+} & {
+  /**
+   * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
+   */
+  set endpointUrl (newUrl: string | undefined);
+  /**
+   * Retrieves the url used for calls to the specified REST API
+   */
+  get endpointUrl (): string;
+};
 
 /**
  * @internal
@@ -768,7 +804,7 @@ type YourApiData<YourTypes> = {
   get endpointUrl (): string;
 };
 
-export type TDefaultRestApi = Readonly<YourApiRestData<typeof HiveRestApiTypes>>;
+export type TDefaultRestApi = YourApiRestData<typeof HiveRestApiTypes>;
 
 export type TDefaultHiveApi = Readonly<{
   account_by_key_api: ApiData<'account_by_key_api'>;

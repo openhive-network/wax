@@ -123,7 +123,33 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(retVal).toBe("function");
   });
 
-    test.afterAll(async () => {
+  test('Should be able to set REST API endpoint URL', async ({ waxTest }) => {
+    const url1 = "https://best.honey.provider";
+
+    const retVal = await waxTest(async({ chain }, url1) => {
+      chain.restApi.endpointUrl = url1;
+
+      return chain.restApi.endpointUrl;
+    }, url1);
+
+    expect(retVal).toBe(url1);
+  });
+
+  test('Should be able to set REST API endpoint URL on different APIs', async ({ waxTest }) => {
+    const url1 = "https://best.honey.provider";
+    const url2 = "https://other.honey.provider";
+
+    const retVal = await waxTest(async({ chain }, url1, url2) => {
+      chain.restApi.hafbe.blocks.endpointUrl = url1;
+      chain.restApi.hafbe.blocks.latest.endpointUrl = url2;
+
+      return [chain.restApi.endpointUrl, chain.restApi.hafbe.blocks.endpointUrl, chain.restApi.hafbe.blocks.latest.endpointUrl];
+    }, url1, url2);
+
+    expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);
+  });
+
+  test.afterAll(async () => {
     await browser.close();
   });
 });

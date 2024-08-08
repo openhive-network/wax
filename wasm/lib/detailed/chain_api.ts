@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TWaxRestApiRequest } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
 
@@ -100,6 +100,45 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return Boolean(api[HiveChainApi.EndpointUrlKey] = newValue ?? this.apiEndpoint);
   }
 
+  private getRestTypeFromPath(path: string[]): object {
+    let currObj: Record<string, any> = this.localRestTypes;
+    for (const appendPath of path) {
+      if (currObj[appendPath as keyof typeof currObj] === undefined)
+        currObj[appendPath as keyof typeof currObj] = {}; // Create a blank object, so configuration such as endpointUrl can be set
+
+      currObj = currObj[appendPath as keyof typeof currObj];
+    }
+
+    return currObj;
+  }
+
+  private getEndpointUrlForRestApi(path: string[]): string {
+    let foundApi: string | undefined;
+
+    // Do not use getRestTypeFromPath as we need to extract any parent-level HiveChainApi.EndpointUrlKey-s
+    let currObj: Record<string, any> = this.localRestTypes;
+    if (currObj[HiveChainApi.EndpointUrlKey] !== undefined)
+      foundApi = currObj[HiveChainApi.EndpointUrlKey];
+    for (const appendPath of path) {
+      if (currObj[appendPath as keyof typeof currObj] === undefined)
+        currObj[appendPath as keyof typeof currObj] = {}; // Create a blank object, so configuration such as endpointUrl can be set
+
+      currObj = currObj[appendPath as keyof typeof currObj];
+      if (currObj[HiveChainApi.EndpointUrlKey] !== undefined)
+        foundApi = currObj[HiveChainApi.EndpointUrlKey];
+    }
+
+    return foundApi ?? this.restApiEndpoint;
+  }
+  private setEndpointUrlForRestApi(path: string[], newValue: string | undefined, found = false): boolean {
+    const obj = this.getRestTypeFromPath(path);
+
+    if(this.originator !== null)
+      found ||= this.originator.setEndpointUrlForRestApi(path, newValue, found);
+
+    return Boolean(obj[HiveChainApi.EndpointUrlKey] = newValue ?? this.restApiEndpoint);
+  }
+
   private initializeApi(): void {
     this.restApi = (() => {
       const that = this;
@@ -107,8 +146,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         // Helper function to determine if we have to convert plain object to the instance of the given request or not
         const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
 
-        if(typeof callFn.config === 'object' && (callFn.config as any).params !== undefined && typeof params === "object")
-          await validateOrReject(isPlainObj(params) ? plainToInstance((callFn.config as any).params, params) : params);
+        if(typeof callFn.config === 'object' && callFn.config.params !== undefined && typeof params === "object")
+          await validateOrReject(isPlainObj(params) ? plainToInstance(callFn.config.params, params) : params);
 
         let path = '/' + callFn.paths.filter(node => node.length).join('/');
         const allToReplace = extractBracedStrings(path);
@@ -134,7 +173,9 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         else
           body = JSON.stringify(reqImmutable);
 
-        const url = that.restApiEndpoint + path + (isQsReq ? '?' + body : '');
+        const endpoint = that.getEndpointUrlForRestApi(callFn.paths);
+
+        const url = endpoint + path + (isQsReq ? '?' + body : '');
 
         const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
           method,
@@ -145,12 +186,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         let result: any = data.response;
 
         if(typeof callFn.config === 'object') {
-          if(result === undefined && (callFn.config as any).result !== undefined)
+          if(result === undefined && callFn.config.result !== undefined)
             throw new WaxChainApiError('No result found in the Hive API response', data);
 
-          if ((callFn.config as any).result !== Number && (callFn.config as any).result !== Boolean && (callFn.config as any).result !== String) {
+          if (callFn.config.result !== undefined && callFn.config.result !== Number && callFn.config.result !== Boolean && callFn.config.result !== String) {
             // Parse any other result type which is a valid validator constructor
-            result = plainToInstance((callFn.config as any).result, result) as object;
+            result = plainToInstance(callFn.config.result, result) as object;
 
             if (Array.isArray(result))
               for(const node of result)
@@ -190,15 +231,29 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
           callFn.config = currObj[property];
 
-          if (currObj[property].urlPath === undefined)
+          if (callFn.config?.urlPath === undefined)
             callFn.paths.push(property);
           else
-            callFn.paths.push(currObj[property].urlPath);
+            callFn.paths.push(callFn.config.urlPath);
 
-          if (currObj[property].method !== undefined)
-            callFn.lastMethod = currObj[property].method;
+          if (callFn.config?.method !== undefined)
+            callFn.lastMethod = callFn.config.method;
 
           return proxiedFunction;
+        },
+        set: (_target: any, property: string, newValue: any, _receiver: any) => {
+          if(property === HiveChainApi.EndpointUrlKey) {
+            const setValue = this.setEndpointUrlForRestApi(callFn.paths, newValue);
+
+            callFn.paths = [] as string[];
+            callFn.lastMethod = 'GET';
+            callFn.config = undefined;
+
+            return setValue;
+          }
+
+
+          return false;
         },
         apply: (_target: any, _thisArg: any, argumentsList: [object]) => {
           return callFn(...argumentsList);
