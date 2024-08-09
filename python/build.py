@@ -31,7 +31,7 @@ class CustomBuild(build_ext):
     build_info = package_dir / "info.json"
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
-        configure_args = ["-GNinja", "-DCMAKE_BUILD_TYPE=RelWithDebInfo"]
+        configure_args = ["-GNinja", "-DCMAKE_BUILD_TYPE=Release"]
         build_command = ninja_command
         if build_command is None:
             assert make_command is not None, "cannot find neither ninja nor make"
