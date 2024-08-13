@@ -36,7 +36,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
   // Initialize data
-  const bk = await beekeeper.default() as IBeekeeperInstance;
+  const bk = await beekeeper.default({ enableLogs: false }) as IBeekeeperInstance;
   const wx = await wax.createWaxFoundation();
 
   let chain: IHiveChainInterface;
