@@ -94,6 +94,41 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(typeof retVal).toBe("number");
   });
 
+  test('Should be able to call concurrently same REST API multiple times with same URL', async ({ waxTest }) => {
+    const urls = await waxTest(async({ chain }) => {
+      const extended = chain.extendRest({
+        hafbe: {
+          'block-numbers': {
+            headblock: {
+              params: undefined,
+              result: Number
+            }
+          }
+        }
+      });
+
+      const getPromise = () => new Promise((resolve, reject) => {
+        let requestUrl: string;
+
+        ((extended.restApi.hafbe['block-numbers'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+          resolve(requestUrl);
+        }).catch(reject);
+      });
+
+      const urls = await Promise.all([
+        getPromise(),
+        getPromise(),
+        getPromise(),
+        getPromise(),
+        getPromise()
+      ]);
+
+      return urls;
+    });
+
+    expect(urls.every(node => node === urls[0])).toBeTruthy();
+  });
+
   test('Should be able to extend REST API, then extend standard API and keep all of the types', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       // First extend REST API

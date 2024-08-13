@@ -38,7 +38,128 @@ export type TRestChainCaller = ((params: object) => Promise<any>) & {
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public api!: TDefaultHiveApi;
 
-  public restApi!: any;
+  public get restApi () {
+    const that = this;
+    const callFn = async function(params: object | undefined, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
+      // Helper function to determine if we have to convert plain object to the instance of the given request or not
+      const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
+
+      if(typeof callFn.config === 'object' && callFn.config.params !== undefined && typeof params === "object")
+        await validateOrReject(isPlainObj(params) ? plainToInstance(callFn.config.params, params) : params);
+
+      let path = '/' + callFn.paths.filter(node => node.length).join('/');
+      const allToReplace = extractBracedStrings(path);
+
+      const reqImmutable = params === undefined ? undefined : structuredClone(params);
+
+      if (typeof params === "object")
+        for(const toReplace of allToReplace) {
+          if (toReplace in (reqImmutable as object))
+            path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
+          else
+            throw new Error('No ' + toReplace + ' in request');
+
+          delete (reqImmutable as object)[toReplace as keyof typeof reqImmutable];
+        }
+
+      const method = callFn.lastMethod;
+      const isQsReq = method === 'GET' || method === 'DELETE';
+
+      let body: string;
+      if (isQsReq)
+        body = qs.stringify(reqImmutable);
+      else
+        body = JSON.stringify(reqImmutable);
+
+      const endpoint = that.getEndpointUrlForRestApi(callFn.paths);
+
+      const url = endpoint + path + (isQsReq ? (body.length === 0 ? '' : '?' + body) : '');
+
+      const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
+        method,
+        responseType: 'json',
+        url,
+        data: isQsReq ? undefined : JSON.stringify(reqImmutable)
+      }))) as IDetailedResponseData<object>;
+      let result: any = data.response;
+
+      if(typeof callFn.config === 'object') {
+        if(result === undefined && callFn.config.result !== undefined)
+          throw new WaxChainApiError('No result found in the Hive API response', data);
+
+        if (callFn.config.result !== undefined && callFn.config.result !== Number && callFn.config.result !== Boolean && callFn.config.result !== String) {
+          // Parse any other result type which is a valid validator constructor
+          result = plainToInstance(callFn.config.result, result) as object;
+
+          if (Array.isArray(result))
+            for(const node of result)
+              await validateOrReject(node);
+          else
+            await validateOrReject(result);
+        }
+      }
+
+      callFn.paths = [] as string[];
+      callFn.lastMethod = 'GET';
+      callFn.config = undefined;
+
+      return result;
+    };
+    callFn.paths = [] as string[];
+    callFn.lastMethod = "GET";
+    callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
+    callFn[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
+
+    const proxiedFunction = new Proxy(callFn, {
+      get: (_target: any, property: string, _receiver: any): TRestChainCaller | string => {
+        if(property === HiveChainApi.EndpointUrlKey) {
+          const restApiUrl = this.getEndpointUrlForRestApi(callFn.paths);
+
+          callFn.paths = [] as string[];
+          callFn.lastMethod = 'GET';
+          callFn.config = undefined;
+
+          return restApiUrl;
+        }
+
+        if (property === HiveChainApi.WithProxyKey)
+          return callFn[HiveChainApi.WithProxyKey];
+
+        const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.paths);
+
+        callFn.config = currObj[property];
+
+        if (callFn.config?.urlPath === undefined)
+          callFn.paths.push(property);
+        else
+          callFn.paths.push(callFn.config.urlPath);
+
+        if (callFn.config?.method !== undefined)
+          callFn.lastMethod = callFn.config.method;
+
+        return proxiedFunction;
+      },
+      set: (_target: any, property: string, newValue: any, _receiver: any) => {
+        if(property === HiveChainApi.EndpointUrlKey) {
+          const setValue = this.setEndpointUrlForRestApi(callFn.paths, newValue);
+
+          callFn.paths = [] as string[];
+          callFn.lastMethod = 'GET';
+          callFn.config = undefined;
+
+          return setValue;
+        }
+
+
+        return false;
+      },
+      apply: (_target: any, _thisArg: any, argumentsList: [object]) => {
+        return callFn(...argumentsList);
+      }
+    });
+
+    return proxiedFunction;
+  };
 
   private readonly requestHelper = new RequestHelper();
 
@@ -140,129 +261,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private initializeApi(): void {
-    this.restApi = (() => {
-      const that = this;
-      const callFn = async function(params: object | undefined, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
-        // Helper function to determine if we have to convert plain object to the instance of the given request or not
-        const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
-
-        if(typeof callFn.config === 'object' && callFn.config.params !== undefined && typeof params === "object")
-          await validateOrReject(isPlainObj(params) ? plainToInstance(callFn.config.params, params) : params);
-
-        let path = '/' + callFn.paths.filter(node => node.length).join('/');
-        const allToReplace = extractBracedStrings(path);
-
-        const reqImmutable = params === undefined ? undefined : structuredClone(params);
-
-        if (typeof params === "object")
-          for(const toReplace of allToReplace) {
-            if (toReplace in (reqImmutable as object))
-              path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
-            else
-              throw new Error('No ' + toReplace + ' in request');
-
-            delete (reqImmutable as object)[toReplace as keyof typeof reqImmutable];
-          }
-
-        const method = callFn.lastMethod;
-        const isQsReq = method === 'GET' || method === 'DELETE';
-
-        let body: string;
-        if (isQsReq)
-          body = qs.stringify(reqImmutable);
-        else
-          body = JSON.stringify(reqImmutable);
-
-        const endpoint = that.getEndpointUrlForRestApi(callFn.paths);
-
-        const url = endpoint + path + (isQsReq ? '?' + body : '');
-
-        const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
-          method,
-          responseType: 'json',
-          url,
-          data: isQsReq ? undefined : JSON.stringify(reqImmutable)
-        }))) as IDetailedResponseData<object>;
-        let result: any = data.response;
-
-        if(typeof callFn.config === 'object') {
-          if(result === undefined && callFn.config.result !== undefined)
-            throw new WaxChainApiError('No result found in the Hive API response', data);
-
-          if (callFn.config.result !== undefined && callFn.config.result !== Number && callFn.config.result !== Boolean && callFn.config.result !== String) {
-            // Parse any other result type which is a valid validator constructor
-            result = plainToInstance(callFn.config.result, result) as object;
-
-            if (Array.isArray(result))
-              for(const node of result)
-                await validateOrReject(node);
-            else
-              await validateOrReject(result);
-          }
-        }
-
-        callFn.paths = [] as string[];
-        callFn.lastMethod = 'GET';
-        callFn.config = undefined;
-
-        return result;
-      };
-      callFn.paths = [] as string[];
-      callFn.lastMethod = "GET";
-      callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
-      callFn[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
-
-      const proxiedFunction = new Proxy(callFn, {
-        get: (_target: any, property: string, _receiver: any): TRestChainCaller | string => {
-          if(property === HiveChainApi.EndpointUrlKey) {
-            const restApiUrl = this.getEndpointUrlForRestApi(callFn.paths);
-
-            callFn.paths = [] as string[];
-            callFn.lastMethod = 'GET';
-            callFn.config = undefined;
-
-            return restApiUrl;
-          }
-
-          if (property === HiveChainApi.WithProxyKey)
-            return callFn[HiveChainApi.WithProxyKey];
-
-          const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.paths);
-
-          callFn.config = currObj[property];
-
-          if (callFn.config?.urlPath === undefined)
-            callFn.paths.push(property);
-          else
-            callFn.paths.push(callFn.config.urlPath);
-
-          if (callFn.config?.method !== undefined)
-            callFn.lastMethod = callFn.config.method;
-
-          return proxiedFunction;
-        },
-        set: (_target: any, property: string, newValue: any, _receiver: any) => {
-          if(property === HiveChainApi.EndpointUrlKey) {
-            const setValue = this.setEndpointUrlForRestApi(callFn.paths, newValue);
-
-            callFn.paths = [] as string[];
-            callFn.lastMethod = 'GET';
-            callFn.config = undefined;
-
-            return setValue;
-          }
-
-
-          return false;
-        },
-        apply: (_target: any, _thisArg: any, argumentsList: [object]) => {
-          return callFn(...argumentsList);
-        }
-      });
-
-      return proxiedFunction;
-    })();
-
     this.api = new Proxy({} as TDefaultHiveApi, {
       get: (_target: any, propertyParent: string, _receiver: any) => {
         return new Proxy({}, {
