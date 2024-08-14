@@ -5,7 +5,7 @@ import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
-import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
+import type { DeepPartial, IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
@@ -891,7 +891,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended Rest api
    */
-  extendRest<YourRestApi>(extendedHiveRestApiData: YourRestApi): TWaxRestExtended<YourRestApi, this>;
+  extendRest<YourRestApi>(extendedHiveRestApiData?: DeepPartial<YourRestApi>): TWaxRestExtended<YourRestApi, this>;
 
   /**
    * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)

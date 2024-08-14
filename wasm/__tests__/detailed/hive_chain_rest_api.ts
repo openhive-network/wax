@@ -28,7 +28,7 @@ test.describe('Wax object interface chain REST API tests', () => {
 
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
-      const blocks = await chain.restApi.hafbe.blocks.latest({ limit: 1000 });
+      const blocks = await chain.restApi.hafbe.blocks.latest({ limit: 1 });
 
       return blocks;
     });
@@ -156,6 +156,70 @@ test.describe('Wax object interface chain REST API tests', () => {
     });
 
     expect(retVal).toBe("function");
+  });
+
+  test('Should be able to extend REST API via interfaces', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      // First extend REST API using interfaces only
+      const extended1 = chain.extendRest<{
+        hafbe: {
+          'block-numbers': {
+            headblock: {
+              params: undefined,
+              result: number
+            }
+          }
+        }
+      }>();
+
+      // Then extend REST API using interfaces and providing additional urlPath data
+      const extended2 = extended1.extendRest<{
+        hafbe: {
+          transactions: {
+            byId: {
+              params: { transactionId: string; };
+              result: { transaction_json: object; };
+              urlPath: "{transactionId}"
+            }
+          }
+        }
+      }>({
+        hafbe: {
+          transactions: {
+            byId: {
+              urlPath: "{transactionId}"
+            }
+          }
+        }
+      });
+
+      const getPromise1 = () => new Promise((resolve, reject) => {
+        let requestUrl: string;
+
+        ((extended2.restApi.hafbe['block-numbers'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+          resolve(requestUrl);
+        }).catch(reject);
+      });
+
+      const getPromise2 = () => new Promise((resolve, reject) => {
+        let requestUrl: string;
+
+        ((extended2.restApi.hafbe.transactions.byId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
+          transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
+        }) as Promise<any>).then(() => {
+          resolve(requestUrl);
+        }).catch(reject);
+      });
+
+      const urls = await Promise.all([
+        getPromise1(),
+        getPromise2()
+      ]);
+
+      return urls;
+    });
+
+    expect(retVal).toStrictEqual(["",""]);
   });
 
   test('Should be able to set REST API endpoint URL', async ({ waxTest }) => {
