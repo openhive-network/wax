@@ -1233,7 +1233,7 @@ API_TRX_SIG1_AUTHORITIES = {
     },
 }
 
-API_TRX_SIG5 = {
+API_TRX_SIG5_v0 = {
     "ref_block_num": 808,
     "ref_block_prefix": 1359279161,
     "extensions": [],
@@ -1294,3 +1294,419 @@ API_TRX_SIG5 = {
     ],
 }
 
+API_TRX_SIG5_AUTHORITIES_0 = {
+    "account_name": "esteem.app",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM6zXVBarPvth5XjcVmcyAiGEndvyiQAokVJHSsPGKWaoSqwHk5K", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM5XKXqoieAtbq8isuXty8SrysvsXfehJGZeLBQ6STEAsP4gHUBV", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["ecency.app", 1]],
+            "key_auths": [["STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM7rYhpTmVrhBmLcEaoxWvVk5M3FrN4xtapk1utikFD8hhrNmzAf",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_1 = {
+    "account_name": "ecency",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM4yhxC7Bum8St36z3nZmj9VA59EXM7DXReMLMRn8fwrazgNbKYQ", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM51ApnQm3HNieuy3ZUQNtXbdu8CzEFEWRPqMLY1422i8Gy7g2PJ", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["ecency.app", 1]],
+            "key_auths": [["STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5vCxUjSAZAgKBornswBuzXgAZasbE3EkPHpLmDEVHmPVGMnnah",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_2 = {
+    "account_name": "ecency.stats",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM8h5aXWY4xxVZfUCT3Bp3un6G4aAu2aRseJ4U2QXEb6HmLzo98n", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM6yT137LvnvqENnQj1mZx62SGxA5gpXUpMo2yAmCBXNfjnH3RjZ", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["demo", 1], ["ecency.app", 1]],
+            "key_auths": [["STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM73YE8rEQoDh6Y6EvrX2tXmmzhEnoTTwrL5jh3Wet3iMxKBJJty",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_3 = {
+    "account_name": "good-karma",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM7Wv1ZehXeLJbUbauam6h3khcnMXD9BLmuMBoD1v8jxh8Qm6Wgt", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM6FgbXf53uLD7m2skkzWR6Y4VU5zYwDqC476W2vva1aVognPnT2", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["ecency.app", 1], ["peakd.app", 1]],
+            "key_auths": [["STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM8mZcbokoRM8LvRk1CGibFyfuTXp77w72ktgJrZNsjKYmoF3gTx",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_4 = {
+    "account_name": "esteemapp",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM6drpX8y9nRyMykbonvXXkFbtESvWKG35NrNhoQ97uRhRQxbUhg", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM8eKCcDrQhmqmHjA2ifrtVUs5U7KXqXScnh4dwGzk6rhyRt2DtB", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [
+                ["ecency.app", 1],
+                ["hivesigner", 1],
+                ["peakd.app", 1],
+                ["steemconnect", 1],
+            ],
+            "key_auths": [["STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM6W6WwFy5P8putgwPppiyG1ySM65wvSQSPKErkDCNG9sTSevhjf",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_5 = {
+    "account_name": "demo",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM7N79vVmojHW4ZkCTytB753Eg938R3f8GA3M2ra7dd7TsTQKSCb", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [
+                ["STM5YR5MnAkAP4iKRWuzPv9Z33sdqDvyWHtknDse3c94M2krs9CDd", 1],
+                ["STM5YRGgcSyWr9PWgPfMucw8sAaryQ71vaHwv1SNsSETcf5jQZj36", 1],
+                ["STM5Z5Dmqt5hyidjhQYZkaoze3AW1BGm9LXVHL8oLt8gMTPhyZQm2", 1],
+                ["STM5auKGdpPM5bJuQeeayASWn4yCifgrSWgn4K3tH5f123N7M41gB", 1],
+                ["STM64nx2weChqikvdeYMzaR3hdVNrgvDtJyjNCAL4N8jQLC9kTmTX", 1],
+                ["STM77EkCQWHwVfCESvhevCzw3TWgVLexwr2f4pxmY1oZtMnz7gsEJ", 1],
+                ["STM7Vo1uyWAoyWKM7A7ExHEkfFCnq8ZRGyrZwZGpuJESCQ79cJ5cc", 1],
+                ["STM7bvNHzp4nMNmVysBbicDtogYg7TyWrPxnXw9aegCzNgELsNvM4", 1],
+                ["STM7nWjvRqLrdKKuqYZ2kL75TPMePNFc4dQpq6cHUkPJzmz5shP35", 1],
+                ["STM7nnkD6ZdoMHKta3rA9XVeeqQ3wy41Kmv3J8JWc5hx5oHbZXEK5", 1],
+                ["STM7sxc377Hac7vfVAT6xusAjVTMSHR4qSNy41CvZoJjnMLTePzK2", 1],
+                ["STM8PcNaC4Zk5yKXYiUjikj4P3hadU7H6WBCKtqPQzkhMiK3YBr5t", 1],
+                ["STM8fFik5Q7D8u9cD1WZW9pXGbqATxcyZT1SPaS21NCjqEar7zibD", 1],
+            ],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [
+                ["demo-app", 1],
+                ["ecency.app", 1],
+                ["hivesigner", 1],
+                ["leofinance", 1],
+            ],
+            "key_auths": [["STM62fkRnTJSeJoWMLS5r61cgQbxSo3JJ7BoxCgZrkfRuNN71hA1A", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5PV4XZSdKe9JdPXm7nxn3AtZPSzsrcD8hxFqueokxpqXbKxEs7",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_6 = {
+    "account_name": "ecency.app",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM6DFboChKgXFzkvEh18u2iXL7Q5N7ExNjqfPnuJ518uyRKWrsmJ", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM78Cf8BNZ6HmmeskFwGPfcjKzYhQHZD1bAiYHbmGFGQRJjQHuny", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["hivesigner", 1]],
+            "key_auths": [["STM7KDcjUNMqUdohFu9iYjCAqYEyXfM7pjNLx96GhRNpdYscB3aQc", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM8fACNECP4r4BvfMBJ8n8ScZ4sgEMRraNBVosuibPR1vbs25pAa",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_7 = {
+    "account_name": "hivesigner",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM7peJ4EfsE4yBrTcRqPwcrzuFyhHEZkHyaJMX7nscW78cEB1YjD", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM6DkcEaV3Jjo4owZEcK94kwc6hHhLAkLvxf9gsGUs6Fh6oG66tA", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [],
+            "key_auths": [["STM574A9CiTg3EkcsZ7VfXin8tVtFVWqGq5x2wrfoqv5yMfxvx96d", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5gPXMTMA8MPQBTUccSiTVBxgqKAijS4FQLkS6bZb3mN92ac6Xr",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_8 = {
+    "account_name": "peakd.app",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM6UYws2MJVPp32z1DhdwakP9Bhh9rfHeYq8zLPpcmJKafWKMHfU", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM6XFJgZM4Nfau2fVyVcQrVJJbqvvnD3RV2gRrPTiTaMVq5a1LcN", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["hivesigner", 1]],
+            "key_auths": [["STM64peLPcuSsUk591okRGUwv5rsTadSnnqi9ddMZhrVkxkDaSUzo", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5YNzowSc6EwLjBhpHMN7iutMa5VAUjcRPcxifJW6N3udWWXVSP",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_9 = {
+    "account_name": "steemconnect",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM5HNbqoTitv3dN4iNttaUQnbWDZhNQRohQ59CFuEf7z4AiCoDTz", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM58efjiXLKkjYvrqNCHQ5J4DTBXgCN9EE5K4gNaYPdixREfuW1F", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [],
+            "key_auths": [["STM5khoFYgEg8Mvh989JmXLhgEgwAF78nPRr2xppQgafzWCXe2krQ", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM7PApWPMRoKL1vGrsVrTS3Aqm95X8xGbpebWgNTFWWb5ex71W1M",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_10 = {
+    "account_name": "demo-app",
+    "authorities": {
+        "owner": {
+            "account_auths": [["steemconnect", 1]],
+            "key_auths": [["STM82hFUKjN2j8KGqQ8rz9YgFAbMrWFuCPkabtrAnUfV2JQshNPLz", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM7g438Ha3LB7kfuYNyT2MXaFKdogKad5B7vp7Lj35mNay4RwKPf", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [["ecency.app", 1], ["steemconnect", 1]],
+            "key_auths": [["STM6v5nwZYvAmyZZUoSdjJvgJ3FwiDHdKuWsAaB4zx3qhuhdyy76s", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5kKfxHjCdhgCNS5vA67iKCJTYXEWzbQdm3fv7cv9SRs1f4UZ1N",
+    },
+}
+
+API_TRX_SIG5_AUTHORITIES_11 = {
+    "account_name": "leofinance",
+    "authorities": {
+        "owner": {
+            "account_auths": [],
+            "key_auths": [["STM5QemqxTCU4peHzSVL7vPGExgzsdRbAB3uYk8xAQVzuTycbU3hN", 1]],
+            "weight_threshold": 1,
+        },
+        "active": {
+            "account_auths": [],
+            "key_auths": [["STM8dDctyAECwcwxgt4toBGockzs7WSUaXUrCkETP68pPLRAXSNsc", 1]],
+            "weight_threshold": 1,
+        },
+        "posting": {
+            "account_auths": [
+                ["hivesigner", 1],
+                ["leofinance", 1],
+                ["peakd.app", 1],
+                ["steem.leo", 1],
+                ["steemauto", 1],
+                ["threespeak", 1],
+            ],
+            "key_auths": [["STM57hDwzvNYEYfL4wLj9REhaRgiNxdFt232SxVzPwZYPqiH2ZfNW", 1]],
+            "weight_threshold": 1,
+        },
+        "memo": "STM5Vz7MkUod4kzCoj5N4xW2FUyXUEgn5eqHx9m8EuupqXyej9aD3",
+    },
+}
+
+API_TRX_SIG5_v1 = {
+    "ref_block_num": 528,
+    "ref_block_prefix": 1044714908,
+    "extensions": [],
+    "expiration": "2024-08-02T11:55:00",
+    "operations": [
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "ecency",
+                "author": "oflyhigh",
+                "weight": 100,
+                "permlink": "5pualx-and",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "ecency.stats",
+                "author": "oflyhigh",
+                "weight": 100,
+                "permlink": "5pualx-and",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "esteem.app",
+                "author": "oflyhigh",
+                "weight": 100,
+                "permlink": "5pualx-and",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "good-karma",
+                "author": "oflyhigh",
+                "weight": 100,
+                "permlink": "5pualx-and",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "esteemapp",
+                "author": "oflyhigh",
+                "weight": 100,
+                "permlink": "5pualx-and",
+            },
+        },
+    ],
+    "signatures": [
+        "1f090f0e06ee2d619c606d0a50619b7c0701eaf6aca1a1eb1be58f095cb470969c1878bc72fdc135dbc3313c32297d32cd4490e080dd737b1b84ca2490ec6b3ac2",
+        "1f10a2f09b957b5d0fd33e8a4b194f180046d2140be27974b038f3be6a05497f1f535fae01eb8a42f830b318ce4c948d119c63fa39ec399c5f281234bc2fa75f3c",
+        "1f4cbdc11512d188d8904efa86aadc9d641c8618ff14c216e20fd219dc1d5322d9636648558e38d3f5db16059073fbb7e98460877c71ca6206f02dcf25749192c5",
+        "1f698ab8b3dc9077f57dcab0a0e74a3ea9e1faa3d4b022be22103888c5b03eca365c5d3f53bd39168fb097b5d90ea502a868d9e15e2d97db84bf63b4978e127fce",
+        "203afe20deb225e5afc0f7825852a9f6eb7d1a5359a3f2a5d45367fdcd6322f65b147d511da7e0d8416878175107f07db0c5e40ad2c23d8aa2cddfe5cbccbbec94",
+    ],
+}
+
+API_TRX_SIG5_v2 = {
+    "ref_block_num": 435,
+    "ref_block_prefix": 3476775084,
+    "extensions": [],
+    "expiration": "2024-08-02T11:50:21",
+    "operations": [
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "ecency",
+                "author": "visualshots",
+                "weight": 100,
+                "permlink": "visual-shots-daily-curation-report-august-01-2024-eng-esp",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "ecency.stats",
+                "author": "visualshots",
+                "weight": 100,
+                "permlink": "visual-shots-daily-curation-report-august-01-2024-eng-esp",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "esteem.app",
+                "author": "visualshots",
+                "weight": 100,
+                "permlink": "visual-shots-daily-curation-report-august-01-2024-eng-esp",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "good-karma",
+                "author": "visualshots",
+                "weight": 100,
+                "permlink": "visual-shots-daily-curation-report-august-01-2024-eng-esp",
+            },
+        },
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "esteemapp",
+                "author": "visualshots",
+                "weight": 100,
+                "permlink": "visual-shots-daily-curation-report-august-01-2024-eng-esp",
+            },
+        },
+    ],
+    "signatures": [
+        "1f02e6406d1a0cbd2597f3731f8e7a8ae6625508113b26548eeb335cd640dcd2927bb5e499de290520a4e82e65139a2ee30c4b8366f1b27a2aa71255172f3e494b",
+        "1f11363331f7175f8162c6541a5515f8f009934fbe8a6fd37ac00a936d723827e0422927cb91d6ec3a475a45fdd12da553ec485e7599220067fdac0ba000a25cfc",
+        "1f27874abbaa01a5578b8e29338a55ea7e97a58bca009f9d9b405d49f6deee6a024f9cafdde4ff2c4b40236e5930eb1887df7e7a18d9ebd9418fc8bc5f38c81d77",
+        "20095f4f6e756d0de3d5899864d80b85c67ba9833da54db7c359947dfcc94b5a7873bba9c87b78e21a0cfa9c4b00b7cf7c87aab96e1de516988235e8d7f33e89ca",
+        "206043df39cab7bc40563e080627a7e4536922bdf57c4ef048c03b3cb72ee3e1955ec3ed7dd2013d2cee06a8da59a497255fa2d93fa5cf4e7dba01796ebda1d795",
+    ],
+}
