@@ -20,8 +20,12 @@ void signing_keys_collector::prepare_account_authority_data( const std::vector< 
 {
   std::vector<std::string> account_names;
   for (const auto& account : accounts)
+  {
+    ddump ( ("prepare_account_authority_data:account") ( account ) );
     account_names.emplace_back(static_cast<std::string>(account));
-  account_authorities = retrieve_authorities(account_names);
+  }
+  auto _account_authorities = retrieve_authorities(account_names);
+  account_authorities.merge(_account_authorities);
 }
 
 const hive::protocol::authority& signing_keys_collector::get_active( const account_name_type& account_name ) const
@@ -42,6 +46,11 @@ const hive::protocol::authority& signing_keys_collector::get_posting( const acco
 inline
 const signing_keys_collector::authorities_t& signing_keys_collector::get_authorities( const account_name_type& account_name ) const
 {
+  ddump ( ("get_authorities") ( account_name ) );
+  for (const auto& auths : account_authorities)
+  {
+    ddump ( ("account_authorities") ( auths.first ) );
+  }
   auto it = account_authorities.find( account_name );
   FC_ASSERT( it != account_authorities.end(),
     "Tried to access authority for account ${a} but not cached.", ( "a", account_name ) );
