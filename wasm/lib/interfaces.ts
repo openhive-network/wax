@@ -5,7 +5,7 @@ import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
-import type { DeepPartial, IWaxExtendableFormatter } from "./detailed/formatters/types";
+import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
 import type { NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
@@ -723,10 +723,14 @@ type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTy
 
 export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly result: TRes; };
 
+export type TDeepWaxRestApiRequestPartial<T> = T extends object ? {
+  [P in keyof T]?: TDeepWaxRestApiRequestPartial<T[P]>;
+} & Omit<TWaxRestApiRequest<any, any>, 'params' | 'result'> : T;
+
 export type TWaxRestApiRequest<TReq, TRes> = {
   readonly params: TReq;
   readonly result: TRes;
-  readonly isArray?: boolean;
+  readonly responseArray?: boolean;
   readonly method?: string;
   readonly urlPath?: string
 };
@@ -891,7 +895,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended Rest api
    */
-  extendRest<YourRestApi>(extendedHiveRestApiData?: DeepPartial<YourRestApi>): TWaxRestExtended<YourRestApi, this>;
+  extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxRestApiRequestPartial<YourRestApi>): TWaxRestExtended<YourRestApi, this>;
 
   /**
    * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)

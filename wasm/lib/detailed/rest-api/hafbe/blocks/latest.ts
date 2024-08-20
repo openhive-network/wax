@@ -3,7 +3,7 @@ import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
 
 export class GetLatestBlocksRequest {
   @IsNumber()
-  public limit!: number;
+  public 'result-limit'!: number;
 }
 
 export class OpsCount {

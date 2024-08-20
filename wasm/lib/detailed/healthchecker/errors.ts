@@ -9,6 +9,6 @@ export class WaxNon_2XX_3XX_ResponseCodeError<T extends (object | string) = stri
     public readonly request: IRequestOptions,
     public readonly response: Partial<IDetailedResponseData<T>>
   ) {
-    super("Received non 2xx-3xx http response code while requesting given resource");
+    super(`Received non 2xx-3xx http response code while requesting given resource "${request.method} ${request.url}"`);
   }
 }

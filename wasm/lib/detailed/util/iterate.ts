@@ -3,6 +3,12 @@ export const iterate = (thisObj: Record<string, any>, obj: Record<string, any>):
     return;
 
   for(const itKey in obj) {
+    if(typeof obj[itKey] !== "object") {
+      thisObj[itKey] = obj[itKey];
+
+      continue;
+    }
+
     if ("params" in obj[itKey])
       thisObj[itKey] = obj[itKey];
     else {

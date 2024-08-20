@@ -28,7 +28,7 @@ test.describe('Wax object interface chain REST API tests', () => {
 
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
-      const blocks = await chain.restApi.hafbe.blocks.latest({ limit: 1 });
+      const blocks = await chain.restApi.hafbe.operationTypeCounts({ "result-limit": 1 });
 
       return blocks;
     });
@@ -52,7 +52,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       }
 
       const extended = chain.extendRest({
-        hafbe: {
+        hafah: {
           transactions: {
             byId: {
               params: TransactionByIdRequest,
@@ -63,7 +63,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const blocks = await extended.restApi.hafbe.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+      const blocks = await extended.restApi.hafah.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
 
       return blocks;
     });
@@ -73,20 +73,46 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(retVal.transaction_json !== null).toBeTruthy();
   });
 
-  test('Should be able to extend and perform REST API calls returning INT', async ({ waxTest }) => {
+  test('Should be able to extend and perform REST API calls returning array of array', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
+      class RestGetOperationKeysParamsReq{
+        public operationTypeId!: number;
+      }
+
       const extended = chain.extendRest({
-        hafbe: {
-          'block-numbers': {
-            headblock: {
-              params: undefined,
-              result: Number
+        hafah: {
+          "operation-types": {
+            operationKeys: {
+              params: RestGetOperationKeysParamsReq,
+              result: Array<string>,
+              responseArray: true,
+              urlPath: "{operationTypeId}/keys"
             }
           }
         }
       });
 
-      const blockNum: number = await extended.restApi.hafbe['block-numbers'].headblock();
+      const operations = await extended.restApi.hafah['operation-types'].operationKeys({ operationTypeId: 1 });
+
+      return operations;
+    });
+
+    expect(Array.isArray(retVal)).toBeTruthy();
+    expect(Array.isArray(retVal[0])).toBeTruthy();
+  });
+
+  test('Should be able to extend and perform REST API calls returning INT', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ chain }) => {
+      const extended = chain.extendRest({
+        hafah: {
+          headblock: {
+            params: undefined,
+            result: Number
+          }
+        }
+      });
+
+      const blockNum: number = await extended.restApi.hafah.headblock();
 
       return blockNum;
     });
@@ -97,12 +123,10 @@ test.describe('Wax object interface chain REST API tests', () => {
   test('Should be able to call concurrently same REST API multiple times with same URL', async ({ waxTest }) => {
     const urls = await waxTest(async({ chain }) => {
       const extended = chain.extendRest({
-        hafbe: {
-          'block-numbers': {
-            headblock: {
-              params: undefined,
-              result: Number
-            }
+        hafah: {
+          headblock: {
+            params: undefined,
+            result: Number
           }
         }
       });
@@ -110,7 +134,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended.restApi.hafbe['block-numbers'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended.restApi.hafah.headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -162,29 +186,26 @@ test.describe('Wax object interface chain REST API tests', () => {
     const retVal = await waxTest(async({ chain }) => {
       // First extend REST API using interfaces only
       const extended1 = chain.extendRest<{
-        hafbe: {
-          'block-numbers': {
-            headblock: {
-              params: undefined,
-              result: number
-            }
+        hafah: {
+          headblock: {
+            params: undefined,
+            result: number
           }
         }
       }>();
 
       // Then extend REST API using interfaces and providing additional urlPath data
       const extended2 = extended1.extendRest<{
-        hafbe: {
+        hafah: {
           transactions: {
             byId: {
               params: { transactionId: string; };
               result: { transaction_json: object; };
-              urlPath: "{transactionId}"
             }
           }
         }
       }>({
-        hafbe: {
+        hafah: {
           transactions: {
             byId: {
               urlPath: "{transactionId}"
@@ -196,7 +217,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise1 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi.hafbe['block-numbers'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended2.restApi.hafah.headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -204,7 +225,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise2 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi.hafbe.transactions.byId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
+        ((extended2.restApi.hafah.transactions.byId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
           transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
         }) as Promise<any>).then(() => {
           resolve(requestUrl);
@@ -219,7 +240,10 @@ test.describe('Wax object interface chain REST API tests', () => {
       return urls;
     });
 
-    expect(retVal).toStrictEqual(["",""]);
+    expect(retVal).toStrictEqual([
+      "https://api.syncad.com/hafah/headblock",
+      "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+    ]);
   });
 
   test('Should be able to set REST API endpoint URL', async ({ waxTest }) => {
@@ -239,10 +263,10 @@ test.describe('Wax object interface chain REST API tests', () => {
     const url2 = "https://other.honey.provider";
 
     const retVal = await waxTest(async({ chain }, url1, url2) => {
-      chain.restApi.hafbe.blocks.endpointUrl = url1;
-      chain.restApi.hafbe.blocks.latest.endpointUrl = url2;
+      chain.restApi.hafbe.witnesses.endpointUrl = url1;
+      chain.restApi.hafbe.witnesses.root.endpointUrl = url2;
 
-      return [chain.restApi.endpointUrl, chain.restApi.hafbe.blocks.endpointUrl, chain.restApi.hafbe.blocks.latest.endpointUrl];
+      return [chain.restApi.endpointUrl, chain.restApi.hafbe.witnesses.endpointUrl, chain.restApi.hafbe.witnesses.root.endpointUrl];
     }, url1, url2);
 
     expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);

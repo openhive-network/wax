@@ -20,13 +20,11 @@ export const HiveRestApiTypes = {
         urlPath: "${accountName}"
       }
     },
-    blocks: {
-      latest: {
-        params: GetLatestBlocksRequest,
-        result: GetLatestBlocksResponse,
-        urlPath: "",
-        responseArray: true
-      }
+    operationTypeCounts: {
+      params: GetLatestBlocksRequest,
+      result: GetLatestBlocksResponse,
+      urlPath: "operation-type-counts",
+      responseArray: true
     }
   }
 };

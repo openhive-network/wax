@@ -1,8 +1,7 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TWaxRestApiRequest } from "../interfaces";
+import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TWaxRestApiRequest, TDeepWaxRestApiRequestPartial } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import type { ApiAccount, ApiManabar, RcAccount } from "./api";
-import type { DeepPartial } from "./formatters";
 
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
@@ -359,7 +358,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return newApi as unknown as HiveChainApi & TWaxExtended<YourApi, this>;
   }
 
-  public extendRest<YourRestApi>(extendedHiveRestApiData?: DeepPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
+  public extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxRestApiRequestPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.apiEndpoint, this.restApiEndpoint, this);
 
     if(typeof extendedHiveRestApiData === "object")
