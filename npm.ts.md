@@ -269,6 +269,83 @@ const result = await extended.api.transaction_status_api.find_transaction({
 console.info(result); // { status: 'unknown' }
 ```
 
+#### Extend REST API interface and call custom endpoints
+
+In this example we will extend REST API Wax endpoints and create our classes with validators
+in order to use the [hafah_endpoints.get_transaction](https://api.syncad.com/?urls.primaryName=HAfAH#/Transactions/hafah_endpoints.get_transaction) API:
+
+```ts
+import { IsHexadecimal } from 'class-validator';
+import { createHiveChain, TWaxRestExtended } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+class TransactionByIdRequest {
+  @IsHexadecimal()
+  public transactionId!: string;
+}
+
+// Create the proper API structure
+const ExtendedRestApi = {
+  hafah: { // API type - structure-like - pushed to the query path during call
+    transactions: { // method name - also pushed to the query path during call
+      byId: { // next query path to be added. It will be replaced though due to the urlPath property defined
+        params: TransactionByIdRequest, // params is our request
+        result: Number, // result is our response (Number is a NumberConstructor - we cannot use number as a type in this context, so we pass NumberConstructor as a value)
+        urlPath: "{transactionId}" // url that will replace `byId`. We have `{}` format syntax here, so it means data from `params` matching given property names will be replaced in braces
+      }
+    }
+  }
+};
+
+const extended: TWaxRestExtended<typeof ExtendedRestApi> = chain.extendRest(ExtendedRestApi);
+
+// Call the REST API using our extended interface
+const result = await await extended.restApi.hafah.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+
+console.info(result); // URL response from "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+```
+
+#### Extend REST API interface using interfaces only and call custom endpoints
+
+In this example we will extend the REST API Wax endpoints without creating any validators.
+The goal is to extend the REST API interface using TypeScript interfaces-only in order to also use the [hafah_endpoints.get_transaction](https://api.syncad.com/?urls.primaryName=HAfAH#/Transactions/hafah_endpoints.get_transaction) API:
+
+```ts
+import { createHiveChain, TWaxRestExtended } from '@hiveio/wax';
+const chain = await createHiveChain();
+
+interface ITransactionByIdRequest {
+  transactionId: string;
+}
+
+// Create the proper API structure
+type TExtendedRestApi = {
+  hafah: {
+    transactions: {
+      byId: {
+        params: TransactionByIdRequest;
+        result: number; // we can use standard `number` type now, as it can be passed as value in this context
+      }
+    }
+  }
+};
+
+const extended: TWaxRestExtended<TExtendedRestApi> = chain.extendRest({
+  hafah: {
+    transactions: {
+      byId: {
+        urlPath: "{transactionId}" // We have to pass urlPath as value here
+      }
+    }
+  }
+});
+
+// Call the REST API using our extended interface
+const result = await await extended.restApi.hafah.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+
+console.info(result); // URL response from "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+```
+
 ## API
 
 See API documentation at [project WIKI](${GEN_DOC_URL})
