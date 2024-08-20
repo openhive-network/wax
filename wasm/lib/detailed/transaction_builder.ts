@@ -239,18 +239,6 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return this.target.signatures.length > 0;
   }
 
-  public build(walletOrSignature?: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): transaction {
-    if(typeof walletOrSignature === 'string')
-      this.target.signatures.push(walletOrSignature);
-
-    if(typeof walletOrSignature === 'object' && typeof publicKey !== 'undefined')
-      this.sign(walletOrSignature, publicKey);
-    else
-      this.flushTransaction();
-
-    return this.target;
-  }
-
   public get transaction(): transaction {
     this.flushTransaction();
 

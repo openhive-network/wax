@@ -202,51 +202,11 @@ interface ITransactionBase {
   sign(signature: THexString): THexString;
 
   /**
-   * Checks if underlying transaction has been already signed at least one time (after {@link sign} or {@link build})
+   * Checks if underlying transaction has been already signed at least one time (after {@link sign})
    *
    * @returns {boolean} either true or false based on the signatures amount
    */
   isSigned(): boolean;
-
-  /**
-   * Signs the transaction using given public key and returns the proto transaction. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
-   *
-   * @returns {transaction} signed protobuf transaction object
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   *
-   * @deprecated
-   */
-  build(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): transaction;
-
-  /**
-   * Adds your signature to the internal signatures array and returns the proto transaction. Applies the transaction expiration time
-   *
-   * @param {THexString} signature signature to add
-   *
-   * @returns {transaction} protobuf transaction object
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   *
-   * @deprecated
-   */
-  build(signature: THexString): transaction;
-
-  /**
-   * Returns the proto transaction. Applies the transaction expiration time.
-   *
-   * @returns {transaction} transaction
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   *
-   * @deprecated
-   */
-  build(): transaction;
 
   /**
    * Fills up constructed transaction object basing on preconfigured TAPOS. Also applies the transaction expiration time.

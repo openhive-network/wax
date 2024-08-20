@@ -1029,7 +1029,7 @@ test.describe('Wax operation factories tests', () => {
         description: 'build transaction'
       }));
 
-      return tx.build.length;
+      return tx.transaction.operations.length;
     });
 
     expect(retVal).toStrictEqual(2);
