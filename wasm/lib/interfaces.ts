@@ -6,7 +6,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { NaiAsset } from "./detailed";
+import type { ApiTransaction, NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type Long from "long";
 import type { OperationBase } from "./detailed/operation_builder";
@@ -799,6 +799,15 @@ export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IH
 export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiRestData<YourRestApi[k]> } };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
+  /**
+   * Broadcast transaction to the selected during Wax Chain initialization Hive Node
+   *
+   * @param transaction Transaction object to be broadcasted
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  broadcast(transaction: ApiTransaction | object | ITransaction): Promise<void>;
+
   /**
    * Allows to start transaction preparing process.
    *

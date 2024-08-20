@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import type { TDefaultHiveApi, IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TWaxRestApiRequest, TDeepWaxRestApiRequestPartial } from "../interfaces";
 import type { MainModule } from "../wax_module";
-import type { ApiAccount, ApiManabar, RcAccount } from "./api";
+import { BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
@@ -12,6 +12,7 @@ import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
 import { extractBracedStrings } from "./rest-api/utils.js";
 import { iterate } from "./util/iterate.js";
+import { Transaction } from "./transaction_builder.js";
 
 import Long from "long";
 import qs from 'qs';
@@ -199,6 +200,15 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     iterate(this.localRestTypes, HiveRestApiTypes);
 
     this.initializeApi();
+  }
+
+  public async broadcast(transaction: ApiTransaction | object | Transaction): Promise<void> {
+    const toBroadcast: object = "target" in transaction ? transaction.toApiJson() : transaction;
+
+    const request = new BroadcastTransactionRequest();
+    request.trx = toBroadcast as ApiTransaction;
+
+    await this.api.network_broadcast_api.broadcast_transaction(request);
   }
 
   private requestInterceptor: (data: IRequestOptions) => IRequestOptions = (data: IRequestOptions) => data;

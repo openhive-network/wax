@@ -110,7 +110,7 @@ console.info(chain.waxify`${stx}`);
 #### Create a transaction and broadcast it using network_broadcast_api
 
 ```js
-import { createHiveChain, BroadcastTransactionRequest } from '@hiveio/wax';
+import { createHiveChain } from '@hiveio/wax';
 import beekeeperFactory from '@hiveio/beekeeper';
 const bk = await beekeeperFactory();
 const chain = await createHiveChain();
@@ -133,10 +133,8 @@ tx.pushOperation({
   }
 }).sign(wallet, publicKey);
 
-const request = new BroadcastTransactionRequest(tx);
-
-// Transmit
-await chain.api.network_broadcast_api.broadcast_transaction(request);
+// Broadcast
+await chain.broadcast(tx);
 ```
 
 #### Use custom formatters to output data in specified format
