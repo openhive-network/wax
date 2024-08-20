@@ -50,36 +50,36 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       let path = '/' + callFn.paths.filter(node => node.length).join('/');
       const allToReplace = extractBracedStrings(path);
 
-      const reqImmutable = params === undefined ? undefined : structuredClone(params);
+      const finalizedRequestData = params === undefined ? undefined : structuredClone(params);
 
       if (typeof params === "object")
         for(const toReplace of allToReplace) {
-          if (toReplace in (reqImmutable as object))
-            path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof reqImmutable]));
+          if (toReplace in (finalizedRequestData as object))
+            path = path.replace(`{${toReplace}}`, String(params[toReplace as keyof typeof finalizedRequestData]));
           else
             throw new Error('No ' + toReplace + ' in request');
 
-          delete (reqImmutable as object)[toReplace as keyof typeof reqImmutable];
+          delete (finalizedRequestData as object)[toReplace as keyof typeof finalizedRequestData];
         }
 
       const method = callFn.lastMethod;
-      const isQsReq = method === 'GET' || method === 'DELETE';
+      const isQueryStringOnlyRequest = method === 'GET' || method === 'DELETE';
 
-      let body: string;
-      if (isQsReq)
-        body = qs.stringify(reqImmutable);
-      else
-        body = JSON.stringify(reqImmutable);
+      let queryString = '';
+      if (isQueryStringOnlyRequest && finalizedRequestData !== undefined && Object.keys(finalizedRequestData).length > 0)
+        queryString = '?' + qs.stringify(finalizedRequestData);
+
+      const body = isQueryStringOnlyRequest ? undefined : JSON.stringify(finalizedRequestData);
 
       const endpoint = that.getEndpointUrlForRestApi(callFn.paths);
 
-      const url = endpoint + path + (isQsReq ? (body.length === 0 ? '' : '?' + body) : '');
+      const url = endpoint + path + queryString;
 
       const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
         method,
         responseType: 'json',
         url,
-        data: isQsReq ? undefined : JSON.stringify(reqImmutable)
+        data: body
       }))) as IDetailedResponseData<object>;
       let result: any = data.response;
 

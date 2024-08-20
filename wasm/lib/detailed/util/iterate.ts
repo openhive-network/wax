@@ -1,21 +1,21 @@
-export const iterate = (thisObj: Record<string, any>, obj: Record<string, any>): void => {
-  if (typeof obj !== "object")
+export const iterate = (source: Record<string, any>, target: Record<string, any>): void => {
+  if (typeof target !== "object")
     return;
 
-  for(const itKey in obj) {
-    if(typeof obj[itKey] !== "object") {
-      thisObj[itKey] = obj[itKey];
+  for(const itKey in target) {
+    if(typeof target[itKey] !== "object") {
+      source[itKey] = target[itKey];
 
       continue;
     }
 
-    if ("params" in obj[itKey])
-      thisObj[itKey] = obj[itKey];
+    if ("params" in target[itKey])
+      source[itKey] = target[itKey];
     else {
-      if (thisObj[itKey] === undefined)
-        thisObj[itKey] = {};
+      if (source[itKey] === undefined)
+        source[itKey] = {};
 
-      iterate(thisObj[itKey], obj[itKey]);
+      iterate(source[itKey], target[itKey]);
     }
   }
 };
