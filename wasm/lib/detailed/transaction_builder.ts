@@ -219,6 +219,8 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   public sign(walletOrSignature: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): THexString {
+    this.validate();
+
     if (typeof walletOrSignature === 'string') {
 
       this.target.signatures.push(walletOrSignature);

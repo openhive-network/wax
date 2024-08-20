@@ -1032,7 +1032,7 @@ test.describe('Wax operation factories tests', () => {
       return tx.transaction.operations.length;
     });
 
-    expect(retVal).toStrictEqual(2);
+    expect(retVal).toStrictEqual(1);
   });
 
   test.afterAll(async () => {

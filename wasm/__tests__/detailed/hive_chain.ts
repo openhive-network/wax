@@ -66,7 +66,7 @@ test.describe('Wax object interface chain tests', () => {
       const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.pushOperation(new wax.BlogPostOperation({
-        author: "me",
+        author: "mee",
         body: "how r u",
         category: "test",
         title: "about you",
@@ -93,7 +93,7 @@ test.describe('Wax object interface chain tests', () => {
             value: {
               parent_author: "",
               parent_permlink: "test",
-              author: "me",
+              author: "mee",
               permlink: "permlink1",
               title: "about you",
               body: "how r u",
@@ -103,7 +103,7 @@ test.describe('Wax object interface chain tests', () => {
           {
             type: "comment_options_operation",
             value: {
-              author: "me",
+              author: "mee",
               permlink: "permlink1",
               max_accepted_payout: {
                 amount: "0",

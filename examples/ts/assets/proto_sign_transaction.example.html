@@ -47,9 +47,9 @@
 
       const tx = new wax.Transaction(protoTx);
 
-      const signed = tx.build(wallet, publicKey);
+      const signed = tx.sign(wallet, publicKey);
 
-      console.log(`Your signature for transmitting: "${signed.signatures[0]}"`);
+      console.log(`Your signature for transmitting: "${tx.transaction.signatures[0]}"`);
       console.log(`Transaction id: ${tx.id} (matches the real one: ${String(tx.id === txId)})`);
 
       await beekeeper.delete();

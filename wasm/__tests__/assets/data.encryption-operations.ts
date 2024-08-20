@@ -116,8 +116,8 @@ export const recurrentTransferOp = {
     to_account: 'initminer',
     amount: chain.hive(100),
     memo: 'This should be encrypted',
-    recurrence: 1,
-    executions: 1,
+    recurrence: 24,
+    executions: 2,
     extensions: [],
   },
 };
@@ -135,7 +135,7 @@ export const convertOp = {
   convert: {
     owner: 'gtg',
     requestid: 1,
-    amount: chain.hive(100),
+    amount: chain.hbd(100),
   },
 };
 
@@ -159,7 +159,7 @@ export const limitOrderCreateOp = {
     owner: 'gtg',
     orderid: 1,
     amount_to_sell: chain.hive(100),
-    min_to_receive: chain.hive(50),
+    min_to_receive: chain.hbd(50),
     fill_or_kill: false,
     expiration: '2023-11-09T21:51:27',
   },
@@ -177,7 +177,7 @@ export const feedPublishOp = {
     publisher: 'gtg',
     exchange_rate: {
       base: chain.hive(100),
-      quote: chain.hive(50),
+      quote: chain.hbd(50),
     },
   },
 };
@@ -304,7 +304,7 @@ export const commentOptionsOp = {
   comment_options: {
     author: 'gtg',
     permlink: 'test-permlink',
-    max_accepted_payout: chain.hive(100),
+    max_accepted_payout: chain.hbd(100),
     percent_hbd: 10,
     allow_votes: true,
     allow_curation_rewards: true,
@@ -329,7 +329,7 @@ export const limitOrderCreate2Op = {
     fill_or_kill: false,
     exchange_rate: {
       base: chain.hive(100),
-      quote: chain.hive(50),
+      quote: chain.hbd(50),
     },
     expiration: '2023-11-09T21:51:27',
   },
@@ -393,12 +393,12 @@ export const escrowTransferOp = {
   escrow_transfer: {
     from_account: 'initminer',
     to_account: 'gtg',
-    agent: 'gtg',
+    agent: 'blocktrades',
     escrow_id: 100,
     hbd_amount: chain.hbd(100),
     hive_amount: chain.hive(100),
     fee: chain.hive(100),
-    ratification_deadline: '2023-11-09T21:51:27',
+    ratification_deadline: '2023-11-09T21:51:20',
     escrow_expiration: '2023-11-09T21:51:27',
     json_meta: '{}',
   },
@@ -408,7 +408,7 @@ export const escrowDisputeOp = {
   escrow_dispute: {
     from_account: 'initminer',
     to_account: 'gtg',
-    agent: 'gtg',
+    agent: 'blocktrades',
     who: 'gtg',
     escrow_id: 100,
   },
@@ -472,7 +472,7 @@ export const delegateVestingSharesOp = {
 export const accountCreateWithDelegationOp = {
   account_create_with_delegation: {
     fee: chain.hive(100),
-    delegation: chain.hive(50),
+    delegation: chain.vests(50),
     creator: 'gtg',
     new_account_name: 'initminer',
     owner: {
@@ -535,7 +535,7 @@ export const createProposalOp = {
     receiver: 'gtg',
     start_date: '2023-11-09T21:51:27',
     end_date: '2023-11-10T21:51:27',
-    daily_pay: chain.hive(100),
+    daily_pay: chain.hbd(100),
     subject: 'Test subject',
     permlink: 'test-permlink',
     extensions: [],
@@ -563,7 +563,7 @@ export const updateProposalOp = {
   update_proposal: {
     proposal_id: '1',
     creator: 'initminer',
-    daily_pay: chain.hive(100),
+    daily_pay: chain.hbd(100),
     subject: 'Test subject',
     permlink: 'test-permlink',
     extensions: [],
