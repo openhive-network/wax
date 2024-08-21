@@ -65,7 +65,7 @@ globalThis.createWasmTestFor = async function createWasmTestFor(_env: TEnvType) 
   const wasm = await import("../../dist/lib/build_wasm/wax.common.js");
 
   // Initialize data
-  const provider = await (wasm as { default: TMainModuleFn }).default();
+  const provider = await (wasm as unknown as { default: TMainModuleFn }).default();
 
   // Provide results
   return {

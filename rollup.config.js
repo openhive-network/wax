@@ -32,6 +32,7 @@ const commonConfiguration = packEntire => ([
           // 'module' dependency is redundant in our environment - use 'await import' instead:
           'const{createRequire:createRequire}=await import("module");': '',
           'var require=createRequire(import.meta.url);': '',
+          'createRequire(import.meta.url);': '',
           'var nodePath=require("path")': 'var nodePath=await import("path")',
           // new URL("./") throws - use import.meta.url instead:
           'require("url").fileURLToPath(new URL("./",import.meta.url))': 'import.meta.url',
