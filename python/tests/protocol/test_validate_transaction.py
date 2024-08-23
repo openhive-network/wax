@@ -24,7 +24,7 @@ def test_validate_transaction():
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:482 from_variant')
+        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:484 from_variant')
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION_NO_OPERATIONS)
