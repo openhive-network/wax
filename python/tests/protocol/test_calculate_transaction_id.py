@@ -16,7 +16,7 @@ def test_calculate_transaction_id():
     result = calculate_transaction_id(tx_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:482 from_variant')
+        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:484 from_variant')
 
 def test_calculate_serialization_sensitive_transaction_id():
     tx_str = json.dumps(API_REF_SERIALIZATION_SENSITIVE_TRANSACTION)

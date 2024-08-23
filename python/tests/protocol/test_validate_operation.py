@@ -19,7 +19,7 @@ def test_validate_operation():
     result = validate_operation(vote_op_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:482 from_variant')
+        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:484 from_variant')
 
     vote_op_str = json.dumps(API_REF_VOTE_OP_EMPTY)
     result = validate_operation(vote_op_str.encode())
