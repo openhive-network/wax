@@ -3,6 +3,8 @@
 # tag: cpp17
 
 from libcpp.string cimport string
+from libcpp.pair cimport pair
+from libcpp.vector cimport vector
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
@@ -97,7 +99,25 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring.
         cpp_optional[uint32_t]    account_subsidy_decay
 
+    cdef cppclass wax_authority:
+        wax_authority() except +
+
+        ctypedef cppmap[string, uint16_t] authority_map
+
+        uint32_t      weight_threshold
+        authority_map account_auths
+        authority_map key_auths
+
+    cdef cppclass wax_authorities:
+        wax_authorities() except +
+
+        wax_authority active
+        wax_authority owner
+        wax_authority posting
+
     ctypedef cppmap[string, string] witness_set_properties_serialized
+
+    ctypedef cppmap[string, wax_authorities] (*retrieve_authorities_t)(vector[string], void* ) except +
 
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
@@ -131,6 +151,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
         witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
+
+        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_user_data ) except +
 
         void cpp_throws(int type) except +
 

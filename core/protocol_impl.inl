@@ -3,7 +3,9 @@
 #include "core/protocol_impl.hpp"
 
 #include "core/utils.hpp"
+#include "core/signing_keys_collector.hpp"
 
+#include <hive/protocol/authority.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/types.hpp>
@@ -158,6 +160,66 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   /// ret_val.other_authorities = std::move(other_authorities);
 
   return ret_val;
+  });
+}
+
+static inline
+signing_keys_collector::authorities_t convert_wax_authorities_to_authorities(const wax_authorities& w_authorities)
+{
+  using authority = hive::protocol::authority;
+  auto convert_wax_key_auth_map_to_hive_key_auth_map = [](const wax_authority::authority_map& auth_map) -> authority::key_authority_map {
+    authority::key_authority_map result;
+    for (const auto& auth : auth_map)
+      result.emplace(auth.first, auth.second);
+    return result;
+    };
+
+  authority active;
+  const auto& wax_active = w_authorities.active;
+  active.weight_threshold = wax_active.weight_threshold;
+  active.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_active.key_auths);
+  active.account_auths = authority::account_authority_map(wax_active.account_auths.cbegin(), wax_active.account_auths.cend());
+
+  authority owner;
+  const auto& wax_owner = w_authorities.owner;
+  owner.weight_threshold = wax_owner.weight_threshold;
+  owner.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_owner.key_auths);
+  owner.account_auths = authority::account_authority_map(wax_owner.account_auths.cbegin(), wax_owner.account_auths.cend());
+
+  authority posting;
+  const auto& wax_posting = w_authorities.posting;
+  posting.weight_threshold = wax_posting.weight_threshold;
+  posting.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_posting.key_auths);
+  posting.account_auths = authority::account_authority_map(wax_posting.account_auths.cbegin(), wax_posting.account_auths.cend());
+
+  return { std::move(active), std::move(owner), std::move(posting) };
+}
+
+template <class FoundationProvider>
+inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_keys(
+  const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_user_data)
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    const auto tx = get_transaction(transaction);
+    signing_keys_collector::retrieve_authorities_t retrieve_authorities = [&] (const std::vector<std::string>& accounts)
+      {
+      const auto wax_authorities_map = retrieve_authorities_cb(accounts, retrieve_authorities_user_data);
+      signing_keys_collector::authorities_map_t authorities_map;
+      for (const auto& wax_authorities_info : wax_authorities_map)
+      {
+        signing_keys_collector::account_name_type account = wax_authorities_info.first;
+        signing_keys_collector::authorities_t authorities = convert_wax_authorities_to_authorities(wax_authorities_info.second);
+        authorities_map.emplace(account, std::move(authorities));
+      }
+
+      return authorities_map;
+      };
+
+    signing_keys_collector signing_keys_collector(retrieve_authorities);
+    std::vector<std::string> result = signing_keys_collector.collect_signing_keys(tx);
+
+    return result;
   });
 }
 

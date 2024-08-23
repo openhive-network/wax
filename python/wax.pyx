@@ -1,17 +1,34 @@
 # -*- coding: utf-8 -*-
 # distutils: language = c++
 
+from typing import Callable
 from functools import wraps
 
 from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
+from libcpp.map cimport map as cppmap
+from libcpp.vector cimport vector
 from libcpp.optional cimport optional, make_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
+import cython
 from cython.operator cimport dereference, preincrement
 
 from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo, python_private_key_data, python_brain_key_data, python_witness_set_properties_data, python_price
+from .wax_result import (
+    python_result,
+    python_error_code,
+    python_json_asset,
+    python_ref_block_data,
+    python_required_authority_collection,
+    python_encrypted_memo,
+    python_private_key_data,
+    python_brain_key_data,
+    python_witness_set_properties_data,
+    python_price,
+    python_authority,
+    python_authorities,
+)
 
 def return_python_result(foo):
     @wraps(foo)
@@ -447,6 +464,32 @@ def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]
       ret_val.account_subsidy_decay=int(deserialized_props.account_subsidy_decay.value())
 
     return ret_val
+
+cdef wax_authority python_authority_to_wax_authority(object auth_obj):
+    auth = wax_authority()
+    auth.weight_threshold = auth_obj.weight_threshold
+    auth.key_auths = auth_obj.key_auths
+    auth.account_auths = auth_obj.account_auths
+    return auth
+
+cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
+    auths = wax_authorities()
+    auths.active = python_authority_to_wax_authority(auths_obj.active)
+    auths.owner = python_authority_to_wax_authority(auths_obj.owner)
+    auths.posting = python_authority_to_wax_authority(auths_obj.posting)
+    return auths
+
+cdef cppmap[cppstring, wax_authorities] retrieve_authorities_cb(vector[cppstring] account_names, void* retrieve_authorities_fn):
+    cdef object obj = (<object>retrieve_authorities_fn)(account_names)
+    cdef cppmap[cppstring, wax_authorities] result
+    for k, v in obj.items():
+        auths = python_authorities_to_wax_authorities(v)
+        result[k] = auths
+    return result
+
+def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
+    cdef protocol obj
+    return obj.cpp_collect_signing_keys(transaction, retrieve_authorities_cb, <void*>(retrieve_authorities))
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

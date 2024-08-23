@@ -2,8 +2,9 @@
 
 #include "core/types.hpp"
 
-#include <set>
+#include <vector>
 #include <string>
+#include <map>
 
 namespace cpp {
 
@@ -44,7 +45,15 @@ public:
   *   Can throw on error.
   */
   required_authority_collection cpp_collect_transaction_required_authorities(const std::string& transaction);
+
+  using authorities_map_t = std::map<std::string, wax_authorities>;
+  typedef authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);
+
+  /** Allows to collect signing keys from given transaction
+  *   Can throw on error.
+  */
+  std::vector<std::string> cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb,
+    void* retrieve_authorities_user_data);
 };
 
 } /// namespace cpp
-

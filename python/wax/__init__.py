@@ -42,10 +42,22 @@ from .wax import (
     encode_encrypted_memo,
     decode_encrypted_memo,
     serialize_witness_set_properties,
-    deserialize_witness_set_properties
+    deserialize_witness_set_properties,
+    collect_signing_keys,
 )
 
-from .wax_result import python_error_code, python_json_asset, python_result, python_ref_block_data, python_required_authority_collection, python_private_key_data, python_brain_key_data, python_witness_set_properties_data
+from .wax_result import (
+    python_error_code,
+    python_json_asset,
+    python_result,
+    python_ref_block_data,
+    python_required_authority_collection,
+    python_private_key_data,
+    python_brain_key_data,
+    python_witness_set_properties_data,
+    python_authority,
+    python_authorities,
+)
 
 __version__ = "0.0.0"
 
@@ -58,6 +70,8 @@ __all__ = [
     "python_private_key_data",
     "python_brain_key_data",
     "python_witness_set_properties_data",
+    "python_authority",
+    "python_authorities",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -100,5 +114,5 @@ __all__ = [
     "decode_encrypted_memo",
     "serialize_witness_set_properties",
     "deserialize_witness_set_properties",
-
+    "collect_signing_keys",
 ]

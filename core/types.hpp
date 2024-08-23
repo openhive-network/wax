@@ -116,4 +116,20 @@ struct required_authority_collection
   /// std::vector<authority> other_authorities;
 };
 
+struct wax_authority
+{
+  using authority_map = std::map<std::string, uint16_t>;
+
+  uint32_t      weight_threshold = 0;
+  authority_map account_auths;
+  authority_map key_auths;
+};
+
+struct wax_authorities
+{
+  wax_authority active;
+  wax_authority owner;
+  wax_authority posting;
+};
+
 } /// namespace cpp
