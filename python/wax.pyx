@@ -1,17 +1,34 @@
 # -*- coding: utf-8 -*-
 # distutils: language = c++
 
+from typing import Callable
 from functools import wraps
 
 from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
+from libcpp.map cimport map as cppmap
+from libcpp.vector cimport vector
 from libcpp.optional cimport optional, make_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
+import cython
 from cython.operator cimport dereference, preincrement
 
-from wax cimport error_code, json_asset, result, protocol, proto_protocol
-from .wax_result import python_result, python_error_code, python_json_asset, python_ref_block_data, python_required_authority_collection, python_encrypted_memo, python_private_key_data, python_brain_key_data, python_witness_set_properties_data, python_price
+from wax cimport authority, authorities, error_code, json_asset, result, protocol, proto_protocol
+from .wax_result import (
+    python_result,
+    python_error_code,
+    python_json_asset,
+    python_ref_block_data,
+    python_required_authority_collection,
+    python_encrypted_memo,
+    python_private_key_data,
+    python_brain_key_data,
+    python_witness_set_properties_data,
+    python_price,
+    python_authority,
+    python_authorities,
+)
 
 def return_python_result(foo):
     @wraps(foo)
@@ -447,6 +464,25 @@ def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]
       ret_val.account_subsidy_decay=int(deserialized_props.account_subsidy_decay.value())
 
     return ret_val
+
+cdef authority pauthority_to_authority(object auth_obj):
+    cdef authority auth = authority()
+    auth.weight_threshold = auth_obj.weight_threshold
+    auth.key_auths = auth_obj.key_auths
+    auth.account_auths = auth_obj.account_auths
+    return auth
+
+cdef authorities get_account_authorities_cb(cppstring account_name, void* user_data):
+    cdef object obj = (<object>user_data)(account_name)
+    cdef authorities result = authorities()
+    result.active = pauthority_to_authority(obj.active)
+    result.owner = pauthority_to_authority(obj.owner)
+    result.posting = pauthority_to_authority(obj.posting)
+    return result
+
+def collect_signing_keys(transaction: bytes, get_account_authorities: Callable[[bytes], python_authorities]) -> list[bytes]:
+    cdef protocol obj
+    return obj.cpp_collect_signing_keys(transaction, get_account_authorities_cb, <void*>(get_account_authorities))
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

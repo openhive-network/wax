@@ -93,3 +93,15 @@ class python_witness_set_properties_data:
     account_subsidy_budget: int|None=None
     # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring.
     account_subsidy_decay: int|None=None
+
+@dataclass
+class python_authority:
+    weight_threshold: int
+    account_auths: dict[bytes, int]
+    key_auths: dict[bytes, int]
+
+@dataclass
+class python_authorities:
+    active: python_authority
+    owner: python_authority
+    posting: python_authority

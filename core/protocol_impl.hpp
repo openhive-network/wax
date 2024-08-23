@@ -2,10 +2,13 @@
 
 #include "core/types.hpp"
 
-#include <set>
+#include <vector>
 #include <string>
+#include <map>
 
 namespace cpp {
+
+class signing_keys_collector;
 
 /** Common implementation of protocol interface, next exposed to other languages
     It provides Hive protocol functionality operating on Hive native JSON format.
@@ -44,7 +47,12 @@ public:
   *   Can throw on error.
   */
   required_authority_collection cpp_collect_transaction_required_authorities(const std::string& transaction);
+
+  /** Allows to collect signing keys from given transaction
+  *   Can throw on error.
+  */
+  std::vector<std::string> cpp_collect_signing_keys(const std::string& transaction, get_account_authorities_cb_t get_account_authorities_cb,
+    void* get_account_authorities_user_data);
 };
 
 } /// namespace cpp
-

@@ -19,6 +19,7 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_FLAGS -g)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 set(CMAKE_VERBOSE_MAKEFILE "ON")
@@ -47,8 +48,14 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
-add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp cpython_interface.cpp ${HEADERS}
-  LINK_LIBRARIES hive_protocol)
+add_python_library(${PROJECT_NAME} MODULE SOURCES
+  ${WAX_CPP_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
+  cpython_interface.cpp
+  ${HEADERS}
+  LINK_LIBRARIES hive_protocol
+)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"

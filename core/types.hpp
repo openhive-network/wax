@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <optional>
+#include <functional>
 
 namespace cpp {
 
@@ -115,5 +116,23 @@ struct required_authority_collection
   */
   /// std::vector<authority> other_authorities;
 };
+
+struct authority
+{
+  using authority_map = std::map<std::string, uint16_t>;
+
+  uint32_t      weight_threshold = 0;
+  authority_map account_auths;
+  authority_map key_auths;
+};
+
+struct authorities
+{
+  authority active;
+  authority owner;
+  authority posting;
+};
+
+typedef authorities (*get_account_authorities_cb_t)(std::string, void*);
 
 } /// namespace cpp

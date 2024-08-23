@@ -3,7 +3,9 @@
 #include "core/protocol_impl.hpp"
 
 #include "core/utils.hpp"
+#include "core/signing_keys_collector.hpp"
 
+#include <hive/protocol/authority.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/types.hpp>
@@ -158,6 +160,48 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   /// ret_val.other_authorities = std::move(other_authorities);
 
   return ret_val;
+  });
+}
+
+template <class FoundationProvider>
+inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_keys(
+  const std::string& transaction, get_account_authorities_cb_t get_account_authorities_cb, void* get_account_authorities_cb_user_data)
+{
+  auto convert_pkey_auth_map_to_hive_key_auth_map = [](authority::authority_map auth_map) -> signing_keys_collector::authority::key_authority_map {
+    signing_keys_collector::authority::key_authority_map result;
+    for (auto& auth : auth_map)
+      result.emplace(std::move(auth.first), auth.second);
+    return result;
+    };
+
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    signing_keys_collector::get_account_authorities_t get_account_authorities = [&] (const std::string& account)
+      {
+      auto python_authorities = get_account_authorities_cb(account, get_account_authorities_cb_user_data);
+      signing_keys_collector::authority active;
+      const auto& pactive = python_authorities.active;
+      active.weight_threshold = pactive.weight_threshold;
+      active.key_auths = convert_pkey_auth_map_to_hive_key_auth_map(pactive.key_auths);
+      active.account_auths = signing_keys_collector::authority::account_authority_map(pactive.account_auths.cbegin(), pactive.account_auths.cend());
+      signing_keys_collector::authority owner;
+      const auto& powner = python_authorities.owner;
+      owner.weight_threshold = powner.weight_threshold;
+      owner.key_auths = convert_pkey_auth_map_to_hive_key_auth_map(powner.key_auths);
+      owner.account_auths = signing_keys_collector::authority::account_authority_map(powner.account_auths.cbegin(), powner.account_auths.cend());
+      signing_keys_collector::authority posting;
+      const auto& pposting = python_authorities.posting;
+      posting.weight_threshold = pposting.weight_threshold;
+      posting.key_auths = convert_pkey_auth_map_to_hive_key_auth_map(pposting.key_auths);
+      posting.account_auths = signing_keys_collector::authority::account_authority_map(pposting.account_auths.cbegin(), pposting.account_auths.cend());
+      signing_keys_collector::authorities_t authorities { std::move(active), std::move(owner), std::move(posting) };
+
+      return authorities;
+      };
+
+    const auto tx = get_transaction(transaction);
+    signing_keys_collector signing_keys_collector(get_account_authorities);
+    return signing_keys_collector.collect_signing_keys(tx);
   });
 }
 
