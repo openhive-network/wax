@@ -52,6 +52,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       const finalizedRequestData = params === undefined ? undefined : structuredClone(params);
 
+      for(const key in params)
+        for(let i = 0; i < callFn.paths.length; ++i)
+          if (key === callFn.paths[i]) {
+            callFn.paths[i] = params[key];
+
+            delete params[key];
+          }
+
+
+      // XXX: Do we need that?
       if (typeof params === "object")
         for(const toReplace of allToReplace) {
           if (toReplace in (finalizedRequestData as object))

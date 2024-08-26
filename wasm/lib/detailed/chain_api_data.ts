@@ -10,20 +10,23 @@ import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_
 
 import { GetLatestBlocksRequest, GetLatestBlocksResponse } from "./rest-api/index.js";
 import { GetWitnessesRoot, GetWitnessesRootResponse } from "./rest-api/hafbe/witnesses/root.js";
+import { GetAllWitnessesRequest, GetAllWitnessesResponse } from "./rest-api/hafbe/witnesses/all.js";
 
 export const HiveRestApiTypes = {
   hafbe: {
     witnesses: {
-      root: {
+      params: GetAllWitnessesRequest,
+      result: GetAllWitnessesResponse,
+      responseArray: true,
+      'account-name': {
         params: GetWitnessesRoot,
         result: GetWitnessesRootResponse,
         urlPath: "${accountName}"
       }
     },
-    operationTypeCounts: {
+    'operation-type-counts': {
       params: GetLatestBlocksRequest,
       result: GetLatestBlocksResponse,
-      urlPath: "operation-type-counts",
       responseArray: true
     }
   }

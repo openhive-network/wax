@@ -761,7 +761,7 @@ type YourApiRestData<YourTypes> = {
        * Retrieves the url used for calls to the specified REST API
        */
       get endpointUrl (): string;
-    })
+    } & (Omit<YourApiRestData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
     : (
       // Check if isArray is not present, but request type
       YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
@@ -782,7 +782,7 @@ type YourApiRestData<YourTypes> = {
          * Retrieves the url used for calls to the specified REST API
          */
         get endpointUrl (): string;
-      })
+      } & (Omit<YourApiRestData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
       : (YourApiRestData<YourTypes[P]> & {
         /**
          * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
