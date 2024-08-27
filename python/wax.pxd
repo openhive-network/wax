@@ -8,6 +8,7 @@ from libcpp.vector cimport vector
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
+from libcpp.functional cimport function as cpp_function
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
@@ -117,7 +118,16 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
     ctypedef cppmap[string, string] witness_set_properties_serialized
 
-    ctypedef cppmap[string, wax_authorities] (*retrieve_authorities_t)(vector[string], void* ) except +
+    ctypedef cppmap[string, wax_authorities] wax_authorities_map
+    ctypedef wax_authorities_map (*retrieve_authorities_t)(vector[string], void* ) except +
+
+    cdef cppclass retrieve_authorities_wrapper:
+        retrieve_authorities_wrapper() noexcept
+        retrieve_authorities_wrapper(void* _retrieve_authorities_fn) noexcept
+
+        wax_authorities_map operator () (vector[string] account_names)
+
+        void* retrieve_authorities_fn
 
     cdef cppclass protocol:
         result cpp_validate_operation( string operation )
@@ -152,7 +162,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
         witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
 
-        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_user_data ) except +
+        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_wrapper retrieve_authorities ) except +
 
         void cpp_throws(int type) except +
 
@@ -168,3 +178,31 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_proto_to_api( string operation_or_tx )
         result cpp_proto_to_legacy_api( string operation_or_tx )
         result cpp_api_to_proto( string operation_or_tx )
+
+cdef inline wax_authority python_authority_to_wax_authority(object auth_obj):
+    auth = wax_authority()
+    auth.weight_threshold = auth_obj.weight_threshold
+    auth.key_auths = auth_obj.key_auths
+    auth.account_auths = auth_obj.account_auths
+    return auth
+
+cdef inline wax_authorities python_authorities_to_wax_authorities(object auths_obj):
+    auths = wax_authorities()
+    auths.active = python_authority_to_wax_authority(auths_obj.active)
+    auths.owner = python_authority_to_wax_authority(auths_obj.owner)
+    auths.posting = python_authority_to_wax_authority(auths_obj.posting)
+    return auths
+
+cdef cppclass retrieve_authorities_wrapper:
+    retrieve_authorities_wrapper() noexcept
+    retrieve_authorities_wrapper(void* _retrieve_authorities_fn) noexcept
+
+    wax_authorities_map operator () (vector[string] account_names):
+        cdef object obj = (<object>retrieve_authorities_fn)(account_names)
+        cdef wax_authorities_map result
+        for k, v in obj.items():
+            auths = python_authorities_to_wax_authorities(v)
+            result[k] = auths
+        return result
+
+    void* retrieve_authorities_fn

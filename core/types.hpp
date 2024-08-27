@@ -132,4 +132,6 @@ struct wax_authorities
   wax_authority posting;
 };
 
+using wax_authorities_map = std::map<std::string, wax_authorities>;
+
 } /// namespace cpp

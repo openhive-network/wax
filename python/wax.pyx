@@ -465,31 +465,10 @@ def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]
 
     return ret_val
 
-cdef wax_authority python_authority_to_wax_authority(object auth_obj):
-    auth = wax_authority()
-    auth.weight_threshold = auth_obj.weight_threshold
-    auth.key_auths = auth_obj.key_auths
-    auth.account_auths = auth_obj.account_auths
-    return auth
-
-cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
-    auths = wax_authorities()
-    auths.active = python_authority_to_wax_authority(auths_obj.active)
-    auths.owner = python_authority_to_wax_authority(auths_obj.owner)
-    auths.posting = python_authority_to_wax_authority(auths_obj.posting)
-    return auths
-
-cdef cppmap[cppstring, wax_authorities] retrieve_authorities_cb(vector[cppstring] account_names, void* retrieve_authorities_fn):
-    cdef object obj = (<object>retrieve_authorities_fn)(account_names)
-    cdef cppmap[cppstring, wax_authorities] result
-    for k, v in obj.items():
-        auths = python_authorities_to_wax_authorities(v)
-        result[k] = auths
-    return result
-
 def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
     cdef protocol obj
-    return obj.cpp_collect_signing_keys(transaction, retrieve_authorities_cb, <void*>(retrieve_authorities))
+    cdef retrieve_authorities_wrapper wrapper = retrieve_authorities_wrapper(<void*>(retrieve_authorities))
+    return obj.cpp_collect_signing_keys(transaction, wrapper)
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

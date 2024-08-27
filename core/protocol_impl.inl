@@ -198,13 +198,13 @@ signing_keys_collector::authorities_t convert_wax_authorities_to_authorities(con
 template <class FoundationProvider>
 inline
 std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_keys(
-  const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_user_data)
+  const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb)
 {
   return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
     const auto tx = get_transaction(transaction);
     signing_keys_collector::retrieve_authorities_t retrieve_authorities = [&] (const std::vector<std::string>& accounts)
       {
-      const auto wax_authorities_map = retrieve_authorities_cb(accounts, retrieve_authorities_user_data);
+      const auto wax_authorities_map = retrieve_authorities_cb(accounts);
       signing_keys_collector::authorities_map_t authorities_map;
       for (const auto& wax_authorities_info : wax_authorities_map)
       {

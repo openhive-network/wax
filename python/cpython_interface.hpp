@@ -5,6 +5,7 @@
 #include "core/foundation.hpp"
 #include "core/protocol_impl.hpp"
 #include "core/protobuf_protocol_impl.hpp"
+#include "core/retrieve_authorities_wrapper.hpp"
 
 namespace cpp
 {
