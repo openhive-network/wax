@@ -6,8 +6,8 @@ export class ResourceCreditsOperationData {
   public constructor(
     public readonly from: TAccountName,
     public readonly rc: NaiAsset,
-    public readonly delegatees: Array<TAccountName>
-  ) {}
+    public readonly delegatees: Array<TAccountName>) {
+  }
 }
 
 export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsOperation> {

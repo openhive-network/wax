@@ -59,8 +59,7 @@ export class HealthChecker extends EventEmitter {
    */
   public constructor(
     public readonly defaultEndpoints: Readonly<Array<string>> = HealthChecker.DefaultEndpoints,
-    private readonly calculateScoresFunction: TCalculateScoresFunction = defaultCalcScores
-  ) {
+    private readonly calculateScoresFunction: TCalculateScoresFunction = defaultCalcScores) {
     super();
 
     setTimeout(() => { void this.performChecks(INITIAL_CHECKER_INTERVAL_MS); }, INITIAL_CHECKER_INTERVAL_MS);

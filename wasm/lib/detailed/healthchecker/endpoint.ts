@@ -61,8 +61,8 @@ export class HiveEndpoint implements IHiveEndpoint {
     public readonly apiType: string,
     public readonly apiEndpoint: string,
     public readonly endpointUrls: Readonly<Array<string>>,
-    private readonly caller: (apiUrl: string) => Promise<IDetailedResponseData<any>>
-  ) {}
+    private readonly caller: (apiUrl: string) => Promise<IDetailedResponseData<any>>) {
+  }
 
   public async performCheck(): Promise<void> {
     for(const endpointUrl of this.endpointUrls)

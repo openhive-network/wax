@@ -19,9 +19,7 @@ export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
  *
  * @throws {WaxError} on any Wax API-related error
  */
-export const createWaxFoundation = async(
-  options: Partial<IWaxOptions> = {}
-): Promise<IWaxBaseInterface> => {
+export const createWaxFoundation = async(options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
   const waxProvider = await MainModuleFunction();
 
   const apiOptions: IWaxOptions = { ...DEFAULT_WAX_OPTIONS, ...options };

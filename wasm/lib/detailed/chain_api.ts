@@ -186,8 +186,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     public readonly chainId: string,
     private apiEndpoint: string,
     private restApiEndpoint: string,
-    private readonly originator: HiveChainApi|null
-  ) {
+    private readonly originator: HiveChainApi|null) {
     super(wax, chainId);
 
     // Create a deep copy of the object to assert the immutability of the next instances of the object

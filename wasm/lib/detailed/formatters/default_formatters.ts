@@ -8,9 +8,7 @@ import { CommunityOperationData, ECommunityOperationActions, EFollowActions, EFo
 import { WaxBaseApi } from "../base_api";
 
 export class DefaultFormatters implements IWaxCustomFormatter {
-  public constructor(
-    private readonly wax: IWaxBaseInterface
-  ) {}
+  public constructor(private readonly wax: IWaxBaseInterface) {}
 
   private formatNai(options: DeepReadonly<IWaxFormatterOptions>, source: Readonly<NaiAsset>): string | NaiAsset {
     if(options.asset.displayAsNai)

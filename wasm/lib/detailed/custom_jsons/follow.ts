@@ -5,16 +5,16 @@ export class ReblogOperationData {
   public constructor(
     public readonly account: TAccountName,
     public readonly author: TAccountName,
-    public readonly permlink: string
-  ) {}
+    public readonly permlink: string) {
+  }
 }
 
 export class FollowOperationData {
   public constructor(
     public readonly action: EFollowActions,
     public readonly follower: TAccountName,
-    public readonly following: Array<TAccountName>
-  ) {}
+    public readonly following: Array<TAccountName>) {
+  }
 }
 
 export enum EFollowBlogAction {

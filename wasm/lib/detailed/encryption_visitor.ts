@@ -11,8 +11,7 @@ export enum EEncryptionType {
 export class EncryptionVisitor extends OperationVisitor {
   public constructor(
     private readonly encryptionType: EEncryptionType,
-    private readonly cryptographicFunction: TEncryptFn
-  ) {
+    private readonly cryptographicFunction: TEncryptFn) {
     super()
   }
 

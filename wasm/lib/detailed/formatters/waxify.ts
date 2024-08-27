@@ -20,10 +20,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   private matchers: Map<string, IMatchersData> = new Map();
   private instances: IInstancesData[] = [];
 
-  private constructor(
-    protected readonly wax: IWaxBaseInterface,
-    options?: DeepPartial<IWaxFormatterOptions>
-  ) {
+  private constructor(protected readonly wax: IWaxBaseInterface, options?: DeepPartial<IWaxFormatterOptions>) {
     super(options);
   }
 

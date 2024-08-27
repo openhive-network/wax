@@ -28,8 +28,8 @@ export class CommunityOperationData {
   public constructor(
     public readonly accounts: Array<TAccountName>,
     public readonly community: string,
-    public readonly data: TCommunityRules
-  ) {}
+    public readonly data: TCommunityRules) {
+  }
 }
 
 export enum ESupportedLanguages {
