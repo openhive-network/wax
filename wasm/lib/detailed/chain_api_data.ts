@@ -18,16 +18,17 @@ export const HiveRestApiTypes = {
       params: GetAllWitnessesRequest,
       result: GetAllWitnessesResponse,
       responseArray: true,
-      'account-name': {
+      accountName: {
         params: GetWitnessesRoot,
         result: GetWitnessesRootResponse,
-        urlPath: "${accountName}"
+        urlPath: "{accountName}"
       }
     },
-    'operation-type-counts': {
+    operationTypeCounts: {
       params: GetLatestBlocksRequest,
       result: GetLatestBlocksResponse,
-      responseArray: true
+      responseArray: true,
+      urlPath: 'operation-type-counts'
     }
   }
 };

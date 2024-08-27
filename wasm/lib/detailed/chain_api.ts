@@ -52,16 +52,6 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       const finalizedRequestData = params === undefined ? undefined : structuredClone(params);
 
-      for(const key in params)
-        for(let i = 0; i < callFn.paths.length; ++i)
-          if (key === callFn.paths[i]) {
-            callFn.paths[i] = params[key];
-
-            delete params[key];
-          }
-
-
-      // XXX: Do we need that?
       if (typeof params === "object")
         for(const toReplace of allToReplace) {
           if (toReplace in (finalizedRequestData as object))
@@ -81,7 +71,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       const body = isQueryStringOnlyRequest ? undefined : JSON.stringify(finalizedRequestData);
 
-      const endpoint = that.getEndpointUrlForRestApi(callFn.paths);
+      const endpoint = that.getEndpointUrlForRestApi(callFn.realPaths);
 
       const url = endpoint + path + queryString;
 
@@ -110,12 +100,14 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       }
 
       callFn.paths = [] as string[];
+      callFn.realPaths = [] as string[];
       callFn.lastMethod = 'GET';
       callFn.config = undefined;
 
       return result;
     };
     callFn.paths = [] as string[];
+    callFn.realPaths = [] as string[];
     callFn.lastMethod = "GET";
     callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
     callFn[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
@@ -123,9 +115,10 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     const proxiedFunction = new Proxy(callFn, {
       get: (_target: any, property: string, _receiver: any): TRestChainCaller | string => {
         if(property === HiveChainApi.EndpointUrlKey) {
-          const restApiUrl = this.getEndpointUrlForRestApi(callFn.paths);
+          const restApiUrl = this.getEndpointUrlForRestApi(callFn.realPaths);
 
           callFn.paths = [] as string[];
+          callFn.realPaths = [] as string[];
           callFn.lastMethod = 'GET';
           callFn.config = undefined;
 
@@ -135,7 +128,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         if (property === HiveChainApi.WithProxyKey)
           return callFn[HiveChainApi.WithProxyKey];
 
-        const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.paths);
+        const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.realPaths);
 
         callFn.config = currObj[property];
 
@@ -144,6 +137,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         else
           callFn.paths.push(callFn.config.urlPath);
 
+        callFn.realPaths.push(property);
+
         if (callFn.config?.method !== undefined)
           callFn.lastMethod = callFn.config.method;
 
@@ -151,8 +146,9 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       },
       set: (_target: any, property: string, newValue: any, _receiver: any) => {
         if(property === HiveChainApi.EndpointUrlKey) {
-          const setValue = this.setEndpointUrlForRestApi(callFn.paths, newValue);
+          const setValue = this.setEndpointUrlForRestApi(callFn.realPaths, newValue);
 
+          callFn.realPaths = [] as string[];
           callFn.paths = [] as string[];
           callFn.lastMethod = 'GET';
           callFn.config = undefined;

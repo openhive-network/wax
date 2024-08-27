@@ -28,7 +28,7 @@ test.describe('Wax object interface chain REST API tests', () => {
 
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
-      const blocks = await chain.restApi.hafbe['operation-type-counts']({ "result-limit": 1 });
+      const blocks = await chain.restApi.hafbe.operationTypeCounts({ "result-limit": 1 });
 
       return blocks;
     });
@@ -54,7 +54,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const extended = chain.extendRest({
         hafah: {
           transactions: {
-            'transaction-id': {
+            transactionId: {
               params: TransactionByIdRequest,
               result: DummyResponse,
               urlPath: "{transactionId}"
@@ -63,7 +63,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const blocks = await extended.restApi.hafah.transactions['transaction-id']({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+      const blocks = await extended.restApi.hafah.transactions.transactionId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
 
       return blocks;
     });
@@ -76,24 +76,26 @@ test.describe('Wax object interface chain REST API tests', () => {
   test('Should be able to extend and perform REST API calls returning array of array', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
       class RestGetOperationKeysParamsReq{
-        public 'type-id'!: number;
+        public typeId!: number;
       }
 
       const extended = chain.extendRest({
         hafah: {
-          "operation-types": {
-            "type-id": {
+          operationTypes: {
+            urlPath: 'operation-types',
+            typeId: {
+              urlPath: '{typeId}',
               keys: {
                 params: RestGetOperationKeysParamsReq,
                 result: Array<string>,
                 responseArray: true
-              }
+              },
             }
           }
         }
       });
 
-      const operations = await extended.restApi.hafah['operation-types']['type-id'].keys({ 'type-id': 1 });
+      const operations = await extended.restApi.hafah.operationTypes.typeId.keys({ typeId: 1 });
 
       return operations;
     });
@@ -199,7 +201,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const extended2 = extended1.extendRest<{
         hafah: {
           transactions: {
-            'transaction-id': {
+            transactionId: {
               params: { transactionId: string; };
               result: { transaction_json: object; };
             }
@@ -208,7 +210,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       }>({
         hafah: {
           transactions: {
-            'transaction-id': {
+            transactionId: {
               urlPath: "{transactionId}"
             }
           }
@@ -226,7 +228,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise2 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi.hafah.transactions['transaction-id'] as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
+        ((extended2.restApi.hafah.transactions.transactionId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
           transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
         }) as Promise<any>).then(() => {
           resolve(requestUrl);
@@ -265,9 +267,9 @@ test.describe('Wax object interface chain REST API tests', () => {
 
     const retVal = await waxTest(async({ chain }, url1, url2) => {
       chain.restApi.hafbe.witnesses.endpointUrl = url1;
-      chain.restApi.hafbe.witnesses['account-name'].endpointUrl = url2;
+      chain.restApi.hafbe.witnesses.accountName.endpointUrl = url2;
 
-      return [chain.restApi.endpointUrl, chain.restApi.hafbe.witnesses.endpointUrl, chain.restApi.hafbe.witnesses['account-name'].endpointUrl];
+      return [chain.restApi.endpointUrl, chain.restApi.hafbe.witnesses.endpointUrl, chain.restApi.hafbe.witnesses.accountName.endpointUrl];
     }, url1, url2);
 
     expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);
