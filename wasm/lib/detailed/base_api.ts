@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransactionConstructor, IWaxBaseInterface, THexString } from "../interfaces";
+import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TTimestamp } from "../interfaces";
 import type { MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
 import type { NaiAsset } from "./api";
 
@@ -10,6 +10,7 @@ import Long from "long";
 import { WaxFormatter } from "./formatters/waxify.js";
 
 import { isNaiAsset } from "./util/asset_util.js";
+import { transaction } from "../protocol";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -125,13 +126,16 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
-  public get Transaction(): ITransactionConstructor {
-    return Object.assign(
-      Transaction.bind(undefined, this),
-      {
-        fromApi: Transaction.fromApi.bind(undefined, this)
-      }
-    );
+  public createTransactionFromProto(protoTransaction: transaction): ITransaction {
+    return new Transaction(this, protoTransaction);
+  }
+
+  public createTransactionFromJson(transactionObject: string | object): ITransaction {
+    return Transaction.fromApi(this, transactionObject);
+  }
+
+  public createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction {
+    return new Transaction(this, taposBlockId, expirationTime);
   }
 
   public getAsset(nai: NaiAsset): IHiveAssetData {

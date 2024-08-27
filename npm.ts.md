@@ -22,16 +22,6 @@ npm install @hiveio/wax
 
 ## Usage
 
-Wax is designed to work in web environment by default, so remember to use:
-
-```ts
-import '@hiveio/wax/node';
-```
-
-import when you intend to work in the Node.js environment.
-
-You may need to set `moduleResolution` to `Bundler` in your `tsconfig.json` in order to respect the `exports` fields in our `package.json` file
-
 ### Wax foundation
 
 #### Create a Transaction instance from api data
@@ -41,7 +31,7 @@ import { createWaxFoundation } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
-const transaction = wax.Transaction.fromApi(`{
+const transaction = wax.createTransactionFromJson(`{
   "ref_block_num": 19260,
   "ref_block_prefix": 2140466769,
   "expiration": "2016-09-15T19:47:33",
@@ -66,7 +56,7 @@ import { createWaxFoundation, FollowOperation } from '@hiveio/wax';
 
 const wax = await createWaxFoundation();
 
-const tx = new wax.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+const tx = wax.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
 tx.pushOperation(new FollowOperation().followBlog("initminer", "gtg").authorize("intiminer"));
 

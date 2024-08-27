@@ -24,7 +24,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with hive apps follow operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(protoVoteOp);
 
@@ -45,7 +45,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with hive apps follow operation authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(protoVoteOp);
 
@@ -65,7 +65,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with mutliple hive apps authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(
         new wax.FollowOperation()
@@ -89,7 +89,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with setting community user role using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(
         new wax.CommunityOperation()
@@ -176,7 +176,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with mutliple community hive apps authorizing at the end using transaction interface', async({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(
         new wax.CommunityOperation()
@@ -207,7 +207,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with hive apps reblog operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.FollowOperation()
         .reblog("initminer", "gtg", "first-post")
@@ -237,7 +237,7 @@ test.describe('Wax hive apps operations tests', () => {
 
   test('Should be able to create transaction with hive apps rc operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }) => {
-      const tx = new base.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.ResourceCreditsOperation()
         .delegate("initminer", 3000, "gtg")

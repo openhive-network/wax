@@ -38,7 +38,7 @@ test.describe('Wax object interface chain tests', () => {
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
       // Create transaction
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
@@ -63,7 +63,7 @@ test.describe('Wax object interface chain tests', () => {
       const { wallet } = await session.createWallet("w0");
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.pushOperation(new wax.BlogPostOperation({
         author: "mee",
@@ -262,7 +262,7 @@ test.describe('Wax object interface chain tests', () => {
 
     test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain, wax }, protoVoteOp) => {
-        const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+        const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
         tx.pushOperation(protoVoteOp).transaction;
 
         try {
@@ -283,7 +283,7 @@ test.describe('Wax object interface chain tests', () => {
         const { wallet } = await session.createWallet("w0");
         await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-        const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+        const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
         tx.pushOperation(protoVoteOp).sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
 
         return new wax.BroadcastTransactionRequest(tx);
@@ -443,7 +443,7 @@ test.describe('Wax object interface chain tests', () => {
         const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
         const otherKey = await wallet.importKey('5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG');
 
-        const tx = new chain.Transaction('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
+        const tx = chain.createTransactionWithTaPoS('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
 
         tx.pushOperation(protoVoteOp);
 
@@ -466,13 +466,13 @@ test.describe('Wax object interface chain tests', () => {
         const key = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
         const otherKey = await wallet.importKey('5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG');
 
-        const txBuilder = new chain.Transaction('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
+        const txBuilder = chain.createTransactionWithTaPoS('04c1c7a566fc0da66aee465714acee7346b48ac2', '2023-08-01T15:38:48');
 
         txBuilder.pushOperation(protoVoteOp);
 
         txBuilder.sign(wallet, key);
 
-        const otherTxBuilder = chain.Transaction.fromApi(txBuilder.toApi());
+        const otherTxBuilder = chain.createTransactionFromJson(txBuilder.toApi());
         otherTxBuilder.sign(wallet, otherKey);
         return otherTxBuilder.transaction;
       }, protoVoteOp);

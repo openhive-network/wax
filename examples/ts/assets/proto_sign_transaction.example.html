@@ -45,7 +45,7 @@
       // Create wax base
       const wax = await createWaxFoundation();
 
-      const tx = new wax.Transaction(protoTx);
+      const tx = wax.createTransactionFromProto(protoTx);
 
       const signed = tx.sign(wallet, publicKey);
 

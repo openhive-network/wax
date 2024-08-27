@@ -30,7 +30,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to initialize pushOperation on WitnessSetPropertiesOperation with basic witness_set_properties_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "gtg",
@@ -96,7 +96,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to use WitnessSetPropertiesOperation with url witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "therealwolf",
@@ -127,7 +127,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to use WitnessSetPropertiesOperation with budget and account fee witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "therealwolf",
@@ -163,7 +163,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to use WitnessSetPropertiesOperation with deacy and budget witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "emrebeyler",
@@ -199,7 +199,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to use WitnessSetPropertiesOperation with hbd exchange rate witness property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "ctrpch",
@@ -230,7 +230,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to use WitnessSetPropertiesOperation with all the specific witness properties', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.WitnessSetPropertiesOperation({
         owner: "guiltyparties",
@@ -296,7 +296,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to initialize pushOperations on RecurrentTransferOperation with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.RecurrentTransferOperation({
         from: "alice",
@@ -329,7 +329,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.RecurrentTransferOperation({
         from: "alice",
@@ -369,7 +369,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Properly initialized API should allow generation of a removal operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.RecurrentTransferOperation({
         from: "grace",
@@ -396,7 +396,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should initialize update proposal with mandatory fields only', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.UpdateProposalOperation({
         proposalId: "123",
@@ -423,7 +423,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should add endDate in update proposal when provided', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.UpdateProposalOperation({
         proposalId: "123",
@@ -457,7 +457,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should handle edge case in update proposal where endDate is given as timestamp', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.UpdateProposalOperation({
         proposalId: "123",
@@ -491,7 +491,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should add extensions using RecurrentTransferOperation and convert to legacy api', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.RecurrentTransferOperation({
         from: "alice",
@@ -526,7 +526,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to convert transaction to legacy api wih endDate property', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.UpdateProposalOperation({
         proposalId: "123",
@@ -560,7 +560,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to convert transaction for post with beneficiares to legacy api', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.ReplyOperation({
         parentAuthor: "guest4test",
@@ -616,7 +616,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set percent HBD in ReplyOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.ReplyOperation({
         parentAuthor: "guest4test",
@@ -662,7 +662,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to push images in ReplyBuiler', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.ReplyOperation({
         parentAuthor: "guest4test",
@@ -697,7 +697,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set category in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -730,7 +730,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set alternative author in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -762,7 +762,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to push links in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -794,7 +794,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set max accepted payout in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -837,7 +837,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set allow curation rewards in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -880,7 +880,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set allow votes in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -923,7 +923,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to set format in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -955,7 +955,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to push and set multiple properites', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",
@@ -1018,7 +1018,7 @@ test.describe('Wax operation factories tests', () => {
 
   test('Should be able to retriev number of custom operations that will be push into the Transaction', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
-      const tx = new chain.Transaction('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       tx.pushOperation(new wax.BlogPostOperation({
         category: "test-category",

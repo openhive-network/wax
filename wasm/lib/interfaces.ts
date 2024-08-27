@@ -430,39 +430,6 @@ export interface IEncryptingTransaction extends ITransactionBase {
   stopEncrypt(): ITransaction;
 }
 
-export interface ITransactionConstructor {
-  /**
-   * Constructs a new Transaction object with given data
-   *
-   * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
-   * @param {TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
-   *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
-   *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
-   *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
-   *                                    Expiration time will be applied when calling any non-push-related method in {@link ITransaction}
-   *
-   */
-  new(taposBlockId: TBlockHash, expirationTime: TTimestamp): ITransaction;
-
-  /**
-   * Constructs a new Transaction object with ready protobuf transaction
-   *
-   * @param {transaction} protoTransaction protobuf transaction
-   */
-  new(protoTransaction: transaction): ITransaction;
-
-  /**
-   * Converts Hive API-form transaction in JSON form to our transaction
-   *
-   * @param {string|object} transactionObject transaction object to be converted
-   *
-   * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
-   *
-   * @throws {WaxError} on any Wax API-related error
-   */
-  fromApi(transactionObject: string | object): ITransaction;
-}
-
 export interface IHiveAssetData {
   /**
    * Asset amount
@@ -480,8 +447,6 @@ export interface IHiveAssetData {
 }
 
 export interface IWaxBaseInterface {
-  get Transaction(): ITransactionConstructor;
-
   readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
 
   readonly formatter: IWaxExtendableFormatter;
@@ -669,6 +634,41 @@ export interface IWaxBaseInterface {
    * @returns {number} HP APR percent with 2 decimals
    */
   calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number;
+
+  /**
+   * Constructs a new Transaction object with ready protobuf transaction
+   *
+   * @param {transaction} protoTransaction protobuf transaction
+   */
+  createTransactionFromProto(protoTransaction: transaction): ITransaction;
+
+  /**
+   * Converts Hive API-form transaction in JSON form to our transaction
+   *
+   * @param {string|object} transactionObject transaction object to be converted
+   *
+   * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  createTransactionFromJson(transactionObject: string | object): ITransaction;
+
+  /**
+   * Constructs a new Transaction object with given data
+   *
+   * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
+   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
+   *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
+   *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
+   *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
+   *                                    Expiration time will be applied when calling any non-push-related method in {@link ITransaction}
+   *
+   * @returns {ITransaction} ready to use transaction interface allowing to fill transaction with its contents like Hive operations
+   *
+   * @throws {WaxError} on any Wax API-related error
+   *
+   */
+  createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction;
 
   /**
    * Deletes the created wax proto_protocol instance

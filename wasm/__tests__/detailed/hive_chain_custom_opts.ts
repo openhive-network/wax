@@ -50,7 +50,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
 
   test('Should be able to bidirectional convert legacy api to proto using object interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-      const tx = chain.Transaction.fromApi(serialization_sensitive_transaction);
+      const tx = chain.createTransactionFromJson(serialization_sensitive_transaction);
 
       return tx.toLegacyApi();
     }, serialization_sensitive_transaction);
@@ -61,7 +61,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
   test('Should be able to calculate from api properties from hive chain interface with signature transaction provided', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }, signatureTransaction) => {
       const stringifiedTransaction = JSON.stringify(signatureTransaction);
-      const tx = chain.Transaction.fromApi(stringifiedTransaction);
+      const tx = chain.createTransactionFromJson(stringifiedTransaction);
 
       return {
         signatureKeys: tx.signatureKeys[0],
@@ -78,7 +78,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
 
   test('Should be able to calculate from api properties from hive chain interface with serialization sensitive transaction provided', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }, serialization_sensitive_transaction) => {
-      const tx = chain.Transaction.fromApi(serialization_sensitive_transaction);
+      const tx = chain.createTransactionFromJson(serialization_sensitive_transaction);
 
       return {
         sigDigest: tx.sigDigest,

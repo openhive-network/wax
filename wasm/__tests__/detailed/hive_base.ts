@@ -181,7 +181,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to bidirectional convert api to proto using object interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }, transaction) => {
-      const tx = base.Transaction.fromApi(transaction);
+      const tx = base.createTransactionFromJson(transaction);
 
       return tx.toApi();
     }, transaction);
@@ -197,7 +197,7 @@ test.describe('Wax object interface foundation tests', () => {
       await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
       // Create transaction
-      const tx = new base.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
@@ -219,14 +219,14 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ wax, chain }) => {
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+    const retVal = await waxTest(async({ wax, base }) => {
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
       tx.pushOperation(new wax.RecurrentTransferOperation({
         from: "initminer",
         to: "gtg",
         pairId: 100
       }));
-      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: chain.hive(100) }));
+      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
 
       return tx.transaction.operations;
     });
@@ -268,9 +268,9 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain, wax }) => {
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: chain.hive(100) }));
+    const retVal = await waxTest(async({ base, wax }) => {
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
 
       return tx.transaction.operations;
     });
@@ -295,11 +295,11 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create an update proposal with underlying extensions using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain, wax }) => {
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+    const retVal = await waxTest(async({ base, wax }) => {
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
-      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: chain.hive(0), subject: "subject", permlink: "permlink" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hive(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hive(0), subject: "subject", permlink: "permlink" }));
 
       return tx.transaction.operations;
     });
@@ -339,24 +339,24 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create encrypted operations using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain, beekeeper }) => {
+    const retVal = await waxTest(async({ base, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
       const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: chain.hive(100),
+          amount: base.hive(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"
         }
       }).stopEncrypt().startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: chain.hive(120),
+          amount: base.hive(120),
           from_account: "initminer",
           to_account: "gtg",
           memo: "This also should be encrypted"
@@ -371,7 +371,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       return {
         encrypted: [ encrypted1, encrypted2 ],
-        decrypted: [ chain.decrypt(wallet, encrypted1), chain.decrypt(wallet, encrypted2) ]
+        decrypted: [ base.decrypt(wallet, encrypted1), base.decrypt(wallet, encrypted2) ]
       };
     });
 
@@ -382,17 +382,17 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to decrypt operations using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain, beekeeper }) => {
+    const retVal = await waxTest(async({ base, beekeeper }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
       const publicKey = await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
 
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: chain.hive(100),
+          amount: base.hive(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"

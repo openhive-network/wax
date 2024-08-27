@@ -76,7 +76,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Vote opeartion Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: vote = {
         voter: "alice",
@@ -101,7 +101,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Witness Update Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: witness_update = {
         owner: "alice",
@@ -154,7 +154,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Witness Set Properties Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: witness_set_properties = {
           owner: "example_witness",
@@ -185,7 +185,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Witness Block Aprove Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const tx = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const protoMessage = {
         witness: "test witness",
@@ -202,7 +202,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Withdraw Vesting Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: withdraw_vesting = {
         account: "user123",
@@ -231,7 +231,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Vesting Shares Split Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: vesting_shares_split = {
         owner: "example_user",
@@ -272,7 +272,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Update Proposal Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: update_proposal = {
         proposal_id: '123456789',
@@ -317,7 +317,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Update Proposal Votes Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: update_proposal_votes = {
         voter: "someUser",
@@ -342,7 +342,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Transfer Operation Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: transfer = {
         from_account: "alice",
@@ -375,7 +375,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Transfer To Vesting Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: transfer_to_vesting = {
         from_account: "sender_account",
@@ -406,7 +406,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Transfer To Savings Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: transfer_to_savings = {
         from_account: "alice",
@@ -439,7 +439,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Transfer From Savings Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-    const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+    const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
     const testedOp: transfer_from_savings = {
       from_account: "alice",
@@ -474,7 +474,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Transaction Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       return txB.transaction;
     });
@@ -491,7 +491,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Set Withdraw Vesting Route Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: set_withdraw_vesting_route = {
         from_account: "fromUser",
@@ -516,7 +516,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Request Account Recovery Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: request_account_recovery = {
         recovery_account: "recoveryUser",
@@ -549,7 +549,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Remove Proposal Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: remove_proposal = {
         proposal_owner: "user123",
@@ -572,7 +572,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Recurrent Transfer Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: recurrent_transfer = {
         from_account: "sender",
@@ -607,7 +607,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Recover Account Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: recover_account = {
         account_to_recover: "example_account",
@@ -648,7 +648,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('POW Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: pow = {
         worker_account: "some_account",
@@ -693,7 +693,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('POW2 Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: pow2 = {
         work: {
@@ -750,7 +750,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Limit Order Create Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-     const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+     const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: limit_order_create = {
         owner: "user123",
@@ -795,7 +795,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Limit Order Create 2 Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: limit_order_create2 = {
         owner: "user123",
@@ -854,7 +854,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Limit Order Cancel Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: limit_order_cancel = {
           owner: "user123",
@@ -872,7 +872,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Feed Publish Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: feed_publish = {
         publisher: "example_witness",
@@ -915,7 +915,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Escrow Transfer Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: escrow_transfer = {
         from_account: "alice",
@@ -976,7 +976,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Escrow Release Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: escrow_release = {
         from_account: "alice",
@@ -1025,7 +1025,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Escrow Dispute Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: escrow_dispute = {
         from_account: "alice",
@@ -1052,7 +1052,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Escrow Approve Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: escrow_approve = {
         from_account: "sender",
@@ -1081,7 +1081,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Delete Comment Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: delete_comment = {
         author: "example_user",
@@ -1102,7 +1102,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Delegate Vesting Shares Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: delegate_vesting_shares = {
         delegator: "user1",
@@ -1135,7 +1135,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Decline Voting Rights Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: decline_voting_rights = {
         account: "example_user",
@@ -1156,7 +1156,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Custom Operation Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: custom = {
         required_auths: ["user1", "user2"],
@@ -1179,7 +1179,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Custom JSON Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: custom_json = {
         required_auths: [],
@@ -1204,7 +1204,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Create Proposal Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: create_proposal = {
         creator: "alice",
@@ -1247,7 +1247,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Create Claimed Account Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: create_claimed_account = {
         creator: "alice",
@@ -1304,7 +1304,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Convert Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: convert = {
         owner: "alice",
@@ -1335,7 +1335,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Comment Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: comment = {
         parent_author: "",
@@ -1366,7 +1366,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Comment Options Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: comment_options = {
         author: "example_author",
@@ -1411,7 +1411,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Collateralized Convert Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: collateralized_convert = {
         owner: "exampleUser",
@@ -1442,7 +1442,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Claim Reward Balance Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: claim_reward_balance = {
         account: "alice",
@@ -1467,7 +1467,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Claim Account Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: claim_account = {
         creator: "user123",
@@ -1498,7 +1498,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Change Recovery Account Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: change_recovery_account = {
         account_to_recover: "example_user",
@@ -1523,7 +1523,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Cancel Transfer From Savings Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: cancel_transfer_from_savings = {
         from_account: "alice",
@@ -1544,7 +1544,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Witness Vote Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_witness_vote = {
         account: "user123",
@@ -1569,7 +1569,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Witness Proxy Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_witness_proxy = {
         account: "user1",
@@ -1590,7 +1590,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Update2 Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_update2 = {
         account: "example_account",
@@ -1647,7 +1647,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Update Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_update = {
         account: "exampleUser",
@@ -1700,7 +1700,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Create Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_create = {
         fee: {
@@ -1767,7 +1767,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
   test('Account Creation with Delegation Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
-      const txB = new chain.Transaction("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_create_with_delegation = {
         fee: {amount: "1000", precision: 3, nai: "@@000000021"},
