@@ -25,7 +25,7 @@ export type THexString = string;
  *
  * 20 byte string or hex string describing 20 byte array
  */
-export type TBlockHash = ArrayBuffer | Uint8Array | Uint8ClampedArray | Int8Array | string;
+export type TBlockHash = string;
 
 export interface IManabarData {
   /**
