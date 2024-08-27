@@ -8,25 +8,25 @@ import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
 import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
-import { GetLatestBlocksRequest, GetLatestBlocksResponse } from "./rest-api/index.js";
-import { GetWitnessesRoot, GetWitnessesRootResponse } from "./rest-api/hafbe/witnesses/root.js";
-import { GetAllWitnessesRequest, GetAllWitnessesResponse } from "./rest-api/hafbe/witnesses/all.js";
+import { OperationTypeCountsRequest, OperationTypeCountsResponse } from "./rest-api/index.js";
+import { GetWitnessesByNameRequest, SingleWitnessResponse } from "./rest-api/hafbe/witnesses/by-name.js";
+import { GetAllWitnessesRequest } from "./rest-api/hafbe/witnesses/all.js";
 
 export const HiveRestApiTypes = {
   hafbe: {
     witnesses: {
       params: GetAllWitnessesRequest,
-      result: GetAllWitnessesResponse,
+      result: SingleWitnessResponse,
       responseArray: true,
       accountName: {
-        params: GetWitnessesRoot,
-        result: GetWitnessesRootResponse,
+        params: GetWitnessesByNameRequest,
+        result: SingleWitnessResponse,
         urlPath: "{accountName}"
       }
     },
     operationTypeCounts: {
-      params: GetLatestBlocksRequest,
-      result: GetLatestBlocksResponse,
+      params: OperationTypeCountsRequest,
+      result: OperationTypeCountsResponse,
       responseArray: true,
       urlPath: 'operation-type-counts'
     }

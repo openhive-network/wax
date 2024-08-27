@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
 
-export class GetLatestBlocksRequest {
+export class OperationTypeCountsRequest {
   @IsNumber()
   public 'result-limit'!: number;
 }
@@ -14,7 +14,7 @@ export class OpsCount {
   public op_type_id!: number;
 }
 
-export class GetLatestBlocksResponse {
+export class OperationTypeCountsResponse {
   @IsNumber()
   public block_num!: number;
 

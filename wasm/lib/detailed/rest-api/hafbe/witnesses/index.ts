@@ -1,1 +1,2 @@
-export * from './root.js';
+export * from './by-name.js';
+export * from './all.js';
