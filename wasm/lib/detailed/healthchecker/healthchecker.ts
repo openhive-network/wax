@@ -188,6 +188,17 @@ export class HealthChecker extends EventEmitter {
     this.endpointSubscription.delete(endpointUrl);
   }
 
+  /**
+   * Unsubscribes all the endpoint
+   *
+   * @see {@link subscribe}
+   */
+  public unsubscribeAll(): void {
+    const subscriptionKeys = this.endpointSubscription.keys();
+    for(const key of subscriptionKeys)
+      this.unsubscribe(key);
+  }
+
   private pushEndpointData(data: THiveEndpointData): void {
     const results = this.endpointStats.get(data.endpointUrl);
 
