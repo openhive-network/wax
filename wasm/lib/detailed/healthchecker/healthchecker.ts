@@ -137,6 +137,15 @@ export class HealthChecker extends EventEmitter {
   }
 
   /**
+   * Unregisters the checker from all of the healthcheck intervals
+   */
+  public unregisterAll(): void {
+    const registrationKeys = this.endpoints.keys();
+    for(const key of registrationKeys)
+      this.unregister({ id: key } as HiveEndpoint);
+  }
+
+  /**
    * Subscribes to the given endpoint and notifies via EventEmitter when the endpoint is either down or back up
    *
    * @param {string} endpointUrl endpoint to subscribe to
