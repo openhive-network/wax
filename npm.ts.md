@@ -16,7 +16,7 @@ Installation is done using the
 If you want to use development versions of our packages, set `@hiveio` scope to use our GitLab registry:
 
 ```bash
-echo @hiveio:registry=https://gitlab.syncad.com/api/v4/packages/npm/ >> .npmrc
+echo @hiveio:registry=https://gitlab.syncad.com/api/v4/groups/136/-/packages/npm/ >> .npmrc
 npm install @hiveio/wax
 ```
 
