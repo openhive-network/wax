@@ -1,9 +1,10 @@
 #pragma once
 
 #include <map>
-#include <vector>
+#include <set>
 #include <string>
 #include <optional>
+#include <vector>
 
 namespace cpp {
 
@@ -113,11 +114,12 @@ struct wax_authority
 
 struct required_authority_collection
 {
-  typedef std::vector<std::string> account_vector;
+  typedef std::set<std::string> account_set;
+  typedef account_set account_collection_t;
 
-  account_vector posting_accounts;
-  account_vector active_accounts;
-  account_vector owner_accounts;
+  account_set posting_accounts;
+  account_set active_accounts;
+  account_set owner_accounts;
   std::vector<wax_authority> other_authorities;
 };
 
