@@ -65,15 +65,16 @@ wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
   variables:
-    DIST_DIR: "$CI_PROJECT_DIR/wasm/dist"
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
+    DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
     NPM_PACKAGE_SCOPE: "@hiveio"
     NPM_PACKAGE_NAME: "wax"
 
   artifacts:
     paths:
       - "${DIST_DIR}/*.tgz"  # Built package
-      - "${CI_PROJECT_DIR}/wasm/lib/proto" # For documentation generator
-      - "${CI_PROJECT_DIR}/wasm/lib/build_wasm" # For documentation generator
+      - "${CI_PROJECT_DIR}/ts/wasm/lib/proto" # For documentation generator
+      - "${CI_PROJECT_DIR}/ts/wasm/lib/build_wasm" # For documentation generator
       - "${DIST_DIR}/lib/build_wasm/wax.common.js" # For base WASM tests
       - "${DIST_DIR}/lib/proto" # For protobuf pattern tests
       - "${DIST_DIR}/lib" # For Node.js tests
@@ -86,18 +87,20 @@ wax_wasm_build_tests:
   extends: .npm_process_built_package_tarball
   stage: build
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   script:
+    - cd "${SOURCE_DIR}"
     - npm run build:test
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/dist/assets"
-      - "$CI_PROJECT_DIR/wasm/dist/detailed"
-      - "$CI_PROJECT_DIR/wasm/dist/index.spec.*"
+      - "$CI_PROJECT_DIR/ts/wasm/dist/assets"
+      - "$CI_PROJECT_DIR/ts/wasm/dist/detailed"
+      - "$CI_PROJECT_DIR/ts/wasm/dist/index.spec.*"
 
     when: always
     expire_in: 1 week
@@ -109,11 +112,12 @@ generate_docs:
   stage: build
   extends: .npm_process_built_package_tarball
   variables:
-    DIST_DIR: "$CI_PROJECT_DIR/wasm/dist"
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
+    DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   script:
-    - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
+    - ./ts/scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
@@ -130,8 +134,9 @@ push_to_wiki:
   extends: .npm_push_doc_template
   stage: deploy
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     WIKI_PUSH_TOKEN: "$WIKI_PUSH_TOKEN"
-    DIST_DIR: "${CI_PROJECT_DIR}/wasm/dist"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
   needs:
     - job: generate_docs
@@ -199,6 +204,7 @@ test_wax_protobuf_python_examples:
 test_wax_wasm:
   extends: .npm_test_template
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   needs:
@@ -216,16 +222,17 @@ test_wax_wasm_proto_pattern:
       artifacts: true
 
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/wasm/dist/lib/proto"
-    - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen"
-    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
+    - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
+    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/wasm/dist/npm-pack.gen"
-      - "$CI_PROJECT_DIR/wasm/dist/lib/proto/"
+      - "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
+      - "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto/"
 
     when: always
     expire_in: 1 week
@@ -239,9 +246,11 @@ test_wax_wasm_examples:
       artifacts: true
 
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   script:
+    - cd "${SOURCE_DIR}"
     - npm run examples
   tags:
     - public-runner-docker
@@ -278,13 +287,14 @@ supplement_documentation_url:
       artifacts: true
 
   script:
-    - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}" "${GEN_DOC_URL}" tmp_doc
+    - ./ts/scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}" "${GEN_DOC_URL}" tmp_doc
 
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/npm.ts.md"
+      - "$CI_PROJECT_DIR/ts/README.md"
 
     when: always
     expire_in: 1 week
@@ -294,6 +304,7 @@ deploy_wax_wasm_dev_package:
   extends: .npm_deploy_package_template
   stage: deploy
   variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
     NPM_PACKAGE_SCOPE: "@hiveio"
 
@@ -314,6 +325,7 @@ deploy_wax_wasm_production_public_npm:
   variables:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   needs:
