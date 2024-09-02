@@ -44,5 +44,5 @@ def test_op_proto_to_legacy_api():
         b'var.is_object()\n'
         b'cpp_proto_to_legacy_api requires JSON object as an argument\n'
         b'    {}\n'
-        b'    protobuf_protocol_impl.inl:578 operator()'
+        b'    protobuf_protocol_impl.inl:586 operator()'
     )

@@ -303,11 +303,20 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
     op = set(collection.posting_accounts)
     oa = set(collection.active_accounts)
     oo = set(collection.owner_accounts)
+    ao = list()
+
+    for auth_obj in collection.other_authorities:
+      ao.append(python_authority(
+        weight_threshold = auth_obj.weight_threshold,
+        key_auths = auth_obj.key_auths,
+        account_auths = auth_obj.account_auths
+      ))
 
     return python_required_authority_collection(
       posting_accounts=op,
       active_accounts=oa,
-      owner_accounts=oo
+      owner_accounts=oo,
+      other_authorities=ao
     )
 
 def encode_encrypted_memo(encrypted_content: bytes, main_encryption_key: bytes, other_encryption_key: bytes = b'') -> bytes:

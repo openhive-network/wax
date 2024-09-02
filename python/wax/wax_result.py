@@ -48,6 +48,7 @@ class python_required_authority_collection:  # noqa: N801
     posting_accounts: set[string]
     active_accounts: set[string]
     owner_accounts: set[string]
+    other_authorities: list[wax_authority]
 
 @dataclass
 class python_encrypted_memo:

@@ -5,7 +5,6 @@
 from libcpp.string cimport string
 from libcpp.pair cimport pair
 from libcpp.vector cimport vector
-from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
@@ -44,11 +43,13 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
     cdef cppclass required_authority_collection:
          required_authority_collection() except +
-         ctypedef cppset[string] account_set
+         ctypedef vector[string] account_vector
+         ctypedef vector[wax_authority] authority_vector
 
-         account_set posting_accounts
-         account_set active_accounts
-         account_set owner_accounts
+         account_vector posting_accounts
+         account_vector active_accounts
+         account_vector owner_accounts
+         authority_vector other_authorities
 
     cdef cppclass crypto_memo:
          crypto_memo() except +
