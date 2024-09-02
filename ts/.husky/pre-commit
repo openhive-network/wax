@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-scripts/precommit_hook.sh
+ts/scripts/precommit_hook.sh
