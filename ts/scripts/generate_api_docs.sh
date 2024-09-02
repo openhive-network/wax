@@ -22,7 +22,7 @@ mkdir -vp "${OUTPUT_DIR}"
 pnpm exec typedoc --includeVersion \
   --sourceLinkTemplate "${REPO_URL}/-/blob/{gitRevision}/{path}#L{line}" \
   --gitRevision "${REVISION_INFO}" \
-  --readme npm.ts.md \
+  --readme README.md \
   --plugin typedoc-plugin-markdown \
   --plugin typedoc-gitlab-wiki-theme \
   --tsconfig tsconfig.json \
@@ -31,7 +31,7 @@ pnpm exec typedoc --includeVersion \
 
   if [[ -n "${DOCUMENTATION_URL}" ]]; then
     echo "Attempting to replace generated documentation url placeholder: ${DOCUMENTATION_URL}"
-    sed -i "s<\${GEN_DOC_URL}<${DOCUMENTATION_URL}<g" npm.ts.md
+    sed -i "s<\${GEN_DOC_URL}<${DOCUMENTATION_URL}<g" README.md
   fi
 
 popd
