@@ -16,6 +16,18 @@ using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const
 using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
 using calculate_witness_votes_hp_fn_t = json_asset(const int32_t, const int32_t, const json_asset&, const json_asset&) const;
 
+/// unfortunetely emscripten can't handle correctly C++ set -> JS Set transformation, so we have to use a vector instead.
+struct required_authority_collectionV
+{
+  typedef std::vector<std::string> account_vector;
+  typedef account_vector account_collection_t;
+
+  account_vector posting_accounts;
+  account_vector active_accounts;
+  account_vector owner_accounts;
+  std::vector<wax_authority> other_authorities;
+};
+
 class foundation_wasm : public foundation
 {
 private:
@@ -26,6 +38,8 @@ private:
 { return (unsigned long long) high << 32 | low; }
 
 public:
+  using required_authority_collection_t = required_authority_collectionV;
+
   result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const uint32_t max_mana_low, const uint32_t max_mana_high, const uint32_t current_mana_low, const uint32_t current_mana_high, const uint32_t last_update_time) 
 { return foundation::cpp_calculate_manabar_full_regeneration_time(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
 
@@ -162,11 +176,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("key_auths", &wax_authority::key_auths)
       ;
 
-  value_object<required_authority_collection>("required_authority_collection")
-      .field("posting_accounts", &required_authority_collection::posting_accounts)
-      .field("active_accounts", &required_authority_collection::active_accounts)
-      .field("owner_accounts", &required_authority_collection::owner_accounts)
-      .field("other_authorities", &required_authority_collection::other_authorities)
+  value_object<required_authority_collectionV>("required_authority_collection")
+      .field("posting_accounts", &required_authority_collectionV::posting_accounts)
+      .field("active_accounts", &required_authority_collectionV::active_accounts)
+      .field("owner_accounts", &required_authority_collectionV::owner_accounts)
+      .field("other_authorities", &required_authority_collectionV::other_authorities)
       ;
 
   value_object<ref_block_data>("ref_block_data")
