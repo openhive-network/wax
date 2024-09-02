@@ -13,7 +13,7 @@ set( CMAKE_EXECUTABLE_SUFFIX "" )
 
 cmake_policy(SET CMP0057 NEW)
 
-set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
