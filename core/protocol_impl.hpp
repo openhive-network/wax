@@ -15,6 +15,8 @@ template <class FoundationProvider>
 class protocol_impl : public FoundationProvider
 {
 public:
+  using required_authority_collection_t = typename FoundationProvider::required_authority_collection_t;
+
   result cpp_validate_operation(const std::string& operation);
   result cpp_validate_transaction(const std::string& transaction);
   
@@ -44,7 +46,7 @@ public:
   /** Allows to collect all authorities required to process given transaction (needed to correctly sign it)
   *   Can throw on error.
   */
-  required_authority_collection cpp_collect_transaction_required_authorities(const std::string& transaction);
+  required_authority_collection_t cpp_collect_transaction_required_authorities(const std::string& transaction);
 
   using authorities_map_t = std::map<std::string, wax_authorities>;
   typedef authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);

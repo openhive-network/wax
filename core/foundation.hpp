@@ -10,6 +10,8 @@ namespace cpp {
 class foundation
 {
 public:
+  using required_authority_collection_t = required_authority_collection;
+
   result cpp_calculate_public_key(const std::string& wif);
   result cpp_generate_private_key();
 

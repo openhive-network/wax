@@ -138,9 +138,9 @@ result protocol_impl<FoundationProvider>::cpp_deserialize_transaction(const std:
 
 template <class FoundationProvider>
 inline
-required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
+typename protocol_impl<FoundationProvider>::required_authority_collection_t protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
 {
-  return cpp::safe_exception_wrapper([&]() -> required_authority_collection {
+  return cpp::safe_exception_wrapper([&]() -> required_authority_collection_t {
   const auto _transaction = get_transaction(transaction);
 
   typedef flat_set<hive::protocol::account_name_type> raw_account_set;
@@ -152,10 +152,11 @@ required_authority_collection protocol_impl<FoundationProvider>::cpp_collect_tra
   std::vector<hive::protocol::authority> other_authorities;
   _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
 
-  required_authority_collection ret_val;
-  ret_val.posting_accounts.insert(ret_val.posting_accounts.end(), posting.cbegin(), posting.cend());
-  ret_val.owner_accounts.insert(ret_val.owner_accounts.end(), owner.cbegin(), owner.cend());
-  ret_val.active_accounts.insert(ret_val.active_accounts.end(), active.cbegin(), active.cend());
+  required_authority_collection_t ret_val;
+  using account_collection_t = typename required_authority_collection_t::account_collection_t;
+  ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
+  ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
+  ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
 
   for(const auto& auth : other_authorities)
   {

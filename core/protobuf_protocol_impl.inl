@@ -538,7 +538,7 @@ result proto_protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(
   }
 
 template <class FoundationProvider>
-required_authority_collection proto_protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
+typename proto_protocol_impl<FoundationProvider>::required_authority_collection_t proto_protocol_impl<FoundationProvider>::cpp_collect_transaction_required_authorities(const std::string& transaction)
 {
   protocol_impl<FoundationProvider> provider;
 
