@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hiveio/wax':
-        specifier: file:../..
-        version: file:../..(rollup@4.18.0)
+        specifier: file:../../ts
+        version: file:../../ts
       next:
         specifier: 14.2.4
         version: 14.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -74,8 +74,8 @@ packages:
     resolution: {integrity: sha1-ROAefT23gneFl3cdXV21q62+eOc=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc2.tgz}
     engines: {node: '>= 18'}
 
-  '@hiveio/wax@file:../..':
-    resolution: {directory: ../.., type: directory}
+  '@hiveio/wax@file:../../ts':
+    resolution: {directory: ../../ts, type: directory}
     engines: {node: '>= 18'}
 
   '@humanwhocodes/config-array@0.11.14':
@@ -1739,7 +1739,7 @@ snapshots:
 
   '@hiveio/beekeeper@1.27.6-rc2': {}
 
-  '@hiveio/wax@file:../..(rollup@4.18.0)':
+  '@hiveio/wax@file:../../ts':
     dependencies:
       '@hiveio/beekeeper': 1.27.6-rc2
       class-transformer: 0.5.1

@@ -22,8 +22,8 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.5-rc7-stable.240530185524",
-    "@hiveio/wax": "file:../.."
+    "@hiveio/beekeeper": "1.27.6-rc2",
+    "@hiveio/wax": "file:../../ts"
   },
   "type": "module",
   "pnpm": {

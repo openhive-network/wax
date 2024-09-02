@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.5-rc7-stable.240530185524
-        version: 1.27.5-rc7-stable.240530185524
+        specifier: 1.27.6-rc2
+        version: 1.27.6-rc2
       '@hiveio/wax':
-        specifier: file:../..
-        version: file:../..
+        specifier: file:../../ts
+        version: file:../../ts
     devDependencies:
       '@parcel/config-default':
         specifier: ^2.12.0
@@ -57,18 +57,6 @@ importers:
       typescript:
         specifier: 5.2.2
         version: 5.2.2
-
-  packages/beekeeper:
-    dependencies:
-      '@hiveio/beekeeper':
-        specifier: 1.27.5-rc7-stable.240530185524
-        version: 1.27.5-rc7-stable.240530185524
-
-  packages/wax:
-    dependencies:
-      '@hiveio/wax':
-        specifier: 0.3.8-stable.240604171105
-        version: 0.3.8-stable.240604171105
 
 packages:
 
@@ -222,20 +210,12 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hiveio/beekeeper@1.27.5-rc7-stable.240530185524':
-    resolution: {integrity: sha1-uNh5rTpcWFPN7fCQsm3b+DRojF4=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.5-rc7-stable.240530185524.tgz}
-    engines: {node: '>= 12'}
-
   '@hiveio/beekeeper@1.27.6-rc2':
-    resolution: {integrity: sha1-ROAefT23gneFl3cdXV21q62+eOc=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc2.tgz}
+    resolution: {integrity: sha512-Kun/bWZ36lc5nZY3IZkg9AdqbIPFqW0RoJDrAVtC3GNxrUTxwJh8UWldmRrjGQKnJS8VXvsRxK+8QhZIZIjDMA==}
     engines: {node: '>= 18'}
 
-  '@hiveio/wax@0.3.8-stable.240604171105':
-    resolution: {integrity: sha1-ZNVesLppjGL6by7mq6yT0DR0uOc=, tarball: https://gitlab.syncad.com/api/v4/projects/419/packages/npm/@hiveio/wax/-/@hiveio/wax-0.3.8-stable.240604171105.tgz}
-    engines: {node: '>= 18'}
-
-  '@hiveio/wax@file:../..':
-    resolution: {directory: ../.., type: directory}
+  '@hiveio/wax@file:../../ts':
+    resolution: {directory: ../../ts, type: directory}
     engines: {node: '>= 18'}
 
   '@lezer/common@1.1.0':
@@ -1682,20 +1662,9 @@ snapshots:
   '@esbuild/win32-x64@0.19.11':
     optional: true
 
-  '@hiveio/beekeeper@1.27.5-rc7-stable.240530185524': {}
-
   '@hiveio/beekeeper@1.27.6-rc2': {}
 
-  '@hiveio/wax@0.3.8-stable.240604171105':
-    dependencies:
-      '@hiveio/beekeeper': 1.27.5-rc7-stable.240530185524
-      class-transformer: 0.5.1
-      class-validator: 0.14.0
-      long: 5.2.3
-      protobufjs: 7.2.5
-      reflect-metadata: 0.1.13
-
-  '@hiveio/wax@file:../..':
+  '@hiveio/wax@file:../../ts':
     dependencies:
       '@hiveio/beekeeper': 1.27.6-rc2
       class-transformer: 0.5.1

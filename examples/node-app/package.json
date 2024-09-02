@@ -9,7 +9,7 @@
     "test": "npm run build && npm run start"
   },
   "dependencies": {
-    "@hiveio/wax": "file:../.."
+    "@hiveio/wax": "file:../../ts"
   },
   "devDependencies": {
     "@types/node": "18",
