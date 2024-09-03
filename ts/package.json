@@ -17,8 +17,8 @@
     "benchmark": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "run-s examples:*",
     "examples:html": "cd ../examples/ts/html && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
-    "examples:nextjs-app": "cd ../examples/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../../ts",
-    "examples:node-app": "cd ../examples/node-app && pnpm install --frozen-lockfile && pnpm run test && cd ../../ts"
+    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../../../ts",
+    "examples:node-app": "cd ../examples/ts/node-app && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts"
   },
   "exports": {
     ".": {
