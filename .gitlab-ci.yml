@@ -322,8 +322,6 @@ deploy_wax_wasm_dev_package:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
     - job: supplement_documentation_url
       artifacts: true
   tags:
@@ -342,8 +340,6 @@ deploy_wax_wasm_production_public_npm:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
     - job: supplement_documentation_url
       artifacts: true
 
