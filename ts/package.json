@@ -16,7 +16,7 @@
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite --project=wax_testsuite_custom_chain_options --project=wax_regression_tests --project=wax_operation_factories --project=wax_encrypted_operations --project=wax_non_encrypted_operations",
     "benchmark": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "run-s examples:*",
-    "examples:ts": "cd ../examples/ts && pnpm install --frozen-lockfile && pnpm run test && cd ../../ts",
+    "examples:html": "cd ../examples/ts/html && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
     "examples:nextjs-app": "cd ../examples/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../../ts",
     "examples:node-app": "cd ../examples/node-app && pnpm install --frozen-lockfile && pnpm run test && cd ../../ts"
   },
