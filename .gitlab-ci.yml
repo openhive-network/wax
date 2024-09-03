@@ -226,9 +226,9 @@ test_wax_wasm_proto_pattern:
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/samples/ts/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
     - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
-    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/samples/ts/npm-pack.out"
+    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/ts/protobuf_patterns/npm-pack.out"
   artifacts:
     paths:
       - "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
