@@ -25,12 +25,8 @@ python/dist/
 downloads/
 eggs/
 .eggs/
-
-lib/             # Ignore everything in the lib directory
-!wasm/           # Un-ignore the wasm directory (if it's in the root or under lib)
-wasm/lib/        # Ignore wasm/lib specifically if it's still to be ignored
-!wasm/lib        # Then un-ignore the specific file or subdirectory as needed   
- 
+lib/
+!wasm/lib
 benchmark-data
 lib64/
 parts/
