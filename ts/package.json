@@ -40,7 +40,6 @@
     "@rollup/plugin-terser": "^0.4.4",
     "@types/events": "^3.0.3",
     "@types/node": "^20.10.6",
-    "@types/qs": "^6.9.15",
     "concat-md": "^0.5.1",
     "http-server": "^14.1.1",
     "husky": "8.0.3",
@@ -63,7 +62,6 @@
     "class-validator": "^0.14.0",
     "events": "^3.3.0",
     "long": "^5.2.3",
-    "qs": "^6.12.3",
     "reflect-metadata": "^0.1.13"
   },
   "license": "SEE LICENSE IN LICENSE.md",
