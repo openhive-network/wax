@@ -1,3 +1,6 @@
+from wax import python_authority
+
+
 PROTO_REF_VOTE_OP = {
     "vote": {
         "voter": "otom",
@@ -548,6 +551,175 @@ API_REF_TRANSACTION = {
         "202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3"
     ],
 }
+
+API_REF_RECOVER_ACCOUNT_OP = {
+    "type": "recover_account_operation",
+    "value": {
+        "extensions": [],
+        "account_to_recover": "maryou",
+        "new_owner_authority": {
+            "key_auths": [["STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got", 1]],
+            "account_auths": [],
+            "weight_threshold": 1,
+        },
+        "recent_owner_authority": {
+            "key_auths": [["STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU", 1]],
+            "account_auths": [],
+            "weight_threshold": 1,
+        },
+    },
+}
+
+API_REF_RECOVER_ACCOUNT_OP_OTHER_AUTHORITIES = [
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+]
+
+API_REF_POW2_OP = {
+    "type": "pow2_operation",
+    "value": {
+        "new_owner_key": "STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU",
+        "work": {
+            "type": "equihash_pow",
+            "value": {
+                "input": {
+                    "nonce": "16341422149543555368",
+                    "prev_block": "00a230db8636f29425c86024d0ac1593c8b436b2",
+                    "worker_account": "hedi12",
+                },
+                "proof": {
+                    "k": 6,
+                    "n": 140,
+                    "seed": "3deb97f11ce6ae3b8c26e44c2ba848e1b7dea212ae4204f2dfd9fb6ce7ec29a8",
+                    "inputs": [
+                        2930666,
+                        3055534,
+                        16227194,
+                        1878724,
+                    ],
+                },
+                "prev_block": "00a230db8636f29425c86024d0ac1593c8b436b2",
+                "pow_summary": 3542335882,
+            },
+        },
+        "props": {
+            "hbd_interest_rate": 1000,
+            "maximum_block_size": 131072,
+            "account_creation_fee": {
+                "nai": "@@000000021",
+                "amount": "1",
+                "precision": 3,
+            },
+        },
+    },
+}
+API_REF_POW2_OP_OTHER_AUTHORITIES = [
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    )
+]
+
+API_REF_WITNESS_SET_PROPERTIES_OP = {
+    "type": "witness_set_properties_operation",
+    "value": {
+        "owner": "mebonline",
+        "props": [
+            [
+                "hbd_exchange_rate",
+                "a4000000000000000353424400000000e80300000000000003535445454d0000",
+            ],
+            [
+                "key",
+                "0329568b787d47e00645cee47b5753e93049267eead1856acfb80871f5f27704e5",
+            ],
+        ],
+        "extensions": [],
+    },
+}
+
+API_REF_WITNESS_SET_PROPERTIES_OP_OTHER_AUTHORITIES = [
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM79STNQpvUrJZTN5SiNAphrFaGJ2A7DPZMS5P2rueLtxNvtGQ28": 1},
+    ),
+]
+
+API_REF_CUSTOM_BINARY_OP = {
+    "type": "custom_binary_operation",
+    "value": {
+        "required_owner_auths": ["gtg"],
+        "required_active_auths": ["gtg"],
+        "required_posting_auths": ["gtg"],
+        "required_auths": [
+            {
+                "key_auths": [
+                    ["STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got", 1]
+                ],
+                "account_auths": [],
+                "weight_threshold": 1,
+            }
+        ],
+    },
+}
+
+API_REF_CUSTOM_BINARY_OP_OTHER_AUTHORITIES = [
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7m6skviQgp1QvnAM9bMqzWqDjteuzVN5VwD9h98fUZusv82SfU": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM79STNQpvUrJZTN5SiNAphrFaGJ2A7DPZMS5P2rueLtxNvtGQ28": 1},
+    ),
+    python_authority(
+        weight_threshold=1,
+        account_auths={},
+        key_auths={b"STM7ExTEs8u9q4vWfmRejjG5YLoTVQ9aib1kj2TVzxdMRZ2xN8got": 1},
+    ),
+]
 
 # See Hive mainnet block 80021416, trx_id: 7f34699e9eea49d1bcc10c88f96e38897839ece3
 API_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
