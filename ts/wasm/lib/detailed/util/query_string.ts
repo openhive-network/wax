@@ -25,4 +25,6 @@ export function objectToQueryString(
       queryParts.push(`${key}=${encodedValue}`);
     }
   }
+
+  return queryParts.join("&");
 }
