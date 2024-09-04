@@ -9,4 +9,3 @@ import "./detailed/hive_chain_rest_api";
 import "./detailed/healthchecks";
 import "./detailed/formatters";
 import "./detailed/custom_jsons";
-import "./detailed/utils";
