@@ -12,10 +12,10 @@ import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
 import { extractBracedStrings } from "./rest-api/utils.js";
 import { iterate } from "./util/iterate.js";
+import { objectToQueryString } from "./util/query_string";
 import { Transaction } from "./transaction_builder.js";
 
 import Long from "long";
-import qs from 'qs';
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -68,7 +68,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       let queryString = '';
       if (isQueryStringOnlyRequest && finalizedRequestData !== undefined && Object.keys(finalizedRequestData).length > 0)
-        queryString = '?' + qs.stringify(finalizedRequestData);
+        queryString = '?' + objectToQueryString(finalizedRequestData as Record<string, any>);
 
       const body = isQueryStringOnlyRequest ? undefined : JSON.stringify(finalizedRequestData);
 

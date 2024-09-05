@@ -1369,10 +1369,6 @@ packages:
     resolution: {integrity: sha512-x+NLUpx9SYrcwXtX7ob1gnkSems4i/mGZX5SlYxwIau6RrUSODO89TR/XDGGpn5RPWSYIB+aSfuSlV5+CmbTBg==}
     engines: {node: '>=0.6'}
 
-  qs@6.13.0:
-    resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}
-    engines: {node: '>=0.6'}
-
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
 
@@ -1641,7 +1637,6 @@ snapshots:
       class-validator: 0.14.0
       events: 3.3.0
       long: 5.2.3
-      qs: 6.13.0
       reflect-metadata: 0.1.13
 
   '@lezer/common@1.1.0': {}
@@ -3098,10 +3093,6 @@ snapshots:
       safe-buffer: 5.2.1
 
   qs@6.12.2:
-    dependencies:
-      side-channel: 1.0.6
-
-  qs@6.13.0:
     dependencies:
       side-channel: 1.0.6
 
