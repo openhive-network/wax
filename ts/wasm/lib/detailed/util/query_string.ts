@@ -4,10 +4,6 @@ export function objectToQueryString(
     undefined | null | string | number | boolean | Array<any> | object
   >
 ) {
-  if (typeof params !== "object" || params === null) {
-    throw new Error("Input must be a non-null object");
-  }
-
   const queryParts: Array<string> = [];
 
   for (const [key, value] of Object.entries(params)) {

@@ -22,7 +22,31 @@ test.describe("Utility functions test", () => {
     });
   });
 
-  test("objectToQueryString", () => {
+  test("Should be able to convert empty object to a correct query string", () => {
+    const params = {};
+
+    const decoded = "";
+    const encoded = "";
+
+    const querified = objectToQueryString(params);
+    expect(querified).toEqual(encoded);
+    expect(decodeURIComponent(querified)).toEqual(decoded);
+  });
+
+  test("Should be able to convert single parameter to a correct query string", () => {
+    const params = {
+      name: "John"
+    };
+
+    const decoded = "name=John";
+    const encoded = "name=John";
+
+    const querified = objectToQueryString(params);
+    expect(querified).toEqual(encoded);
+    expect(decodeURIComponent(querified)).toEqual(decoded);
+  });
+
+  test("Should be able to convert object with multiple parameters to a correct query string", () => {
     const params = {
       name: "John",
       age: 30,
