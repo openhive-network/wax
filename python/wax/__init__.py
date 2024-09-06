@@ -48,6 +48,7 @@ from .wax import (
     collect_signing_keys,
     estimate_hive_collateral,
     check_memo_for_private_keys,
+    minimize_required_signatures,
 )
 
 from .wax_result import (
@@ -61,6 +62,7 @@ from .wax_result import (
     python_witness_set_properties_data,
     python_authority,
     python_authorities,
+    python_minimize_required_signatures_data,
 )
 
 __version__ = "0.0.0"
@@ -76,6 +78,7 @@ __all__ = [
     "python_witness_set_properties_data",
     "python_authority",
     "python_authorities",
+    "python_minimize_required_signatures_data",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -123,4 +126,5 @@ __all__ = [
     "collect_signing_keys",
     "estimate_hive_collateral",
     "check_memo_for_private_keys",
+    "minimize_required_signatures",
 ]

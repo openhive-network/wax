@@ -3,6 +3,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -128,6 +130,22 @@ struct wax_authorities
   wax_authority active;
   wax_authority owner;
   wax_authority posting;
+};
+
+using wax_authorities_map_t = std::map<std::string, wax_authorities>;
+typedef wax_authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);
+typedef std::string (*witness_public_key_getter_cb_t)(std::string, void*);
+
+struct minimize_required_signatures_data_t
+{
+  std::string chain_id;
+  std::vector<std::string> available_keys;
+  wax_authorities_map_t authorities_map;
+  witness_public_key_getter_cb_t get_witness_key_cb;
+  void* get_witness_key_fn;
+  std::optional<uint32_t> max_recursion;
+  std::optional<uint32_t> max_membership;
+  std::optional<uint32_t> max_account_auths;
 };
 
 } /// namespace cpp

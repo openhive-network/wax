@@ -51,17 +51,19 @@ public:
   */
   required_authority_collection_t cpp_collect_transaction_required_authorities(const std::string& transaction);
 
-  using authorities_map_t = std::map<std::string, wax_authorities>;
-  typedef authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);
-
   /** Allows to collect signing keys from given transaction
   *   Can throw on error.
   */
   std::vector<std::string> cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb,
-    void* retrieve_authorities_user_data);
+    void* retrieve_authorities_fn);
 
   void cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
     const std::vector<std::string>& imported_keys);
+
+  /** Minimize required signatures collection depend on given available keys and authorities.
+  */
+  std::vector<std::string> cpp_minimize_required_signatures(const std::string& signed_transaction, const minimize_required_signatures_data_t& minimize_required_signatures_data);
+
 };
 
 } /// namespace cpp

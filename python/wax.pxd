@@ -45,12 +45,11 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass required_authority_collection:
          required_authority_collection() except +
          ctypedef cppset[string] account_set
-         ctypedef vector[wax_authority] authority_vector
 
          account_set posting_accounts
          account_set active_accounts
          account_set owner_accounts
-         authority_vector other_authorities
+         vector[wax_authority] other_authorities
 
     cdef cppclass crypto_memo:
          crypto_memo() except +
@@ -118,8 +117,21 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         wax_authority posting
 
     ctypedef cppmap[string, string] witness_set_properties_serialized
+    ctypedef cppmap[string, wax_authorities] wax_authorities_map_t
+    ctypedef wax_authorities_map_t (*retrieve_authorities_t)(vector[string], void* ) except +
+    ctypedef string (*get_witness_key_t)(string, void* ) except +
 
-    ctypedef cppmap[string, wax_authorities] (*retrieve_authorities_t)(vector[string], void* ) except +
+    cdef cppclass minimize_required_signatures_data_t:
+        minimize_required_signatures_data_t() except +
+
+        string chain_id
+        vector[string] available_keys
+        wax_authorities_map_t authorities_map
+        get_witness_key_t get_witness_key_cb
+        void* get_witness_key_fn
+        cpp_optional[uint32_t] max_recursion
+        cpp_optional[uint32_t] max_membership
+        cpp_optional[uint32_t] max_account_auths
 
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
@@ -159,7 +171,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
         witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
 
-        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_user_data ) except +
+        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_fn ) except +
+        vector[string] cpp_minimize_required_signatures( string signed_transaction, minimize_required_signatures_data_t minimize_required_signatures_data ) except +
 
         void cpp_check_memo_for_private_keys(string memo, string account, wax_authorities auths, string memo_key, vector[string] imported_keys) except +
 

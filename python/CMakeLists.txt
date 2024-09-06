@@ -48,7 +48,12 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
-add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp cpython_interface.cpp ${HEADERS}
+add_python_library(${PROJECT_NAME} MODULE SOURCES
+  ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/minimize_required_signatures_helper.cpp
+  cpython_interface.cpp
+  ${HEADERS}
   LINK_LIBRARIES hive_protocol)
 
 target_include_directories(${PROJECT_NAME} PRIVATE

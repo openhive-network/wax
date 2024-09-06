@@ -8,7 +8,7 @@ from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.vector cimport vector
-from libcpp.optional cimport optional, make_optional
+from libcpp.optional cimport optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
 import cython
@@ -360,20 +360,19 @@ def get_transaction_required_authorities( transaction: bytes ) -> python_require
     op = set(collection.posting_accounts)
     oa = set(collection.active_accounts)
     oo = set(collection.owner_accounts)
-    ao = list()
-
-    for auth_obj in collection.other_authorities:
-      ao.append(python_authority(
-        weight_threshold = auth_obj.weight_threshold,
-        key_auths = auth_obj.key_auths,
-        account_auths = auth_obj.account_auths
+    other_auths = []
+    for auth in collection.other_authorities:
+      other_auths.append(python_authority(
+        weight_threshold = auth.weight_threshold,
+        key_auths = auth.key_auths,
+        account_auths = auth.account_auths
       ))
 
     return python_required_authority_collection(
       posting_accounts=op,
       active_accounts=oa,
       owner_accounts=oo,
-      other_authorities=ao
+      other_authorities=other_auths,
     )
 
 def encode_encrypted_memo(encrypted_content: bytes, main_encryption_key: bytes, other_encryption_key: bytes = b'') -> bytes:
@@ -561,6 +560,36 @@ def check_memo_for_private_keys(memo: bytes, account: bytes, auths: python_autho
     cdef protocol obj
     cdef wax_authorities wax_auths = python_authorities_to_wax_authorities(auths)
     obj.cpp_check_memo_for_private_keys(memo, account, wax_auths, memo_key, imported_keys)
+
+cdef cppstring get_witness_key_cb(cppstring account_name, void* get_witness_key_fn):
+    cdef result = (<object>get_witness_key_fn)(account_name)
+    return result
+
+def minimize_required_signatures(
+    signed_transaction: bytes,
+    minimize_required_signatures_data: python_minimize_required_signatures_data,
+) -> list[bytes]:
+    cdef protocol obj
+    cdef minimize_required_signatures_data_t wax_minimize_required_signatures_data
+    cdef uint32_t _uint_helper
+
+    wax_minimize_required_signatures_data.chain_id = minimize_required_signatures_data.chain_id
+    wax_minimize_required_signatures_data.available_keys = minimize_required_signatures_data.available_keys
+    for k, v in minimize_required_signatures_data.authorities_map.items():
+        auths = python_authorities_to_wax_authorities(v)
+        wax_minimize_required_signatures_data.authorities_map[k] = auths
+    wax_minimize_required_signatures_data.get_witness_key_cb = get_witness_key_cb
+    wax_minimize_required_signatures_data.get_witness_key_fn = <void*>minimize_required_signatures_data.get_witness_key
+    if minimize_required_signatures_data.max_recursion is not None:
+        _uint_helper = int(minimize_required_signatures_data.max_recursion)
+        wax_minimize_required_signatures_data.max_recursion = _uint_helper
+    if minimize_required_signatures_data.max_membership is not None:
+        _uint_helper = int(minimize_required_signatures_data.max_membership)
+        wax_minimize_required_signatures_data.max_membership = _uint_helper
+    if minimize_required_signatures_data.max_account_auths is not None:
+        _uint_helper = int(minimize_required_signatures_data.max_account_auths)
+        wax_minimize_required_signatures_data.max_account_auths = _uint_helper
+    return obj.cpp_minimize_required_signatures(signed_transaction, wax_minimize_required_signatures_data)
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

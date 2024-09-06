@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
+from typing import Callable
 
 def compare_any_string(s0:bytes|str, s1:bytes|str) -> bool:
   if isinstance(s0, bytes):
@@ -106,3 +107,13 @@ class python_authorities:
     active: python_authority
     owner: python_authority
     posting: python_authority
+
+@dataclass
+class python_minimize_required_signatures_data:
+    chain_id: bytes
+    available_keys: list[bytes]
+    authorities_map: dict[bytes, python_authorities]
+    get_witness_key: Callable[[bytes], bytes]
+    max_recursion: int | None = None
+    max_membership: int | None = None
+    max_account_auths: int | None = None

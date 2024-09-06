@@ -1,11 +1,16 @@
-#include "signing_keys_collector.hpp"
+#include "core/signing_keys_collector.hpp"
+
+#include "core/hive_protocol_types.hpp"
+
+using namespace hive::protocol;
+using namespace fc;
 
 namespace cpp
 {
 
-std::vector<std::string> signing_keys_collector::collect_signing_keys(const hive::protocol::transaction& transaction)
+std::vector<std::string> signing_keys_collector::collect_signing_keys(const transaction& transaction)
 {
-  fc::flat_set<hive::protocol::public_key_type> keys;
+  flat_set<hive::protocol::public_key_type> keys;
   hive::protocol::signing_keys_collector::collect_signing_keys(&keys, transaction);
   std::vector<std::string> result;
 
@@ -25,17 +30,17 @@ void signing_keys_collector::prepare_account_authority_data( const std::vector< 
   account_authorities.merge(_account_authorities);
 }
 
-const hive::protocol::authority& signing_keys_collector::get_active( const account_name_type& account_name ) const
+const authority& signing_keys_collector::get_active( const account_name_type& account_name ) const
 {
   return get_authorities(account_name).active;
 }
 
-const hive::protocol::authority& signing_keys_collector::get_owner( const account_name_type& account_name ) const
+const authority& signing_keys_collector::get_owner( const account_name_type& account_name ) const
 {
   return get_authorities(account_name).owner;
 }
 
-const hive::protocol::authority& signing_keys_collector::get_posting( const account_name_type& account_name ) const
+const authority& signing_keys_collector::get_posting( const account_name_type& account_name ) const
 {
   return get_authorities(account_name).posting;
 }
