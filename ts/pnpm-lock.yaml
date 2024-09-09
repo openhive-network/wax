@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.6-rc2
-        version: 1.27.6-rc2
+        specifier: 1.27.6-rc3
+        version: 1.27.6-rc3
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -111,8 +111,8 @@ packages:
     resolution: {integrity: sha512-dkdMCN3py0+ksCgYmGG8jKeGA/8Tk+gJwSYYlFGxG5lmhfKNoAy004YpLxpS1W2J8m/EK2Ew+yOs9pVRwO89mg==}
     engines: {node: '>=6.9.0'}
 
-  '@hiveio/beekeeper@1.27.6-rc2':
-    resolution: {integrity: sha512-Kun/bWZ36lc5nZY3IZkg9AdqbIPFqW0RoJDrAVtC3GNxrUTxwJh8UWldmRrjGQKnJS8VXvsRxK+8QhZIZIjDMA==}
+  '@hiveio/beekeeper@1.27.6-rc3':
+    resolution: {integrity: sha1-+tV/0zANMNTgBA7WJAT5DKO9Bk0=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc3.tgz}
     engines: {node: '>= 18'}
 
   '@isaacs/cliui@8.0.2':
@@ -1727,7 +1727,7 @@ snapshots:
       chalk: 2.4.2
       js-tokens: 4.0.0
 
-  '@hiveio/beekeeper@1.27.6-rc2': {}
+  '@hiveio/beekeeper@1.27.6-rc3': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
