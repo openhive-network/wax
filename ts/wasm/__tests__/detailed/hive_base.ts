@@ -28,6 +28,51 @@ test.describe('Wax object interface foundation tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
+  test('Should be able to convert VESTS to HP (bug)', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ base }) => {
+      let blocktrades_delegated_hp = "";
+      let blocktrades_self_witness_vote_hp = "";
+      let mcfarhat_delegated_hp = "";
+
+      {
+        const delegated_vesting_shares = "6909522651976083";
+        /// according to result taken from: https://api.syncad.com/hafbe/witnesses/blocktrades/voters?sort=vests&direction=desc&result-limit=2147483647
+        const self_witness_vote = "43357485398000965";
+
+        ///                                     vests-balance    total-hive   total-vests
+        let hpValue = base.vestsToHp(delegated_vesting_shares, "182849539607", "312353953479712805");
+        blocktrades_delegated_hp = base.waxify`${hpValue}`;
+        console.log(`Blocktrades delegated_vesting_shares (HP): ${blocktrades_delegated_hp}`)
+
+        hpValue = base.vestsToHp(self_witness_vote, "182849539607", "312353953479712805");
+        blocktrades_self_witness_vote_hp = base.waxify`${hpValue}`;
+        console.log(`Blocktrades (self) witness_vote (HP): ${blocktrades_self_witness_vote_hp}`)
+      }
+
+      {
+        const delegated_vesting_shares = "13261033608208";
+
+        ///                                    vests-balance    total-hive   total-vests
+        let hpValue = base.vestsToHp(delegated_vesting_shares, "182849539607", "312353953479712805");
+        mcfarhat_delegated_hp = base.waxify`${hpValue}`;
+        console.log(`mcfarhat delegated_vesting_shares (HP): ${mcfarhat_delegated_hp}`)
+      }
+
+      return {
+        "blocktrades_delegated_hp": blocktrades_delegated_hp,
+        "blocktrades_self_witness_vote_hp": blocktrades_self_witness_vote_hp,
+        "mcfarhat_delegated_hp": mcfarhat_delegated_hp
+      };
+    });
+
+    expect(retVal).toEqual({
+      "blocktrades_delegated_hp": "4,044,780.037 HIVE",
+      "blocktrades_self_witness_vote_hp": "25,381,129.821 HIVE",
+      "mcfarhat_delegated_hp": "7,762.904 HIVE"
+    });
+  });
+
+
   test('Should be able to generate negative HIVE asset', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.hive(-300_000);
