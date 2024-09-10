@@ -43,7 +43,7 @@ test.describe('WASM Base tests', () => {
     }, input_witness_properties);
 
     expect(retval.key).toBe('029072da2e84ebd6eb520f944db3d1af718500b0f1ddf60e11e986f990acddd524');
-    expect(retval.hbd_exchange_rate).toEqual('11010000000000000353424400000000e80300000000000003535445454d0000');
+    expect(retval.hbd_exchange_rate).toEqual('11010000000000000320bcbee8030000000000002320bcbe');
   });
 
   test('Should be able to deserialize witness props', async ({ wasmTest }) => {

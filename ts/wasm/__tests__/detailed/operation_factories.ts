@@ -55,7 +55,7 @@ test.describe('Wax operation factories tests', () => {
         props: [
           [
             "account_creation_fee",
-            "881300000000000003535445454d0000",
+            "88130000000000002320bcbe",
           ],
           [
             "account_subsidy_budget",
@@ -67,7 +67,7 @@ test.describe('Wax operation factories tests', () => {
           ],
           [
             "hbd_exchange_rate",
-            "e8030000000000000353424400000000e80300000000000003535445454d0000",
+            "e8030000000000000320bcbee8030000000000002320bcbe",
           ],
           [
             "hbd_interest_rate",
@@ -146,7 +146,7 @@ test.describe('Wax operation factories tests', () => {
         props: [
           [
             "account_creation_fee",
-            "b80b00000000000003535445454d0000",
+            "b80b0000000000002320bcbe",
           ],
           [
             "account_subsidy_budget",
@@ -217,7 +217,7 @@ test.describe('Wax operation factories tests', () => {
         props: [
           [
             "hbd_exchange_rate",
-            "a8010000000000000353424400000000e80300000000000003535445454d0000",
+            "a8010000000000000320bcbee8030000000000002320bcbe",
           ],
           [
             "key",
@@ -255,7 +255,7 @@ test.describe('Wax operation factories tests', () => {
         props: [
           [
             "account_creation_fee",
-            "b80b00000000000003535445454d0000",
+            "b80b0000000000002320bcbe",
           ],
           [
             "account_subsidy_budget",
@@ -267,7 +267,7 @@ test.describe('Wax operation factories tests', () => {
           ],
           [
             "hbd_exchange_rate",
-            "63030000000000000353424400000000ea0300000000000003535445454d0000"
+            "63030000000000000320bcbeea030000000000002320bcbe"
           ],
           [
             "hbd_interest_rate",

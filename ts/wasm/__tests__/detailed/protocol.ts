@@ -383,10 +383,10 @@ test.describe('WASM Protocol', () => {
     }, witness_properties);
 
     expect(retVal).toStrictEqual({
-      account_creation_fee: "881300000000000003535445454d0000",
+      account_creation_fee: "88130000000000002320bcbe",
       account_subsidy_budget: "1d030000",
       account_subsidy_decay: "b94c0500",
-      hbd_exchange_rate: "64000000000000000353424400000000640000000000000003535445454d0000",
+      hbd_exchange_rate: "64000000000000000320bcbe64000000000000002320bcbe",
       hbd_interest_rate: "e803",
       key: "02472d6eb6d691b6de8b103b51ebdf4e128a523946d8cd03d6ded91b1497ee2e83",
       maximum_block_size: "00000200",
