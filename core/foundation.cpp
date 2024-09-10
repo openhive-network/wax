@@ -468,16 +468,15 @@ result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_n
 // Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,
 // we are using the ones for hive::protocol::asset and hive::protocol::price
 
-// WARNING this serialization primitives are used atm only in context of witness_set_properties operation and to be
-// compliant to hive::protocol behavior (and properties serialization) have enabled legacy serialization mode.
+// WARNING this serialization primitives are used atm only in context of witness_set_properties operation.
 namespace fc { namespace raw {
   template<typename Stream>
   inline void pack( Stream& s, const cpp::json_asset& u )
   {
     const auto actualAsset = cpp::to_asset(u);
 
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
     pack(s, actualAsset);
   }
@@ -487,8 +486,8 @@ namespace fc { namespace raw {
   {
     hive::protocol::asset tmp;
 
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
     unpack(s, tmp, d + 1);
     u = cpp::to_json_asset(tmp);
@@ -499,8 +498,8 @@ namespace fc { namespace raw {
   {
     hive::protocol::price actualPrice { cpp::to_asset(u.base), cpp::to_asset(u.quote) };
 
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
     pack(s, actualPrice);
   }
 
@@ -508,8 +507,8 @@ namespace fc { namespace raw {
   inline void unpack( Stream& s, cpp::price& u, uint32_t d )
   {
     hive::protocol::price tmp;
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
     unpack(s, tmp, d + 1);
     u = { .base = cpp::to_json_asset(tmp.base), .quote = cpp::to_json_asset(tmp.quote) };
