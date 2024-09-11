@@ -28,6 +28,35 @@ test.describe('Wax object interface foundation tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
+  test('Should be able to convert HIVE to HBD - numbers', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ base }) => {
+      const feedPriceQuote = 1000;
+      const feedPriceBase = 171;
+      return base.hiveToHbd(13316762799, feedPriceBase, feedPriceQuote);
+    });
+
+    expect(retVal).toEqual({
+      amount: "2277166438",
+      nai: "@@000000013",
+      precision: 3
+    });
+  });
+
+  test('Should be able to convert HIVE to HBD - NAIs', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ base }) => {
+      const feedPriceQuote = base.hive(1000_000);
+      const feedPriceBase = base.hbd(171_000);
+      const amount = base.hive(13316762799_000);
+      return base.hiveToHbd(amount, feedPriceBase, feedPriceQuote);
+    });
+
+    expect(retVal).toEqual({
+      amount: "2277166438629",
+      nai: "@@000000013",
+      precision: 3
+    });
+  });
+
   test('Should be able to convert VESTS to HP (bug)', async ({ waxTest }) => {
     const retVal = await waxTest(async ({ base }) => {
       let blocktrades_delegated_hp = "";
