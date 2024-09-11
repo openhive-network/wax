@@ -76,6 +76,17 @@ public:
   json_asset cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const;
 
   /**
+   * Convert HIVE to HBD.
+   *
+   * @param amount - amount of HIVE asset to be converted to HBD
+   * @param base   - base value from get_current_price_feed (HBD asset)
+   * @param quote  - quote value from get_current_price_feed (HIVE asset)
+   *
+   * @returns value in HBD asset
+   */
+  json_asset cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, const json_asset& quote) const;
+
+  /**
    * Convert VESTS to HP.
    *
    * @param vests - VESTS asset (also voting power or RC expressed as VESTS asset)

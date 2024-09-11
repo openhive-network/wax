@@ -439,6 +439,22 @@ json_asset foundation::cpp_hbd_to_hive(const json_asset &hbd, const json_asset& 
   });
 }
 
+json_asset foundation::cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, const json_asset& quote) const
+{
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
+    const hive::protocol::asset _amount = to_asset(amount);
+    const hive::protocol::asset _base = to_asset(base);
+    const hive::protocol::asset _quote = to_asset(quote);
+    FC_ASSERT(_amount.symbol == HIVE_SYMBOL, "'amount' param expected as HIVE asset");
+    FC_ASSERT(_base.symbol == HBD_SYMBOL, "'price_base' param expected as HBD asset");
+    FC_ASSERT(_quote.symbol == HIVE_SYMBOL, "'price_quote' param expected as HIVE asset");
+    const hive::protocol::price hive_to_hbd_feed{ _quote, _base };
+
+    const hive::protocol::asset hbd = _amount * hive_to_hbd_feed;
+    return to_json_asset(hbd);
+    });
+}
+
 json_asset foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return cpp::safe_exception_wrapper([&]() -> json_asset {
