@@ -115,6 +115,11 @@ json_asset cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const 
   return foundation::cpp_hbd_to_hive(hbd, base, quote);
 }
 
+json_asset cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, const json_asset& quote) const
+{
+  return foundation::cpp_hive_to_hbd(amount, base, quote);
+}
+
 json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
@@ -253,6 +258,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_inflation_rate_for_block", &foundation_wasm::cpp_calculate_inflation_rate_for_block)
     .function("cpp_vests_to_hp", &foundation_wasm::cpp_vests_to_hp)
     .function("cpp_hbd_to_hive", &foundation_wasm::cpp_hbd_to_hive)
+    .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
