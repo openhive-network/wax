@@ -518,8 +518,18 @@ export interface IWaxBaseInterface {
    * @param {NaiAsset} hbd HBD asset
    * @param {NaiAsset} base HBD asset price base
    * @param {NaiAsset} quote HIVE asset price quote
+   * @returns {NaiAsset} HIVE in nai form
    */
-  hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset
+  hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset;
+
+  /**
+   * Converts given amount of HIVE asset to HBD (nai form)
+   * @param {NaiAsset} amount HIVE asset
+   * @param {NaiAsset} base HBD asset price base taken i.e. from database_api.get_current_price_feed call
+   * @param {NaiAsset} quote HIVE asset price quote taken i.e. from database_api.get_current_price_feed call
+   * @returns {NaiAsset} HBD in nai form
+   */
+  hiveToHbd(amount: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset;
 
   /**
    * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format

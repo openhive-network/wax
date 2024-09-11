@@ -107,6 +107,23 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.proto.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset;
   }
 
+  public hiveToHbd(amount: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
+    const amountAsset = isNaiAsset(amount) ? amount as NaiAsset : this.hive(amount as number | string | BigInt | Long);
+    const baseAsset = isNaiAsset(base) ? base as NaiAsset : this.hbd(base as number | string | BigInt | Long);
+    const quoteAsset = isNaiAsset(quote) ? quote as NaiAsset : this.hive(quote as number | string | BigInt | Long);
+
+    if (amountAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for HBD');
+
+    if (baseAsset.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for base');
+
+    if (quoteAsset.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for quote');
+
+    return this.proto.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset;
+  }
+
   public extract(res: result): string {
     if(res.value !== this.wax.error_code.ok)
       throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
