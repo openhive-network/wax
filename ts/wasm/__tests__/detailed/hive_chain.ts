@@ -5,7 +5,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
 import fs from "fs";
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { protoVoteOp, signatureTransaction } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
@@ -481,6 +481,16 @@ test.describe('Wax object interface chain tests', () => {
         '1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707',
         '209e2e371495ae731486c46cad62786ebb4260a54e558c41393e4ee681047ee07b5f476133d1100e08a6b88220c62c372789efbeb17d465d1c65efb0e23f8f1e0b'
       ]);
+    });
+
+    test('Should be able to get transaction required authorities', async ({ waxTest }) => {
+      const retVal = await waxTest.dynamic(async({ chain }, signatureTransaction) => {
+        const tx = chain.createTransactionFromJson(signatureTransaction);
+
+        return [...tx.requiredAuthorities.posting.values()];
+      }, signatureTransaction);
+
+      expect(retVal[0]).toEqual('thatcryptodave');
     });
 
   test.afterAll(async () => {
