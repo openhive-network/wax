@@ -40,6 +40,11 @@ def calculate_hbd_to_hive(
     base: python_json_asset,
     quote: python_json_asset
 ) -> python_json_asset: ...
+def calculate_hive_to_hbd(
+    amount: python_json_asset,
+    base: python_json_asset,
+    quote: python_json_asset
+) -> python_json_asset: ...
 def calculate_vests_to_hp(
     vests: python_json_asset,
     total_vesting_fund_hive: python_json_asset,

@@ -204,6 +204,15 @@ def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote
     return response.amount, response.precision, response.nai
 
 @return_python_json_asset
+def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, quote: python_json_asset ) -> python_json_asset:
+    cdef protocol obj
+    cdef json_asset _amount = json_asset(amount.amount, amount.precision, amount.nai)
+    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
+    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
+    response = obj.cpp_hive_to_hbd(_amount, _base, _quote)
+    return response.amount, response.precision, response.nai
+
+@return_python_json_asset
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     cdef protocol obj
     cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
