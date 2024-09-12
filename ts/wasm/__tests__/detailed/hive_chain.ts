@@ -5,7 +5,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
 import fs from "fs";
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp, signatureTransaction } from "../assets/data.proto-protocol";
+import { protoVoteOp, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
@@ -483,14 +483,70 @@ test.describe('Wax object interface chain tests', () => {
       ]);
     });
 
-    test('Should be able to get transaction required authorities', async ({ waxTest }) => {
+    test('Should be able to get transaction required posting authority', async ({ waxTest }) => {
       const retVal = await waxTest.dynamic(async({ chain }, signatureTransaction) => {
         const tx = chain.createTransactionFromJson(signatureTransaction);
 
-        return [...tx.requiredAuthorities.posting.values()];
+        return {
+          authsArr: [...tx.requiredAuthorities.posting.values()],
+          postingSize: tx.requiredAuthorities.posting.size,
+          activeSize: tx.requiredAuthorities.active.size,
+          ownerSize: tx.requiredAuthorities.owner.size,
+          otherSize: tx.requiredAuthorities.other.length
+        };
       }, signatureTransaction);
 
-      expect(retVal[0]).toEqual('thatcryptodave');
+      const { authsArr, postingSize, activeSize, ownerSize, otherSize } = retVal;
+
+      expect(authsArr[0]).toEqual('thatcryptodave');
+      expect(postingSize).toEqual(1);
+      expect(activeSize).toEqual(0);
+      expect(ownerSize).toEqual(0);
+      expect(otherSize).toEqual(0);
+    });
+
+    test('Should be able to get transaction required active authority', async ({ waxTest }) => {
+      const retVal = await waxTest.dynamic(async({ chain }, requiredActiveAuthorityTransaction) => {
+        const tx = chain.createTransactionFromJson(requiredActiveAuthorityTransaction);
+
+        return {
+          authsArr: [...tx.requiredAuthorities.active.values()],
+          postingSize: tx.requiredAuthorities.posting.size,
+          activeSize: tx.requiredAuthorities.active.size,
+          ownerSize: tx.requiredAuthorities.owner.size,
+          otherSize: tx.requiredAuthorities.other.length
+        };
+      }, requiredActiveAuthorityTransaction);
+
+      const { authsArr, postingSize, activeSize, ownerSize, otherSize } = retVal;
+
+      expect(authsArr[0]).toEqual('droida');
+      expect(postingSize).toEqual(0);
+      expect(activeSize).toEqual(1);
+      expect(ownerSize).toEqual(0);
+      expect(otherSize).toEqual(0);
+    });
+
+    test('Should be able to get transaction required owner authority', async ({ waxTest }) => {
+      const retVal = await waxTest.dynamic(async({ chain }, requiredOwnerAuthorityTransaction) => {
+        const tx = chain.createTransactionFromJson(requiredOwnerAuthorityTransaction);
+
+        return {
+          authsArr: [...tx.requiredAuthorities.owner.values()],
+          postingSize: tx.requiredAuthorities.posting.size,
+          activeSize: tx.requiredAuthorities.active.size,
+          ownerSize: tx.requiredAuthorities.owner.size,
+          otherSize: tx.requiredAuthorities.other.length
+        };
+      }, requiredOwnerAuthorityTransaction);
+
+      const { authsArr, postingSize, activeSize, ownerSize, otherSize } = retVal;
+
+      expect(authsArr[0]).toEqual('vsc.gateway');
+      expect(postingSize).toEqual(0);
+      expect(activeSize).toEqual(0);
+      expect(ownerSize).toEqual(1);
+      expect(otherSize).toEqual(0);
     });
 
   test.afterAll(async () => {
