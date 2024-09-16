@@ -51,8 +51,8 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
     // Remove endpoints with 0 score - totally down
     const sortedDesc = results.filter(value => !value.down).sort((a, b) => a.score - b.score);
 
-    const min = sortedDesc[0].score;
-    const max = sortedDesc[sortedDesc.length - 1].score;
+    const min = sortedDesc[0]?.score;
+    const max = sortedDesc[sortedDesc.length - 1]?.score;
 
     // Normalize data to range 0.1 - 1
     return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...results.filter(value => value.down)];
