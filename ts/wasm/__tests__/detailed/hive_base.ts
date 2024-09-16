@@ -295,12 +295,12 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, base }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperation(new wax.RecurrentTransferOperation({
+      tx.pushOperation(new wax.RecurrentTransferRemovalOperation({
         from: "initminer",
         to: "gtg",
         pairId: 100
       }));
-      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
 
       return tx.transaction.operations;
     });
@@ -344,7 +344,7 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperation(new wax.RecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
 
       return tx.transaction.operations;
     });

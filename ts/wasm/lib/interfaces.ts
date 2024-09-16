@@ -11,7 +11,7 @@ import type { EAssetName } from "./detailed/base_api";
 import type { TTransactionRequiredAuthorities } from './detailed';
 import type Long from "long";
 import type { OperationBase } from "./detailed/operation_builder";
-import type { BlogPostOperation, ReplyOperation, RecurrentTransferOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/operation_factories";
+import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/operation_factories";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/custom_jsons';
 
 export type TTimestamp = Date | number | string;
@@ -302,7 +302,8 @@ export interface ITransaction extends ITransactionBase {
    * @see Complex operations:
    *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
    *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link RecurrentTransferOperation} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
+   *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
    *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
    *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
    *
@@ -326,7 +327,7 @@ export interface ITransaction extends ITransactionBase {
    *
    * @example Building recurrent transfer with pair id and automaically generated removal
    * ```typescript
-   *  tx.pushOperation(new RecurrentTransferOperation({
+   *  tx.pushOperation(new DefineRecurrentTransferOperation({
    *    from: "initminer",
    *    to: "gtg",
    *    pairId: 100
@@ -393,7 +394,8 @@ export interface IEncryptingTransaction extends ITransactionBase {
    * @see Complex operations:
    *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
    *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link RecurrentTransferOperation} Creates a recurrent transfer. It requires the amount to be set, otherwise the removal will be generated automatically,
+   *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
+   *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
    *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
    *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
    *
@@ -417,7 +419,7 @@ export interface IEncryptingTransaction extends ITransactionBase {
    *
    * @example Building recurrent transfer with pair id and automaically generated removal
    * ```typescript
-   *  tx.pushOperation(new RecurrentTransferOperation({
+   *  tx.pushOperation(new DefineRecurrentTransferOperation({
    *    from: "initminer",
    *    to: "gtg",
    *    pairId: 100

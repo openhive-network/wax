@@ -294,11 +294,11 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to initialize pushOperations on RecurrentTransferOperation with basic recurrent_transfer_operation', async ({ waxTest }) => {
+  test('Should be able to initialize pushOperations on DefineRecurrentTransferOperation with basic recurrent_transfer_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperation(new wax.RecurrentTransferOperation({
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({
         from: "alice",
         to: "bob",
         amount: { amount: "100", precision: 3, nai: "@@000000013" },
@@ -327,11 +327,11 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should be able to add base recurrent_transfer_pair_id extension using RecurrentTransferOperation', async ({ waxTest }) => {
+  test('Should be able to add base recurrent_transfer_pair_id extension using DefineRecurrentTransferOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperation(new wax.RecurrentTransferOperation({
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({
         from: "alice",
         to: "bob",
         pairId: 12345,
@@ -371,7 +371,7 @@ test.describe('Wax operation factories tests', () => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperation(new wax.RecurrentTransferOperation({
+      tx.pushOperation(new wax.RecurrentTransferRemovalOperation({
         from: "grace",
         to: "henry",
         pairId: 24680
@@ -489,17 +489,14 @@ test.describe('Wax operation factories tests', () => {
     });
   });
 
-  test('Should add extensions using RecurrentTransferOperation and convert to legacy api', async ({ waxTest }) => {
+  test('Should add extensions using DefineRecurrentTransferOperation and convert to legacy api', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
-      tx.pushOperation(new wax.RecurrentTransferOperation({
+      tx.pushOperation(new wax.RecurrentTransferRemovalOperation({
         from: "alice",
         to: "bob",
-        pairId: 50,
-        memo: "monthly subscription",
-        recurrence: 24,
-        executions: 2
+        pairId: 50
       }));
 
       return tx.toLegacyApi();
@@ -517,7 +514,7 @@ test.describe('Wax operation factories tests', () => {
           }
         ]],
         from: 'alice',
-        memo: 'monthly subscription',
+        memo: '',
         recurrence: 24,
         to: 'bob'
       }
