@@ -86,7 +86,7 @@ function( DEFINE_WAX_TARGET_FOR env )
       target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
 
       set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
-      target_link_options( ${exec_ts_gen} PUBLIC --embind-emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
+      target_link_options( ${exec_ts_gen} PUBLIC --emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
       INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
         COMPONENT "${exec_wasm_name}_dts"
         DESTINATION .
