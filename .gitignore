@@ -26,7 +26,7 @@ downloads/
 eggs/
 .eggs/
 lib/
-!wasm/lib
+!ts/wasm/lib
 benchmark-data
 lib64/
 parts/
@@ -207,7 +207,7 @@ build_wasm
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope
 # .npmrc
 # !examples/ts/.npmrc
-wasm/lib/proto
+ts/wasm/lib/proto
 dist
 node_modules
 python/wax/proto
@@ -219,8 +219,8 @@ results.xml
 storage_root-node
 
 # We use pnpm
-/package-lock.json
-/yarn.lock
+/ts/package-lock.json
+/ts/yarn.lock
 /examples/ts/package-lock.json
 /examples/ts/yarn.lock
 
