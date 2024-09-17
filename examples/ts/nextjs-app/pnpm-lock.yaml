@@ -70,8 +70,8 @@ packages:
     resolution: {integrity: sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-  '@hiveio/beekeeper@1.27.6-rc2':
-    resolution: {integrity: sha1-ROAefT23gneFl3cdXV21q62+eOc=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc2.tgz}
+  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926':
+    resolution: {integrity: sha1-GhsyYwb56QgPSawZNrgz+24gzRA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc3-stable.240916231926.tgz}
     engines: {node: '>= 18'}
 
   '@hiveio/wax@file:../../../ts':
@@ -1595,11 +1595,11 @@ snapshots:
 
   '@eslint/js@8.57.0': {}
 
-  '@hiveio/beekeeper@1.27.6-rc2': {}
+  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926': {}
 
   '@hiveio/wax@file:../../../ts':
     dependencies:
-      '@hiveio/beekeeper': 1.27.6-rc2
+      '@hiveio/beekeeper': 1.27.6-rc3-stable.240916231926
       class-transformer: 0.5.1
       class-validator: 0.14.1
       events: 3.3.0

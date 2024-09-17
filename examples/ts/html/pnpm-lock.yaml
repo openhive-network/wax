@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.6-rc2
-        version: 1.27.6-rc2
+        specifier: 1.27.6-rc3-stable.240916231926
+        version: 1.27.6-rc3-stable.240916231926
       '@hiveio/wax':
         specifier: file:../../../ts
         version: file:../../../ts
@@ -210,8 +210,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hiveio/beekeeper@1.27.6-rc2':
-    resolution: {integrity: sha512-Kun/bWZ36lc5nZY3IZkg9AdqbIPFqW0RoJDrAVtC3GNxrUTxwJh8UWldmRrjGQKnJS8VXvsRxK+8QhZIZIjDMA==}
+  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926':
+    resolution: {integrity: sha1-GhsyYwb56QgPSawZNrgz+24gzRA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc3-stable.240916231926.tgz}
     engines: {node: '>= 18'}
 
   '@hiveio/wax@file:../../../ts':
@@ -1628,11 +1628,11 @@ snapshots:
   '@esbuild/win32-x64@0.19.11':
     optional: true
 
-  '@hiveio/beekeeper@1.27.6-rc2': {}
+  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926': {}
 
   '@hiveio/wax@file:../../../ts':
     dependencies:
-      '@hiveio/beekeeper': 1.27.6-rc2
+      '@hiveio/beekeeper': 1.27.6-rc3-stable.240916231926
       class-transformer: 0.5.1
       class-validator: 0.14.0
       events: 3.3.0

@@ -22,7 +22,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.6-rc2",
+    "@hiveio/beekeeper": "1.27.6-rc3-stable.240916231926",
     "@hiveio/wax": "file:../../../ts"
   },
   "type": "module",
