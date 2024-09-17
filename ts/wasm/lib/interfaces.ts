@@ -236,11 +236,11 @@ interface ITransactionBase {
   /**
    * Converts the created transaction into the Hive API-form JSON
    *
-   * @returns {object} transaction in Hive API-form
+   * @returns {ApiTransaction} transaction in Hive API-form
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  toApiJson(): object;
+  toApiJson(): ApiTransaction;
 
   /**
    * Converts the created transaction into the Hive API-legacy form JSON string.
@@ -667,13 +667,13 @@ export interface IWaxBaseInterface {
   /**
    * Converts Hive API-form transaction in JSON form to our transaction
    *
-   * @param {string|object} transactionObject transaction object to be converted
+   * @param {string|object|ApiTransaction} transactionObject transaction object to be converted
    *
    * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  createTransactionFromJson(transactionObject: string | object): ITransaction;
+  createTransactionFromJson(transactionObject: string | object | ApiTransaction): ITransaction;
 
   /**
    * Constructs a new Transaction object with given data
@@ -824,11 +824,11 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Broadcast transaction to the selected during Wax Chain initialization Hive Node
    *
-   * @param transaction Transaction object to be broadcasted
+   * @param {ApiTransaction|ITransaction} transaction Transaction object to be broadcasted
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  broadcast(transaction: ApiTransaction | object | ITransaction): Promise<void>;
+  broadcast(transaction: ApiTransaction | ITransaction): Promise<void>;
 
   /**
    * Allows to start transaction preparing process.

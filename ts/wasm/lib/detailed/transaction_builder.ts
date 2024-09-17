@@ -7,6 +7,7 @@ import { calculateExpiration } from "./util/expiration_parser.js";
 import { OperationBase } from "./operation_builder";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
+import type { ApiTransaction } from "./api";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -96,7 +97,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return serialized;
   }
 
-  public toApiJson(): object {
+  public toApiJson(): ApiTransaction {
     return JSON.parse(this.toApi());
   }
 

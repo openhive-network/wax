@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TTimestamp } from "../interfaces";
 import type { MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
-import type { NaiAsset } from "./api";
+import type { ApiTransaction, NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
 import { Transaction } from "./transaction_builder.js";
@@ -147,7 +147,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return new Transaction(this, protoTransaction);
   }
 
-  public createTransactionFromJson(transactionObject: string | object): ITransaction {
+  public createTransactionFromJson(transactionObject: string | object | ApiTransaction): ITransaction {
     return Transaction.fromApi(this, transactionObject);
   }
 
