@@ -160,7 +160,7 @@ class CommentOperation extends OperationBase {
         if (isNaiAsset(this.maxAcceptedPayoutToSet))
           payout = this.maxAcceptedPayoutToSet as asset;
         else
-          payout = sink.api.hbd(this.maxAcceptedPayoutToSet as number | string | BigInt | Long);
+          payout = sink.api.hbdSatoshis(this.maxAcceptedPayoutToSet as number | string | BigInt | Long);
 
         this.commentOptions.max_accepted_payout = payout;
       }

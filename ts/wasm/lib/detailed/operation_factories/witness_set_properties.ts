@@ -94,12 +94,12 @@ export class WitnessSetPropertiesOperation extends OperationBase {
       if (isNaiAsset(this.hbdExchangeRate.base))
         base = this.hbdExchangeRate.base as asset;
       else
-        base = sink.api.hbd(this.hbdExchangeRate.base as number | string | BigInt | Long);
+        base = sink.api.hbdSatoshis(this.hbdExchangeRate.base as number | string | BigInt | Long);
 
       if (isNaiAsset(this.hbdExchangeRate.quote))
         quote = this.hbdExchangeRate.quote as asset;
       else
-        quote = sink.api.hive(this.hbdExchangeRate.quote as number | string | BigInt | Long);
+        quote = sink.api.hiveSatoshis(this.hbdExchangeRate.quote as number | string | BigInt | Long);
 
       this.props.hbd_exchange_rate = { base, quote };
     }
@@ -110,7 +110,7 @@ export class WitnessSetPropertiesOperation extends OperationBase {
       if (isNaiAsset(this.accountCreationFee))
         fee = this.accountCreationFee as asset;
       else
-        fee = sink.api.hive(this.accountCreationFee as number | string | BigInt | Long);
+        fee = sink.api.hiveSatoshis(this.accountCreationFee as number | string | BigInt | Long);
 
       this.props.account_creation_fee = fee;
     }

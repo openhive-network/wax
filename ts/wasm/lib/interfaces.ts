@@ -488,24 +488,87 @@ export interface IWaxBaseInterface {
 
   /**
    * Retrieves HIVE in nai form with given amount
-   * @param {number | string | BigInt | Long} amount amount of HIVE
+   *
+   * Note: This function works with precision and only accepts JS Double-precision floating-point format (IEEE 754),
+   * which does not support numbers greater than 2^53 - 1 or less than -(2^53 - 1).
+   * If you want to pass large number values, use {@link hiveSatoshis} instead.
+   *
+   * @example Inputs: `1000`, `1000.2`, `1000.300`
+   *
+   * @param {number} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
    */
-  hive(amount: number | string | BigInt | Long): NaiAsset;
+  hive(amount: number): NaiAsset;
 
   /**
    * Retrieves HBD in nai form with given amount
-   * @param {number | string | BigInt | Long} amount amount of HBD
+   *
+   * Note: This function works with precision and only accepts JS Double-precision floating-point format (IEEE 754),
+   * which does not support numbers greater than 2^53 - 1 or less than -(2^53 - 1).
+   * If you want to pass large number values, use {@link hbdSatoshis} instead.
+   *
+   * @example Inputs: `1000`, `1000.2`, `1000.300`
+   *
+   * @param {number} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
    */
-  hbd(amount: number | string | BigInt | Long): NaiAsset;
+  hbd(amount: number): NaiAsset;
 
   /**
    * Retrieves VESTS in nai form with given amount
+   *
+   * Note: This function works with precision and only accepts JS Double-precision floating-point format (IEEE 754),
+   * which does not support numbers greater than 2^53 - 1 or less than -(2^53 - 1).
+   * If you want to pass large number values, use {@link vestsSatoshis} instead.
+   *
+   * @example Inputs: `1000`, `1000.2`, `1000.300`, `1000.000005`
+   *
+   * @param {number} amount amount of VESTS
+   * @returns {NaiAsset} VESTS in nai form
+   */
+  vests(amount: number): NaiAsset;
+
+  /**
+   * Retrieves HIVE in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link hive} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
+   * @param {number | string | BigInt | Long} amount amount of HIVE
+   * @returns {NaiAsset} HIVE in nai form
+   */
+  hiveSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves HBD in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link hbd} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
+   * @param {number | string | BigInt | Long} amount amount of HBD
+   * @returns {NaiAsset} HBD in nai form
+   */
+  hbdSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves VESTS in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link vests} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
    * @param {number | string | BigInt | Long} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
    */
-  vests(amount: number | string | BigInt | Long): NaiAsset;
+  vestsSatoshis(amount: number | string | BigInt | Long): NaiAsset;
 
   /**
    * Converts VESTS to HP in nai form
