@@ -5,7 +5,7 @@ import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
 import fs from "fs";
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
+import { protoVoteOp, recoverAccountTransaction, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
 let browser!: ChromiumBrowser;
@@ -547,6 +547,20 @@ test.describe('Wax object interface chain tests', () => {
       expect(activeSize).toEqual(0);
       expect(ownerSize).toEqual(1);
       expect(otherSize).toEqual(0);
+    });
+
+    test('Should be able to get transaction required authorities for transaction with recover_account_operation', async ({ waxTest }) => {
+      const retVal = await waxTest.dynamic(async({ chain }, recoverAccountTransaction) => {
+        const tx = chain.createTransactionFromJson(recoverAccountTransaction);
+
+        return {
+          first: tx.requiredAuthorities.other[0].key_auths,
+          second: tx.requiredAuthorities.other[1].key_auths
+        }
+      }, recoverAccountTransaction);
+
+      expect(retVal.first).toEqual({"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW": 1});
+      expect(retVal.second).toEqual({"STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1});
     });
 
   test.afterAll(async () => {

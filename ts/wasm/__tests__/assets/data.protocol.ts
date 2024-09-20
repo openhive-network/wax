@@ -822,3 +822,34 @@ export const required_authorities_transaction = JSON.stringify({
       "202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3"
   ],
 });
+
+export const recoverAccountTransaction = {
+  "ref_block_num": 36,
+  "ref_block_prefix": 2180018243,
+  "expiration": "2024-04-24T08:30:15",
+  "extensions": [],
+  "signatures": [],
+  "operations": [
+    {
+      "type": "recover_account_operation",
+      "value": {
+        "account_to_recover": "bob",
+        "new_owner_authority": {
+          "weight_threshold": 1,
+          "account_auths": [],
+          "key_auths": [
+            ["STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW", 1]
+          ]
+        },
+        "recent_owner_authority": {
+          "weight_threshold": 1,
+          "account_auths": [],
+          "key_auths": [
+            ["STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s", 1]
+          ]
+        },
+        "extensions": []
+      }
+    }
+  ]
+};
