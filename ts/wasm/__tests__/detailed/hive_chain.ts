@@ -563,6 +563,54 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal.second).toEqual({"STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1});
     });
 
+      test('Should be able to get hive asset with JS Double-precision floating-point format', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hive(100.3).amount;
+      });
+
+      expect(retVal).toBe("100300");
+    });
+
+    test('Should be able to get hbd asset with JS Double-precision floating-point format', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hbd(100.3).amount;
+      });
+
+      expect(retVal).toBe("100300");
+    });
+
+    test('Should be able to get vests asset with JS Double-precision floating-point format', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.vests(100.3).amount;
+      });
+
+      expect(retVal).toBe("100300000");
+    });
+
+    test('Should be able to get hive asset with large number value', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hiveSatoshis(Number.MAX_SAFE_INTEGER + 1).amount;
+      });
+
+      expect(retVal).toBe("9007199254740992");
+    });
+
+    test('Should be able to get hbd asset with large number value', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hbdSatoshis(Number.MAX_SAFE_INTEGER + 1).amount;
+      });
+
+      expect(retVal).toBe("9007199254740992");
+    });
+
+    test('Should be able to get vests asset with large number value', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.vestsSatoshis(Number.MAX_SAFE_INTEGER + 1).amount;
+      });
+
+      expect(retVal).toBe("9007199254740992");
+    });
+
   test.afterAll(async () => {
     await browser.close();
   });
