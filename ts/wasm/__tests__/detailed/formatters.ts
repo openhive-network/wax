@@ -337,7 +337,7 @@ test.describe('Wax object interface formatters tests', () => {
         delegatees: [ "gtg", "null" ],
         from: "initminer",
         rc: {
-          amount: "4127361273",
+          amount: "4127361273000000",
           nai: "@@000000037",
           precision: 6,
         }

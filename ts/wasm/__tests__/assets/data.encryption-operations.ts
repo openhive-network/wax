@@ -77,7 +77,7 @@ export const transferOp = {
   transfer: {
     from_account: 'gtg',
     to_account: 'initminer',
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
@@ -95,7 +95,7 @@ export const transferToSavingsOp = {
   transfer_to_savings: {
     from_account: 'gtg',
     to_account: 'savings',
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
@@ -105,7 +105,7 @@ export const transferFromSavingsOp = {
     from_account: 'savings',
     request_id: 1,
     to_account: 'gtg',
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
@@ -114,7 +114,7 @@ export const recurrentTransferOp = {
   recurrent_transfer: {
     from_account: 'gtg',
     to_account: 'initminer',
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
     recurrence: 24,
     executions: 2,
@@ -135,7 +135,7 @@ export const convertOp = {
   convert: {
     owner: 'gtg',
     requestid: 1,
-    amount: chain.hbd(100),
+    amount: chain.hbdSatoshis(100),
   },
 };
 
@@ -143,14 +143,14 @@ export const transferToVestingOp = {
   transfer_to_vesting: {
     from_account: 'gtg',
     to_account: 'initminer',
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
   },
 };
 
 export const withdrawVestingOp = {
   withdraw_vesting: {
     account: 'gtg',
-    vesting_shares: chain.vests(100),
+    vesting_shares: chain.vestsSatoshis(100),
   },
 };
 
@@ -158,8 +158,8 @@ export const limitOrderCreateOp = {
   limit_order_create: {
     owner: 'gtg',
     orderid: 1,
-    amount_to_sell: chain.hive(100),
-    min_to_receive: chain.hbd(50),
+    amount_to_sell: chain.hiveSatoshis(100),
+    min_to_receive: chain.hbdSatoshis(50),
     fill_or_kill: false,
     expiration: '2023-11-09T21:51:27',
   },
@@ -176,15 +176,15 @@ export const feedPublishOp = {
   feed_publish: {
     publisher: 'gtg',
     exchange_rate: {
-      base: chain.hive(100),
-      quote: chain.hbd(50),
+      base: chain.hiveSatoshis(100),
+      quote: chain.hbdSatoshis(50),
     },
   },
 };
 
 export const accountCreateOp = {
   account_create: {
-    fee: chain.hive(100),
+    fee: chain.hiveSatoshis(100),
     creator: 'gtg',
     new_account_name: 'initminer',
     owner: {
@@ -236,11 +236,11 @@ export const witnessUpdateOp = {
     url: 'http://example.com',
     block_signing_key: '5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78',
     props: {
-      account_creation_fee: chain.hive(100),
+      account_creation_fee: chain.hiveSatoshis(100),
       maximum_block_size: 2000,
       hbd_interest_rate: 100,
     },
-    fee: chain.hive(100),
+    fee: chain.hiveSatoshis(100),
   },
 };
 
@@ -271,7 +271,7 @@ export const powOp = {
       work: 'test work',
     },
     props: {
-      account_creation_fee: chain.hive(100),
+      account_creation_fee: chain.hiveSatoshis(100),
       maximum_block_size: 10,
       hbd_interest_rate: 10,
     },
@@ -304,7 +304,7 @@ export const commentOptionsOp = {
   comment_options: {
     author: 'gtg',
     permlink: 'test-permlink',
-    max_accepted_payout: chain.hbd(100),
+    max_accepted_payout: chain.hbdSatoshis(100),
     percent_hbd: 10,
     allow_votes: true,
     allow_curation_rewards: true,
@@ -325,11 +325,11 @@ export const limitOrderCreate2Op = {
   limit_order_create2: {
     owner: 'gtg',
     orderid: 1,
-    amount_to_sell: chain.hive(100),
+    amount_to_sell: chain.hiveSatoshis(100),
     fill_or_kill: false,
     exchange_rate: {
-      base: chain.hive(100),
-      quote: chain.hbd(50),
+      base: chain.hiveSatoshis(100),
+      quote: chain.hbdSatoshis(50),
     },
     expiration: '2023-11-09T21:51:27',
   },
@@ -338,7 +338,7 @@ export const limitOrderCreate2Op = {
 export const claimAccountOp = {
   claim_account: {
     creator: 'gtg',
-    fee: chain.hive(100),
+    fee: chain.hiveSatoshis(100),
     extensions: [],
   },
 };
@@ -395,9 +395,9 @@ export const escrowTransferOp = {
     to_account: 'gtg',
     agent: 'blocktrades',
     escrow_id: 100,
-    hbd_amount: chain.hbd(100),
-    hive_amount: chain.hive(100),
-    fee: chain.hive(100),
+    hbd_amount: chain.hbdSatoshis(100),
+    hive_amount: chain.hiveSatoshis(100),
+    fee: chain.hiveSatoshis(100),
     ratification_deadline: '2023-11-09T21:51:20',
     escrow_expiration: '2023-11-09T21:51:27',
     json_meta: '{}',
@@ -422,8 +422,8 @@ export const escrowReleaseOp = {
     who: 'gtg',
     receiver: 'gtg',
     escrow_id: 100,
-    hbd_amount: chain.hbd(100),
-    hive_amount: chain.hive(100),
+    hbd_amount: chain.hbdSatoshis(100),
+    hive_amount: chain.hiveSatoshis(100),
   },
 };
 
@@ -455,9 +455,9 @@ export const declineVotingRightsOp = {
 export const claimRewardBalanceOp = {
   claim_reward_balance: {
     account: 'gtg',
-    reward_hive: chain.hive(100),
-    reward_hbd: chain.hbd(100),
-    reward_vests: chain.vests(100),
+    reward_hive: chain.hiveSatoshis(100),
+    reward_hbd: chain.hbdSatoshis(100),
+    reward_vests: chain.vestsSatoshis(100),
   },
 };
 
@@ -465,14 +465,14 @@ export const delegateVestingSharesOp = {
   delegate_vesting_shares: {
     delegator: 'gtg',
     delegatee: 'initminer',
-    vesting_shares: chain.vests(100),
+    vesting_shares: chain.vestsSatoshis(100),
   },
 };
 
 export const accountCreateWithDelegationOp = {
   account_create_with_delegation: {
-    fee: chain.hive(100),
-    delegation: chain.vests(50),
+    fee: chain.hiveSatoshis(100),
+    delegation: chain.vestsSatoshis(50),
     creator: 'gtg',
     new_account_name: 'initminer',
     owner: {
@@ -535,7 +535,7 @@ export const createProposalOp = {
     receiver: 'gtg',
     start_date: '2023-11-09T21:51:27',
     end_date: '2023-11-10T21:51:27',
-    daily_pay: chain.hbd(100),
+    daily_pay: chain.hbdSatoshis(100),
     subject: 'Test subject',
     permlink: 'test-permlink',
     extensions: [],
@@ -563,7 +563,7 @@ export const updateProposalOp = {
   update_proposal: {
     proposal_id: '1',
     creator: 'initminer',
-    daily_pay: chain.hbd(100),
+    daily_pay: chain.hbdSatoshis(100),
     subject: 'Test subject',
     permlink: 'test-permlink',
     extensions: [],
@@ -574,6 +574,6 @@ export const collateralizedConvertOp = {
   collateralized_convert: {
     owner: 'gtg',
     requestid: 1,
-    amount: chain.hive(100),
+    amount: chain.hiveSatoshis(100),
   },
 };

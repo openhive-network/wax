@@ -72,7 +72,7 @@ test.describe('Wax object interface chain tests', () => {
         title: "about you",
         permlink: "permlink1",
         percentHbd: 0,
-        maxAcceptedPayout: chain.hbd(0)
+        maxAcceptedPayout: chain.hbdSatoshis(0)
       }));
 
       tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");

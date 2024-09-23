@@ -44,9 +44,9 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to convert HIVE to HBD - NAIs', async ({ waxTest }) => {
     const retVal = await waxTest(async ({ base }) => {
-      const feedPriceQuote = base.hive(1000_000);
-      const feedPriceBase = base.hbd(171_000);
-      const amount = base.hive(13316762799_000);
+      const feedPriceQuote = base.hiveSatoshis(1000_000);
+      const feedPriceBase = base.hbdSatoshis(171_000);
+      const amount = base.hiveSatoshis(13316762799_000);
       return base.hiveToHbd(amount, feedPriceBase, feedPriceQuote);
     });
 
@@ -104,7 +104,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to generate negative HIVE asset', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.hive(-300_000);
+      return base.hiveSatoshis(-300_000);
     });
 
     expect(retVal).toStrictEqual({
@@ -116,7 +116,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to generate negative HBD asset', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.hbd(-300_000);
+      return base.hbdSatoshis(-300_000);
     });
 
     expect(retVal).toStrictEqual({
@@ -128,7 +128,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to generate negative VESTS asset', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.vests(-300_000000);
+      return base.vestsSatoshis(-300_000000);
     });
 
     expect(retVal).toStrictEqual({
@@ -178,7 +178,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to convert VESTS to HP using NaiAssets', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.vestsToHp(base.vests(10), base.hive(10), base.vests(10));
+      return base.vestsToHp(base.vestsSatoshis(10), base.hiveSatoshis(10), base.vestsSatoshis(10));
     });
 
     expect(retVal).toEqual({
@@ -190,7 +190,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to convert VESTS to HP using mixed params', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.vestsToHp(base.vests(10), 10, base.vests(10));
+      return base.vestsToHp(base.vestsSatoshis(10), 10, base.vestsSatoshis(10));
     });
 
     expect(retVal).toEqual({
@@ -214,7 +214,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to convert HBD to HIVE using NaiAsset', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.hbdToHive(base.hbd(10), base.hbd(1), base.hive(10));
+      return base.hbdToHive(base.hbdSatoshis(10), base.hbdSatoshis(1), base.hiveSatoshis(10));
     });
 
     expect(retVal).toEqual({
@@ -226,7 +226,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to convert HBD to HIVE using mixed params', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.hbdToHive(10, base.hbd(1), base.hive(10));
+      return base.hbdToHive(10, base.hbdSatoshis(1), base.hiveSatoshis(10));
     });
 
     expect(retVal).toEqual({
@@ -300,7 +300,7 @@ test.describe('Wax object interface foundation tests', () => {
         to: "gtg",
         pairId: 100
       }));
-      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hiveSatoshis(100) }));
 
       return tx.transaction.operations;
     });
@@ -344,7 +344,7 @@ test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create a recurrent transfer without any underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hive(100) }));
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hiveSatoshis(100) }));
 
       return tx.transaction.operations;
     });
@@ -372,8 +372,8 @@ test.describe('Wax object interface foundation tests', () => {
     const retVal = await waxTest(async({ base, wax }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hive(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
-      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hive(0), subject: "subject", permlink: "permlink" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hiveSatoshis(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hiveSatoshis(0), subject: "subject", permlink: "permlink" }));
 
       return tx.transaction.operations;
     });
@@ -423,14 +423,14 @@ test.describe('Wax object interface foundation tests', () => {
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: base.hive(100),
+          amount: base.hiveSatoshis(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"
         }
       }).stopEncrypt().startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: base.hive(120),
+          amount: base.hiveSatoshis(120),
           from_account: "initminer",
           to_account: "gtg",
           memo: "This also should be encrypted"
@@ -466,7 +466,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       tx.startEncrypt(publicKey).pushOperation({
         transfer: {
-          amount: base.hive(100),
+          amount: base.hiveSatoshis(100),
           from_account: "gtg",
           to_account: "initminer",
           memo: "This should be encrypted"
@@ -504,7 +504,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to calculate account HP with mixed params', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.calculateAccountHp(10, base.hive(10), 10);
+      return base.calculateAccountHp(10, base.hiveSatoshis(10), 10);
     });
 
     expect(retVal).toEqual({
@@ -528,7 +528,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to calculate witness votes HP with mixed params', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.calculateWitnessVotesHp(10, base.hive(10), 10);
+      return base.calculateWitnessVotesHp(10, base.hiveSatoshis(10), 10);
     });
 
     expect(retVal).toEqual({
@@ -548,7 +548,7 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to calculate HP APR with mixed params', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
-      return base.calculateHpApr(1_000_000, 1_500, base.hive(10), 10);
+      return base.calculateHpApr(1_000_000, 1_500, base.hiveSatoshis(10), 10);
     });
 
     expect(retVal).toEqual(1.46);

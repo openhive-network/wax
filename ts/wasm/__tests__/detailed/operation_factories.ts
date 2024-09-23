@@ -799,7 +799,7 @@ test.describe('Wax operation factories tests', () => {
         title: "Set max accepted payout",
         body: "Set max accepted payout",
         permlink: "set-max-accepted-payout",
-        maxAcceptedPayout: chain.hive(100),
+        maxAcceptedPayout: chain.hiveSatoshis(100),
       }));
 
       return tx.toApi();
@@ -964,7 +964,7 @@ test.describe('Wax operation factories tests', () => {
         images: ['test.png'],
         links: ['https://test.com'],
         tags: ['spam'],
-        maxAcceptedPayout: chain.hive(100),
+        maxAcceptedPayout: chain.hiveSatoshis(100),
         percentHbd: 20,
         beneficiaries: [{ account: 'guest4test7', weight: 40 }],
         description: 'Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries'
