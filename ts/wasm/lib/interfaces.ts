@@ -498,7 +498,7 @@ export interface IWaxBaseInterface {
    * @param {number} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
    */
-  hive(amount: number): NaiAsset;
+  hiveCoins(amount: number): NaiAsset;
 
   /**
    * Retrieves HBD in nai form with given amount
@@ -512,7 +512,7 @@ export interface IWaxBaseInterface {
    * @param {number} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
    */
-  hbd(amount: number): NaiAsset;
+  hbdCoins(amount: number): NaiAsset;
 
   /**
    * Retrieves VESTS in nai form with given amount
@@ -526,7 +526,7 @@ export interface IWaxBaseInterface {
    * @param {number} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
    */
-  vests(amount: number): NaiAsset;
+  vestsCoins(amount: number): NaiAsset;
 
   /**
    * Retrieves HIVE in nai form with given amount
@@ -569,6 +569,54 @@ export interface IWaxBaseInterface {
    * @returns {NaiAsset} VESTS in nai form
    */
   vestsSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves HIVE in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link hiveCoins} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
+   * @param {number | string | BigInt | Long} amount amount of HIVE
+   * @returns {NaiAsset} HIVE in nai form
+   *
+   * @deprecated Use {@link hiveSatoshis} or {@link hiveCoins} instead
+   */
+  hive(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves HBD in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link hbdCoins} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
+   * @param {number | string | BigInt | Long} amount amount of HBD
+   * @returns {NaiAsset} HBD in nai form
+   *
+   * @deprecated Use {@link hbdSatoshis} or {@link hbdCoins} instead
+   */
+  hbd(amount: number | string | BigInt | Long): NaiAsset;
+
+  /**
+   * Retrieves VESTS in nai form with given amount
+   *
+   * Note: This function only accepts integer values.
+   * If you want to pass fractional number values, use {@link vestsCoins} instead.
+   * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
+   *
+   * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
+   *
+   * @param {number | string | BigInt | Long} amount amount of VESTS
+   * @returns {NaiAsset} VESTS in nai form
+   *
+   * @deprecated Use {@link vestsSatoshis} or {@link vestsCoins} instead
+   */
+  vests(amount: number | string | BigInt | Long): NaiAsset;
 
   /**
    * Converts VESTS to HP in nai form

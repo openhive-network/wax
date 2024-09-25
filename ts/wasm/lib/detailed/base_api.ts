@@ -55,16 +55,38 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return props;
   }
 
-  public hive(amount: number): NaiAsset {
-    return this.hiveSatoshis((amount * (10**this.ASSETS.HIVE.precision)).toFixed(0));
+  private naiAssetToLong(amount: number, precision: number): Long {
+    let satoshisValue = Long.fromNumber(amount).multiply(10 ** precision);
+
+    const [ , frac ] = amount.toString().split('.') as [string, string | undefined];
+    if (frac)
+      satoshisValue = satoshisValue.add(frac.substring(0, precision) + '0'.repeat(Math.max(0, precision - frac.length)));
+
+    return satoshisValue;
   }
 
-  public hbd(amount: number): NaiAsset {
-    return this.hbdSatoshis((amount * (10**this.ASSETS.HBD.precision)).toFixed(0));
+  public hiveCoins(amount: number): NaiAsset {
+    return this.hiveSatoshis(this.naiAssetToLong(amount, this.ASSETS.HIVE.precision));
   }
 
-  public vests(amount: number): NaiAsset {
-    return this.vestsSatoshis((amount * (10**this.ASSETS.VESTS.precision)).toFixed(0));
+  public hbdCoins(amount: number): NaiAsset {
+    return this.hbdSatoshis(this.naiAssetToLong(amount, this.ASSETS.HBD.precision));
+  }
+
+  public vestsCoins(amount: number): NaiAsset {
+    return this.vestsSatoshis(this.naiAssetToLong(amount, this.ASSETS.VESTS.precision));
+  }
+
+  public hive(amount: number | string | BigInt | Long): NaiAsset {
+    return this.hiveSatoshis(amount);
+  }
+
+  public hbd(amount: number | string | BigInt | Long): NaiAsset {
+    return this.hbdSatoshis(amount);
+  }
+
+  public vests(amount: number | string | BigInt | Long): NaiAsset {
+    return this.vestsSatoshis(amount);
   }
 
   public hiveSatoshis(amount: number | string | BigInt | Long): NaiAsset {

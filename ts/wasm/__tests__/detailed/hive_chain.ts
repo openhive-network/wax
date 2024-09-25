@@ -565,7 +565,7 @@ test.describe('Wax object interface chain tests', () => {
 
       test('Should be able to get hive asset with JS Double-precision floating-point format', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
-        return chain.hive(100.3).amount;
+        return chain.hiveCoins(100.3).amount;
       });
 
       expect(retVal).toBe("100300");
@@ -573,18 +573,26 @@ test.describe('Wax object interface chain tests', () => {
 
     test('Should be able to get hbd asset with JS Double-precision floating-point format', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
-        return chain.hbd(100.3).amount;
+        return chain.hbdCoins(100.34567).amount;
       });
 
-      expect(retVal).toBe("100300");
+      expect(retVal).toBe("100345");
     });
 
     test('Should be able to get vests asset with JS Double-precision floating-point format', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
-        return chain.vests(100.3).amount;
+        return chain.vestsCoins(100).amount;
       });
 
-      expect(retVal).toBe("100300000");
+      expect(retVal).toBe("100000000");
+    });
+
+    test('Should be able to get vests asset with JS Double-precision floating-point format near max safe integer (with fractional part)', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.vestsCoins(9007199254740.543).amount;
+      });
+
+      expect(retVal).toBe("9007199254740543000");
     });
 
     test('Should be able to get hive asset with large number value', async ({ waxTest }) => {
