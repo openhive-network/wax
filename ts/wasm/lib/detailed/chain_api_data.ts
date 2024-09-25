@@ -13,7 +13,7 @@ import { GetWitnessesByNameRequest, SingleWitnessResponse } from "./rest-api/haf
 import { GetAllWitnessesRequest } from "./rest-api/hafbe/witnesses/all.js";
 
 export const HiveRestApiTypes = {
-  hafbe: {
+  'hafbe-api': {
     witnesses: {
       params: GetAllWitnessesRequest,
       result: SingleWitnessResponse,

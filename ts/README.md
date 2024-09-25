@@ -274,7 +274,7 @@ class TransactionByIdRequest {
 
 // Create the proper API structure
 const ExtendedRestApi = {
-  hafah: { // API type - structure-like - pushed to the query path during call
+  'hafah-api': { // API type - structure-like - pushed to the query path during call
     transactions: { // method name - also pushed to the query path during call
       byId: { // next query path to be added. It will be replaced though due to the urlPath property defined
         params: TransactionByIdRequest, // params is our request
@@ -288,9 +288,9 @@ const ExtendedRestApi = {
 const extended: TWaxRestExtended<typeof ExtendedRestApi> = chain.extendRest(ExtendedRestApi);
 
 // Call the REST API using our extended interface
-const result = await await extended.restApi.hafah.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+const result = await await extended.restApi['hafah-api'].transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
 
-console.info(result); // URL response from "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+console.info(result); // URL response from "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
 ```
 
 #### Extend REST API interface using interfaces only and call custom endpoints
@@ -308,7 +308,7 @@ interface ITransactionByIdRequest {
 
 // Create the proper API structure
 type TExtendedRestApi = {
-  hafah: {
+  'hafah-api': {
     transactions: {
       byId: {
         params: TransactionByIdRequest;
@@ -319,7 +319,7 @@ type TExtendedRestApi = {
 };
 
 const extended: TWaxRestExtended<TExtendedRestApi> = chain.extendRest({
-  hafah: {
+  'hafah-api': {
     transactions: {
       byId: {
         urlPath: "{transactionId}" // We have to pass urlPath as value here
@@ -329,9 +329,9 @@ const extended: TWaxRestExtended<TExtendedRestApi> = chain.extendRest({
 });
 
 // Call the REST API using our extended interface
-const result = await await extended.restApi.hafah.transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+const result = await await extended.restApi['hafah-api'].transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
 
-console.info(result); // URL response from "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+console.info(result); // URL response from "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
 ```
 
 ## API

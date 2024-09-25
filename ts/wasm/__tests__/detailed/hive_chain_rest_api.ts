@@ -28,7 +28,7 @@ test.describe('Wax object interface chain REST API tests', () => {
 
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
-      const blocks = await chain.restApi.hafbe.operationTypeCounts({ "result-limit": 1 });
+      const blocks = await chain.restApi['hafbe-api'].operationTypeCounts({ "result-limit": 1 });
 
       return blocks;
     });
@@ -52,7 +52,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       }
 
       const extended = chain.extendRest({
-        hafah: {
+        'hafah-api': {
           transactions: {
             transactionId: {
               params: TransactionByIdRequest,
@@ -63,7 +63,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const blocks = await extended.restApi.hafah.transactions.transactionId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
+      const blocks = await extended.restApi['hafah-api'].transactions.transactionId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
 
       return blocks;
     });
@@ -80,7 +80,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       }
 
       const extended = chain.extendRest({
-        hafah: {
+        'hafah-api': {
           operationTypes: {
             urlPath: 'operation-types',
             typeId: {
@@ -95,7 +95,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const operations = await extended.restApi.hafah.operationTypes.typeId.keys({ typeId: 1 });
+      const operations = await extended.restApi['hafah-api'].operationTypes.typeId.keys({ typeId: 1 });
 
       return operations;
     });
@@ -107,7 +107,7 @@ test.describe('Wax object interface chain REST API tests', () => {
   test('Should be able to extend and perform REST API calls returning INT', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
       const extended = chain.extendRest({
-        hafah: {
+        'hafah-api': {
           headblock: {
             params: undefined,
             result: Number
@@ -115,7 +115,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         }
       });
 
-      const blockNum: number = await extended.restApi.hafah.headblock();
+      const blockNum: number = await extended.restApi['hafah-api'].headblock();
 
       return blockNum;
     });
@@ -126,7 +126,7 @@ test.describe('Wax object interface chain REST API tests', () => {
   test('Should be able to call concurrently same REST API multiple times with same URL', async ({ waxTest }) => {
     const urls = await waxTest(async({ chain }) => {
       const extended = chain.extendRest({
-        hafah: {
+        'hafah-api': {
           headblock: {
             params: undefined,
             result: Number
@@ -137,7 +137,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended.restApi.hafah.headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended.restApi['hafah-api'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -189,7 +189,7 @@ test.describe('Wax object interface chain REST API tests', () => {
     const retVal = await waxTest(async({ chain }) => {
       // First extend REST API using interfaces only
       const extended1 = chain.extendRest<{
-        hafah: {
+        'hafah-api': {
           headblock: {
             params: undefined,
             result: number
@@ -199,7 +199,7 @@ test.describe('Wax object interface chain REST API tests', () => {
 
       // Then extend REST API using interfaces and providing additional urlPath data
       const extended2 = extended1.extendRest<{
-        hafah: {
+        'hafah-api': {
           transactions: {
             transactionId: {
               params: { transactionId: string; };
@@ -208,7 +208,7 @@ test.describe('Wax object interface chain REST API tests', () => {
           }
         }
       }>({
-        hafah: {
+        'hafah-api': {
           transactions: {
             transactionId: {
               urlPath: "{transactionId}"
@@ -220,7 +220,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise1 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi.hafah.headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended2.restApi['hafah-api'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -228,7 +228,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise2 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi.hafah.transactions.transactionId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
+        ((extended2.restApi['hafah-api'].transactions.transactionId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
           transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
         }) as Promise<any>).then(() => {
           resolve(requestUrl);
@@ -244,8 +244,8 @@ test.describe('Wax object interface chain REST API tests', () => {
     });
 
     expect(retVal).toStrictEqual([
-      "https://api.syncad.com/hafah/headblock",
-      "https://api.syncad.com/hafah/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+      "https://api.syncad.com/hafah-api/headblock",
+      "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
     ]);
   });
 
@@ -266,10 +266,10 @@ test.describe('Wax object interface chain REST API tests', () => {
     const url2 = "https://other.honey.provider";
 
     const retVal = await waxTest(async({ chain }, url1, url2) => {
-      chain.restApi.hafbe.witnesses.endpointUrl = url1;
-      chain.restApi.hafbe.witnesses.accountName.endpointUrl = url2;
+      chain.restApi['hafbe-api'].witnesses.endpointUrl = url1;
+      chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl = url2;
 
-      return [chain.restApi.endpointUrl, chain.restApi.hafbe.witnesses.endpointUrl, chain.restApi.hafbe.witnesses.accountName.endpointUrl];
+      return [chain.restApi.endpointUrl, chain.restApi['hafbe-api'].witnesses.endpointUrl, chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl];
     }, url1, url2);
 
     expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);
