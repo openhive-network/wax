@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
+import { json_price } from '../../dist/lib/wax_module';
 
 let browser!: ChromiumBrowser;
 
@@ -405,6 +406,29 @@ test.describe('WASM Protocol', () => {
     }, witness_properties);
 
     expect(retVal).toStrictEqual(witness_properties);
+  });
+
+  test('Should be able to estimate hive collateral', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, ...args) => {
+      const current_median_history_base = protocol.cpp_hbd(args[0], args[1]);
+      const current_median_history_quote = protocol.cpp_hive(args[2], args[3]);
+
+      const current_min_history_base = protocol.cpp_hbd(args[4], args[5]);
+      const current_min_history_quote = protocol.cpp_hive(args[6], args[7]);
+
+      const current_median_history:json_price = {base:current_median_history_base, quote:current_median_history_quote};
+      const current_min_history:json_price = {base:current_min_history_base, quote:current_min_history_quote};
+
+      const hbd_amount_to_get = protocol.cpp_hbd(args[8], args[9]);
+
+      return protocol.cpp_estimate_hive_collateral(current_median_history, current_min_history, hbd_amount_to_get);
+    }, ...numToHighLow(201), ...numToHighLow(1000), ...numToHighLow(197), ...numToHighLow(1000), ...numToHighLow(100000));
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1065988"
+    });
   });
 
   test.afterAll(async () => {

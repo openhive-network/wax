@@ -135,6 +135,11 @@ result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const
     return foundation::cpp_calculate_inflation_rate_for_block( block_num );
 }
 
+json_asset cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const
+{
+  return foundation::cpp_estimate_hive_collateral( current_median_history, current_min_history, hbd_amount_to_get );
+}
+
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
@@ -193,9 +198,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
       ;
 
-  value_object<price>("price")
-      .field("base", &price::base)
-      .field("quote", &price::quote)
+  value_object<json_price>("json_price")
+      .field("base", &json_price::base)
+      .field("quote", &json_price::quote)
       ;
 
   register_optional<std::string>();
@@ -203,7 +208,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<uint16_t>();
   register_optional<int32_t>();
   register_optional<json_asset>();
-  register_optional<price>();
+  register_optional<json_price>();
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
   register_vector<wax_authority>("VectorWaxAuthority");
   register_map<std::string, std::string>("MapStringString");
@@ -259,6 +264,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_vests_to_hp", &foundation_wasm::cpp_vests_to_hp)
     .function("cpp_hbd_to_hive", &foundation_wasm::cpp_hbd_to_hive)
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
+    .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")

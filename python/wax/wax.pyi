@@ -12,6 +12,7 @@ from .wax_result import (
     python_brain_key_data,
     python_witness_set_properties_data,
     python_authorities,
+    python_price,
     )
 
 def validate_operation(operation: bytes) -> python_result: ...
@@ -87,3 +88,8 @@ def verify_exception_handling( throw_type: int ) -> None: ...
 def serialize_witness_set_properties(input_properties: python_witness_set_properties_data): dict[bytes, bytes]
 def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]): python_witness_set_properties_data
 def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]: ...
+def estimate_hive_collateral(
+    current_median_history: python_price,
+    current_min_history: python_price,
+    hbd_amount_to_get: python_json_asset
+) -> python_json_asset: ...

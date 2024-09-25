@@ -13,6 +13,7 @@
 #include <hive/protocol/key_utils.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/crypto_memo.hpp>
+#include <hive/protocol/hive_collateral.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -479,6 +480,19 @@ result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_n
   });
 }
 
+json_asset foundation::cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const
+{
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
+    const hive::protocol::price _current_median_history { to_asset(current_median_history.base), to_asset(current_median_history.quote) };
+    const hive::protocol::price _current_min_history { to_asset(current_min_history.base), to_asset(current_min_history.quote) };
+    const hive::protocol::asset _hbd_amount_to_get = to_asset(hbd_amount_to_get);
+
+    const hive::protocol::asset _hive = hive::protocol::hive_collateral::estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get);
+
+    return to_json_asset(_hive);
+  });
+}
+
 } /// namespace cpp
 
 // Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,
@@ -510,7 +524,7 @@ namespace fc { namespace raw {
   }
 
   template<typename Stream>
-  inline void pack( Stream& s, const cpp::price& u )
+  inline void pack( Stream& s, const cpp::json_price& u )
   {
     hive::protocol::price actualPrice { cpp::to_asset(u.base), cpp::to_asset(u.quote) };
 
@@ -520,7 +534,7 @@ namespace fc { namespace raw {
   }
 
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::price& u, uint32_t d )
+  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d )
   {
     hive::protocol::price tmp;
     hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
@@ -533,5 +547,5 @@ namespace fc { namespace raw {
 
 // Note: This differs from the hive::protocol::asset struct in that it uses a string for the amount
 FC_REFLECT( cpp::json_asset, (amount)(precision)(nai) );
-FC_REFLECT( cpp::price, (base)(quote) );
+FC_REFLECT( cpp::json_price, (base)(quote) );
 

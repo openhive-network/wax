@@ -106,6 +106,17 @@ public:
    */
   result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const;
 
+  /**
+   * Estimate hive collateral
+   *
+   * @param current_median_history Current median price retrieved by `get_feed_history`
+   * @param current_min_history Current minimal price retrieved by `get_feed_history`
+   * @param hbd_amount_to_get HBD asset used to get HIVE asset
+   *
+   * @returns value in HIVE asset
+   */
+  json_asset cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const;
+
 protected:
   /// use this only through derived classes
   foundation() = default;
@@ -120,7 +131,7 @@ namespace fc { namespace raw {
   template<typename Stream>
   inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d );
   template<typename Stream>
-  inline void pack( Stream& s, const cpp::price& u );
+  inline void pack( Stream& s, const cpp::json_price& u );
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::price& u, uint32_t d );
+  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d );
 } }

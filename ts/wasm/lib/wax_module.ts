@@ -11,7 +11,7 @@ export type {
   protocol,
   protocol_foundation,
   result,
-  price,
+  json_price,
   witness_set_properties_data,
   MapStringString,
   VectorString,

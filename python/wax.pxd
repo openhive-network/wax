@@ -30,8 +30,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         int precision
         string nai
 
-    cdef cppclass price:
-        price() except +
+    cdef cppclass json_price:
+        json_price() except +
 
         json_asset base
         json_asset quote
@@ -91,7 +91,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         # New witness URL to set
         cpp_optional[string] url
         # HBD to HIVE ratio proposed by the witness
-        cpp_optional[price]       hbd_exchange_rate
+        cpp_optional[json_price]       hbd_exchange_rate
         # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
         cpp_optional[uint32_t]    maximum_block_size
         # Rate of interest for holding HBD (in BPS - basis points)
@@ -148,6 +148,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares ) except +
         result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
         required_authority_collection cpp_collect_transaction_required_authorities( string transaction ) except +
+        json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get )
 
         crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
         string cpp_crypto_memo_dump_string(crypto_memo value) except +

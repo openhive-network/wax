@@ -14,7 +14,7 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t
 import cython
 from cython.operator cimport dereference, preincrement
 
-from wax cimport error_code, json_asset, result, protocol, proto_protocol
+from wax cimport error_code, json_asset, json_price, result, protocol, proto_protocol
 from .wax_result import (
     python_result,
     python_error_code,
@@ -239,6 +239,29 @@ def calculate_inflation_rate_for_block(
     response = obj.cpp_calculate_inflation_rate_for_block(block_num)
     return response.value, response.content, response.exception_message
 
+@return_python_json_asset
+def estimate_hive_collateral(current_median_history: python_price, current_min_history: python_price, hbd_amount_to_get: python_json_asset ) -> python_json_asset:
+    cdef protocol obj
+
+    cdef json_asset _current_median_history_base = json_asset(current_median_history.base.amount, current_median_history.base.precision, current_median_history.base.nai)
+    cdef json_asset _current_median_history_quote = json_asset(current_median_history.quote.amount, current_median_history.quote.precision, current_median_history.quote.nai)
+
+    cdef json_asset _current_min_history_base = json_asset(current_min_history.base.amount, current_min_history.base.precision, current_min_history.base.nai)
+    cdef json_asset _current_min_history_quote = json_asset(current_min_history.quote.amount, current_min_history.quote.precision, current_min_history.quote.nai)
+
+    cdef json_price _current_median_history
+    _current_median_history.base = _current_median_history_base
+    _current_median_history.quote = _current_median_history_quote
+
+    cdef json_price _current_min_history
+    _current_min_history.base = _current_min_history_base
+    _current_min_history.quote = _current_min_history_quote
+
+    cdef json_asset _hbd_amount_to_get = json_asset(hbd_amount_to_get.amount, hbd_amount_to_get.precision, hbd_amount_to_get.nai)
+
+    response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
+    return response.amount, response.precision, response.nai
+
 @return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:
     cdef proto_protocol obj
@@ -366,8 +389,8 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
 
     cdef json_asset _base
     cdef json_asset _quote
-    cdef price _price_helper
-    cdef optional[price] _price_opt
+    cdef json_price _price_helper
+    cdef optional[json_price] _price_opt
 
     if input_props.new_signing_key is not None:
       if isinstance(input_props.new_signing_key, str):

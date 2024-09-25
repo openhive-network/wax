@@ -46,7 +46,7 @@ struct json_asset
     : amount(_amount), precision(_precision), nai(_nai) {}
 };
 
-struct price
+struct json_price
 {
   json_asset base;
   json_asset quote;
@@ -90,7 +90,7 @@ struct witness_set_properties_data
   /** New witness URL to set */
   std::optional<std::string> url;
   /** HBD to HIVE ratio proposed by the witness */
-  std::optional<price>       hbd_exchange_rate;
+  std::optional<json_price>       hbd_exchange_rate;
   /** This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity */
   std::optional<uint32_t>    maximum_block_size;
   /** Rate of interest for holding HBD (in BPS - basis points) */
