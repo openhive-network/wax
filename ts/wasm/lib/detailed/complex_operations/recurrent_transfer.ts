@@ -1,7 +1,7 @@
-import type { TAccountName } from "../custom_jsons/index.js";
+import type { TAccountName } from "../hive_apps_operations/index.js";
 import type { asset, operation } from "../../protocol.js";
 import { recurrent_transfer } from "../../proto/recurrent_transfer.js";
-import { OperationBase, type IOperationSink } from "../operation_builder.js";
+import { OperationBase, type IOperationSink } from "../operation_base.js";
 import { WaxError } from "../../errors.js";
 
 export interface IRecurrentTransferBaseData {

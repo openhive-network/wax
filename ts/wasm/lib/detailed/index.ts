@@ -8,9 +8,9 @@ export {
 } from './healthchecker/index.js';
 export * from './api/index.js';
 export * from './formatters/index.js';
-export * from './custom_jsons/index.js';
-export * from './operation_factories/index.js';
+export * from './hive_apps_operations/index.js';
+export * from './complex_operations/index.js';
 export * from './util/index.js';
 export * from './healthchecker/index.js';
-export { IOperationSink, OperationBase } from './operation_builder.js';
-export { TTransactionRequiredAuthorities } from './transaction_builder.js';
+export { IOperationSink, OperationBase } from './operation_base.js';
+export { TTransactionRequiredAuthorities } from './transaction.js';

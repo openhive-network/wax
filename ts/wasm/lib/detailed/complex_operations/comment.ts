@@ -1,8 +1,8 @@
-import type { TAccountName } from "../custom_jsons/factory";
+import type { TAccountName } from "../hive_apps_operations/factory";
 import { operation, comment, asset } from "../../protocol.js";
 import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { WaxError } from "../../errors.js";
-import { OperationBase, IOperationSink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_base.js";
 import Long from "long";
 import { isNaiAsset } from "../util/asset_util.js";
 

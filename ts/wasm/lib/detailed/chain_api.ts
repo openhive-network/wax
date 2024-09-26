@@ -13,7 +13,7 @@ import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthc
 import { extractBracedStrings } from "./rest-api/utils.js";
 import { iterate } from "./util/iterate.js";
 import { objectToQueryString } from "./util/query_string";
-import { Transaction } from "./transaction_builder.js";
+import { Transaction } from "./transaction.js";
 
 import Long from "long";
 

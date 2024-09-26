@@ -20,6 +20,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.hive.blog/",
+          restApiEndpoint: "https://api.syncad.com/",
           chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
@@ -37,7 +38,7 @@ export default defineConfig<IWaxedTest>({
     {
       name: "wax_operation_factories",
       testDir: "./wasm/dist",
-      testMatch: "operation_factories*"
+      testMatch: "complex_operations*"
     },
     {
       name: "wax_encrypted_operations",

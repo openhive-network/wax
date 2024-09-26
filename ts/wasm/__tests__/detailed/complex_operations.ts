@@ -10,7 +10,7 @@ let browser!: ChromiumBrowser;
 
 const app = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
 
-test.describe('Wax operation factories tests', () => {
+test.describe('Wax complex operation tests', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch({
       headless: true

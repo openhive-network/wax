@@ -1,7 +1,7 @@
 import { asset, operation } from "../../protocol.js";
-import type { TAccountName } from "../custom_jsons/index.js";
+import type { TAccountName } from "../hive_apps_operations/index.js";
 import { update_proposal } from "../../proto/update_proposal.js";
-import { OperationBase, IOperationSink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_base.js";
 
 interface IUpdateProposalData {
   /**

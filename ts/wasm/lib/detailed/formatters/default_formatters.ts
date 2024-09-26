@@ -4,7 +4,7 @@ import type { IWaxBaseInterface } from "../../interfaces";
 import type { custom_json, transaction, witness_set_properties } from "../../protocol";
 
 import { WaxFormattable } from "../decorators/formatters";
-import { CommunityOperationData, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperationData, ReblogOperationData, ResourceCreditsOperationData } from "../custom_jsons";
+import { CommunityOperationData, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperationData, ReblogOperationData, ResourceCreditsOperationData } from "../hive_apps_operations";
 import { WaxBaseApi } from "../base_api";
 
 export class DefaultFormatters implements IWaxCustomFormatter {

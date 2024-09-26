@@ -1,10 +1,10 @@
 import { asset, operation, witness_set_properties } from "../../protocol.js";
-import { OperationBase, IOperationSink } from "../operation_builder.js";
+import { OperationBase, IOperationSink } from "../operation_base.js";
 import { type witness_set_properties_data } from "../../wax_module.js";
 import { type TPublicKey } from "@hiveio/beekeeper";
 import { WaxBaseApi } from "../base_api.js";
 import type Long from "long";
-import { TAccountName } from "../custom_jsons/index.js";
+import { TAccountName } from "../hive_apps_operations/index.js";
 import { isNaiAsset } from "../util/asset_util.js";
 
 type TInternalAsset = asset | Long | string | BigInt | number;

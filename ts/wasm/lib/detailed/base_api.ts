@@ -4,7 +4,7 @@ import type { MainModule, proto_protocol, result, witness_set_properties_data } 
 import type { ApiTransaction, NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
-import { Transaction } from "./transaction_builder.js";
+import { Transaction } from "./transaction.js";
 import Long from "long";
 
 import { WaxFormatter } from "./formatters/waxify.js";

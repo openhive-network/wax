@@ -10,9 +10,9 @@ import type { ApiTransaction, NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type { TTransactionRequiredAuthorities } from './detailed';
 import type Long from "long";
-import type { OperationBase } from "./detailed/operation_builder";
-import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/operation_factories";
-import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/custom_jsons';
+import type { OperationBase } from "./detailed/operation_base";
+import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
+import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/hive_apps_operations';
 
 export type TTimestamp = Date | number | string;
 
@@ -532,7 +532,7 @@ export interface IWaxBaseInterface {
    * Retrieves HIVE in nai form with given amount
    *
    * Note: This function only accepts integer values.
-   * If you want to pass fractional number values, use {@link hive} instead.
+   * If you want to pass fractional number values, use {@link hiveCoins} instead.
    * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
@@ -546,7 +546,7 @@ export interface IWaxBaseInterface {
    * Retrieves HBD in nai form with given amount
    *
    * Note: This function only accepts integer values.
-   * If you want to pass fractional number values, use {@link hbd} instead.
+   * If you want to pass fractional number values, use {@link hbdCoins} instead.
    * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
@@ -560,7 +560,7 @@ export interface IWaxBaseInterface {
    * Retrieves VESTS in nai form with given amount
    *
    * Note: This function only accepts integer values.
-   * If you want to pass fractional number values, use {@link vests} instead.
+   * If you want to pass fractional number values, use {@link vestsCoins} instead.
    * This function copies the input value to the output `amount` property without any conversion - adds just a `nai` id.
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`

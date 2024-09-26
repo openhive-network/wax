@@ -1,6 +1,6 @@
 import { WaxError } from '../../errors.js';
 import Long from 'long';
-import { OperationBase, type IOperationSink } from '../operation_builder.js';
+import { OperationBase, type IOperationSink } from '../operation_base.js';
 import { type operation } from '../../protocol.js';
 
 export type TAccountName = string;

@@ -4,7 +4,7 @@ import type { IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTim
 import { authority, transaction, type operation } from "../protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
-import { OperationBase } from "./operation_builder";
+import { OperationBase } from "./operation_base";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 import type { ApiTransaction } from "./api";
