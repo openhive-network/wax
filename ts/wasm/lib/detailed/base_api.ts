@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TTimestamp } from "../interfaces";
+import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
 import type { json_price, MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
 import type { ApiTransaction, NaiAsset } from "./api";
 
@@ -31,8 +31,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.formatter.waxify.bind(this.formatter);
   }
 
-  // Public for our internal usage among i.e. complex operation sinks or formatters (this method is not exposed in the IWaxBaseInterface)
-  public assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
+  private assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
     const stringifyAsset = (assetType: EAssetName) => `"${this.ASSETS[assetType].nai}" (${assetType}) with precision: ${this.ASSETS[assetType].precision}`;
 
     const assets = Array.isArray(requiredSymbolType) ? requiredSymbolType : [ requiredSymbolType ];
@@ -44,18 +43,29 @@ export class WaxBaseApi implements IWaxBaseInterface {
     throw new WaxError(`Invalid asset provided: "${JSON.stringify(asset)}". Expected asset symbol(s): "${assets.map(stringifyAsset).join(" or ")}".`);
   }
 
-  public estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetConvertible | NaiAsset, currentMedianHistoryQuote: TNaiAssetConvertible | NaiAsset, currentMinHistoryBase: TNaiAssetConvertible | NaiAsset, currentMinHistoryQuote: TNaiAssetConvertible | NaiAsset, hbdAmountToGet: TNaiAssetConvertible | NaiAsset): NaiAsset {
+  // Public for our internal usage among i.e. complex operation sinks or formatters (this method is not exposed in the IWaxBaseInterface)
+  public createAssetWithRequiredSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: TNaiAssetSource): NaiAsset {
+    if (isNaiAsset(asset))
+      return this.assertAssetSymbol(requiredSymbolType, asset as NaiAsset);
+
+    if(Array.isArray(requiredSymbolType))
+      throw new WaxError(`Cannot deduce the asset type when multiple available: ${requiredSymbolType.join(", ")} when passing non-asset value: "${asset.toString()}"`);
+
+    return this.getNaiAssetForAssetName(requiredSymbolType, asset as TNaiAssetConvertible);
+  }
+
+  public estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetSource, currentMedianHistoryQuote: TNaiAssetSource, currentMinHistoryBase: TNaiAssetSource, currentMinHistoryQuote: TNaiAssetSource, hbdAmountToGet: TNaiAssetSource): NaiAsset {
     const currentMedianHistory: json_price = {
-      base: isNaiAsset(currentMedianHistoryBase) ? this.assertAssetSymbol(EAssetName.HBD, currentMedianHistoryBase as NaiAsset) : this.hbdSatoshis(currentMedianHistoryBase as number | string | BigInt | Long),
-      quote: isNaiAsset(currentMedianHistoryQuote) ? this.assertAssetSymbol(EAssetName.HIVE, currentMedianHistoryQuote as NaiAsset) : this.hiveSatoshis(currentMedianHistoryQuote as number | string | BigInt | Long)
+      base: this.createAssetWithRequiredSymbol(EAssetName.HBD, currentMedianHistoryBase),
+      quote: this.createAssetWithRequiredSymbol(EAssetName.HIVE, currentMedianHistoryQuote)
     };
 
     const currentMinHistory: json_price = {
-      base: isNaiAsset(currentMinHistoryBase) ? this.assertAssetSymbol(EAssetName.HBD, currentMinHistoryBase as NaiAsset) : this.hbdSatoshis(currentMinHistoryBase as number | string | BigInt | Long),
-      quote: isNaiAsset(currentMinHistoryQuote) ? this.assertAssetSymbol(EAssetName.HIVE, currentMinHistoryQuote as NaiAsset) : this.hiveSatoshis(currentMinHistoryQuote as number | string | BigInt | Long)
+      base: this.createAssetWithRequiredSymbol(EAssetName.HBD, currentMinHistoryBase),
+      quote: this.createAssetWithRequiredSymbol(EAssetName.HIVE, currentMinHistoryQuote)
     };
 
-    const actualHbdAmountToGet = isNaiAsset(hbdAmountToGet) ? this.assertAssetSymbol(EAssetName.HBD, hbdAmountToGet as NaiAsset) : this.hbdSatoshis(hbdAmountToGet as number | string | BigInt | Long);
+    const actualHbdAmountToGet = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbdAmountToGet);
 
     return this.proto.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset;
   }
@@ -106,56 +116,56 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.vestsSatoshis(this.naiAssetToLong(amount, this.ASSETS.VESTS.precision));
   }
 
-  public hive(amount: number | string | BigInt | Long): NaiAsset {
+  public hive(amount: TNaiAssetConvertible): NaiAsset {
     return this.hiveSatoshis(amount);
   }
 
-  public hbd(amount: number | string | BigInt | Long): NaiAsset {
+  public hbd(amount: TNaiAssetConvertible): NaiAsset {
     return this.hbdSatoshis(amount);
   }
 
-  public vests(amount: number | string | BigInt | Long): NaiAsset {
+  public vests(amount: TNaiAssetConvertible): NaiAsset {
     return this.vestsSatoshis(amount);
   }
 
-  public hiveSatoshis(amount: number | string | BigInt | Long): NaiAsset {
+  public hiveSatoshis(amount: TNaiAssetConvertible): NaiAsset {
     const long = Long.fromString(amount.toString());
 
     return this.proto.cpp_hive(long.low, long.high) as NaiAsset;
   }
 
-  public hbdSatoshis(amount: number | string | BigInt | Long): NaiAsset {
+  public hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset {
     const long = Long.fromString(amount.toString());
 
     return this.proto.cpp_hbd(long.low, long.high) as NaiAsset;
   }
 
-  public vestsSatoshis(amount: number | string | BigInt | Long): NaiAsset {
+  public vestsSatoshis(amount: TNaiAssetConvertible): NaiAsset {
     const long = Long.fromString(amount.toString());
 
     return this.proto.cpp_vests(long.low, long.high) as NaiAsset;
   }
 
-  public vestsToHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const vestsAsset = isNaiAsset(vests) ? this.assertAssetSymbol(EAssetName.VESTS, vests as NaiAsset) : this.vestsSatoshis(vests as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
+  public vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const vestsAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, vests);
+    const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
+    const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
     return this.proto.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
-  public hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const hbdAsset = isNaiAsset(hbd) ? this.assertAssetSymbol(EAssetName.HBD, hbd as NaiAsset) : this.hbdSatoshis(hbd as number | string | BigInt | Long);
-    const baseAsset = isNaiAsset(base) ? this.assertAssetSymbol(EAssetName.HBD, base as NaiAsset) : this.hbdSatoshis(base as number | string | BigInt | Long);
-    const quoteAsset = isNaiAsset(quote) ? this.assertAssetSymbol(EAssetName.HIVE, quote as NaiAsset) : this.hiveSatoshis(quote as number | string | BigInt | Long);
+  public hbdToHive(hbd: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset {
+    const hbdAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbd as NaiAsset);
+    const baseAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, base as NaiAsset);
+    const quoteAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, quote as NaiAsset);
 
     return this.proto.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset;
   }
 
-  public hiveToHbd(amount: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const amountAsset = isNaiAsset(amount) ? this.assertAssetSymbol(EAssetName.HIVE, amount as NaiAsset) : this.hiveSatoshis(amount as number | string | BigInt | Long);
-    const baseAsset = isNaiAsset(base) ? this.assertAssetSymbol(EAssetName.HBD, base as NaiAsset) : this.hbdSatoshis(base as number | string | BigInt | Long);
-    const quoteAsset = isNaiAsset(quote) ? this.assertAssetSymbol(EAssetName.HIVE, quote as NaiAsset) : this.hiveSatoshis(quote as number | string | BigInt | Long);
+  public hiveToHbd(amount: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset {
+    const amountAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, amount);
+    const baseAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, base);
+    const quoteAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, quote);
 
     return this.proto.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset;
   }
@@ -189,6 +199,19 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
   public createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction {
     return new Transaction(this, taposBlockId, expirationTime);
+  }
+
+  private getNaiAssetForAssetName(assetName: EAssetName, assetSource: TNaiAssetConvertible): NaiAsset {
+    switch (assetName) {
+      case EAssetName.HIVE:
+        return this.hiveSatoshis(assetSource);
+      case EAssetName.HBD:
+        return this.hbdSatoshis(assetSource);
+      case EAssetName.VESTS:
+        return this.vestsSatoshis(assetSource);
+      default:
+        throw new WaxError(`Invalid asset name provided: "${assetName}". Expected one of: "${Object.keys(EAssetName).join(", ")}".`);
+    }
   }
 
   public getAsset(nai: NaiAsset): IHiveAssetData {
@@ -301,24 +324,24 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
-  public calculateAccountHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const vestsAsset = isNaiAsset(vests) ? this.assertAssetSymbol(EAssetName.VESTS, vests as NaiAsset) : this.vestsSatoshis(vests as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
+  public calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const vestsAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, vests);
+    const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
+    const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
     return this.proto.cpp_calculate_account_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
-  public calculateWitnessVotesHp(votes: number, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
+  public calculateWitnessVotesHp(votes: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
+    const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
     return this.proto.cpp_calculate_witness_votes_hp(votes, votes, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
-  public calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number {
-    const virtualSupplyAsset = isNaiAsset(virtualSupply) ? this.assertAssetSymbol(EAssetName.HIVE, virtualSupply as NaiAsset) : this.hiveSatoshis(virtualSupply as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
+  public calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource): number {
+    const virtualSupplyAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, virtualSupply);
+    const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
 
     return Number.parseFloat(this.extract(this.proto.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset)));
   }

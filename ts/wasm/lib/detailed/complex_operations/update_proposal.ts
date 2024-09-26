@@ -76,7 +76,7 @@ export class UpdateProposalOperation extends OperationBase {
    * @internal
    */
   public finalize(sink: IOperationSink): Iterable<operation> {
-    (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.updateProposal.daily_pay as asset);
+    this.updateProposal.daily_pay = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HBD, this.updateProposal.daily_pay as asset);
 
     return [{ update_proposal: this.updateProposal }];
   }

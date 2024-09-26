@@ -4,7 +4,6 @@ import { beneficiary_route_type, comment_options, type comment_payout_beneficiar
 import { WaxError } from "../../errors.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import Long from "long";
-import { isNaiAsset } from "../util/asset_util.js";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
 
 export enum ECommentFormat {
@@ -155,16 +154,8 @@ class CommentOperation extends OperationBase {
     operations.push({ comment: this.comment });
 
     if(typeof this.commentOptions === "object") {
-      if (this.maxAcceptedPayoutToSet !== undefined) {
-        let payout: asset;
-
-        if (isNaiAsset(this.maxAcceptedPayoutToSet))
-          payout = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet as asset);
-        else
-          payout = sink.api.hbdSatoshis(this.maxAcceptedPayoutToSet as number | string | BigInt | Long);
-
-        this.commentOptions.max_accepted_payout = payout;
-      }
+      if (this.maxAcceptedPayoutToSet !== undefined)
+        this.commentOptions.max_accepted_payout = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet);
 
       operations.push({ comment_options: this.commentOptions });
     }

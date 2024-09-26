@@ -62,7 +62,7 @@ class RecurrentTransferOperationBase extends OperationBase {
    * @internal
    */
   public finalize(sink: IOperationSink): Iterable<operation> {
-    (sink.api as WaxBaseApi).assertAssetSymbol([EAssetName.HBD, EAssetName.HIVE], this.recurrentTransfer.amount as asset);
+    this.recurrentTransfer.amount = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol([EAssetName.HBD, EAssetName.HIVE], this.recurrentTransfer.amount as asset);
 
     return [{ recurrent_transfer: this.recurrentTransfer }];
   }

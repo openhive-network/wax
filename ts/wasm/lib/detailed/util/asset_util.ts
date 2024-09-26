@@ -1,8 +1,7 @@
-import Long from "long";
-import { NaiAsset } from "../api/index.js";
+import { type TNaiAssetSource } from "../../interfaces.js";
 
 
-export const isNaiAsset = (asset: number | string | BigInt | Long | NaiAsset): boolean => {
+export const isNaiAsset = (asset: TNaiAssetSource): boolean => {
   if (typeof asset !== 'object' || 'low' in asset)
     return false;
 

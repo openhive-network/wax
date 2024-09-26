@@ -5,7 +5,6 @@ import { type TPublicKey } from "@hiveio/beekeeper";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
 import type Long from "long";
 import { TAccountName } from "../hive_apps_operations/index.js";
-import { isNaiAsset } from "../util/asset_util.js";
 
 type TInternalAsset = asset | Long | string | BigInt | number;
 
@@ -90,30 +89,14 @@ export class WitnessSetPropertiesOperation extends OperationBase {
    */
   public finalize(sink: IOperationSink): Iterable<operation> {
     if (this.hbdExchangeRate !== undefined) {
-      let base: asset, quote: asset;
-      if (isNaiAsset(this.hbdExchangeRate.base))
-        base = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.hbdExchangeRate.base as asset);
-      else
-        base = sink.api.hbdSatoshis(this.hbdExchangeRate.base as number | string | BigInt | Long);
-
-      if (isNaiAsset(this.hbdExchangeRate.quote))
-        quote = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HIVE, this.hbdExchangeRate.quote as asset);
-      else
-        quote = sink.api.hiveSatoshis(this.hbdExchangeRate.quote as number | string | BigInt | Long);
+      const base = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HBD, this.hbdExchangeRate.base);
+      const quote = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HIVE, this.hbdExchangeRate.quote);
 
       this.props.hbd_exchange_rate = { base, quote };
     }
 
-    if (this.accountCreationFee !== undefined) {
-      let fee: asset;
-
-      if (isNaiAsset(this.accountCreationFee))
-        fee = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HIVE, this.accountCreationFee as asset);
-      else
-        fee = sink.api.hiveSatoshis(this.accountCreationFee as number | string | BigInt | Long);
-
-      this.props.account_creation_fee = fee;
-    }
+    if (this.accountCreationFee !== undefined)
+      this.props.account_creation_fee = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HIVE, this.accountCreationFee);
 
     this.witnessProps.props = (sink.api as WaxBaseApi).serializeWitnessProps(this.props);
 
