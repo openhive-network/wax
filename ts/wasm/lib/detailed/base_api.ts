@@ -37,12 +37,27 @@ export class WaxBaseApi implements IWaxBaseInterface {
       quote: isNaiAsset(currentMedianHistoryQuote) ? currentMedianHistoryQuote as NaiAsset : this.hiveSatoshis(currentMedianHistoryQuote as number | string | BigInt | Long)
     };
 
+    if (currentMedianHistory.base.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for currentMedianHistoryBase');
+
+    if (currentMedianHistory.quote.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for currentMedianHistoryQuote');
+
     const currentMinHistory: json_price = {
       base: isNaiAsset(currentMinHistoryBase) ? currentMinHistoryBase as NaiAsset : this.hbdSatoshis(currentMinHistoryBase as number | string | BigInt | Long),
       quote: isNaiAsset(currentMinHistoryQuote) ? currentMinHistoryQuote as NaiAsset : this.hiveSatoshis(currentMinHistoryQuote as number | string | BigInt | Long)
     };
 
+    if (currentMinHistory.base.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for currentMinHistoryBase');
+
+    if (currentMinHistory.quote.nai !== this.ASSETS.HIVE.nai)
+      throw new WaxError('Invalid asset type for currentMinHistoryQuote');
+
     const actualHbdAmountToGet = isNaiAsset(hbdAmountToGet) ? hbdAmountToGet as NaiAsset : this.hbdSatoshis(hbdAmountToGet as number | string | BigInt | Long);
+
+    if (actualHbdAmountToGet.nai !== this.ASSETS.HBD.nai)
+      throw new WaxError('Invalid asset type for actualHbdAmountToGet');
 
     return this.proto.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset;
   }
