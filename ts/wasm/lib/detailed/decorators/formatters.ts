@@ -22,7 +22,7 @@ export interface IWaxFormatterDecoratorOptions<T = any> {
   matchInstanceOf?: { new(...args: any[]): T };
 }
 
-type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
+export type TWaxFormatterDecorator = (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
 
 /**
  * When used on method, marks that this method is intended to be used for wax formatting with given property matching.

@@ -63,9 +63,7 @@ export class RequestHelper {
    * @param {IRequestOptions} config request data
    * @returns {IDetailedResponseData<TResponse>} data for the account retrieval
    *
-   * @throws {WaxRequestHelperNetworkError} unknown network-related error occurred
    * @throws {WaxNon_2XX_3XX_ResponseCodeError} HTTP Response code is not in range 200-399 (inclusive)
-   * @throws {WaxRequestHelperMaxRedirectsError} Exceeded maximum number of redirects defined in {@link IRequestOptions.maxRedirects}
    */
   public request<TResponse extends (object | string) = string>(config: IRequestOptions): Promise<IDetailedResponseData<TResponse>> {
     return this.requestHandler(config);

@@ -23,7 +23,7 @@ export abstract class HiveAppsOperation<ChildT extends HiveAppsOperation<any, Bo
   protected ops: operation[] = [];
 
   /**
-   * Authorizes the currently staged hive apps operation, commits it to the {@link BuiltHiveAppsOperation} instance and clears the stage
+   * Authorizes the currently staged hive apps operation, commits it to saved body and clears the stage
    *
    * @param {string[] | string} requiredPostingAuths required posting authorities (can be an account name)
    * @param {?string[]} requiredAuths required authorities (defaults to the empty array)

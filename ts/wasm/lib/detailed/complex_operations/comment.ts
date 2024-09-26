@@ -267,9 +267,9 @@ class CommentOperation extends OperationBase {
    * @param {?any} value value to be set (optional when passing the entire object)
    *
    * @throws {WaxError} if key already exists on the jsonmetadata object
-   * @returns {CommentOperation} itself
+   * @returns {this} itself
    */
-  public pushMetadataProperty(keyOrObject: string | object, value?: any): CommentOperation {
+  public pushMetadataProperty(keyOrObject: string | object, value?: any): this {
     const assign = (key: string, value: any) => {
       if(key in this.jsonMetadata)
         throw new WaxError("Key already exists on the json metadata object");
@@ -292,9 +292,9 @@ class CommentOperation extends OperationBase {
    * @param {TAccountName} account beneficiary account
    * @param {number} weight weight of the beneficiary account
    *
-   * @returns {CommentOperation} itself
+   * @returns {this} itself
    */
-  private addBeneficiary(account: TAccountName, weight: number): CommentOperation {
+  private addBeneficiary(account: TAccountName, weight: number): this {
     this.ensureCommentOptionsCreated();
 
     let beneficiary: comment_payout_beneficiaries | undefined;

@@ -9,7 +9,7 @@ import { isNaiAsset } from "../util/asset_util.js";
 
 type TInternalAsset = asset | Long | string | BigInt | number;
 
-interface IWitnessSetPropertiesData {
+export interface IWitnessSetPropertiesData {
   /**
    * Witness account name.
    */

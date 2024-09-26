@@ -3,7 +3,7 @@ import type { TAccountName } from "../hive_apps_operations/index.js";
 import { update_proposal } from "../../proto/update_proposal.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 
-interface IUpdateProposalData {
+export interface IUpdateProposalData {
   /**
    * The identifier of the proposal to be updated.
    */

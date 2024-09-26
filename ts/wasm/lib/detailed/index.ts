@@ -1,5 +1,6 @@
 export { createWaxFoundation } from "./base.js";
 export { createHiveChain } from "./chain.js";
+export { EAssetName } from "./base_api.js";
 export { EManabarType } from './chain_api.js';
 export {
   HealthChecker, IHiveEndpoint, IHiveEndpointDataDown, IHiveEndpointDataUp,

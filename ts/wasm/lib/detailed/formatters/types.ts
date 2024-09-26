@@ -1,6 +1,7 @@
 import type { IWaxBaseInterface } from "../../interfaces";
 import type { WaxFormattable } from "../decorators/formatters";
 import type Long from "long";
+import type { ITransaction } from "../../interfaces";
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -89,7 +90,7 @@ export interface IFormatFunctionArguments<TSource = object, TTarget = any> {
 /**
  * Formatter function that receives input value for the matched property and returns the formatted output
  * Remember that this function takes two arguments. The first one is for data parsing, e.g. for transactions
- * parsing using {@link ITransactionConstructor["fromApi"]}. That data should mantain immutable.
+ * parsing using {@link ITransaction["createTransactionFromJson"]}. That data should mantain immutable.
  *
  * The second argument is the target working argument which should be returned from the formatter function
  * if your options specify to ignore given formatting.

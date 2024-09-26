@@ -944,7 +944,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Allows to start transaction preparing process.
    *
-   * Same as {@link IWaxBaseInterface.Transaction}, but pulls the reference block data from the remote
+   * Same as {@link IWaxBaseInterface.createTransaction}, but pulls the reference block data from the remote
    *
    * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
    *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
