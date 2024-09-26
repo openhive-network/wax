@@ -849,6 +849,49 @@ test.describe('Wax complex operation tests', () => {
     ]);
   });
 
+  test('Should be able to set max accepted payout (as number) in BlogPostOperation', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set max accepted payout",
+        body: "Set max accepted payout",
+        permlink: "set-max-accepted-payout",
+        maxAcceptedPayout: 100,
+      }));
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set max accepted payout',
+          json_metadata: `{"format":"markdown+html","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "test-category",
+          permlink: 'set-max-accepted-payout',
+          title: 'Set max accepted payout'
+        }
+      },
+      {
+        type: 'comment_options_operation',
+        value: {
+          allow_curation_rewards: true,
+          allow_votes: true,
+          author: 'gtg',
+          max_accepted_payout: { amount: '100', nai: '@@000000013', precision: 3 },
+          percent_hbd: 10000,
+          permlink: 'set-max-accepted-payout',
+        }
+      }
+    ]);
+  });
+
   test('Should be able to set allow curation rewards in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
