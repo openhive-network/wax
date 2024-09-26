@@ -472,6 +472,22 @@ json_asset foundation::cpp_vests_to_hp(const json_asset& vests, const json_asset
   });
 }
 
+json_asset foundation::cpp_hp_to_vests(const json_asset& hive, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+{
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
+  const hive::protocol::asset _hive = to_asset(hive);
+  const hive::protocol::asset _total_vesting_fund_hive = to_asset(total_vesting_fund_hive);
+  const hive::protocol::asset _total_vesting_shares = to_asset(total_vesting_shares);
+  FC_ASSERT( _hive.symbol == HIVE_SYMBOL, "'hive' param expected as HIVE asset" );
+  FC_ASSERT( _total_vesting_fund_hive.symbol == HIVE_SYMBOL, "'total_vesting_fund_hive' param expected as HIVE asset" );
+  FC_ASSERT( _total_vesting_shares.symbol == VESTS_SYMBOL, "'total_vesting_shares' param expected as VESTS asset" );
+  const hive::protocol::price hive_to_vests_feed{ _total_vesting_shares, _total_vesting_fund_hive };
+
+  const hive::protocol::asset vests = _hive * hive_to_vests_feed;
+  return to_json_asset(vests);
+  });
+}
+
 result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
 {
   return method_wrapper([&](result& _result)

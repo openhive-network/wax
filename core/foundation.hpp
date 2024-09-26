@@ -87,7 +87,7 @@ public:
   json_asset cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, const json_asset& quote) const;
 
   /**
-   * Convert VESTS to HP.
+   * Convert VESTS to HP (HIVE).
    *
    * @param vests - VESTS asset (also voting power or RC expressed as VESTS asset)
    * @param total_vesting_fund_hive - from dgpo HIVE asset
@@ -96,6 +96,17 @@ public:
    * @returns value in HIVE asset (HP)
    */
   json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const;
+
+  /**
+   * Convert HP (HIVE) to VESTS.
+   *
+   * @param vests - HIVE asset (HP)
+   * @param total_vesting_fund_hive - from dgpo HIVE asset
+   * @param total_vesting_shares - from dgpo VESTS asset
+   *
+   * @returns value in VESTS asset
+   */
+  json_asset cpp_hp_to_vests(const json_asset& hive, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const;
 
   /**
    * Calculate current inflation rate.

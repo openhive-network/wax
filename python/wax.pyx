@@ -221,6 +221,15 @@ def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: pyt
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
+@return_python_json_asset
+def calculate_hp_to_vests(hive: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
+    cdef protocol obj
+    cdef json_asset _hive = json_asset(hive.amount, hive.precision, hive.nai)
+    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    response = obj.cpp_hp_to_vests(_hive, _total_vesting_fund_hive, _total_vesting_shares)
+    return response.amount, response.precision, response.nai
+
 def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     response = calculate_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares)
     return response

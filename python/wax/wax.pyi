@@ -51,6 +51,11 @@ def calculate_vests_to_hp(
     total_vesting_fund_hive: python_json_asset,
     total_vesting_shares: python_json_asset
 ) -> python_json_asset: ...
+def calculate_hp_to_vests(
+    hive: python_json_asset,
+    total_vesting_fund_hive: python_json_asset,
+    total_vesting_shares: python_json_asset
+) -> python_json_asset: ...
 def calculate_hp_apr(
     head_block_num: int,
     vesting_reward_percent: int,
