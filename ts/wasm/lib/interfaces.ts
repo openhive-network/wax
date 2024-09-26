@@ -14,6 +14,10 @@ import type { OperationBase } from "./detailed/operation_base";
 import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/hive_apps_operations';
 
+export type TNaiAssetConvertible = number | string | BigInt | Long;
+
+export type TNaiAssetSource = TNaiAssetConvertible | NaiAsset;
+
 export type TTimestamp = Date | number | string;
 
 /**
@@ -487,6 +491,19 @@ export interface IWaxBaseInterface {
   getAsset(nai: NaiAsset): IHiveAssetData;
 
   /**
+   * Estimate hive collateral
+   *
+   * @param {TNaiAssetSource} currentMedianHistoryBase Base for Current median price retrieved by `get_feed_history`
+   * @param {TNaiAssetSource} currentMedianHistoryQuote Quote for Current median price retrieved by `get_feed_history`
+   * @param {TNaiAssetSource} currentMinHistoryBase Base for Current minimal price retrieved by `get_feed_history`
+   * @param {TNaiAssetSource} currentMinHistoryQuote Quote for Current minimal price retrieved by `get_feed_history`
+   * @param {TNaiAssetSource} hbdAmountToGet HBD asset used to get HIVE asset
+   *
+   * @returns {NaiAsset} value in HIVE asset
+   */
+  estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetSource, currentMedianHistoryQuote: TNaiAssetSource, currentMinHistoryBase: TNaiAssetSource, currentMinHistoryQuote: TNaiAssetSource, hbdAmountToGet: TNaiAssetSource): NaiAsset;
+
+  /**
    * Retrieves HIVE in nai form with given amount
    *
    * Note: This function works with precision and only accepts JS Double-precision floating-point format (IEEE 754),
@@ -537,10 +554,10 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of HIVE
+   * @param {TNaiAssetConvertible} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
    */
-  hiveSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+  hiveSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Retrieves HBD in nai form with given amount
@@ -551,10 +568,10 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of HBD
+   * @param {TNaiAssetConvertible} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
    */
-  hbdSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+  hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Retrieves VESTS in nai form with given amount
@@ -565,10 +582,10 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of VESTS
+   * @param {TNaiAssetConvertible} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
    */
-  vestsSatoshis(amount: number | string | BigInt | Long): NaiAsset;
+  vestsSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Retrieves HIVE in nai form with given amount
@@ -579,12 +596,12 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of HIVE
+   * @param {TNaiAssetConvertible} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
    *
    * @deprecated Use {@link hiveSatoshis} or {@link hiveCoins} instead
    */
-  hive(amount: number | string | BigInt | Long): NaiAsset;
+  hive(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Retrieves HBD in nai form with given amount
@@ -595,12 +612,12 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of HBD
+   * @param {TNaiAssetConvertible} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
    *
    * @deprecated Use {@link hbdSatoshis} or {@link hbdCoins} instead
    */
-  hbd(amount: number | string | BigInt | Long): NaiAsset;
+  hbd(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Retrieves VESTS in nai form with given amount
@@ -611,12 +628,12 @@ export interface IWaxBaseInterface {
    *
    * @example Input: `10000`, `"10000000000000000"`, `BigInt("10000000000000000")`
    *
-   * @param {number | string | BigInt | Long} amount amount of VESTS
+   * @param {TNaiAssetConvertible} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
    *
    * @deprecated Use {@link vestsSatoshis} or {@link vestsCoins} instead
    */
-  vests(amount: number | string | BigInt | Long): NaiAsset;
+  vests(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Converts VESTS to HP in nai form
@@ -624,7 +641,7 @@ export interface IWaxBaseInterface {
    * @param {NaiAsset} totalVestingFundHive HIVE assest total vesting fund
    * @param {NaiAsset} totalVestingShares VESTS asset total shares
    */
-  vestsToHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset
+  vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset
 
   /**
    * Converts HBD to HIVE in nai form
@@ -633,7 +650,7 @@ export interface IWaxBaseInterface {
    * @param {NaiAsset} quote HIVE asset price quote
    * @returns {NaiAsset} HIVE in nai form
    */
-  hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset;
+  hbdToHive(hbd: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset;
 
   /**
    * Converts given amount of HIVE asset to HBD (nai form)
@@ -642,7 +659,7 @@ export interface IWaxBaseInterface {
    * @param {NaiAsset} quote HIVE asset price quote taken i.e. from database_api.get_current_price_feed call
    * @returns {NaiAsset} HBD in nai form
    */
-  hiveToHbd(amount: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset;
+  hiveToHbd(amount: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset;
 
   /**
    * Retrieves the public key in wif format from the given sig digest and signature in hexadecimal format
@@ -740,33 +757,33 @@ export interface IWaxBaseInterface {
   /**
    * Calculates account HP based on given vests, total vesting fund HIVE and total vesting shares
    *
-   * @param {number | string | BigInt | Long | NaiAsset} vests VESTS asset
-   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund
-   * @param {number | string | BigInt | Long | NaiAsset} totalVestingShares VESTS asset total shares
+   * @param {TNaiAssetSource} vests VESTS asset
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
+   * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
    * @returns {NaiAsset} HP in nai form
    */
-  calculateAccountHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset;
+  calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
    * Calculates witness votes HP based on given votes, total vesting fund HIVE and total vesting shares
    *
    * @param {number} votes witness votes
-   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund
-   * @param {number | string | BigInt | Long | NaiAsset} totalVestingShares VESTS asset total shares
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
+   * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
    * @returns {NaiAsset} HP in nai form
    */
-  calculateWitnessVotesHp(votes: number, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset;
+  calculateWitnessVotesHp(votes: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
    * Calculate current HP APR
    *
    * @param {number} headBlockNum head block number
    * @param {number} vestingRewardPercent vesting reward percent
-   * @param {number | string | BigInt | Long | NaiAsset} virtualSupply virtual supply
-   * @param {number | string | BigInt | Long | NaiAsset} totalVestingFundHive HIVE asset total vesting fund HIVE
+   * @param {TNaiAssetSource} virtualSupply virtual supply
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund HIVE
    * @returns {number} HP APR percent with 2 decimals
    */
-  calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number;
+  calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource): number;
 
   /**
    * Constructs a new Transaction object with ready protobuf transaction

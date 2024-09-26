@@ -1,6 +1,6 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TTimestamp } from "../interfaces";
-import type { MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
+import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TTimestamp } from "../interfaces";
+import type { json_price, MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
 import type { ApiTransaction, NaiAsset } from "./api";
 
 import { WaxError } from '../errors.js';
@@ -29,6 +29,22 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
     return this.formatter.waxify.bind(this.formatter);
+  }
+
+  public estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetConvertible | NaiAsset, currentMedianHistoryQuote: TNaiAssetConvertible | NaiAsset, currentMinHistoryBase: TNaiAssetConvertible | NaiAsset, currentMinHistoryQuote: TNaiAssetConvertible | NaiAsset, hbdAmountToGet: TNaiAssetConvertible | NaiAsset): NaiAsset {
+    const currentMedianHistory: json_price = {
+      base: isNaiAsset(currentMedianHistoryBase) ? currentMedianHistoryBase as NaiAsset : this.hbdSatoshis(currentMedianHistoryBase as number | string | BigInt | Long),
+      quote: isNaiAsset(currentMedianHistoryQuote) ? currentMedianHistoryQuote as NaiAsset : this.hiveSatoshis(currentMedianHistoryQuote as number | string | BigInt | Long)
+    };
+
+    const currentMinHistory: json_price = {
+      base: isNaiAsset(currentMinHistoryBase) ? currentMinHistoryBase as NaiAsset : this.hbdSatoshis(currentMinHistoryBase as number | string | BigInt | Long),
+      quote: isNaiAsset(currentMinHistoryQuote) ? currentMinHistoryQuote as NaiAsset : this.hiveSatoshis(currentMinHistoryQuote as number | string | BigInt | Long)
+    };
+
+    const actualHbdAmountToGet = isNaiAsset(hbdAmountToGet) ? hbdAmountToGet as NaiAsset : this.hbdSatoshis(hbdAmountToGet as number | string | BigInt | Long);
+
+    return this.proto.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset;
   }
 
   public deserializeWitnessProps(serializedWitnessProps: Array<[string, string]>): witness_set_properties_data {

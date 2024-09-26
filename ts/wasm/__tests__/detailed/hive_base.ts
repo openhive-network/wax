@@ -573,6 +573,18 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.wifPrivateKey).toHaveLength(51);
   });
 
+  test('Should be able to estimate hive collateral', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.estimateHiveCollateral(201, 1000, 197, 1000, 100000);
+    });
+
+    expect(retVal).toStrictEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1065988"
+    });
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
