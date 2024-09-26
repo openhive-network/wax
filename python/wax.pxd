@@ -148,7 +148,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares ) except +
         result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
         required_authority_collection cpp_collect_transaction_required_authorities( string transaction ) except +
-        json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get )
+        json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get ) except +
 
         crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
         string cpp_crypto_memo_dump_string(crypto_memo value) except +
