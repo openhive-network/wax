@@ -5,6 +5,7 @@ import { WaxError } from "../../errors.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import Long from "long";
 import { isNaiAsset } from "../util/asset_util.js";
+import { EAssetName, type WaxBaseApi } from '../base_api.js';
 
 export enum ECommentFormat {
   HTML = "html",
@@ -158,7 +159,7 @@ class CommentOperation extends OperationBase {
         let payout: asset;
 
         if (isNaiAsset(this.maxAcceptedPayoutToSet))
-          payout = this.maxAcceptedPayoutToSet as asset;
+          payout = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet as asset);
         else
           payout = sink.api.hbdSatoshis(this.maxAcceptedPayoutToSet as number | string | BigInt | Long);
 

@@ -368,12 +368,23 @@ test.describe('Wax object interface foundation tests', () => {
     ]);
   });
 
-  test('Should be able to create an update proposal with underlying extensions using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ base, wax }) => {
+  test('Should fail when invalid asset is provided', async ({ waxTest }) => {
+    await expect(waxTest(async({ base, wax }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hiveSatoshis(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
       tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hiveSatoshis(0), subject: "subject", permlink: "permlink" }));
+
+      return tx.transaction.operations;
+    })).rejects.toThrow('Invalid asset provided: "{"amount":"0","precision":3,"nai":"@@000000021"}". Expected asset symbol(s): ""@@000000013" (HBD) with precision: 3".');
+  });
+
+  test('Should be able to create an update proposal with underlying extensions using transaction interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base, wax }) => {
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hbdSatoshis(0), subject: "subject", permlink: "permlink", endDate: "2023-08-01T15:38:48" }));
+      tx.pushOperation(new wax.UpdateProposalOperation({ proposalId: 100, creator: "initminer", dailyPay: base.hbdSatoshis(0), subject: "subject", permlink: "permlink" }));
 
       return tx.transaction.operations;
     });
@@ -384,7 +395,7 @@ test.describe('Wax object interface foundation tests', () => {
           creator: "initminer",
           daily_pay: {
             amount: "0",
-            nai: "@@000000021",
+            nai: "@@000000013",
             precision: 3
           },
           permlink: "permlink",
@@ -400,7 +411,7 @@ test.describe('Wax object interface foundation tests', () => {
           creator: "initminer",
           daily_pay: {
             amount: "0",
-            nai: "@@000000021",
+            nai: "@@000000013",
             precision: 3
           },
           permlink: "permlink",

@@ -2,6 +2,7 @@ import { asset, operation } from "../../protocol.js";
 import type { TAccountName } from "../hive_apps_operations/index.js";
 import { update_proposal } from "../../proto/update_proposal.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
+import { EAssetName, type WaxBaseApi } from '../base_api.js';
 
 export interface IUpdateProposalData {
   /**
@@ -74,7 +75,9 @@ export class UpdateProposalOperation extends OperationBase {
   /**
    * @internal
    */
-  public finalize(_sink: IOperationSink): Iterable<operation> {
+  public finalize(sink: IOperationSink): Iterable<operation> {
+    (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.updateProposal.daily_pay as asset);
+
     return [{ update_proposal: this.updateProposal }];
   }
 }

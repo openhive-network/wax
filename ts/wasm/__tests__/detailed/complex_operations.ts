@@ -789,6 +789,23 @@ test.describe('Wax complex operation tests', () => {
     ]);
   });
 
+  test('Should fail to set invalid asset in max accepted payout in BlogPostOperation', async ({ waxTest }) => {
+    await expect(waxTest(({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set max accepted payout",
+        body: "Set max accepted payout",
+        permlink: "set-max-accepted-payout",
+        maxAcceptedPayout: chain.hiveSatoshis(100),
+      }));
+
+      return tx.toApi();
+    })).rejects.toThrow('Invalid asset provided: "{"amount":"100","precision":3,"nai":"@@000000021"}". Expected asset symbol(s): ""@@000000013" (HBD) with precision: 3".');
+  });
+
   test('Should be able to set max accepted payout in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
@@ -799,7 +816,7 @@ test.describe('Wax complex operation tests', () => {
         title: "Set max accepted payout",
         body: "Set max accepted payout",
         permlink: "set-max-accepted-payout",
-        maxAcceptedPayout: chain.hiveSatoshis(100),
+        maxAcceptedPayout: chain.hbdSatoshis(100),
       }));
 
       return tx.toApi();
@@ -824,7 +841,7 @@ test.describe('Wax complex operation tests', () => {
           allow_curation_rewards: true,
           allow_votes: true,
           author: 'gtg',
-          max_accepted_payout: { amount: '100', nai: '@@000000021', precision: 3 },
+          max_accepted_payout: { amount: '100', nai: '@@000000013', precision: 3 },
           percent_hbd: 10000,
           permlink:'set-max-accepted-payout',
         }
@@ -964,7 +981,7 @@ test.describe('Wax complex operation tests', () => {
         images: ['test.png'],
         links: ['https://test.com'],
         tags: ['spam'],
-        maxAcceptedPayout: chain.hiveSatoshis(100),
+        maxAcceptedPayout: chain.hbdSatoshis(100),
         percentHbd: 20,
         beneficiaries: [{ account: 'guest4test7', weight: 40 }],
         description: 'Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries'
@@ -1005,7 +1022,7 @@ test.describe('Wax complex operation tests', () => {
               }
             }
           ],
-          max_accepted_payout: { amount: '100', nai: '@@000000021', precision: 3 },
+          max_accepted_payout: { amount: '100', nai: '@@000000013', precision: 3 },
           percent_hbd: 20,
           permlink:'push-and-set-multiple-properites',
         }

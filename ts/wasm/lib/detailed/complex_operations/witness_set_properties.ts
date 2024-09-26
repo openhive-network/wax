@@ -2,7 +2,7 @@ import { asset, operation, witness_set_properties } from "../../protocol.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import { type witness_set_properties_data } from "../../wax_module.js";
 import { type TPublicKey } from "@hiveio/beekeeper";
-import { WaxBaseApi } from "../base_api.js";
+import { EAssetName, type WaxBaseApi } from '../base_api.js';
 import type Long from "long";
 import { TAccountName } from "../hive_apps_operations/index.js";
 import { isNaiAsset } from "../util/asset_util.js";
@@ -92,12 +92,12 @@ export class WitnessSetPropertiesOperation extends OperationBase {
     if (this.hbdExchangeRate !== undefined) {
       let base: asset, quote: asset;
       if (isNaiAsset(this.hbdExchangeRate.base))
-        base = this.hbdExchangeRate.base as asset;
+        base = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HBD, this.hbdExchangeRate.base as asset);
       else
         base = sink.api.hbdSatoshis(this.hbdExchangeRate.base as number | string | BigInt | Long);
 
       if (isNaiAsset(this.hbdExchangeRate.quote))
-        quote = this.hbdExchangeRate.quote as asset;
+        quote = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HIVE, this.hbdExchangeRate.quote as asset);
       else
         quote = sink.api.hiveSatoshis(this.hbdExchangeRate.quote as number | string | BigInt | Long);
 
@@ -108,7 +108,7 @@ export class WitnessSetPropertiesOperation extends OperationBase {
       let fee: asset;
 
       if (isNaiAsset(this.accountCreationFee))
-        fee = this.accountCreationFee as asset;
+        fee = (sink.api as WaxBaseApi).assertAssetSymbol(EAssetName.HIVE, this.accountCreationFee as asset);
       else
         fee = sink.api.hiveSatoshis(this.accountCreationFee as number | string | BigInt | Long);
 

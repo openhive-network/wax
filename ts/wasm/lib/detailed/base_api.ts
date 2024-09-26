@@ -31,33 +31,31 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.formatter.waxify.bind(this.formatter);
   }
 
+  // Public for our internal usage among i.e. complex operation sinks or formatters (this method is not exposed in the IWaxBaseInterface)
+  public assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
+    const stringifyAsset = (assetType: EAssetName) => `"${this.ASSETS[assetType].nai}" (${assetType}) with precision: ${this.ASSETS[assetType].precision}`;
+
+    const assets = Array.isArray(requiredSymbolType) ? requiredSymbolType : [ requiredSymbolType ];
+
+    for (const symbolType of assets)
+      if (this.ASSETS[symbolType].nai === asset.nai && this.ASSETS[symbolType].precision === asset.precision)
+        return asset;
+
+    throw new WaxError(`Invalid asset provided: "${JSON.stringify(asset)}". Expected asset symbol(s): "${assets.map(stringifyAsset).join(" or ")}".`);
+  }
+
   public estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetConvertible | NaiAsset, currentMedianHistoryQuote: TNaiAssetConvertible | NaiAsset, currentMinHistoryBase: TNaiAssetConvertible | NaiAsset, currentMinHistoryQuote: TNaiAssetConvertible | NaiAsset, hbdAmountToGet: TNaiAssetConvertible | NaiAsset): NaiAsset {
     const currentMedianHistory: json_price = {
-      base: isNaiAsset(currentMedianHistoryBase) ? currentMedianHistoryBase as NaiAsset : this.hbdSatoshis(currentMedianHistoryBase as number | string | BigInt | Long),
-      quote: isNaiAsset(currentMedianHistoryQuote) ? currentMedianHistoryQuote as NaiAsset : this.hiveSatoshis(currentMedianHistoryQuote as number | string | BigInt | Long)
+      base: isNaiAsset(currentMedianHistoryBase) ? this.assertAssetSymbol(EAssetName.HBD, currentMedianHistoryBase as NaiAsset) : this.hbdSatoshis(currentMedianHistoryBase as number | string | BigInt | Long),
+      quote: isNaiAsset(currentMedianHistoryQuote) ? this.assertAssetSymbol(EAssetName.HIVE, currentMedianHistoryQuote as NaiAsset) : this.hiveSatoshis(currentMedianHistoryQuote as number | string | BigInt | Long)
     };
-
-    if (currentMedianHistory.base.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for currentMedianHistoryBase');
-
-    if (currentMedianHistory.quote.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for currentMedianHistoryQuote');
 
     const currentMinHistory: json_price = {
-      base: isNaiAsset(currentMinHistoryBase) ? currentMinHistoryBase as NaiAsset : this.hbdSatoshis(currentMinHistoryBase as number | string | BigInt | Long),
-      quote: isNaiAsset(currentMinHistoryQuote) ? currentMinHistoryQuote as NaiAsset : this.hiveSatoshis(currentMinHistoryQuote as number | string | BigInt | Long)
+      base: isNaiAsset(currentMinHistoryBase) ? this.assertAssetSymbol(EAssetName.HBD, currentMinHistoryBase as NaiAsset) : this.hbdSatoshis(currentMinHistoryBase as number | string | BigInt | Long),
+      quote: isNaiAsset(currentMinHistoryQuote) ? this.assertAssetSymbol(EAssetName.HIVE, currentMinHistoryQuote as NaiAsset) : this.hiveSatoshis(currentMinHistoryQuote as number | string | BigInt | Long)
     };
 
-    if (currentMinHistory.base.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for currentMinHistoryBase');
-
-    if (currentMinHistory.quote.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for currentMinHistoryQuote');
-
-    const actualHbdAmountToGet = isNaiAsset(hbdAmountToGet) ? hbdAmountToGet as NaiAsset : this.hbdSatoshis(hbdAmountToGet as number | string | BigInt | Long);
-
-    if (actualHbdAmountToGet.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for actualHbdAmountToGet');
+    const actualHbdAmountToGet = isNaiAsset(hbdAmountToGet) ? this.assertAssetSymbol(EAssetName.HBD, hbdAmountToGet as NaiAsset) : this.hbdSatoshis(hbdAmountToGet as number | string | BigInt | Long);
 
     return this.proto.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset;
   }
@@ -139,52 +137,25 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public vestsToHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const vestsAsset = isNaiAsset(vests) ? vests as NaiAsset : this.vestsSatoshis(vests as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
-
-    if (vestsAsset.nai !== this.ASSETS.VESTS.nai)
-      throw new WaxError('Invalid asset type for vests');
-
-    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for totalVestingFundHive');
-
-    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
-      throw new WaxError('Invalid asset type for totalVestingShares');
+    const vestsAsset = isNaiAsset(vests) ? this.assertAssetSymbol(EAssetName.VESTS, vests as NaiAsset) : this.vestsSatoshis(vests as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
 
     return this.proto.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
   public hbdToHive(hbd: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const hbdAsset = isNaiAsset(hbd) ? hbd as NaiAsset : this.hbdSatoshis(hbd as number | string | BigInt | Long);
-    const baseAsset = isNaiAsset(base) ? base as NaiAsset : this.hbdSatoshis(base as number | string | BigInt | Long);
-    const quoteAsset = isNaiAsset(quote) ? quote as NaiAsset : this.hiveSatoshis(quote as number | string | BigInt | Long);
-
-    if (hbdAsset.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for HBD');
-
-    if (baseAsset.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for base');
-
-    if (quoteAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for quote');
+    const hbdAsset = isNaiAsset(hbd) ? this.assertAssetSymbol(EAssetName.HBD, hbd as NaiAsset) : this.hbdSatoshis(hbd as number | string | BigInt | Long);
+    const baseAsset = isNaiAsset(base) ? this.assertAssetSymbol(EAssetName.HBD, base as NaiAsset) : this.hbdSatoshis(base as number | string | BigInt | Long);
+    const quoteAsset = isNaiAsset(quote) ? this.assertAssetSymbol(EAssetName.HIVE, quote as NaiAsset) : this.hiveSatoshis(quote as number | string | BigInt | Long);
 
     return this.proto.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset;
   }
 
   public hiveToHbd(amount: number | string | BigInt | Long | NaiAsset, base: number | string | BigInt | Long | NaiAsset, quote: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const amountAsset = isNaiAsset(amount) ? amount as NaiAsset : this.hiveSatoshis(amount as number | string | BigInt | Long);
-    const baseAsset = isNaiAsset(base) ? base as NaiAsset : this.hbdSatoshis(base as number | string | BigInt | Long);
-    const quoteAsset = isNaiAsset(quote) ? quote as NaiAsset : this.hiveSatoshis(quote as number | string | BigInt | Long);
-
-    if (amountAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for HBD');
-
-    if (baseAsset.nai !== this.ASSETS.HBD.nai)
-      throw new WaxError('Invalid asset type for base');
-
-    if (quoteAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for quote');
+    const amountAsset = isNaiAsset(amount) ? this.assertAssetSymbol(EAssetName.HIVE, amount as NaiAsset) : this.hiveSatoshis(amount as number | string | BigInt | Long);
+    const baseAsset = isNaiAsset(base) ? this.assertAssetSymbol(EAssetName.HBD, base as NaiAsset) : this.hbdSatoshis(base as number | string | BigInt | Long);
+    const quoteAsset = isNaiAsset(quote) ? this.assertAssetSymbol(EAssetName.HIVE, quote as NaiAsset) : this.hiveSatoshis(quote as number | string | BigInt | Long);
 
     return this.proto.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset;
   }
@@ -331,38 +302,23 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public calculateAccountHp(vests: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const vestsAsset = isNaiAsset(vests) ? vests as NaiAsset : this.vestsSatoshis(vests as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
-
-    if (vestsAsset.nai !== this.ASSETS.VESTS.nai)
-      throw new WaxError('Invalid asset type for vests');
-
-    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for totalVestingFundHive');
-
-    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
-      throw new WaxError('Invalid asset type for totalVestingShares');
+    const vestsAsset = isNaiAsset(vests) ? this.assertAssetSymbol(EAssetName.VESTS, vests as NaiAsset) : this.vestsSatoshis(vests as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
 
     return this.proto.cpp_calculate_account_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
   public calculateWitnessVotesHp(votes: number, totalVestingFundHive: number | string | BigInt | Long | NaiAsset, totalVestingShares: number | string | BigInt | Long | NaiAsset): NaiAsset {
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
-    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? totalVestingShares as NaiAsset : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
-
-    if (totalVestingFundHiveAsset.nai !== this.ASSETS.HIVE.nai)
-      throw new WaxError('Invalid asset type for totalVestingFundHive');
-
-    if (totalVestingSharesAsset.nai !== this.ASSETS.VESTS.nai)
-      throw new WaxError('Invalid asset type for totalVestingShares');
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
+    const totalVestingSharesAsset = isNaiAsset(totalVestingShares) ? this.assertAssetSymbol(EAssetName.VESTS, totalVestingShares as NaiAsset) : this.vestsSatoshis(totalVestingShares as number | string | BigInt | Long);
 
     return this.proto.cpp_calculate_witness_votes_hp(votes, votes, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset;
   }
 
   public calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: number | string | BigInt | Long | NaiAsset, totalVestingFundHive: number | string | BigInt | Long | NaiAsset): number {
-    const virtualSupplyAsset = isNaiAsset(virtualSupply) ? virtualSupply as NaiAsset : this.hiveSatoshis(virtualSupply as number | string | BigInt | Long);
-    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? totalVestingFundHive as NaiAsset : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
+    const virtualSupplyAsset = isNaiAsset(virtualSupply) ? this.assertAssetSymbol(EAssetName.HIVE, virtualSupply as NaiAsset) : this.hiveSatoshis(virtualSupply as number | string | BigInt | Long);
+    const totalVestingFundHiveAsset = isNaiAsset(totalVestingFundHive) ? this.assertAssetSymbol(EAssetName.HIVE, totalVestingFundHive as NaiAsset) : this.hiveSatoshis(totalVestingFundHive as number | string | BigInt | Long);
 
     return Number.parseFloat(this.extract(this.proto.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset)));
   }
