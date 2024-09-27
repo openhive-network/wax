@@ -47,6 +47,7 @@ from .wax import (
     deserialize_witness_set_properties,
     collect_signing_keys,
     estimate_hive_collateral,
+    check_memo_for_private_keys,
 )
 
 from .wax_result import (
@@ -121,4 +122,5 @@ __all__ = [
     "deserialize_witness_set_properties",
     "collect_signing_keys",
     "estimate_hive_collateral",
+    "check_memo_for_private_keys",
 ]

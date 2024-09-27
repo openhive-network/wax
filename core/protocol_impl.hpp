@@ -59,6 +59,9 @@ public:
   */
   std::vector<std::string> cpp_collect_signing_keys(const std::string& transaction, retrieve_authorities_cb_t retrieve_authorities_cb,
     void* retrieve_authorities_user_data);
+
+  void cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
+    const std::vector<std::string>& imported_keys);
 };
 
 } /// namespace cpp

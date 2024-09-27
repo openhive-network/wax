@@ -98,3 +98,9 @@ def estimate_hive_collateral(
     current_min_history: python_price,
     hbd_amount_to_get: python_json_asset
 ) -> python_json_asset: ...
+def check_memo_for_private_keys(
+    memo: bytes,
+    account: bytes,
+    auths: python_authorities,
+    memo_key: bytes,
+    imported_keys: list[bytes] = []) -> None: ...

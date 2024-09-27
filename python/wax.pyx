@@ -557,6 +557,11 @@ def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[lis
     cdef protocol obj
     return obj.cpp_collect_signing_keys(transaction, retrieve_authorities_cb, <void*>(retrieve_authorities))
 
+def check_memo_for_private_keys(memo: bytes, account: bytes, auths: python_authorities, memo_key: bytes, imported_keys: list[bytes]) -> None:
+    cdef protocol obj
+    cdef wax_authorities wax_auths = python_authorities_to_wax_authorities(auths)
+    obj.cpp_check_memo_for_private_keys(memo, account, wax_auths, memo_key, imported_keys)
+
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj
     obj.cpp_throws(throw_type)

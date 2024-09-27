@@ -161,6 +161,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_user_data ) except +
 
+        void cpp_check_memo_for_private_keys(string memo, string account, wax_authorities auths, string memo_key, vector[string] imported_keys) except +
+
         void cpp_throws(int type) except +
 
     cdef cppclass proto_protocol:

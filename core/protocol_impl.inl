@@ -14,6 +14,9 @@
 #include <fc/io/json.hpp>
 #include <fc/container/flat.hpp>
 #include <fc/bitutil.hpp>
+#include <fc/container/flat.hpp>
+
+#include <algorithm>
 
 namespace cpp {
 
@@ -266,6 +269,46 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_collect_signing_
     std::vector<std::string> result = signing_keys_collector.collect_signing_keys(tx);
 
     return result;
+  });
+}
+
+template <class FoundationProvider>
+inline
+void protocol_impl<FoundationProvider>::cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account,
+  const wax_authorities& auths, const std::string& memo_key, const std::vector<std::string>& imported_keys)
+{
+  return cpp::safe_exception_wrapper([&]() -> void {
+    std::vector<hive::protocol::public_key_type> keys;
+    hive::protocol::collect_potential_keys(&keys, account, memo);
+
+    if (keys.empty())
+      return;
+
+    fc::flat_set<std::string> _keys;
+    _keys.reserve(keys.size());
+    std::transform(keys.cbegin(), keys.cend(), std::inserter(_keys, _keys.end()), [](const auto& key) { return static_cast<std::string>(key); });
+
+    for (const auto& key_weight_pair : auths.owner.key_auths)
+    {
+      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private owner key in memo field.");
+    }
+
+    for (const auto& key_weight_pair : auths.active.key_auths)
+    {
+      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private active key in memo field.");
+    }
+
+    for (const auto& key_weight_pair : auths.posting.key_auths)
+    {
+      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private posting key in memo field.");
+    }
+
+    FC_ASSERT(!_keys.contains(memo_key), "Detected private memo key in memo field.");
+
+    for (const auto& imported_key : imported_keys)
+    {
+      FC_ASSERT(!_keys.contains(imported_key), "Detected private key in memo field.");
+    }
   });
 }
 
