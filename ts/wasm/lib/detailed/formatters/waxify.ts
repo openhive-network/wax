@@ -145,7 +145,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
    * @internal
    */
   protected handleInstanceOf(source: object, target: any, property: string): any | undefined {
-    const isInstance = (value: any, prop: string) => typeof value === "object" && value[prop] !== null && Object.getPrototypeOf(value[prop]) !== Object.prototype && !Array.isArray(value[prop]);
+    const isInstance = (value: any, prop: string) => typeof value === "object" && value[prop] !== null && value[prop] !== undefined && Object.getPrototypeOf(value[prop]) !== Object.prototype && !Array.isArray(value[prop]);
 
     // If source is a plain object then do not waste time iterating
     if (!isInstance(source, property) && !isInstance(target, property))
