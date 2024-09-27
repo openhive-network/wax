@@ -7,6 +7,7 @@ import Long from "long";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;
+  requireDefined: boolean;
   matchInstanceOf?: { new(...args: any[]): any };
   defaultFormatter?: TFormatFunction;
 }
@@ -41,6 +42,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
       instance.matchers.set(key, {
         defaultFormatter: value.defaultFormatter,
         matchInstanceOf: value.matchInstanceOf,
+        requireDefined: value.requireDefined,
         matchValues: new Map([ ...value.matchValues, ...(instance.matchers.get(key)?.matchValues ?? []) ])
       })
     for(const { formatFn, matchInstanceOf } of this.instances) {
@@ -100,6 +102,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
       const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
       const explicitProp = Reflect.getMetadata("wax:formatter:explicitprop", formatter, key) as boolean | undefined;
+      const requireDefined = Reflect.getMetadata("wax:formatter:requiredefined", formatter, key) as boolean;
       const matchedPropertyValue = Reflect.getMetadata("wax:formatter:propvalue", formatter, key) as any | undefined;
       const matchInstanceOf = Reflect.getMetadata("wax:formatter:instanceof", formatter, key) as { new(...args: any[]): any } | undefined;
 
@@ -120,6 +123,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
             matchedProperty,
             {
               matchValues,
+              requireDefined,
               matchInstanceOf,
               defaultFormatter: typeof matchedPropertyValue === "undefined" ? formatter[key].bind(formatter) : undefined
             }
@@ -173,6 +177,9 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     const matchValues = matched?.matchValues.get(source[property]) ?? matched?.defaultFormatter;
 
     if(typeof matchValues === "function" && typeof matched?.matchInstanceOf === "function" && !(typeof source === "object" && source[property] instanceof matched.matchInstanceOf))
+      return;
+
+    if(matched.requireDefined && source[property] === undefined)
       return;
 
     return matchValues?.({

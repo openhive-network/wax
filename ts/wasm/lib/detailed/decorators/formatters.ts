@@ -15,6 +15,16 @@ export interface IWaxFormatterDecoratorOptions<T = any> {
   matchValue?: any;
 
   /**
+   * Optional value to require property value to be defined (!== undefined)
+   *
+   * Note: Does not work with {@link matchInstanceOf}
+   *
+   * @type {?boolean}
+   * @default false
+   */
+  requireDefined?: boolean;
+
+  /**
    * Matches instance of a given class
    *
    * @type {?{ new(...args: any[]): T }}
@@ -48,10 +58,12 @@ export const WaxFormattable = (options?: IWaxFormatterDecoratorOptions | string)
   return (target: any, propertyKey: string, _descriptor: PropertyDescriptor): void => {
     const matchProperty = (options as IWaxFormatterDecoratorOptions | undefined)?.matchProperty;
     const matchValue = (options as IWaxFormatterDecoratorOptions | undefined)?.matchValue as any | undefined;
+    const requireDefined = (options as IWaxFormatterDecoratorOptions | undefined)?.requireDefined as boolean | undefined ?? false;
     const matchInstanceOf = (options as IWaxFormatterDecoratorOptions | undefined)?.matchInstanceOf as { new(...args: any[]): any } | undefined;
 
     Reflect.defineMetadata("wax:formatter:prop", matchProperty ?? propertyKey, target, propertyKey);
     Reflect.defineMetadata("wax:formatter:explicitprop", typeof matchProperty === "string", target, propertyKey);
+    Reflect.defineMetadata("wax:formatter:requiredefined", requireDefined, target, propertyKey);
 
     if(typeof matchValue !== "undefined")
       Reflect.defineMetadata("wax:formatter:propvalue", matchValue, target, propertyKey);

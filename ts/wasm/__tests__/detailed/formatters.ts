@@ -653,6 +653,32 @@ test.describe('Wax object interface formatters tests', () => {
     ).toBe("MyData: 12542");
   });
 
+  test('Should be able to format values using custom formatters extended from hive chain interface and require defined values', async() => {
+    class MyFormatters {
+      @WaxFormattable({ requireDefined: true, matchProperty: "requiredProperty" })
+      myCustomPropFormatter() {
+        throw new Error('This should not be called');
+      }
+
+      @WaxFormattable({ requireDefined: false /* default */, matchProperty: "undefinedProperty" })
+      myCustomProp({ source }): void | string {
+        if (source.myCustomProp === undefined)
+          return "This should be called";
+      }
+    }
+
+    const { chain } = await createWaxTestFor('node');
+    const formatter = chain.formatter.extend(MyFormatters);
+    const data = {
+      requiredProperty: undefined,
+      undefinedProperty: undefined
+    };
+
+    expect(
+      formatter.waxify`Result: ${data}`
+    ).toBe("Result: This should be called");
+  });
+
   test('Should be able to match values on properties using custom formatters extended from hive chain interface', async() => {
     class OperationsFormatter {
       @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
