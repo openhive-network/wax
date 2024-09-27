@@ -8,6 +8,7 @@ import { OperationBase } from "./operation_base";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 import type { ApiTransaction } from "./api";
+import { safeWasmCall } from "./util/wasm_errors";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -35,7 +36,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   private expirationTime?: TTimestamp;
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
-    return this.api.proto.cpp_get_tapos_data(hex);
+    return safeWasmCall(() => this.api.proto.cpp_get_tapos_data(hex));
   }
 
   private indexKeeper: Array<TIndexKeeperNode> = [];
@@ -81,10 +82,11 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
-    if(typeof transactionObject === 'object')
-      transactionObject = JSON.stringify(transactionObject);
+    const transactionStringified = typeof transactionObject === 'string' ? transactionObject : JSON.stringify(transactionObject);
 
-    const serialized = api.extract(api.proto.cpp_api_to_proto(transactionObject));
+    const protoData = safeWasmCall(() => api.proto.cpp_api_to_proto(transactionStringified));
+
+    const serialized = api.extract(protoData);
 
     const tx = transaction.fromJSON(JSON.parse(serialized));
 
@@ -92,7 +94,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   public toApi(): string {
-    const serialized = this.api.extract(this.api.proto.cpp_proto_to_api(this.toString()));
+    const apiData = safeWasmCall(() => this.api.proto.cpp_proto_to_api(this.toString()));
+
+    const serialized = this.api.extract(apiData);
 
     return serialized;
   }
@@ -102,7 +106,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   public toLegacyApi(): string {
-    const serialized = this.api.extract(this.api.proto.cpp_proto_to_legacy_api(this.toString()));
+    const apiData = safeWasmCall(() => this.api.proto.cpp_proto_to_legacy_api(this.toString()));
+
+    const serialized = this.api.extract(apiData);
 
     return serialized;
   }
@@ -158,33 +164,33 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   public get sigDigest(): string {
     const tx = this.toString();
 
-    const sigDigest: string = this.api.extract(this.api.proto.cpp_calculate_sig_digest(tx, this.api.chainId));
+    const sigDigest = safeWasmCall(() => this.api.proto.cpp_calculate_sig_digest(tx, this.api.chainId));
 
-    return sigDigest;
+    return this.api.extract(sigDigest);
   }
 
   public get legacy_sigDigest(): string {
     const tx = this.toString();
 
-    const sigDigest: string = this.api.extract(this.api.proto.cpp_calculate_legacy_sig_digest(tx, this.api.chainId));
+    const legacySigDigest = safeWasmCall(() => this.api.proto.cpp_calculate_legacy_sig_digest(tx, this.api.chainId));
 
-    return sigDigest;
+    return this.api.extract(legacySigDigest);
   }
 
   public get id(): TTransactionId {
     const tx = this.toString();
 
-    const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_transaction_id(tx));
+    const transactionId = safeWasmCall(() => this.api.proto.cpp_calculate_transaction_id(tx));
 
-    return transactionId;
+    return this.api.extract(transactionId);
   }
 
   public get legacy_id(): TTransactionId {
     const tx = this.toString();
 
-    const transactionId: string = this.api.extract(this.api.proto.cpp_calculate_legacy_transaction_id(tx));
+    const legacyTransactionId = safeWasmCall(() => this.api.proto.cpp_calculate_legacy_transaction_id(tx));
 
-    return transactionId;
+    return this.api.extract(legacyTransactionId);
   }
 
   public get requiredAuthorities(): TTransactionRequiredAuthorities {
@@ -195,7 +201,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     const owner: Set<string> = new Set();
     const other: Array<authority> = [];
 
-    const res = this.api.proto.cpp_collect_transaction_required_authorities(tx);
+    const res = safeWasmCall(() => this.api.proto.cpp_collect_transaction_required_authorities(tx));
 
     for(let i = 0; i < res.posting_accounts.size(); i++)
       posting.add(res.posting_accounts.get(i) as string);
@@ -245,7 +251,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   public validate(): void {
     const tx = this.toString();
 
-    this.api.extract(this.api.proto.cpp_validate_transaction(tx));
+    const validationResult = safeWasmCall(() => this.api.proto.cpp_validate_transaction(tx));
+
+    this.api.extract(validationResult);
   }
 
   private applyExpiration(): void {

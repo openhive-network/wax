@@ -7,6 +7,7 @@ import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 
 import { WaxError, WaxChainApiError } from "../errors.js";
+import { safeWasmCall } from './util/wasm_errors.js';
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
@@ -436,11 +437,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     const encrypted = wallet.encryptData(content, from, to);
 
-    return this.proto.cpp_crypto_memo_dump_string({
+    return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
       content: encrypted,
       from,
       to
-    });
+    }));
   }
 
   private async getManabarDataArguments(accountName: string, manabarType: EManabarType): Promise<Parameters<WaxBaseApi['calculateCurrentManabarValue']>> {
