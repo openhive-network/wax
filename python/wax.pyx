@@ -63,6 +63,10 @@ def return_python_ref_block_data(foo):
 
     return wrapper
 
+def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+    cdef protocol obj
+    return obj.cpp_operation_get_impacted_accounts(operation)
+
 @return_python_result
 def validate_operation(operation: bytes) -> python_result:
     cdef protocol obj
@@ -270,6 +274,10 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
 
     response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
     return response.amount, response.precision, response.nai
+
+def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+    cdef proto_protocol obj
+    return obj.cpp_operation_get_impacted_accounts(operation)
 
 @return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:

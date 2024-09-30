@@ -8,9 +8,11 @@
 #include <hive/protocol/authority.hpp>
 #include <hive/protocol/operations.hpp>
 #include <hive/protocol/transaction.hpp>
+#include <hive/protocol/forward_impacted.hpp>
 #include <hive/protocol/types.hpp>
 
 #include <fc/io/json.hpp>
+#include <fc/container/flat.hpp>
 #include <fc/bitutil.hpp>
 
 namespace cpp {
@@ -29,6 +31,19 @@ struct validate_visitor
 hive::protocol::signed_transaction get_transaction(const std::string& trx)
 {
   return fc::json::from_string(trx, fc::json::format_validation_mode::full).as<hive::protocol::signed_transaction>();
+}
+
+template <class FoundationProvider>
+inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_operation_get_impacted_accounts(const std::string& operation) const
+{
+  fc::variant _v = fc::json::from_string(operation, fc::json::format_validation_mode::full);
+  hive::protocol::operation _operation = _v.as<hive::protocol::operation>();
+
+  fc::flat_set<hive::protocol::account_name_type> impacted;
+  hive::app::operation_get_impacted_accounts(_operation, impacted);
+
+  return std::vector<std::string>{ impacted.begin(), impacted.end() };
 }
 
 template <class FoundationProvider>

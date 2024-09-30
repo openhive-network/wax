@@ -1,7 +1,9 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
-import type { json_price, MainModule, proto_protocol, result, witness_set_properties_data } from "../wax_module";
-import type { ApiTransaction, NaiAsset } from "./api";
+import type { json_price, MainModule, proto_protocol, protocol, result, VectorString, witness_set_properties_data } from "../wax_module";
+import type { ApiOperation, ApiTransaction, NaiAsset } from "./api";
+import type { TAccountName } from "./hive_apps_operations";
+import type { operation, transaction } from "../protocol";
 
 import { WaxError } from '../errors.js';
 import { safeWasmCall } from "./util/wasm_errors.js";
@@ -11,7 +13,6 @@ import Long from "long";
 import { WaxFormatter } from "./formatters/waxify.js";
 
 import { isNaiAsset } from "./util/asset_util.js";
-import { transaction } from "../protocol";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -24,12 +25,28 @@ export enum EAssetName {
 
 export class WaxBaseApi implements IWaxBaseInterface {
   public proto: proto_protocol;
+  public protocol: protocol;
 
   public readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
 
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
     return this.formatter.waxify.bind(this.formatter);
+  }
+
+  public operationGetImpactedAccounts(operation: operation | ApiOperation, resultingSet = new Set<TAccountName>()): Set<TAccountName> {
+    let vector: VectorString;
+
+    const stringifiedOperation = JSON.stringify(operation);
+    if ("type" in operation)
+      vector = safeWasmCall(() => this.protocol.cpp_operation_get_impacted_accounts(stringifiedOperation));
+    else
+      vector = safeWasmCall(() => this.proto.cpp_operation_get_impacted_accounts(stringifiedOperation));
+
+    for(let i = 0; i < vector.size(); ++i)
+      resultingSet.add(vector.get(i) as TAccountName);
+
+    return resultingSet;
   }
 
   private assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
@@ -183,6 +200,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     public readonly chainId: string
   ) {
     this.proto = safeWasmCall(() => new wax.proto_protocol());
+    this.protocol = safeWasmCall(() => new wax.protocol());
     this.ASSETS = {
       [EAssetName.HBD]: this.hbdSatoshis(0),
       [EAssetName.HIVE]: this.hiveSatoshis(0),

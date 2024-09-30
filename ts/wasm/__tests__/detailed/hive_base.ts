@@ -6,7 +6,7 @@ import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { naiAsset, transaction } from "../assets/data.protocol";
+import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
 
 let browser!: ChromiumBrowser;
 
@@ -261,6 +261,22 @@ test.describe('Wax object interface foundation tests', () => {
     }, transaction);
 
     expect(retVal).toBe(transaction);
+  });
+
+  test('Should be able to get impacted accounts from example api operation', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, operation) => {
+      return [...base.operationGetImpactedAccounts(operation)];
+    }, vote_operation);
+
+    expect(retVal).toStrictEqual(["c0ff33a", "otom"]);
+  });
+
+  test('Should be able to get impacted accounts from example proto operation', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, operation) => {
+      return [...base.operationGetImpactedAccounts(operation)];
+    }, protoVoteOp);
+
+    expect(retVal).toStrictEqual(["c0ff33a", "otom"]);
   });
 
   test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {

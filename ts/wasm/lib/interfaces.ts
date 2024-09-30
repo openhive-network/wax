@@ -6,13 +6,13 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./detailed/chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
 import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { ApiTransaction, NaiAsset } from "./detailed";
+import type { ApiOperation, ApiTransaction, NaiAsset } from "./detailed";
 import type { EAssetName } from "./detailed/base_api";
 import type { TTransactionRequiredAuthorities } from './detailed';
 import type Long from "long";
 import type { OperationBase } from "./detailed/operation_base";
 import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
-import type { ResourceCreditsOperation, CommunityOperation, FollowOperation } from './detailed/hive_apps_operations';
+import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 
@@ -114,6 +114,17 @@ interface ITransactionBase {
    * @deprecated
    */
   get legacy_sigDigest(): THexString;
+
+  /**
+   * Retrieves the set of account names (not authorities!) that are impacted by a whole transaction.
+   *
+   * If you want to list impacted accounts per operation, use {@link IWaxBaseInterface.operationGetImpactedAccounts} instead.
+   *
+   * @returns {Set<TAccountName>} A set containing the account names that are impacted by the current transaction
+   *
+   * @throws {WaxError} on any Wax WASM related error
+   */
+  get impactedAccounts(): Set<TAccountName>;
 
   /**
    * Generates id of the transaction (HF26 serialization form is used).
@@ -474,6 +485,16 @@ export interface IWaxBaseInterface {
    * @returns {string} public key prefix
    */
   get addressPrefix (): string;
+
+  /**
+   * Retrieves the set of account names (not authorities!) that are impacted by a given operation.
+   *
+   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf opereation or operation returned from the Hive Nodes API
+   * @returns {Set<TAccountName>} A set containing the account names that are impacted by the given operation.
+   *
+   * @throws {WaxError} on any Wax WASM related error
+   */
+  operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName>;
 
   /**
    * Retrieves the bundled package version string

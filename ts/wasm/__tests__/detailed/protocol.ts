@@ -154,6 +154,17 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
   });
 
+  test('Should be able to get impacted accounts from example operation', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, operation) => {
+      const vector = protocol.cpp_operation_get_impacted_accounts(operation);
+
+      // Convert VectorString to JS-array
+      return new Array(vector.size()).fill("").map((_, i) => vector.get(i));
+    }, JSON.stringify(vote_operation));
+
+    expect(retVal).toStrictEqual(["c0ff33a", "otom"]);
+  });
+
   test('Should be able to validate example transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
       return protocol.cpp_validate_transaction(transaction);

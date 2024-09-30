@@ -122,6 +122,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
     ctypedef cppmap[string, wax_authorities] (*retrieve_authorities_t)(vector[string], void* ) except +
 
     cdef cppclass protocol:
+        vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
         result cpp_calculate_transaction_id( string transaction )
@@ -162,6 +163,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         void cpp_throws(int type) except +
 
     cdef cppclass proto_protocol:
+        vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
         result cpp_calculate_transaction_id( string transaction )

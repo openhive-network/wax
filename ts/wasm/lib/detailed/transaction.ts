@@ -9,6 +9,7 @@ import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "../errors.js";
 import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
+import type { TAccountName } from "./hive_apps_operations";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -63,6 +64,15 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     };
 
     this.expirationTime = expirationTime as TTimestamp;
+  }
+
+  public get impactedAccounts(): Set<TAccountName> {
+    const impactedAccounts = new Set<TAccountName>();
+
+    for(const op of this.target.operations)
+      this.api.operationGetImpactedAccounts(op, impactedAccounts);
+
+    return impactedAccounts;
   }
 
   private calculateSignerPublicKeys(calculatedSigDigest: string): Array<THexString> {
