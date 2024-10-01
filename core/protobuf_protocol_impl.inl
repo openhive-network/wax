@@ -473,6 +473,16 @@ std::vector<std::string> proto_protocol_impl<FoundationProvider>::cpp_operation_
 }
 
 template <class FoundationProvider>
+std::vector<std::string> proto_protocol_impl<FoundationProvider>::cpp_transaction_get_impacted_accounts(const std::string& transaction) const
+{
+  protocol_impl<FoundationProvider> provider;
+
+  return provider.cpp_transaction_get_impacted_accounts(
+    cpp_proto_to_api_impl(transaction)
+  );
+}
+
+template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
 {
   return method_wrapper([&](result& _result)

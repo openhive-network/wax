@@ -123,6 +123,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
+        vector[string] cpp_transaction_get_impacted_accounts( string transaction ) except +
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
         result cpp_calculate_transaction_id( string transaction )
@@ -164,6 +165,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
     cdef cppclass proto_protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
+        vector[string] cpp_transaction_get_impacted_accounts( string transaction ) except +
         result cpp_validate_operation( string operation )
         result cpp_validate_transaction( string transaction )
         result cpp_calculate_transaction_id( string transaction )

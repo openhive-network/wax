@@ -67,6 +67,10 @@ def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
     cdef protocol obj
     return obj.cpp_operation_get_impacted_accounts(operation)
 
+def transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+    cdef protocol obj
+    return obj.cpp_transaction_get_impacted_accounts(transaction)
+
 @return_python_result
 def validate_operation(operation: bytes) -> python_result:
     cdef protocol obj
@@ -278,6 +282,10 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
 def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
     cdef proto_protocol obj
     return obj.cpp_operation_get_impacted_accounts(operation)
+
+def transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+    cdef proto_protocol obj
+    return obj.cpp_transaction_get_impacted_accounts(transaction)
 
 @return_python_result
 def validate_proto_operation(operation: bytes) -> python_result:

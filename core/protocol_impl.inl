@@ -48,6 +48,24 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_operation_get_im
 
 template <class FoundationProvider>
 inline
+std::vector<std::string> protocol_impl<FoundationProvider>::cpp_transaction_get_impacted_accounts(const std::string& transaction) const
+{
+  fc::variant _v = fc::json::from_string(transaction, fc::json::format_validation_mode::full);
+
+  ddump((_v));
+
+  hive::protocol::transaction _transaction = _v.as<hive::protocol::transaction>();
+
+  ddump((_transaction));
+
+  fc::flat_set<hive::protocol::account_name_type> impacted;
+  hive::app::transaction_get_impacted_accounts(_transaction, impacted);
+
+  return std::vector<std::string>{ impacted.begin(), impacted.end() };
+}
+
+template <class FoundationProvider>
+inline
 result protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
 {
   return method_wrapper([&](result&)

@@ -18,6 +18,7 @@ public:
   using required_authority_collection_t = typename FoundationProvider::required_authority_collection_t;
 
   std::vector<std::string> cpp_operation_get_impacted_accounts(const std::string& operation) const;
+  std::vector<std::string> cpp_transaction_get_impacted_accounts(const std::string& transaction) const;
 
   result cpp_validate_operation(const std::string& operation);
   result cpp_validate_transaction(const std::string& transaction);

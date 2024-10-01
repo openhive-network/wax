@@ -67,12 +67,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   public get impactedAccounts(): Set<TAccountName> {
-    const impactedAccounts = new Set<TAccountName>();
-
-    for(const op of this.target.operations)
-      this.api.operationGetImpactedAccounts(op, impactedAccounts);
-
-    return impactedAccounts;
+    return this.api.transactionGetImpactedAccounts(this.target);
   }
 
   private calculateSignerPublicKeys(calculatedSigDigest: string): Array<THexString> {

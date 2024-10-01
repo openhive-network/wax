@@ -271,6 +271,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .constructor<>()
 
     .function("cpp_operation_get_impacted_accounts", &protocol_wasm::cpp_operation_get_impacted_accounts)
+    .function("cpp_transaction_get_impacted_accounts", &protocol_wasm::cpp_transaction_get_impacted_accounts)
     .function("cpp_validate_operation", &protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
@@ -285,6 +286,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   class_<proto_protocol_wasm, base<foundation_wasm>>("proto_protocol")
     .constructor<>()
     .function("cpp_operation_get_impacted_accounts", &proto_protocol_wasm::cpp_operation_get_impacted_accounts)
+    .function("cpp_transaction_get_impacted_accounts", &proto_protocol_wasm::cpp_transaction_get_impacted_accounts)
     .function("cpp_validate_operation", &proto_protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &proto_protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)

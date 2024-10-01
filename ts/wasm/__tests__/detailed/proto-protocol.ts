@@ -100,6 +100,17 @@ test.describe('WASM Proto Protocol', () => {
     expect(retVal).toStrictEqual(["c0ff33a", "otom"]);
   });
 
+  test('Should be able to get impacted accounts from example transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ proto_protocol }, protoTx) => {
+      const vector = proto_protocol.cpp_transaction_get_impacted_accounts(protoTx);
+
+      // Convert VectorString to JS-array
+      return new Array(vector.size()).fill("").map((_, i) => vector.get(i));
+    }, protoTx);
+
+    expect(retVal).toStrictEqual(["c0ff33a", "otom"]);
+  });
+
   test('Should be able to validate example transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ proto_protocol }, transaction) => {
       return proto_protocol.cpp_validate_transaction(transaction);

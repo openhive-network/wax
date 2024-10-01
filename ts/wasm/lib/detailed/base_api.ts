@@ -34,7 +34,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.formatter.waxify.bind(this.formatter);
   }
 
-  public operationGetImpactedAccounts(operation: operation | ApiOperation, resultingSet = new Set<TAccountName>()): Set<TAccountName> {
+  public operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName> {
     let vector: VectorString;
 
     const stringifiedOperation = JSON.stringify(operation);
@@ -42,6 +42,28 @@ export class WaxBaseApi implements IWaxBaseInterface {
       vector = safeWasmCall(() => this.protocol.cpp_operation_get_impacted_accounts(stringifiedOperation));
     else
       vector = safeWasmCall(() => this.proto.cpp_operation_get_impacted_accounts(stringifiedOperation));
+
+    const resultingSet = new Set<TAccountName>();
+
+    for(let i = 0; i < vector.size(); ++i)
+      resultingSet.add(vector.get(i) as TAccountName);
+
+    return resultingSet;
+  }
+
+  public transactionGetImpactedAccounts(transaction: transaction | ApiTransaction): Set<TAccountName> {
+    let vector: VectorString;
+
+    const resultingSet = new Set<TAccountName>();
+
+    if(transaction.operations.length === 0)
+      return resultingSet;
+
+    const stringifiedTransaction = JSON.stringify(transaction);
+    if ("type" in transaction.operations[0])
+      vector = safeWasmCall(() => this.protocol.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
+    else
+      vector = safeWasmCall(() => this.proto.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
 
     for(let i = 0; i < vector.size(); ++i)
       resultingSet.add(vector.get(i) as TAccountName);
