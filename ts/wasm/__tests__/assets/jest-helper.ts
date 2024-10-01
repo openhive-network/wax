@@ -47,12 +47,22 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
 
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args): Promise<R> => {
 
-    let nodeData = await fn(await (globalFunction as Function)('node'), ...args);
-    const webData = await page.evaluate(async({ args, globalFunction, webFn, customConfig }) => {
-      eval(`window.webEvalFn = ${webFn};`);
-      globalThis.config = customConfig;
-      return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web'), ...args);
-    }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config });
+    let nodeData, webData;
+
+    try {
+      nodeData = await fn(await (globalFunction as Function)('node'), ...args);
+      webData = await page.evaluate(async({ args, globalFunction, webFn, customConfig }) => {
+        eval(`window.webEvalFn = ${webFn};`);
+        globalThis.config = customConfig;
+        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web'), ...args);
+      }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config });
+    } catch(error) {
+      if(!(error instanceof Error) || error.name !== "WebAssembly.Exception")
+        throw error;
+
+      // Rethrow WASM exceptions here, but remove the stack to prevent large stacktraces overflowing the console buffer
+      throw Object.assign(error, { stack: '' });
+    }
 
     if(typeof nodeData === "object") // Remove prototype data from the node result to match webData
       nodeData = JSON.parse(JSON.stringify(nodeData));
