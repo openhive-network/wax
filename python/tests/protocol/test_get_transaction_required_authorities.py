@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import pytest
 import json
 
-from typing import TYPE_CHECKING, Final
-
 from utils.refs import API_REF_TRANSACTION
-from wax import get_transaction_required_authorities, python_authority, python_required_authority_collection
+from wax import get_transaction_required_authorities, python_authority
 
 
 def test_get_transaction_required_autorities():
