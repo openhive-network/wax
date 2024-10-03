@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.6-rc3-stable.240916231926
-        version: 1.27.6-rc3-stable.240916231926
+        specifier: 1.27.6-rc3
+        version: 1.27.6-rc3
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -123,8 +123,8 @@ packages:
     resolution: {integrity: sha512-iYyACpW3iW8Fw+ZybQK+drQre+ns/tKpXbNESfrhNnPLIklLbXr7MYJ6gPEd0iETGLOK+SxMjVvKb/ffmk+FEw==}
     engines: {node: '>=6.9.0'}
 
-  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926':
-    resolution: {integrity: sha1-GhsyYwb56QgPSawZNrgz+24gzRA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc3-stable.240916231926.tgz}
+  '@hiveio/beekeeper@1.27.6-rc3':
+    resolution: {integrity: sha1-+tV/0zANMNTgBA7WJAT5DKO9Bk0=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.6-rc3.tgz}
     engines: {node: '>= 18'}
 
   '@isaacs/cliui@8.0.2':
@@ -1774,7 +1774,7 @@ snapshots:
       picocolors: 1.1.0
     optional: true
 
-  '@hiveio/beekeeper@1.27.6-rc3-stable.240916231926': {}
+  '@hiveio/beekeeper@1.27.6-rc3': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
