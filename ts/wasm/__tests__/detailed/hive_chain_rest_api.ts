@@ -220,7 +220,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise1 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi['hafah-api'].headblock as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended2.restApi['hafah-api'].headblock as any).withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -228,7 +228,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise2 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi['hafah-api'].transactions.transactionId as any).withProxy(data => { requestUrl = data.url; return data; }, data => data)({
+        ((extended2.restApi['hafah-api'].transactions.transactionId as any).withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)({
           transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
         }) as Promise<any>).then(() => {
           resolve(requestUrl);

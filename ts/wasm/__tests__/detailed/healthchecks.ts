@@ -39,6 +39,55 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal).toStrictEqual("https://api.hive.blog");
    });
 
+   test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
+    const testEndpoint = "https://api.syncad.com";
+
+    const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
+      return new Promise<string>((resolve, reject) => {
+        const hc = new wax.HealthChecker([testEndpoint]);
+
+        hc.on("newbest", ({ endpointUrl }) => {
+          console.log(`REST common endpoint test found new best endpoint: ${endpointUrl}`);
+          resolve(endpointUrl);
+          }); // New best endpoint url
+        hc.on("data", (data: Array<IScoredEndpoint>) => {
+          const scoredData = JSON.stringify(data);
+          console.log(`REST common endpoint test, acquired stats: ${scoredData}`);
+          }); // New data from all endpoint checks - scores ready
+        hc.on("error", reject); // Error handled
+
+        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1);
+      });
+    }, testEndpoint);
+
+    expect(retVal).toStrictEqual("https://api.syncad.com");
+   });
+
+   test('Should be able to create REST endpoint healthchecker (explicit endpoint)', async ({ waxTest }) => {
+    const testEndpoint = "https://api.syncad.com";
+
+    const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
+      return new Promise<string>((resolve, reject) => {
+        const hc = new wax.HealthChecker();
+
+        hc.on("newbest", ({ endpointUrl }) => {
+          console.log(`REST explicit endpoint test found new best endoint: ${endpointUrl}`);
+          resolve(endpointUrl);
+          }); // New best endpoint url
+        hc.on("data", (data: Array<IScoredEndpoint>) => {
+          const scoredData = JSON.stringify(data);
+          console.log(`REST explicit endpoint test, acquired stats: ${scoredData}`);
+          }); // New data from all endpoint checks - scores ready
+        hc.on("error", reject); // Error handled
+
+        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1, [testEndpoint]);
+      });
+    }, testEndpoint);
+
+    expect(retVal).toStrictEqual("https://api.syncad.com");
+   });
+
+
   test.afterAll(async () => {
     await browser.close();
   });
