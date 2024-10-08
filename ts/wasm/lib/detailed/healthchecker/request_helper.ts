@@ -18,6 +18,7 @@ export interface IDetailedResponseData<T extends (object | string) = string> {
 }
 
 export interface IRequestOptions {
+  endpoint: string;
   url: string;
   method: "GET" | "POST" | string;
   data?: string;
@@ -41,7 +42,9 @@ export class RequestHelper {
       response: undefined
     };
 
-    const response = await fetch(config.url, { method: config.method, body: config.data });
+    const finalUrl = config.endpoint + config.url;
+
+    const response = await fetch(finalUrl, { method: config.method, body: config.data});
     runningData.status = response.status;
 
     if(response.status < 200 || response.status > 399)
@@ -65,7 +68,7 @@ export class RequestHelper {
    *
    * @throws {WaxNon_2XX_3XX_ResponseCodeError} HTTP Response code is not in range 200-399 (inclusive)
    */
-  public request<TResponse extends (object | string) = string>(config: IRequestOptions): Promise<IDetailedResponseData<TResponse>> {
-    return this.requestHandler(config);
+  public async request<TResponse extends (object | string) = string>(config: IRequestOptions): Promise<IDetailedResponseData<TResponse>> {
+    return await this.requestHandler(config);
   }
 }

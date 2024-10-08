@@ -1,8 +1,8 @@
 import EventEmitter from "events";
 import { WaxError } from "../../errors.js";
-import { type TChainCaller } from "../chain_api.js";
+import { type WaxChainCommonApiCaller } from "../chain_api.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
-import { type IDetailedResponseData } from "./request_helper.js";
+import { type IDetailedResponseData, type IRequestOptions } from "./request_helper.js";
 import { defaultCalcScores } from "./math.js";
 
 const INITIAL_CHECKER_INTERVAL_MS = 10_000;
@@ -75,7 +75,7 @@ export class HealthChecker extends EventEmitter {
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
    * @param {Parameters<TFn>[0]} toSend param to {@link endpointToCheck}
    * @param {(data: Awaited<ReturnType<TFn>>) => boolean} validator optional validator for fields. Return true to pass validation and false to fail
-   * @param {?string[]} testOnEndpints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
+   * @param {?string[]} testOnEndpoints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
    *
    * @returns {IHiveEndpoint} hive endpoint to check
    *
@@ -90,26 +90,42 @@ export class HealthChecker extends EventEmitter {
     endpointToCheck: TFn,
     toSend: Parameters<TFn>[0],
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
-    testOnEndpints?: string[]
+    testOnEndpoints?: string[]
   ): IHiveEndpoint {
-    if(!("apiType" in endpointToCheck))
+    if(!("withProxy" in endpointToCheck))
       throw new WaxError('Specified endpoint does not belong to the wax API interface');
 
-    const apiType = endpointToCheck.apiType as string;
+    if(!("apiType" in endpointToCheck) && !("paths" in endpointToCheck))
+      throw new WaxError('Specified endpoint does not belong to the wax JSON-RPC nor REST API interface');
 
-    const endpoints = (testOnEndpints === undefined || testOnEndpints.length === 0) ? this.defaultEndpoints : testOnEndpints;
+    /// BW-FIXME
+    const apiCallDescriptor = "apiType" in endpointToCheck ? endpointToCheck.apiType as string : 'REST';//(endpointToCheck.paths as string[]).join('/');
 
-    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, endpointToCheck?.name, endpoints, async(apiUrl: string) => {
+    /// BW-FIXME
+    const apiCallName = "name" in endpointToCheck ? endpointToCheck.name : 'unnamed endpoint';
+
+    const endpoints = (testOnEndpoints === undefined || testOnEndpoints.length === 0) ? this.defaultEndpoints : testOnEndpoints;
+
+    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiCallDescriptor, apiCallName, endpoints, async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
-      const returned = await (endpointToCheck as unknown as TChainCaller).withProxy(data => {
-        data.url = apiUrl;
+      const requestInterceptor = (data: IRequestOptions): IRequestOptions => {
+        //console.log(`XXXXX inside healthchecker requestinterceptor, ${data.url}, apiUrl: ${endpointToTest}`)
+        data.endpoint = endpointToTest;
         return data;
-      }, data => timings = data)(toSend);
+      };
+
+      const responseInterceptor = (data: IDetailedResponseData<any>): IDetailedResponseData<any> => {
+        //console.log("XXXXX inside healthchecker responseInterceptor")
+        timings = data;
+        return data;
+      };
+
+      const returned = await (endpointToCheck as unknown as WaxChainCommonApiCaller).withProxy(requestInterceptor, responseInterceptor)(toSend);
 
       if(validator !== undefined)
         if(!validator(returned))
-          throw new WaxError(`Validator did not pass on api: "${apiType}" using url: "${apiUrl}"`);
+          throw new WaxError(`Validator did not pass on api: "${apiCallDescriptor}" using endpoint: "${endpointToTest}"`);
 
       return timings;
     });
