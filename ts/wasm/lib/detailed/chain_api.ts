@@ -81,11 +81,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       const endpoint = that.getEndpointUrlForRestApi(callFn.realPaths);
 
-      const url = endpoint + path + queryString;
+      const url = path + queryString;
 
       const data = responseInterceptor(await that.requestHelper.request<object>(requestInterceptor({
         method,
         responseType: 'json',
+        endpoint,
         url,
         data: body
       }))) as IDetailedResponseData<object>;
@@ -323,7 +324,8 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
               const data = responseInterceptor(await this.requestHelper.request<{ error?: object; result?: object; }>(requestInterceptor({
                 method: 'POST',
                 responseType: 'json',
-                url: this.getEndpointUrlForApi(propertyParent),
+                endpoint: this.getEndpointUrlForApi(propertyParent),
+                url: '',
                 data: JSON.stringify({
                   jsonrpc: "2.0",
                   method,
