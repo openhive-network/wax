@@ -75,7 +75,7 @@ export class HealthChecker extends EventEmitter {
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
    * @param {Parameters<TFn>[0]} toSend param to {@link endpointToCheck}
    * @param {(data: Awaited<ReturnType<TFn>>) => boolean} validator optional validator for fields. Return true to pass validation and false to fail
-   * @param {?string[]} testOnEndpints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
+   * @param {?string[]} testOnEndpoints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
    *
    * @returns {IHiveEndpoint} hive endpoint to check
    *
@@ -90,14 +90,14 @@ export class HealthChecker extends EventEmitter {
     endpointToCheck: TFn,
     toSend: Parameters<TFn>[0],
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
-    testOnEndpints?: string[]
+    testOnEndpoints?: string[]
   ): IHiveEndpoint {
     if(!("apiType" in endpointToCheck))
       throw new WaxError('Specified endpoint does not belong to the wax API interface');
 
     const apiType = endpointToCheck.apiType as string;
 
-    const endpoints = (testOnEndpints === undefined || testOnEndpints.length === 0) ? this.defaultEndpoints : testOnEndpints;
+    const endpoints = (testOnEndpoints === undefined || testOnEndpoints.length === 0) ? this.defaultEndpoints : testOnEndpoints;
 
     const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, endpointToCheck?.name, endpoints, async(apiUrl: string) => {
       let timings!: IDetailedResponseData<any>;
