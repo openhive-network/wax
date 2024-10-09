@@ -31,7 +31,7 @@ type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetailedRespo
  * Helper base type to describe common parts of WaxChain API callers
  */
 export type WaxChainCommonApiCaller = {
-  callDescriptor: string;
+  //callDescriptor: string;
   withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
 };
 
@@ -116,7 +116,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       return result;
     };
     callFn.paths = [] as string[];
-    callFn.callDescriptor = '';
+    //callFn.callDescriptor = '';
     callFn.realPaths = [] as string[];
     callFn.lastMethod = "GET";
     callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
@@ -128,7 +128,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
           const restApiUrl = this.getEndpointUrlForRestApi(callFn.realPaths);
 
           callFn.paths = [] as string[];
-          callFn.callDescriptor = '';
+          //callFn.callDescriptor = '';
           callFn.realPaths = [] as string[];
           callFn.lastMethod = 'GET';
           callFn.config = undefined;
@@ -152,7 +152,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
         if (callFn.config?.method !== undefined) {
           callFn.lastMethod = callFn.config.method;
-          callFn.callDescriptor = callFn.paths.join('/') + callFn.config.method;
+          //callFn.callDescriptor = callFn.paths.join('/') + callFn.config.method;
         }
 
         return proxiedFunction;
@@ -163,7 +163,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
           callFn.realPaths = [] as string[];
           callFn.paths = [] as string[];
-          callFn.callDescriptor = '';
+          //callFn.callDescriptor = '';
           callFn.lastMethod = 'GET';
           callFn.config = undefined;
 
@@ -354,7 +354,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
             const caller: TChainCaller = function(params: object) { return performCall(params); };
             Object.defineProperty(caller, "name", { value: property }); // Dynamically set function name to the property we are calling
             caller.apiType = propertyParent;
-            caller.callDescriptor = `${propertyParent}.${property}`;
+            //caller.callDescriptor = `${propertyParent}.${property}`;
             caller[HiveChainApi.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => performCall(params, requestInterceptor, responseInterceptor);
 
             return caller;
