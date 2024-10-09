@@ -92,8 +92,11 @@ export class HealthChecker extends EventEmitter {
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
     testOnEndpoints?: string[]
   ): IHiveEndpoint {
-    if(!("apiType" in endpointToCheck))
+    if(!("withProxy" in endpointToCheck))
       throw new WaxError('Specified endpoint does not belong to the wax API interface');
+
+    if(!("apiType" in endpointToCheck) && !("paths" in endpointToCheck))
+      throw new WaxError('Specified endpoint does not belong to the wax JSON-RPC nor REST API interface');
 
     const apiType = endpointToCheck.apiType as string;
 
