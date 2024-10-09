@@ -277,6 +277,11 @@ interface ITransactionBase {
    * @deprecated
    */
   toLegacyApi(): string;
+
+  /**
+   * Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
+   */
+  toBinaryForm(): THexString;
 }
 
 /**

@@ -110,6 +110,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return JSON.parse(this.toApi());
   }
 
+  public toBinaryForm(): THexString {
+    const conversionResult = safeWasmCall(() => this.api.proto.cpp_serialize_transaction(this.toString()));
+
+    const serialized = this.api.extract(conversionResult);
+
+    return serialized;
+  }
+
   public toLegacyApi(): string {
     const apiData = safeWasmCall(() => this.api.proto.cpp_proto_to_legacy_api(this.toString()));
 
