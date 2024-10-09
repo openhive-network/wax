@@ -308,6 +308,43 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.signees[0]).toBe('STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
   });
 
+  test('Should be able to binary serialize signed transaction using object interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ beekeeper, base, wax }, protoVoteOp) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      // Create transaction
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      // push some operations
+      tx.pushOperation(protoVoteOp);
+      tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hiveSatoshis(100) }));
+
+      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.transaction;
+
+      const binaryHex = tx.toBinaryForm();
+
+      console.log(tx.toApi());
+
+      return {
+        sig: stx.signatures[0],
+        digest: tx.sigDigest,
+        signees: tx.signatureKeys,
+        binHex: binaryHex
+      };
+    }, protoVoteOp);
+
+    expect(retVal.sig).toBe('1f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d145269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58');
+    expect(retVal.digest).toBe('d07a8509795ff7c6f33ab7d6f4da24044e8f5833f0dffcd357bf21ba5e4db1d9');
+    expect(retVal.signees).toHaveLength(1);
+    expect(retVal.signees[0]).toBe('STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
+    expect(retVal.binHex).toBe('a5c766fc0da60827c9640200046f746f6d076330666633336108657778686e6a626a98083109696e69746d696e65720367746764000000000000002320bcbe00180002000000011f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d145269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58');
+  });
+
+
   test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, base }) => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
