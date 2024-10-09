@@ -1,8 +1,8 @@
 import EventEmitter from "events";
 import { WaxError } from "../../errors.js";
-import { type TChainCaller } from "../chain_api.js";
+import { type WaxChainCommonApiCaller } from "../chain_api.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
-import { type IDetailedResponseData } from "./request_helper.js";
+import { type IDetailedResponseData, type IRequestOptions } from "./request_helper.js";
 import { defaultCalcScores } from "./math.js";
 
 const INITIAL_CHECKER_INTERVAL_MS = 10_000;
@@ -99,17 +99,26 @@ export class HealthChecker extends EventEmitter {
 
     const endpoints = (testOnEndpoints === undefined || testOnEndpoints.length === 0) ? this.defaultEndpoints : testOnEndpoints;
 
-    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, endpointToCheck?.name, endpoints, async(apiUrl: string) => {
+    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, endpointToCheck?.name, endpoints, async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
-      const returned = await (endpointToCheck as unknown as TChainCaller).withProxy(data => {
-        data.url = apiUrl;
+      const requestInterceptor = (data: IRequestOptions): IRequestOptions => {
+        //console.log(`XXXXX inside healthchecker requestinterceptor, ${data.url}, apiUrl: ${endpointToTest}`)
+        data.endpoint = endpointToTest;
         return data;
-      }, data => timings = data)(toSend);
+      };
+
+      const responseInterceptor = (data: IDetailedResponseData<any>): IDetailedResponseData<any> => {
+        //console.log("XXXXX inside healthchecker responseInterceptor")
+        timings = data;
+        return data;
+      };
+
+      const returned = await (endpointToCheck as unknown as WaxChainCommonApiCaller).withProxy(requestInterceptor, responseInterceptor)(toSend);
 
       if(validator !== undefined)
         if(!validator(returned))
-          throw new WaxError(`Validator did not pass on api: "${apiType}" using url: "${apiUrl}"`);
+          throw new WaxError(`Validator did not pass on api: "${apiType}" using endpoint: "${endpointToTest}"`);
 
       return timings;
     });
