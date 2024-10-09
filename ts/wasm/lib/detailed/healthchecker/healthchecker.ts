@@ -98,11 +98,15 @@ export class HealthChecker extends EventEmitter {
     if(!("apiType" in endpointToCheck) && !("paths" in endpointToCheck))
       throw new WaxError('Specified endpoint does not belong to the wax JSON-RPC nor REST API interface');
 
-    const apiType = endpointToCheck.apiType as string;
+    /// BW-FIXME
+    const apiCallDescriptor = "apiType" in endpointToCheck ? endpointToCheck.apiType as string : 'REST';//(endpointToCheck.paths as string[]).join('/');
+
+    /// BW-FIXME
+    const apiCallName = "name" in endpointToCheck ? endpointToCheck.name : 'unnamed endpoint';
 
     const endpoints = (testOnEndpoints === undefined || testOnEndpoints.length === 0) ? this.defaultEndpoints : testOnEndpoints;
 
-    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, endpointToCheck?.name, endpoints, async (endpointToTest: string) => {
+    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiCallDescriptor, apiCallName, endpoints, async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
       const requestInterceptor = (data: IRequestOptions): IRequestOptions => {
@@ -121,7 +125,7 @@ export class HealthChecker extends EventEmitter {
 
       if(validator !== undefined)
         if(!validator(returned))
-          throw new WaxError(`Validator did not pass on api: "${apiType}" using endpoint: "${endpointToTest}"`);
+          throw new WaxError(`Validator did not pass on api: "${apiCallDescriptor}" using endpoint: "${endpointToTest}"`);
 
       return timings;
     });
