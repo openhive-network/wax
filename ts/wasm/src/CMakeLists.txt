@@ -44,6 +44,7 @@ file(GLOB HEADERS "core/*.hpp")
 
 set( SOURCES
       ${WAX_ROOT_PATH}/core/foundation.cpp
+      ${WAX_ROOT_PATH}/core/binary_view_helper.cpp
       wasm_interface.cpp
 )
 

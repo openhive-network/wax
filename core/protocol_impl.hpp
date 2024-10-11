@@ -20,6 +20,8 @@ public:
   std::vector<std::string> cpp_operation_get_impacted_accounts(const std::string& operation) const;
   std::vector<std::string> cpp_transaction_get_impacted_accounts(const std::string& transaction) const;
 
+  binary_data cpp_generate_binary_transaction_metadata(const std::string& transaction)const;
+
   result cpp_validate_operation(const std::string& operation);
   result cpp_validate_transaction(const std::string& transaction);
   
