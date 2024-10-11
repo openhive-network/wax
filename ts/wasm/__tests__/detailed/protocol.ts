@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
-import { json_price } from '../../dist/lib/wax_module';
+import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 
 let browser!: ChromiumBrowser;
 
@@ -32,6 +32,197 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
 
     privateKey = retVal.content as string;
+  });
+  test('Should be able to generate binary metadata information', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }, transaction) => {
+      const values = protocol.cpp_generate_binary_transaction_metadata(transaction);
+
+      const parseChildren = (data: VectorBinaryDataNode) => {
+        const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
+
+        for(let i = 0; i < data.size(); ++i) {
+          const node = data.get(i) as binary_data_node;
+
+          offsets.push({
+            key: node.key as string,
+            type: node.type as string,
+            offset: node.offset,
+            size: node.size,
+            value: node.value as string,
+            length: node.type === "array" ? node.length : undefined,
+            children: node.type === "scalar" ? undefined : parseChildren(node.children) as any
+          });
+        }
+
+        return offsets;
+      };
+
+      return {
+        binary: values.binary,
+        offsets: parseChildren(values.offsets)
+      }
+    }, required_authorities_transaction);
+
+    expect(retVal.binary).toBe('3c4b51ee947fd5fada5701000a74616f746568313232310a6f7a63686172746172747f757364737465656d2d6274632d6461696c792d706f6c6f6e6965782d626974747265782d746563686e6963616c2d616e616c797369732d6d61726b65742d7265706f72742d7570646174652d34362d676c6173732d68616c662d66756c6c2d6275742d7468652d626f74746c652d732d6c6566742d656d7074792d736570741027010001202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3');
+    expect(retVal.offsets).toStrictEqual([
+      {
+        "children": undefined,
+        "key": "ref_block_num",
+        "length": undefined,
+        "offset": 0,
+        "size": 2,
+        "type": "scalar",
+        "value": "19260"
+      },
+      {
+        "children": undefined,
+        "key": "ref_block_prefix",
+        "length": undefined,
+        "offset": 2,
+        "size": 4,
+        "type": "scalar",
+        "value": "2140466769"
+      },
+      {
+        "children": undefined,
+        "key": "expiration",
+        "length": undefined,
+        "offset": 6,
+        "size": 4,
+        "type": "scalar",
+        "value": "2016-09-15T19:47:33"
+      },
+      {
+        "children": [
+          {
+          "children": [
+            {
+              "children": undefined,
+              "key": "type",
+              "length": undefined,
+              "offset": 11,
+              "size": 1,
+              "type": "scalar",
+              "value": "vote_operation"
+            },
+            {
+              "children": [
+                {
+                  "children": undefined,
+                  "key": "voter",
+                  "length": undefined,
+                  "offset": 12,
+                  "size": 11,
+                  "type": "scalar",
+                  "value": "taoteh1221",
+                },
+                {
+                  "children": undefined,
+                  "key": "author",
+                  "length": undefined,
+                  "offset": 23,
+                  "size": 11,
+                  "type": "scalar",
+                  "value": "ozchartart",
+                },
+                {
+                  "children": undefined,
+                  "key": "permlink",
+                  "length": undefined,
+                  "offset": 34,
+                  "size": 128,
+                  "type": "scalar",
+                  "value": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+                },
+                {
+                  "children": undefined,
+                  "key": "weight",
+                  "length": undefined,
+                  "offset": 162,
+                  "size": 2,
+                  "type": "scalar",
+                  "value": "10000"
+                }
+              ],
+              "key": "value",
+              "length": undefined,
+              "offset": 12,
+              "size": 152,
+              "type": "object",
+              "value": ""
+            }
+          ],
+          "key": "0",
+          "length": undefined,
+          "offset": 11,
+          "size": 153,
+          "type": "object",
+          "value": ""
+        }
+        ],
+        "key": "operations",
+        "length": 1,
+        "offset": 10,
+        "size": 154,
+        "type": "array",
+        "value": "Length: 1"
+      },
+      {
+        "children": [{
+          "children": [
+            {
+              "children": undefined,
+              "key": "type",
+              "length": undefined,
+              "offset": 165,
+              "size": 1,
+              "type": "scalar",
+              "value": "void_t"
+            },
+            {
+              "children": [],
+              "key": "value",
+              "length": undefined,
+              "offset": 166,
+              "size": 0,
+              "type": "object",
+              "value": ""
+            }
+          ],
+          "key": "0",
+          "length": undefined,
+          "offset": 165,
+          "size": 1,
+          "type": "object",
+          "value": ""
+        }],
+        "key": "extensions",
+        "length": 1,
+        "offset": 164,
+        "size": 2,
+        "type": "array",
+        "value": "Length: 1"
+      },
+      {
+        "children": [
+          {
+            "children": undefined,
+            "key": "0",
+            "length": undefined,
+            "offset": 167,
+            "size": 65,
+            "type": "scalar",
+            "value": "202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3"
+          }
+        ],
+        "key": "signatures",
+        "length": 1,
+        "offset": 166,
+        "size": 66,
+        "type": "array",
+        "value": "Length: 1"
+      }
+    ]);
   });
 
   test('Should be able to generate random private key using password', async ({ wasmTest }) => {
