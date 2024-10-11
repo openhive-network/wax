@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
-import { json_price } from '../../dist/lib/wax_module';
+import { binary_data_node, json_price } from '../../dist/lib/wax_module';
 
 let browser!: ChromiumBrowser;
 
@@ -32,6 +32,37 @@ test.describe('WASM Protocol', () => {
     expect(retVal.exception_message).toHaveLength(0);
 
     privateKey = retVal.content as string;
+  });
+  test('Should be able to generate binary metadata information', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }, transaction) => {
+      const values = protocol.cpp_generate_binary_transaction_metadata(transaction);
+
+      const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
+
+      for(let i = 0; i < values.offsets.size(); ++i) {
+        const node = values.offsets.get(i) as binary_data_node;
+
+        offsets.push({
+          key: node.key as string,
+          type: node.type as string,
+          offset: node.offset,
+          size: node.size,
+          value: node.value as string,
+          length: node.type === "pod" ? undefined : node.length,
+          children: undefined // TODO: Implement children parsing
+        });
+      }
+
+      return {
+        binary: values.binary,
+        offsets
+      }
+    }, transaction);
+
+    console.log(retVal);
+
+    expect(retVal.binary).toBe('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000');
+    expect(retVal.offsets).toStrictEqual({}); // TODO: Properly parse offsets
   });
 
   test('Should be able to generate random private key using password', async ({ wasmTest }) => {
