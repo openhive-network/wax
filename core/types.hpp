@@ -132,6 +132,23 @@ struct wax_authorities
   wax_authority posting;
 };
 
+struct binary_data_node
+{
+  std::string key;
+  std::string type;
+  uint32_t    offset;
+  uint32_t    size;
+  std::string value;
+  uint32_t    length = 0;
+  std::vector<binary_data_node> children;
+};
+
+struct binary_data
+{
+  std::string binary;
+  std::vector<binary_data_node> offsets;
+};
+
 using wax_authorities_map_t = std::map<std::string, wax_authorities>;
 typedef wax_authorities_map_t (*retrieve_authorities_cb_t)(std::vector<std::string>, void*);
 typedef std::string (*witness_public_key_getter_cb_t)(std::string, void*);

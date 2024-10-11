@@ -1,6 +1,7 @@
 /// Implementation file for protocol_impl class template methods
 
 #include "core/protocol_impl.hpp"
+#include <core/binary_view_helper.hpp>
 
 #include "core/utils.hpp"
 #include "core/hive_protocol_types.hpp"
@@ -57,16 +58,23 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_transaction_get_
 {
   fc::variant _v = fc::json::from_string(transaction, fc::json::format_validation_mode::full);
 
-  ddump((_v));
-
   hive::protocol::transaction _transaction = _v.as<hive::protocol::transaction>();
-
-  ddump((_transaction));
 
   fc::flat_set<hive::protocol::account_name_type> impacted;
   hive::app::transaction_get_impacted_accounts(_transaction, impacted);
 
   return std::vector<std::string>{ impacted.begin(), impacted.end() };
+}
+
+template <class FoundationProvider>
+inline
+binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction) const
+{
+  fc::variant _v = fc::json::from_string(transaction, fc::json::format_validation_mode::full);
+
+  hive::protocol::signed_transaction _transaction = _v.as<hive::protocol::signed_transaction>();
+
+  return cpp::generate_binary_transaction_metadata(_transaction);
 }
 
 template <class FoundationProvider>
@@ -145,12 +153,9 @@ result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::s
 {
   return method_wrapper([&](result& _result)
     {
-      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
-      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
-
       const auto _transaction = get_transaction(transaction);
-      const auto _packed = fc::to_hex(fc::raw::pack_to_vector(_transaction));
-      _result.content = std::string(_packed.data(), _packed.size());
+
+      _result.content = serialize_transaction(_transaction);
     });
 }
 

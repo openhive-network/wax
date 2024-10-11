@@ -203,6 +203,21 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("quote", &json_price::quote)
       ;
 
+  value_object<binary_data_node>("binary_data_node")
+      .field("key", &binary_data_node::key)
+      .field("type", &binary_data_node::type)
+      .field("offset", &binary_data_node::offset)
+      .field("size", &binary_data_node::size)
+      .field("value", &binary_data_node::value)
+      .field("length", &binary_data_node::length)
+      .field("children", &binary_data_node::children)
+      ;
+
+  value_object<binary_data>("binary_data")
+      .field("binary", &binary_data::binary)
+      .field("offsets", &binary_data::offsets)
+      ;
+
   register_optional<std::string>();
   register_optional<uint32_t>();
   register_optional<uint16_t>();
@@ -211,6 +226,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<json_price>();
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
   register_vector<wax_authority>("VectorWaxAuthority");
+  register_vector<binary_data_node>("VectorBinaryDataNode");
   register_map<std::string, std::string>("MapStringString");
   register_map<std::string, uint16_t>("MapStringUInt16");
 
@@ -272,6 +288,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_operation_get_impacted_accounts", &protocol_wasm::cpp_operation_get_impacted_accounts)
     .function("cpp_transaction_get_impacted_accounts", &protocol_wasm::cpp_transaction_get_impacted_accounts)
+    .function("cpp_generate_binary_transaction_metadata", &protocol_wasm::cpp_generate_binary_transaction_metadata)
     .function("cpp_validate_operation", &protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
@@ -287,6 +304,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .constructor<>()
     .function("cpp_operation_get_impacted_accounts", &proto_protocol_wasm::cpp_operation_get_impacted_accounts)
     .function("cpp_transaction_get_impacted_accounts", &proto_protocol_wasm::cpp_transaction_get_impacted_accounts)
+    .function("cpp_generate_binary_transaction_metadata", &proto_protocol_wasm::cpp_generate_binary_transaction_metadata)
     .function("cpp_validate_operation", &proto_protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &proto_protocol_wasm::cpp_validate_transaction)
     .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)
