@@ -20,6 +20,37 @@ export type TNaiAssetSource = TNaiAssetConvertible | NaiAsset;
 
 export type TTimestamp = Date | number | string;
 
+export interface IBinaryViewBaseNode {
+  key: string;
+  offset: number;
+  size: number;
+}
+
+export interface IBinaryViewScalarNode extends IBinaryViewBaseNode {
+  type: "scalar";
+  value: string;
+}
+
+export interface IBinaryViewArrayNode extends IBinaryViewBaseNode {
+  type: "array";
+  length: number;
+  children: IBinaryViewNode[];
+  value: string;
+}
+
+export interface IBinaryViewObjectNode extends IBinaryViewBaseNode {
+  type: "object";
+  children: IBinaryViewNode[];
+  value?: string;
+}
+
+export type IBinaryViewNode = IBinaryViewScalarNode | IBinaryViewArrayNode | IBinaryViewObjectNode;
+
+export interface IBinaryViewOutputData {
+  binary: string;
+  offsets: IBinaryViewNode[];
+}
+
 /**
  * String in hex format
  */
@@ -232,6 +263,13 @@ interface ITransactionBase {
    * @returns {boolean} either true or false based on the signatures amount
    */
   isSigned(): boolean;
+
+  /**
+   * Retrieves transaction binary view packed "AST" data (in same form as in the block_log)
+   *
+   * @return {IBinaryViewOutputData} binary view metadata
+   */
+  get binaryViewMetadata(): IBinaryViewOutputData;
 
   /**
    * Fills up constructed transaction object basing on preconfigured TAPOS. Also applies the transaction expiration time.

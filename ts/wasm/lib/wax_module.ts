@@ -16,7 +16,10 @@ export type {
   MapStringString,
   VectorString,
   private_key_data,
-  brain_key_data
+  brain_key_data,
+  binary_data_node,
+  binary_data,
+  VectorBinaryDataNode
 } from './build_wasm/wax.common.js';
 
 declare function waxmodule(): Promise<MainModule>;
