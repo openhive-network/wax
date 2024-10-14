@@ -138,6 +138,14 @@ struct stringifier< fc::time_point_sec >
     return v.to_iso_string();
   }
 };
+template<>
+struct stringifier< hive::protocol::legacy_hive_asset_symbol_type >
+{
+  static std::string value( const hive::protocol::legacy_hive_asset_symbol_type& v )
+  {
+    return fc::to_string(v.ser);
+  }
+};
 template< typename T >
 struct stringifier< std::vector< T > >
 {
@@ -200,7 +208,7 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
     size_t i = 0; \
     for( const auto& item : v )\
     {\
-      uint32_t item_offset = array_offset + get_size( item );\
+      uint32_t item_offset = array_offset;\
 \
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )\
       { /* All reflected types are objects, so we have to create another nested level of object type */\
@@ -216,7 +224,7 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
       else /* Rest of the cases has to handle offsets and pushing elements to arrays by themselves*/ \
         binary_view_visitor< M >{ array_nodes, array_offset, item }.add(std::to_string(i).c_str(), item);\
 \
-      array_offset = item_offset;\
+      array_offset += get_size( item );\
       ++i;\
     }\
 \
@@ -227,6 +235,52 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
   } \
   template< typename M > \
   void __unused_array_( const __VA_ARGS__ & v ) const
+
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_MAP( ... ) \
+  template< typename K, typename V > \
+  void add( const char* name, const __VA_ARGS__ & v ) const \
+  { \
+    /* Dynamic size */ \
+    uint32_t object_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size()} ); \
+    std::vector< binary_data_node > object_nodes; \
+ \
+    for( const auto& [key, value] : v ) \
+    { \
+      uint32_t key_size = get_size( key ); \
+      uint32_t nested_offset = object_offset; \
+      std::vector< binary_data_node > nested_nodes; \
+ \
+      binary_data_node node{ \
+        std::string{ key }, OBJECT_TYPE, nested_offset, key_size + get_size( value ), std::string{ "" }, 0, nested_nodes \
+      }; \
+      nested_offset += key_size; \
+      if constexpr( std::is_same< typename fc::reflector< V >::is_defined, fc::true_type >::value ) \
+        /* All reflected types are objects, so we have to create another nested level of object type */ \
+        fc::reflector< V >::visit( binary_view_visitor< V >{ nested_nodes, nested_offset, value } ); \
+      else /* Rest of the cases has to handle offsets and pushing elements to object by themselves */ \
+        binary_view_visitor< V >{ nested_nodes, nested_offset, value }.add(std::string{ key }.c_str(), value); \
+ \
+      if(nested_nodes[0].type == SCALAR_TYPE) \
+      { /* When we have only one scalar value, we can merge it with the parent object and change its display view */ \
+        FC_ASSERT( nested_nodes.size() == 1, "Map with scalar value type should have only one child node - internal error" ); \
+ \
+        node.value = nested_nodes[0].value; \
+        node.type = nested_nodes[0].type; \
+        node.children.clear(); \
+      } \
+ \
+      object_nodes.emplace_back( node ); \
+ \
+      object_offset += nested_offset; \
+    } \
+ \
+    binary_data_node node{ \
+      std::string{ name }, OBJECT_TYPE, offset, push_offset( v ), std::string{ "" }, 0, object_nodes \
+    }; \
+    nodes.emplace_back( node ); \
+  } \
+  template<typename K, typename V> \
+  void __unused_map_( const __VA_ARGS__ & v ) const
 
 class static_variant_visitor : public fc::visitor<uint32_t> {
 private:
@@ -306,13 +360,12 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ::flat_set_ex<M> );
 
   // Object types:
+  CPP_BINARY_VIEW_VISITOR_REGISTER_MAP( boost::container::flat_map< K, V > );
 
   // Other types:
   template< typename M >
   void add( const char* name, const fc::optional< M >& v ) const
   {
-    static_assert(!is_hive_array< M >::value, "We currently do not support arrays in optional types when converting to binary view");
-
     uint32_t child_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.valid() } );
     std::vector< binary_data_node > child_nodes;
 
@@ -361,9 +414,17 @@ public:
   }
 
   template< typename M >
-  void add( const char* name, const M& v ) const
+  void add( const char* key, const M& value ) const
   {
-    push_offset( v ); // XXX: Just for debugging purposes. Should be replaced with the actual function code here
+    uint32_t child_offset = offset;
+    std::vector< binary_data_node > child_nodes;
+
+    fc::reflector< M >::visit( binary_view_visitor< M >{ child_nodes, child_offset, value } );
+
+    binary_data_node child_node{
+      std::string{ key }, OBJECT_TYPE, offset, push_offset(value), "", 0, child_nodes
+    };
+    nodes.emplace_back( child_node );
   }
 
   uint32_t& offset;
@@ -375,6 +436,7 @@ public:
   inline static std::string OBJECT_TYPE{ "object" };
 };
 
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_MAP
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR
