@@ -3,8 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
-import { binary_data_node, json_price } from '../../dist/lib/wax_module';
-import { VectorBinaryDataNode } from '../../dist/lib/build_wasm/wax.common';
+import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 
 let browser!: ChromiumBrowser;
 
@@ -94,7 +93,8 @@ test.describe('WASM Protocol', () => {
         "value": "2016-09-15T19:47:33"
       },
       {
-        "children": {
+        "children": [
+          {
           "children": [
             {
               "children": undefined,
@@ -157,8 +157,9 @@ test.describe('WASM Protocol', () => {
           "offset": 11,
           "size": 153,
           "type": "object",
-          value: ""
-        },
+          "value": ""
+        }
+        ],
         "key": "operations",
         "length": 1,
         "offset": 10,
@@ -167,26 +168,34 @@ test.describe('WASM Protocol', () => {
         "value": "Length: 1"
       },
       {
-        "children": [
-          {
-            "children": undefined,
-            "key": "type",
-            "length": undefined,
-            "offset": 165,
-            "size": 1,
-            "type": "scalar",
-            "value": "void_t"
-          },
-          {
-            "children": [],
-            "key": "value",
-            "length": undefined,
-            "offset": 166,
-            "size": 0,
-            "type": "object",
-            "value": ""
-          }
-        ],
+        "children": [{
+          "children": [
+            {
+              "children": undefined,
+              "key": "type",
+              "length": undefined,
+              "offset": 165,
+              "size": 1,
+              "type": "scalar",
+              "value": "void_t"
+            },
+            {
+              "children": [],
+              "key": "value",
+              "length": undefined,
+              "offset": 166,
+              "size": 0,
+              "type": "object",
+              "value": ""
+            }
+          ],
+          "key": "0",
+          "length": undefined,
+          "offset": 165,
+          "size": 1,
+          "type": "object",
+          "value": ""
+        }],
         "key": "extensions",
         "length": 1,
         "offset": 164,

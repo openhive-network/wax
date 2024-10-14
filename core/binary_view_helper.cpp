@@ -201,6 +201,7 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
     for( const auto& item : v )\
     {\
       uint32_t item_offset = array_offset;\
+      uint32_t item_size = get_size( item );\
 \
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )\
       { /* All reflected types are objects, so we have to create another nested level of object type */\
@@ -209,14 +210,14 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
         fc::reflector< M >::visit( binary_view_visitor< M >{ item_nodes, item_offset, item } );\
 \
         binary_data_node node{\
-          std::to_string(i), OBJECT_TYPE, array_offset, push_offset( item ), "", 0, item_nodes\
+          std::to_string(i), OBJECT_TYPE, array_offset, item_size, "", 0, item_nodes\
         };\
         array_nodes.emplace_back( node );\
       }\
       else /* Rest of the cases has to handle offsets and pushing elements to arrays by themselves*/ \
-        binary_view_visitor< M >{ array_nodes, array_offset, item }.add(std::to_string(i).c_str(), item);\
+        binary_view_visitor< M >{ array_nodes, item_offset, item }.add(std::to_string(i).c_str(), item);\
 \
-      array_offset += get_size( item );\
+      array_offset += item_size;\
       ++i;\
     }\
 \
@@ -404,7 +405,7 @@ public:
     child_nodes.emplace_back( valuenode );
 
     binary_data_node child_node{
-      name, OBJECT_TYPE, offset, offset + whichsize + valuesize, "", 0, child_nodes
+      name, OBJECT_TYPE, offset, whichsize + valuesize, "", 0, child_nodes
     };
     nodes.emplace_back( child_node );
   }
