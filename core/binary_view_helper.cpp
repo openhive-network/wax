@@ -3,8 +3,11 @@
 
 #include <hive/protocol/misc_utilities.hpp>
 #include <hive/protocol/types_fwd.hpp>
+#include <hive/protocol/types.hpp>
 
 #include <fc/crypto/hex.hpp>
+#include <fc/crypto/sha256.hpp>
+#include <fc/crypto/ripemd160.hpp>
 #include <fc/io/iobuffer.hpp>
 #include <fc/io/raw_fwd.hpp>
 #include <fc/io/varint.hpp>
@@ -56,6 +59,46 @@ struct stringifier< hive::protocol::fixed_string<16> >
   }
 };
 template<>
+struct stringifier< hive::protocol::fixed_string<32> >
+{
+  static std::string value( const hive::protocol::fixed_string<32>& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< hive::protocol::json_string >
+{
+  static std::string value( const hive::protocol::json_string& v )
+  {
+    return v.operator const std::string&();
+  }
+};
+template<>
+struct stringifier< hive::protocol::public_key_type >
+{
+  static std::string value( const hive::protocol::public_key_type& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< fc::sha256 >
+{
+  static std::string value( const fc::sha256& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< fc::ripemd160 >
+{
+  static std::string value( const fc::ripemd160& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
 struct stringifier< fc::array< unsigned char, 65 > >
 {
   static std::string value( const fc::array< unsigned char, 65 >& v )
@@ -63,14 +106,12 @@ struct stringifier< fc::array< unsigned char, 65 > >
     return fc::to_hex( fc::raw::pack_to_vector( v ) );
   }
 };
-template<typename T>
-struct stringifier< fc::optional< T > >
+template<>
+struct stringifier< std::vector< char > >
 {
-  static inline std::string UNKNOWN_STR{ "(not provided)" };
-
-  static std::string value( const fc::optional< T >& v )
+  static std::string value( const std::vector< char >& v )
   {
-    return v ? stringifier< T >::value( *v ) : UNKNOWN_STR;
+    return fc::to_hex( v );
   }
 };
 template<typename T>
@@ -241,8 +282,13 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<16> ); // account_name_type
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::array< unsigned char, 65 > ); // compact_signature
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::time_point_sec );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::json_string );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::public_key_type );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( std::vector<char> );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<32> ); // custom_id_type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::sha256 ); // digest type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::ripemd160 ); // block_id_type
 
-  CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( fc::optional<M> );
   CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( fc::safe<M> );
 
   // Array types:
@@ -250,7 +296,35 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( fc::flat_set<M> );
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ::flat_set_ex<M> );
 
+  // Object types:
+
   // Other types:
+  template< typename M >
+  void add( const char* name, const fc::optional< M >& v ) const
+  {
+    static_assert(!is_hive_array< M >::value, "We currently do not support arrays in optional types when converting to binary view");
+
+    uint32_t child_offset = offset;
+    std::vector< binary_data_node > child_nodes;
+
+    binary_data_node node{
+      std::string{ name }, SCALAR_TYPE, offset, push_offset(v), std::string{ "" }, 0, child_nodes
+    };
+
+    if(v.valid())
+    {
+      binary_view_visitor< M >{ child_nodes, child_offset, *v }.add(name, *v);
+
+      FC_ASSERT(child_nodes.size() == 1, "Optional type should have only one child node - internal error");
+
+      node.value = child_nodes[0].value;
+      node.length = child_nodes[0].length;
+      node.type = child_nodes[0].type;
+    }
+
+    nodes.emplace_back( node );
+  }
+
   template< typename... Ts >
   void add( const char* name, const fc::static_variant< Ts... >& v ) const
   {
