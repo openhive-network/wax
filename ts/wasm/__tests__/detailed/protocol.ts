@@ -64,8 +64,6 @@ test.describe('WASM Protocol', () => {
       }
     }, required_authorities_transaction);
 
-    console.log(retVal);
-
     expect(retVal.binary).toBe('3c4b51ee947fd5fada5701000a74616f746568313232310a6f7a63686172746172747f757364737465656d2d6274632d6461696c792d706f6c6f6e6965782d626974747265782d746563686e6963616c2d616e616c797369732d6d61726b65742d7265706f72742d7570646174652d34362d676c6173732d68616c662d66756c6c2d6275742d7468652d626f74746c652d732d6c6566742d656d7074792d736570741027010001202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3');
     expect(retVal.offsets).toStrictEqual([
       {
@@ -108,6 +106,33 @@ test.describe('WASM Protocol', () => {
           },
           {
             "children": [
+              {
+                "children": undefined,
+                "key": "voter",
+                "length": undefined,
+                "offset": 12,
+                "size": 11,
+                "type": "scalar",
+                "value": "taoteh1221",
+              },
+              {
+                "children": undefined,
+                "key": "author",
+                "length": undefined,
+                "offset": 23,
+                "size": 11,
+                "type": "scalar",
+                "value": "ozchartart",
+              },
+              {
+                "children": undefined,
+                "key": "permlink",
+                "length": undefined,
+                "offset": 34,
+                "size": 128,
+                "type": "scalar",
+                "value": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+              },
               {
                 "children": undefined,
                 "key": "weight",

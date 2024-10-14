@@ -45,10 +45,42 @@ struct stringifier< fc::string >
     return v;
   }
 };
+template<>
+struct stringifier< hive::protocol::fixed_string<16> >
+{
+  static std::string value( const hive::protocol::fixed_string<16>& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< fc::array< unsigned char, 65 > >
+{
+  static std::string value( const fc::array< unsigned char, 65 >& v )
+  {
+    return fc::to_hex( fc::raw::pack_to_vector( v ) );
+  }
+};
 template< typename T >
 struct stringifier< std::vector< T > >
 {
   static std::string value( const std::vector< T >& v )
+  {
+    return "Length: " + fc::to_string( v.size() );
+  }
+};
+template< typename T >
+struct stringifier< fc::flat_set< T > >
+{
+  static std::string value( const fc::flat_set< T >& v )
+  {
+    return "Length: " + fc::to_string( v.size() );
+  }
+};
+template< typename T >
+struct stringifier< ::flat_set_ex< T > >
+{
+  static std::string value( const ::flat_set_ex< T >& v )
   {
     return "Length: " + fc::to_string( v.size() );
   }
@@ -66,15 +98,53 @@ struct is_hive_array< fc::flat_set<T>> : public std::true_type {};
 template<typename T>
 struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
 
-#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( type )                                           \
-  void add( const char* name, type v ) const                                                   \
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( ... )                                           \
+  void add( const char* name, const __VA_ARGS__ & v ) const                                                   \
   {                                                                                            \
     binary_data_node node{                                                                     \
-      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), stringifier< type >::value( v ) \
+      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), stringifier< __VA_ARGS__ >::value( v ) \
     };                                                                                         \
     nodes.emplace_back( node );                                                                \
   }                                                                                            \
-  void __unused_##type() const
+  void __unused_scalar_( __VA_ARGS__ ) const
+
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ... ) \
+  template< typename M > \
+  void add( const char* name, const __VA_ARGS__ & v ) const\
+  {\
+    /* Dynamic size */ \
+    uint32_t array_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size()} );\
+    std::vector< binary_data_node > array_nodes; \
+    size_t i = 0; \
+    for( const auto& item : v )\
+    {\
+      uint32_t item_offset = array_offset + get_size( item );\
+\
+      if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )\
+      { /* All reflected types are objects, so we have to create another nested level of object type */\
+        std::vector< binary_data_node > item_nodes;\
+\
+        fc::reflector< M >::visit( binary_view_visitor< M >{ item_nodes, item_offset, item } );\
+\
+        binary_data_node node{\
+          std::to_string(i), OBJECT_TYPE, array_offset, push_offset( item ), "", 0, item_nodes\
+        };\
+        array_nodes.emplace_back( node );\
+      }\
+      else /* Rest of the cases has to handle offsets and pushing elements to arrays by themselves*/ \
+        binary_view_visitor< M >{ array_nodes, array_offset, item }.add(std::to_string(i).c_str(), item);\
+\
+      array_offset = item_offset;\
+      ++i;\
+    }\
+\
+    binary_data_node node{\
+      std::string{ name }, ARRAY_TYPE, offset, push_offset( v ), stringifier< __VA_ARGS__ >::value( v ), v.size(), array_nodes\
+    };\
+    nodes.emplace_back( node );\
+  } \
+  template< typename M > \
+  void __unused_array_( const __VA_ARGS__ & v ) const
 
 class static_variant_visitor : public fc::visitor<uint32_t> {
 private:
@@ -124,6 +194,7 @@ public:
     return size;
   }
 
+  // Scalar types:
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( bool );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint8_t );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int8_t );
@@ -133,53 +204,16 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int32_t );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint64_t );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int64_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::string );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<16> ); // account_name_type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::array< unsigned char, 65 > ); // compact_signature
 
-  // vector, flat_set, flat_set_ex
+  // Array types:
+  CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( std::vector<M> );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( fc::flat_set<M> );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ::flat_set_ex<M> );
 
-  template< typename M >
-  void add( const char* name, const std::vector< M >& v ) const
-  {
-    // Dynamic size
-    uint32_t array_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size()} );
-    std::vector< binary_data_node > array_nodes;
-
-    for( size_t i = 0; i < v.size(); ++i )
-    {
-      const M& item = v[ i ];
-      uint32_t item_offset = array_offset + get_size( item );
-
-      if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
-      { // All reflected types are objects, so we have to create another nested level of object type
-        std::vector< binary_data_node > item_nodes;
-
-        fc::reflector< M >::visit( binary_view_visitor< M >{ item_nodes, item_offset, item } );
-
-        binary_data_node node{
-          std::to_string(i), OBJECT_TYPE, array_offset, push_offset( item ), "", 0, item_nodes
-        };
-        array_nodes.emplace_back( node );
-      }
-      else // Rest of the cases has to handle offsets and pushing elements to arrays by themselves
-        binary_view_visitor< M >{ array_nodes, array_offset, item }.add(std::to_string(i).c_str(), item);
-
-      array_offset = item_offset;
-    }
-
-    binary_data_node node{
-      std::string{ name }, ARRAY_TYPE, offset, push_offset( v ), stringifier< std::vector< M > >::value( v ), v.size(), array_nodes
-    };
-    nodes.emplace_back( node );
-  }
-
-  // compact_signature
-  void add( const char* name, const fc::array< unsigned char, 65 >& v ) const
-  {
-    binary_data_node node{
-      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), fc::to_hex( fc::raw::pack_to_vector( v ) )
-    };
-    nodes.emplace_back( node );
-  }
-
+  // Other types:
   void add( const char* name, const fc::time_point_sec& v ) const
   {
     binary_data_node node{
@@ -225,6 +259,7 @@ public:
   inline static std::string OBJECT_TYPE{ "object" };
 };
 
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR
 
 template< typename T >
