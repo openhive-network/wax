@@ -94,63 +94,71 @@ test.describe('WASM Protocol', () => {
         "value": "2016-09-15T19:47:33"
       },
       {
-        "children": [
-          {
-            "children": undefined,
-            "key": "type",
-            "length": undefined,
-            "offset": 11,
-            "size": 1,
-            "type": "scalar",
-            "value": "vote_operation"
-          },
-          {
-            "children": [
-              {
-                "children": undefined,
-                "key": "voter",
-                "length": undefined,
-                "offset": 12,
-                "size": 11,
-                "type": "scalar",
-                "value": "taoteh1221",
-              },
-              {
-                "children": undefined,
-                "key": "author",
-                "length": undefined,
-                "offset": 23,
-                "size": 11,
-                "type": "scalar",
-                "value": "ozchartart",
-              },
-              {
-                "children": undefined,
-                "key": "permlink",
-                "length": undefined,
-                "offset": 34,
-                "size": 128,
-                "type": "scalar",
-                "value": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
-              },
-              {
-                "children": undefined,
-                "key": "weight",
-                "length": undefined,
-                "offset": 162,
-                "size": 2,
-                "type": "scalar",
-                "value": "10000"
-              }
-            ],
-            "key": "value",
-            "length": undefined,
-            "offset": 12,
-            "size": 152,
-            "type": "object",
-            "value": ""
-          }
-        ],
+        "children": {
+          "children": [
+            {
+              "children": undefined,
+              "key": "type",
+              "length": undefined,
+              "offset": 11,
+              "size": 1,
+              "type": "scalar",
+              "value": "vote_operation"
+            },
+            {
+              "children": [
+                {
+                  "children": undefined,
+                  "key": "voter",
+                  "length": undefined,
+                  "offset": 12,
+                  "size": 11,
+                  "type": "scalar",
+                  "value": "taoteh1221",
+                },
+                {
+                  "children": undefined,
+                  "key": "author",
+                  "length": undefined,
+                  "offset": 23,
+                  "size": 11,
+                  "type": "scalar",
+                  "value": "ozchartart",
+                },
+                {
+                  "children": undefined,
+                  "key": "permlink",
+                  "length": undefined,
+                  "offset": 34,
+                  "size": 128,
+                  "type": "scalar",
+                  "value": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+                },
+                {
+                  "children": undefined,
+                  "key": "weight",
+                  "length": undefined,
+                  "offset": 162,
+                  "size": 2,
+                  "type": "scalar",
+                  "value": "10000"
+                }
+              ],
+              "key": "value",
+              "length": undefined,
+              "offset": 12,
+              "size": 152,
+              "type": "object",
+              "value": ""
+            }
+          ],
+          "key": "0",
+          "length": undefined,
+          "offset": 11,
+          "size": 153,
+          "type": "object",
+          value: ""
+        },
         "key": "operations",
         "length": 1,
         "offset": 10,

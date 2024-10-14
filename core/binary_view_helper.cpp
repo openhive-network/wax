@@ -8,6 +8,8 @@
 #include <fc/io/iobuffer.hpp>
 #include <fc/io/raw_fwd.hpp>
 #include <fc/io/varint.hpp>
+#include <fc/optional.hpp>
+#include <fc/safe.hpp>
 #include <fc/time.hpp>
 
 #include <fc/static_variant.hpp>
@@ -61,6 +63,32 @@ struct stringifier< fc::array< unsigned char, 65 > >
     return fc::to_hex( fc::raw::pack_to_vector( v ) );
   }
 };
+template<typename T>
+struct stringifier< fc::optional< T > >
+{
+  static inline std::string UNKNOWN_STR{ "(not provided)" };
+
+  static std::string value( const fc::optional< T >& v )
+  {
+    return v ? stringifier< T >::value( *v ) : UNKNOWN_STR;
+  }
+};
+template<typename T>
+struct stringifier< fc::safe< T > >
+{
+  static std::string value( const fc::safe< T >& v )
+  {
+    return stringifier< T >::value( v.value );
+  }
+};
+template<>
+struct stringifier< fc::time_point_sec >
+{
+  static std::string value( const fc::time_point_sec& v )
+  {
+    return v.to_iso_string();
+  }
+};
 template< typename T >
 struct stringifier< std::vector< T > >
 {
@@ -98,7 +126,8 @@ struct is_hive_array< fc::flat_set<T>> : public std::true_type {};
 template<typename T>
 struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
 
-#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( ... )                                           \
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( template_str, ... )                                           \
+  template_str \
   void add( const char* name, const __VA_ARGS__ & v ) const                                                   \
   {                                                                                            \
     binary_data_node node{                                                                     \
@@ -106,7 +135,11 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
     };                                                                                         \
     nodes.emplace_back( node );                                                                \
   }                                                                                            \
+  template_str \
   void __unused_scalar_( __VA_ARGS__ ) const
+
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( ... ) CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( template<typename M>, __VA_ARGS__ )
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( ... ) CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( , __VA_ARGS__)
 
 #define CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ... ) \
   template< typename M > \
@@ -207,6 +240,10 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::string );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<16> ); // account_name_type
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::array< unsigned char, 65 > ); // compact_signature
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::time_point_sec );
+
+  CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( fc::optional<M> );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( fc::safe<M> );
 
   // Array types:
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( std::vector<M> );
@@ -214,34 +251,34 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ::flat_set_ex<M> );
 
   // Other types:
-  void add( const char* name, const fc::time_point_sec& v ) const
-  {
-    binary_data_node node{
-      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), v.to_iso_string()
-    };
-    nodes.emplace_back( node );
-  }
-
   template< typename... Ts >
   void add( const char* name, const fc::static_variant< Ts... >& v ) const
   {
+    uint32_t child_offset = offset;
+    std::vector< binary_data_node > child_nodes;
+
     // Dynamic size
     uint32_t whichsize = get_size( fc::unsigned_int{ (uint32_t) v.which() } );
 
     binary_data_node whichnode{
-      std::string{ "type" }, SCALAR_TYPE, offset, whichsize, v.get_stored_type_name( true )
+      std::string{ "type" }, SCALAR_TYPE, child_offset, whichsize, v.get_stored_type_name( true )
     };
-    nodes.emplace_back( whichnode );
+    child_nodes.emplace_back( whichnode );
 
-    uint32_t offset_fwd = offset + whichsize;
+    uint32_t offset_fwd = child_offset + whichsize;
     std::vector< binary_data_node > nodes_fwd;
 
     uint32_t valuesize = v.visit( static_variant_visitor{ nodes_fwd, offset_fwd } );
 
     binary_data_node valuenode{
-      std::string{ "value" }, OBJECT_TYPE, offset + whichsize, valuesize, "", 0, nodes_fwd
+      std::string{ "value" }, OBJECT_TYPE, child_offset + whichsize, valuesize, "", 0, nodes_fwd
     };
-    nodes.emplace_back( valuenode );
+    child_nodes.emplace_back( valuenode );
+
+    binary_data_node child_node{
+      name, OBJECT_TYPE, offset, offset + whichsize + valuesize, "", 0, child_nodes
+    };
+    nodes.emplace_back( child_node );
   }
 
   template< typename M >
@@ -261,6 +298,8 @@ public:
 
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL
 
 template< typename T >
 uint32_t static_variant_visitor::operator()( const T& v ) const
