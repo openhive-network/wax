@@ -2,10 +2,12 @@
 #include <core/types.hpp>
 
 #include <hive/protocol/misc_utilities.hpp>
+#include <hive/protocol/types_fwd.hpp>
 
 #include <fc/crypto/hex.hpp>
 #include <fc/io/iobuffer.hpp>
 #include <fc/io/raw_fwd.hpp>
+#include <fc/time.hpp>
 
 #include <fc/static_variant.hpp>
 
@@ -51,30 +53,40 @@ struct stringifier< std::vector< T > >
   }
 };
 
-#define CPP_BINARY_VIEW_VISITOR_REGISTER_POD( type )                                           \
+template< typename T >
+struct is_hive_array : public std::false_type {};
+
+template<typename T>
+struct is_hive_array<std::vector<T>> : public std::true_type {};
+
+template<typename T>
+struct is_hive_array< fc::flat_set<T>> : public std::true_type {};
+
+template<typename T>
+struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
+
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( type )                                           \
   void add( const char* name, type v ) const                                                   \
   {                                                                                            \
     binary_data_node node{                                                                     \
-      std::string{ name }, POD_TYPE, offset, push_offset( v ), stringifier< type >::value( v ) \
+      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), stringifier< type >::value( v ) \
     };                                                                                         \
     nodes.emplace_back( node );                                                                \
   }                                                                                            \
   void __unused_##type() const
 
-class static_variant_visitor {
+class static_variant_visitor : public fc::visitor<uint32_t> {
 private:
   uint32_t& offset;
   std::vector< binary_data_node >& nodes;
-  uint32_t whichsize;
-  std::string whichname;
 
 public:
-  static_variant_visitor( std::vector< binary_data_node >& nodes, uint32_t& offset, uint32_t whichsize, const std::string& whichname )
-    : nodes( nodes ), offset( offset ), whichsize( whichsize ), whichname( whichname )
+  static_variant_visitor( std::vector< binary_data_node >& nodes, uint32_t& offset )
+    : nodes( nodes ), offset( offset )
   {}
 
   template< typename T >
-  void operator()( const T& v ) const;
+  uint32_t operator()( const T& v ) const;
 };
 
 template< typename T >
@@ -111,49 +123,88 @@ public:
     return size;
   }
 
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( bool );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( uint8_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( int8_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( uint16_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( int16_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( uint32_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( int32_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( uint64_t );
-  CPP_BINARY_VIEW_VISITOR_REGISTER_POD( int64_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( bool );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint8_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int8_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint16_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int16_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint32_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int32_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( uint64_t );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( int64_t );
 
   // vector, flat_set, flat_set_ex
 
   template< typename M >
   void add( const char* name, const std::vector< M >& v ) const
   {
-    uint32_t offset_fwd = offset + get_size( v.size() );
-    std::vector< binary_data_node > nodes_fwd;
+    uint32_t array_offset = offset + get_size( v.size() );
+    std::vector< binary_data_node > array_nodes;
 
-    for( const auto& item: v )
-      // TODO: Static selection here
-        if( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
-          fc::reflector< M >::visit( binary_view_visitor< M >( nodes_fwd, offset_fwd, item ) );
-        else
-          pack_undefined( nodes_fwd, offset_fwd );
+    for( size_t i = 0; i < v.size(); ++i )
+    {
+      const M& item = v[ i ];
+      uint32_t item_offset = array_offset + get_size( item );
+
+      if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
+      { // All reflected types are objects, so we have to create another nested level of object type
+        std::vector< binary_data_node > item_nodes;
+
+        fc::reflector< M >::visit( binary_view_visitor< M >{ item_nodes, item_offset, item } );
+
+        binary_data_node node{
+          std::to_string(i), OBJECT_TYPE, array_offset, push_offset( item ), "", 0, item_nodes
+        };
+        array_nodes.emplace_back( node );
+      }
+      else // Rest of the cases has to handle offsets and pushing elements to arrays by themselves
+        binary_view_visitor< M >{ array_nodes, array_offset, item }.add(std::to_string(i).c_str(), item);
+
+      array_offset = item_offset;
+    }
 
     binary_data_node node{
-      std::string{ name }, ARRAY_TYPE, offset, push_offset( v ), stringifier< std::vector< M > >::value( v ), v.size(), nodes_fwd
+      std::string{ name }, ARRAY_TYPE, offset, push_offset( v ), stringifier< std::vector< M > >::value( v ), v.size(), array_nodes
     };
     nodes.emplace_back( node );
   }
 
+  // compact_signature
   void add( const char* name, const fc::array< unsigned char, 65 >& v ) const
   {
     binary_data_node node{
-      std::string{ name }, POD_TYPE, offset, push_offset( v ), fc::to_hex( fc::raw::pack_to_vector( v ) )
+      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), fc::to_hex( fc::raw::pack_to_vector( v ) )
     };
     nodes.emplace_back( node );
   }
 
-  template< typename M >
-  void pack_undefined( std::vector< binary_data_node >& nodes, uint32_t& offset, const fc::static_variant< M >& v ) const
+  void add( const char* name, const fc::time_point_sec& v ) const
   {
-    v.visit( static_variant_visitor{ nodes, offset, get_size( v.which() ), v.get_stored_type_name( true ) } );
+    binary_data_node node{
+      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), v.to_iso_string()
+    };
+    nodes.emplace_back( node );
+  }
+
+  template< typename... Ts >
+  void add( const char* name, const fc::static_variant< Ts... >& v ) const
+  {
+    uint32_t whichsize = get_size( v.which() );
+
+    binary_data_node whichnode{
+      std::string{ "type" }, SCALAR_TYPE, offset, whichsize, v.get_stored_type_name( true )
+    };
+    nodes.emplace_back( whichnode );
+
+    uint32_t offset_fwd = offset + whichsize;
+    std::vector< binary_data_node > nodes_fwd;
+
+    uint32_t valuesize = v.visit( static_variant_visitor{ nodes_fwd, offset_fwd } );
+
+    binary_data_node valuenode{
+      std::string{ "value" }, OBJECT_TYPE, offset + whichsize, valuesize, "", 0, nodes_fwd
+    };
+    nodes.emplace_back( valuenode );
   }
 
   template< typename M >
@@ -166,30 +217,22 @@ public:
   std::vector< binary_data_node >& nodes;
   const T& val;
 
-  inline static std::string POD_TYPE{ "pod" };
+  inline static std::string SCALAR_TYPE{ "scalar" };
   inline static std::string ARRAY_TYPE{ "array" };
   inline static std::string OBJECT_TYPE{ "object" };
 };
 
-#undef CPP_BINARY_VIEW_VISITOR_REGISTER_POD
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR
 
 template< typename T >
-void static_variant_visitor::operator()( const T& v ) const
+uint32_t static_variant_visitor::operator()( const T& v ) const
 {
-  nodes.emplace_back( binary_data_node{
-    "type", binary_view_visitor< T >::POD_TYPE, offset, whichsize, stringifier< T >::value( whichname ) } );
+  static_assert(!is_hive_array< T >::value, "We currently do not support arrays in static_variants when converting to binary view");
+  static_assert(!std::is_scalar< T >::value, "We only support objects in static_variants when converting to binary view");
 
-  uint32_t offset_fwd = offset + whichsize;
-  std::vector< binary_data_node > nodes_fwd;
+  fc::reflector< T >::visit( binary_view_visitor< T >{ nodes, offset, v } );
 
-  fc::reflector< T >::visit( binary_view_visitor< T >( nodes_fwd, offset_fwd, v ) );
-
-  binary_data_node node{
-    // TODO: Handle array in static_variant here: (currently only OBJECT_TYPE is supported)
-    "value", binary_view_visitor< T >::OBJECT_TYPE, offset, binary_view_visitor< T >::get_size( v ), "", 0, nodes_fwd
-  };
-
-  nodes.emplace_back( node );
+  return binary_view_visitor< T >::get_size( v );
 }
 
 binary_data generate_binary_transaction_metadata( const hive::protocol::signed_transaction& tx )
@@ -201,7 +244,7 @@ binary_data generate_binary_transaction_metadata( const hive::protocol::signed_t
 
   uint32_t offset = 0;
 
-  fc::reflector< hive::protocol::signed_transaction >::visit( binary_view_visitor< hive::protocol::signed_transaction >( nodes, offset, tx ) );
+  fc::reflector< hive::protocol::signed_transaction >::visit( binary_view_visitor< hive::protocol::signed_transaction >{ nodes, offset, tx } );
 
   result.offsets = nodes;
 

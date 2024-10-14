@@ -4,6 +4,7 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
 import { binary_data_node, json_price } from '../../dist/lib/wax_module';
+import { VectorBinaryDataNode } from '../../dist/lib/build_wasm/wax.common';
 
 let browser!: ChromiumBrowser;
 
@@ -37,31 +38,35 @@ test.describe('WASM Protocol', () => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction) => {
       const values = protocol.cpp_generate_binary_transaction_metadata(transaction);
 
-      const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
+      const parseChildren = (data: VectorBinaryDataNode) => {
+        const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
 
-      for(let i = 0; i < values.offsets.size(); ++i) {
-        const node = values.offsets.get(i) as binary_data_node;
+        for(let i = 0; i < data.size(); ++i) {
+          const node = data.get(i) as binary_data_node;
 
-        offsets.push({
-          key: node.key as string,
-          type: node.type as string,
-          offset: node.offset,
-          size: node.size,
-          value: node.value as string,
-          length: node.type === "pod" ? undefined : node.length,
-          children: undefined // TODO: Implement children parsing
-        });
-      }
+          offsets.push({
+            key: node.key as string,
+            type: node.type as string,
+            offset: node.offset,
+            size: node.size,
+            value: node.value as string,
+            length: node.type === "array" ? node.length : undefined,
+            children: node.type === "scalar" ? undefined : parseChildren(node.children) as any
+          });
+        }
+
+        return offsets;
+      };
 
       return {
         binary: values.binary,
-        offsets
+        offsets: parseChildren(values.offsets)
       }
-    }, transaction);
+    }, required_authorities_transaction);
 
     console.log(retVal);
 
-    expect(retVal.binary).toBe('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000');
+    expect(retVal.binary).toBe('3c4b51ee947fd5fada5701000a74616f746568313232310a6f7a63686172746172747f757364737465656d2d6274632d6461696c792d706f6c6f6e6965782d626974747265782d746563686e6963616c2d616e616c797369732d6d61726b65742d7265706f72742d7570646174652d34362d676c6173732d68616c662d66756c6c2d6275742d7468652d626f74746c652d732d6c6566742d656d7074792d736570741027010001202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3');
     expect(retVal.offsets).toStrictEqual({}); // TODO: Properly parse offsets
   });
 
