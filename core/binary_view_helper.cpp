@@ -7,6 +7,7 @@
 #include <fc/crypto/hex.hpp>
 #include <fc/io/iobuffer.hpp>
 #include <fc/io/raw_fwd.hpp>
+#include <fc/io/varint.hpp>
 #include <fc/time.hpp>
 
 #include <fc/static_variant.hpp>
@@ -138,7 +139,8 @@ public:
   template< typename M >
   void add( const char* name, const std::vector< M >& v ) const
   {
-    uint32_t array_offset = offset + get_size( v.size() );
+    // Dynamic size
+    uint32_t array_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size()} );
     std::vector< binary_data_node > array_nodes;
 
     for( size_t i = 0; i < v.size(); ++i )
@@ -189,7 +191,8 @@ public:
   template< typename... Ts >
   void add( const char* name, const fc::static_variant< Ts... >& v ) const
   {
-    uint32_t whichsize = get_size( v.which() );
+    // Dynamic size
+    uint32_t whichsize = get_size( fc::unsigned_int{ (uint32_t) v.which() } );
 
     binary_data_node whichnode{
       std::string{ "type" }, SCALAR_TYPE, offset, whichsize, v.get_stored_type_name( true )
