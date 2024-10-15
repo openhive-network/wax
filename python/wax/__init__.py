@@ -63,6 +63,7 @@ from .wax_result import (
     python_authority,
     python_authorities,
     python_minimize_required_signatures_data,
+    python_price,
 )
 
 __version__ = "0.0.0"
@@ -127,4 +128,5 @@ __all__ = [
     "estimate_hive_collateral",
     "check_memo_for_private_keys",
     "minimize_required_signatures",
+    "python_price",
 ]
