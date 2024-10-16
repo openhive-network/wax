@@ -240,13 +240,13 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
     for( const auto& [key, value] : v ) \
     { \
       uint32_t key_size = get_size( key ); \
-      uint32_t nested_offset = object_offset + key_size; \
+      uint32_t nested_offset = object_offset; \
       std::vector< binary_data_node > nested_nodes; \
  \
       binary_data_node node{ \
-        std::string{ key }, OBJECT_TYPE, nested_offset, get_size( value ), std::string{ "" }, 0, nested_nodes \
+        std::string{ key }, OBJECT_TYPE, nested_offset, key_size + get_size( value ), std::string{ "" }, 0, nested_nodes \
       }; \
- \
+      nested_offset += key_size; \
       if constexpr( std::is_same< typename fc::reflector< V >::is_defined, fc::true_type >::value ) \
         /* All reflected types are objects, so we have to create another nested level of object type */ \
         fc::reflector< V >::visit( binary_view_visitor< V >{ nested_nodes, nested_offset, value } ); \
@@ -359,11 +359,11 @@ public:
   template< typename M >
   void add( const char* name, const fc::optional< M >& v ) const
   {
-    uint32_t child_offset = offset;
+    uint32_t child_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.valid() } );
     std::vector< binary_data_node > child_nodes;
 
     binary_data_node node{
-      std::string{ name }, SCALAR_TYPE, offset, push_offset(v), std::string{ "" }, 0, child_nodes
+      std::string{ name }, SCALAR_TYPE, offset, push_offset(v), std::string{ "(not provided)" }, 0, child_nodes
     };
 
     if(v.valid())
@@ -375,6 +375,7 @@ public:
       node.value = child_nodes[0].value;
       node.length = child_nodes[0].length;
       node.type = child_nodes[0].type;
+      node.children = child_nodes[0].children;
     }
 
     nodes.emplace_back( node );
