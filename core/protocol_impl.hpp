@@ -64,6 +64,8 @@ public:
   */
   std::vector<std::string> cpp_minimize_required_signatures(const std::string& signed_transaction, const minimize_required_signatures_data_t& minimize_required_signatures_data);
 
+  std::map<std::string, std::string> cpp_get_hive_constants(const std::string& treasury_name, const std::string& chain_id);
+
 };
 
 } /// namespace cpp
