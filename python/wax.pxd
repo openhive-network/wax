@@ -173,8 +173,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_fn ) except +
         vector[string] cpp_minimize_required_signatures( string signed_transaction, minimize_required_signatures_data_t minimize_required_signatures_data ) except +
-
         void cpp_check_memo_for_private_keys(string memo, string account, wax_authorities auths, string memo_key, vector[string] imported_keys) except +
+        cppmap[string, string] cpp_get_hive_protocol_config(string treasury_name, string chain_id) except +
 
         void cpp_throws(int type) except +
 
