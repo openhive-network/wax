@@ -3,6 +3,10 @@ from typing import Any
 from wax import python_authority, python_authorities
 
 
+MAINNET_CHAIN_ID = b"beeab0de00000000000000000000000000000000000000000000000000000000"
+
+TREASURY_NAME = b"hive.fund"
+
 PROTO_REF_VOTE_OP = {
     "vote": {
         "voter": "otom",

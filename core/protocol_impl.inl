@@ -12,6 +12,7 @@
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/forward_impacted.hpp>
 #include <hive/protocol/types.hpp>
+#include <hive/protocol/get_config.hpp>
 
 #include <fc/io/json.hpp>
 #include <fc/container/flat.hpp>
@@ -333,6 +334,44 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_minimize_require
       tx, minimize_required_signatures_data.chain_id, minimize_required_signatures_data.available_keys, authorities_map,
       minimize_required_signatures_data.get_witness_key_cb, minimize_required_signatures_data.get_witness_key_fn,
       minimize_required_signatures_data.max_recursion, minimize_required_signatures_data.max_membership, minimize_required_signatures_data.max_account_auths);
+
+    return result;
+    });
+}
+
+template <class FoundationProvider>
+inline
+std::map<std::string, std::string> protocol_impl<FoundationProvider>::cpp_get_hive_protocol_config(const std::string& treasury_name, const std::string& chain_id)
+{
+  return cpp::safe_exception_wrapper([&]() -> std::map<std::string, std::string> {
+    const auto config = hive::protocol::get_config(treasury_name, fc::sha256(chain_id));
+    std::map<std::string, std::string> result;
+    for (const auto& elem : config)
+    {
+      const auto& key = elem.key();
+      const auto& value = elem.value();
+
+      switch (value.get_type())
+      {
+        case fc::variant::int64_type:
+        case fc::variant::uint64_type:
+        case fc::variant::bool_type:
+        case fc::variant::string_type:
+          result.emplace(key, value.as_string());
+          break;
+
+        case fc::variant::object_type:
+        {
+          const auto& v = value.get_object().begin()->value();
+          result.emplace(key, v.as_string());
+          break;
+        }
+
+        default:
+          FC_ASSERT(false, "Unexpected type of value ${type} for ${key}.", ("type", value.get_type()) ("key", key));
+          break;
+      }
+    }
 
     return result;
     });

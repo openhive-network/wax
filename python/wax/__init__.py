@@ -49,6 +49,7 @@ from .wax import (
     estimate_hive_collateral,
     check_memo_for_private_keys,
     minimize_required_signatures,
+    get_hive_protocol_config,
 )
 
 from .wax_result import (
@@ -80,6 +81,7 @@ __all__ = [
     "python_authority",
     "python_authorities",
     "python_minimize_required_signatures_data",
+    "python_price",
     "calculate_transaction_id",
     "calculate_legacy_transaction_id",
     "calculate_sig_digest",
@@ -128,5 +130,5 @@ __all__ = [
     "estimate_hive_collateral",
     "check_memo_for_private_keys",
     "minimize_required_signatures",
-    "python_price",
+    "get_hive_protocol_config",
 ]

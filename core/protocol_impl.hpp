@@ -64,6 +64,11 @@ public:
   */
   std::vector<std::string> cpp_minimize_required_signatures(const std::string& signed_transaction, const minimize_required_signatures_data_t& minimize_required_signatures_data);
 
+  /** Returns map of hive::protocol constants in form:
+  *   constant_name => constant_value as string.
+  */
+  std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& treasury_name, const std::string& chain_id);
+
 };
 
 } /// namespace cpp
