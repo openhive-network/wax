@@ -47,7 +47,7 @@ struct stringifier< fc::string >
 {
   static std::string value( const fc::string& v )
   {
-    return v;
+    return std::string{ v };
   }
 };
 template<>
@@ -55,7 +55,7 @@ struct stringifier< hive::protocol::fixed_string<16> >
 {
   static std::string value( const hive::protocol::fixed_string<16>& v )
   {
-    return v.operator std::string();
+    return std::string{ v };
   }
 };
 template<>
@@ -63,7 +63,7 @@ struct stringifier< hive::protocol::fixed_string<32> >
 {
   static std::string value( const hive::protocol::fixed_string<32>& v )
   {
-    return v.operator std::string();
+    return std::string{ v };
   }
 };
 template<>
@@ -71,7 +71,7 @@ struct stringifier< hive::protocol::json_string >
 {
   static std::string value( const hive::protocol::json_string& v )
   {
-    return v.operator const std::string&();
+    return std::string{ v };
   }
 };
 template<>
@@ -79,7 +79,7 @@ struct stringifier< hive::protocol::public_key_type >
 {
   static std::string value( const hive::protocol::public_key_type& v )
   {
-    return v.operator std::string();
+    return std::string{ v };
   }
 };
 template<>
@@ -87,7 +87,7 @@ struct stringifier< fc::sha256 >
 {
   static std::string value( const fc::sha256& v )
   {
-    return v.operator std::string();
+    return std::string{ v };
   }
 };
 template<>
@@ -95,7 +95,7 @@ struct stringifier< fc::ripemd160 >
 {
   static std::string value( const fc::ripemd160& v )
   {
-    return v.operator std::string();
+    return std::string{ v };
   }
 };
 template<>
