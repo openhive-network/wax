@@ -299,6 +299,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
     .function("cpp_deserialize_transaction", &protocol_wasm::cpp_deserialize_transaction)
     .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
+    .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
