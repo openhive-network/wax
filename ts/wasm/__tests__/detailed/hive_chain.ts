@@ -571,6 +571,14 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("100300");
     });
 
+    test('Should be able to get hive asset with JS Double-precision floating-point format with more decimal places than the precision', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hiveCoins(100.34567).amount;
+      });
+
+      expect(retVal).toBe("100345");
+    });
+
     test('Should be able to get hbd asset with JS Double-precision floating-point format', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         return chain.hbdCoins(100.34567).amount;
@@ -579,12 +587,36 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toBe("100345");
     });
 
+    test('Should be able to get hbd asset with JS Double-precision floating-point format with less decimal places than the precision', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.hbdCoins(100.3).amount;
+      });
+
+      expect(retVal).toBe("100300");
+    });
+
     test('Should be able to get vests asset with JS Double-precision floating-point format', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         return chain.vestsCoins(100).amount;
       });
 
       expect(retVal).toBe("100000000");
+    });
+
+    test('Should be able to get vests asset with JS Double-precision floating-point format with more decimal places than the precision', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.vestsCoins(100.345678910).amount;
+      });
+
+      expect(retVal).toBe("100345678");
+    });
+
+    test('Should be able to get vests asset with JS Double-precision floating-point format with less decimal places than the precision', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        return chain.vestsCoins(100.3).amount;
+      });
+
+      expect(retVal).toBe("100300000");
     });
 
     test('Should be able to get vests asset with JS Double-precision floating-point format near max safe integer (with fractional part)', async ({ waxTest }) => {
