@@ -146,6 +146,38 @@ test.describe('WASM Protocol', () => {
     expect(reqPostingAuth).toBe('taoteh1221');
   });
 
+  test('Should be able to get hive::protocol config', async ({ wasmTest }) => {
+    const hiveProtocolConfig = await wasmTest(({ protocol }) => {
+      const hiveProtocolConfig = protocol.cpp_get_hive_protocol_config("hive.fund", "beeab0de00000000000000000000000000000000000000000000000000000000");
+
+      console.log("hiveProtocolConfig: ", hiveProtocolConfig);
+      console.log("hiveProtocolConfig.size(): ", hiveProtocolConfig.size());
+
+      const hiveProtocolConfigKeys = hiveProtocolConfig.keys();
+
+      console.log("hiveProtocolConfigKeys: ", hiveProtocolConfigKeys);
+
+      const keys: string[] = [];
+      for (let i = 0; i < hiveProtocolConfigKeys.size(); ++i)
+        keys.push(hiveProtocolConfigKeys.get(i) as string);
+
+      console.log("keys: ", keys);
+
+      const retValue: Record<string, string> = {};
+
+      for (const key of keys)
+        retValue[key] = hiveProtocolConfig.get(key) as string;
+
+      console.log("retValue: ", retValue);
+
+      return retValue;
+    });
+
+    expect(hiveProtocolConfig.HBD_SYMBOL).toBe("@@000000013");
+    expect(hiveProtocolConfig.HIVE_DEFAULT_ACCOUNT_SUBSIDY_DECAY).toBe("347321");
+    expect(hiveProtocolConfig.HIVE_INIT_PUBLIC_KEY).toBe("STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX");
+  });
+
   test('Should be able to validate example operation', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, operation) => {
       return protocol.cpp_validate_operation(operation);
