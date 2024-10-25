@@ -344,6 +344,35 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.binHex).toBe('a5c766fc0da60827c9640200046f746f6d076330666633336108657778686e6a626a98083109696e69746d696e65720367746764000000000000002320bcbe00180002000000011f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d145269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58');
   });
 
+  test('Should be able to convert transaction json to binary form', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, transaction) => {
+      return base.convertTransactionToBinaryForm(JSON.parse(transaction));
+    }, transaction);
+
+    expect(retVal).toEqual('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000')
+  });
+
+  test('Should be able to convert binary transaction to json form', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.convertTransactionFromBinaryForm('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000');
+    });
+
+    expect(retVal).toEqual({
+      "expiration": "2021-12-13T11:31:33",
+      "extensions": [],
+      "operations": [{
+        "vote": {
+          "author": "c0ff33a",
+          "permlink": "ewxhnjbj",
+          "voter": "otom",
+          "weight": 2200
+        }
+      }],
+      "ref_block_num": 34559,
+      "ref_block_prefix": 1271006404,
+      "signatures": []
+    });
+  });
 
   test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, base }) => {

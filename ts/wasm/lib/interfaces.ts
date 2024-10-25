@@ -847,6 +847,24 @@ export interface IWaxBaseInterface {
   createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction;
 
   /**
+   * Converts given transaction from Hive API-form JSON to HF26 specific binary form
+   *
+   * @param {ApiTransaction} transaction transaction in Hive API-form JSON
+   *
+   * @returns {THexString} transaction in hexstring
+   */
+  convertTransactionToBinaryForm(transaction: ApiTransaction): THexString;
+
+  /**
+   * Converts given transaction from HF26 specific binary form to Hive API-form JSON
+   *
+   * @param {THexString} transaction transaction in hexstring
+   *
+   * @returns {ApiTransaction} transaction in Hive API-form JSON
+   */
+  convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction;
+
+  /**
    * Deletes the created wax proto_protocol instance
    */
   delete(): void;

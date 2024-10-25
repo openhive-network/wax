@@ -294,6 +294,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_sig_digest", &proto_protocol_wasm::cpp_calculate_sig_digest)
     .function("cpp_calculate_legacy_sig_digest", &proto_protocol_wasm::cpp_calculate_legacy_sig_digest)
     .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
+    .function("cpp_deserialize_transaction", &proto_protocol_wasm::cpp_deserialize_transaction)
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
     .function("cpp_proto_to_legacy_api", &proto_protocol_wasm::cpp_proto_to_legacy_api)
     .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)

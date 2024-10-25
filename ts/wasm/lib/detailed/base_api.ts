@@ -134,6 +134,20 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return props;
   }
 
+  public convertTransactionToBinaryForm(transaction: ApiTransaction): THexString {
+    const tx = this.createTransactionFromJson(transaction);
+
+    const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString()));
+
+    return this.extract(conversionResult);
+  }
+
+  public convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction {
+    const conversionResult = safeWasmCall(() => this.proto.cpp_deserialize_transaction(transaction));
+
+    return JSON.parse(this.extract(conversionResult));
+  }
+
   private naiAssetToLong(amount: number, precision: number): Long {
     let satoshisValue = Long.fromNumber(amount).multiply(10 ** precision);
 
