@@ -16,9 +16,9 @@
     "test": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite --project=wax_testsuite_custom_chain_options --project=wax_regression_tests --project=wax_operation_factories --project=wax_encrypted_operations --project=wax_non_encrypted_operations --project=wax_utils",
     "benchmark": "unset CI && playwright test --workers 1 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "run-s examples:*",
-    "examples:html": "cd ../examples/ts/html && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
-    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install --frozen-lockfile && pnpm run build && cd ../../../ts",
-    "examples:node-app": "cd ../examples/ts/node-app && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts"
+    "examples:html": "cd ../examples/ts/html && pnpm install && pnpm run test && cd ../../../ts",
+    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install && pnpm run build && cd ../../../ts",
+    "examples:node-app": "cd ../examples/ts/node-app && pnpm install && pnpm run test && cd ../../../ts"
   },
   "exports": {
     ".": {
@@ -57,7 +57,7 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.6-rc3",
+    "@hiveio/beekeeper": "1.27.6-rc4",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "events": "^3.3.0",
