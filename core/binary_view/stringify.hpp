@@ -12,7 +12,8 @@ namespace cpp { namespace binary_view {
   template< typename T, class NodeT >
   struct stringifier
   {
-    static_assert( false, "Given type is not supported by binary view stringifier" );
+    // no need to static_assert here - general purpose trait does not contain `stringify` method so, even instantiated, compilation will fail. Otherwise GCC fails trying to generate some "implicit" code for this template.
+    //static_assert( false, "Given type is not supported by binary view stringifier" );
   };
 
   template< typename T >
