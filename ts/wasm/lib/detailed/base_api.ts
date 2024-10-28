@@ -1,7 +1,8 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
-import type { json_price, MainModule, proto_protocol, protocol, result, VectorString, witness_set_properties_data } from "../wax_module";
-import { type ApiOperation, ApiTransaction, type NaiAsset } from "./api";
+import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
+import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data } from "../wax_module";
+import type { ApiOperation, NaiAsset } from "./api";
+import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
 import type { operation, transaction } from "../protocol";
 
@@ -34,6 +35,41 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
     return this.formatter.waxify.bind(this.formatter);
+  }
+
+  public parseBinaryMetadataChildren(data: VectorBinaryDataNode): IBinaryViewNode[] {
+    const offsets: IBinaryViewNode[] = [];
+
+    for(let i = 0; i < data.size(); ++i) {
+      const node = data.get(i) as binary_data_node;
+
+      offsets.push({
+        key: node.key as string,
+        type: node.type as IBinaryViewNode["type"],
+        offset: node.offset,
+        size: node.size,
+        value: (node.value as string).length === 0 ? undefined : node.value as string,
+        length: (node.type === "array" ? node.length : undefined) as IBinaryViewArrayNode["length"],
+        children: node.type === "scalar" ? undefined : this.parseBinaryMetadataChildren(node.children) as any
+      } as IBinaryViewNode);
+    }
+
+    return offsets;
+  };
+
+  public operationBinaryViewMetadata(operation: operation | ApiOperation, isHf26Serialization = true): IBinaryViewOutputData {
+    let result;
+
+    const stringifiedOperation = JSON.stringify(operation);
+    if ("type" in operation)
+      result = safeWasmCall(() => this.protocol.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
+    else
+      result = safeWasmCall(() => this.proto.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
+
+    return {
+      binary: result.binary as string,
+      offsets: this.parseBinaryMetadataChildren(result.offsets) as IBinaryViewNode[]
+    };
   }
 
   public operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName> {

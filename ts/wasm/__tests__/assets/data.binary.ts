@@ -158,6 +158,105 @@ export const binaryDataHf26Vote = [
   }
 ];
 
+const binaryDataHf26TransferOperationBase = (offset = 0) => ([
+  {
+    "key": "type",
+    "type": "scalar",
+    "length": undefined,
+    "children": undefined,
+    "offset": 0 + offset,
+    "size": 1,
+    "value": "transfer_operation"
+  },
+  {
+    "key": "value",
+    "type": "object",
+    "length": undefined,
+    "offset": 1 + offset,
+    "size": 61,
+    "value": "",
+    "children": [
+      {
+        "key": "from",
+        "type": "scalar",
+        "length": undefined,
+        "children": undefined,
+        "offset": 1 + offset,
+        "size": 9,
+        "value": "oneplus7"
+      },
+      {
+        "key": "to",
+        "type": "scalar",
+        "length": undefined,
+        "children": undefined,
+        "offset": 10 + offset,
+        "size": 12,
+        "value": "kryptogames"
+      },
+      {
+        "key": "amount",
+        "type": "object",
+        "length": undefined,
+        "offset": 22 + offset,
+        "size": 12,
+        "value": "",
+        "children": [
+          {
+            "key": "amount",
+            "type": "object",
+            "length": undefined,
+            "offset": 22 + offset,
+            "size": 8,
+            "value": "",
+            "children": [
+              {
+                "key": "value",
+                "type": "scalar",
+                "length": undefined,
+                "children": undefined,
+                "offset": 22 + offset,
+                "size": 8,
+                "value": "300000"
+              }
+            ]
+          },
+          {
+            "key": "symbol",
+            "type": "object",
+            "length": undefined,
+            "offset": 30 + offset,
+            "size": 4,
+            "value": "",
+            "children": [
+              {
+                "key": "asset_num",
+                "type": "scalar",
+                "length": undefined,
+                "children": undefined,
+                "offset": 30 + offset,
+                "size": 4,
+                "value": "3200000035"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "memo",
+        "type": "scalar",
+        "length": undefined,
+        "children": undefined,
+        "offset": 34 + offset,
+        "size": 28,
+        "value": "Roll under 50 4d434bd943616"
+      }
+    ]
+  }
+]);
+
+export const binaryDataHf26TransferOperation = binaryDataHf26TransferOperationBase(0);
+
 export const binaryDataHf26Transfer = [
   {
     "key": "ref_block_num",
@@ -201,102 +300,7 @@ export const binaryDataHf26Transfer = [
         "offset": 11,
         "size": 62,
         "value": "",
-        "children": [
-          {
-            "key": "type",
-            "type": "scalar",
-            "length": undefined,
-            "children": undefined,
-            "offset": 11,
-            "size": 1,
-            "value": "transfer_operation"
-          },
-          {
-            "key": "value",
-            "type": "object",
-            "length": undefined,
-            "offset": 12,
-            "size": 61,
-            "value": "",
-            "children": [
-              {
-                "key": "from",
-                "type": "scalar",
-                "length": undefined,
-                "children": undefined,
-                "offset": 12,
-                "size": 9,
-                "value": "oneplus7"
-              },
-              {
-                "key": "to",
-                "type": "scalar",
-                "length": undefined,
-                "children": undefined,
-                "offset": 21,
-                "size": 12,
-                "value": "kryptogames"
-              },
-              {
-                "key": "amount",
-                "type": "object",
-                "length": undefined,
-                "offset": 33,
-                "size": 12,
-                "value": "",
-                "children": [
-                  {
-                    "key": "amount",
-                    "type": "object",
-                    "length": undefined,
-                    "offset": 33,
-                    "size": 8,
-                    "value": "",
-                    "children": [
-                      {
-                        "key": "value",
-                        "type": "scalar",
-                        "length": undefined,
-                        "children": undefined,
-                        "offset": 33,
-                        "size": 8,
-                        "value": "300000"
-                      }
-                    ]
-                  },
-                  {
-                    "key": "symbol",
-                    "type": "object",
-                    "length": undefined,
-                    "offset": 41,
-                    "size": 4,
-                    "value": "",
-                    "children": [
-                      {
-                        "key": "asset_num",
-                        "type": "scalar",
-                        "length": undefined,
-                        "children": undefined,
-                        "offset": 41,
-                        "size": 4,
-                        "value": "3200000035"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "key": "memo",
-                "type": "scalar",
-                "length": undefined,
-                "children": undefined,
-                "offset": 45,
-                "size": 28,
-                "value": "Roll under 50 4d434bd943616"
-              }
-            ]
-          }
-        ]
+        "children": binaryDataHf26TransferOperationBase(11)
       }
     ]
   },
@@ -319,6 +323,105 @@ export const binaryDataHf26Transfer = [
     "children": []
   }
 ];
+
+const binaryDataLegacyTransferOperationBase = (offset = 0) => ([
+  {
+    "key": "type",
+    "type": "scalar",
+    "offset": 0 + offset,
+    "size": 1,
+    "value": "transfer_operation",
+    "length": undefined,
+    "children": undefined
+  },
+  {
+    "key": "value",
+    "type": "object",
+    "offset": 1 + offset,
+    "size": 65,
+    "value": "",
+    "length": undefined,
+    "children": [
+      {
+        "key": "from",
+        "type": "scalar",
+        "offset": 1 + offset,
+        "size": 9,
+        "value": "oneplus7",
+        "length": undefined,
+        "children": undefined
+      },
+      {
+        "key": "to",
+        "type": "scalar",
+        "offset": 10 + offset,
+        "size": 12,
+        "value": "kryptogames",
+        "length": undefined,
+        "children": undefined
+      },
+      {
+        "key": "amount",
+        "type": "object",
+        "offset": 22 + offset,
+        "size": 16,
+        "value": "",
+        "length": undefined,
+        "children": [
+          {
+            "key": "amount",
+            "type": "object",
+            "offset": 22 + offset,
+            "size": 8,
+            "value": "",
+            "length": undefined,
+            "children": [
+              {
+                "key": "value",
+                "type": "scalar",
+                "offset": 22 + offset,
+                "size": 8,
+                "value": "300000",
+                "length": undefined,
+                "children": undefined
+              }
+            ]
+          },
+          {
+            "key": "symbol",
+            "type": "object",
+            "offset": 30 + offset,
+            "size": 8,
+            "value": "",
+            "length": undefined,
+            "children": [
+              {
+                "key": "asset_num",
+                "type": "scalar",
+                "offset": 30 + offset,
+                "size": 4,
+                "value": "3200000035",
+                "length": undefined,
+                "children": undefined
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "memo",
+        "type": "scalar",
+        "offset": 38 + offset,
+        "size": 28,
+        "value": "Roll under 50 4d434bd943616",
+        "length": undefined,
+        "children": undefined
+      }
+    ]
+  }
+]);
+
+export const binaryDataLegacyTransferOperation = binaryDataLegacyTransferOperationBase(0);
 
 export const binaryDataLegacyTransfer = [
   {
@@ -363,102 +466,7 @@ export const binaryDataLegacyTransfer = [
         "size": 66,
         "value": "",
         "length": undefined,
-        "children": [
-          {
-            "key": "type",
-            "type": "scalar",
-            "offset": 11,
-            "size": 1,
-            "value": "transfer_operation",
-            "length": undefined,
-            "children": undefined
-          },
-          {
-            "key": "value",
-            "type": "object",
-            "offset": 12,
-            "size": 65,
-            "value": "",
-            "length": undefined,
-            "children": [
-              {
-                "key": "from",
-                "type": "scalar",
-                "offset": 12,
-                "size": 9,
-                "value": "oneplus7",
-                "length": undefined,
-                "children": undefined
-              },
-              {
-                "key": "to",
-                "type": "scalar",
-                "offset": 21,
-                "size": 12,
-                "value": "kryptogames",
-                "length": undefined,
-                "children": undefined
-              },
-              {
-                "key": "amount",
-                "type": "object",
-                "offset": 33,
-                "size": 16,
-                "value": "",
-                "length": undefined,
-                "children": [
-                  {
-                    "key": "amount",
-                    "type": "object",
-                    "offset": 33,
-                    "size": 8,
-                    "value": "",
-                    "length": undefined,
-                    "children": [
-                      {
-                        "key": "value",
-                        "type": "scalar",
-                        "offset": 33,
-                        "size": 8,
-                        "value": "300000",
-                        "length": undefined,
-                        "children": undefined
-                      }
-                    ]
-                  },
-                  {
-                    "key": "symbol",
-                    "type": "object",
-                    "offset": 41,
-                    "size": 8,
-                    "value": "",
-                    "length": undefined,
-                    "children": [
-                      {
-                        "key": "asset_num",
-                        "type": "scalar",
-                        "offset": 41,
-                        "size": 4,
-                        "value": "3200000035",
-                        "length": undefined,
-                        "children": undefined
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "key": "memo",
-                "type": "scalar",
-                "offset": 49,
-                "size": 28,
-                "value": "Roll under 50 4d434bd943616",
-                "length": undefined,
-                "children": undefined
-              }
-            ]
-          }
-        ]
+        "children": binaryDataLegacyTransferOperationBase(11)
       }
     ]
   },

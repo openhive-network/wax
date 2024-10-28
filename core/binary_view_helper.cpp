@@ -294,6 +294,29 @@ binary_data generate_binary_transaction_metadata( const hive::protocol::signed_t
   return result;
 }
 
+binary_data generate_binary_operation_metadata( const hive::protocol::operation& op, bool use_hf26_serialization )
+{
+  const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
+
+  hive::protocol::serialization_mode_controller::mode_guard guard( serialization_type );
+  hive::protocol::serialization_mode_controller::set_pack( serialization_type );
+
+  binary_data result;
+  result.binary = fc::to_hex( fc::raw::pack_to_vector( op ) );
+
+  std::vector< binary_data_node > nodes;
+
+  uint32_t offset = 0;
+
+  binary_view_visitor< hive::protocol::operation >{ nodes, offset, op }.add( "", op );
+
+  FC_ASSERT( nodes.size() == 1, "Operation (static variant) should have only one child node - internal error" );
+
+  result.offsets = nodes[0].children;
+
+  return result;
+}
+
 std::string serialize_transaction( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization )
 {
   const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;

@@ -10,7 +10,6 @@ import { WaxError } from "../errors.js";
 import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
-import type { binary_data_node, VectorBinaryDataNode } from "../wax_module.js";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -82,29 +81,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   private getBinaryViewMetadataImpl(isHf26Serialization: boolean): IBinaryViewOutputData {
     const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString(), isHf26Serialization));
 
-    const parseChildren = (data: VectorBinaryDataNode) => {
-      const offsets: Array<Partial<binary_data_node>> = [];
-
-      for(let i = 0; i < data.size(); ++i) {
-        const node = data.get(i) as binary_data_node;
-
-        offsets.push({
-          key: node.key as string,
-          type: node.type as string,
-          offset: node.offset,
-          size: node.size,
-          value: (node.value as string).length === 0 ? undefined : node.value as string,
-          length: node.type === "array" ? node.length : undefined,
-          children: node.type === "scalar" ? undefined : parseChildren(node.children) as any
-        });
-      }
-
-      return offsets;
-    };
-
     return {
       binary: binaryData.binary as string,
-      offsets: parseChildren(binaryData.offsets) as IBinaryViewNode[]
+      offsets: this.api.parseBinaryMetadataChildren(binaryData.offsets) as IBinaryViewNode[]
     };
   }
 

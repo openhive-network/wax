@@ -79,6 +79,16 @@ binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_m
 
 template <class FoundationProvider>
 inline
+binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_operation_metadata(const std::string& operation, bool use_hf26_serialization) const
+{
+  fc::variant _v = fc::json::from_string(operation, fc::json::format_validation_mode::full);
+  hive::protocol::operation _operation = _v.as<hive::protocol::operation>();
+
+  return cpp::generate_binary_operation_metadata(_operation, use_hf26_serialization);
+}
+
+template <class FoundationProvider>
+inline
 result protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
 {
   return method_wrapper([&](result&)

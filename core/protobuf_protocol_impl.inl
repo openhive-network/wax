@@ -494,6 +494,17 @@ binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_transac
 }
 
 template <class FoundationProvider>
+binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_operation_metadata(const std::string& operation, bool use_hf26_serialization) const
+{
+  protocol_impl<FoundationProvider> provider;
+
+  return provider.cpp_generate_binary_operation_metadata(
+    cpp_proto_to_api_impl(operation),
+    use_hf26_serialization
+  );
+}
+
+template <class FoundationProvider>
 result proto_protocol_impl<FoundationProvider>::cpp_validate_operation(const std::string& operation)
 {
   return method_wrapper([&](result& _result)

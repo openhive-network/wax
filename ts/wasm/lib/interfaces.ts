@@ -549,6 +549,16 @@ export interface IWaxBaseInterface {
   operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName>;
 
   /**
+   * Retrieves given operation binary view packed "AST" data (in same form as in the block_log)
+   *
+   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf opereation or operation returned from the Hive Nodes API
+   * @returns {?isHf26Serialization} A flag indicating if serialization should be done in HF26 form or legacy form (defaults to `true` - hf26 type)
+   *
+   * @return {IBinaryViewOutputData} binary view metadata
+   */
+  operationBinaryViewMetadata(operation: operation | ApiOperation, isHf26Serialization?: boolean): IBinaryViewOutputData;
+
+  /**
    * Retrieves the bundled package version string
    *
    * @returns {string} application version

@@ -2,9 +2,9 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction } from "../assets/data.protocol";
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation } from "../assets/data.protocol";
 import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
-import { binaryDataHf26Transfer, binaryDataHf26Vote, binaryDataLegacyTransfer } from '../assets/data.binary';
+import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
 
 let browser!: ChromiumBrowser;
 
@@ -99,6 +99,37 @@ test.describe('WASM Protocol', () => {
 
     expect(retVal.binary).toBe('a70783341cd8b4564d650102086f6e65706c7573370b6b727970746f67616d6573e09304000000000003535445454d00001b526f6c6c20756e64657220353020346434333462643934333631360000');
     expect(retVal.offsets).toStrictEqual(binaryDataLegacyTransfer);
+  });
+  test('Should be able to generate binary metadata information using hf26 pack type - single transfer operation', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }, operation, parseChildrenFn) => {
+      const values = protocol.cpp_generate_binary_operation_metadata(JSON.stringify(operation), true);
+
+      const parseBinaryChildren = eval(parseChildrenFn);
+
+      return {
+        binary: values.binary,
+        offsets: parseBinaryChildren(values.offsets)
+      }
+    }, transfer_operation, parseBinaryChildren.toString());
+
+    expect(retVal.binary).toBe('02086f6e65706c7573370b6b727970746f67616d6573e0930400000000002320bcbe1b526f6c6c20756e6465722035302034643433346264393433363136');
+    expect(retVal.offsets).toStrictEqual(binaryDataHf26TransferOperation);
+  });
+
+  test('Should be able to generate binary metadata information using legacy pack type - single transfer operation', async ({ wasmTest }) => {
+    const retVal = await wasmTest.dynamic(({ protocol }, operation, parseChildrenFn) => {
+      const values = protocol.cpp_generate_binary_operation_metadata(JSON.stringify(operation), false);
+
+      const parseBinaryChildren = eval(parseChildrenFn);
+
+      return {
+        binary: values.binary,
+        offsets: parseBinaryChildren(values.offsets)
+      }
+    }, transfer_operation, parseBinaryChildren.toString());
+
+    expect(retVal.binary).toBe('02086f6e65706c7573370b6b727970746f67616d6573e09304000000000003535445454d00001b526f6c6c20756e6465722035302034643433346264393433363136');
+    expect(retVal.offsets).toStrictEqual(binaryDataLegacyTransferOperation);
   });
 
   test('Should be able to generate random private key using password', async ({ wasmTest }) => {
