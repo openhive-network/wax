@@ -9,7 +9,7 @@ set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
 
-#SET( CMAKE_VERBOSE_MAKEFILE ON )
+SET( CMAKE_VERBOSE_MAKEFILE ON )
 
 cmake_policy(SET CMP0057 NEW)
 
@@ -34,7 +34,7 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
-TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions )
+TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall )
 TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
   -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
   -sEXCEPTION_STACK_TRACES=1
