@@ -102,19 +102,10 @@ namespace cpp { namespace binary_view {
     }
   };
 
-  template<>
-  struct stringifier< hive::protocol::fixed_string< 16 >, scalar_node >
+  template<typename StorageT>
+  struct stringifier< hive::protocol::fixed_string_impl< StorageT >, scalar_node >
   {
-    static std::string stringify( const hive::protocol::fixed_string< 16 >& v )
-    {
-      return std::string{ v };
-    }
-  };
-
-  template<>
-  struct stringifier< hive::protocol::fixed_string< 32 >, scalar_node >
-  {
-    static std::string stringify( const hive::protocol::fixed_string< 32 >& v )
+    static std::string stringify( const hive::protocol::fixed_string_impl< StorageT >& v )
     {
       return std::string{ v };
     }

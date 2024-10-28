@@ -85,17 +85,10 @@ namespace cpp { namespace binary_view {
     using node = scalar_node;
   };
 
-  template<bool IsScalar>
-  struct node_type< hive::protocol::fixed_string< 16 >, IsScalar >
+  template<bool IsScalar, typename StorageT>
+  struct node_type< hive::protocol::fixed_string_impl< StorageT >, IsScalar >
   {
-    using type = hive::protocol::fixed_string< 16 >;
-    using node = scalar_node;
-  };
-
-  template<bool IsScalar>
-  struct node_type< hive::protocol::fixed_string< 32 >, IsScalar >
-  {
-    using type = hive::protocol::fixed_string< 32 >;
+    using type = hive::protocol::fixed_string_impl< StorageT >;
     using node = scalar_node;
   };
 
