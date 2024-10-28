@@ -45,6 +45,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   public constructor(
     public readonly api: WaxBaseApi,
     taposBlockId: TBlockHash | string | transaction,
+    private chainHeadBlockTime?: Date,
     expirationTime?: TTimestamp) {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
@@ -287,7 +288,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   private applyExpiration(): void {
-    const expiration = calculateExpiration(this.expirationTime);
+    const expiration = calculateExpiration(this.chainHeadBlockTime, this.expirationTime);
 
     if(expiration instanceof Date)
       this.target.expiration = expiration.toISOString().slice(0, -5);
