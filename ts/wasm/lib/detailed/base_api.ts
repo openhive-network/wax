@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
 import type { json_price, MainModule, proto_protocol, protocol, result, VectorString, witness_set_properties_data } from "../wax_module";
-import type { ApiOperation, ApiTransaction, NaiAsset } from "./api";
+import { type ApiOperation, ApiTransaction, type NaiAsset } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
 import type { operation, transaction } from "../protocol";
 
@@ -13,6 +13,8 @@ import Long from "long";
 import { WaxFormatter } from "./formatters/waxify.js";
 
 import { isNaiAsset } from "./util/asset_util.js";
+import { plainToInstance } from "class-transformer";
+import { validateSync } from "class-validator";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -135,6 +137,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public convertTransactionToBinaryForm(transaction: ApiTransaction): THexString {
+    const validationErrors = validateSync(plainToInstance(ApiTransaction, transaction));
+
+    if(validationErrors.length > 0)
+      throw new WaxError(`Transaction validation failed: ${validationErrors.join(", ")}`);
+
     const tx = this.createTransactionFromJson(transaction);
 
     const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString()));
@@ -143,7 +150,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction {
-    const conversionResult = safeWasmCall(() => this.proto.cpp_deserialize_transaction(transaction));
+    const conversionResult = safeWasmCall(() => this.protocol.cpp_deserialize_transaction(transaction));
+
+    const validationErrors = validateSync(plainToInstance(ApiTransaction, JSON.parse(this.extract(conversionResult))));
+
+    if(validationErrors.length > 0)
+      throw new WaxError(`Transaction validation failed: ${validationErrors.join(", ")}`);
 
     return JSON.parse(this.extract(conversionResult));
   }

@@ -7,6 +7,7 @@ import fs from "fs";
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
+import { ApiTransaction } from '../../dist/bundle/index-full';
 
 let browser!: ChromiumBrowser;
 
@@ -352,6 +353,32 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal).toEqual('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000')
   });
 
+  test('Should not be able to convert transaction json to binary form because of invalid input type', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      try {
+        return base.convertTransactionToBinaryForm({
+          "expiration": "2021-12-13T11:31:33",
+          "extensions": [],
+          "operations": [{
+            "vote": {
+              "author": "c0ff33a",
+              "permlink": "ewxhnjbj",
+              "voter": "otom",
+              "weight": 2200
+            }
+          }],
+          "ref_block_num": 34559,
+          "ref_block_prefix": 1271006404,
+          "signatures": []
+        } as unknown as ApiTransaction); // Invalid input type
+      } catch (error) {
+        return false;
+      }
+    });
+
+    expect(retVal).toBeFalsy();
+  });
+
   test('Should be able to convert binary transaction to json form', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.convertTransactionFromBinaryForm('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000');
@@ -361,7 +388,8 @@ test.describe('Wax object interface foundation tests', () => {
       "expiration": "2021-12-13T11:31:33",
       "extensions": [],
       "operations": [{
-        "vote": {
+        "type": "vote_operation",
+        "value": {
           "author": "c0ff33a",
           "permlink": "ewxhnjbj",
           "voter": "otom",
@@ -372,6 +400,14 @@ test.describe('Wax object interface foundation tests', () => {
       "ref_block_prefix": 1271006404,
       "signatures": []
     });
+  });
+
+  test('Should be able to call convertTransactionToBinaryForm on object received from convertTransactionFromBinaryForm', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.convertTransactionToBinaryForm(base.convertTransactionFromBinaryForm('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000'));
+    });
+
+    expect(retVal).toEqual('ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000');
   });
 
   test('Should be able to create a recurrent transfer with underlying extensions using transaction interface', async ({ waxTest }) => {
