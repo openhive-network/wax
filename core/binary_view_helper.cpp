@@ -131,6 +131,17 @@ public:
     nodes.emplace_back( child_node );
   }
 
+  // Ignore default FC_REFLECT behavior and apply default scalar logic for asset symbol type
+  // This will use stringifier for asset symbol type which handles pack type (legacy/hf26)
+  void add( const char* name, const hive::protocol::asset_symbol_type& v ) const
+  {
+    add_scalar( name, v );
+  }
+  void add( const char* name, const hive::protocol::legacy_hive_asset_symbol_type& ) const
+  {
+    add_scalar( name, HIVE_SYMBOL );
+  }
+
   template< typename M >
   void add_scalar( const char* name, const M& v ) const
   {

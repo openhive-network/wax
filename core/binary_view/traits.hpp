@@ -142,9 +142,9 @@ namespace cpp { namespace binary_view {
   };
 
   template<bool IsScalar>
-  struct node_type< hive::protocol::legacy_hive_asset_symbol_type, IsScalar >
+  struct node_type< hive::protocol::asset_symbol_type, IsScalar >
   {
-    using type = hive::protocol::legacy_hive_asset_symbol_type;
+    using type = hive::protocol::asset_symbol_type;
     using node = scalar_node;
   };
 }} // namespace cpp::binary_view

@@ -175,11 +175,28 @@ namespace cpp { namespace binary_view {
   };
 
   template<>
-  struct stringifier< hive::protocol::legacy_hive_asset_symbol_type, scalar_node >
+  struct stringifier< hive::protocol::asset_symbol_type, scalar_node >
   {
-    static std::string stringify( const hive::protocol::legacy_hive_asset_symbol_type& v )
+    inline static std::string HBD_STR{ "HBD" };
+    inline static std::string HIVE_STR{ "HIVE" };
+    inline static std::string VESTS_STR{ "VESTS" };
+
+    static std::string stringify( const hive::protocol::asset_symbol_type& v )
     {
-      return fc::to_string( v.ser );
+      if (hive::protocol::serialization_mode_controller::get_current_pack() == hive::protocol::pack_type::legacy)
+        switch (v.asset_num)
+        {
+          case HIVE_ASSET_NUM_HIVE:
+            return HIVE_STR;
+          case HIVE_ASSET_NUM_HBD:
+            return HBD_STR;
+          case HIVE_ASSET_NUM_VESTS:
+            return VESTS_STR;
+          default:
+            FC_ASSERT( false, "Cannot serialize unknown asset symbol" );
+        }
+      else
+        return v.to_nai_string();
     }
   };
 }} // namespace cpp::binary_view

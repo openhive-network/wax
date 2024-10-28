@@ -223,22 +223,12 @@ const binaryDataHf26TransferOperationBase = (offset = 0) => ([
           },
           {
             "key": "symbol",
-            "type": "object",
+            "type": "scalar",
             "length": undefined,
             "offset": 30 + offset,
             "size": 4,
-            "value": "",
-            "children": [
-              {
-                "key": "asset_num",
-                "type": "scalar",
-                "length": undefined,
-                "children": undefined,
-                "offset": 30 + offset,
-                "size": 4,
-                "value": "3200000035"
-              }
-            ]
+            "value": "@@000000021",
+            "children": undefined
           }
         ]
       },
@@ -389,22 +379,12 @@ const binaryDataLegacyTransferOperationBase = (offset = 0) => ([
           },
           {
             "key": "symbol",
-            "type": "object",
+            "type": "scalar",
             "offset": 30 + offset,
             "size": 8,
-            "value": "",
+            "value": "HIVE",
             "length": undefined,
-            "children": [
-              {
-                "key": "asset_num",
-                "type": "scalar",
-                "offset": 30 + offset,
-                "size": 4,
-                "value": "3200000035",
-                "length": undefined,
-                "children": undefined
-              }
-            ]
+            "children": undefined
           }
         ]
       },
