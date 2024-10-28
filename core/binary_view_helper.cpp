@@ -98,7 +98,7 @@ public:
       node.children = child_nodes[0].children;
     }
 
-    nodes.emplace_back( node );
+    nodes.emplace_back( std::move(node) );
   }
 
   template< typename... Ts >
@@ -123,12 +123,12 @@ public:
     binary_data_node valuenode{
       std::string{ "value" }, binary_view::object_node::name, child_offset + whichsize, valuesize, "", 0, nodes_fwd
     };
-    child_nodes.emplace_back( valuenode );
+    child_nodes.emplace_back( std::move(valuenode) );
 
     binary_data_node child_node{
       name, binary_view::object_node::name, offset, whichsize + valuesize, "", 0, child_nodes
     };
-    nodes.emplace_back( child_node );
+    nodes.emplace_back( std::move(child_node) );
   }
 
   // Ignore default FC_REFLECT behavior and apply default scalar logic for asset symbol type
@@ -148,7 +148,7 @@ public:
     binary_data_node node{
       std::string{ name }, binary_view::scalar_node::name, offset, push_offset( v ), binary_view::stringifier< M, binary_view::scalar_node >::stringify( v )
     };
-    nodes.emplace_back( node );
+    nodes.emplace_back( std::move(node) );
   }
 
   template< typename M >
@@ -156,6 +156,8 @@ public:
   { /* Dynamic size */
     uint32_t array_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size() } );
     std::vector< binary_data_node > array_nodes;
+    array_nodes.reserve(v.size());
+
     size_t i = 0;
     for( const auto& item: v )
     {
@@ -171,7 +173,7 @@ public:
         binary_data_node node{
           std::to_string( i ), binary_view::object_node::name, array_offset, item_size, "", 0, item_nodes
         };
-        array_nodes.emplace_back( node );
+        array_nodes.emplace_back( std::move(node) );
       }
       else /* Rest of the cases has to handle offsets and pushing elements to arrays by themselves*/
         binary_view_visitor< typename M::value_type >{ array_nodes, item_offset, item }.add( std::to_string( i ).c_str(), item );
@@ -192,6 +194,8 @@ public:
     /* Dynamic size */
     uint32_t object_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.size() } );
     std::vector< binary_data_node > object_nodes;
+
+    object_nodes.reserve(v.size());
 
     for( const auto& [key, value]: v )
     {
@@ -218,7 +222,7 @@ public:
         node.children.clear();
       }
 
-      object_nodes.emplace_back( node );
+      object_nodes.emplace_back( std::move(node) );
 
       object_offset += nested_offset;
     }
@@ -226,7 +230,7 @@ public:
     binary_data_node node{
       std::string{ name }, binary_view::object_node::name, offset, push_offset( v ), std::string{ "" }, 0, object_nodes
     };
-    nodes.emplace_back( node );
+    nodes.emplace_back( std::move(node) );
   }
 
   template <typename M>
@@ -260,7 +264,7 @@ public:
       binary_data_node child_node{
         std::string{ key }, binary_view::object_node::name, offset, push_offset( value ), "", 0, child_nodes
       };
-      nodes.emplace_back( child_node );
+      nodes.emplace_back( std::move(child_node));
     }
     else
     {
