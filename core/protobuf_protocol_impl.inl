@@ -483,12 +483,13 @@ std::vector<std::string> proto_protocol_impl<FoundationProvider>::cpp_transactio
 }
 
 template <class FoundationProvider>
-binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction) const
+binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization) const
 {
   protocol_impl<FoundationProvider> provider;
 
   return provider.cpp_generate_binary_transaction_metadata(
-    cpp_proto_to_api_impl(transaction)
+    cpp_proto_to_api_impl(transaction),
+    use_hf26_serialization
   );
 }
 

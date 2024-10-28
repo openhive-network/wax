@@ -273,10 +273,15 @@ uint32_t static_variant_visitor::operator()( const T& v ) const
   return binary_view_visitor< T >::get_size( v );
 }
 
-binary_data generate_binary_transaction_metadata( const hive::protocol::signed_transaction& tx )
+binary_data generate_binary_transaction_metadata( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization )
 {
+  const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
+
+  hive::protocol::serialization_mode_controller::mode_guard guard( serialization_type );
+  hive::protocol::serialization_mode_controller::set_pack( serialization_type );
+
   binary_data result;
-  result.binary = serialize_transaction( tx );
+  result.binary = serialize_transaction( tx, use_hf26_serialization );
 
   std::vector< binary_data_node > nodes;
 
@@ -289,10 +294,12 @@ binary_data generate_binary_transaction_metadata( const hive::protocol::signed_t
   return result;
 }
 
-std::string serialize_transaction( const hive::protocol::signed_transaction& tx )
+std::string serialize_transaction( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization )
 {
-  hive::protocol::serialization_mode_controller::mode_guard guard( hive::protocol::transaction_serialization_type::hf26 );
-  hive::protocol::serialization_mode_controller::set_pack( hive::protocol::transaction_serialization_type::hf26 );
+  const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
+
+  hive::protocol::serialization_mode_controller::mode_guard guard( serialization_type );
+  hive::protocol::serialization_mode_controller::set_pack( serialization_type );
 
   return fc::to_hex( fc::raw::pack_to_vector( tx ) );
 }

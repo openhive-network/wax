@@ -272,6 +272,15 @@ interface ITransactionBase {
   get binaryViewMetadata(): IBinaryViewOutputData;
 
   /**
+   * Retrieves transaction binary view packed "AST" data (in same form as in the block_log) (legacy serialization form is used).
+   *
+   * @return {IBinaryViewOutputData} binary view metadata
+   *
+   * @deprecated
+   */
+  get legacy_binaryViewMetadata(): IBinaryViewOutputData;
+
+  /**
    * Fills up constructed transaction object basing on preconfigured TAPOS. Also applies the transaction expiration time.
    * @returns {transaction} protobuf transaction object
    */

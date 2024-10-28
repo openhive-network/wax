@@ -68,13 +68,13 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_transaction_get_
 
 template <class FoundationProvider>
 inline
-binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction) const
+binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization) const
 {
   fc::variant _v = fc::json::from_string(transaction, fc::json::format_validation_mode::full);
 
   hive::protocol::signed_transaction _transaction = _v.as<hive::protocol::signed_transaction>();
 
-  return cpp::generate_binary_transaction_metadata(_transaction);
+  return cpp::generate_binary_transaction_metadata(_transaction, use_hf26_serialization);
 }
 
 template <class FoundationProvider>

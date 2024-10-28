@@ -79,8 +79,8 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return keys;
   }
 
-  public get binaryViewMetadata(): IBinaryViewOutputData {
-    const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString()));
+  private getBinaryViewMetadataImpl(isHf26Serialization: boolean): IBinaryViewOutputData {
+    const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString(), isHf26Serialization));
 
     const parseChildren = (data: VectorBinaryDataNode) => {
       const offsets: Array<Partial<binary_data_node>> = [];
@@ -106,6 +106,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
       binary: binaryData.binary as string,
       offsets: parseChildren(binaryData.offsets) as IBinaryViewNode[]
     };
+  }
+
+  public get binaryViewMetadata(): IBinaryViewOutputData {
+    return this.getBinaryViewMetadataImpl(true);
+  }
+
+  public get legacy_binaryViewMetadata(): IBinaryViewOutputData {
+    return this.getBinaryViewMetadataImpl(false);
   }
 
   public get signatureKeys(): Array<THexString> {
