@@ -16,13 +16,21 @@ import { iterate } from "./util/iterate.js";
 import { objectToQueryString } from "./util/query_string";
 import { Transaction } from "./transaction.js";
 
+import { dateFromString } from "./util/expiration_parser.js";
+
 import Long from "long";
+import { DEFAULT_WAX_OPTIONS } from "./base";
 
 export enum EManabarType {
   UPVOTE = 0,
   DOWNVOTE = 1,
   RC = 2
 }
+
+type TChainReferenceData = {
+  head_block_id: TBlockHash,
+  head_block_time: Date
+};
 
 type TRequestInterceptor = (data: IRequestOptions) => IRequestOptions;
 type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetailedResponseData<any>;
@@ -175,7 +183,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   private localRestTypes = {} as typeof HiveRestApiTypes;
 
-  private taposCache: TBlockHash = '';
+  private taposCache: TChainReferenceData = { head_block_id: '', head_block_time: new Date(Date.now()) };
   private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
 
   private static readonly EndpointUrlKey = "endpointUrl";
@@ -384,18 +392,23 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public async createTransaction(expirationTime?: TTimestamp): Promise<ITransaction> {
-    const head_block_id = await this.acquireTaposData(3000);
+    const chainReferenceData = await this.acquireChainReferenceData(3000);
 
-    const builder = super.createTransactionWithTaPoS(head_block_id, expirationTime ?? "+1m");
+    /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
+     *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
+    */
+    const expirationRefTime = this.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
+
+    const builder = super.createTransactionWithChainReferenceData(chainReferenceData.head_block_id, expirationRefTime, expirationTime ?? "+1m");
 
     return builder;
   }
 
-  private async acquireTaposData(taposLiveness: number): Promise<TBlockHash> {
+  private async acquireChainReferenceData(taposLiveness: number): Promise<TChainReferenceData> {
     const now = Date.now();
     if ((now - this.lastTaposCacheUpdate) >= taposLiveness) {
-      const { head_block_id } = await this.api.database_api.get_dynamic_global_properties({});
-      this.taposCache = head_block_id;
+      const { head_block_id, time } = await this.api.database_api.get_dynamic_global_properties({});
+      this.taposCache = { head_block_id: head_block_id, head_block_time: dateFromString(time) };
       this.lastTaposCacheUpdate = now;
     }
 
