@@ -3,8 +3,11 @@
 
 #include <hive/protocol/misc_utilities.hpp>
 #include <hive/protocol/types_fwd.hpp>
+#include <hive/protocol/types.hpp>
 
 #include <fc/crypto/hex.hpp>
+#include <fc/crypto/sha256.hpp>
+#include <fc/crypto/ripemd160.hpp>
 #include <fc/io/iobuffer.hpp>
 #include <fc/io/raw_fwd.hpp>
 #include <fc/io/varint.hpp>
@@ -56,11 +59,83 @@ struct stringifier< hive::protocol::fixed_string<16> >
   }
 };
 template<>
+struct stringifier< hive::protocol::fixed_string<32> >
+{
+  static std::string value( const hive::protocol::fixed_string<32>& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< hive::protocol::json_string >
+{
+  static std::string value( const hive::protocol::json_string& v )
+  {
+    return v.operator const std::string&();
+  }
+};
+template<>
+struct stringifier< hive::protocol::public_key_type >
+{
+  static std::string value( const hive::protocol::public_key_type& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< fc::sha256 >
+{
+  static std::string value( const fc::sha256& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
+struct stringifier< fc::ripemd160 >
+{
+  static std::string value( const fc::ripemd160& v )
+  {
+    return v.operator std::string();
+  }
+};
+template<>
 struct stringifier< fc::array< unsigned char, 65 > >
 {
   static std::string value( const fc::array< unsigned char, 65 >& v )
   {
     return fc::to_hex( fc::raw::pack_to_vector( v ) );
+  }
+};
+template<>
+struct stringifier< hive::protocol::legacy_hive_asset_symbol_type >
+{
+  static std::string value( const hive::protocol::legacy_hive_asset_symbol_type& v )
+  {
+    return fc::to_string(v.ser);
+  }
+};
+template<>
+struct stringifier< std::vector< char > >
+{
+  static std::string value( const std::vector< char >& v )
+  {
+    return fc::to_hex( v );
+  }
+};
+template<typename T>
+struct stringifier< fc::safe< T > >
+{
+  static std::string value( const fc::safe< T >& v )
+  {
+    return stringifier< T >::value( v.value );
+  }
+};
+template<>
+struct stringifier< fc::time_point_sec >
+{
+  static std::string value( const fc::time_point_sec& v )
+  {
+    return v.to_iso_string();
   }
 };
 template< typename T >
@@ -100,7 +175,8 @@ struct is_hive_array< fc::flat_set<T>> : public std::true_type {};
 template<typename T>
 struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
 
-#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( ... )                                           \
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( template_str, ... )                                           \
+  template_str \
   void add( const char* name, const __VA_ARGS__ & v ) const                                                   \
   {                                                                                            \
     binary_data_node node{                                                                     \
@@ -108,7 +184,11 @@ struct is_hive_array< ::flat_set_ex<T>> : public std::true_type {};
     };                                                                                         \
     nodes.emplace_back( node );                                                                \
   }                                                                                            \
+  template_str \
   void __unused_scalar_( __VA_ARGS__ ) const
+
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( ... ) CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( template<typename M>, __VA_ARGS__ )
+#define CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( ... ) CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL( , __VA_ARGS__)
 
 #define CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ... ) \
   template< typename M > \
@@ -209,18 +289,49 @@ public:
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::string );
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<16> ); // account_name_type
   CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::array< unsigned char, 65 > ); // compact_signature
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::time_point_sec );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::json_string );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::public_key_type );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( std::vector<char> );
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::fixed_string<32> ); // custom_id_type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::sha256 ); // digest type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( fc::ripemd160 ); // block_id_type
+  CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR( hive::protocol::legacy_hive_asset_symbol_type );
+
+  CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR( fc::safe<M> );
 
   // Array types:
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( std::vector<M> );
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( fc::flat_set<M> );
   CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY( ::flat_set_ex<M> );
 
+  // Object types:
+
   // Other types:
-  void add( const char* name, const fc::time_point_sec& v ) const
+  template< typename M >
+  void add( const char* name, const fc::optional< M >& v ) const
   {
+    static_assert(!is_hive_array< M >::value, "We currently do not support arrays in optional types when converting to binary view");
+
+    uint32_t child_offset = offset + get_size( fc::unsigned_int{ (uint32_t) v.valid() } );
+    std::vector< binary_data_node > child_nodes;
+
     binary_data_node node{
-      std::string{ name }, SCALAR_TYPE, offset, push_offset( v ), v.to_iso_string()
+      std::string{ name }, SCALAR_TYPE, offset, push_offset(v), std::string{ "" }, 0, child_nodes
     };
+
+    if(v.valid())
+    {
+      binary_view_visitor< M >{ child_nodes, child_offset, *v }.add(name, *v);
+
+      FC_ASSERT(child_nodes.size() == 1, "Optional type should have only one child node - internal error");
+
+      node.value = child_nodes[0].value;
+      node.length = child_nodes[0].length;
+      node.type = child_nodes[0].type;
+      node.children = child_nodes[0].children;
+    }
+
     nodes.emplace_back( node );
   }
 
@@ -234,7 +345,7 @@ public:
     uint32_t whichsize = get_size( fc::unsigned_int{ (uint32_t) v.which() } );
 
     binary_data_node whichnode{
-      std::string{ "type" }, SCALAR_TYPE, child_offset, whichsize, v.get_stored_type_name( true )
+      std::string{ "type" }, SCALAR_TYPE, offset, whichsize, v.get_stored_type_name( true )
     };
     child_nodes.emplace_back( whichnode );
 
@@ -244,14 +355,9 @@ public:
     uint32_t valuesize = v.visit( static_variant_visitor{ nodes_fwd, offset_fwd } );
 
     binary_data_node valuenode{
-      std::string{ "value" }, OBJECT_TYPE, child_offset + whichsize, valuesize, "", 0, nodes_fwd
+      std::string{ "value" }, OBJECT_TYPE, offset + whichsize, valuesize, "", 0, nodes_fwd
     };
-    child_nodes.emplace_back( valuenode );
-
-    binary_data_node child_node{
-      name, OBJECT_TYPE, offset, offset + whichsize + valuesize, "", 0, child_nodes
-    };
-    nodes.emplace_back( child_node );
+    nodes.emplace_back( valuenode );
   }
 
   template< typename M >
@@ -271,6 +377,8 @@ public:
 
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_ARRAY
 #undef CPP_BINARY_VIEW_VISITOR_REGISTER_SCALAR
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR
+#undef CPP_BINARY_VIEW_VISITOR_REGISTER_TEMPLATIZED_SCALAR_IMPL
 
 template< typename T >
 uint32_t static_variant_visitor::operator()( const T& v ) const
