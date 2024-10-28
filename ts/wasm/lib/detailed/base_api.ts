@@ -300,8 +300,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return Transaction.fromApi(this, transactionObject);
   }
 
+  public createTransactionWithChainReferenceData(taposBlockId: TBlockHash, chainHeadBlockTime?: Date, expirationTime?: TTimestamp): ITransaction {
+    return new Transaction(this, taposBlockId, chainHeadBlockTime, expirationTime);
+  }
+
   public createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction {
-    return new Transaction(this, taposBlockId, expirationTime);
+    return new Transaction(this, taposBlockId, undefined, expirationTime);
   }
 
   private getNaiAssetForAssetName(assetName: EAssetName, assetSource: TNaiAssetConvertible): NaiAsset {
