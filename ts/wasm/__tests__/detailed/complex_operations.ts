@@ -543,7 +543,7 @@ test.describe('Wax complex operation tests', () => {
         creator: 'alice',
         daily_pay: '1.000 HBD',
         extensions: [[
-          'update_proposal_end_date',
+          1,
           {
             end_date: '2023-03-14T00:00:00'
           }
