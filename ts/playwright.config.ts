@@ -31,6 +31,11 @@ export default defineConfig<IWaxedTest>({
       testMatch: "regression_hive_operations*"
     },
     {
+      name: "healthchecker_tests",
+      testDir: "./wasm/dist",
+      testMatch: "healthchecks*"
+    },
+    {
       name: "wax_testsuite_protocol_benchmarks",
       testDir: "./wasm/dist",
       testMatch: "protocol_benchmarks*"

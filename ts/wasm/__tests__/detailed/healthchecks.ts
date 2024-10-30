@@ -89,6 +89,41 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal).toStrictEqual("https://api.syncad.com");
    });
 
+   test('Should be able to handle multithreaded calls - should not exceed the timeout', async ({ waxTest }) => {
+    const testEndpoint = "https://api.hive.blog";
+
+    // This test can take up 30 seconds per testing environment (web + node = ~60s)
+    test.setTimeout(60_000);
+
+    const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
+      return new Promise<string>(async(resolve, reject) => {
+        const hc = new wax.HealthChecker([testEndpoint]);
+
+        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
+
+        await Promise.all([
+          hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
+          hc.register(chain.api.block_api.get_block_header, { block_num: 1 }, data => data.header.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
+          hc.register(chain.api.block_api.get_block_range, { starting_block_num: 1, count: 1 }, data => data.blocks[0]?.previous === "0000000000000000000000000000000000000000", [testEndpoint])
+        ]);
+        const defaultStartProcessing = Date.now() + 10_000;
+        await new Promise(newDataRes => hc.on('data', newDataRes));
+        const waitForNextMs = (Date.now() - defaultStartProcessing) * 2;
+        await new Promise(promiseRes => setTimeout(promiseRes, waitForNextMs));
+        await Promise.all([ // Multiple unregister calls
+          hc.unregisterAll(), // This should be called during #performChecks
+          hc.unregisterAll(),
+          hc.unregisterAll()
+        ]);
+        // Register again and wait for data
+        await hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+        // This should result in a new best endpoint
+        hc.on("data", async(data: Array<IScoredEndpoint>) => { await hc.unregisterAll(); resolve(data[0].endpointUrl); });
+      });
+    }, testEndpoint);
+
+    expect(retVal).toStrictEqual("https://api.hive.blog");
+   });
 
   test.afterAll(async () => {
     await browser.close();
