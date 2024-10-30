@@ -14,13 +14,17 @@ export type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetail
 /**
  * Helper base type to describe common parts of WaxChain API callers
  */
-export type WaxChainCommonApiCaller = {
-  //callDescriptor: string;
+export type WaxChainCommonApiCaller = ((params: object) => Promise<any>) & {
+  apiCallerId: string;
+  paths: string[];
+  realPaths: string[];
+  lastMethod: string;
+  config: TWaxRestApiRequest<any, any> | undefined;
   withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
 };
 
-export type TRestChainCaller = Record<string, any> & ((params: object) => Promise<any>) & WaxChainCommonApiCaller & {
-  paths: string[];
+export type TRestChainCaller = ((params: object) => Promise<any>) & {
+  _target: WaxChainCommonApiCaller;
 };
 
 export class ApiCaller extends RequestHelper {
@@ -53,7 +57,7 @@ export class ApiCaller extends RequestHelper {
   }
 
   private static readonly EndpointUrlKey = "endpointUrl";
-  private static readonly WithProxyKey = "withProxy";
+  private static readonly TargetKey = "_target";
 
   public setEndpointUrlForPath(path: string[], newValue: string | undefined, found = false): boolean {
     const obj = this.getRestTypeFromPath(path);
@@ -166,19 +170,17 @@ export class ApiCaller extends RequestHelper {
     };
     callFn.apiCallerId = this.id;
     callFn.paths = [] as string[];
-    //callFn.callDescriptor = '';
     callFn.realPaths = [] as string[];
     callFn.lastMethod = this.defaultMethod;
     callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
-    callFn[ApiCaller.WithProxyKey] = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
+    callFn.withProxy = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
 
     const proxiedFunction = new Proxy(callFn, {
-      get: (_target: any, property: string, _receiver: any): TRestChainCaller | string => {
+      get: (_target: any, property: string, _receiver: any): TRestChainCaller | WaxChainCommonApiCaller | string => {
         if(property === ApiCaller.EndpointUrlKey) {
           const restApiUrl = this.getEndpointUrlForRestApi(callFn.realPaths);
 
           callFn.paths = [] as string[];
-          //callFn.callDescriptor = '';
           callFn.realPaths = [] as string[];
           callFn.lastMethod = this.defaultMethod;
           callFn.config = undefined;
@@ -186,8 +188,8 @@ export class ApiCaller extends RequestHelper {
           return restApiUrl;
         }
 
-        if (property === ApiCaller.WithProxyKey)
-          return callFn[ApiCaller.WithProxyKey];
+        if (property === ApiCaller.TargetKey)
+          return callFn;
 
         const currObj: Record<string, any> = this.getRestTypeFromPath(callFn.realPaths);
 
@@ -202,7 +204,6 @@ export class ApiCaller extends RequestHelper {
 
         if (callFn.config?.method !== undefined) {
           callFn.lastMethod = callFn.config.method;
-          //callFn.callDescriptor = callFn.paths.join('/') + callFn.config.method;
         }
 
         return proxiedFunction;
@@ -213,7 +214,6 @@ export class ApiCaller extends RequestHelper {
 
           callFn.realPaths = [] as string[];
           callFn.paths = [] as string[];
-          //callFn.callDescriptor = '';
           callFn.lastMethod = this.defaultMethod;
           callFn.config = undefined;
 

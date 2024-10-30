@@ -1,8 +1,8 @@
 import EventEmitter from "events";
 import { WaxError, WaxHealthCheckerError } from "../../errors.js";
-import { type WaxChainCommonApiCaller } from "../util/api_caller.js";
+import { TRestChainCaller, type TRequestInterceptor, type TResponseInterceptor } from "../util/api_caller.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
-import { type IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
+import { type IDetailedResponseData } from "../util/request_helper.js";
 import { defaultCalcScores } from "./math.js";
 import { EChainApiType } from "../chain_api.js";
 
@@ -146,11 +146,13 @@ export class HealthChecker extends EventEmitter {
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
     testOnEndpoints?: string[]
   ): Promise<IHiveEndpoint> {
-    if(!("withProxy" in endpointToCheck) || !("paths" in endpointToCheck) || !("apiCallerId" in endpointToCheck))
+    const target = (endpointToCheck as unknown as TRestChainCaller)._target;
+
+    if(!("withProxy" in target) || !("paths" in target) || !("apiCallerId" in target))
       throw new WaxError('Specified endpoint does not belong to the wax API interface');
 
-    const apiType = endpointToCheck.apiCallerId as EChainApiType;
-    const paths = endpointToCheck.paths as string[];
+    const apiType = target.apiCallerId as EChainApiType;
+    const paths = target.paths as string[];
 
     const endpoints = (testOnEndpoints === undefined || testOnEndpoints.length === 0) ? (this.defaultEndpoints === undefined ?
         (apiType === EChainApiType.JSON_RPC ? HealthChecker.DefaultJsonRpcEndpoints : HealthChecker.DefaultRestApiEndpoints)
@@ -160,17 +162,17 @@ export class HealthChecker extends EventEmitter {
     const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, endpoints, async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
-      const requestInterceptor = (data: IRequestOptions): IRequestOptions => {
+      const requestInterceptor: TRequestInterceptor = data => {
         data.endpoint = endpointToTest;
         return data;
       };
 
-      const responseInterceptor = (data: IDetailedResponseData<any>): IDetailedResponseData<any> => {
+      const responseInterceptor: TResponseInterceptor = data => {
         timings = data;
         return data;
       };
 
-      const returned = await (endpointToCheck as unknown as WaxChainCommonApiCaller).withProxy(requestInterceptor, responseInterceptor)(toSend);
+      const returned = await target.withProxy(requestInterceptor, responseInterceptor)(toSend);
 
       if(validator !== undefined)
         if(!validator(returned))
