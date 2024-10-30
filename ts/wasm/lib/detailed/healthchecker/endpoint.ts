@@ -1,5 +1,5 @@
 import { type HealthChecker } from "./healthchecker.js";
-import { type IDetailedResponseData } from "./request_helper.js";
+import { type IDetailedResponseData } from "../util/request_helper.js";
 
 export interface IHiveEndpoint {
   /**

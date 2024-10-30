@@ -1,5 +1,5 @@
 import { WaxError } from "../../errors.js";
-import { IDetailedResponseData, type IRequestOptions } from "./request_helper.js";
+import { IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
 
 /**
  * @internal

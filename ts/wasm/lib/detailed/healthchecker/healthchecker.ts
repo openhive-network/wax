@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import { WaxError } from "../../errors.js";
 import { type WaxChainCommonApiCaller } from "../chain_api.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
-import { type IDetailedResponseData, type IRequestOptions } from "./request_helper.js";
+import { type IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
 import { defaultCalcScores } from "./math.js";
 
 const INITIAL_CHECKER_INTERVAL_MS = 10_000;

@@ -10,7 +10,7 @@ import { WaxError, WaxChainApiError } from "../errors.js";
 import { safeWasmCall } from './util/wasm_errors.js';
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
-import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./healthchecker/request_helper.js";
+import { IDetailedResponseData, IRequestOptions, RequestHelper } from "./util/request_helper.js";
 import { extractBracedStrings } from "./rest-api/utils.js";
 import { iterate } from "./util/iterate.js";
 import { objectToQueryString } from "./util/query_string";

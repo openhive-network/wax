@@ -1,4 +1,4 @@
-import { WaxNon_2XX_3XX_ResponseCodeError } from "./errors.js";
+import { WaxNon_2XX_3XX_ResponseCodeError } from "../healthchecker/errors.js";
 
 export interface ISingleJitterData {
   loaded: number;
