@@ -25,6 +25,7 @@ public:
     : retrieve_authorities(_retrieve_authorities) {}
   virtual ~signing_keys_collector() {}
 
+  using hive::protocol::signing_keys_collector::collect_signing_keys;
   std::vector<std::string> collect_signing_keys(const hive::protocol::transaction& transaction);
 
 private:

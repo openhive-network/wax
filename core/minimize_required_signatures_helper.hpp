@@ -9,7 +9,7 @@
 
 namespace hive::protocol
 {
-class signed_transaction;
+struct signed_transaction;
 } // namespace hive::protocol
 
 namespace cpp

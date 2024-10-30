@@ -27,7 +27,7 @@ fc::variants parse_proto_extensions(const fc::variant& ex)
     FC_ASSERT(obj.size() != 0, "Each extension should be a nonempty object");
     const std::string& key = obj.begin()->key();
     FC_ASSERT(obj[key].is_object() || obj[key].is_array() || obj[key].is_string(), "Extension should contain the body");
-    result.emplace_back(std::move(fc::mutable_variant_object{ "type", key }("value", obj[key])));
+    result.emplace_back(fc::mutable_variant_object{ "type", key }("value", obj[key]));
   }
 
   return result;
@@ -36,7 +36,7 @@ fc::variants parse_proto_extensions(const fc::variant& ex)
 void try_parse_proto_extensions(fc::mutable_variant_object& body)
 {
   if (body.find("extensions") != body.end())
-    body("extensions", std::move(parse_proto_extensions(body["extensions"])));
+    body("extensions", parse_proto_extensions(body["extensions"]));
 }
 
 // Convert map to table of pairs
@@ -47,10 +47,7 @@ fc::variant parse_proto_map(const fc::variant& _map)
   fc::variants arr;
 
   for (const auto& elem : obj)
-    {
-    fc::variants subarray {elem.key(), elem.value()};
-    arr.emplace_back(std::move(subarray));
-    }
+    arr.emplace_back(fc::variants{elem.key(), elem.value()});
 
   fc::variant result { arr };
 
@@ -63,28 +60,28 @@ fc::variant parse_proto_authority(const fc::variant& auth)
   fc::mutable_variant_object auth_body = auth.get_object();
 
   if (auth_body.find("account_auths") != auth_body.end())
-    auth_body["account_auths"] = std::move(parse_proto_map(auth_body["account_auths"]));
-  
+    auth_body["account_auths"] = parse_proto_map(auth_body["account_auths"]);
+
   if (auth_body.find("key_auths") != auth_body.end())
-    auth_body["key_auths"] = std::move(parse_proto_map(auth_body["key_auths"]));
-  
+    auth_body["key_auths"] = parse_proto_map(auth_body["key_auths"]);
+
   return auth_body;
 }
 
 void try_parse_proto_authority(fc::mutable_variant_object& body, const char* auth_name)
 {
   if (body.find(auth_name) != body.end())
-    body[auth_name] = std::move(parse_proto_authority(body[auth_name]));
+    body[auth_name] = parse_proto_authority(body[auth_name]);
 }
 
 void parse_proto_authority3(fc::mutable_variant_object& body)
 {
   FC_ASSERT(body.find("owner") != body.end(), "Operation should contain owner authority");
-  body["owner"] = std::move(parse_proto_authority(body["owner"]));
+  body["owner"] = parse_proto_authority(body["owner"]);
   FC_ASSERT(body.find("active") != body.end(), "Operation should contain active authority");
-  body["active"] = std::move(parse_proto_authority(body["active"]));
+  body["active"] = parse_proto_authority(body["active"]);
   FC_ASSERT(body.find("posting") != body.end(), "Operation should contain posting authority");
-  body["posting"] = std::move(parse_proto_authority(body["posting"]));
+  body["posting"] = parse_proto_authority(body["posting"]);
 }
 
 void try_parse_proto_authority3(fc::mutable_variant_object& body)
@@ -112,29 +109,29 @@ void parse_proto_witness_set_properties(fc::mutable_variant_object& body)
 {
   try_parse_proto_extensions(body);
   if (body.find("props") != body.end())
-    body["props"] = std::move(parse_proto_map(body["props"]));
+    body["props"] = parse_proto_map(body["props"]);
 }
 
 void parse_proto_request_account_recovery(fc::mutable_variant_object& body)
 {
   try_parse_proto_extensions(body);
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_proto_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_proto_authority(body["new_owner_authority"]);
 }
 
 void parse_proto_recover_account(fc::mutable_variant_object& body)
 {
   try_parse_proto_extensions(body);
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_proto_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_proto_authority(body["new_owner_authority"]);
   FC_ASSERT(body.find("recent_owner_authority") != body.end(), "Operation should contain recent_owner_authority");
-  body["recent_owner_authority"] = std::move(parse_proto_authority(body["recent_owner_authority"]));
+  body["recent_owner_authority"] = parse_proto_authority(body["recent_owner_authority"]);
 }
 
 void parse_proto_reset_account(fc::mutable_variant_object& body)
 {
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_proto_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_proto_authority(body["new_owner_authority"]);
 }
 
 void parse_proto_pow2(fc::mutable_variant_object& body)
@@ -146,7 +143,7 @@ void parse_proto_pow2(fc::mutable_variant_object& body)
   FC_ASSERT(obj.size() != 0, "pow2 work should be a nonempty object");
   const std::string& key = obj.begin()->key();
   FC_ASSERT(obj[key].is_object(), "pow2 work should contain the body");
-  body["work"] = std::move(fc::mutable_variant_object{ "type", key }("value", obj[key].get_object()));
+  body["work"] = fc::mutable_variant_object{ "type", key }("value", obj[key].get_object());
 }
 
 const TParseMethodMap parse_proto_methods =
@@ -205,7 +202,7 @@ fc::mutable_variant_object parse_proto_transaction(const fc::variant& trx)
   fc::mutable_variant_object tx_body = trx.get_object();
 
   for (const auto& op : tx_body["operations"].get_array())
-    operations.emplace_back(std::move(parse_proto_operation(op)));
+    operations.emplace_back(parse_proto_operation(op));
 
   try_parse_proto_extensions(tx_body);
 
@@ -231,7 +228,7 @@ fc::variants parse_api_extensions(const fc::variant& ex)
       (extension.get_object()["value"].is_object() || extension.get_object()["value"].is_string()), "Not a valid api operation extension", (ex));
 
     std::string key = extension.get_object()["type"].get_string();
-    result.emplace_back(std::move(fc::mutable_variant_object{ key, extension.get_object()["value"] }));
+    result.emplace_back(fc::mutable_variant_object{ key, extension.get_object()["value"] });
   }
 
   return result;
@@ -240,7 +237,7 @@ fc::variants parse_api_extensions(const fc::variant& ex)
 void try_parse_api_extensions(fc::mutable_variant_object& body)
 {
   if (body.find("extensions") != body.end())
-    body("extensions", std::move(parse_api_extensions(body["extensions"])));
+    body("extensions", parse_api_extensions(body["extensions"]));
 }
 
 // Convert table of pairs to map
@@ -266,28 +263,28 @@ fc::variant parse_api_authority(const fc::variant& auth)
   fc::mutable_variant_object auth_body = auth.get_object();
 
   if (auth_body.find("account_auths") != auth_body.end())
-    auth_body["account_auths"] = std::move(parse_api_pairs_table(auth_body["account_auths"]));
-  
+    auth_body["account_auths"] = parse_api_pairs_table(auth_body["account_auths"]);
+
   if (auth_body.find("key_auths") != auth_body.end())
-    auth_body["key_auths"] = std::move(parse_api_pairs_table(auth_body["key_auths"]));
-  
+    auth_body["key_auths"] = parse_api_pairs_table(auth_body["key_auths"]);
+
   return auth_body;
 }
 
 void try_parse_api_authority(fc::mutable_variant_object& body, const char* auth_name)
 {
   if (body.find(auth_name) != body.end())
-    body[auth_name] = std::move(parse_api_authority(body[auth_name]));
+    body[auth_name] = parse_api_authority(body[auth_name]);
 }
 
 void parse_api_authority3(fc::mutable_variant_object& body)
 {
   FC_ASSERT(body.find("owner") != body.end(), "Operation should contain owner authority");
-  body["owner"] = std::move(parse_api_authority(body["owner"]));
+  body["owner"] = parse_api_authority(body["owner"]);
   FC_ASSERT(body.find("active") != body.end(), "Operation should contain active authority");
-  body["active"] = std::move(parse_api_authority(body["active"]));
+  body["active"] = parse_api_authority(body["active"]);
   FC_ASSERT(body.find("posting") != body.end(), "Operation should contain posting authority");
-  body["posting"] = std::move(parse_api_authority(body["posting"]));
+  body["posting"] = parse_api_authority(body["posting"]);
 }
 
 void try_parse_api_authority3(fc::mutable_variant_object& body)
@@ -315,29 +312,29 @@ void parse_api_witness_set_properties(fc::mutable_variant_object& body)
 {
   try_parse_api_extensions(body);
   if (body.find("props") != body.end())
-    body["props"] = std::move(parse_api_pairs_table(body["props"]));
+    body["props"] = parse_api_pairs_table(body["props"]);
 }
 
 void parse_api_request_account_recovery(fc::mutable_variant_object& body)
 {
   try_parse_api_extensions(body);
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_api_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_api_authority(body["new_owner_authority"]);
 }
 
 void parse_api_recover_account(fc::mutable_variant_object& body)
 {
   try_parse_api_extensions(body);
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_api_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_api_authority(body["new_owner_authority"]);
   FC_ASSERT(body.find("recent_owner_authority") != body.end(), "Operation should contain recent_owner_authority");
-  body["recent_owner_authority"] = std::move(parse_api_authority(body["recent_owner_authority"]));
+  body["recent_owner_authority"] = parse_api_authority(body["recent_owner_authority"]);
 }
 
 void parse_api_reset_account(fc::mutable_variant_object& body)
 {
   FC_ASSERT(body.find("new_owner_authority") != body.end(), "Operation should contain new_owner_authority");
-  body["new_owner_authority"] = std::move(parse_api_authority(body["new_owner_authority"]));
+  body["new_owner_authority"] = parse_api_authority(body["new_owner_authority"]);
 }
 
 void parse_api_pow2(fc::mutable_variant_object& body)
@@ -352,7 +349,7 @@ void parse_api_pow2(fc::mutable_variant_object& body)
     work.get_object()["value"].is_object(), "Not a valid api pow2 operation work");
 
   const std::string& key = work.get_object()["type"].get_string();
-  body["work"] = std::move(fc::mutable_variant_object{ key, work.get_object()["value"].get_object() });
+  body["work"] = fc::mutable_variant_object{ key, work.get_object()["value"].get_object() };
 }
 
 const TParseMethodMap parse_api_methods =
@@ -407,7 +404,7 @@ fc::mutable_variant_object parse_api_transaction(const fc::variant& trx)
   fc::mutable_variant_object tx_body = trx.get_object();
 
   for (const auto& op : tx_body["operations"].get_array())
-    operations.emplace_back(std::move(parse_api_operation(op)));
+    operations.emplace_back(parse_api_operation(op));
 
   try_parse_api_extensions(tx_body);
 
@@ -422,7 +419,7 @@ fc::mutable_variant_object parse_api_block(const fc::variant& block)
   fc::mutable_variant_object block_body = block.get_object();
 
   for (const auto& trx : block_body["transactions"].get_array())
-    transactions.emplace_back(std::move(parse_api_transaction(trx)));
+    transactions.emplace_back(parse_api_transaction(trx));
 
   try_parse_api_extensions(block_body);
 

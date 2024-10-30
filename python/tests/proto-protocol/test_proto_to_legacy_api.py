@@ -21,7 +21,7 @@ def test_tx_proto_to_legacy_api():
         b'op.is_object() && op.get_object().size()\n'
         b'Operation cannot be empty\n'
         b'    {}\n'
-        b'    protobuf_protocol_impl.inl:176 parse_proto_operation'
+        b'    protobuf_protocol_impl.inl:173 parse_proto_operation'
     )
 
 def test_op_proto_to_legacy_api():
@@ -44,5 +44,5 @@ def test_op_proto_to_legacy_api():
         b'var.is_object()\n'
         b'cpp_proto_to_legacy_api requires JSON object as an argument\n'
         b'    {}\n'
-        b'    protobuf_protocol_impl.inl:628 operator()'
+        b'    protobuf_protocol_impl.inl:625 operator()'
     )

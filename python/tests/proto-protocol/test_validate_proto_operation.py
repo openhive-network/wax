@@ -20,7 +20,7 @@ def test_validate_proto_operation():
     assert result.status == result.status.fail
     assert result.exception_message == (
         b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:182 parse_proto_operation')
+        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:179 parse_proto_operation')
 
     # Negative test
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP_EMPTY)

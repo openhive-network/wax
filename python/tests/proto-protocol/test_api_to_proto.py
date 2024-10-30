@@ -45,7 +45,7 @@ def test_api_to_proto():
         b',"weight":10000}}))\n    {"op":{"vote":{"voter":"taoteh1221","author":"oz'
         b'chartart","permlink":"usdsteem-btc-daily-poloniex-bittrex-technical-analysis'
         b'-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept","'
-        b'weight":10000}}}\n    protobuf_protocol_impl.inl:382 parse_api_operation'
+        b'weight":10000}}}\n    protobuf_protocol_impl.inl:379 parse_api_operation'
     )
 
     api_str = json.dumps(API_REF_RELEASE_BLOCK)
