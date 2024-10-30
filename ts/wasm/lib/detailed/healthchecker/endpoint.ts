@@ -1,16 +1,19 @@
 import { type HealthChecker } from "./healthchecker.js";
 import { type IDetailedResponseData } from "../util/request_helper.js";
+import { EChainApiType } from "../chain_api.js";
 
 export interface IHiveEndpoint {
   /**
-   * @example 'block_api'
+   * @example ['block_api', 'get_block_header']
+   * @example ['hafbe-api', 'operation-type-counts']
    */
-  readonly apiType: string;
+  readonly paths: string[];
 
   /**
-   * @example 'get_block'
+   * @example 'json_rpc'
+   * @example 'rest'
    */
-  readonly apiEndpoint: string;
+  readonly apiCallerId: EChainApiType;
 
   /**
    * Endpoints that will be checked
@@ -25,8 +28,8 @@ export interface IHiveEndpoint {
 
 export interface INewUpDownEvent {
   data: THiveEndpointData;
-  apiType: string;
-  apiEndpoint: string;
+  paths: string[];
+  apiCallerId: EChainApiType;
   endpointUrl: string;
   up: boolean;
 }
@@ -58,8 +61,8 @@ export class HiveEndpoint implements IHiveEndpoint {
   public constructor(
     private readonly checker: HealthChecker,
     public readonly id: number,
-    public readonly apiType: string,
-    public readonly apiEndpoint: string,
+    public readonly apiCallerId: EChainApiType,
+    public readonly paths: string[],
     public readonly endpointUrls: Readonly<Array<string>>,
     private readonly caller: (apiUrl: string) => Promise<IDetailedResponseData<any>>) {
   }
@@ -76,7 +79,7 @@ export class HiveEndpoint implements IHiveEndpoint {
         };
 
         if(this.down.has(endpointUrl)) {
-          this.checker.emit("statechanged", { data, apiType: this.apiType, apiEndpoint: this.apiEndpoint, endpointUrl, up: true } satisfies INewUpDownEvent );
+          this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: true } satisfies INewUpDownEvent );
           this.down.delete(endpointUrl);
         }
 
@@ -89,7 +92,7 @@ export class HiveEndpoint implements IHiveEndpoint {
         };
 
         if(this.up.has(endpointUrl)) {
-          this.checker.emit("statechanged", { data, apiType: this.apiType, apiEndpoint: this.apiEndpoint, endpointUrl, up: false } satisfies INewUpDownEvent );
+          this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: false } satisfies INewUpDownEvent );
           this.up.delete(endpointUrl);
         }
 

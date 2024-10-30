@@ -6,7 +6,7 @@ import { extractBracedStrings } from "../rest-api/utils.js";
 import { objectToQueryString } from "./query_string.js";
 import { type IDetailedResponseData, type IRequestOptions, RequestHelper } from "./request_helper.js";
 
-export type TInterceptorRequestOptions = IRequestOptions & { paths: string[]; };
+export type TInterceptorRequestOptions = IRequestOptions & { paths: string[]; apiCallerId: string };
 
 export type TRequestInterceptor = (data: TInterceptorRequestOptions) => IRequestOptions;
 export type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetailedResponseData<any>;
@@ -28,6 +28,7 @@ export class ApiCaller extends RequestHelper {
   public responseInterceptor: TResponseInterceptor = (data: IDetailedResponseData<any>) => data;
 
   /**
+   * @param id Unique identifier of the API caller - may be used in interceptors for originator identification
    * @param defaultEndpointUrl Prefix URL for all API calls
    * @param localTypes Default set of API types
    * @param defaultMethod Default method to be called. Default is 'GET'
@@ -40,6 +41,7 @@ export class ApiCaller extends RequestHelper {
    *  If you wish to set response interceptor outside the constructor, use {@link responseInterceptor} instead.
    */
   public constructor(
+    public readonly id: string,
     public defaultEndpointUrl: string,
     public readonly localTypes: Record<string, any> = {},
     public readonly defaultMethod: string = 'GET',
@@ -134,7 +136,8 @@ export class ApiCaller extends RequestHelper {
         endpoint,
         url,
         data: body,
-        paths: callFn.realPaths
+        paths: callFn.realPaths,
+        apiCallerId: that.id
       }))))) as IDetailedResponseData<object>;
       let result: any = data.response;
 
@@ -161,6 +164,7 @@ export class ApiCaller extends RequestHelper {
 
       return result;
     };
+    callFn.apiCallerId = this.id;
     callFn.paths = [] as string[];
     //callFn.callDescriptor = '';
     callFn.realPaths = [] as string[];

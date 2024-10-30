@@ -27,6 +27,11 @@ type TChainReferenceData = {
   head_block_time: Date
 };
 
+export enum EChainApiType {
+  JSON_RPC = "json_rpc",
+  REST = "rest"
+}
+
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public get restApi () {
     return this.restApiCaller.createApiCaller() as unknown as IHiveChainInterface['restApi'];
@@ -50,7 +55,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     public readonly originator: HiveChainApi|null) {
     super(wax, chainId);
 
-    this.jsonRpcApiCaller = new ApiCaller(apiEndpoint, iterate({}, HiveApiTypes), 'POST', (path, newValue, found) => {
+    this.jsonRpcApiCaller = new ApiCaller(EChainApiType.JSON_RPC, apiEndpoint, iterate({}, HiveApiTypes), 'POST', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.jsonRpcApiCaller.setEndpointUrlForPath(path, newValue, found);
 
@@ -73,7 +78,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       return data;
     });
-    this.restApiCaller = new ApiCaller(restApiEndpoint, iterate({}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
+    this.restApiCaller = new ApiCaller(EChainApiType.REST, restApiEndpoint, iterate({}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.restApiCaller.setEndpointUrlForPath(path, newValue, found);
 
