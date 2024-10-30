@@ -28,9 +28,9 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker();
 
-        hc.on("newbest", ({ endpointUrl }) => { resolve(endpointUrl); }); // New best endpoint url
+        hc.on("newbest", async({ endpointUrl }) => { await hc.unregisterAll(); resolve(endpointUrl); }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => { console.log(JSON.stringify(data)); }); // New data from all endpoint checks - scores ready
-        hc.on("error", reject); // Error handled
+        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
       });
@@ -46,15 +46,16 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker([testEndpoint]);
 
-        hc.on("newbest", ({ endpointUrl }) => {
+        hc.on("newbest", async({ endpointUrl }) => {
           console.log(`REST common endpoint test found new best endpoint: ${endpointUrl}`);
+          await hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST common endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
-        hc.on("error", reject); // Error handled
+        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1);
       });
@@ -70,15 +71,16 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker();
 
-        hc.on("newbest", ({ endpointUrl }) => {
+        hc.on("newbest", async({ endpointUrl }) => {
           console.log(`REST explicit endpoint test found new best endoint: ${endpointUrl}`);
+          await hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST explicit endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
-        hc.on("error", reject); // Error handled
+        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1, [testEndpoint]);
       });

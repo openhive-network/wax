@@ -26,6 +26,9 @@ export class HealthChecker extends EventEmitter {
   private readonly endpoints: Map<number, HiveEndpoint> = new Map();
   private readonly endpointStats: Map<string, Array<THiveEndpointData>> = new Map();
 
+  private isRunning = false;
+  private timeoutInterval?: NodeJS.Timeout;
+
   private lastBest?: string;
 
   private cachedScoredList: Array<IScoredEndpoint> = [];
@@ -42,6 +45,31 @@ export class HealthChecker extends EventEmitter {
     "api.hive.blog"
   ];
 
+  private async ensureRunning(): Promise<void> {
+    if (this.isRunning)
+      return;
+
+    await this.stop(); // Ensure that we are not running multiple intervals - race condition prevention
+    if (this.timeoutInterval === undefined) // Ensure no race condition with the stop function when multiple threads call ensureRunning function
+      this.timeoutInterval = setTimeout(() => { void this.performChecks(INITIAL_CHECKER_INTERVAL_MS); }, INITIAL_CHECKER_INTERVAL_MS);
+    this.isRunning = true;
+  }
+
+  private async stop(): Promise<void> {
+    if (!this.isRunning)
+      return;
+
+    this.isRunning = false;
+
+    // If no further actions scheduled and there is no processing involved, we can stop immediately
+    if (this.timeoutInterval !== undefined) {
+      clearTimeout(this.timeoutInterval);
+
+      this.timeoutInterval = undefined;
+    } else // Otherwise we need to wait for the last processing to finish
+      await new Promise(resolve => { this.once('stopped' as any, resolve); });
+  }
+
   /**
    * Creates a new HealthChecker instance.
    *
@@ -54,15 +82,13 @@ export class HealthChecker extends EventEmitter {
    * hc.on("newbest", ({ endpointUrl }) => { setEndpoint(endpointUrl); });
    * hc.on("data", (endpointsScored) => { console.log(endpointsScored); });
    *
-   * hc.register(chain.api.block_api.get_block, { block_num: 1 });
+   * await hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
    */
   public constructor(
     public readonly defaultEndpoints: Readonly<Array<string>> = HealthChecker.DefaultEndpoints,
     private readonly calculateScoresFunction: TCalculateScoresFunction = defaultCalcScores) {
     super();
-
-    setTimeout(() => { void this.performChecks(INITIAL_CHECKER_INTERVAL_MS); }, INITIAL_CHECKER_INTERVAL_MS);
 
     this.on('stats', (data: THiveEndpointData) => {
       this.pushEndpointData(data);
@@ -83,15 +109,15 @@ export class HealthChecker extends EventEmitter {
    * ```ts
    * const hc = new wax.HealthChecker();
    *
-   * hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", ["api.openhive.network"]);
+   * await hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", ["api.openhive.network"]);
    * ```
    */
-  public register<TFn extends (...args: any) => any>(
+  public async register<TFn extends (...args: any) => any>(
     endpointToCheck: TFn,
     toSend: Parameters<TFn>[0],
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
     testOnEndpoints?: string[]
-  ): IHiveEndpoint {
+  ): Promise<IHiveEndpoint> {
     if(!("withProxy" in endpointToCheck))
       throw new WaxError('Specified endpoint does not belong to the wax API interface');
 
@@ -132,6 +158,8 @@ export class HealthChecker extends EventEmitter {
 
     this.endpoints.set(hiveEndpointObject.id, hiveEndpointObject);
 
+    await this.ensureRunning();
+
     return hiveEndpointObject;
   }
 
@@ -141,7 +169,7 @@ export class HealthChecker extends EventEmitter {
    * @param {IHiveEndpoint} api api to unregister
    * @returns {boolean} either true or false if api has been unregistered succesfully
    */
-  public unregister(api: IHiveEndpoint): boolean {
+  public async unregister(api: IHiveEndpoint): Promise<boolean> {
     const endpoint = this.endpoints.get((api as HiveEndpoint).id);
 
     if(endpoint === undefined)
@@ -149,16 +177,19 @@ export class HealthChecker extends EventEmitter {
 
     this.endpoints.delete((api as HiveEndpoint).id);
 
+    if (this.endpoints.size === 0)
+      await this.stop();
+
     return true;
   }
 
   /**
    * Unregisters the checker from all of the healthcheck intervals
    */
-  public unregisterAll(): void {
+  public async unregisterAll(): Promise<void> {
     const registrationKeys = this.endpoints.keys();
     for(const key of registrationKeys)
-      this.unregister({ id: key } as HiveEndpoint);
+      await this.unregister({ id: key } as HiveEndpoint);
   }
 
   /**
@@ -175,7 +206,7 @@ export class HealthChecker extends EventEmitter {
    * hc.on("newdown", ({ endpointUrl }) => { console.log(endpointUrl, 'is down. Changing endpoint url...'); });
    * hc.on("newup", ({ endpointUrl }) => { console.log(endpointUrl, 'is up. Changing to given endpoint...'); });
    *
-   * hc.register(chain.api.block_api.get_block, { block_num: 1 });
+   * await hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
    */
   public subscribe(endpointUrl: string): void {
@@ -267,7 +298,10 @@ export class HealthChecker extends EventEmitter {
       this.emit("error", error);
     }
 
-    setTimeout(() => { void this.performChecks(scheduleChecksAfterMs); }, scheduleChecksAfterMs);
+    if (this.isRunning)
+      this.timeoutInterval = setTimeout(() => { void this.performChecks(scheduleChecksAfterMs); }, scheduleChecksAfterMs);
+    else
+      this.emit('stopped');
 
     this.cachedScoredList = this.calculateCachedScored();
 
