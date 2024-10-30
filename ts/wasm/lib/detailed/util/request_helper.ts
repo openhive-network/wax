@@ -21,7 +21,7 @@ export interface IRequestOptions {
   endpoint: string;
   url: string;
   method: "GET" | "POST" | string;
-  data?: string;
+  data?: string | object;
   /**
    * @default `"text"`
    */
@@ -44,7 +44,7 @@ export class RequestHelper {
 
     const finalUrl = config.endpoint + config.url;
 
-    const response = await fetch(finalUrl, { method: config.method, body: config.data});
+    const response = await fetch(finalUrl, { method: config.method, body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data });
     runningData.status = response.status;
 
     if(response.status < 200 || response.status > 399)
