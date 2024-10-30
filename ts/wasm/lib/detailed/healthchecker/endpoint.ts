@@ -1,6 +1,7 @@
 import { type HealthChecker } from "./healthchecker.js";
 import { type IDetailedResponseData } from "../util/request_helper.js";
 import { EChainApiType } from "../chain_api.js";
+import { WaxHealthCheckerEndpointUrlError } from "../../../lib/errors.js";
 
 export interface IHiveEndpoint {
   /**
@@ -96,8 +97,10 @@ export class HiveEndpoint implements IHiveEndpoint {
           this.up.delete(endpointUrl);
         }
 
-      this.checker.emit("stats", data);
-      this.down.set(endpointUrl, data);
-    }
+        this.checker.emit("stats", data);
+        this.down.set(endpointUrl, data);
+
+        throw new WaxHealthCheckerEndpointUrlError(error instanceof Error ? error : new Error(String(error)), endpointUrl);
+      }
   }
 }

@@ -1,5 +1,5 @@
 import EventEmitter from "events";
-import { WaxError } from "../../errors.js";
+import { WaxError, WaxHealthCheckerError } from "../../errors.js";
 import { type WaxChainCommonApiCaller } from "../util/api_caller.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
 import { type IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
@@ -18,6 +18,28 @@ export interface IScoredEndpoint {
 };
 
 export type TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>) => Array<IScoredEndpoint>;
+
+interface IHealthCheckerEvents {
+  'newbest': (endpoint: IScoredEndpoint) => void | Promise<void>;
+  'newup': (endpoint: IScoredEndpoint) => void | Promise<void>;
+  'newdown': (endpoint: IScoredEndpoint) => void | Promise<void>;
+  'data': (endpoints: Array<IScoredEndpoint>) => void | Promise<void>;
+  'error': (error: WaxHealthCheckerError) => void | Promise<void>;
+}
+
+export declare interface HealthChecker {
+  on<U extends keyof IHealthCheckerEvents>(
+    event: U, listener: IHealthCheckerEvents[U]
+  ): this;
+
+  once<U extends keyof IHealthCheckerEvents>(
+    event: U, listener: IHealthCheckerEvents[U]
+  ): this;
+
+  off<U extends keyof IHealthCheckerEvents>(
+    event: U, listener: IHealthCheckerEvents[U]
+  ): this;
+}
 
 export class HealthChecker extends EventEmitter {
   private id: number = 0;
@@ -96,7 +118,7 @@ export class HealthChecker extends EventEmitter {
     private readonly calculateScoresFunction: TCalculateScoresFunction = defaultCalcScores) {
     super();
 
-    this.on('stats', (data: THiveEndpointData) => {
+    this.on('stats' as any, (data: THiveEndpointData) => {
       this.pushEndpointData(data);
     });
   }
@@ -222,7 +244,7 @@ export class HealthChecker extends EventEmitter {
         this.emit(data.up ? "newup" : "newdown", { endpointUrl });
     };
 
-    this.on("statechanged", listener);
+    this.on("statechanged" as any, listener);
 
     this.endpointSubscription.set(endpointUrl, listener);
   }
@@ -240,7 +262,7 @@ export class HealthChecker extends EventEmitter {
     if(subscription === undefined)
       return;
 
-    this.off("statechanged", subscription);
+    this.off("statechanged" as any, subscription);
 
     this.endpointSubscription.delete(endpointUrl);
   }
@@ -289,14 +311,19 @@ export class HealthChecker extends EventEmitter {
   private async performChecks (previousTimeoutMs: number): Promise<void> {
     let scheduleChecksAfterMs = previousTimeoutMs;
 
-    try {
-      const start = Date.now();
+    const start = Date.now();
 
-      await Promise.allSettled([...this.endpoints.values()].map(endpoint => endpoint.performCheck()));
+    const endpoints = [...this.endpoints.values()];
 
-      scheduleChecksAfterMs = Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
-    } catch(error) { // function performCheck should not throw, but we should handle all kind of unexpected errors especially that performChecks function is called by the interval
-      this.emit("error", error);
+    const results = await Promise.allSettled(endpoints.map(endpoint => endpoint.performCheck()));
+
+    scheduleChecksAfterMs = Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
+
+    for (let i = 0; i < results.length; ++i) {
+      const result = results[i];
+
+      if (result.status === "rejected")
+        this.emit("error", new WaxHealthCheckerError(result.reason instanceof Error ? result.reason : new Error(String(result.reason)), endpoints[i]));
     }
 
     if (this.isRunning)
