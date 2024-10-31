@@ -7,6 +7,7 @@ import { defaultCalcScores } from "./math.js";
 import { EChainApiType } from "../chain_api.js";
 
 const INITIAL_CHECKER_INTERVAL_MS = 10_000;
+const PERFORM_CHECK_INTERVAL_MS = 1_000;
 
 const GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT = 10;
 
@@ -49,8 +50,8 @@ export class HealthChecker extends EventEmitter {
   private readonly endpoints: Map<number, HiveEndpoint> = new Map();
   private readonly endpointStats: Map<string, Array<THiveEndpointData>> = new Map();
 
-  private isRunning = false;
-  private timeoutInterval?: NodeJS.Timeout;
+  private intervalId?: NodeJS.Timeout;
+  private nextScheduledCheck: number | undefined;
 
   private lastBest?: string;
 
@@ -72,29 +73,18 @@ export class HealthChecker extends EventEmitter {
     "https://api.syncad.com"
   ];
 
-  private async ensureRunning(): Promise<void> {
-    if (this.isRunning)
-      return;
+  private ensureRunning(): void {
+    if(this.nextScheduledCheck === undefined)
+      this.nextScheduledCheck = Date.now();
 
-    await this.stop(); // Ensure that we are not running multiple intervals - race condition prevention
-    if (this.timeoutInterval === undefined) // Ensure no race condition with the stop function when multiple threads call ensureRunning function
-      this.timeoutInterval = setTimeout(() => { void this.performChecks(INITIAL_CHECKER_INTERVAL_MS); }, INITIAL_CHECKER_INTERVAL_MS);
-    this.isRunning = true;
+    if(this.intervalId === undefined)
+      this.intervalId = setInterval(this.performChecks.bind(this), PERFORM_CHECK_INTERVAL_MS);
   }
 
-  private async stop(): Promise<void> {
-    if (!this.isRunning)
-      return;
-
-    this.isRunning = false;
-
-    // If no further actions scheduled and there is no processing involved, we can stop immediately
-    if (this.timeoutInterval !== undefined) {
-      clearTimeout(this.timeoutInterval);
-
-      this.timeoutInterval = undefined;
-    } else // Otherwise we need to wait for the last processing to finish
-      await new Promise(resolve => { this.once('stopped' as any, resolve); });
+  private stop(): void {
+    clearInterval(this.intervalId);
+    this.intervalId = undefined;
+    this.nextScheduledCheck = undefined;
   }
 
   /**
@@ -110,7 +100,7 @@ export class HealthChecker extends EventEmitter {
    * hc.on("newbest", ({ endpointUrl }) => { setEndpoint(endpointUrl); });
    * hc.on("data", (endpointsScored) => { console.log(endpointsScored); });
    *
-   * await hc.register(chain.api.block_api.get_block, { block_num: 1 });
+   * hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
    */
   public constructor(
@@ -137,15 +127,15 @@ export class HealthChecker extends EventEmitter {
    * ```ts
    * const hc = new wax.HealthChecker();
    *
-   * await hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", ["api.openhive.network"]);
+   * hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", ["api.openhive.network"]);
    * ```
    */
-  public async register<TFn extends (...args: any) => any>(
+  public register<TFn extends (...args: any) => any>(
     endpointToCheck: TFn,
     toSend: Parameters<TFn>[0],
     validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
     testOnEndpoints?: string[]
-  ): Promise<IHiveEndpoint> {
+  ): IHiveEndpoint {
     const target = (endpointToCheck as unknown as TRestChainCaller)._target;
 
     if(!("withProxy" in target) || !("paths" in target) || !("apiCallerId" in target))
@@ -183,7 +173,8 @@ export class HealthChecker extends EventEmitter {
 
     this.endpoints.set(hiveEndpointObject.id, hiveEndpointObject);
 
-    await this.ensureRunning();
+    if (this.endpoints.size === 1)
+      this.ensureRunning();
 
     return hiveEndpointObject;
   }
@@ -194,7 +185,7 @@ export class HealthChecker extends EventEmitter {
    * @param {IHiveEndpoint} api api to unregister
    * @returns {boolean} either true or false if api has been unregistered succesfully
    */
-  public async unregister(api: IHiveEndpoint): Promise<boolean> {
+  public unregister(api: IHiveEndpoint): boolean {
     const endpoint = this.endpoints.get((api as HiveEndpoint).id);
 
     if(endpoint === undefined)
@@ -203,7 +194,7 @@ export class HealthChecker extends EventEmitter {
     this.endpoints.delete((api as HiveEndpoint).id);
 
     if (this.endpoints.size === 0)
-      await this.stop();
+      this.stop();
 
     return true;
   }
@@ -211,10 +202,10 @@ export class HealthChecker extends EventEmitter {
   /**
    * Unregisters the checker from all of the healthcheck intervals
    */
-  public async unregisterAll(): Promise<void> {
+  public unregisterAll(): void {
     const registrationKeys = this.endpoints.keys();
     for(const key of registrationKeys)
-      await this.unregister({ id: key } as HiveEndpoint);
+      this.unregister({ id: key } as HiveEndpoint);
   }
 
   /**
@@ -231,7 +222,7 @@ export class HealthChecker extends EventEmitter {
    * hc.on("newdown", ({ endpointUrl }) => { console.log(endpointUrl, 'is down. Changing endpoint url...'); });
    * hc.on("newup", ({ endpointUrl }) => { console.log(endpointUrl, 'is up. Changing to given endpoint...'); });
    *
-   * await hc.register(chain.api.block_api.get_block, { block_num: 1 });
+   * hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
    */
   public subscribe(endpointUrl: string): void {
@@ -310,16 +301,18 @@ export class HealthChecker extends EventEmitter {
     return normalizedValues;
   }
 
-  private async performChecks (previousTimeoutMs: number): Promise<void> {
-    let scheduleChecksAfterMs = previousTimeoutMs;
+  private async performChecks (): Promise<void> {
+    if (this.nextScheduledCheck === undefined) // Already processing
+      return;
+    if (this.nextScheduledCheck > Date.now()) // Not time yet
+      return;
+    this.nextScheduledCheck = undefined;
 
     const start = Date.now();
 
     const endpoints = [...this.endpoints.values()];
 
     const results = await Promise.allSettled(endpoints.map(endpoint => endpoint.performCheck()));
-
-    scheduleChecksAfterMs = Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
 
     for (let i = 0; i < results.length; ++i) {
       const result = results[i];
@@ -328,13 +321,10 @@ export class HealthChecker extends EventEmitter {
         this.emit("error", new WaxHealthCheckerError(result.reason instanceof Error ? result.reason : new Error(String(result.reason)), endpoints[i]));
     }
 
-    if (this.isRunning)
-      this.timeoutInterval = setTimeout(() => { void this.performChecks(scheduleChecksAfterMs); }, scheduleChecksAfterMs);
-    else
-      this.emit('stopped');
-
     this.cachedScoredList = this.calculateCachedScored();
 
     this.emit('data', this.cachedScoredList);
+
+    this.nextScheduledCheck = Date.now() + Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
   }
 }

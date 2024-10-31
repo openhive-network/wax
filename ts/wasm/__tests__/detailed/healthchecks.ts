@@ -28,9 +28,9 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker();
 
-        hc.on("newbest", async({ endpointUrl }) => { await hc.unregisterAll(); resolve(endpointUrl); }); // New best endpoint url
+        hc.on("newbest", ({ endpointUrl }) => { hc.unregisterAll(); resolve(endpointUrl); }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => { console.log(JSON.stringify(data)); }); // New data from all endpoint checks - scores ready
-        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
+        hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
       });
@@ -46,16 +46,16 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker([testEndpoint]);
 
-        hc.on("newbest", async({ endpointUrl }) => {
+        hc.on("newbest", ({ endpointUrl }) => {
           console.log(`REST common endpoint test found new best endpoint: ${endpointUrl}`);
-          await hc.unregisterAll();
+          hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST common endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
-        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
+        hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1);
       });
@@ -71,16 +71,16 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>((resolve, reject) => {
         const hc = new wax.HealthChecker();
 
-        hc.on("newbest", async({ endpointUrl }) => {
+        hc.on("newbest", ({ endpointUrl }) => {
           console.log(`REST explicit endpoint test found new best endoint: ${endpointUrl}`);
-          await hc.unregisterAll();
+          hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
         hc.on("data", (data: Array<IScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST explicit endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
-        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
+        hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1, [testEndpoint]);
       });
@@ -99,26 +99,20 @@ test.describe('Wax object interface chain tests', () => {
       return new Promise<string>(async(resolve, reject) => {
         const hc = new wax.HealthChecker([testEndpoint]);
 
-        hc.on("error", async(error) => {await hc.unregisterAll(); reject(error);}); // Error handled
+        hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        await Promise.all([
-          hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
-          hc.register(chain.api.block_api.get_block_header, { block_num: 1 }, data => data.header.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
-          hc.register(chain.api.block_api.get_block_range, { starting_block_num: 1, count: 1 }, data => data.blocks[0]?.previous === "0000000000000000000000000000000000000000", [testEndpoint])
-        ]);
-        const defaultStartProcessing = Date.now() + 10_000;
-        await new Promise(newDataRes => hc.on('data', newDataRes));
-        const waitForNextMs = (Date.now() - defaultStartProcessing) * 2;
-        await new Promise(promiseRes => setTimeout(promiseRes, waitForNextMs));
-        await Promise.all([ // Multiple unregister calls
-          hc.unregisterAll(), // This should be called during #performChecks
-          hc.unregisterAll(),
-          hc.unregisterAll()
-        ]);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
+        hc.register(chain.api.block_api.get_block_header, { block_num: 1 }, data => data.header.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
+        hc.register(chain.api.block_api.get_block_range, { starting_block_num: 1, count: 1 }, data => data.blocks[0]?.previous === "0000000000000000000000000000000000000000", [testEndpoint])
+        await new Promise(newDataRes => hc.on('data', newDataRes ));
+        await new Promise(promiseRes => setTimeout(promiseRes, 10_000));
+        hc.unregisterAll();
+        hc.unregisterAll();
+        hc.unregisterAll();
         // Register again and wait for data
-        await hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
         // This should result in a new best endpoint
-        hc.on("data", async(data: Array<IScoredEndpoint>) => { await hc.unregisterAll(); resolve(data[0].endpointUrl); });
+        hc.on("data", (data: Array<IScoredEndpoint>) => { hc.unregisterAll(); resolve(data[0].endpointUrl); });
       });
     }, testEndpoint);
 
