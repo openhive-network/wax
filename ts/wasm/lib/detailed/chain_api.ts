@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxRestApiRequestPartial } from "../interfaces";
+import type { IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import { BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
@@ -125,7 +125,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return newApi as unknown as HiveChainApi & TWaxExtended<YourApi, this>;
   }
 
-  public extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxRestApiRequestPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
+  public extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxApiRequestPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
     const newApi = new HiveChainApi(this.wax, this.chainId, this.jsonRpcApiCaller.defaultEndpointUrl, this.restApiCaller.defaultEndpointUrl, this);
 
     if(typeof extendedHiveRestApiData === "object")

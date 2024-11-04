@@ -930,12 +930,10 @@ export interface IWaxBaseInterface {
 /**
  * @internal
  */
-type ApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
+type JsonRpcApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
 
-export type TWaxApiRequest<TReq, TRes> = { readonly params: TReq; readonly result: TRes; };
-
-export type TDeepWaxRestApiRequestPartial<T> = T extends object ? {
-  [P in keyof T]?: TDeepWaxRestApiRequestPartial<T[P]>;
+export type TDeepWaxApiRequestPartial<T> = T extends object ? {
+  [P in keyof T]?: TDeepWaxApiRequestPartial<T[P]>;
 } & Omit<TWaxRestApiRequest<any, any>, 'params' | 'result'> : T;
 
 export type TWaxRestApiRequest<TReq, TRes> = {
@@ -949,7 +947,7 @@ export type TWaxRestApiRequest<TReq, TRes> = {
 /**
  * @internal
  */
-type YourApiRestData<YourTypes> = {
+type YourApiData<YourTypes> = {
   readonly [P in keyof YourTypes]:
   // First check for value type
   (YourTypes[P] extends object ? (
@@ -972,7 +970,7 @@ type YourApiRestData<YourTypes> = {
        * Retrieves the url used for calls to the specified REST API
        */
       get endpointUrl (): string;
-    } & (Omit<YourApiRestData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
+    } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
     : (
       // Check if isArray is not present, but request type
       YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
@@ -993,8 +991,8 @@ type YourApiRestData<YourTypes> = {
          * Retrieves the url used for calls to the specified REST API
          */
         get endpointUrl (): string;
-      } & (Omit<YourApiRestData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
-      : (YourApiRestData<YourTypes[P]> & {
+      } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
+      : (YourApiData<YourTypes[P]> & {
         /**
          * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
          */
@@ -1017,37 +1015,19 @@ type YourApiRestData<YourTypes> = {
   get endpointUrl (): string;
 };
 
-/**
- * @internal
- */
-type YourApiData<YourTypes> = {
-  readonly [P in keyof YourTypes]: YourTypes[P] extends { readonly params: new (...args: any) => Readonly<infer ParamsType>; readonly result: new (...args: any) => Readonly<infer ResultType>; }
-    ? (params: ParamsType) => Promise<ResultType>
-    : (YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType; } ? (params: ParamsType) => Promise<ResultType> : never);
-} & {
-  /**
-   * New url to set per API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.apiEndpoint})
-   */
-  set endpointUrl (newUrl: string | undefined);
-  /**
-   * Retrieves the url used for calls to the specified API
-   */
-  get endpointUrl (): string;
-};
+export type TDefaultRestApi = YourApiData<typeof HiveRestApiTypes>;
 
-export type TDefaultRestApi = YourApiRestData<typeof HiveRestApiTypes>;
-
-export type TDefaultHiveApi = Readonly<{
-  account_by_key_api: ApiData<'account_by_key_api'>;
-  block_api: ApiData<'block_api'>;
-  database_api: ApiData<'database_api'>;
-  network_broadcast_api: ApiData<'network_broadcast_api'>;
-  rc_api: ApiData<'rc_api'>;
+export type TDefaultJsonRpcApi = Readonly<{
+  account_by_key_api: JsonRpcApiData<'account_by_key_api'>;
+  block_api: JsonRpcApiData<'block_api'>;
+  database_api: JsonRpcApiData<'database_api'>;
+  network_broadcast_api: JsonRpcApiData<'network_broadcast_api'>;
+  rc_api: JsonRpcApiData<'rc_api'>;
 }>;
 
-export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly api: TDefaultHiveApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
+export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly api: TDefaultJsonRpcApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
 
-export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiRestData<YourRestApi[k]> } };
+export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiData<YourRestApi[k]> } };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
@@ -1115,7 +1095,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns Wax Hive chain instance containing extended Rest api
    */
-  extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxRestApiRequestPartial<YourRestApi>): TWaxRestExtended<YourRestApi, this>;
+  extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxApiRequestPartial<YourRestApi>): TWaxRestExtended<YourRestApi, this>;
 
   /**
    * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)
@@ -1144,7 +1124,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    */
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
 
-  readonly api: TDefaultHiveApi;
+  readonly api: TDefaultJsonRpcApi;
 
   readonly restApi: TDefaultRestApi;
 }
