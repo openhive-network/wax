@@ -39,6 +39,32 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal).toStrictEqual("https://api.hive.blog");
    });
 
+  test('Should be able to create endpoint healthchecker and retrieve data 2 times', async ({ waxTest }) => {
+    const testEndpoint = "https://api.hive.blog";
+
+    const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
+      return new Promise<string>((resolve, reject) => {
+        const hc = new wax.HealthChecker();
+
+        let i = 0;
+
+        hc.on("data", (data: Array<IScoredEndpoint>) => {
+          ++i;
+
+          if (i === 2) {
+            hc.unregisterAll();
+            resolve(data[0].endpointUrl);
+          }
+        });
+        hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
+
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+      });
+    }, testEndpoint);
+
+    expect(retVal).toStrictEqual("https://api.hive.blog");
+  });
+
    test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
     const testEndpoint = "https://api.syncad.com";
 

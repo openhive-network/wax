@@ -161,11 +161,6 @@ export class ApiCaller extends RequestHelper {
         }
       }
 
-      callFn.paths = [] as string[];
-      callFn.realPaths = [] as string[];
-      callFn.lastMethod = that.defaultMethod;
-      callFn.config = undefined;
-
       return result;
     };
     callFn.apiCallerId = this.id;
@@ -224,7 +219,13 @@ export class ApiCaller extends RequestHelper {
         return false;
       },
       apply: (_target: any, _thisArg: any, argumentsList: [object]) => {
-        return callFn(...argumentsList);
+        return callFn(...argumentsList).finally(() => {
+          // Reset arguments only when called using client-exposed proxy
+          callFn.paths = [] as string[];
+          callFn.realPaths = [] as string[];
+          callFn.lastMethod = that.defaultMethod;
+          callFn.config = undefined;
+        });
       }
     });
 
