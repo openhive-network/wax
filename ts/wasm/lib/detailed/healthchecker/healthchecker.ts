@@ -100,6 +100,9 @@ export class HealthChecker extends EventEmitter {
    * hc.on("newbest", ({ endpointUrl }) => { setEndpoint(endpointUrl); });
    * hc.on("data", (endpointsScored) => { console.log(endpointsScored); });
    *
+   * // Remember to handle error event to prevent unhandled promise rejection
+   * hc.on("error", error => { console.error(error); });
+   *
    * hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
    */
@@ -221,6 +224,9 @@ export class HealthChecker extends EventEmitter {
    *
    * hc.on("newdown", ({ endpointUrl }) => { console.log(endpointUrl, 'is down. Changing endpoint url...'); });
    * hc.on("newup", ({ endpointUrl }) => { console.log(endpointUrl, 'is up. Changing to given endpoint...'); });
+   *
+   * // Remember to handle error event to prevent unhandled promise rejection
+   * hc.on("error", error => { console.error(error); });
    *
    * hc.register(chain.api.block_api.get_block, { block_num: 1 });
    * ```
