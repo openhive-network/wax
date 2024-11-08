@@ -47,9 +47,9 @@ import {
   transfer_to_vesting,
   update_proposal,
   update_proposal_votes,
-  vesting_shares_split,
   vote,
   withdraw_vesting,
+  witness_block_approve,
   witness_set_properties,
   witness_update
 } from "../../dist/bundle/index-full";
@@ -92,10 +92,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      voter: "alice",
-      author: "bob",
-      permlink: "example-post",
-      weight: 10000
+      vote: {
+        author: "bob",
+        permlink: "example-post",
+        voter: "alice",
+        weight: 10000
+      }
     });
   });
 
@@ -104,23 +106,23 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: witness_update = {
-        owner: "alice",
-        url: "https://alice.example.com",
-        block_signing_key: "HIVE8KhdgP747CbKNzrN2dzFCkBdGh",
-        props: {
-          account_creation_fee: {
-            amount: "100.000",
-            precision: 3,
-            nai: "@@100000021"
-          },
-          maximum_block_size: 65536,
-          hbd_interest_rate: 1000,
-        },
         fee: {
-          amount: "0.000",
+          amount: "0",
           precision: 3,
-          nai: "@@100000021"
-        }
+          nai: "@@000000021"
+        },
+        url: "https://alice.example.com",
+        owner: "alice",
+        props: {
+          hbd_interest_rate: 1000,
+          maximum_block_size: 65536,
+          account_creation_fee: {
+            amount: "100000",
+            precision: 3,
+            nai: "@@000000021"
+          },
+        },
+        block_signing_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh"
       };
 
       const op: operation = { witness_update: testedOp };
@@ -131,23 +133,23 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
     expect(retVal).toStrictEqual({
       witness_update: {
-        owner: "alice",
-        url: "https://alice.example.com",
-        block_signing_key: "HIVE8KhdgP747CbKNzrN2dzFCkBdGh",
-        props: {
-          account_creation_fee: {
-            amount: "100.000",
-            precision: 3,
-            nai: "@@100000021"
-          },
-          maximum_block_size: 65536,
-          hbd_interest_rate: 1000,
-        },
         fee: {
-          amount: "0.000",
+          amount: "0",
           precision: 3,
-          nai: "@@100000021"
-        }
+          nai: "@@000000021"
+        },
+        url: "https://alice.example.com",
+        owner: "alice",
+        props: {
+          hbd_interest_rate: 1000,
+          maximum_block_size: 65536,
+          account_creation_fee: {
+            amount: "100000",
+            precision: 3,
+            nai: "@@000000021"
+          },
+        },
+        block_signing_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh"
       }
     });
   });
@@ -157,11 +159,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: witness_set_properties = {
-          owner: "example_witness",
+          owner: "example-witness",
           props: {
-              "maximum_block_size": "65536",
-              "account_creation_fee": "3.000 HIVE",
-              "url": "https://example.com/mywitness"
+              maximum_block_size: "00000100",
+              account_creation_fee: "88130000000000002320bcbe",
+              url: "0f68747470733a2f2f686976652e696f",
+              key: "02472d6eb6d691b6de8b103b51ebdf4e128a523946d8cd03d6ded91b1497ee2e83"
           },
           extensions: []
       };
@@ -173,13 +176,16 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      owner: "example_witness",
-      props: {
-        "maximum_block_size": "65536",
-        "account_creation_fee": "3.000 HIVE",
-        "url": "https://example.com/mywitness"
-      },
-      extensions: []
+      witness_set_properties: {
+        owner: "example-witness",
+        props: {
+          maximum_block_size: "00000100",
+          account_creation_fee: "88130000000000002320bcbe",
+          url: "0f68747470733a2f2f686976652e696f",
+          key: "02472d6eb6d691b6de8b103b51ebdf4e128a523946d8cd03d6ded91b1497ee2e83"
+        },
+        extensions: []
+      }
     });
   });
 
@@ -187,17 +193,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
     const retVal = await waxTest(({ chain }) => {
       const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
-      const protoMessage = {
-        witness: "test witness",
-        blockId: "123456789"
-      } as operation;
+      const protoMessage: witness_block_approve = {
+          witness: "test-witness",
+          block_id: "123456789"
+      };
 
-      tx.pushOperation(protoMessage).validate();
+      const op: operation = { witness_block_approve: protoMessage }
+
+      tx.pushOperation(op).validate();
 
       return tx.transaction.operations[0];
     });
 
-    expect(retVal).toStrictEqual({ witness: "test witness", block_id: "123456789" });
+    expect(retVal).toStrictEqual({
+      witness_block_approve: {
+        witness: "test-witness",
+        block_id: "123456789"
+      }
+      });
   });
 
   test('Withdraw Vesting Test', async ({ waxTest }) => {
@@ -207,7 +220,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const testedOp: withdraw_vesting = {
         account: "user123",
         vesting_shares: {
-          amount: "100.000000",
+          amount: "100000000",
           precision: 6,
           nai: "@@000000037"
         }
@@ -220,51 +233,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "user123",
-      vesting_shares: {
-        amount: "100.000000",
-        precision: 6,
-        nai: "@@000000037"
-      }
-    });
-  });
-
-  test('Vesting Shares Split Test', async ({ waxTest }) => {
-    const retVal = await waxTest(({ chain }) => {
-      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-
-      const testedOp: vesting_shares_split = {
-        owner: "example_user",
-        vesting_shares_before_split: {
-          amount: "1000000",
-          precision: 6,
-          nai: "@@000000037"
-        },
-        vesting_shares_after_split: {
-          amount: "6000000",
-          precision: 12,
-          nai: "@@000000037"
-        }
-      };
-
-      const op: operation = { vesting_shares_split: testedOp };
-      txB.pushOperation(op).validate();
-
-      return txB.transaction.operations[0];
-    });
-
-    expect(retVal).toStrictEqual({
-      vesting_shares_split: {
-        owner: "example_user",
-        vesting_shares_before_split: {
-          amount: "1000000",
-          precision: 6,
-          nai: "@@000000037"
-        },
-        vesting_shares_after_split: {
-          amount: "6000000",
-          precision: 12,
-          nai: "@@000000037"
+      withdraw_vesting: {
+        account: "user123",
+        vesting_shares: {
+          amount: "100000000",
+          nai: "@@000000037",
+          precision: 6
         }
       }
     });
@@ -276,11 +250,11 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
       const testedOp: update_proposal = {
         proposal_id: '123456789',
-        creator: "creator_account",
+        creator: "creator-account",
         daily_pay: {
-          amount: '100.000',
+          amount: '100000',
           precision: 3,
-          nai: '@@000000021'
+          nai: '@@000000013'
         },
         subject: 'Updated Proposal Subject',
         permlink: 'updated-proposal-permlink',
@@ -298,20 +272,22 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      proposal_id: '123456789',
-      creator: "creator_account",
-      daily_pay: {
-        amount: '100.000',
-        precision: 3,
-        nai: '@@000000021'
-      },
-      subject: 'Updated Proposal Subject',
-      permlink: 'updated-proposal-permlink',
-      extensions: [{
-        update_proposal_end_date: {
-          end_date: '2024-01-01T00:00:00'
-        }
-      }]
+      update_proposal: {
+        proposal_id: '123456789',
+        creator: "creator-account",
+        daily_pay: {
+          amount: '100000',
+          precision: 3,
+          nai: '@@000000013'
+        },
+        subject: 'Updated Proposal Subject',
+        permlink: 'updated-proposal-permlink',
+        extensions: [{
+          update_proposal_end_date: {
+            end_date: '2024-01-01T00:00:00'
+          }
+        }]
+      }
     });
   });
 
@@ -320,7 +296,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: update_proposal_votes = {
-        voter: "someUser",
+        voter: "some-user",
         proposal_ids: ['1001', '1002'],
         approve: true,
         extensions: []
@@ -333,10 +309,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      voter: "someUser",
-      proposal_ids: ['1001', '1002'],
-      approve: true,
-      extensions: []
+      update_proposal_votes: {
+        voter: "some-user",
+        proposal_ids: ['1001', '1002'],
+        approve: true,
+        extensions: []
+      }
     });
   });
 
@@ -348,7 +326,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
         from_account: "alice",
         to_account: "bob",
         amount: {
-          amount: "100.000",
+          amount: "100000",
           precision: 3,
           nai: "@@000000021"
         },
@@ -362,14 +340,16 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      to_account: "bob",
-      amount: {
-        amount: "100.000",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      memo: "Here's your payment"
+      transfer: {
+        from_account: "alice",
+        to_account: "bob",
+        amount: {
+          amount: "100000",
+          precision: 3,
+          nai: "@@000000021"
+        },
+        memo: "Here's your payment"
+      }
     });
   });
 
@@ -378,12 +358,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: transfer_to_vesting = {
-        from_account: "sender_account",
-        to_account: "receiver_account",
+        from_account: "sender-account",
+        to_account: "receiver-account",
         amount: {
           amount: "1000",
           precision: 3,
-          nai: "1234567890"
+          nai: "@@000000021"
         }
       };
 
@@ -394,12 +374,14 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "sender_account",
-      to_account: "receiver_account",
-      amount: {
-        amount: "1000",
-        precision: 3,
-        nai: "1234567890"
+      transfer_to_vesting: {
+        from_account: "sender-account",
+        to_account: "receiver-account",
+        amount: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000021"
+        }
       }
     });
   });
@@ -426,14 +408,16 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from: "alice",
-      to: "bob",
-      amount: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000013"
-      },
-      memo: "Saving for future"
+      transfer_to_savings: {
+        from_account: "alice",
+        to_account: "bob",
+        amount: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000013"
+        },
+        memo: "Saving for future"
+      }
     });
   });
 
@@ -460,15 +444,17 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      request_id: 12345,
-      to_account: "bob",
-      amount: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      memo: "Rent payment"
+      transfer_from_savings: {
+        from_account: "alice",
+        request_id: 12345,
+        to_account: "bob",
+        amount: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000021"
+        },
+        memo: "Rent payment"
+      }
     });
   });
 
@@ -480,8 +466,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      ref_block_num: 1,
-      ref_block_prefix: 123456789,
+      ref_block_num: 51109,
+      ref_block_prefix: 2785934438,
       expiration: "2023-08-01T15:38:48",
       operations: [],
       extensions: [],
@@ -494,8 +480,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: set_withdraw_vesting_route = {
-        from_account: "fromUser",
-        to_account: "toUser",
+        from_account: "from-user",
+        to_account: "to-user",
         percent: 50,
         auto_vest: true
       };
@@ -507,10 +493,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "fromUser",
-      to_account: "toUser",
-      percent: 50,
-      auto_vest: true
+      set_withdraw_vesting_route: {
+        from_account: "from-user",
+        to_account: "to-user",
+        percent: 50,
+        auto_vest: true
+      }
     });
   });
 
@@ -519,12 +507,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: request_account_recovery = {
-        recovery_account: "recoveryUser",
-        account_to_recover: "compromisedUser",
+        recovery_account: "recovery-user",
+        account_to_recover: "compromised-user",
         new_owner_authority: {
           weight_threshold: 1,
           account_auths: { "intermediary": 1 },
-          key_auths: { "public_key": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         extensions: []
       };
@@ -536,14 +524,16 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      recovery_account: "recoveryUser",
-      account_to_recover: "compromisedUser",
-      new_owner_authority: {
-        weight_threshold: 1,
-        account_auths: { "intermediary": 1 },
-        key_auths: { "public_key": 1 }
-      },
-      extensions: []
+      request_account_recovery: {
+        recovery_account: "recovery-user",
+        account_to_recover: "compromised-user",
+        new_owner_authority: {
+          weight_threshold: 1,
+          account_auths: { "intermediary": 1 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
+        },
+        extensions: []
+      }
     });
   });
 
@@ -564,9 +554,11 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      proposal_owner: "user123",
-      proposal_ids: ['101', '202'],
-      extensions: []
+      remove_proposal: {
+        proposal_owner: "user123",
+        proposal_ids: ['101', '202'],
+        extensions: []
+      }
     });
   });
 
@@ -593,15 +585,17 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "sender",
-      to_account: "receiver",
-      amount: { amount: "1000", precision: 3, nai: "@@000000021" },
-      memo: "Monthly subscription",
-      recurrence: 720,
-      executions: 12,
-      extensions: [
-        { recurrent_transfer_pair_id: { pair_id: 1 } }
-      ]
+      recurrent_transfer: {
+        from_account: "sender",
+        to_account: "receiver",
+        amount: { amount: "1000", precision: 3, nai: "@@000000021" },
+        memo: "Monthly subscription",
+        recurrence: 720,
+        executions: 12,
+        extensions: [
+          { recurrent_transfer_pair_id: { pair_id: 1 } }
+        ]
+      }
     });
   });
 
@@ -610,16 +604,16 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: recover_account = {
-        account_to_recover: "example_account",
+        account_to_recover: "example-account",
         new_owner_authority: {
           weight_threshold: 1,
-          account_auths: {},
-          key_auths: {}
+          account_auths: { "intermediary": 1 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         recent_owner_authority: {
           weight_threshold: 1,
-          account_auths: {},
-          key_auths: {}
+          account_auths: { "gtg": 1 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         extensions: []
       };
@@ -631,18 +625,20 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account_to_recover: "example_account",
-      new_owner_authority: {
-        weight_threshold: 1,
-        account_auths: {},
-        key_auths: {}
-      },
-      recent_owner_authority: {
-        weight_threshold: 1,
-        account_auths: {},
-        key_auths: {}
-      },
-      extensions: []
+      recover_account: {
+        account_to_recover: "example-account",
+        new_owner_authority: {
+          weight_threshold: 1,
+          account_auths: { "intermediary": 1 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
+        },
+        recent_owner_authority: {
+          weight_threshold: 1,
+          account_auths: { "gtg": 1 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
+        },
+        extensions: []
+      }
     });
   });
 
@@ -651,20 +647,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: pow = {
-        worker_account: "some_account",
-        block_id: "0000000000000000000000000000000000000000",
-        nonce: '1234567890',
         work: {
-          worker: "some_worker",
-          input: "some_input",
-          signature: "some_signature",
-          work: "some_work"
+          work: "000000002c131fe666ffc53cd4ac3c1bd4c80298294f7980ea5ffff510d0d472",
+          input: "9401eda213a342333f08b5cb78a63e001a94bf3b9b4e4010361dc2ac091d2291",
+          worker: "STM56h3LYjBgwFNucK4BNWwzV9S9odoQgtBTo8tW7HSBWQr6B85fG",
+          signature: "1fcd252a535a25dfff6bf8207c2c81c27ace3658bc894046cb24c5e01ba13dad76661ece701471f49c8c11b4eabeb586544876495e8e7d6d62e86931a68aa97a67"
         },
+        nonce: "2679032206",
         props: {
-          account_creation_fee: { amount: "1000.000", precision: 3, nai: "@@000000021" },
-          maximum_block_size: 65536,
-          hbd_interest_rate: 1000
-        }
+          hbd_interest_rate: 1000,
+          maximum_block_size: 131072,
+          account_creation_fee: {
+            nai: "@@000000021",
+            amount: "1",
+            precision: 3
+          }
+        },
+        block_id: "003e9e6a776ccd3c72e6f1d3dc42f8cd5ee7d4bf",
+        worker_account: "some-account"
       };
 
       const op: operation = { pow: testedOp };
@@ -674,19 +674,25 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      worker_account: "some_account",
-      block_id: "0000000000000000000000000000000000000000",
-      nonce: '1234567890',
-      work: {
-        worker: "some_worker",
-        input: "some_input",
-        signature: "some_signature",
-        work: "some_work"
-      },
-      props: {
-        account_creation_fee: { amount: "1000.000", precision: 3, nai: "@@000000021" },
-        maximum_block_size: 65536,
-        hbd_interest_rate: 1000
+      pow: {
+        work: {
+          work: "000000002c131fe666ffc53cd4ac3c1bd4c80298294f7980ea5ffff510d0d472",
+          input: "9401eda213a342333f08b5cb78a63e001a94bf3b9b4e4010361dc2ac091d2291",
+          worker: "STM56h3LYjBgwFNucK4BNWwzV9S9odoQgtBTo8tW7HSBWQr6B85fG",
+          signature: "1fcd252a535a25dfff6bf8207c2c81c27ace3658bc894046cb24c5e01ba13dad76661ece701471f49c8c11b4eabeb586544876495e8e7d6d62e86931a68aa97a67"
+        },
+        nonce: "2679032206",
+        props: {
+          hbd_interest_rate: 1000,
+          maximum_block_size: 131072,
+          account_creation_fee: {
+            nai: "@@000000021",
+            amount: "1",
+            precision: 3
+          }
+        },
+        block_id: "003e9e6a776ccd3c72e6f1d3dc42f8cd5ee7d4bf",
+        worker_account: "some-account"
       }
     });
   });
@@ -699,19 +705,19 @@ test.describe('Wax transaction hive operations regression tests', () => {
         work: {
           pow2: {
             input: {
-              worker_account: "example_worker",
+              worker_account: "example-worker",
               prev_block: "0000000000000000",
               nonce: '123456789'
             },
             pow_summary: 0
           }
         },
-        new_owner_key: '000000000000',
+        new_owner_key: 'STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r',
         props: {
           account_creation_fee: {
             amount: "3000",
             precision: 3,
-            nai: "@@000000013"
+            nai: "@@000000021"
           },
           maximum_block_size: 65536,
           hbd_interest_rate: 1000
@@ -725,25 +731,27 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      work: {
-        pow2: {
-          input: {
-            worker_account: "example_worker",
-            prev_block: "0000000000000000",
-            nonce: '123456789'
-          },
-          pow_summary: 0
-        }
-      },
-      new_owner_key: '000000000000',
-      props: {
-        account_creation_fee: {
-          amount: "3000",
-          precision: 3,
-          nai: "@@000000013"
+      pow2: {
+        work: {
+          pow2: {
+            input: {
+              worker_account: "example-worker",
+              prev_block: "0000000000000000",
+              nonce: '123456789'
+            },
+            pow_summary: 0
+          }
         },
-        maximum_block_size: 65536,
-        hbd_interest_rate: 1000
+        new_owner_key: 'STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r',
+        props: {
+          account_creation_fee: {
+            amount: "3000",
+            precision: 3,
+            nai: "@@000000021"
+          },
+          maximum_block_size: 65536,
+          hbd_interest_rate: 1000
+        }
       }
     });
   });
@@ -776,20 +784,22 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      owner: "user123",
-      orderid: 98765,
-      amount_to_sell: {
-        amount: "100",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      min_to_receive: {
-        amount: "200",
-        precision: 3,
-        nai: "@@000000013"
-      },
-      fill_or_kill: true,
-      expiration: "2023-12-01T00:00:00"
+      limit_order_create: {
+        owner: "user123",
+        orderid: 98765,
+        amount_to_sell: {
+          amount: "100",
+          precision: 3,
+          nai: "@@000000021"
+        },
+        min_to_receive: {
+          amount: "200",
+          precision: 3,
+          nai: "@@000000013"
+        },
+        fill_or_kill: true,
+        expiration: "2023-12-01T00:00:00"
+      }
     });
   });
 
@@ -821,34 +831,36 @@ test.describe('Wax transaction hive operations regression tests', () => {
         expiration: "2023-12-01T00:00:00"
       };
 
-      const op: operation = { "limit_order_create2" : testedOp };
+      const op: operation = { limit_order_create2 : testedOp };
       txB.pushOperation(op).validate();
 
       return txB.transaction.operations[0];
     });
 
     expect(retVal).toStrictEqual({
-      owner: "user123",
-      orderid: 789,
-      amount_to_sell: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      fill_or_kill: true,
-      exchange_rate: {
-        base: {
-          amount: "2000",
+      limit_order_create2: {
+        owner: "user123",
+        orderid: 789,
+        amount_to_sell: {
+          amount: "1000",
           precision: 3,
           nai: "@@000000021"
         },
-        quote: {
-          amount: "500",
-          precision: 3,
-          nai: "@@000000013"
-        }
-      },
-      expiration: "2023-12-01T00:00:00"
+        fill_or_kill: true,
+        exchange_rate: {
+          base: {
+            amount: "2000",
+            precision: 3,
+            nai: "@@000000021"
+          },
+          quote: {
+            amount: "500",
+            precision: 3,
+            nai: "@@000000013"
+          }
+        },
+        expiration: "2023-12-01T00:00:00"
+      }
     });
   });
 
@@ -867,7 +879,11 @@ test.describe('Wax transaction hive operations regression tests', () => {
       return txB.transaction.operations[0];
     });
 
-    expect(retVal).toStrictEqual({ owner: "user123", orderid: 456 });
+    expect(retVal).toStrictEqual({
+      limit_order_cancel: {
+        owner: "user123", orderid: 456
+      }
+    });
   });
 
   test('Feed Publish Test', async ({ waxTest }) => {
@@ -875,15 +891,15 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: feed_publish = {
-        publisher: "example_witness",
+        publisher: "example-witness",
         exchange_rate: {
           base: {
-            amount: "0.345",
+            amount: "0345",
             precision: 3,
             nai: "@@000000013"
           },
           quote: {
-            amount: "1.000",
+            amount: "1000",
             precision: 3,
             nai: "@@000000021"
           }
@@ -897,17 +913,19 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      publisher: "example_witness",
-      exchange_rate: {
-        base: {
-          amount: "0.345",
-          precision: 3,
-          nai: "@@000000013"
-        },
-        quote: {
-          amount: "1.000",
-          precision: 3,
-          nai: "@@000000021"
+      feed_publish: {
+        publisher: "example-witness",
+        exchange_rate: {
+          base: {
+            amount: "0345",
+            precision: 3,
+            nai: "@@000000013"
+          },
+          quote: {
+            amount: "1000",
+            precision: 3,
+            nai: "@@000000021"
+          }
         }
       }
     });
@@ -949,28 +967,30 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      to_account: "bob",
-      agent: "charlie",
-      escrow_id: 12345,
-      hbd_amount: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000013"
-      },
-      hive_amount: {
-        amount: "2000",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      fee: {
-        amount: "50",
-        precision: 3,
-        nai: "@@000000013"
-      },
-      ratification_deadline: "2023-09-01T12:00:00",
-      escrow_expiration: "2023-12-01T12:00:00",
-      json_meta: '{}'
+      escrow_transfer: {
+        from_account: "alice",
+        to_account: "bob",
+        agent: "charlie",
+        escrow_id: 12345,
+        hbd_amount: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000013"
+        },
+        hive_amount: {
+          amount: "2000",
+          precision: 3,
+          nai: "@@000000021"
+        },
+        fee: {
+          amount: "50",
+          precision: 3,
+          nai: "@@000000013"
+        },
+        ratification_deadline: "2023-09-01T12:00:00",
+        escrow_expiration: "2023-12-01T12:00:00",
+        json_meta: '{}'
+      }
     });
   });
 
@@ -1004,21 +1024,23 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      to_account: "bob",
-      agent: "charlie",
-      who: "alice",
-      receiver: "bob",
-      escrow_id: 12345,
-      hbd_amount: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000013"
-      },
-      hive_amount: {
-        amount: "2000",
-        precision: 3,
-        nai: "@@000000021"
+      escrow_release: {
+        from_account: "alice",
+        to_account: "bob",
+        agent: "charlie",
+        who: "alice",
+        receiver: "bob",
+        escrow_id: 12345,
+        hbd_amount: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000013"
+        },
+        hive_amount: {
+          amount: "2000",
+          precision: 3,
+          nai: "@@000000021"
+        }
       }
     });
   });
@@ -1042,11 +1064,13 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      to_account: "bob",
-      agent: "charlie",
-      who: "alice",
-      escrow_id: 101
+      escrow_dispute: {
+        from_account: "alice",
+        to_account: "bob",
+        agent: "charlie",
+        who: "alice",
+        escrow_id: 101
+      }
     });
   });
 
@@ -1057,7 +1081,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const testedOp: escrow_approve = {
         from_account: "sender",
         to_account: "receiver",
-        agent: "escrow_agent",
+        agent: "escrow-agent",
         who: "receiver",
         escrow_id: 123456,
         approve: true
@@ -1070,12 +1094,14 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "sender",
-      to_account: "receiver",
-      agent: "escrow_agent",
-      who: "receiver",
-      escrow_id: 123456,
-      approve: true
+      escrow_approve: {
+        from_account: "sender",
+        to_account: "receiver",
+        agent: "escrow-agent",
+        who: "receiver",
+        escrow_id: 123456,
+        approve: true
+      }
     });
   });
 
@@ -1084,7 +1110,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: delete_comment = {
-        author: "example_user",
+        author: "example-user",
         permlink: "example_post"
       };
 
@@ -1095,8 +1121,10 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      author: "example_user",
-      permlink: "example_post"
+      delete_comment: {
+        author: "example-user",
+        permlink: "example_post"
+      }
     });
   });
 
@@ -1109,8 +1137,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
         delegatee: "user2",
         vesting_shares: {
           amount: "1000",
-          precision: 3,
-          nai: "1234567890"
+          precision: 6,
+          nai: "@@000000037"
         }
       };
 
@@ -1126,8 +1154,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
         delegatee: "user2",
         vesting_shares: {
           amount: "1000",
-          precision: 3,
-          nai: "1234567890"
+          precision: 6,
+          nai: "@@000000037"
         }
       }
     });
@@ -1138,7 +1166,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: decline_voting_rights = {
-        account: "example_user",
+        account: "example-user",
         decline: true
       };
 
@@ -1149,8 +1177,10 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "example_user",
-      decline: true
+      decline_voting_rights: {
+        account: "example-user",
+        decline: true
+      }
     });
   });
 
@@ -1161,7 +1191,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const testedOp: custom = {
         required_auths: ["user1", "user2"],
         id: 123,
-        data: "data_payload"
+        data: "7598a1d3e8cdf938"
       };
 
       const op: operation = { custom: testedOp };
@@ -1171,9 +1201,11 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      required_auths: ["user1", "user2"],
-      id: 123,
-      data: "data_payload"
+      custom: {
+        required_auths: ["user1", "user2"],
+        id: 123,
+        data: "7598a1d3e8cdf938"
+      }
     });
   });
 
@@ -1183,7 +1215,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
       const testedOp: custom_json = {
         required_auths: [],
-        required_posting_auths: ["example_user"],
+        required_posting_auths: ["example-user"],
         id: "follow",
         json: "{\"follower\":\"example_user\",\"following\":\"target_user\",\"action\":\"follow\"}"
       };
@@ -1195,10 +1227,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      required_auths: [],
-      required_posting_auths: ["example_user"],
-      id: "follow",
-      json: "{\"follower\":\"example_user\",\"following\":\"target_user\",\"action\":\"follow\"}"
+      custom_json: {
+        required_auths: [],
+        required_posting_auths: ["example-user"],
+        id: "follow",
+        json: "{\"follower\":\"example_user\",\"following\":\"target_user\",\"action\":\"follow\"}"
+      }
     });
   });
 
@@ -1212,7 +1246,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
         start_date: "2023-09-01T00:00:00",
         end_date: "2023-12-01T00:00:00",
         daily_pay: {
-          amount: "100.000",
+          amount: "100000",
           precision: 3,
           nai: "@@000000013"
         },
@@ -1234,7 +1268,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
         start_date: "2023-09-01T00:00:00",
         end_date: "2023-12-01T00:00:00",
         daily_pay: {
-          amount: "100.000",
+          amount: "100000",
           precision: 3,
           nai: "@@000000013"
         },
@@ -1255,19 +1289,19 @@ test.describe('Wax transaction hive operations regression tests', () => {
         owner: {
           weight_threshold: 1,
           account_auths: { "account1": 1 },
-          key_auths: { "key1": 1 }
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         active: {
           weight_threshold: 1,
           account_auths: { "account2": 1 },
-          key_auths: { "key2": 1 }
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         posting: {
           weight_threshold: 1,
           account_auths: { "account3": 1 },
-          key_auths: { "key3": 1 }
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
-        memo_key: "memo123",
+        memo_key: "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r",
         json_metadata: "",
         extensions: []
       };
@@ -1279,26 +1313,28 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      creator: "alice",
-      new_account_name: "bob",
-      owner: {
-        weight_threshold: 1,
-        account_auths: { "account1": 1 },
-        key_auths: { "key1": 1 }
-      },
-      active: {
-        weight_threshold: 1,
-        account_auths: { "account2": 1 },
-        key_auths: { "key2": 1 }
-      },
-      posting: {
-        weight_threshold: 1,
-        account_auths: { "account3": 1 },
-        key_auths: { "key3": 1 }
-      },
-      memo_key: "memo123",
-      json_metadata: "",
-      extensions: []
+      create_claimed_account: {
+        creator: "alice",
+        new_account_name: "bob",
+        owner: {
+          weight_threshold: 1,
+          account_auths: { "account1": 1 },
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
+        },
+        active: {
+          weight_threshold: 1,
+          account_auths: { "account2": 1 },
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
+        },
+        posting: {
+          weight_threshold: 1,
+          account_auths: { "account3": 1 },
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
+        },
+        memo_key: "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r",
+        json_metadata: "",
+        extensions: []
+      }
     });
   });
 
@@ -1310,7 +1346,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
         owner: "alice",
         requestid: 123,
         amount: {
-          amount: "1000.000",
+          amount: "1000000",
           precision: 3,
           nai: "@@000000013"
         }
@@ -1323,12 +1359,14 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      owner: "alice",
-      requestid: 123,
-      amount: {
-        amount: "1000.000",
-        precision: 3,
-        nai: "@@000000013"
+      convert: {
+        owner: "alice",
+        requestid: 123,
+        amount: {
+          amount: "1000000",
+          precision: 3,
+          nai: "@@000000013"
+        }
       }
     });
   });
@@ -1354,13 +1392,15 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      parent_author: "",
-      parent_permlink: "travel",
-      author: "user123",
-      permlink: "my-first-post",
-      title: "My First Post",
-      body: "Hello, this is my first post on the platform!",
-      json_metadata: '{"app":"peakd/2023.2.3","format":"markdown","tags":["introduction","firstpost"]}'
+      comment: {
+        parent_author: "",
+        parent_permlink: "travel",
+        author: "user123",
+        permlink: "my-first-post",
+        title: "My First Post",
+        body: "Hello, this is my first post on the platform!",
+        json_metadata: '{"app":"peakd/2023.2.3","format":"markdown","tags":["introduction","firstpost"]}'
+      }
     });
   });
 
@@ -1369,7 +1409,7 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: comment_options = {
-        author: "example_author",
+        author: "example-author",
         permlink: "example-permlink",
         max_accepted_payout: { amount: "1000000", precision: 3, nai: "@@000000013" },
         percent_hbd: 10000,
@@ -1392,20 +1432,22 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      author: "example_author",
-      permlink: "example-permlink",
-      max_accepted_payout: { amount: "1000000", precision: 3, nai: "@@000000013" },
-      percent_hbd: 10000,
-      allow_votes: true,
-      allow_curation_rewards: true,
-      extensions: [{
-        comment_payout_beneficiaries: {
-          beneficiaries: [
-            { account: "beneficiary1", weight: 5000 },
-            { account: "beneficiary2", weight: 5000 }
-          ]
-        }
-      }]
+      comment_options: {
+        author: "example-author",
+        permlink: "example-permlink",
+        max_accepted_payout: { amount: "1000000", precision: 3, nai: "@@000000013" },
+        percent_hbd: 10000,
+        allow_votes: true,
+        allow_curation_rewards: true,
+        extensions: [{
+          comment_payout_beneficiaries: {
+            beneficiaries: [
+              { account: "beneficiary1", weight: 5000 },
+              { account: "beneficiary2", weight: 5000 }
+            ]
+          }
+        }]
+      }
     });
   });
 
@@ -1414,10 +1456,10 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: collateralized_convert = {
-        owner: "exampleUser",
+        owner: "example-user",
         requestid: 12345,
         amount: {
-          amount: "100.000",
+          amount: "100000",
           precision: 3,
           nai: "@@000000021"
         }
@@ -1430,12 +1472,14 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      owner: "exampleUser",
-      requestid: 12345,
-      amount: {
-        amount: "100.000",
-        precision: 3,
-        nai: "@@000000021"
+      collateralized_convert: {
+        owner: "example-user",
+        requestid: 12345,
+        amount: {
+          amount: "100000",
+          precision: 3,
+          nai: "@@000000021"
+        }
       }
     });
   });
@@ -1446,9 +1490,9 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
       const testedOp: claim_reward_balance = {
         account: "alice",
-        reward_hive: { amount: "100.000", precision: 3, nai: "@@000000021" },
-        reward_hbd: { amount: "50.000", precision: 3, nai: "@@000000013" },
-        reward_vests: { amount: "200.000", precision: 6, nai: "@@000000037" }
+        reward_hive: { amount: "100000", precision: 3, nai: "@@000000021" },
+        reward_hbd: { amount: "50000", precision: 3, nai: "@@000000013" },
+        reward_vests: { amount: "200000", precision: 6, nai: "@@000000037" }
       };
 
       const op: operation = { claim_reward_balance: testedOp };
@@ -1458,10 +1502,12 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "alice",
-      reward_hive: { amount: "100.000", precision: 3, nai: "@@000000021" },
-      reward_hbd: { amount: "50.000", precision: 3, nai: "@@000000013" },
-      reward_vests: { amount: "200.000", precision: 6, nai: "@@000000037" }
+      claim_reward_balance: {
+        account: "alice",
+        reward_hive: { amount: "100000", precision: 3, nai: "@@000000021" },
+        reward_hbd: { amount: "50000", precision: 3, nai: "@@000000013" },
+        reward_vests: { amount: "200000", precision: 6, nai: "@@000000037" }
+      }
     });
   });
 
@@ -1486,13 +1532,15 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      creator: "user123",
-      fee: {
-        amount: "1000",
-        precision: 3,
-        nai: "@@000000021"
-      },
-      extensions: []
+      claim_account: {
+        creator: "user123",
+        fee: {
+          amount: "1000",
+          precision: 3,
+          nai: "@@000000021"
+        },
+        extensions: []
+      }
     });
   });
 
@@ -1501,8 +1549,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: change_recovery_account = {
-        account_to_recover: "example_user",
-        new_recovery_account: "new_recovery_account",
+        account_to_recover: "example-user",
+        new_recovery_account: "new-recovery",
         extensions: []
       };
 
@@ -1514,8 +1562,8 @@ test.describe('Wax transaction hive operations regression tests', () => {
 
     expect(retVal).toStrictEqual({
       change_recovery_account: {
-        account_to_recover: "example_user",
-        new_recovery_account: "new_recovery_account",
+        account_to_recover: "example-user",
+        new_recovery_account: "new-recovery",
         extensions: []
       }
     });
@@ -1537,8 +1585,10 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      from_account: "alice",
-      request_id: 1234
+      cancel_transfer_from_savings: {
+        from_account: "alice",
+        request_id: 1234
+      }
     });
   });
 
@@ -1583,8 +1633,10 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "user1",
-      proxy: "user2"
+      account_witness_proxy: {
+        account: "user1",
+        proxy: "user2"
+      }
     });
   });
 
@@ -1593,23 +1645,23 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_update2 = {
-        account: "example_account",
+        account: "example-account",
         owner: {
           weight_threshold: 1,
-          account_auths: {"account_name_1": 1},
-          key_auths: {"first_key": 1}
+          account_auths: {"account-name-1": 1},
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1}
         },
         active: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {"active_key": 1}
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1}
         },
         posting: {
           weight_threshold: 2,
-          account_auths: {"account_name_2": 1},
-          key_auths: {"posting_key1": 1, "posting_key2": 1}
+          account_auths: {"account-name-2": 1},
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1, "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1}
         },
-        memo_key: "memo_key_example",
+        memo_key: "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r",
         json_metadata: "{}",
         posting_json_metadata: "{}",
         extensions: []
@@ -1622,26 +1674,28 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "example_account",
-      owner: {
-        weight_threshold: 1,
-        account_auths: {"account_name_1": 1},
-        key_auths: {"first_key": 1}
-      },
-      active: {
-        weight_threshold: 1,
-        account_auths: {},
-        key_auths: {"active_key": 1}
-      },
-      posting: {
-        weight_threshold: 2,
-        account_auths: {"account_name_2": 1},
-        key_auths: {"posting_key1": 1, "posting_key2": 1}
-      },
-      memo_key: "memo_key_example",
-      json_metadata: "{}",
-      posting_json_metadata: "{}",
-      extensions: []
+      account_update2: {
+        account: "example-account",
+        owner: {
+          weight_threshold: 1,
+          account_auths: {"account-name-1": 1},
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1}
+        },
+        active: {
+          weight_threshold: 1,
+          account_auths: {},
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1}
+        },
+        posting: {
+          weight_threshold: 2,
+          account_auths: {"account-name-2": 1},
+          key_auths: {"STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1, "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1}
+        },
+        memo_key: "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r",
+        json_metadata: "{}",
+        posting_json_metadata: "{}",
+        extensions: []
+      }
     });
   });
 
@@ -1650,23 +1704,23 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       const testedOp: account_update = {
-        account: "exampleUser",
+        account: "example-user",
         owner: {
           weight_threshold: 1,
-          account_auths: { "accountName1": 1, "accountName2": 2 },
-          key_auths: { "key1": 1, "key2": 2 }
+          account_auths: { "account-name1": 1, "account-name2": 2 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 2 }
         },
         active: {
           weight_threshold: 1,
-          account_auths: { "anotherAccount1": 1, "anotherAccount2": 2 },
-          key_auths: { "activeKey1": 1, "activeKey2": 2 }
+          account_auths: { "another-account1": 1, "another-account2": 2 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 2 }
         },
         posting: {
           weight_threshold: 1,
-          account_auths: { "postingAccount1": 3, "postingAccount2": 4 },
-          key_auths: { "postingKey1": 3, "postingKey2": 4 }
+          account_auths: { "posting-account1": 3, "posting-account2": 4 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 3, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 4 }
         },
-        memo_key: "memoKeyExample",
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
         json_metadata: "{}"
       };
 
@@ -1677,24 +1731,26 @@ test.describe('Wax transaction hive operations regression tests', () => {
     });
 
     expect(retVal).toStrictEqual({
-      account: "exampleUser",
-      owner: {
-        weight_threshold: 1,
-        account_auths: { "accountName1": 1, "accountName2": 2 },
-        key_auths: { "key1": 1, "key2": 2 }
-      },
-      active: {
-        weight_threshold: 1,
-        account_auths: { "anotherAccount1": 1, "anotherAccount2": 2 },
-        key_auths: { "activeKey1": 1, "activeKey2": 2 }
-      },
-      posting: {
-        weight_threshold: 1,
-        account_auths: { "postingAccount1": 3, "postingAccount2": 4 },
-        key_auths: { "postingKey1": 3, "postingKey2": 4 }
-      },
-      memo_key: "memoKeyExample",
-      json_metadata: "{}"
+      account_update: {
+        account: "example-user",
+        owner: {
+          weight_threshold: 1,
+          account_auths: { "account-name1": 1, "account-name2": 2 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 2 }
+        },
+        active: {
+          weight_threshold: 1,
+          account_auths: { "another-account1": 1, "another-account2": 2 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 2 }
+        },
+        posting: {
+          weight_threshold: 1,
+          account_auths: { "posting-account1": 3, "posting-account2": 4 },
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 3, "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 4 }
+        },
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
+        json_metadata: "{}"
+      }
     });
   });
 
@@ -1708,24 +1764,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
           precision: 3,
           nai: "@@000000021"
         },
-        creator: "existing_account",
-        new_account_name: "new_account",
+        creator: "existing-account",
+        new_account_name: "new-account",
         owner: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE6k9a45YAq...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         active: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE5k9b55YDf...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         posting: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE4j8d60Yes...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
-        memo_key: "HIVE7d9g45Xdz...",
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
         json_metadata: "{}"
       };
 
@@ -1742,24 +1798,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
           precision: 3,
           nai: "@@000000021"
         },
-        creator: "existing_account",
-        new_account_name: "new_account",
+        creator: "existing-account",
+        new_account_name: "new-account",
         owner: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE6k9a45YAq...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         active: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE5k9b55YDf...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
         posting: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: { "HIVE4j8d60Yes...": 1 }
+          key_auths: { "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh": 1 }
         },
-        memo_key: "HIVE7d9g45Xdz...",
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
         json_metadata: "{}"
       }
     });
@@ -1772,24 +1828,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
       const testedOp: account_create_with_delegation = {
         fee: {amount: "1000", precision: 3, nai: "@@000000021"},
         delegation: {amount: "50000", precision: 6, nai: "@@000000037"},
-        creator: "test_creator",
-        new_account_name: "new_account",
+        creator: "test-creator",
+        new_account_name: "new-account",
         owner: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         active: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         posting: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
-        memo_key: "STM5j1234567890",
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
         json_metadata: "",
         extensions: []
       };
@@ -1804,24 +1860,24 @@ test.describe('Wax transaction hive operations regression tests', () => {
       account_create_with_delegation: {
         fee: {amount: "1000", precision: 3, nai: "@@000000021"},
         delegation: {amount: "50000", precision: 6, nai: "@@000000037"},
-        creator: "test_creator",
-        new_account_name: "new_account",
+        creator: "test-creator",
+        new_account_name: "new-account",
         owner: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         active: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
         posting: {
           weight_threshold: 1,
           account_auths: {},
-          key_auths: {}
+          key_auths: { "STM7zRaYjSZQ3k6UiZ81rxbZtigDhUTuGP4zVZr7NvoCapbuCgN6r": 1 }
         },
-        memo_key: "STM5j1234567890",
+        memo_key: "STM5CTaWTCA8DWRjXGy2XNL4otzEZQkQjowxL3f8yToTi8KM6PrFh",
         json_metadata: "",
         extensions: []
       }
