@@ -389,7 +389,7 @@ export const initminerAccountApi = {
     ],
     weight_threshold: 1
   },
-  balance: "0.004 HIVE",
+  balance: "0.006 HIVE",
   can_vote: true,
   comment_count: 0,
   created: "2016-03-24T16:00:00",
