@@ -69,38 +69,49 @@ export class HiveEndpoint implements IHiveEndpoint {
   }
 
   public async performCheck(): Promise<void> {
-    for(const endpointUrl of this.endpointUrls)
-      try {
-        const stats = await this.caller(endpointUrl);
+    const results = await Promise.allSettled(this.endpointUrls.map(url => this.verifyUponUrl(url)));
 
-        const data: IHiveEndpointDataUp = {
-          endpointUrl,
-          up: true,
-          latency: stats.end - stats.start
-        };
+    for (let i = 0; i < results.length; ++i) {
+      const result = results[i];
 
-        if(this.down.has(endpointUrl)) {
-          this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: true } satisfies INewUpDownEvent );
-          this.down.delete(endpointUrl);
-        }
+      if (result.status === "rejected")
+        this.checker.emit("error", new WaxHealthCheckerEndpointUrlError(result.reason instanceof Error ? result.reason : new Error(String(result.reason)), this.endpointUrls[i]));
+    }
+  }
 
-        this.checker.emit("stats", data);
-        this.up.set(endpointUrl, data);
-      } catch (error) {
-        const data: IHiveEndpointDataDown = {
-          endpointUrl,
-          up: false
-        };
+  private async verifyUponUrl(endpointUrl: string): Promise<void> {
+    try {
+      const stats = await this.caller(endpointUrl);
 
-        if(this.up.has(endpointUrl)) {
-          this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: false } satisfies INewUpDownEvent );
-          this.up.delete(endpointUrl);
-        }
+      const data: IHiveEndpointDataUp = {
+        endpointUrl,
+        up: true,
+        latency: stats.end - stats.start
+      };
 
-        this.checker.emit("stats", data);
-        this.down.set(endpointUrl, data);
-
-        throw new WaxHealthCheckerEndpointUrlError(error instanceof Error ? error : new Error(String(error)), endpointUrl);
+      if (this.down.has(endpointUrl)) {
+        this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: true } satisfies INewUpDownEvent);
+        this.down.delete(endpointUrl);
       }
+
+      this.checker.emit("stats", data);
+      this.up.set(endpointUrl, data);
+    } catch (error) {
+      const data: IHiveEndpointDataDown = {
+        endpointUrl,
+        up: false
+      };
+
+      if (this.up.has(endpointUrl)) {
+        this.checker.emit("statechanged", { data, apiCallerId: this.apiCallerId, paths: this.paths, endpointUrl, up: false } satisfies INewUpDownEvent);
+        this.up.delete(endpointUrl);
+      }
+
+      this.checker.emit("stats", data);
+      this.down.set(endpointUrl, data);
+
+      throw new WaxHealthCheckerEndpointUrlError(error instanceof Error ? error : new Error(String(error)), endpointUrl);
+    }
+
   }
 }
