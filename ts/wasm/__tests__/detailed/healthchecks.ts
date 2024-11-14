@@ -66,7 +66,8 @@ test.describe('Wax object interface chain tests', () => {
   });
 
   test('Should be able to create endpoint healthchecker and retrieve data 2 times while having invalid failing endpoint', async ({ waxTest }) => {
-    const testEndpoints = ["https://api.hive.blog", "https://non-existing-failing-endpoint"];
+    /// use IP for broken endpoint instead of nonexisting-dns-name to avoid OS differences and fake test failures caused by name resolution
+    const testEndpoints = ["https://api.hive.blog", "https://1.1.1.1", "https://api.openhive.network"];
 
     const retVal = await waxTest(({ wax, chain }, testEndpoints) => {
       return new Promise<string>((resolve, reject) => {
@@ -77,8 +78,9 @@ test.describe('Wax object interface chain tests', () => {
         hc.on("data", (data: Array<IScoredEndpoint>) => {
           ++i;
 
-          if (data.length !== 2 || data[1].endpointUrl === "https://api.hive.blog")
-            return reject("Invalid endpoints in data");
+          /// It is bad when HC returned data having different length than provided endpoints count or one of valid URLs is at the end (broken one shall be there)
+          if (data.length !== 3 || (data[2].endpointUrl === "https://api.hive.blog" || data[2].endpointUrl === "https://api.openhive.network"))
+            return reject(`Invalid endpoints in data: data length: ${data.length}, data: ${JSON.stringify(data)}`);
 
           if (i === 2) {
             hc.unregisterAll();
@@ -86,13 +88,14 @@ test.describe('Wax object interface chain tests', () => {
           }
         });
 
-        hc.on("error", error => { console.error(error.message); });
+        hc.on("error", error => { console.error(`Received HC specific error: ${error.message}`); });
 
         hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", testEndpoints);
       });
     }, testEndpoints);
 
-    expect(retVal).toStrictEqual("https://api.hive.blog");
+    expect(retVal === "https://api.hive.blog" ||
+           retVal === "https://api.openhive.network").toBe(true);
   });
 
    test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
