@@ -212,7 +212,7 @@ ts/wasm/lib/proto
 dist
 node_modules
 python/wax/proto
-python/wax.cpp
+python/cpp_python_bridge.cpp
 .parcel-cache
 .pnpm-store
 results.json
