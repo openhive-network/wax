@@ -14,7 +14,7 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t
 import cython
 from cython.operator cimport dereference, preincrement
 
-from wax cimport error_code, json_asset, json_price, result, protocol, proto_protocol
+from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, proto_protocol
 from .wax_result import (
     python_result,
     python_error_code,
