@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .wax import (
+from .cpp_python_bridge import (
     api_to_proto,
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
