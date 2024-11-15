@@ -18,6 +18,10 @@ packages = [
     { include = "wax"},
     { include = "wax/proto" }
 ]
+source = [
+    { name = "PyPI", priority = "primary" },
+    { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
+]
 
 [tool.poetry.build]
 script = "build.py"
@@ -26,13 +30,15 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.10"
 protobuf = "4.24.4"
+pydantic = "1.10.18"
+schemas = "0.0.1.dev311+5bf88ae"
 
 [tool.poetry.dev-dependencies]
 pytest = "7.4.2"
 types-setuptools = ">=67.8.0"
+grpcio = "1.59.0"
 mypy-protobuf = "3.5.0"
 types-protobuf = "4.24.0.3"
-grpcio = "1.59.0"
 grpc-stubs = "1.53.0.2"
 grpcio-tools = "1.59.0"
 
