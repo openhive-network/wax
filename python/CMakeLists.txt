@@ -1,6 +1,6 @@
 SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hive")
 # this file is generated while performing a cythonize'ing process of the Python extension
-SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/wax.cpp")
+SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cpp_python_bridge.cpp")
 
 LIST(APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
@@ -48,7 +48,7 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
-add_python_library(${PROJECT_NAME} MODULE SOURCES
+add_python_library("cpp_python_bridge" MODULE SOURCES
   ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/binary_view_helper.cpp
@@ -57,21 +57,21 @@ add_python_library(${PROJECT_NAME} MODULE SOURCES
   ${HEADERS}
   LINK_LIBRARIES hive_protocol)
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories("cpp_python_bridge" PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/../"
   "${CMAKE_CURRENT_SOURCE_DIR}/../core"
   "${HIVE_ROOT_PATH}/libraries/chain/include"
 )
 
-python_extension_module(${PROJECT_NAME})
+python_extension_module("cpp_python_bridge")
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpython_interface.hpp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
+target_link_options("cpp_python_bridge" PRIVATE -static-libgcc -static-libstdc++)
 
 INSTALL(TARGETS
-  ${PROJECT_NAME}
+  "cpp_python_bridge"
 
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
