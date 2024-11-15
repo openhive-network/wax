@@ -28,11 +28,14 @@ python = "^3.10"
 protobuf = "4.24.4"
 
 [tool.poetry.dev-dependencies]
+mypy = "1.11.2"
+pre-commit = "2.21.0"
 pytest = "7.4.2"
 types-setuptools = ">=67.8.0"
+ruff = "0.6.5"
+grpcio = "1.59.0"
 mypy-protobuf = "3.5.0"
 types-protobuf = "4.24.0.3"
-grpcio = "1.59.0"
 grpc-stubs = "1.53.0.2"
 grpcio-tools = "1.59.0"
 
@@ -54,3 +57,39 @@ format-jinja = """
 files = [
     "wax/__init__.py",
 ]
+
+[tool.mypy]
+strict = true
+disallow_untyped_decorators = false
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = ["ALL"]
+ignore = [
+    "D1", # missing docstring in public
+    "D203", # 1 blank line required before class docstring; because we re using D211
+    "D212", # Multi-line docstring summary should start at the first line; because we re using D213
+    "D401", # First line of docstring should be in imperative mood
+    "D413", # Missing blank line after last section
+    "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
+    "ANN101",  # Missing annotation for self; makes no sense
+    "ANN102",  # Missing annotation for cls; makes no sense
+    "TD002", # Missing author in to-do; no need for that
+    "TD003",  # Missing issue link on the line following this to-do; no need for that
+    "SLF001",  # Private member accessed: {access}; too restrictive
+    "COM812", # Trailing comma missing; handled by ruff formatter
+    "EM",  # agreed not to use it in our convention
+    "FIX", # can't have that enabled, as we treat ruff result as an error on CI
+    "S101",  # Use of assert detected; too restrictive
+    "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
+    "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
+]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["wax"]

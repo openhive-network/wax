@@ -2,16 +2,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import Callable
+from typing import TYPE_CHECKING, Callable, TypeAlias
 
-def compare_any_string(s0:bytes|str, s1:bytes|str) -> bool:
-  if isinstance(s0, bytes):
-    s0 = s0.decode('utf-8')
+if TYPE_CHECKING:
+    string: TypeAlias = bytes  # noqa: PYI042
 
-  if isinstance(s1, bytes):
-    s1 = s1.decode('utf-8')
 
-  return s0 == s1
+def compare_any_string(s0: bytes | str, s1: bytes | str) -> bool:
+    if isinstance(s0, bytes):
+        s0 = s0.decode("utf-8")
+
+    if isinstance(s1, bytes):
+        s1 = s1.decode("utf-8")
+
+    return s0 == s1
+
 
 class python_error_code(IntEnum):  # noqa: N801
     fail = 0
@@ -31,28 +36,39 @@ class python_json_asset:  # noqa: N801
     precision: int
     nai: bytes
 
-    def __eq__(self, other):
-      return self.precision == other.precision and compare_any_string(self.amount, other.amount) and compare_any_string(self.nai, other.nai)
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, python_json_asset):
+            return NotImplemented
+
+        return (
+            self.precision == other.precision
+            and compare_any_string(self.amount, other.amount)
+            and compare_any_string(self.nai, other.nai)
+        )
+
 
 @dataclass
-class python_price:
+class python_price:  # noqa: N801
     base: python_json_asset
     quote: python_json_asset
+
 
 @dataclass
 class python_ref_block_data:  # noqa: N801
     ref_block_num: int
     ref_block_prefix: int
 
+
 @dataclass
 class python_required_authority_collection:  # noqa: N801
     posting_accounts: set[string]
     active_accounts: set[string]
     owner_accounts: set[string]
-    other_authorities: list[wax_authority]
+    other_authorities: list[wax_authority]  # type: ignore[name-defined] # noqa: F821
+
 
 @dataclass
-class python_encrypted_memo:
+class python_encrypted_memo:  # noqa: N801
     # base58 string pointing the public key identifying the first private-key to perform encryption
     main_encryption_key: string
     # base58 string pointing the public key identifying the other private-key being being (also) decrypt data buffer
@@ -60,14 +76,16 @@ class python_encrypted_memo:
     # base58 encoded encrypted content
     encrypted_content: string
 
+
 @dataclass
-class python_private_key_data:
+class python_private_key_data:  # noqa: N801
     wif_private_key: string
     # base58 string pointing the public key associated to the private key specified above
     associated_public_key: string
 
+
 @dataclass
-class python_brain_key_data:
+class python_brain_key_data:  # noqa: N801
     # a string containing space separated list of N words generated as a brain key (atm 16)
     brain_key: string
     # first private key derived from above specified brain key
@@ -75,41 +93,45 @@ class python_brain_key_data:
     # base58 string pointing the public key associated to the private key specified above
     associated_public_key: string
 
+
 @dataclass
-class python_witness_set_properties_data:
+class python_witness_set_properties_data:  # noqa: N801
     # Witness key to match the current witness key. Obligatory
     key: bytes
     # New witness key to set
-    new_signing_key: bytes|None=None
+    new_signing_key: bytes | None = None
     # HIVE maximum account creation fee
-    account_creation_fee: python_json_asset|None=None
+    account_creation_fee: python_json_asset | None = None
     # New witness URL to set
-    url: bytes|None = None
+    url: bytes | None = None
     # HBD to HIVE ratio proposed by the witness
-    hbd_exchange_rate: python_price|None=None
+    hbd_exchange_rate: python_price | None = None
     # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
-    maximum_block_size: int|None=None
+    maximum_block_size: int | None = None
     # Rate of interest for holding HBD (in BPS - basis points)
-    hbd_interest_rate: int|None=None
-    # How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account.
-    account_subsidy_budget: int|None=None
-    # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring.
-    account_subsidy_decay: int|None=None
+    hbd_interest_rate: int | None = None
+    # How many free accounts should be created per elected witness block. Scaled so that HIVE_ACCOUNT_SUBSIDY_PRECISION represents one account. # NOQA: E501
+    account_subsidy_budget: int | None = None
+    # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring. # NOQA: E501
+    account_subsidy_decay: int | None = None
+
 
 @dataclass
-class python_authority:
+class python_authority:  # noqa: N801
     weight_threshold: int
     account_auths: dict[bytes, int]
     key_auths: dict[bytes, int]
 
+
 @dataclass
-class python_authorities:
+class python_authorities:  # noqa: N801
     active: python_authority
     owner: python_authority
     posting: python_authority
 
+
 @dataclass
-class python_minimize_required_signatures_data:
+class python_minimize_required_signatures_data:  # noqa: N801
     chain_id: bytes
     available_keys: list[bytes]
     authorities_map: dict[bytes, python_authorities]
