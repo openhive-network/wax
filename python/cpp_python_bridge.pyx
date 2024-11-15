@@ -14,13 +14,14 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t
 import cython
 from cython.operator cimport dereference, preincrement
 
-from wax cimport error_code, json_asset, json_price, result, protocol, proto_protocol
+from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, proto_protocol
 from .wax_result import (
     python_result,
     python_error_code,
     python_json_asset,
     python_ref_block_data,
     python_required_authority_collection,
+
     python_encrypted_memo,
     python_private_key_data,
     python_brain_key_data,
