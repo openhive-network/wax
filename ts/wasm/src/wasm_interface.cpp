@@ -79,6 +79,12 @@ crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
 std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const
 { return foundation::cpp_crypto_memo_dump_string(value); }
 
+void cpp_scan_text_for_matching_private_keys(const std::string& text, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
+  const std::vector<std::string>& imported_keys) const
+{
+  return foundation::cpp_check_memo_for_private_keys(text, account, auths, memo_key, imported_keys);
+}
+
 brain_key_data cpp_suggest_brain_key()
 { return foundation::cpp_suggest_brain_key(); }
 
@@ -189,6 +195,12 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("key_auths", &wax_authority::key_auths)
       ;
 
+  value_object<wax_authorities>("wax_authorities")
+    .field("active", &wax_authorities::active)
+    .field("owner", &wax_authorities::owner)
+    .field("posting", &wax_authorities::posting)
+    ;
+
   value_object<required_authority_collectionV>("required_authority_collection")
       .field("posting_accounts", &required_authority_collectionV::posting_accounts)
       .field("active_accounts", &required_authority_collectionV::active_accounts)
@@ -272,6 +284,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
     .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)
+
+    .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_scan_text_for_matching_private_keys)
 
     .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_manabar_full_regeneration_time))
     .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))
