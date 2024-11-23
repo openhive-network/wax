@@ -53,6 +53,9 @@ public:
   */
   std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const;
 
+  void cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
+    const std::vector<std::string>& imported_keys) const;
+
   result cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
   result cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
 
