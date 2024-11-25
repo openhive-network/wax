@@ -27,7 +27,8 @@ public:
     void* get_witness_key_fn,
     std::optional<uint32_t> max_recursion,
     std::optional<uint32_t> max_membership,
-    std::optional<uint32_t> max_account_auths);
+    std::optional<uint32_t> max_account_auths,
+    bool strict_authority_level = false);
 };
 
 } // namespace cpp

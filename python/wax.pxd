@@ -9,6 +9,7 @@ from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
+from libcpp cimport bool
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef enum error_code:
@@ -132,6 +133,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         cpp_optional[uint32_t] max_recursion
         cpp_optional[uint32_t] max_membership
         cpp_optional[uint32_t] max_account_auths
+        bool strict_authority_level
 
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +

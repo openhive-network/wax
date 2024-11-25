@@ -17,7 +17,8 @@ std::vector<std::string> minimize_required_signatures_helper::minimize_required_
   void* get_witness_key_fn,
   std::optional<uint32_t> max_recursion,
   std::optional<uint32_t> max_membership,
-  std::optional<uint32_t> max_account_auths)
+  std::optional<uint32_t> max_account_auths,
+  bool strict_authority_level)
 {
   flat_set<public_key_type> _available_keys;
   for (const auto& key : available_keys)
@@ -44,7 +45,7 @@ std::vector<std::string> minimize_required_signatures_helper::minimize_required_
   uint32_t _max_membership = max_membership ? *max_membership : HIVE_MAX_AUTHORITY_MEMBERSHIP;
   uint32_t _max_account_auths = max_account_auths ? *max_account_auths : HIVE_MAX_SIG_CHECK_ACCOUNTS;
 
-  const auto signatures = transaction.minimize_required_signatures(chain_id_type(chain_id), _available_keys,
+  const auto signatures = transaction.minimize_required_signatures(strict_authority_level, chain_id_type(chain_id), _available_keys,
     get_active, get_owner, get_posting, _get_witness_key, _max_recursion, _max_membership, _max_account_auths);
 
   std::vector<std::string> result;

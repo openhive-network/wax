@@ -117,3 +117,4 @@ class python_minimize_required_signatures_data:
     max_recursion: int | None = None
     max_membership: int | None = None
     max_account_auths: int | None = None
+    strict_authority_level: bool = False
