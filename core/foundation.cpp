@@ -528,14 +528,14 @@ namespace fc { namespace raw {
   }
 
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d )
+  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d, bool limit_is_disabled )
   {
     hive::protocol::asset tmp;
 
     hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
     hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
-    unpack(s, tmp, d + 1);
+    unpack(s, tmp, d + 1, limit_is_disabled);
     u = cpp::to_json_asset(tmp);
   }
 
@@ -550,13 +550,13 @@ namespace fc { namespace raw {
   }
 
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d )
+  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d, bool limit_is_disabled )
   {
     hive::protocol::price tmp;
     hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
     hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
-    unpack(s, tmp, d + 1);
+    unpack(s, tmp, d + 1, limit_is_disabled);
     u = { .base = cpp::to_json_asset(tmp.base), .quote = cpp::to_json_asset(tmp.quote) };
   }
 } }

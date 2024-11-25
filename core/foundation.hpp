@@ -140,9 +140,9 @@ namespace fc { namespace raw {
   template<typename Stream>
   inline void pack( Stream& s, const cpp::json_asset& u );
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d );
+  inline void unpack( Stream& s, cpp::json_asset& u, uint32_t d, bool limit_is_disabled );
   template<typename Stream>
   inline void pack( Stream& s, const cpp::json_price& u );
   template<typename Stream>
-  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d );
+  inline void unpack( Stream& s, cpp::json_price& u, uint32_t d, bool limit_is_disabled );
 } }
