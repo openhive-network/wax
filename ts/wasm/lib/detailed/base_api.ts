@@ -1,7 +1,9 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
+
 import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
-import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, IChainConfig } from "../wax_module";
+import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities, IChainConfig } from "../wax_module";
 import type { ApiOperation, NaiAsset } from "./api";
+
 import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
 import type { operation, transaction } from "../protocol";
@@ -16,6 +18,8 @@ import { WaxFormatter } from "./formatters/waxify.js";
 import { isNaiAsset } from "./util/asset_util.js";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
+
+import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -379,6 +383,36 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const data = safeWasmCall(() => this.proto.cpp_crypto_memo_from_string(encrypted));
 
     return wallet.decryptData(data.content as string, data.from as string, data.to as string);
+  }
+
+/**
+   * Allows to scan given text content for references to private keys or account passwords basing on provided account authority information.
+   *
+   * @remarks This call atm **should be not exposed** to the Wax public interface, as it directly {@link wax_authorities} uses internal type,
+   * which is generated from the C++ code and it is very inconvenient in direct TS usage. If we want to expose this method, we should define
+   * actual WaxAuthorities interface, operating on native JS containers (Array/Map). Best reuse such type with
+   * {@link AccountAuthorityUpdateOperation} implementation.
+   *
+   * @param content text to be scanned
+   * @param account name of account being protected against security leak
+   * @param accountAuthorities account authority definition (to retrieve public keys)
+   * @param memoKey memo public key
+   * @param otherKeys optional list of keys to be checked
+   *
+   * @throws {WaxError} on found private key references
+   *
+   * @internal
+   *
+   */
+  public scanForMatchingPrivateKeys(content: string, account: string, accountAuthorities: wax_authorities, memoKey: TPublicKey, otherKeys?: TPublicKey[]): void {
+    const actualOtherKeys: VectorString = new this.wax.VectorString();
+
+    if(otherKeys !== undefined) {
+      for(const key of otherKeys)
+        actualOtherKeys.push_back(key);
+    }
+
+    safeWasmCall(()=>this.proto.cpp_scan_text_for_matching_private_keys(content, account, accountAuthorities, memoKey, actualOtherKeys ));
   }
 
   private calculateManabarPercent(current: Long, max: Long): number {

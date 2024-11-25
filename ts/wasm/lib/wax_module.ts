@@ -19,7 +19,8 @@ export type {
   brain_key_data,
   binary_data_node,
   binary_data,
-  VectorBinaryDataNode
+  VectorBinaryDataNode,
+  wax_authorities
 } from './build_wasm/wax.common.js';
 
 export type {
