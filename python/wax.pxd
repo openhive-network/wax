@@ -134,6 +134,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         cpp_optional[uint32_t] max_membership
         cpp_optional[uint32_t] max_account_auths
         bool strict_authority_level
+        bool allow_mixed_authorities
 
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +

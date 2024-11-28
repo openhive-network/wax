@@ -28,7 +28,8 @@ public:
     std::optional<uint32_t> max_recursion,
     std::optional<uint32_t> max_membership,
     std::optional<uint32_t> max_account_auths,
-    bool strict_authority_level = false);
+    bool strict_authority_level = false,
+    bool allow_mixed_authorities = false);
 };
 
 } // namespace cpp

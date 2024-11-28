@@ -62,7 +62,6 @@ def get_witness_key(account_name: bytes) -> bytes:
     return b""
 
 MINIMIZE_REQUIRED_SIGNATURES_DATA = python_minimize_required_signatures_data(
-    strict_authority_level=False,
     chain_id=b"beeab0de00000000000000000000000000000000000000000000000000000000",
     available_keys=AVAILABLE_KEYS,
     authorities_map=ACCOUNT_AUTHS,

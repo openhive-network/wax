@@ -590,6 +590,7 @@ def minimize_required_signatures(
         _uint_helper = int(minimize_required_signatures_data.max_account_auths)
         wax_minimize_required_signatures_data.max_account_auths = _uint_helper
     wax_minimize_required_signatures_data.strict_authority_level = minimize_required_signatures_data.strict_authority_level
+    wax_minimize_required_signatures_data.allow_mixed_authorities = minimize_required_signatures_data.allow_mixed_authorities
     return obj.cpp_minimize_required_signatures(signed_transaction, wax_minimize_required_signatures_data)
 
 def get_hive_protocol_config(treasury_name: bytes, chain_id: bytes) -> dict[bytes, bytes]:
