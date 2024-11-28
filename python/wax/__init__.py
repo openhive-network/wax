@@ -70,10 +70,14 @@ from .wax_result import (
     python_minimize_required_signatures_data,
     python_price,
 )
+from .interfaces import IWaxBaseInterface
+from .wax_factory import create_wax_foundation
 
 __version__ = "0.0.0"
 
 __all__ = [
+    "IWaxBaseInterface",
+    "create_wax_foundation",
     "python_error_code",
     "python_result",
     "python_json_asset",
