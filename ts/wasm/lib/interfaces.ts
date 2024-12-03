@@ -932,17 +932,17 @@ export interface IWaxBaseInterface {
  */
 type JsonRpcApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
 
-export type TDeepWaxApiRequestPartial<T> = T extends object ? {
-  [P in keyof T]?: TDeepWaxApiRequestPartial<T[P]>;
-} & Omit<TWaxRestApiRequest<any, any>, 'params' | 'result'> : T;
-
-export type TWaxRestApiRequest<TReq, TRes> = {
+export type TWaxApiRequest<TReq, TRes> = {
   readonly params: TReq;
   readonly result: TRes;
   readonly responseArray?: boolean;
   readonly method?: string;
   readonly urlPath?: string
 };
+
+export type TDeepWaxApiRequestPartial<T> = T extends object ? {
+  [P in keyof T]?: TDeepWaxApiRequestPartial<T[P]>;
+} & Omit<TWaxApiRequest<any, any>, 'params' | 'result'> : T;
 
 /**
  * @internal
@@ -970,7 +970,7 @@ type YourApiData<YourTypes> = {
        * Retrieves the url used for calls to the specified REST API
        */
       get endpointUrl (): string;
-    } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
+    } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxApiRequest<any, any>>))
     : (
       // Check if isArray is not present, but request type
       YourTypes[P] extends { readonly params: infer ParamsType; readonly result: infer ResultType }
@@ -991,7 +991,7 @@ type YourApiData<YourTypes> = {
          * Retrieves the url used for calls to the specified REST API
          */
         get endpointUrl (): string;
-      } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxRestApiRequest<any, any>>))
+      } & (Omit<YourApiData<YourTypes[P]>, keyof TWaxApiRequest<any, any>>))
       : (YourApiData<YourTypes[P]> & {
         /**
          * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
@@ -1006,11 +1006,11 @@ type YourApiData<YourTypes> = {
   ) : never);
 } & {
   /**
-   * New url to set per REST API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
+   * New url to set per API. Pass `undefined` to switch back to default endpoint URL specified in the chain configuration ({@link IWaxOptionsChain.restApiEndpoint})
    */
   set endpointUrl (newUrl: string | undefined);
   /**
-   * Retrieves the url used for calls to the specified REST API
+   * Retrieves the url used for calls to the specified API
    */
   get endpointUrl (): string;
 };

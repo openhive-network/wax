@@ -1,4 +1,4 @@
-import { WaxNon_2XX_3XX_ResponseCodeError } from "../healthchecker/errors.js";
+import { WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxRequestTimeoutError, WaxUnknownRequestError } from "../healthchecker/errors.js";
 
 export interface ISingleJitterData {
   loaded: number;
@@ -28,6 +28,8 @@ export interface IRequestOptions {
   responseType?: "text" | "json";
 }
 
+const API_CALL_TIMEOUT_MS = 2_000;
+
 export class RequestHelper {
   private async requestHandler<T extends (object | string)>(config: IRequestOptions): Promise<IDetailedResponseData<T>> {
     const runningData: Partial<IDetailedResponseData<T>> = {
@@ -42,22 +44,39 @@ export class RequestHelper {
       response: undefined
     };
 
-    const finalUrl = config.endpoint + config.url;
+    try {
+      const finalUrl = config.endpoint + config.url;
 
-    const response = await fetch(finalUrl, { method: config.method, body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data });
-    runningData.status = response.status;
+      const response = await fetch(finalUrl, {
+        method: config.method,
+        signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
+        body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data
+      });
 
-    if(response.status < 200 || response.status > 399)
-      throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData);
+      runningData.status = response.status;
 
-    if(config.responseType === "json")
-      runningData.response = await response.json() as T;
-    else
-      runningData.response = await response.text() as T;
+      if(response.status < 200 || response.status > 399)
+        throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData);
 
-    runningData.end = Date.now();
+      if(config.responseType === "json")
+        runningData.response = await response.json() as T;
+      else
+        runningData.response = await response.text() as T;
 
-    return runningData as IDetailedResponseData<T>;
+      runningData.end = Date.now();
+
+      return runningData as IDetailedResponseData<T>;
+    } catch (error) {
+      if (typeof error !== "object" || !(error instanceof Error))
+        throw new WaxUnknownRequestError<T>(config, runningData);
+
+      if (error.name === "TimeoutError")
+        throw new WaxRequestTimeoutError<T>(config, runningData);
+      else if (error.name === "AbortError")
+        throw new WaxRequestAbortedByUser<T>(config, runningData);
+
+      throw new WaxUnknownRequestError<T>(config, runningData);
+    }
   }
 
   /**

@@ -1,8 +1,9 @@
 import EventEmitter from "events";
-import { WaxError, WaxHealthCheckerError } from "../../errors.js";
+import { WaxError } from "../../errors.js";
+import { WaxHealthCheckerError, WaxHealthCheckerValidatorFailedError } from "./errors.js";
 import { TRestChainCaller, type TRequestInterceptor, type TResponseInterceptor } from "../util/api_caller.js";
 import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
-import { type IDetailedResponseData } from "../util/request_helper.js";
+import { IRequestOptions, type IDetailedResponseData } from "../util/request_helper.js";
 import { defaultCalcScores } from "./math.js";
 import { EChainApiType } from "../chain_api.js";
 
@@ -26,6 +27,7 @@ interface IHealthCheckerEvents {
   'newdown': (endpoint: IScoredEndpoint) => void | Promise<void>;
   'data': (endpoints: Array<IScoredEndpoint>) => void | Promise<void>;
   'error': (error: WaxHealthCheckerError) => void | Promise<void>;
+  'validationerror': (error: WaxHealthCheckerValidatorFailedError) => void | Promise<void>;
 }
 
 export declare interface HealthChecker {
@@ -155,8 +157,11 @@ export class HealthChecker extends EventEmitter {
     const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, endpoints, async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
+      let request: IRequestOptions;
+
       const requestInterceptor: TRequestInterceptor = data => {
         data.endpoint = endpointToTest;
+        request = data;
         return data;
       };
 
@@ -167,9 +172,14 @@ export class HealthChecker extends EventEmitter {
 
       const returned = await target.withProxy(requestInterceptor, responseInterceptor)(toSend);
 
-      if(validator !== undefined)
-        if(!validator(returned))
-          throw new WaxError(`Validator did not pass on api '${apiType}': "${paths.join('/')}" using endpoint: "${endpointToTest}"`);
+      if(validator !== undefined && typeof timings === "object")
+        if(!validator(returned)) {
+          const error = new WaxHealthCheckerValidatorFailedError(request!, timings!);
+
+          this.emit("validationerror", error);
+
+          throw error;
+        }
 
       return timings;
     });

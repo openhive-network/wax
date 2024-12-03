@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { WaxChainApiError } from "../../../lib/errors";
-import { type TWaxRestApiRequest } from "../../../lib/interfaces";
+import { type TWaxApiRequest } from "../../../lib/interfaces";
 import { extractBracedStrings } from "../rest-api/utils.js";
 import { objectToQueryString } from "./query_string.js";
 import { type IDetailedResponseData, type IRequestOptions, RequestHelper } from "./request_helper.js";
@@ -19,7 +19,7 @@ export type WaxChainCommonApiCaller = ((params: object) => Promise<any>) & {
   paths: string[];
   realPaths: string[];
   lastMethod: string;
-  config: TWaxRestApiRequest<any, any> | undefined;
+  config: TWaxApiRequest<any, any> | undefined;
   withProxy: (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => Promise<any>;
 };
 
@@ -167,7 +167,7 @@ export class ApiCaller extends RequestHelper {
     callFn.paths = [] as string[];
     callFn.realPaths = [] as string[];
     callFn.lastMethod = this.defaultMethod;
-    callFn.config = undefined as TWaxRestApiRequest<any, any> | undefined;
+    callFn.config = undefined as TWaxApiRequest<any, any> | undefined;
     callFn.withProxy = (requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor) => (params: object) => callFn(params, requestInterceptor, responseInterceptor);
 
     const proxiedFunction = new Proxy(callFn, {

@@ -1,7 +1,7 @@
 import { type HealthChecker } from "./healthchecker.js";
 import { type IDetailedResponseData } from "../util/request_helper.js";
 import { EChainApiType } from "../chain_api.js";
-import { WaxHealthCheckerEndpointUrlError } from "../../../lib/errors.js";
+import { WaxHealthCheckerEndpointUrlError, WaxRequestTimeoutError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser } from "./errors.js";
 
 export interface IHiveEndpoint {
   /**
@@ -40,12 +40,17 @@ export interface INewBestEvent {
   apiEndpoint: string;
 }
 
-export interface IHiveEndpointDataDown {
+export type TErrorReason = "timeout" | "servererror" | "userabort" | "other";
+
+export interface IHiveEndpointDataBase {
   endpointUrl: string;
-  up: false;
 }
-export interface IHiveEndpointDataUp {
-  endpointUrl: string;
+
+export interface IHiveEndpointDataDown extends IHiveEndpointDataBase {
+  up: false;
+  reason: TErrorReason;
+}
+export interface IHiveEndpointDataUp extends IHiveEndpointDataBase {
   up: true;
   latency: number;
 }
@@ -97,8 +102,17 @@ export class HiveEndpoint implements IHiveEndpoint {
       this.checker.emit("stats", data);
       this.up.set(endpointUrl, data);
     } catch (error) {
+      let reason: TErrorReason = "other";
+      if (error instanceof WaxRequestTimeoutError)
+        reason = "timeout";
+      else if (error instanceof WaxNon_2XX_3XX_ResponseCodeError)
+        reason = "servererror";
+      else if (error instanceof WaxRequestAbortedByUser)
+        reason = "userabort";
+
       const data: IHiveEndpointDataDown = {
         endpointUrl,
+        reason,
         up: false
       };
 
@@ -112,6 +126,5 @@ export class HiveEndpoint implements IHiveEndpoint {
 
       throw new WaxHealthCheckerEndpointUrlError(error instanceof Error ? error : new Error(String(error)), endpointUrl);
     }
-
   }
 }
