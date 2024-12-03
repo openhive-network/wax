@@ -11,7 +11,7 @@ BASE_IMAGE=registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
 
 export DOCKER_BUILDKIT=1
 
-docker buildx build --progress=plain --target=ci-base-image \
-  --build-arg BASE_IMAGE=$BASE_IMAGE \
+docker buildx build --no-cache --progress=plain --target=ci-base-image \
+  --push --build-arg BASE_IMAGE=$BASE_IMAGE \
   -t ${REGISTRY}ci-base-image${CI_IMAGE_TAG} \
   -f "${SCRIPT_DIR}/../docker/Dockerfile.ci" "${PROJECT_DIR}"
