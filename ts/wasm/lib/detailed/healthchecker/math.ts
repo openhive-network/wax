@@ -1,8 +1,8 @@
-import { type THiveEndpointData } from "./endpoint.js";
-import { type TCalculateScoresFunction, type IScoredEndpoint } from "./healthchecker.js";
+import { type THiveEndpointData, type IHiveEndpointDataUp, type IHiveEndpointDataDown } from "./endpoint.js";
+import { type TCalculateScoresFunction, type TScoredEndpoint } from "./healthchecker.js";
 
 // XXX: Maybe use Opentelemetry histogram: https://github.com/open-telemetry/opentelemetry-js/blob/main/packages/sdk-metrics/src/aggregator/Histogram.ts
-export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>): Array<IScoredEndpoint> => {
+export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>): Array<TScoredEndpoint> => {
     // Handle initial stats - on not enough data
     const topStats = data.map(value => value[1]).reduce((prev, curr) => curr.length > prev ? curr.length : prev, 0);
 
@@ -16,17 +16,28 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
       return arr.map(value => (value - avgForArr)/(stdDevForArr || 1));
     };
 
-    const results: Array<IScoredEndpoint> = [];
+    const results: Array<TScoredEndpoint> = [];
 
     for(const [endpointUrl, endpointData] of data) {
       // Start with 1 to avoid division by 0. If all of the fields are down it will be 0 no matter what: 0/1 = 1
       const upTimes = endpointData.reduce((prev, curr) => curr.up ? prev + 1 : prev, 1);
 
+      let lastUp: IHiveEndpointDataUp | undefined = undefined, lastDown: IHiveEndpointDataDown | undefined = undefined;
+      for(let i = endpointData.length - 1; i >= 0; --i) {
+        if(endpointData[i].up && !lastUp)
+          lastUp = endpointData[i] as IHiveEndpointDataUp;
+        else if(!endpointData[i].up && !lastDown)
+          lastDown = endpointData[i] as IHiveEndpointDataDown;
+        if (lastUp !== undefined && lastDown !== undefined)
+          break;
+      }
+
       if(upTimes === 1) {
         results.push({
           endpointUrl,
           score: 0,
-          down: true
+          up: false,
+          lastErrorReason: lastDown!.reason
         });
 
         continue;
@@ -41,7 +52,8 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
       results.push({
         endpointUrl,
         score: avg(standardScoreValue) / upTimes,
-        down: false
+        up: true,
+        lastLatency: lastUp!.latency
       });
     }
 
@@ -49,11 +61,11 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
 
     // Sort by score in descending order to retrieve min and max values for normalization
     // Remove endpoints with 0 score - totally down
-    const sortedDesc = results.filter(value => !value.down).sort((a, b) => a.score - b.score);
+    const sortedDesc = results.filter(value => value.up).sort((a, b) => a.score - b.score);
 
     const min = sortedDesc[0]?.score;
     const max = sortedDesc[sortedDesc.length - 1]?.score;
 
     // Normalize data to range 0.1 - 1
-    return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...results.filter(value => value.down)];
+    return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...results.filter(value => !value.up)];
 };

@@ -2,7 +2,7 @@ import EventEmitter from "events";
 import { WaxError } from "../../errors.js";
 import { WaxHealthCheckerError, WaxHealthCheckerValidatorFailedError } from "./errors.js";
 import { TRestChainCaller, type TRequestInterceptor, type TResponseInterceptor } from "../util/api_caller.js";
-import { HiveEndpoint, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData } from "./endpoint.js";
+import { HiveEndpoint, type IHiveEndpointDataBase, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData, type TErrorReason } from "./endpoint.js";
 import { IRequestOptions, type IDetailedResponseData } from "../util/request_helper.js";
 import { defaultCalcScores } from "./math.js";
 import { EChainApiType } from "../chain_api.js";
@@ -12,20 +12,27 @@ const PERFORM_CHECK_INTERVAL_MS = 1_000;
 
 const GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT = 10;
 
-export interface IScoredEndpoint {
-  endpointUrl: string;
-  /** 0 - 1 */
+export interface IScoredEndpointUp extends IHiveEndpointDataBase {
   score: number;
-  down: boolean;
-};
+  lastLatency: number;
+  up: true;
+}
 
-export type TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>) => Array<IScoredEndpoint>;
+export interface IScoredEndpointDown extends IHiveEndpointDataBase {
+  score: 0;
+  up: false;
+  lastErrorReason: TErrorReason;
+}
+
+export type TScoredEndpoint = IScoredEndpointDown | IScoredEndpointUp;
+
+export type TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>) => Array<TScoredEndpoint>;
 
 interface IHealthCheckerEvents {
-  'newbest': (endpoint: IScoredEndpoint) => void | Promise<void>;
-  'newup': (endpoint: IScoredEndpoint) => void | Promise<void>;
-  'newdown': (endpoint: IScoredEndpoint) => void | Promise<void>;
-  'data': (endpoints: Array<IScoredEndpoint>) => void | Promise<void>;
+  'newbest': (endpoint: TScoredEndpoint) => void | Promise<void>;
+  'newup': (endpoint: TScoredEndpoint) => void | Promise<void>;
+  'newdown': (endpoint: TScoredEndpoint) => void | Promise<void>;
+  'data': (endpoints: Array<TScoredEndpoint>) => void | Promise<void>;
   'error': (error: WaxHealthCheckerError) => void | Promise<void>;
   'validationerror': (error: WaxHealthCheckerValidatorFailedError) => void | Promise<void>;
 }
@@ -57,13 +64,13 @@ export class HealthChecker extends EventEmitter {
 
   private lastBest?: string;
 
-  private cachedScoredList: Array<IScoredEndpoint> = [];
+  private cachedScoredList: Array<TScoredEndpoint> = [];
 
   public get best (): string | undefined {
     return this.lastBest;
   }
 
-  public list(): Array<IScoredEndpoint> {
+  public list(): Array<TScoredEndpoint> {
     return this.cachedScoredList;
   }
 
@@ -302,7 +309,7 @@ export class HealthChecker extends EventEmitter {
     results.push(data);
   }
 
-  private calculateCachedScored(): Array<IScoredEndpoint> {
+  private calculateCachedScored(): Array<TScoredEndpoint> {
     if (this.endpointStats.size === 0)
       return [];
 

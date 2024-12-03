@@ -2,7 +2,7 @@ import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { IScoredEndpoint } from '../../dist/bundle/index-full';
+import { TScoredEndpoint } from '../../dist/bundle/index-full';
 
 let browser!: ChromiumBrowser;
 
@@ -29,7 +29,7 @@ test.describe('Wax object interface chain tests', () => {
         const hc = new wax.HealthChecker();
 
         hc.on("newbest", ({ endpointUrl }) => { hc.unregisterAll(); resolve(endpointUrl); }); // New best endpoint url
-        hc.on("data", (data: Array<IScoredEndpoint>) => { console.log(JSON.stringify(data)); }); // New data from all endpoint checks - scores ready
+        hc.on("data", (data: Array<TScoredEndpoint>) => { console.log(JSON.stringify(data)); }); // New data from all endpoint checks - scores ready
         hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
 
         hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
@@ -48,7 +48,7 @@ test.describe('Wax object interface chain tests', () => {
 
         let i = 0;
 
-        hc.on("data", (data: Array<IScoredEndpoint>) => {
+        hc.on("data", (data: Array<TScoredEndpoint>) => {
           ++i;
 
           if (i === 2) {
@@ -75,7 +75,7 @@ test.describe('Wax object interface chain tests', () => {
 
         let i = 0;
 
-        hc.on("data", (data: Array<IScoredEndpoint>) => {
+        hc.on("data", (data: Array<TScoredEndpoint>) => {
           ++i;
 
           /// It is bad when HC returned data having different length than provided endpoints count or one of valid URLs is at the end (broken one shall be there)
@@ -110,7 +110,7 @@ test.describe('Wax object interface chain tests', () => {
           hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
-        hc.on("data", (data: Array<IScoredEndpoint>) => {
+        hc.on("data", (data: Array<TScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST common endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
@@ -135,7 +135,7 @@ test.describe('Wax object interface chain tests', () => {
           hc.unregisterAll();
           resolve(endpointUrl);
           }); // New best endpoint url
-        hc.on("data", (data: Array<IScoredEndpoint>) => {
+        hc.on("data", (data: Array<TScoredEndpoint>) => {
           const scoredData = JSON.stringify(data);
           console.log(`REST explicit endpoint test, acquired stats: ${scoredData}`);
           }); // New data from all endpoint checks - scores ready
@@ -171,7 +171,7 @@ test.describe('Wax object interface chain tests', () => {
         // Register again and wait for data
         hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
         // This should result in a new best endpoint
-        hc.on("data", (data: Array<IScoredEndpoint>) => { hc.unregisterAll(); resolve(data[0].endpointUrl); });
+        hc.on("data", (data: Array<TScoredEndpoint>) => { hc.unregisterAll(); resolve(data[0].endpointUrl); });
       });
     }, testEndpoint);
 
