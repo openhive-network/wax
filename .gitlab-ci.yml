@@ -17,7 +17,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-2
-  CI_BASE_IMAGE_TAG: "@sha256:924cb31153b5512ef0263ac18ea57d0d36559a284154ee081e8d6b3e68b4b640"
+  CI_BASE_IMAGE_TAG: "@sha256:128bfa65ab2725367fd024a9cd4ac78ee04e3d486af53a4499ab15f7e8264d14"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
 
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-2
