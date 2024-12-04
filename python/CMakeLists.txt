@@ -9,8 +9,13 @@ LIST(APPEND CMAKE_MODULE_PATH
   "${HIVE_ROOT_PATH}/libraries/fc/GitVersionGen"
 )
 
+#set(CMAKE_C_COMPILER "/emsdk/upstream/bin/clang-19")
+#set(CMAKE_CXX_COMPILER "/emsdk/upstream/bin/clang-19")
+
 project(wax)
 cmake_minimum_required(VERSION 3.22.1)
+
+include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
 
 find_package(PythonExtensions REQUIRED)
 
@@ -19,10 +24,13 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_FLAGS -g)
+# set(CMAKE_CXX_FLAGS "-g -fno-unroll-loops -finline-limit=0 -flto -fomit-frame-pointer -fno-keep-static-consts")
+# set(CMAKE_CXX_FLAGS "-fno-unroll-loops -fno-inline -flto -fomit-frame-pointer -fno-keep-static-consts -mllvm")
+#set(CMAKE_CXX_FLAGS -Oz)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 set(CMAKE_VERBOSE_MAKEFILE "ON")
+# set(HIVE_BUILD_ON_MINIMAL_FC ON)
 
 include(hive_targets)
 
@@ -41,6 +49,12 @@ LIST( APPEND  BOOST_COMPONENTS
       thread
       # program_options
       unit_test_framework )
+
+#set(HIVE_BUILD_ON_MINIMAL_FC ON)
+
+#add_subdirectory( ${HIVE_ROOT_PATH}/libraries/fc build_fc_minimal )
+#add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
+#add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_DIR}/protocol)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)

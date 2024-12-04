@@ -34,8 +34,11 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
-TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall )
+TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall
+  -Oz -fno-inline -fno-unroll-loops -flto -mllvm -inline-threshold=0
+ )
 TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
+  -Oz -fno-inline -fno-unroll-loops -mllvm -inline-threshold=0
   -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
   -sEXCEPTION_STACK_TRACES=1
  )
@@ -71,8 +74,10 @@ function( DEFINE_WAX_TARGET_FOR env )
         -sEXPORT_ES6=1
         -sINITIAL_MEMORY=67108864
         # Decreases runtime performance for 50kB decrease in packed .tgz code size
-        # --closure 1
-        # -Os
+        --closure 1
+        --icf=all
+        --llvm-lto 1
+        -Oz
       )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
       INSTALL( TARGETS ${exec_wasm_name}
@@ -87,7 +92,8 @@ function( DEFINE_WAX_TARGET_FOR env )
       target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
 
       set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
-      target_link_options( ${exec_ts_gen} PUBLIC --emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
+      target_link_options( ${exec_ts_gen} PUBLIC
+        --emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
       INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
         COMPONENT "${exec_wasm_name}_dts"
         DESTINATION .
