@@ -510,7 +510,30 @@ export interface IEncryptingTransaction extends ITransactionBase {
    * @returns {ITransaction} current transaction instance
    */
   stopEncrypt(): ITransaction;
-}
+};
+
+/**
+ * Extends {@link ITransaction} interface by functionality which requires online chain access (i.e. accessing account
+ * authority to prevent private keys leak).
+ */
+export interface IOnlineTransaction extends ITransaction {
+  /**
+   * Allows to perform transaction checks which require additional access to chain APIs i.e. to retrieve account data.
+   *
+   * Supported checks:
+   *
+   * - [x] private key leakage prevention
+   * - [ ] new authority definition validation (prevent creation of cycles, extending chain limits specific to authority verification, referencing nonexisting accounts)
+   *
+   * @throws {WaxError} when any of supported checks failed.
+   */
+  performOnChainVerification(): Promise<void>;
+
+  /** Overrided only to change return type.
+   *  {@inheritdoc ITransaction.pushOperation}
+   */
+  pushOperation(op: operation | OperationBase): IOnlineTransaction;
+};
 
 export interface IHiveAssetData {
   /**
@@ -1041,11 +1064,12 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Broadcast transaction to the selected during Wax Chain initialization Hive Node
    *
-   * @param {ApiTransaction|ITransaction} transaction Transaction object to be broadcasted
+   * @param {ApiTransaction|ITransaction|IOnlineTransaction} transaction Transaction object to be broadcasted.
+   * If online-transaction is provided, additionally `performOnChainVerification` method is called.
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  broadcast(transaction: ApiTransaction | ITransaction): Promise<void>;
+  broadcast(transaction: ApiTransaction | ITransaction | IOnlineTransaction): Promise<void>;
 
   /**
    * Allows to start transaction preparing process.
@@ -1058,12 +1082,12 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`.
    *                                     Expiration time will be applied when calling any non-push-related method in {@link ITransaction}
    *
-   * @returns {ITransaction} ready to use transaction interface allowing to fill transaction with its contents like Hive operations
+   * @returns {IOnlineTransaction} ready to use transaction interface allowing to fill transaction with its contents like Hive operations
    *
    * @throws {WaxError} on any Wax API-related error
    * @throws {WaxChainApiError} on any Hive API-related error
    */
-  createTransaction(expirationTime?: TTimestamp): Promise<ITransaction>;
+  createTransaction(expirationTime?: TTimestamp): Promise<IOnlineTransaction>;
 
   /**
    * Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format
