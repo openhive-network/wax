@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { IHiveChainInterface, IManabarData, ITransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
+import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
 import type { MainModule } from "../wax_module";
 import { BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
@@ -8,12 +8,10 @@ import { safeWasmCall } from './util/wasm_errors.js';
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { iterate } from "./util/iterate.js";
-import { Transaction } from "./transaction.js";
-
+import { OnlineTransaction} from "./online_transaction";
 import { dateFromString } from "./util/expiration_parser.js";
 
 import Long from "long";
-import { DEFAULT_WAX_OPTIONS } from "./base";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
 
 export enum EManabarType {
@@ -22,7 +20,7 @@ export enum EManabarType {
   RC = 2
 }
 
-type TChainReferenceData = {
+export type TChainReferenceData = {
   head_block_id: TBlockHash,
   head_block_time: Date
 };
@@ -86,8 +84,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     });
   }
 
-  public async broadcast(transaction: ApiTransaction | object | Transaction): Promise<void> {
-    const toBroadcast: object = "target" in transaction ? transaction.toApiJson() : transaction;
+  public async broadcast(transaction: ApiTransaction | ITransaction | IOnlineTransaction): Promise<void> {
+    const toBroadcast: object = "toApiJson" in transaction ? transaction.toApiJson() : transaction;
+
+    if ("performOnChainVerification" in transaction)
+      await transaction.performOnChainVerification();
 
     const request = new BroadcastTransactionRequest();
     request.trx = toBroadcast as ApiTransaction;
@@ -134,17 +135,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return newApi as unknown as HiveChainApi & TWaxRestExtended<YourRestApi, this>;
   }
 
-  public async createTransaction(expirationTime?: TTimestamp): Promise<ITransaction> {
+  public async createTransaction(expirationTime?: TTimestamp): Promise<IOnlineTransaction> {
     const chainReferenceData = await this.acquireChainReferenceData(3000);
 
-    /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
-     *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
-    */
-    const expirationRefTime = this.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
-
-    const builder = super.createTransactionWithChainReferenceData(chainReferenceData.head_block_id, expirationRefTime, expirationTime ?? "+1m");
-
-    return builder;
+    const transaction = new OnlineTransaction(this, chainReferenceData, expirationTime); 
+    return transaction;
   }
 
   private async acquireChainReferenceData(taposLiveness: number): Promise<TChainReferenceData> {
