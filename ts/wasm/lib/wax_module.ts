@@ -20,7 +20,9 @@ export type {
   binary_data_node,
   binary_data,
   VectorBinaryDataNode,
-  wax_authorities
+  wax_authority,
+  wax_authorities,
+  MapStringUInt16
 } from './build_wasm/wax.common.js';
 
 export type {
