@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
-import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
-import type { MainModule } from "../wax_module";
-import { BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
+import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
+import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../wax_module";
+import { ApiAuthority, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
 import { WaxError } from "../errors.js";
 import { safeWasmCall } from './util/wasm_errors.js';
@@ -13,6 +13,7 @@ import { dateFromString } from "./util/expiration_parser.js";
 
 import Long from "long";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
+import { TAccountName } from "./hive_apps_operations";
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -176,6 +177,47 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     const [ account ] = await this.findAccounts(accountName);
 
     return account;
+  }
+
+  public transformApiAuthority(input: ApiAuthority): wax_authority {
+    const transformEntries = (input: {"0": string; "1": number}[], storage: MapStringUInt16) => input.reduce((storage: MapStringUInt16, data): MapStringUInt16 => {
+      storage.set(data[0], data[1]);
+      return storage;
+      }, storage);
+
+      const retVal: wax_authority = {
+        weight_threshold: input.weight_threshold,
+        account_auths: transformEntries(input.account_auths, new this.wax.MapStringUInt16()),
+        key_auths: transformEntries(input.key_auths, new this.wax.MapStringUInt16())
+      };
+
+      return retVal;
+  }
+
+  public async collectAccountAuthorities(...accountNames: string[]): Promise<Map<TAccountName, [wax_authorities, TPublicKey]>> {
+    if(accountNames.length === 0)
+      return new Map();
+
+    const accountData = await this.findAccounts(...accountNames);
+
+    const retVal = new Map<TAccountName, [wax_authorities, TPublicKey]>();
+
+    for(let i = 0; i < accountData.length; ++i) {
+      const name = accountData[i].name;
+      const owner = accountData[i].owner;
+      const active = accountData[i].active;
+      const posting = accountData[i].posting;
+
+      const account_authority: wax_authorities = {
+        owner: this.transformApiAuthority(owner),
+        active: this.transformApiAuthority(active),
+        posting: this.transformApiAuthority(posting)
+      };
+
+      retVal.set(name, [account_authority, accountData[i].memo_key]);
+    }
+
+    return retVal;
   }
 
   public async encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount: string): Promise<string> {
