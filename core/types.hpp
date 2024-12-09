@@ -163,8 +163,7 @@ struct minimize_required_signatures_data_t
   std::optional<uint32_t> max_recursion;
   std::optional<uint32_t> max_membership;
   std::optional<uint32_t> max_account_auths;
-  bool strict_authority_level = false;
-  bool allow_mixed_authorities = false;
+  bool allow_strict_and_mixed_authorities = false;
 };
 
 } /// namespace cpp

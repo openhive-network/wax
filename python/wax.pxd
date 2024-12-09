@@ -133,8 +133,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         cpp_optional[uint32_t] max_recursion
         cpp_optional[uint32_t] max_membership
         cpp_optional[uint32_t] max_account_auths
-        bool strict_authority_level
-        bool allow_mixed_authorities
+        bool allow_strict_and_mixed_authorities
 
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +

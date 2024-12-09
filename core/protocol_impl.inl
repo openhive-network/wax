@@ -349,7 +349,7 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_minimize_require
       tx, minimize_required_signatures_data.chain_id, minimize_required_signatures_data.available_keys, authorities_map,
       minimize_required_signatures_data.get_witness_key_cb, minimize_required_signatures_data.get_witness_key_fn,
       minimize_required_signatures_data.max_recursion, minimize_required_signatures_data.max_membership, minimize_required_signatures_data.max_account_auths,
-      minimize_required_signatures_data.strict_authority_level, minimize_required_signatures_data.allow_mixed_authorities);
+      minimize_required_signatures_data.allow_strict_and_mixed_authorities);
 
     return result;
     });
