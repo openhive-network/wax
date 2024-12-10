@@ -233,7 +233,7 @@ typename protocol_impl<FoundationProvider>::required_authority_collection_t prot
 }
 
 static inline
-hive::protocol::authorities_t convert_wax_authorities_to_authorities(const wax_authorities& w_authorities)
+hive::protocol::authority convert_wax_authority_to_protocol_authority(const wax_authority& w_authority)
 {
   using authority = hive::protocol::authority;
   auto convert_wax_key_auth_map_to_hive_key_auth_map = [](const wax_authority::authority_map& auth_map) -> authority::key_authority_map {
@@ -243,25 +243,111 @@ hive::protocol::authorities_t convert_wax_authorities_to_authorities(const wax_a
     return result;
     };
 
-  authority active;
-  const auto& wax_active = w_authorities.active;
-  active.weight_threshold = wax_active.weight_threshold;
-  active.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_active.key_auths);
-  active.account_auths = authority::account_authority_map(wax_active.account_auths.cbegin(), wax_active.account_auths.cend());
+  authority a;
+  a.weight_threshold = w_authority.weight_threshold;
+  a.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(w_authority.key_auths);
+  a.account_auths = authority::account_authority_map(w_authority.account_auths.cbegin(), w_authority.account_auths.cend());
 
-  authority owner;
-  const auto& wax_owner = w_authorities.owner;
-  owner.weight_threshold = wax_owner.weight_threshold;
-  owner.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_owner.key_auths);
-  owner.account_auths = authority::account_authority_map(wax_owner.account_auths.cbegin(), wax_owner.account_auths.cend());
+  return a;
+}
 
-  authority posting;
-  const auto& wax_posting = w_authorities.posting;
-  posting.weight_threshold = wax_posting.weight_threshold;
-  posting.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(wax_posting.key_auths);
-  posting.account_auths = authority::account_authority_map(wax_posting.account_auths.cbegin(), wax_posting.account_auths.cend());
+static inline
+hive::protocol::authorities_t convert_wax_authorities_to_authorities(const wax_authorities& w_authorities)
+{
+  using authority = hive::protocol::authority;
+
+  authority active = convert_wax_authority_to_protocol_authority(w_authorities.active);
+  authority owner = convert_wax_authority_to_protocol_authority(w_authorities.owner);
+  authority posting = convert_wax_authority_to_protocol_authority(w_authorities.posting);
 
   return { std::move(active), std::move(owner), std::move(posting) };
+}
+
+template <class FoundationProvider>
+inline
+hive::protocol::authority_verification_trace protocol_impl<FoundationProvider>::cpp_trace_authority_verification(
+  const required_authority_collection_t& required_authorities,
+  const std::vector<std::string>& decodedSignaturePublicKeys,
+  IAccountAuthorityProvider& authorityProvider)
+{
+  struct Impl final : public hive::protocol::authority_getter_i
+  {
+    explicit Impl(IAccountAuthorityProvider& authorityProvider) : _authorityProvider(authorityProvider) {}
+    virtual ~Impl() = default;
+
+    using authority = hive::protocol::authority;
+    using public_key_type = hive::protocol::public_key_type;
+
+    virtual std::optional<authority> get_active(const std::string& a) const override
+    {
+      return acquireAuthority(a, "active");
+    }
+
+    virtual std::optional<authority> get_owner(const std::string& a) const override
+    {
+      return acquireAuthority(a, "owner");
+    }
+
+    virtual std::optional<authority> get_posting(const std::string& a) const override
+    {
+      return acquireAuthority(a, "posting");
+    }
+
+    virtual std::optional<public_key_type> get_witness_key(const std::string& account) const override
+    {
+      std::optional<public_key_type> retval;
+      const std::string signingKey = _authorityProvider.getWitnessPublicKey(account);
+      if(signingKey.empty() == false)
+        retval = fc::ecc::public_key::from_base58_with_prefix(signingKey, HIVE_ADDRESS_PREFIX);
+      return retval;
+    }
+
+  private:
+    std::optional<authority> acquireAuthority(const std::string& account, const char* role) const
+    {
+      const wax_authority wAuth = _authorityProvider.getAuthority(account, role);
+      return convert_wax_authority_to_protocol_authority(wAuth);
+    }
+
+  private:
+    IAccountAuthorityProvider& _authorityProvider;
+  };
+
+  return cpp::safe_exception_wrapper([&]() ->hive::protocol::authority_verification_trace {
+  flat_set<hive::protocol::public_key_type> _signatureDecodedPublicKeys;
+  for(const auto& decodedKey : decodedSignaturePublicKeys)
+  {
+    auto key = fc::ecc::public_key::from_base58_with_prefix(decodedKey, HIVE_ADDRESS_PREFIX);
+    _signatureDecodedPublicKeys.insert(key);
+  }
+
+  hive::protocol::required_authorities_type _requiredAuths;
+
+  _requiredAuths.required_active.insert(required_authorities.active_accounts.cbegin(), required_authorities.active_accounts.end());
+  _requiredAuths.required_owner.insert(required_authorities.owner_accounts.cbegin(), required_authorities.owner_accounts.end());
+  _requiredAuths.required_posting.insert(required_authorities.posting_accounts.cbegin(), required_authorities.posting_accounts.end());
+
+  ///_requiredAuths.required_witness; /// ? missing field in required_authority_collection_t?
+  for(const auto& o : required_authorities.other_authorities)
+  {
+    _requiredAuths.other.emplace_back(convert_wax_authority_to_protocol_authority(o));
+  }
+
+  /// TODO: FIXME allow to pass by params
+  const bool allow_strict_and_mixed_authorities = false;
+  const bool allow_redundant_signatures = false;
+
+  Impl protocolDataProvider(authorityProvider);
+
+  hive::protocol::authority_verification_trace trace = hive::protocol::verify_authority_with_tracing(
+    allow_strict_and_mixed_authorities,
+    allow_redundant_signatures,
+    _requiredAuths,
+    _signatureDecodedPublicKeys,
+    protocolDataProvider);
+
+  return trace;
+  });
 }
 
 template <class FoundationProvider>
