@@ -1092,6 +1092,26 @@ test.describe('Wax complex operation tests', () => {
     expect(retVal).toStrictEqual(1);
   });
 
+  test('Should be able to create simple account authority update operation for gtg', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "gtg");
+
+      op.role("active").add("gtg", 0); // Virtually add gtg to active authority - can't have circular authority - we just need it for tests
+
+      tx.pushOperation(op);
+
+      return tx.transaction.operations[0];
+    });
+
+    expect(retVal).toBeDefined();
+    expect("account_update2" in retVal).toBeTruthy();
+    expect(retVal.account_update2?.account).toBe("gtg");
+    expect(retVal.account_update2?.active?.account_auths).toBeDefined();
+    expect(retVal.account_update2!.active!.account_auths["gtg"]).toBe(0);
+  });
+
   test.afterAll(async () => {
     await browser.close();
   });
