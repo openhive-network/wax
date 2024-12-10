@@ -1,0 +1,10 @@
+export interface IChainConfig {
+	"HIVE_CHAIN_ID": string;
+  "HIVE_TREASURY_ACCOUNT": string;
+  "VESTS_SYMBOL": string;
+  "HIVE_SYMBOL": string;
+  "HBD_SYMBOL": string;
+  "IS_TEST_NET": string;
+  "HIVE_ENABLE_SMT": string;
+@CONFIG_HPP@
+}

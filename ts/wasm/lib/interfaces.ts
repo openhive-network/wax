@@ -13,6 +13,7 @@ import type Long from "long";
 import type { OperationBase } from "./detailed/operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
+import type { IChainConfig } from "./build_wasm/config";
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 
@@ -566,6 +567,11 @@ export interface IWaxBaseInterface {
    * @returns {string} application version
    */
   getVersion(): string;
+
+  /**
+   * Holds the protocol configuration for the current chain
+   */
+  get config(): IChainConfig;
 
   /**
    * Retrieves asset amount and symbol from the api data

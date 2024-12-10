@@ -53,6 +53,17 @@ set( INCLUDES "${WAX_ROOT_PATH}"
               "${HIVE_ROOT_PATH}/libraries/chain/include"
 )
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/get_config.d/generate_get_config.cmake")
+generate_get_config(
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../../hive/libraries/protocol/include/hive/protocol/config.hpp"  # path to config.hpp
+  "${CMAKE_CURRENT_SOURCE_DIR}/get_config.d/config.ts.in"    # path to get_config template file
+  "${CMAKE_CURRENT_BINARY_DIR}/config.ts"                    # output path
+)
+INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/config.ts"
+  COMPONENT "wax_config_ts"
+  DESTINATION .
+  )
+
 function( DEFINE_WAX_TARGET_FOR env )
       set( exec_wasm_name "wax_wasm_${env}" )
       set( exec_ts_gen "wax_ts_gen_${env}" )

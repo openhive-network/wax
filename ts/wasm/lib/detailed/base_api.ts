@@ -16,6 +16,7 @@ import { WaxFormatter } from "./formatters/waxify.js";
 import { isNaiAsset } from "./util/asset_util.js";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
+import type { IChainConfig } from "../build_wasm/config";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -332,7 +333,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public get addressPrefix(): string {
-    return safeWasmCall(() => this.proto.cpp_get_address_prefix() as string);
+    return this.config.HIVE_ADDRESS_PREFIX;
   }
 
   public getVersion(): string {
@@ -353,6 +354,26 @@ export class WaxBaseApi implements IWaxBaseInterface {
       from: mainEncryptionKey,
       to: otherEncryptionKey ?? mainEncryptionKey
     }));
+  }
+
+  private cachedConfig: IChainConfig | undefined;
+
+  public get config(): IChainConfig {
+    if (this.cachedConfig === undefined) {
+      // XXX: This should be an overloaded call with default parameters
+      const config = safeWasmCall(() => this.protocol.cpp_get_hive_protocol_config("hive.fund", "beeab0de00000000000000000000000000000000000000000000000000000000"));
+
+      const configToSave = {} as IChainConfig;
+      const configKeys = config.keys();
+      for(let i = 0; i < configKeys.size(); ++i) {
+        const key = configKeys.get(i) as string;
+
+        configToSave[key] = config.get(key) as string;
+      }
+      this.cachedConfig = configToSave;
+    }
+
+    return this.cachedConfig;
   }
 
   public decrypt(wallet: IBeekeeperUnlockedWallet, encrypted: string): string {

@@ -43,6 +43,8 @@ else
     -S "${EXECUTION_PATH}/ts/wasm/src" -B "${BUILD_DIR}" 2>&1 | tee -i "${BUILD_DIR}/cmake.log"
   ninja -v -j8 2>&1 | tee -i "${BUILD_DIR}/build.log"
 
+  cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+
   cmake --install "${BUILD_DIR}" --component wax_wasm_common_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
   cmake --install "${BUILD_DIR}" --component wax_wasm_common_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
