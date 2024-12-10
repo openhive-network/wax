@@ -2,11 +2,28 @@
 
 #include "core/types.hpp"
 
+#include <hive/protocol/authority_trace_data.hpp>
+
 #include <vector>
 #include <string>
 #include <map>
 
 namespace cpp {
+
+/** Helper interface instance to allow integration of TS/JS/Python environment and override (implement) a virtual methods
+*   to provide data to underlying C++ algoruthms.
+*/
+class IAccountAuthorityProvider
+{
+public:
+  /** Allows to query for given account authority and specific role (owner, active, posting).
+  */
+  virtual wax_authority getAuthority(std::string account_name, std::string authorityRole) = 0;
+  /// Allows to query for given witness signing key.
+  virtual std::string getWitnessPublicKey(std::string witness_name) = 0;
+
+  virtual ~IAccountAuthorityProvider() = default;
+};
 
 /** Common implementation of protocol interface, next exposed to other languages
     It provides Hive protocol functionality operating on Hive native JSON format.
@@ -53,6 +70,13 @@ public:
   *   Can throw on error.
   */
   required_authority_collection_t cpp_collect_transaction_required_authorities(const std::string& transaction);
+
+  /** Allows to perform traced verify_authority call, and collect data gathered during analysis, returned through authority_verification_trace object.
+  */
+  hive::protocol::authority_verification_trace cpp_trace_authority_verification(
+    const required_authority_collection_t& required_authorities,
+    const std::vector<std::string>& decodedSignaturePublicKeys,
+    IAccountAuthorityProvider& authorityProvider);
 
   /** Allows to collect signing keys from given transaction
   *   Can throw on error.
