@@ -150,7 +150,7 @@ def build(setup_kwargs: dict[str, Any]) -> None:
                 [
                     Extension(
                         "cpp_python_bridge", ["cpp_python_bridge.pyx"],
-                        include_dirs=['.', './..'],
+                        include_dirs=['.', './..', './../hive/libraries/protocol/include'],
                         language="c++",
                     ),  # There has to be at least one extension, instead CustomBuild.run won't be called
                 ],
