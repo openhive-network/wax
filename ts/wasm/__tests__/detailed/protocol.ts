@@ -1,9 +1,10 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation } from "../assets/data.protocol";
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction } from "../assets/data.protocol";
 import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
+import { wax_authority } from '../../dist/lib/build_wasm/wax.common';
 
 const parseBinaryChildren = (data: VectorBinaryDataNode) => {
   const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
@@ -26,6 +27,220 @@ const parseBinaryChildren = (data: VectorBinaryDataNode) => {
 };
 
 test.describe('WASM Protocol', () => {
+  test('Should be able to get authority trace for direct sign', async ({ wasmTest }) => {
+    const signatureDecodedPublicKeys = ['STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK'];
+
+    const retVal = await wasmTest(({ provider, protocol }, posting_authority_transaction, signatureDecodedPublicKeys) => {
+      const pubKeysVector = new provider.VectorString();
+
+      for(const key of signatureDecodedPublicKeys)
+        pubKeysVector.push_back(key);
+
+      const keysMap = new provider.MapStringUInt16();
+      keysMap.set('STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK', 1);
+
+      const accountsMap = new provider.MapStringUInt16();
+      accountsMap.set('gtg', 1);
+
+      const expectedWitnessKey = 'STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK';
+
+      const expectedOwner: wax_authority = { weight_threshold: 10, account_auths: accountsMap, key_auths: keysMap };
+      const expectedActive: wax_authority = { weight_threshold: 5, account_auths: accountsMap, key_auths: keysMap };
+      const expectedPosting: wax_authority = { weight_threshold: 1, account_auths: accountsMap, key_auths: keysMap };
+
+      class MyImplementation {
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`Querying for authority role: ${role} of account: ${account}`);
+
+          if (role === 'owner')
+            return expectedOwner;
+
+          if (role === 'active')
+            return expectedActive;
+
+          return expectedPosting;
+        }
+
+        getWitnessPublicKey (account: string): string {
+          console.log(`Querying for witness: ${account} signing key`);
+
+          return expectedWitnessKey;
+        }
+      }
+
+      const impl = provider.IAccountAuthorityProvider.implement(new MyImplementation());
+
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(posting_authority_transaction);
+
+      const trace = protocol.cpp_trace_authority_verification(reqAuths, pubKeysVector, impl)
+
+      console.log(JSON.stringify([expectedOwner, expectedActive, expectedPosting]));
+
+      const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
+
+      return {
+        ...trace,
+        final_authority_path: transformVectorToArray(trace.final_authority_path),
+        root: {
+          ...trace.root,
+          visited_entries: transformVectorToArray(trace.root.visited_entries)
+        }
+      }
+    }, posting_authority_transaction, signatureDecodedPublicKeys);
+
+    expect(retVal).toStrictEqual({
+      "final_authority_path": [
+        {
+          "flags": 0,
+          "processed_entry": "andablackwidow",
+          "processed_role": "posting",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 0
+        }
+      ],
+      "root": {
+        "flags": 0,
+        "processed_entry": "andablackwidow",
+        "processed_role": "posting",
+        "recursion_depth": 0,
+        "threshold": 1,
+        "visited_entries": [],
+        "weight": 0
+      },
+      "verification_status": 0
+    });
+  });
+
+  test('Should be able to get authority trace for delegated sign', async ({ wasmTest }) => {
+    const signatureDecodedPublicKeys = ['STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF'];
+
+    const retVal = await wasmTest(({ provider, protocol }, posting_delegated_authority_transaction, signatureDecodedPublicKeys) => {
+      const pubKeysVector = new provider.VectorString();
+
+      for(const key of signatureDecodedPublicKeys)
+        pubKeysVector.push_back(key);
+
+      const tattooworldKeysMap = new provider.MapStringUInt16();
+      tattooworldKeysMap.set('STM5txaAE5dF7JCJPtrEJbiLSi831jZrXgfZhj4PVHqGHvu7C3FWt', 1);
+
+      const tattooworldAccountsMap = new provider.MapStringUInt16();
+      tattooworldAccountsMap.set('ecency.app', 1);
+      tattooworldAccountsMap.set('peakd.app', 1);
+      tattooworldAccountsMap.set('leofinance', 1);
+      tattooworldAccountsMap.set('threespeak', 1);
+      tattooworldAccountsMap.set('steemauto', 1);
+
+      const leofinanceKeysMap = new provider.MapStringUInt16();
+      leofinanceKeysMap.set('STM57hDwzvNYEYfL4wLj9REhaRgiNxdFt232SxVzPwZYPqiH2ZfNW', 1);
+
+      const leofinanceAccountsMap = new provider.MapStringUInt16();
+      leofinanceAccountsMap.set('hivesigner', 1);
+      leofinanceAccountsMap.set('steem.leo', 1);
+      leofinanceAccountsMap.set('peakd.app', 1);
+      leofinanceAccountsMap.set('leofinance', 1);
+      leofinanceAccountsMap.set('threespeak', 1);
+      leofinanceAccountsMap.set('steemauto', 1);
+
+      const steemautoKeysMap = new provider.MapStringUInt16();
+      steemautoKeysMap.set('STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF', 1);
+
+      const steemautoAccountsMap = new provider.MapStringUInt16();
+      steemautoAccountsMap.set('steemauto', 1);
+
+      const expectedWitnessKey = 'STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK';
+
+      const expectedTattooworldPosting: wax_authority = { weight_threshold: 1, account_auths: tattooworldAccountsMap, key_auths: tattooworldKeysMap };
+      const expectedLeofinancePosting: wax_authority = { weight_threshold: 1, account_auths: leofinanceAccountsMap, key_auths: leofinanceKeysMap };
+      const expectedSteemautoPosting: wax_authority = { weight_threshold: 1, account_auths: steemautoAccountsMap, key_auths: steemautoKeysMap };
+
+      const randomAuthority: wax_authority = { weight_threshold: 1, account_auths: new provider.MapStringUInt16(), key_auths: new provider.MapStringUInt16() };
+
+      class MyImplementation {
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`Querying for authority role: ${role} of account: ${account}`);
+
+          if (account === 'tattooworld')
+            return expectedTattooworldPosting;
+
+          if (account === 'leofinance')
+            return expectedLeofinancePosting;
+
+          if (account === 'steemauto')
+            return expectedSteemautoPosting
+
+          return randomAuthority;
+        }
+
+        getWitnessPublicKey (account: string): string {
+          console.log(`Querying for witness: ${account} signing key`);
+
+          return expectedWitnessKey;
+        }
+      }
+
+      const impl = provider.IAccountAuthorityProvider.implement(new MyImplementation());
+
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(posting_delegated_authority_transaction);
+
+      const trace = protocol.cpp_trace_authority_verification(reqAuths, pubKeysVector, impl)
+
+      const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
+
+      return {
+        ...trace,
+        final_authority_path: transformVectorToArray(trace.final_authority_path),
+        root: {
+          ...trace.root,
+          visited_entries: transformVectorToArray(trace.root.visited_entries)
+        }
+      }
+    }, posting_delegated_authority_transaction, signatureDecodedPublicKeys);
+
+    expect(retVal).toStrictEqual({
+      "final_authority_path": [
+        {
+          "flags": 0,
+          "processed_entry": "tattooworld",
+          "processed_role": "posting",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 0
+        },
+        {
+          "flags": 0,
+          "processed_entry": "leofinance",
+          "processed_role": "posting",
+          "recursion_depth": 1,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 1
+        },
+        {
+          "flags": 0,
+          "processed_entry": "steemauto",
+          "processed_role": "posting",
+          "recursion_depth": 2,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 1
+        }
+      ],
+      "root": {
+        "flags": 0,
+        "processed_entry": "tattooworld",
+        "processed_role": "posting",
+        "recursion_depth": 0,
+        "threshold": 1,
+        "visited_entries": [],
+        "weight": 0
+      },
+      "verification_status": 0
+    });
+  });
+
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }) => {
       return protocol.cpp_generate_private_key();
