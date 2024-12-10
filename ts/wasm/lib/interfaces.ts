@@ -11,7 +11,7 @@ import type { EAssetName } from "./detailed/base_api";
 import type { TTransactionRequiredAuthorities } from './detailed';
 import type Long from "long";
 import type { OperationBase } from "./detailed/operation_base";
-import type { BlogPostOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
+import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
@@ -367,6 +367,7 @@ export interface ITransaction extends ITransactionBase {
    * or Class instance for a complex operation that will produce operations including given params
    *
    * @see Complex operations:
+   *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
    *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
    *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
    *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
@@ -459,6 +460,7 @@ export interface IEncryptingTransaction extends ITransactionBase {
    * or Class instance for a complex operation that will produce operations including given params
    *
    * @see Complex operations:
+   *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
    *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
    *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
    *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
