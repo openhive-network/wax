@@ -823,6 +823,48 @@ export const required_authorities_transaction = JSON.stringify({
   ],
 });
 
+export const posting_authority_transaction = JSON.stringify({
+  ref_block_num: 13931,
+  ref_block_prefix: 1456856403,
+  extension: [],
+  expiration: "2024-07-29T09:28:48",
+  operations: [
+    {
+      type: "vote_operation",
+      value: {
+        voter: "andablackwidow",
+        author: "hbd.funder",
+        weight: 10000,
+        permlink: "re-upvote-this-post-to-fund-hbdstabilizer-20240729t045521z"
+      }
+    }
+  ],
+  signatures: [
+    "205e7d375b4dd9ef35b7ce229ad597818e99184e3cd079c9e8a31f4f225fa1b10b33eba4af56bd57ca657f6d5dfd2841fef2a08e425fac3535da7a63095132ba90"
+  ]
+});
+
+export const posting_delegated_authority_transaction = JSON.stringify({
+  ref_block_num: 31682,
+  ref_block_prefix: 1691585842,
+  extensions: [],
+  expiration: "2024-10-01T20:10:59",
+  operations: [
+    {
+      type: "vote_operation",
+      value: {
+        voter: "tattooworld",
+        author: "mamaemigrante",
+        weight: 10000,
+        permlink: "buscando-ollas-nuevas-para-mi-cocina-looking-for-new-pots-and-pans-for-my-kitchen"
+      }
+    }
+  ],
+  signatures: [
+    "20543c6e9e5ea2acfb94e9c5cd6672f302d067b62a4c71832dcaec7caf5e83a83b45ae76c55e3f51f8eb254b460a0585e7f911a93d6e5a58522429b7a4678dc22e"
+  ]
+});
+
 export const recoverAccountTransaction = {
   "ref_block_num": 36,
   "ref_block_prefix": 2180018243,
@@ -853,3 +895,48 @@ export const recoverAccountTransaction = {
     }
   ]
 };
+
+export const singleNestLevelAuthorityDelegationTransaction = JSON.stringify({
+  "ref_block_num": 59824,
+  "ref_block_prefix": 3761625792,
+  "extensions": [],
+  "expiration": "2024-12-12T12:30:00",
+  "operations": [
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "sunnyvo",
+        "author": "franciscomarval",
+        "weight": 475,
+        "permlink": "alegoria-sirenida-mermaid-allegory"
+      }
+    }
+  ],
+  "signatures": [
+    "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
+  ]
+});
+
+export const openAuthorityTransaction = JSON.stringify({
+  "ref_block_num": 35292,
+  "ref_block_prefix": 2546881088,
+  "extensions": [],
+  "expiration": "2024-07-27T20:43:36",
+  "operations": [
+    {
+      "type": "comment_operation",
+      "value": {
+        "body": "With no response, we have no recourse but to release the source code to exploit this will be publicly released on Sunday July 28, 2024.",
+        "title": "",
+        "author": "temp",
+        "permlink": "37",
+        "json_metadata": "",
+        "parent_author": "hive-engine",
+        "parent_permlink": "market-smart-contract-23"
+      }
+    }
+  ],
+  "signatures": [
+    null
+  ]
+});
