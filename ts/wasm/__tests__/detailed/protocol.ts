@@ -246,7 +246,7 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to get hive::protocol config', async ({ wasmTest }) => {
     const hiveProtocolConfig = await wasmTest(({ protocol }) => {
-      const hiveProtocolConfig = protocol.cpp_get_hive_protocol_config("hive.fund", "beeab0de00000000000000000000000000000000000000000000000000000000");
+      const hiveProtocolConfig = protocol.cpp_get_hive_protocol_config("beeab0de00000000000000000000000000000000000000000000000000000000");
 
       const hiveProtocolConfigKeys = hiveProtocolConfig.keys();
 

@@ -13,7 +13,7 @@ import type Long from "long";
 import type { OperationBase } from "./detailed/operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
-import type { IChainConfig } from "./build_wasm/config";
+import type { IChainConfig } from "./wax_module";
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 

@@ -22,6 +22,10 @@ export type {
   VectorBinaryDataNode
 } from './build_wasm/wax.common.js';
 
+export type {
+  IChainConfig
+} from "./build_wasm/config.js";
+
 declare function waxmodule(): Promise<MainModule>;
 
 export default MainModuleFunction as unknown as typeof waxmodule;

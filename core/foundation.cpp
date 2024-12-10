@@ -14,6 +14,7 @@
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/crypto_memo.hpp>
 #include <hive/protocol/hive_collateral.hpp>
+#include <hive/protocol/get_config.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -279,6 +280,41 @@ brain_key_data foundation::cpp_suggest_brain_key()
       return ret_val;
     }
   );
+}
+std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(const std::string& chain_id)
+{
+  return cpp::safe_exception_wrapper([&]() -> std::map<std::string, std::string> {
+    const auto config = hive::protocol::get_config(NEW_HIVE_TREASURY_ACCOUNT, fc::sha256(chain_id));
+    std::map<std::string, std::string> result;
+    for (const auto& elem : config)
+    {
+      const auto& key = elem.key();
+      const auto& value = elem.value();
+
+      switch (value.get_type())
+      {
+        case fc::variant::int64_type:
+        case fc::variant::uint64_type:
+        case fc::variant::bool_type:
+        case fc::variant::string_type:
+          result.emplace(key, value.as_string());
+          break;
+
+        case fc::variant::object_type:
+        {
+          const auto& v = value.get_object().begin()->value();
+          result.emplace(key, v.as_string());
+          break;
+        }
+
+        default:
+          FC_ASSERT(false, "Unexpected type of value ${type} for ${key}.", ("type", value.get_type()) ("key", key));
+          break;
+      }
+    }
+
+    return result;
+    });
 }
 
 result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)

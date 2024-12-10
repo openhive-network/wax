@@ -94,6 +94,9 @@ result cpp_get_public_key_from_signature(const std::string& digest, const std::s
 result cpp_calculate_public_key(const std::string& wif) 
 { return foundation::cpp_calculate_public_key(wif); }
 
+std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id)
+{ return foundation::cpp_get_hive_protocol_config(chain_id); }
+
 ref_block_data cpp_get_tapos_data(const std::string& block_id)
 { return foundation::cpp_get_tapos_data(block_id); }
 
@@ -247,6 +250,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
+    .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
     .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
@@ -299,7 +304,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
     .function("cpp_deserialize_transaction", &protocol_wasm::cpp_deserialize_transaction)
     .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
-    .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance

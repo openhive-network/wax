@@ -592,9 +592,9 @@ def minimize_required_signatures(
     wax_minimize_required_signatures_data.allow_strict_and_mixed_authorities = minimize_required_signatures_data.allow_strict_and_mixed_authorities
     return obj.cpp_minimize_required_signatures(signed_transaction, wax_minimize_required_signatures_data)
 
-def get_hive_protocol_config(treasury_name: bytes, chain_id: bytes) -> dict[bytes, bytes]:
+def get_hive_protocol_config(chain_id: bytes) -> dict[bytes, bytes]:
     cdef protocol obj
-    return obj.cpp_get_hive_protocol_config(treasury_name, chain_id)
+    return obj.cpp_get_hive_protocol_config(chain_id)
 
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj

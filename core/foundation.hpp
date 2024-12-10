@@ -1,6 +1,8 @@
 #pragma once
 
 #include "core/types.hpp"
+#include <map>
+#include <hive/protocol/config.hpp>
 
 #include <string>
 
@@ -17,6 +19,11 @@ public:
 
   private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password);
   brain_key_data cpp_suggest_brain_key();
+
+  /** Returns map of hive::protocol constants in form:
+  *   constant_name => constant_value as string.
+  */
+  std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id = HIVE_CHAIN_ID);
 
   ///  Allows to retrieve public key in WIF format from the signature and digest in hexadecimal format
   result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
