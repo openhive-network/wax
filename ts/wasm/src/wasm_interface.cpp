@@ -28,6 +28,8 @@ struct required_authority_collectionV
   std::vector<wax_authority> other_authorities;
 };
 
+using authority_verification_trace = hive::protocol::authority_verification_trace;
+
 class foundation_wasm : public foundation
 {
 private:
@@ -154,6 +156,27 @@ bool cpp_is_valid_account_name( const std::string& name ) const
   return foundation::cpp_is_valid_account_name( name );
 }
 
+wax_authority test_overrided_getAuthority(IAccountAuthorityProvider& provider, std::string account, std::string role)
+{
+  return provider.getAuthority(account, role);
+}
+
+};
+
+class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
+{
+public:
+  EMSCRIPTEN_WRAPPER(AccountAuthorityProviderWrapper);
+
+  virtual wax_authority getAuthority(std::string account_name, std::string authorityRole) override
+  {
+    return call<wax_authority>("getAuthority", account_name, authorityRole);
+  }
+
+  virtual std::string getWitnessPublicKey(std::string account_name) override
+  {
+    return call<std::string>("getWitnessPublicKey", account_name);
+  }
 };
 
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
@@ -247,6 +270,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
   register_vector<wax_authority>("VectorWaxAuthority");
   register_vector<binary_data_node>("VectorBinaryDataNode");
+  register_vector<authority_verification_trace::path_entry>("VectorPathEntry");
   register_map<std::string, std::string>("MapStringString");
   register_map<std::string, uint16_t>("MapStringUInt16");
 
@@ -261,6 +285,28 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("account_subsidy_budget",  &witness_set_properties_data::account_subsidy_budget)
       .field("account_subsidy_decay",   &witness_set_properties_data::account_subsidy_decay)
       ;
+
+  value_object<authority_verification_trace::path_entry>("path_entry")
+    .field("processed_entry", &authority_verification_trace::path_entry::processed_entry)
+    .field("processed_role", &authority_verification_trace::path_entry::processed_role)
+    .field("recursion_depth", &authority_verification_trace::path_entry::recursion_depth)
+    .field("threshold", &authority_verification_trace::path_entry::threshold)
+    .field("weight", &authority_verification_trace::path_entry::weight)
+    .field("flags", &authority_verification_trace::path_entry::flags)
+    .field("visited_entries", &authority_verification_trace::path_entry::visited_entries)
+    ;
+
+  value_object<authority_verification_trace>("authority_verification_trace")
+    .field("root", &authority_verification_trace::root)
+    .field("final_authority_path", &authority_verification_trace::final_authority_path)
+    .field("verification_status", &authority_verification_trace::verification_status)
+    ;
+
+  class_<IAccountAuthorityProvider>("IAccountAuthorityProvider")
+    .allow_subclass<AccountAuthorityProviderWrapper>("AccountAuthorityProviderWrapper")
+    .function("getAuthority", &IAccountAuthorityProvider::getAuthority, pure_virtual())
+    .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
+    ;
 
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
@@ -306,6 +352,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
+    .function("test_overrided_getAuthority", &foundation_wasm::test_overrided_getAuthority)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
@@ -324,6 +371,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
     .function("cpp_deserialize_transaction", &protocol_wasm::cpp_deserialize_transaction)
     .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
+    .function("cpp_trace_authority_verification", &protocol_wasm::cpp_trace_authority_verification)
+    .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
   ;
 
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
