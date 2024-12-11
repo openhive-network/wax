@@ -13,6 +13,7 @@ from wax.cpp_python_bridge import proto_to_api
 from wax.proto import operation_pb2
 from wax.wax_result import python_error_code, python_result
 
+OperationCreatable: TypeAlias = operation_pb2.operation
 OperationHF26: TypeAlias = (
     bytes | dict[str, Any] | str | python_result | operation_pb2.operation | Operation | Hf26OperationRepresentationType
 )
