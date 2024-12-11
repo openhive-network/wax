@@ -48,8 +48,8 @@ export type TRoleContainerKeyToValueMap = {
  * const active = operation.role("active");
  * active.add(myKey);
  *
- * const posting = operation.role("memo");
- * posting.set(myKey);
+ * const memo = operation.role("memo");
+ * memo.set(myKey);
  * ```
  */
 export class AccountAuthorityUpdateOperation extends OperationBase {
