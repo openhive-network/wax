@@ -152,7 +152,8 @@ push_to_wiki:
       artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
-    - pip install ${PYPROJECT_DIR}/dist/*.whl --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple
+    - export PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+    - pip install ${PYPROJECT_DIR}/dist/*.whl
     - pip list
     - ls -al $(poetry -C "${PYPROJECT_DIR}" env info --path)/lib/python3.10/site-packages/
 
