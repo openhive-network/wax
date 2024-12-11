@@ -1,0 +1,178 @@
+from __future__ import annotations
+
+import json
+from copy import deepcopy
+from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, TypeAlias
+
+from google.protobuf.json_format import MessageToJson
+from typing_extensions import Self
+
+from schemas.fields.hex import Signature, TransactionId
+from schemas.fields.hive_datetime import HiveDateTime
+from schemas.hive_constants import HIVE_TIME_FORMAT
+from wax._private.models.required_authorities import TransactionRequiredAuthorities
+from wax._private.result_tools import decode_impacted_account_names, expose_result, validate_wax_result
+from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
+    calculate_proto_transaction_id,
+    calculate_sig_digest,
+    get_tapos_data,
+    get_transaction_required_authorities,
+    proto_to_api,
+    python_ref_block_data,
+    serialize_transaction,
+    transaction_get_impacted_accounts,
+    validate_proto_transaction,
+)
+from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
+from wax.proto.transaction_pb2 import transaction as proto_transaction
+
+if TYPE_CHECKING:
+    from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
+    from schemas.fields.basic import PublicKey
+    from wax import IWaxBaseInterface
+    from wax._private.models.basic import AccountName
+    from wax._private.models.operations import OperationCreatable
+
+
+TaposBlockId: TypeAlias = str
+
+
+class Transaction(ITransaction):
+    def __init__(
+        self,
+        api: IWaxBaseInterface,
+        tapos_block_id: TaposBlockId | ProtoTransaction,
+        expiration_time: timedelta = timedelta(minutes=30),
+        head_block_time: HiveDateTime | None = None,
+    ) -> None:
+        self._api = api
+        self._expiration_time = expiration_time
+        self._head_block_time = head_block_time
+
+        self.tapos = (
+            get_tapos_data(tapos_block_id.encode())
+            if isinstance(tapos_block_id, str)
+            else self._resolve_tapos_from_transaction(tapos_block_id)
+        )
+
+        if isinstance(tapos_block_id, ProtoTransaction):
+            self._target = deepcopy(tapos_block_id)
+        else:
+            self._target = proto_transaction(
+                ref_block_num=self.tapos.ref_block_num, ref_block_prefix=self.tapos.ref_block_prefix
+            )
+
+    @property
+    def transaction(self) -> ProtoTransaction:
+        self._flush_transaction()
+        return self._target
+
+    @property
+    def is_signed(self) -> bool:
+        return bool(self._target.signatures)
+
+    @property
+    def sig_digest(self) -> Signature:
+        sig_digest = calculate_sig_digest(self.to_bytes(), self._api.chain_id.encode())
+        validate_wax_result(sig_digest)
+
+        return Signature(expose_result(sig_digest))
+
+    @property
+    def impacted_accounts(self) -> list[AccountName]:
+        impacted_accounts = transaction_get_impacted_accounts(self._encoded)
+
+        return decode_impacted_account_names(impacted_accounts)
+
+    @property
+    def id(self) -> TransactionId:
+        transaction_id = calculate_proto_transaction_id(self._encoded)
+        validate_wax_result(transaction_id)
+
+        return TransactionId(expose_result(transaction_id))
+
+    @property
+    def signature_keys(self) -> list[PublicKey]:
+        return self._calculate_signer_public_keys()
+
+    @property
+    def required_authorities(self) -> TransactionRequiredAuthorities:
+        required_authorities = get_transaction_required_authorities(self.to_api().encode())
+        return TransactionRequiredAuthorities(required_authorities)
+
+    def validate(self) -> None:
+        validation_result = validate_proto_transaction(self._encoded)
+        validate_wax_result(validation_result)
+
+    def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
+        self.validate()
+        sig = wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
+        self._target.signatures.append(sig)
+
+        return sig
+
+    def add_signature(self, signature: Signature) -> Signature:
+        self._target.signatures.append(signature)
+        return signature
+
+    def to_api(self) -> str:
+        self._flush_transaction()
+        result = proto_to_api(self._encoded)
+        validate_wax_result(result)
+
+        transaction = json.loads(expose_result(result))
+        transaction["extensions"] = []
+        # proto does not support extensions, but we need to keep the field for API compatibility
+
+        expiration = transaction["expiration"]
+        assert expiration is not None, "Expiration should be set at this point!"
+
+        expiration_without_micro = datetime.strptime(expiration, "%Y-%m-%dT%H:%M:%S.%f").replace(microsecond=0)  # noqa: DTZ007
+        transaction["expiration"] = datetime.strftime(expiration_without_micro, HIVE_TIME_FORMAT)
+
+        return json.dumps(transaction)
+
+    def to_api_json(self) -> JsonTransaction:
+        return json.loads(self.to_api())
+
+    def to_bytes(self) -> bytes:
+        result = serialize_transaction(self.to_api().encode())
+        validate_wax_result(result)
+
+        return result.result
+
+    def push_operation(self, operation: OperationCreatable) -> Self:
+        self._target.operations.add(**{operation.__class__.__name__: operation})
+        return self
+
+    @property
+    def _encoded(self) -> bytes:
+        """Current state of the transaction as bytes."""
+        return MessageToJson(self._target).encode()
+
+    def _flush_transaction(self) -> None:
+        """Apply expiration if not set."""
+        if not bool(self._target.expiration):
+            self._apply_expiration()
+
+    def _apply_expiration(self) -> None:
+        if self._head_block_time is not None:
+            expiration = self._head_block_time + self._expiration_time
+        else:
+            expiration = HiveDateTime.now() + self._expiration_time
+
+        self._target.expiration = str(expiration.isoformat())
+
+    def _calculate_signer_public_keys(self) -> list[PublicKey]:
+        """Calculate public keys of signers."""
+        return [
+            self._api.get_public_key_from_signature(self.sig_digest, Signature(signature))
+            for signature in self._target.signatures
+        ]
+
+    def _resolve_tapos_from_transaction(self, proto_transaction: ProtoTransaction) -> python_ref_block_data:
+        return python_ref_block_data(
+            ref_block_num=proto_transaction.ref_block_num,
+            ref_block_prefix=proto_transaction.ref_block_prefix,
+        )
