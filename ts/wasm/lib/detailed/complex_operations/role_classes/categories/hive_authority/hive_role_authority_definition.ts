@@ -11,16 +11,16 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
     super(role);
   }
 
-  // XXX: Retrieve this value from config
-  private static HIVE_MAX_ACCOUNT_NAME_LENGTH = 16;
+  private HIVE_MAX_ACCOUNT_NAME_LENGTH!: number;
 
-  // XXX: Retrieve this value from config
-  private static HIVE_ADDRESS_PREFIX = "STM";
+  private HIVE_ADDRESS_PREFIX!: string;
 
   private authority!: authority;
 
-  public init(authority: authority) {
+  public init(maxAccountNameLength: number, hiveAddressPrefix: string, authority: authority) {
     this.authority = authority;
+    this.HIVE_MAX_ACCOUNT_NAME_LENGTH = maxAccountNameLength;
+    this.HIVE_ADDRESS_PREFIX = hiveAddressPrefix;
   }
 
   public get value(): Readonly<authority> {
@@ -28,9 +28,9 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
   }
 
   protected addToRole(accountOrKey: TPublicKey | TAccountName, weight: number): void {
-    if (accountOrKey.startsWith(HiveRoleAuthorityDefinition.HIVE_ADDRESS_PREFIX)) {
+    if (accountOrKey.startsWith(this.HIVE_ADDRESS_PREFIX)) {
       this.authority.key_auths[accountOrKey] = weight;
-    } else if (accountOrKey.length <= HiveRoleAuthorityDefinition.HIVE_MAX_ACCOUNT_NAME_LENGTH) {
+    } else if (accountOrKey.length <= this.HIVE_MAX_ACCOUNT_NAME_LENGTH) {
       this.authority.account_auths[accountOrKey] = weight;
     } else {
       throw new WaxError("Invalid account or key");
@@ -38,10 +38,10 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
   }
 
   protected removeFromRole(accountOrKey: TPublicKey | TAccountName): void {
-    if (accountOrKey.startsWith(HiveRoleAuthorityDefinition.HIVE_ADDRESS_PREFIX)) {
+    if (accountOrKey.startsWith(this.HIVE_ADDRESS_PREFIX)) {
       if(this.authority.key_auths[accountOrKey])
         delete this.authority.key_auths[accountOrKey];
-    } else if (accountOrKey.length <= HiveRoleAuthorityDefinition.HIVE_MAX_ACCOUNT_NAME_LENGTH) {
+    } else if (accountOrKey.length <= this.HIVE_MAX_ACCOUNT_NAME_LENGTH) {
       if(this.authority.account_auths[accountOrKey])
         delete this.authority.account_auths[accountOrKey];
     } else {

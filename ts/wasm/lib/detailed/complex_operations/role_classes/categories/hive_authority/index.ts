@@ -45,25 +45,25 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
 
     const transformEntries = (input: {"0": string; "1": number}[]) => Object.fromEntries(input.map(data => [data[0], data[1]]));
 
-    this.authorities.active.init({
+    this.authorities.active.init(Number.parseInt(chain.config.HIVE_MAX_ACCOUNT_NAME_LENGTH), chain.config.HIVE_ADDRESS_PREFIX, {
       weight_threshold: active.weight_threshold,
       account_auths: transformEntries(active.account_auths),
       key_auths: transformEntries(active.key_auths)
     });
 
-    this.authorities.owner.init({
+    this.authorities.owner.init(Number.parseInt(chain.config.HIVE_MAX_ACCOUNT_NAME_LENGTH), chain.config.HIVE_ADDRESS_PREFIX, {
       weight_threshold: owner.weight_threshold,
       account_auths: transformEntries(owner.account_auths),
       key_auths: transformEntries(owner.key_auths)
     });
 
-    this.authorities.posting.init({
+    this.authorities.posting.init(Number.parseInt(chain.config.HIVE_MAX_ACCOUNT_NAME_LENGTH), chain.config.HIVE_ADDRESS_PREFIX, {
       weight_threshold: posting.weight_threshold,
       account_auths: transformEntries(posting.account_auths),
       key_auths: transformEntries(posting.key_auths)
     });
 
-    this.authorities.memo.init(memoKey);
+    this.authorities.memo.init(chain.config.HIVE_ADDRESS_PREFIX, memoKey);
   }
 
   private canAuthorityBeSatisfied(auth: authority): boolean {

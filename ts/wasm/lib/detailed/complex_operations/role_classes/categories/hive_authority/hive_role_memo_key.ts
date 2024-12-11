@@ -7,15 +7,15 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
     super("memo");
   }
 
-  // XXX: Retrieve this value from config
-  private static HIVE_ADDRESS_PREFIX = "STM";
+  private HIVE_ADDRESS_PREFIX!: string;
 
   private static NULL_PUBLIC_KEY = "STM1111111111111111111111111111111114T1Anm";
 
   private publicKey!: TPublicKey;
 
-  public init(publicKey: TPublicKey) {
+  public init(hiveAddressPrefix: string, publicKey: TPublicKey) {
     this.publicKey = publicKey;
+    this.HIVE_ADDRESS_PREFIX = hiveAddressPrefix;
   }
 
   public get value(): Readonly<TPublicKey> {
@@ -29,7 +29,7 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
    * @returns itself
    */
   public set(publicKey: TPublicKey): this {
-    if (!publicKey.startsWith(HiveRoleMemoKeyDefinition.HIVE_ADDRESS_PREFIX))
+    if (!publicKey.startsWith(this.HIVE_ADDRESS_PREFIX))
       throw new WaxError("Invalid public key provided as memo key");
 
     this.publicKey = publicKey;
