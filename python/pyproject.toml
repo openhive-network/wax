@@ -21,6 +21,7 @@ packages = [
 source = [
     { name = "PyPI", priority = "primary" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-helpy-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
 ]
 
 [tool.poetry.build]
@@ -31,7 +32,8 @@ generate-setup-file = true
 python = "^3.10"
 protobuf = "4.24.4"
 pydantic = "1.10.18"
-schemas = "0.0.1.dev311+5bf88ae"
+schemas = "0.0.1.dev320+f4fdcfe"
+beekeepy = "0.0.1.dev273+7461832"
 
 [tool.poetry.dev-dependencies]
 mypy = "1.11.2"
@@ -99,4 +101,4 @@ ignore = [
 allow-star-arg-any = true
 
 [tool.ruff.lint.isort]
-known-first-party = ["wax", "schemas"]
+known-first-party = ["wax", "schemas", "beekeepy"]
