@@ -15,6 +15,11 @@ import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
 import type { IChainConfig } from "../build_wasm/config";
+import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
+
+export * from "./verify_authority_trace_interface";
+
+export type {TAccountName};
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 
@@ -529,6 +534,13 @@ export interface IOnlineTransaction extends ITransaction {
    * @throws {WaxError} when any of supported checks failed.
    */
   performOnChainVerification(): Promise<void>;
+
+  /**
+   * Allows to generate authority verification trace for the currently loaded/built transaction.
+   * Transaction should be already signed, othwerwise the function throws.
+   * The authority trace process requires online access to the chain APIs to retrieve account data.
+   */
+  generateAuthorityVerificationTrace(): Promise<IVerifyAuthorityTrace>;
 
   /** Overrided only to change return type.
    *  {@inheritdoc ITransaction.pushOperation}
