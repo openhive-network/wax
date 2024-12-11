@@ -34,14 +34,12 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
   public async init(chain: IHiveChainInterface, account: TAccountName): Promise<void> {
     this.account = account;
 
-    const {
-      accounts: [{
-        active,
-        posting,
-        owner,
-        memo_key: memoKey
-      }]
-    } = await chain.api.database_api.find_accounts({ accounts: [account] });
+    const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account] });
+
+    if (chainAccount === undefined)
+      throw new WaxError(`Account ${account} not found on the chain`);
+
+    const { active, posting, owner, memo_key: memoKey } = chainAccount;
 
     const transformEntries = (input: {"0": string; "1": number}[]) => Object.fromEntries(input.map(data => [data[0], data[1]]));
 
