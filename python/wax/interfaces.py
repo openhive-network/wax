@@ -4,10 +4,15 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeAlias
 
+from typing_extensions import Self
+
+from wax.proto.transaction_pb2 import transaction as proto_transaction
+
 if TYPE_CHECKING:
     from datetime import datetime
     from decimal import Decimal
 
+    from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
     from wax._private.models.asset import (
         AssetFactory,
         HbdNaiAssetConvertible,
@@ -15,13 +20,216 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax._private.models.basic import AccountName, ChainId, Hex, PublicKey, Signature
+    from wax._private.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax._private.models.brain_key_data import BrainKeyData
-    from wax._private.models.operations import Operation
+    from wax._private.models.operations import Operation, WaxMetaOperation
     from wax._private.models.private_key_data import PrivateKeyData
+    from wax._private.models.required_authorities import TransactionRequiredAuthorities
 
+
+ProtoTransaction: TypeAlias = proto_transaction
+JsonTransaction: TypeAlias = str
 
 ChainConfig: TypeAlias = dict[str, str]
+
+
+class ITransactionBase(ABC):
+    @property
+    @abstractmethod
+    def transaction(self) -> ProtoTransaction:
+        """
+        Fills up constructed transaction basing on preconfigured TAPOS. Also applies the transaction expiration time.
+
+        Returns:
+            ProtoTransaction: Proto transaction object.
+        """
+
+    @property
+    @abstractmethod
+    def is_signed(self) -> bool:
+        """
+        Checks if underlying transaction has been already signed at least one time.
+
+        Returns:
+            bool: Either true or false based on the signatures amount.
+        """
+
+    @property
+    @abstractmethod
+    def sig_digest(self) -> SigDigest:
+        """
+        Returns digest of the transaction for signing (HF26 serialization used).
+
+        Returns:
+            SigDigest: Digest of the transaction in hex form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction or chain id is incorrect.
+        """
+
+    @property
+    @abstractmethod
+    def impacted_accounts(self) -> list[AccountName]:
+        """
+        Returns list of account names (not authorities!) impacted by a whole transaction.
+
+        Returns:
+            list[AccountName]: List of account names impacted by the transaction.
+
+        Raises:
+            WaxValidationFailedError: When any of the accounts is incorrect.
+        """
+
+    @property
+    @abstractmethod
+    def id(self) -> TransactionId:
+        """
+        Returns id of the transaction (HF26 serialization used).
+
+        Returns:
+            TransactionId: Transaction id in hex form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @property
+    @abstractmethod
+    def signature_keys(self) -> list[PublicKey]:
+        """
+        Returns signature keys from the transaction signatures (HF26 serialization used).
+
+        Returns:
+            list[PublicKey]: List of public keys used to sign the transaction.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @property
+    @abstractmethod
+    def required_authorities(self) -> TransactionRequiredAuthorities:
+        """
+        Returns required authority accounts from the transaction.
+
+        Returns:
+            TransactionRequiredAuthorities: All possible authority types.
+        """
+
+    @abstractmethod
+    def validate(self) -> None:
+        """
+        Validates current transaction.
+
+        Returns:
+            None
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
+        """
+        Signs the transaction using given public key. Applies the transaction expiration time.
+
+        Args:
+            wallet: Unlocked wallet to be used for signing.
+            public_key: Public key for signing (remember that should be available in the wallet!)
+
+        Returns:
+            Signature: Transaction signature signed using given key.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def add_signature(self, signature: Signature) -> Signature:
+        """
+        Adds your signature to the internal signatures list inside underlying transaction.
+
+        Args:
+            signature: Signature to be added.
+
+        Returns:
+            Signature: Added transaction signature.
+        """
+
+    @abstractmethod
+    def to_string(self) -> str:
+        """
+        Converts transaction object into the protobuf JSON string.
+
+        Returns:
+            str: Protobuf JSON string.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def to_binary_form(self) -> Hex:
+        """
+        Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
+
+        Returns:
+            Hex: Serialized transaction in hex form.
+        """
+
+    @abstractmethod
+    def to_api(self) -> str:
+        """
+        Converts the created transaction into the Hive API-form str.
+
+        Returns:
+            str: Transaction in Hive API-form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def to_dict(self) -> dict:
+        """
+        Converts the created transaction into the Hive API-form dict.
+
+        Returns:
+            dict: Transaction in Hive API-form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def to_api_json(self) -> JsonTransaction:
+        """
+        Converts the created transaction into the Hive API-form JSON.
+
+        Returns:
+            JsonTransaction: Transaction in Hive API-form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+
+class ITransaction(ITransactionBase):
+    @abstractmethod
+    def push_operation(self, operation: WaxMetaOperation) -> Self:
+        """
+        Pushes given operation into the transaction (exactly to the list of operations).
+
+        Args:
+            operation: Operation to be pushed into the transaction in dict or proto format.
+
+        Examples:
+            * Proto format:
+            transaction.push_operation(vote_pb2.vote(voter="alice", author="bob", permlink="/", weight=11))
+
+        Returns:
+            Self: current transaction instance.
+        """
 
 
 @dataclass
