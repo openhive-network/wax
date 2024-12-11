@@ -14,6 +14,7 @@ from wax._private.result_tools import validate_wax_result
 from wax.cpp_python_bridge import api_to_proto, proto_to_api
 from wax.wax_result import python_result
 
+OperationCreatable: TypeAlias = Message
 OperationHF26: TypeAlias = (
     bytes | dict[str, Any] | str | python_result | Message | Operation | Hf26OperationRepresentationType
 )
