@@ -2,7 +2,7 @@
 
 #include "core/types.hpp"
 
-#include <hive/protocol/authority_verification_tracer.hpp>
+#include <hive/protocol/authority_trace_data.hpp>
 
 #include <vector>
 #include <string>
