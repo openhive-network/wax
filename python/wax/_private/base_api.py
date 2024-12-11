@@ -30,7 +30,7 @@ from wax._private.models.operations import (
     prepare_operation_to_get_impacted_accounts,
     prepare_operation_to_validate,
 )
-from wax._private.result_tools import expose_result, validate_wax_result
+from wax._private.result_tools import decode_impacted_account_names, expose_result, validate_wax_result
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_account_hp,
     calculate_current_manabar_value,
@@ -69,10 +69,7 @@ class WaxBaseApi(WaxBaseInterface):
 
         impacted_accounts = operation_get_impacted_accounts(prepared_operation)
 
-        try:
-            return [AccountName(account.decode()) for account in impacted_accounts]
-        except ValidationError as error:
-            raise WaxValidationFailedError("Error while parsing impacted accounts.") from error
+        return decode_impacted_account_names(impacted_accounts)
 
     @staticmethod
     def estimate_hive_collateral(
