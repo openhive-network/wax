@@ -16,6 +16,8 @@ import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
 import type { IChainConfig } from "./wax_module";
 
+export type {TAccountName};
+
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 
 export type TNaiAssetSource = TNaiAssetConvertible | NaiAsset;
