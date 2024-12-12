@@ -53,7 +53,7 @@ set( INCLUDES "${WAX_ROOT_PATH}"
               "${HIVE_ROOT_PATH}/libraries/chain/include"
 )
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/get_config.d/generate_get_config.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../../../hive/libraries/protocol/get_config.d/generate_get_config.cmake")
 generate_get_config(
   "${CMAKE_CURRENT_SOURCE_DIR}/../../../hive/libraries/protocol/include/hive/protocol/config.hpp"  # path to config.hpp
   "${CMAKE_CURRENT_SOURCE_DIR}/get_config.d/config.ts.in"    # path to get_config template file
