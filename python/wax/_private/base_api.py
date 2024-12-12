@@ -18,6 +18,7 @@ from wax._private.models.asset import (
 )
 from wax._private.models.basic import (
     AccountName,
+    ChainId,
     HbdExchangeRate,
     HbdExchangeRateHF26,
     Price,
@@ -52,8 +53,13 @@ if TYPE_CHECKING:
 
 
 class WaxBaseApi(IWaxBaseInterface):
-    def __init__(self, *, _private: bool = False) -> None:
+    def __init__(self, chain_id: ChainId, *, _private: bool = False) -> None:
         assert _private, "WaxBaseApi should not be instantiated directly. Use create_wax_foundation() instead."
+        self._chain_id = chain_id
+
+    @property
+    def chain_id(self) -> ChainId:
+        return self._chain_id
 
     @staticmethod
     def get_address_prefix() -> str:

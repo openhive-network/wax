@@ -15,13 +15,18 @@ if TYPE_CHECKING:
         AssetHiveHF26Convertible,
         AssetVestsHF26Convertible,
     )
-    from wax._private.models.basic import AccountName, HbdExchangeRate, Price
+    from wax._private.models.basic import AccountName, ChainId, HbdExchangeRate, Price
     from wax._private.models.brain_key_data import BrainKeyData
     from wax._private.models.manabar_data import ManabarData
     from wax._private.models.operations import OperationHF26
 
 
 class IWaxBaseInterface(ABC):
+    @property
+    @abstractmethod
+    def chain_id(self) -> ChainId:
+        """Returns the chain id."""
+
     @staticmethod
     @abstractmethod
     def get_address_prefix() -> str:
