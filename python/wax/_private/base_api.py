@@ -19,6 +19,7 @@ from wax._private.models.asset import (
 )
 from wax._private.models.basic import (
     AccountName,
+    ChainId,
     HbdExchangeRate,
     HbdExchangeRateHF26,
     Price,
@@ -55,6 +56,13 @@ class WaxBaseApi(WaxBaseInterface):
     def __new__(cls, *_: Any, **__: Any) -> None:  # type: ignore[misc]
         # Raise an error if someone tries to instantiate WaxBaseApi directly
         raise TypeError("Please use `create_wax_foundation` to get wax base api functionality.")
+
+    def __init__(self, chain_id: ChainId) -> None:
+        self._chain_id = chain_id
+
+    @property
+    def chain_id(self) -> ChainId:
+        return self._chain_id
 
     @staticmethod
     def get_address_prefix() -> str:
@@ -221,9 +229,9 @@ class WaxBaseApi(WaxBaseInterface):
         return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
 
     @classmethod
-    def _create_instance(cls) -> Self:
+    def _create_instance(cls, chain_id: ChainId) -> Self:
         """Creates new instance of the wax base api."""
         wax_base_api = super().__new__(cls)
-        wax_base_api.__init__()  # type: ignore[misc]
+        wax_base_api.__init__(chain_id)  # type: ignore[misc]
 
         return wax_base_api
