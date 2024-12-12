@@ -72,11 +72,13 @@ from .wax_result import (
 )
 from .interfaces import IWaxBaseInterface
 from .wax_factory import create_wax_foundation
+from .wax_options import WaxOptions
 
 __version__ = "0.0.0"
 
 __all__ = [
     "IWaxBaseInterface",
+    "WaxOptions",
     "create_wax_foundation",
     "python_error_code",
     "python_result",
