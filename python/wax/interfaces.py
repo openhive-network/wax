@@ -15,7 +15,7 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax._private.models.basic import AccountName, Hex, PublicKey, Signature
+    from wax._private.models.basic import AccountName, ChainId, Hex, PublicKey, Signature
     from wax._private.models.brain_key_data import BrainKeyData
     from wax._private.models.operations import Operation
     from wax._private.models.private_key_data import PrivateKeyData
@@ -37,6 +37,11 @@ class IManabarData(ABC):
 
 
 class IWaxBaseInterface(ABC):
+    @property
+    @abstractmethod
+    def chain_id(self) -> ChainId:
+        """Returns the chain id."""
+
     @property
     @abstractmethod
     def config(self) -> ChainConfig:
