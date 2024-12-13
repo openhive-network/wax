@@ -59,6 +59,11 @@ export default defineConfig<IWaxedTest>({
       name: "wax_utils",
       testDir: "./wasm/dist/detailed",
       testMatch: "utils*"
+    },
+    {
+      name: 'wax_mock_tests',
+      testDir: './wasm/dist',
+      testMatch: 'mock*'
     }
   ],
   // Run your local dev server before starting the tests

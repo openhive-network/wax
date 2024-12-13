@@ -253,9 +253,10 @@ export class ApiAccount {
   @IsBoolean()
   public is_smt!: boolean;
 
+  @IsArray()
   @Type(() => ApiDelayedVote)
-  @ValidateNested()
-  public delayed_votes!: ApiDelayedVote;
+  @ValidateNested({ each: true })
+  public delayed_votes!: ApiDelayedVote[];
 
   @IsDateString()
   public governance_vote_expiration_ts!: string;

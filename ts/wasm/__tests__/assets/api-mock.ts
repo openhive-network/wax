@@ -1,26 +1,45 @@
-import type { ApiAccount, ApiTransaction } from '@hiveio/wax';
-
-export interface IWaxApi {
-  findAccounts (params: { accounts: string[] }): Promise<{ accounts: ApiAccount[] }> | { accounts: ApiAccount[] };
-}
+import type { Request, Response } from 'express';
 
 export interface IMockData {
-  findAccounts: { paramsAccounts: string[], accounts: ApiAccount[] }[];
+  [key: string]: (params: Record<string, any>) => any | void;
 }
 
-export type TMockExtendedData = IMockData & Record<string, ApiTransaction | ApiAccount[]>;
+export abstract class AProxyMockResolver {
+  public abstract hasHandler(req: Request): boolean;
 
-export class waxApiMock implements IWaxApi {
-  private mockData!: IMockData;
+  public abstract handle(req: Request, res: Response): void;
+}
 
-  public load (inputData: IMockData): void {
-    console.log(`Loading mocked data: ${JSON.stringify(inputData)}`);
-    this.mockData = inputData;
+export class JsonRpcMock extends AProxyMockResolver {
+  public constructor(
+    private readonly mockData: IMockData
+  ) {
+    super();
   }
 
-  public findAccounts (params: { accounts: string[]; }): { accounts: ApiAccount[]; } {
-    const item = this.mockData.findAccounts.find(({ paramsAccounts }) => paramsAccounts.length === params.accounts.length && paramsAccounts.every((account, index) => account === params.accounts[index]));
+  public hasHandler(req: Request): boolean {
+    if (req.method !== 'POST' || typeof req.body !== 'object' )
+      return false;
 
-    return { accounts: item ? item.accounts : [] };
+    const { method, params } = req.body;
+
+    if (typeof method !== 'string' || typeof params !== 'object')
+      return false;
+
+    if (method in this.mockData && this.mockData[method](params))
+      return true;
+
+    return false;
+  }
+
+  public handle(req: Request, res: Response): void {
+    // here we assume that the request is valid
+    const { method, params } = req.body;
+
+    const response = this.mockData[method](params);
+
+    res.json(response);
   }
 }
+
+// XXX: In future we may want to implement REST API mock

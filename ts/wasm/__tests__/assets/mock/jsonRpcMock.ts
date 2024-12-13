@@ -1,0 +1,16 @@
+import { IMockData } from "../api-mock";
+import sunnyvo from "./data/sunnyvo";
+
+export default {
+  "database_api.find_accounts": (params: Record<string, any>) => {
+    const { accounts } = params;
+
+    if (accounts === undefined || !Array.isArray(accounts) || accounts.length === 0)
+      return;
+
+    if (accounts.length === 1 && accounts[0] === 'sunnyvo')
+      return sunnyvo;
+
+    return [];
+  }
+} satisfies IMockData;

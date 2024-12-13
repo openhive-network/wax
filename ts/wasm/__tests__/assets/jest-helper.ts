@@ -3,24 +3,12 @@ import { Page, test as base, expect } from '@playwright/test';
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals, TEnvType } from './globals';
 import { IWaxOptionsChain } from '../../dist/bundle/index-full';
-import path from 'node:path';
-import fs from 'node:fs';
 
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 export interface IWaxedTest {
   config: IWaxOptionsChain | undefined;
-
-  /**
-   * Path to the mock data file.
-   */
-  fixtureLevelMockFile: string;
-
-  /**
-   * Mock data loaded from the file.
-   */
-  mockData: any; // TODO: Add type for the mock data
 
   /**
    * Runs given function in both environments: web and Node.js
@@ -50,25 +38,6 @@ export interface IWaxedTest {
      * Does not check if results are equal.
      */
     dynamic<R, Args extends any[]>(fn: TWasmTestCallable<R, Args>, ...args: Args): Promise<R>;
-  };
-  /**
-   * Runs given function in both environments: web and Node.js
-   * Created specifically for testing the wax code - base and chain
-   * Contains beekeeper instance (if required)
-   *
-   * Checks if results are equal. If your tests may differ please use {@link dual.dynamic}
-   *
-   * Uses the mock data loaded from the json file provided in a fixture to process the transaction.
-   *
-   * If you want to use the real wax API interface, please use {@link waxTest} method instead.
-   */
-  waxMockTest: (<R, Args extends any[]>(fn: TWaxTestCallable<R, Args>, ...args: Args) => Promise<R>) & {
-    /**
-     * Runs given function in both environments: web and Node.js
-     *
-     * Does not check if results are equal.
-     */
-    dynamic<R, Args extends any[]>(fn: TWaxTestCallable<R, Args>, ...args: Args): Promise<R>;
   };
 }
 
@@ -113,68 +82,8 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
   return using as IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'];
 };
 
-const envMockTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
-  page: Page,
-  mockData: any, // TODO: Add type for the mock data
-  globalFunction: (env: TEnvType, mockData: any) => Promise<GlobalType>
-): IWaxedTest['waxMockTest'] => {
-
-  const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: TWaxTestCallable<R, Args>, ...args: Args): Promise<R> => {
-
-    let nodeData, webData;
-
-    try {
-      nodeData = await fn(await (globalFunction as Function)('node'), ...args);
-      webData = await page.evaluate(async({ args, webFn, customConfig }) => {
-        eval(`window.webEvalFn = ${webFn};`);
-        globalThis.config = customConfig;
-        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis.createWaxMockTestFor('web', mockData), ...args);
-      }, { args, webFn: fn.toString(), customConfig: globalThis.config });
-    } catch(error) {
-      if(!(error instanceof Error) || error.name !== "WebAssembly.Exception")
-        throw error;
-
-      // Rethrow WASM exceptions here, but remove the stack to prevent large stacktraces overflowing the console buffer
-      throw Object.assign(error, { stack: '' });
-    }
-
-    if(typeof nodeData === "object") // Remove prototype data from the node result to match webData
-      nodeData = JSON.parse(JSON.stringify(nodeData));
-
-    if(checkEqual)
-      expect(webData as any).toStrictEqual(nodeData);
-
-    return webData;
-  };
-
-  const using = function<R, Args extends any[]>(fn: TWaxTestCallable<R, Args>, ...args: Args) {
-    return runner.bind(undefined, true)(fn as any, ...args);
-  };
-  using.dynamic = runner.bind(undefined, false);
-
-  return using as IWaxedTest['waxMockTest'];
-};
-
 export const test = base.extend<IWaxedTest>({
   config: [undefined, { option: true }],
-  fixtureLevelMockFile: ['', { option: true }],
-
-  mockData: async ({ fixtureLevelMockFile }, use) => {
-    const mockDataFilePath = path.resolve(process.cwd(), fixtureLevelMockFile);
-    let mockData!: any;
-
-    if (fs.existsSync(mockDataFilePath))
-      try {
-        const rawData = fs.readFileSync(mockDataFilePath, 'utf-8');
-        mockData = JSON.parse(rawData);
-      } catch (error) {
-        console.error('Error while loading the file:', error);
-      }
-    else
-      console.log(`Mock data file not found: ${mockDataFilePath}`);
-
-    await use(mockData);
-  },
 
   waxTest: async({ page, config }, use) => {
     globalThis.config = config;
@@ -183,9 +92,5 @@ export const test = base.extend<IWaxedTest>({
 
   wasmTest: async({ page }, use) => {
     use(envTestFor(page, createWasmTestFor));
-  },
-
-  waxMockTest: async({ page, mockData }, use) => {
-    use(envMockTestFor(page, mockData, createWaxMockTestFor));
   }
 });
