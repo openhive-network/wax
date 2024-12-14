@@ -6,10 +6,11 @@ import type { ApiOperation, NaiAsset } from "./api";
 
 import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
-import type { operation, transaction } from "../protocol";
+import { operation, transaction } from "../protocol";
 
 import { WaxError } from '../errors.js';
 import { safeWasmCall } from "./util/wasm_errors.js";
+import { JSON_stringify_operation, JSON_stringify_transaction, matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";
 import Long from "long";
 
@@ -64,8 +65,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public operationBinaryViewMetadata(operation: operation | ApiOperation, isHf26Serialization = true): IBinaryViewOutputData {
     let result;
 
-    const stringifiedOperation = JSON.stringify(operation);
-    if ("type" in operation)
+    const stringifiedOperation = JSON_stringify_operation(operation);
+    if (matchesHiveProtocolType(operation))
       result = safeWasmCall(() => this.protocol.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
     else
       result = safeWasmCall(() => this.proto.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
@@ -76,19 +77,22 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
-  public operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName> {
+  public operationGetImpactedAccounts(op: operation | ApiOperation): Set<TAccountName> {
     let vector: VectorString;
 
-    const stringifiedOperation = JSON.stringify(operation);
-    if ("type" in operation)
+    const stringifiedOperation = JSON_stringify_operation(op);
+
+    if (matchesHiveProtocolType(op))
       vector = safeWasmCall(() => this.protocol.cpp_operation_get_impacted_accounts(stringifiedOperation));
     else
       vector = safeWasmCall(() => this.proto.cpp_operation_get_impacted_accounts(stringifiedOperation));
 
     const resultingSet = new Set<TAccountName>();
 
-    for(let i = 0; i < vector.size(); ++i)
-      resultingSet.add(vector.get(i) as TAccountName);
+    for(let i = 0; i < vector.size(); ++i) {
+      const collectedAccountName = vector.get(i) as TAccountName;
+      resultingSet.add(collectedAccountName);
+    }
 
     return resultingSet;
   }
@@ -101,8 +105,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
     if(transaction.operations.length === 0)
       return resultingSet;
 
-    const stringifiedTransaction = JSON.stringify(transaction);
-    if ("type" in transaction.operations[0])
+    const stringifiedTransaction = JSON_stringify_transaction(transaction);
+    if (matchesHiveProtocolType(transaction))
       vector = safeWasmCall(() => this.protocol.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
     else
       vector = safeWasmCall(() => this.proto.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
