@@ -26,6 +26,19 @@ export default defineConfig<IWaxedTest>({
       }
     },
     {
+      name: "wax_custom_chain_online_tx",
+      testDir: "./wasm/dist",
+      testMatch: "custom_chain_online_tx*",
+      use:
+      {
+        config: {
+          apiEndpoint: "https://api.fake.openhive.network/",
+          restApiEndpoint: "https://api.fake.openhive.network/", /// really not yet supported but ignored in this test group
+          chainId: "42"
+        }
+      }
+    },
+    {
       name: "wax_regression_tests",
       testDir: "./wasm/dist",
       testMatch: "regression_hive_operations*"
