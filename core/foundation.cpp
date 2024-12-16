@@ -4,6 +4,7 @@
 #include "core/utils.hpp"
 #include "fc/crypto/elliptic.hpp"
 #include <fc/reflect/reflect.hpp>
+#include <fc/io/json.hpp>
 
 #include <boost/lexical_cast.hpp>
 
@@ -394,28 +395,45 @@ void foundation::cpp_check_memo_for_private_keys(const std::string& memo, const 
     _keys.reserve(keys.size());
     std::transform(keys.cbegin(), keys.cend(), std::inserter(_keys, _keys.end()), [](const auto& key) { return static_cast<std::string>(key); });
 
+    const auto throwException = [&](const char* role, const std::string& publicKey) -> void {
+      fc::mutable_variant_object vo;
+      vo["type"] = "WAX_STD_EXCEPTION";
+      vo["msg"] = "Detected private key leak.";
+      vo["authority_role"] = role;
+      vo["public_key"] = publicKey;
+
+      std::string msg = fc::json::to_string(vo);
+      throw std::runtime_error(msg);
+      };
+
+
     for (const auto& key_weight_pair : auths.owner.key_auths)
     {
-      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private owner key in memo field.");
+      if(_keys.contains(key_weight_pair.first))
+        throwException("owner", key_weight_pair.first);
     }
 
     for (const auto& key_weight_pair : auths.active.key_auths)
     {
-      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private active key in memo field.");
+      if(_keys.contains(key_weight_pair.first))
+        throwException("active", key_weight_pair.first);
     }
 
     for (const auto& key_weight_pair : auths.posting.key_auths)
     {
-      FC_ASSERT(!_keys.contains(key_weight_pair.first), "Detected private posting key in memo field.");
+      if(_keys.contains(key_weight_pair.first))
+        throwException("posting", key_weight_pair.first);
     }
 
-    FC_ASSERT(!_keys.contains(memo_key), "Detected private memo key in memo field.");
+    if(_keys.contains(memo_key))
+      throwException("memo", memo_key);
 
     for (const auto& imported_key : imported_keys)
     {
-      FC_ASSERT(!_keys.contains(imported_key), "Detected private key in memo field.");
+      if(_keys.contains(imported_key))
+        throwException("imported", imported_key);
     }
-    });
+  });
 }
 
 
