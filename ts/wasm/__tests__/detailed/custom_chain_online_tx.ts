@@ -63,9 +63,9 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         catch(e) {
           const error: object = e as object;
 
-          /// unfortunately we cannot use instanceof here (probably because of Playwright's context isolation)
-          if("waxStdExceptionClass" in error && error.waxStdExceptionClass === "WaxPrivateKeyLeakDetectedException") {
+          if (e instanceof wax.WaxPrivateKeyLeakDetectedException) {
             const caughtError: WaxPrivateKeyLeakDetectedException = error as WaxPrivateKeyLeakDetectedException;
+
             return {
               detectedLeakError: {
                 account: caughtError.account,
@@ -74,13 +74,11 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
                 message: caughtError.message
               }
             };
-          }
-          else {
-            console.log(`waxStdExceptionClass was not found in error object: ${JSON.stringify(e as Error)}`);
-          }
+          } else
+            throw new Error("Invalid error instance");
         }
 
-        tx.sign(wallet, matchingPublicKey);        
+        tx.sign(wallet, matchingPublicKey);
 
         throw new Error("No error detected");
 

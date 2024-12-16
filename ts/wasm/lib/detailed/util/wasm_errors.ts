@@ -28,7 +28,7 @@ const handleWaxStdException = (e: any, customExceptionHandler?: TCustomException
 
       customExceptionHandler(waxStdExceptionData);
 
-    throw new WaxError(`Error during Wasm call: ${msg}`);
+      throw new WaxError(`Error during Wasm call: ${msg}`);
     }
   }
 
