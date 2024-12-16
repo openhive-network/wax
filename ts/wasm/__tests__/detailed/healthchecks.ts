@@ -70,7 +70,7 @@ test.describe('Wax object interface chain tests', () => {
     const testEndpoints = ["https://api.hive.blog", "https://1.1.1.1", "https://api.openhive.network"];
 
     const retVal = await waxTest(({ wax, chain }, testEndpoints) => {
-      return new Promise<string>((resolve, reject) => {
+      return new Promise<boolean>((resolve, reject) => {
         const hc = new wax.HealthChecker();
 
         let i = 0;
@@ -84,7 +84,13 @@ test.describe('Wax object interface chain tests', () => {
 
           if (i === 2) {
             hc.unregisterAll();
-            resolve(data[0].endpointUrl);
+
+            /**
+             * Perform here a comparison of both successful endpoints to avoid random failures during comparing WebBrowser and NodeJS results,
+             * when api.hive.blogs wins over api.openhive.network and vice versa.
+             */
+            const success = (data[0].endpointUrl === "https://api.hive.blog" || data[0].endpointUrl === "https://api.openhive.network");
+            resolve(success);
           }
         });
 
@@ -94,8 +100,7 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoints);
 
-    expect(retVal === "https://api.hive.blog" ||
-           retVal === "https://api.openhive.network").toBe(true);
+    expect(retVal).toBe(true);
   });
 
    test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
