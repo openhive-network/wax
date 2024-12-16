@@ -8,8 +8,8 @@ import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
 import { operation, transaction } from "../protocol";
 
-import { WaxError } from '../errors.js';
-import { safeWasmCall } from "./util/wasm_errors.js";
+import { WaxError, WaxPrivateKeyLeakDetectedException } from '../errors.js';
+import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
 import { JSON_stringify_operation, JSON_stringify_transaction, matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";
 import Long from "long";
@@ -416,7 +416,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
         actualOtherKeys.push_back(key);
     }
 
-    safeWasmCall(()=>this.proto.cpp_scan_text_for_matching_private_keys(content, account, accountAuthorities, memoKey, actualOtherKeys ));
+    safeWasmCall(()=>this.proto.cpp_scan_text_for_matching_private_keys(content, account, accountAuthorities, memoKey, actualOtherKeys),
+      (e: TWaxStdExceptionData): void => {
+        if(e.msg === "Detected private key leak.") {
+          const json = e.data as {public_key: string, authority_role: string};
+          throw new WaxPrivateKeyLeakDetectedException(e.msg, json.public_key, account, json.authority_role);
+        }
+      }
+    );
   }
 
   private calculateManabarPercent(current: Long, max: Long): number {
