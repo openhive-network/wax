@@ -62,11 +62,11 @@ def get_error_message(
 ) -> str:
     match memo_type:
         case "private_key":
-            return f"Detected private {role} key in memo field."
+            return f'Detected private key leak.","authority_role":"{role}"'
         case "extended_private_key":
-            return f"Detected private {role} key in memo field."
+            return f'Detected private key leak.","authority_role":"{role}"'
         case "imported_key":
-            return "Detected private key in memo field."
+            return f'Detected private key leak.","authority_role":"imported"'
     
 
 @pytest.mark.parametrize("memo_type", ["private_key", "extended_private_key", "imported_key"])
