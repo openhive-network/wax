@@ -5,7 +5,7 @@ import { test } from '../assets/jest-helper';
 import { createServer } from '../assets/proxy-mock-server';
 import { JsonRpcMock } from '../assets/api-mock';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
-import sunnyvo from '../assets/mock/data/sunnyvo';
+import steem from '../assets/mock/data/steem';
 
 let browser!: ChromiumBrowser;
 
@@ -30,10 +30,12 @@ test.describe('Wax base mock tests', () => {
 
   test('Should be able to find account based on mock interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }, account) => {
-      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['sunnyvo'] });
+      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['steem'] });
+
+      console.log(JSON.stringify(foundAccount));
 
       return JSON.stringify(foundAccount) === JSON.stringify(account.result);
-    }, sunnyvo);
+    }, steem);
 
     expect(retVal).toBe(true);
   });

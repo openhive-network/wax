@@ -1,5 +1,6 @@
 import { IMockData } from "../api-mock";
 import sunnyvo from "./data/sunnyvo";
+import steem from "./data/steem";
 
 export default {
   "database_api.find_accounts": (params: Record<string, any>) => {
@@ -10,6 +11,9 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'sunnyvo')
       return sunnyvo;
+
+    if (accounts.length === 1 && accounts[0] === 'steem')
+      return steem;
 
     return [];
   }
