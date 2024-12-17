@@ -199,19 +199,35 @@ export class HealthChecker extends EventEmitter {
     return hiveEndpointObject;
   }
 
+  private clearUnusedEndpointUrlsFromStats(): void {
+    // Collect all currently used endpoint URLs from endpoints
+    const endpointUrls = new Set<string>();
+    for(const endpoint of this.endpoints.values())
+      for(const url of endpoint.endpointUrls)
+        endpointUrls.add(url);
+
+    // Remove all unused endpoint URLs from stats
+    for(const statUrl of this.endpointStats.keys())
+      if(!endpointUrls.has(statUrl))
+        this.endpointStats.delete(statUrl);
+  }
+
   /**
    * Unregisters the checker from the healthcheck intervals
    *
    * @param {IHiveEndpoint} api api to unregister
+   * @param {?boolean} clearUnusedEndpointUrlsFromStats if true, clears unused endpoint urls from stats (defaults to true)
    * @returns {boolean} either true or false if api has been unregistered succesfully
    */
-  public unregister(api: IHiveEndpoint): boolean {
+  public unregister(api: IHiveEndpoint, clearUnusedEndpointUrlsFromStats: boolean = true): boolean {
     const endpoint = this.endpoints.get((api as HiveEndpoint).id);
 
     if(endpoint === undefined)
       return false;
 
     this.endpoints.delete((api as HiveEndpoint).id);
+    if (clearUnusedEndpointUrlsFromStats)
+      this.clearUnusedEndpointUrlsFromStats();
 
     if (this.endpoints.size === 0)
       this.stop();
@@ -221,11 +237,15 @@ export class HealthChecker extends EventEmitter {
 
   /**
    * Unregisters the checker from all of the healthcheck intervals
+   * @param {?boolean} clearUnusedEndpointUrlsFromStats if true, clears unused endpoint urls from stats (defaults to true)
    */
-  public unregisterAll(): void {
-    const registrationKeys = this.endpoints.keys();
+  public unregisterAll(clearUnusedEndpointUrlsFromStats: boolean = true): void {
+    const registrationKeys = this.endpoints.values();
     for(const key of registrationKeys)
-      this.unregister({ id: key } as HiveEndpoint);
+      this.unregister(key, false);
+
+    if(clearUnusedEndpointUrlsFromStats)
+      this.clearUnusedEndpointUrlsFromStats();
   }
 
   /**
