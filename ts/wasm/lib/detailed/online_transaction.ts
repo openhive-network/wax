@@ -7,7 +7,9 @@ import { OperationVisitor } from "../visitor";
 
 import { IOnlineTransaction, TTimestamp } from "../interfaces";
 import { operation } from "../protocol";
-import { TAccountName } from "./hive_apps_operations";
+import type { TAccountName } from "./hive_apps_operations";
+import type { IVerifyAuthorityTrace } from "../verify_authority_trace_interface";
+import { WaxError} from "../errors";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
@@ -129,6 +131,15 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     return this;
   }
 
+  public async generateAuthorityVerificationTrace(): Promise<IVerifyAuthorityTrace> {
+    const finalTransaction = this.transaction;
+
+    if(finalTransaction.signatures.length === 0)
+      throw new WaxError("Transaction is not signed yet");
+
+    throw new WaxError("Not implemented yet");
+  }
+
   public async performOnChainVerification(): Promise<void> {
     const finalTransaction = this.transaction;
 
@@ -136,5 +147,6 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
 
     await validator.validate(finalTransaction.operations);
   }
+
 
 };
