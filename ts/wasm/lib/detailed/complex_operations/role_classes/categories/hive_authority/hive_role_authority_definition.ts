@@ -17,8 +17,43 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
 
   private authority!: authority;
 
+  private previousAuthority!: authority;
+
+  /**
+   * Checks if the authority has changed since the last update.
+   *
+   * This check does not rely on previous {@link add}, {@link remove} etc. calls, but rather on deep comparison of the authority object.
+   */
+  public get authorityChanged(): boolean {
+    if (this.previousAuthority.weight_threshold !== this.authority.weight_threshold)
+      return true;
+
+    const accountKeys = Object.keys(this.authority.account_auths);
+    const previousAccountKeys = Object.keys(this.previousAuthority.account_auths);
+
+    if (accountKeys.length !== previousAccountKeys.length)
+      return true;
+
+    for (let i = 0; i < accountKeys.length; ++i)
+      if (accountKeys[i] !== previousAccountKeys[i] || this.authority.account_auths[accountKeys[i]] !== this.previousAuthority.account_auths[previousAccountKeys[i]])
+        return true;
+
+    const keyKeys = Object.keys(this.authority.key_auths);
+    const previouskeyKeys = Object.keys(this.previousAuthority.key_auths);
+
+    if (keyKeys.length !== previouskeyKeys.length)
+      return true;
+
+    for (let i = 0; i < keyKeys.length; ++i)
+      if (keyKeys[i] !== previouskeyKeys[i] || this.authority.key_auths[keyKeys[i]] !== this.previousAuthority.key_auths[previouskeyKeys[i]])
+        return true;
+
+    return false;
+  }
+
   public init(maxAccountNameLength: number, hiveAddressPrefix: string, authority: authority) {
     this.authority = authority;
+    this.previousAuthority = structuredClone(authority);
     this.HIVE_MAX_ACCOUNT_NAME_LENGTH = maxAccountNameLength;
     this.HIVE_ADDRESS_PREFIX = hiveAddressPrefix;
   }

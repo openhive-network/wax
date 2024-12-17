@@ -94,9 +94,9 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
     return [{
       account_update2: account_update2.fromPartial({
         account: this.account,
-        active,
-        owner,
-        posting,
+        active: this.authorities.active.authorityChanged ? active : undefined,
+        owner: this.authorities.owner.authorityChanged ? owner : undefined,
+        posting: this.authorities.posting.authorityChanged ? posting : undefined,
         memo_key: memoKey
       })
     }];
