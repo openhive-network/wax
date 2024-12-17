@@ -30,4 +30,9 @@ export abstract class RoleCategoryBase<AuthType extends Record<string, LevelBase
    * This function should return an array of operations that will modify the user account roles.
    */
   public abstract finalize(sink: IOperationSink): operation[];
+
+  /**
+   * Indicates if any of the authority levels has changed since the last update.
+   */
+  public abstract get changed(): boolean;
 }

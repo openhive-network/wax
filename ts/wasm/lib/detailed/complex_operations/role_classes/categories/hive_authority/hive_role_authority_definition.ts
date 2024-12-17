@@ -109,7 +109,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName = accountOrKey): this {
-    this.remove(accountOrKey)
+    if (accountOrKey !== newKeyOrAccount)
+      this.remove(accountOrKey)
     this.addToRole(newKeyOrAccount, weight);
 
     return this;

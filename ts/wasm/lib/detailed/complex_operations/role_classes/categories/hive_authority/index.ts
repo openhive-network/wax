@@ -31,6 +31,10 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
     };
   }
 
+  public get changed(): boolean {
+    return this.authorities.active.changed || this.authorities.owner.changed || this.authorities.posting.changed || this.authorities.memo.changed;
+  }
+
   public async init(chain: IHiveChainInterface, account: TAccountName): Promise<void> {
     this.account = account;
 
@@ -84,7 +88,7 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
     const owner = this.authorities.owner.changed ? this.authorities.owner.value : undefined;
     const memoKey = this.authorities.memo.changed ? this.authorities.memo.value : undefined;
 
-    if (!active && !posting && !owner && !memoKey)
+    if (!this.changed)
       return [];
 
     if (active && !this.canAuthorityBeSatisfied(active))

@@ -128,6 +128,18 @@ export class AccountAuthorityUpdateOperation extends OperationBase {
   }
 
   /**
+   * Checks if the authority has changed since the last update and it is possible to transmit this operation (any changes applied)
+   */
+  public get isEffective(): boolean {
+    let effective = false;
+
+    for (const role of this.instancesPerContainerName.values())
+      effective ||= role.changed;
+
+    return effective;
+  }
+
+  /**
    * @internal
    */
   public finalize(sink: IOperationSink): Iterable<operation> {
