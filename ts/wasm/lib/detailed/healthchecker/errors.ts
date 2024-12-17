@@ -21,8 +21,13 @@ export class WaxHealthCheckerError extends WaxError {
 }
 
 export class WaxHealthCheckerValidatorFailedError<T extends (object | string) = string> extends WaxError {
-  public constructor(public readonly request: IRequestOptions, public readonly response: Partial<IDetailedResponseData<T>>) {
-    super(`Validator did not pass on api: "${request.method} ${request.endpoint + request.url}"`);
+  public constructor(
+    public readonly failedReason: string,
+    public readonly apiEndpoint: IHiveEndpoint,
+    public readonly request: IRequestOptions,
+    public readonly response: Partial<IDetailedResponseData<T>>
+  ) {
+    super(`Validator did not pass on api: "${request.method} ${request.endpoint + request.url}": "${failedReason}"`);
   }
 }
 

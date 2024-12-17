@@ -130,7 +130,7 @@ export class HealthChecker extends EventEmitter {
    *
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
    * @param {Parameters<TFn>[0]} toSend param to {@link endpointToCheck}
-   * @param {(data: Awaited<ReturnType<TFn>>) => boolean} validator optional validator for fields. Return true to pass validation and false to fail
+   * @param {(data: Awaited<ReturnType<TFn>>) => (true | string)} validator optional validator for fields. Return true to pass validation and string to fail with given message
    * @param {?string[]} testOnEndpoints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
    *
    * @returns {IHiveEndpoint} hive endpoint to check
@@ -145,7 +145,7 @@ export class HealthChecker extends EventEmitter {
   public register<TFn extends (...args: any) => any>(
     endpointToCheck: TFn,
     toSend: Parameters<TFn>[0],
-    validator?: (data: Awaited<ReturnType<TFn>>) => boolean,
+    validator?: (data: Awaited<ReturnType<TFn>>) => (true | string),
     testOnEndpoints?: string[]
   ): IHiveEndpoint {
     const target = (endpointToCheck as unknown as TRestChainCaller)._target;
@@ -179,14 +179,17 @@ export class HealthChecker extends EventEmitter {
 
       const returned = await target.withProxy(requestInterceptor, responseInterceptor)(toSend);
 
-      if(validator !== undefined && typeof timings === "object")
-        if(!validator(returned)) {
-          const error = new WaxHealthCheckerValidatorFailedError(request!, timings!);
+      if(validator !== undefined && typeof timings === "object") {
+        const validatorResult = validator(returned);
+
+        if(validatorResult !== true) {
+          const error = new WaxHealthCheckerValidatorFailedError(validatorResult, hiveEndpointObject, request!, timings!);
 
           this.emit("validationerror", error);
 
           throw error;
         }
+      }
 
       return timings;
     });
