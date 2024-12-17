@@ -78,12 +78,14 @@ test.describe('WASM Protocol', () => {
 
       const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
 
+      const last_root = trace.root.get(trace.root.size() -1)!;
+
       return {
         ...trace,
         final_authority_path: transformVectorToArray(trace.final_authority_path),
         root: {
           ...trace.root,
-          visited_entries: transformVectorToArray(trace.root.visited_entries)
+          visited_entries: transformVectorToArray(last_root.visited_entries)
         }
       }
     }, posting_authority_transaction, signatureDecodedPublicKeys);
@@ -189,12 +191,14 @@ test.describe('WASM Protocol', () => {
 
       const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
 
+      const last_root = trace.root.get(trace.root.size() -1)!;
+
       return {
         ...trace,
         final_authority_path: transformVectorToArray(trace.final_authority_path),
         root: {
           ...trace.root,
-          visited_entries: transformVectorToArray(trace.root.visited_entries)
+          visited_entries: transformVectorToArray(last_root.visited_entries)
         }
       }
     }, posting_delegated_authority_transaction, signatureDecodedPublicKeys);
@@ -304,12 +308,14 @@ test.describe('WASM Protocol', () => {
 
       const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
 
+      const last_root = trace.root.get(trace.root.size() -1)!;
+
       return {
         ...trace,
         final_authority_path: transformVectorToArray(trace.final_authority_path),
         root: {
           ...trace.root,
-          visited_entries: transformVectorToArray(trace.root.visited_entries)
+          visited_entries: transformVectorToArray(last_root.visited_entries)
         }
       }
     }, singleNestLevelAuthorityDelegationTransaction, signatureDecodedPublicKeys);
@@ -378,12 +384,14 @@ test.describe('WASM Protocol', () => {
 
       const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
 
+      const last_root = trace.root.get(trace.root.size() -1)!;
+
       return {
         ...trace,
         final_authority_path: transformVectorToArray(trace.final_authority_path),
         root: {
           ...trace.root,
-          visited_entries: transformVectorToArray(trace.root.visited_entries)
+          visited_entries: transformVectorToArray(last_root.visited_entries)
         }
       }
     }, openAuthorityTransaction);
