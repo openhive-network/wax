@@ -282,6 +282,8 @@ test.describe('WASM Protocol', () => {
           if (account === 'steemauto')
             return expectedSteemautoPosting
 
+          console.log(`Returning a random authority for role: ${role} of account: ${account}`);
+
           return randomAuthority;
         }
 
@@ -349,12 +351,19 @@ test.describe('WASM Protocol', () => {
       const pubKeysVector = new provider.VectorString();
 
       class MyImplementation {
-        getAuthority (account: string, role: string): void {
-          console.log(`Querying for authority role: ${role} of account: ${account}`);
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`OpenAuthority: Querying for authority role: ${role} of account: ${account}`);
+
+          const entryMap = new provider.MapStringUInt16();
+          const openAuthority: wax_authority = { weight_threshold: 0, account_auths: entryMap, key_auths: entryMap };
+
+          return openAuthority;
         }
 
-        getWitnessPublicKey (account: string): void {
-          console.log(`Querying for witness: ${account} signing key`);
+        getWitnessPublicKey (account: string): string {
+          console.log(`OpenAuthority: Querying for witness: ${account} signing key`);
+
+          return ''
         }
       }
 
@@ -380,29 +389,20 @@ test.describe('WASM Protocol', () => {
       "final_authority_path": [
         {
           "flags": 0,
-          "processed_entry": "sunnyvo",
+          "processed_entry": "temp",
           "processed_role": "posting",
           "recursion_depth": 0,
-          "threshold": 1,
+          "threshold": 0,
           "visited_entries": {},
           "weight": 0
-        },
-        {
-          "flags": 0,
-          "processed_entry": "steemauto",
-          "processed_role": "posting",
-          "recursion_depth": 1,
-          "threshold": 1,
-          "visited_entries": {},
-          "weight": 1
         }
       ],
       "root": {
         "flags": 0,
-        "processed_entry": "sunnyvo",
+        "processed_entry": "temp",
         "processed_role": "posting",
         "recursion_depth": 0,
-        "threshold": 1,
+        "threshold": 0,
         "visited_entries": [],
         "weight": 0
       },
