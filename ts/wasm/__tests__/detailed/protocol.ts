@@ -1,10 +1,9 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction, singleNestLevelAuthorityDelegationTransaction } from "../assets/data.protocol";
-import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction, singleNestLevelAuthorityDelegationTransaction, openAuthorityTransaction } from "../assets/data.protocol";
+import { binary_data_node, json_price, VectorBinaryDataNode, wax_authority } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
-import { wax_authority } from '../../dist/lib/build_wasm/wax.common';
 
 const parseBinaryChildren = (data: VectorBinaryDataNode) => {
   const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
@@ -282,6 +281,8 @@ test.describe('WASM Protocol', () => {
           if (account === 'steemauto')
             return expectedSteemautoPosting
 
+          console.log(`Returning a random authority for role: ${role} of account: ${account}`);
+
           return randomAuthority;
         }
 
@@ -337,6 +338,70 @@ test.describe('WASM Protocol', () => {
         "processed_role": "posting",
         "recursion_depth": 0,
         "threshold": 1,
+        "visited_entries": [],
+        "weight": 0
+      },
+      "verification_status": 0
+    });
+  });
+
+  test('Should be able to get authority trace for open authority transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ provider, protocol }, openAuthorityTransaction) => {
+      const pubKeysVector = new provider.VectorString();
+
+      class MyImplementation {
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`OpenAuthority: Querying for authority role: ${role} of account: ${account}`);
+
+          const entryMap = new provider.MapStringUInt16();
+          const openAuthority: wax_authority = { weight_threshold: 0, account_auths: entryMap, key_auths: entryMap };
+
+          return openAuthority;
+        }
+
+        getWitnessPublicKey (account: string): string {
+          console.log(`OpenAuthority: Querying for witness: ${account} signing key`);
+
+          return ''
+        }
+      }
+
+      const impl = provider.IAccountAuthorityProvider.implement(new MyImplementation());
+
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(openAuthorityTransaction);
+
+      const trace = protocol.cpp_trace_authority_verification(reqAuths, pubKeysVector, impl)
+
+      const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
+
+      return {
+        ...trace,
+        final_authority_path: transformVectorToArray(trace.final_authority_path),
+        root: {
+          ...trace.root,
+          visited_entries: transformVectorToArray(trace.root.visited_entries)
+        }
+      }
+    }, openAuthorityTransaction);
+
+    expect(retVal).toStrictEqual({
+      "final_authority_path": [
+        {
+          "flags": 0,
+          "processed_entry": "temp",
+          "processed_role": "posting",
+          "recursion_depth": 0,
+          "threshold": 0,
+          "visited_entries": {},
+          "weight": 0
+        }
+      ],
+      "root": {
+        "flags": 0,
+        "processed_entry": "temp",
+        "processed_role": "posting",
+        "recursion_depth": 0,
+        "threshold": 0,
         "visited_entries": [],
         "weight": 0
       },
