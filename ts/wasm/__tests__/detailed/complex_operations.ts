@@ -1093,7 +1093,7 @@ test.describe('Wax complex operation tests', () => {
   });
 
   test('Should be able to create simple account authority update operation for gtg', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ wax, chain }) => {
+    const retVal = await waxTest.dynamic(async({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
 
       const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "gtg");
