@@ -916,3 +916,27 @@ export const singleNestLevelAuthorityDelegationTransaction = JSON.stringify({
     "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
   ]
 });
+
+export const openAuthorityTransaction = JSON.stringify({
+  "ref_block_num": 35292,
+  "ref_block_prefix": 2546881088,
+  "extensions": [],
+  "expiration": "2024-07-27T20:43:36",
+  "operations": [
+    {
+      "type": "comment_operation",
+      "value": {
+        "body": "With no response, we have no recourse but to release the source code to exploit this will be publicly released on Sunday July 28, 2024.",
+        "title": "",
+        "author": "temp",
+        "permlink": "37",
+        "json_metadata": "",
+        "parent_author": "hive-engine",
+        "parent_permlink": "market-smart-contract-23"
+      }
+    }
+  ],
+  "signatures": [
+    null
+  ]
+});
