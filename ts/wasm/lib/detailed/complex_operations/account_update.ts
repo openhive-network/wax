@@ -4,6 +4,7 @@ import { OperationBase, IOperationSink } from "../operation_base.js";
 import type { IHiveChainInterface } from "../../interfaces.js";
 import { HiveAccountCategory } from "./role_classes/categories/hive_authority/index.js";
 import { RoleCategoryBase } from "./role_classes/role_category_base.js";
+import { WaxError } from "../../errors.js";
 
 // Here are all of the role categories. They are automatically parsed. Add new categories here
 const AuthorityRoleCategories = [
@@ -134,6 +135,9 @@ export class AccountAuthorityUpdateOperation extends OperationBase {
 
     for (const role of this.instancesPerContainerName.values())
       operations.push(...role.finalize(sink));
+
+    if (operations.length === 0)
+      throw new WaxError("No operations updating account authority generated");
 
     return operations;
   }
