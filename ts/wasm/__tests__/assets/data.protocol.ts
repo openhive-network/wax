@@ -895,3 +895,24 @@ export const recoverAccountTransaction = {
     }
   ]
 };
+
+export const singleNestLevelAuthorityDelegationTransaction = JSON.stringify({
+  "ref_block_num": 59824,
+  "ref_block_prefix": 3761625792,
+  "extensions": [],
+  "expiration": "2024-12-12T12:30:00",
+  "operations": [
+    {
+      "type": "vote_operation",
+      "value": {
+        "voter": "sunnyvo",
+        "author": "franciscomarval",
+        "weight": 475,
+        "permlink": "alegoria-sirenida-mermaid-allegory"
+      }
+    }
+  ],
+  "signatures": [
+    "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
+  ]
+});
