@@ -12,10 +12,21 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
   private static NULL_PUBLIC_KEY = "STM1111111111111111111111111111111114T1Anm";
 
   private publicKey!: TPublicKey;
+  private previousPublicKey!: TPublicKey;
 
   public init(hiveAddressPrefix: string, publicKey: TPublicKey) {
     this.publicKey = publicKey;
+    this.previousPublicKey = publicKey;
     this.HIVE_ADDRESS_PREFIX = hiveAddressPrefix;
+  }
+
+  /**
+   * Checks if the key has changed since the last update.
+   *
+   * This check does not rely on previous {@link set} call, but rather on comparison of the public key value.
+   */
+  public get changed(): boolean {
+    return this.publicKey !== this.previousPublicKey;
   }
 
   public get value(): Readonly<TPublicKey> {

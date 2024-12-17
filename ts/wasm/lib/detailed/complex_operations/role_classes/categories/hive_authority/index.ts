@@ -79,24 +79,27 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
   }
 
   public finalize(_sink: IOperationSink): operation[] {
-    const active = this.authorities.active.value;
-    const posting = this.authorities.posting.value;
-    const owner = this.authorities.owner.value;
-    const memoKey = this.authorities.memo.value;
+    const active = this.authorities.active.changed ? this.authorities.active.value : undefined;
+    const posting = this.authorities.posting.changed ? this.authorities.posting.value : undefined;
+    const owner = this.authorities.owner.changed ? this.authorities.owner.value : undefined;
+    const memoKey = this.authorities.memo.changed ? this.authorities.memo.value : undefined;
 
-    if (!this.canAuthorityBeSatisfied(active))
+    if (!active && !posting && !owner && !memoKey)
+      return [];
+
+    if (active && !this.canAuthorityBeSatisfied(active))
       throw new WaxError("Active authority cannot be ever satisfied due to insufficient weight");
-    if (!this.canAuthorityBeSatisfied(owner))
+    if (owner && !this.canAuthorityBeSatisfied(owner))
       throw new WaxError("Owner authority cannot be ever satisfied due to insufficient weight");
-    if (!this.canAuthorityBeSatisfied(posting))
+    if (posting && !this.canAuthorityBeSatisfied(posting))
       throw new WaxError("Posting authority cannot be ever satisfied due to insufficient weight");
 
     return [{
       account_update2: account_update2.fromPartial({
         account: this.account,
-        active: this.authorities.active.authorityChanged ? active : undefined,
-        owner: this.authorities.owner.authorityChanged ? owner : undefined,
-        posting: this.authorities.posting.authorityChanged ? posting : undefined,
+        active,
+        owner,
+        posting,
         memo_key: memoKey
       })
     }];

@@ -14,4 +14,6 @@ export abstract class LevelBase<TRole extends string> {
   }
 
   public abstract get value(): any;
+
+  public abstract get changed(): boolean;
 }

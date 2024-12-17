@@ -24,7 +24,7 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    *
    * This check does not rely on previous {@link add}, {@link remove} etc. calls, but rather on deep comparison of the authority object.
    */
-  public get authorityChanged(): boolean {
+  public get changed(): boolean {
     if (this.previousAuthority.weight_threshold !== this.authority.weight_threshold)
       return true;
 
