@@ -100,16 +100,17 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
   }
 
   /**
-   * Ensures account or key is present in the currently selected role with specified weight.
-   * Changes the weight if necessary.
+   * Replaces the account or key with a new one in the currently selected role or changes the weight of the existing account or key.
    *
    * @note If you want to change the role, you need to call {@link withRole} method first.
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
-   * @param {?number} weight Account or key weight in the authority. Default is 1.
+   * @param {number} weight Account or key weight in the authority.
+   * @param {?(TPublicKey | TAccountName)} newKeyOrAccount Account or key to replace the old one. If not provided, the account or key is not replaced, but weight is changed.
    * @returns itself
    */
-  public replace(accountOrKey: TPublicKey | TAccountName, weight: number): this {
-    this.addToRole(accountOrKey, weight);
+  public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName = accountOrKey): this {
+    this.remove(accountOrKey)
+    this.addToRole(newKeyOrAccount, weight);
 
     return this;
   }
