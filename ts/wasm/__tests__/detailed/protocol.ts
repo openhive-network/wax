@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction } from "../assets/data.protocol";
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction, singleNestLevelAuthorityDelegationTransaction } from "../assets/data.protocol";
 import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
 import { wax_authority } from '../../dist/lib/build_wasm/wax.common';
@@ -231,6 +231,109 @@ test.describe('WASM Protocol', () => {
       "root": {
         "flags": 0,
         "processed_entry": "tattooworld",
+        "processed_role": "posting",
+        "recursion_depth": 0,
+        "threshold": 1,
+        "visited_entries": [],
+        "weight": 0
+      },
+      "verification_status": 0
+    });
+  });
+
+  test('Should be able to get authority trace for delegated sign with single nest level', async ({ wasmTest }) => {
+    const signatureDecodedPublicKeys = ['STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF'];
+
+    const retVal = await wasmTest(({ provider, protocol }, singleNestLevelAuthorityDelegationTransaction, signatureDecodedPublicKeys) => {
+      const pubKeysVector = new provider.VectorString();
+
+      for(const key of signatureDecodedPublicKeys)
+        pubKeysVector.push_back(key);
+
+      const sunnyvoKeysMap = new provider.MapStringUInt16();
+      sunnyvoKeysMap.set('STM8jRobEtRCFUXmNXuf46RsomxHQoPase9KXZf1QjPcXSUH7MQrD', 1);
+
+      const sunnyvoAccountsMap = new provider.MapStringUInt16();
+      sunnyvoAccountsMap.set('ecency.app', 1);
+      sunnyvoAccountsMap.set('hive.blog', 1);
+      sunnyvoAccountsMap.set('threespeak', 1);
+      sunnyvoAccountsMap.set('steemauto', 1);
+
+      const steemautoKeysMap = new provider.MapStringUInt16();
+      steemautoKeysMap.set('STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF', 1);
+
+      const steemautoAccountsMap = new provider.MapStringUInt16();
+      steemautoAccountsMap.set('steemauto', 1);
+
+      const expectedWitnessKey = 'STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK';
+
+      const expectedSunnyvoPosting: wax_authority = { weight_threshold: 1, account_auths: sunnyvoAccountsMap, key_auths: sunnyvoKeysMap };
+      const expectedSteemautoPosting: wax_authority = { weight_threshold: 1, account_auths: steemautoAccountsMap, key_auths: steemautoKeysMap };
+
+      const randomAuthority: wax_authority = { weight_threshold: 1, account_auths: new provider.MapStringUInt16(), key_auths: new provider.MapStringUInt16() };
+
+      class MyImplementation {
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`Querying for authority role: ${role} of account: ${account}`);
+
+          if (account === 'sunnyvo')
+            return expectedSunnyvoPosting;
+
+          if (account === 'steemauto')
+            return expectedSteemautoPosting
+
+          return randomAuthority;
+        }
+
+        getWitnessPublicKey (account: string): string {
+          console.log(`Querying for witness: ${account} signing key`);
+
+          return expectedWitnessKey;
+        }
+      }
+
+      const impl = provider.IAccountAuthorityProvider.implement(new MyImplementation());
+
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(singleNestLevelAuthorityDelegationTransaction);
+
+      const trace = protocol.cpp_trace_authority_verification(reqAuths, pubKeysVector, impl)
+
+      const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
+
+      return {
+        ...trace,
+        final_authority_path: transformVectorToArray(trace.final_authority_path),
+        root: {
+          ...trace.root,
+          visited_entries: transformVectorToArray(trace.root.visited_entries)
+        }
+      }
+    }, singleNestLevelAuthorityDelegationTransaction, signatureDecodedPublicKeys);
+
+    expect(retVal).toStrictEqual({
+      "final_authority_path": [
+        {
+          "flags": 0,
+          "processed_entry": "sunnyvo",
+          "processed_role": "posting",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 0
+        },
+        {
+          "flags": 0,
+          "processed_entry": "steemauto",
+          "processed_role": "posting",
+          "recursion_depth": 1,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 1
+        }
+      ],
+      "root": {
+        "flags": 0,
+        "processed_entry": "sunnyvo",
         "processed_role": "posting",
         "recursion_depth": 0,
         "threshold": 1,
