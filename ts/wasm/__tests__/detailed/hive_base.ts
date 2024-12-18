@@ -1,34 +1,14 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
+
 import { expect } from '@playwright/test';
 
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
 import { ApiTransaction } from '../../dist/bundle/index-full';
 
-let browser!: ChromiumBrowser;
 
 test.describe('Wax object interface foundation tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to create TAPOS transaction using implicit expiration time', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, beekeeper, base }, protoVoteOp) => {
       // Create wallet:
@@ -749,9 +729,5 @@ test.describe('Wax object interface foundation tests', () => {
       precision: 3,
       amount: "1065988"
     });
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

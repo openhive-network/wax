@@ -1,29 +1,13 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
+
 import { expect } from '@playwright/test';
 
 import { realSerializedWitnessSetProperties, input_witness_properties } from "../assets/data.proto-protocol";
 
 import { test } from '../assets/jest-helper';
 
-let browser!: ChromiumBrowser;
-
 test.describe('WASM Base tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   // Base browser type test
-  test('Should test on chromium', async () => {
+  test('Should test on chromium', async ({ browser }) => {
     const browserType = browser.browserType();
 
     expect(browserType.name()).toBe('chromium');
@@ -155,9 +139,5 @@ test.describe('WASM Base tests', () => {
         throw error;
       }
     }).toThrow();
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

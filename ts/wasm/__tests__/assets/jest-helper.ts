@@ -1,14 +1,21 @@
-import { Page, test as base, expect } from '@playwright/test';
+import { ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
 
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals, TEnvType } from './globals';
 import { IWaxOptionsChain } from '../../dist/bundle/index-full';
+import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper';
+
+import fs from 'fs';
 
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 export interface IWaxedTest {
   config: IWaxOptionsChain | undefined;
+
+
+  beforeEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+
 
   /**
    * Runs given function in both environments: web and Node.js
@@ -41,11 +48,16 @@ export interface IWaxedTest {
   };
 }
 
+interface IWaxedWorker {
+  beforeAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+
+  afterAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+}
+
 const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
   page: Page,
   globalFunction: (env: TEnvType) => Promise<GlobalType>
 ): IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'] => {
-
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args): Promise<R> => {
 
     let nodeData, webData;
@@ -82,8 +94,67 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
   return using as IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'];
 };
 
-export const test = base.extend<IWaxedTest>({
+export const test = base.extend<IWaxedTest, IWaxedWorker>({
   config: [undefined, { option: true }],
+
+  /// According to PW docs, ever hook must be wrapped into tuple holding additional information related to its scope and automatic installation:
+  /// https://playwright.dev/docs/test-fixtures#adding-global-beforeeachaftereach-hooks
+
+  beforeAll: [async ({}, use) => {
+    await chromium.launch({
+      headless: true
+    });
+
+    await use(async () => {});
+  }, { scope: 'worker', auto: true }],
+
+  beforeEach: [async ({ page }, use, testInfo) => {
+    page.on('console', (msg: ConsoleMessage) => {
+      console.log('>>', msg.type(), msg.text());
+    });
+
+    console.log(testInfo.parallelIndex);
+
+    if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
+      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+    }
+
+    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
+
+    await use(async () => {});
+  }, { auto: true }],
+
+  afterAll: [async ({ browser }, use) => {
+    await use(async () => {});
+
+    await browser.close();
+  }, { scope: 'worker', auto: true }],
+
+  // forEachWorker: [async ({}, use) => {
+  //   const browser = await chromium.launch({
+  //     headless: true
+  //   });
+
+  //   await use();
+
+  //   await browser.close();
+  // }, { scope: 'worker', auto: true }],
+
+  // forEachTest: [async ({ page }, use, testInfo) => {
+  //   page.on('console', (msg: ConsoleMessage) => {
+  //     console.log('>>', msg.type(), msg.text());
+  //   });
+
+  //   console.log(testInfo.parallelIndex);
+
+  //   if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
+  //     fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+  //   }
+
+  //   await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
+
+  //   await use();
+  // }, { auto: true }],
 
   waxTest: async({ page, config }, use) => {
     globalThis.config = config;
@@ -94,3 +165,36 @@ export const test = base.extend<IWaxedTest>({
     use(envTestFor(page, createWasmTestFor));
   }
 });
+
+// Solution nr. 2
+// export const defineTestSuite = (testSuiteName: string, testSuiteBody: (test: typeof base) => void) => {
+//   test.describe(testSuiteName, () => {
+//     let browser: ChromiumBrowser;
+
+//     test.beforeAll(async () => {
+//       browser = await chromium.launch({
+//         headless: true
+//       });
+//     });
+
+//     test.beforeEach(async ({ page }, testInfo) => {
+//       page.on('console', (msg: ConsoleMessage) => {
+//         console.log('>>', msg.type(), msg.text());
+//       });
+
+//       console.log(testInfo.parallelIndex);
+
+//       if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
+//         fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+//       }
+
+//       await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
+//     });
+
+//     testSuiteBody(test);
+
+//     test.afterAll(async () => {
+//       await browser.close();
+//     });
+//   });
+// };
