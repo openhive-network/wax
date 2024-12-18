@@ -177,8 +177,8 @@ namespace cpp { namespace binary_view {
   template<>
   struct stringifier< hive::protocol::asset_symbol_type, scalar_node >
   {
-    inline static std::string HBD_STR{ "HBD" };
-    inline static std::string HIVE_STR{ "HIVE" };
+    inline static std::string HBD_STR{ "SBD" };
+    inline static std::string HIVE_STR{ "STEEM" };
     inline static std::string VESTS_STR{ "VESTS" };
 
     static std::string stringify( const hive::protocol::asset_symbol_type& v )
