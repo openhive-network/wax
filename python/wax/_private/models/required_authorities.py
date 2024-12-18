@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority
 from schemas.fields.hive_int import HiveInt
+from wax._private.core.encoders import to_python_string
 
 if TYPE_CHECKING:
     from wax.wax_result import python_authority, python_required_authority_collection
@@ -30,10 +31,10 @@ class TransactionRequiredAuthorities:
         ]
 
     def _decode_accounts(self, accounts: set[bytes]) -> set[AccountName]:
-        return {AccountName(account.decode()) for account in accounts}
+        return {AccountName(to_python_string(account)) for account in accounts}
 
     def _create_account_auths(self, auth: dict[bytes, int]) -> list[tuple[AccountName, HiveInt]]:
-        return [(AccountName(account.decode()), HiveInt(weight)) for account, weight in auth.items()]
+        return [(AccountName(to_python_string(account)), HiveInt(weight)) for account, weight in auth.items()]
 
     def _create_key_auths(self, auth: dict[bytes, int]) -> list[tuple[PublicKey, HiveInt]]:
-        return [(PublicKey(key.decode()), HiveInt(weight)) for key, weight in auth.items()]
+        return [(PublicKey(to_python_string(key)), HiveInt(weight)) for key, weight in auth.items()]

@@ -8,6 +8,7 @@ from google.protobuf.json_format import MessageToJson
 from schemas.operation import Operation
 from schemas.operations.representation_types import Hf26OperationRepresentationType
 from schemas.operations.representations import HF26Representation, convert_to_representation
+from wax._private.core.encoders import to_cpp_string, to_python_string
 from wax._private.exceptions import InvalidOperationFormatError
 from wax.cpp_python_bridge import proto_to_api
 from wax.proto import operation_pb2
@@ -21,40 +22,40 @@ OperationHF26: TypeAlias = (
 
 def prepare_operation_to_validate(operation: OperationHF26) -> bytes:
     if isinstance(operation, operation_pb2.operation):
-        operation = proto_to_api(MessageToJson(operation).encode())
+        operation = proto_to_api(to_cpp_string(MessageToJson(operation)))
 
     if isinstance(operation, bytes):
         return operation
 
     if isinstance(operation, str):
-        return operation.encode()
+        return to_cpp_string(operation)
 
     if isinstance(operation, python_result):
         assert_operation_status_ok(operation)
         return operation.result
 
     if isinstance(operation, HF26Representation):
-        return operation.json(by_alias=True).encode()
+        return to_cpp_string(operation.json(by_alias=True))
 
     if isinstance(operation, Operation):
-        return cast(HF26Representation, convert_to_representation(operation)).json(by_alias=True).encode()
+        return to_cpp_string(cast(HF26Representation, convert_to_representation(operation)).json(by_alias=True))
 
-    return json.dumps(operation).encode()
+    return to_cpp_string(json.dumps(operation))
 
 
 def prepare_operation_to_get_impacted_accounts(operation: OperationHF26) -> bytes:
     if isinstance(operation, bytes):
-        operation = operation.decode()
+        operation = to_python_string(operation)
 
     if isinstance(operation, str):
         operation = json.loads(operation)
 
     if isinstance(operation, python_result):
         assert_operation_status_ok(operation)
-        operation = operation.result.decode()
+        operation = to_python_string(operation.result)
 
     if isinstance(operation, operation_pb2.operation):
-        return MessageToJson(operation).encode()
+        return to_cpp_string(MessageToJson(operation))
 
     if isinstance(operation, HF26Representation):
         operation = operation.dict(by_alias=True)
@@ -71,7 +72,7 @@ def prepare_operation_to_get_impacted_accounts(operation: OperationHF26) -> byte
             "Operation does not have 'type' or 'value' field (is not in HF26 format)."
         ) from error
 
-    return json.dumps(formatted_operation).encode()
+    return to_cpp_string(json.dumps(formatted_operation))
 
 
 def assert_operation_status_ok(operation: python_result) -> None:
