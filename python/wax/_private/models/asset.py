@@ -11,6 +11,7 @@ from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.compound import HiveInt
 from wax._private.core.decimal_converter import DecimalConverter
+from wax._private.core.encoders import to_python_string
 from wax._private.exceptions import (
     CannotCreateAssetError,
     InvalidAssetAmountError,
@@ -145,8 +146,8 @@ class Asset:
 
     @classmethod
     def from_python_json_asset(cls, asset: python_json_asset) -> AnyAssetHF26:
-        asset_cls = Asset.resolve_nai(asset.nai.decode())
-        return asset_cls(amount=AssetNaiAmount(asset.amount.decode()))
+        asset_cls = Asset.resolve_nai(to_python_string(asset.nai))
+        return asset_cls(amount=AssetNaiAmount(to_python_string(asset.amount)))
 
     @classmethod
     def resolve_nai(cls, nai: str) -> type[AnyAssetHF26]:
