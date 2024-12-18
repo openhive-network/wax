@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from wax._private.core.encoders import to_python_string
+
 if TYPE_CHECKING:
     from wax.wax_result import python_brain_key_data
 
@@ -25,6 +27,6 @@ class BrainKeyData:
         Args:
             data: brain key data.
         """
-        self.brain_key = data.brain_key.decode()
-        self.wif_private_key = data.wif_private_key.decode()
-        self.associated_public_key = data.associated_public_key.decode()
+        self.brain_key = to_python_string(data.brain_key)
+        self.wif_private_key = to_python_string(data.wif_private_key)
+        self.associated_public_key = to_python_string(data.associated_public_key)
