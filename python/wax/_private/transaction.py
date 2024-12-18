@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 from schemas.fields.hex import Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
+from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.core.encoders import to_cpp_string
 from wax._private.models.required_authorities import TransactionRequiredAuthorities
 from wax._private.result_tools import decode_impacted_account_names, expose_result, validate_wax_result
@@ -41,7 +42,7 @@ class Transaction(ITransaction):
         self,
         api: WaxBaseInterface,
         tapos_block_id: TaposBlockId | ProtoTransaction,
-        expiration_time: timedelta = timedelta(minutes=30),
+        expiration_time: timedelta = DEFAULT_TRANSACTION_EXPIRATION_TIME,
         head_block_time: HiveDateTime | None = None,
     ) -> None:
         self._api = api
