@@ -10,6 +10,7 @@ from wax.proto.transaction_pb2 import transaction as proto_transaction
 if TYPE_CHECKING:
     from datetime import datetime
 
+    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
     from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
     from schemas.fields.basic import PublicKey
     from schemas.fields.hex import Hex, Signature, TransactionId
@@ -142,6 +143,22 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
+    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+        """
+        Signs asynchronously the transaction using given public key. Applies the transaction expiration time.
+
+        Args:
+            wallet: Unlocked wallet to be used for signing.
+            public_key: Public key for signing (remember that should be available in the wallet!)
+
+        Returns:
+            Signature: Transaction signature signed using given key.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
     def add_signature(self, signature: Signature) -> Signature:
         """
         Adds your signature to the internal signatures list inside underlying transaction.
@@ -165,7 +182,17 @@ class ITransactionBase(ABC):
             WaxValidationFailedError: When the transaction is incorrect.
         """
 
+    @abstractmethod
+    def to_bytes(self) -> bytes:
+        """
+        Converts the created transaction into the chain binary form.
 
+        Returns:
+            bytes: Serialized transaction in chain form.
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
 class ITransaction(ITransactionBase):
     @abstractmethod
     def push_operation(self, operation: OperationCreatable) -> Self:
