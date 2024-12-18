@@ -32,6 +32,7 @@ from wax.proto.transaction_pb2 import transaction as proto_transaction
 if TYPE_CHECKING:
     from datetime import timedelta
 
+    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
     from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
     from schemas.fields.basic import PublicKey
     from wax import IWaxBaseInterface
@@ -78,7 +79,7 @@ class Transaction(ITransaction):
 
     @property
     def sig_digest(self) -> Signature:
-        sig_digest = calculate_sig_digest(self.to_bytes(), to_cpp_string(self._api.chain_id))
+        sig_digest = calculate_sig_digest(to_cpp_string(self.to_api()), to_cpp_string(self._api.chain_id))
         validate_wax_result(sig_digest)
 
         return Signature(expose_result(sig_digest))
@@ -112,6 +113,13 @@ class Transaction(ITransaction):
     def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
         self.validate()
         sig = wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
+        self._target.signatures.append(sig)
+
+        return sig
+
+    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+        self.validate()
+        sig = await wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
         self._target.signatures.append(sig)
 
         return sig
