@@ -1,12 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
-from wax._private.models.basic import ChainId
+from wax._private.core.constants import DEFAULT_CHAIN_ID
+
+if TYPE_CHECKING:
+    from wax._private.models.basic import ChainId
 
 
-@dataclass
 class WaxOptions:
-    chain_id: ChainId = field(
-        default_factory=lambda: ChainId("18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e")
-    )
+    """Allows configuration of wax itself."""
+
+    def __init__(self, chain_id: ChainId = DEFAULT_CHAIN_ID) -> None:
+        """
+        Constructs WaxOptions.
+
+        Args:
+            chain_id: chain id used for signing. Defaults to mainnet chain id.
+        """
+        self.chain_id = chain_id
