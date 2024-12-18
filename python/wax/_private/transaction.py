@@ -27,6 +27,7 @@ from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
 from wax.proto.transaction_pb2 import transaction as proto_transaction
 
 if TYPE_CHECKING:
+    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
     from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
     from schemas.fields.basic import PublicKey
     from wax import WaxBaseInterface
@@ -111,6 +112,13 @@ class Transaction(ITransaction):
 
         return sig
 
+    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+        self.validate()
+        sig = await wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
+        self._target.signatures.append(sig)
+
+        return sig
+
     def add_signature(self, signature: Signature) -> Signature:
         self._target.signatures.append(signature)
         return signature
@@ -120,6 +128,12 @@ class Transaction(ITransaction):
         validate_wax_result(result)
 
         return expose_result(result)
+
+    def to_bytes(self) -> bytes:
+        result = serialize_transaction(to_cpp_string(self.to_api_json()))
+        validate_wax_result(result)
+
+        return result.result
 
     def push_operation(self, operation: OperationCreatable) -> Self:
         self._target.operations.add(**{operation.__class__.__name__: operation})
