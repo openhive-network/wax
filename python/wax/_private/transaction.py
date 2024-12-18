@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from datetime import timedelta
 from typing import TYPE_CHECKING, TypeAlias
 
 from google.protobuf.json_format import MessageToJson, Parse
 from typing_extensions import Self
 
+from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.required_authorities import TransactionRequiredAuthorities
 from wax._private.result_tools import (
@@ -33,6 +33,8 @@ from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
 from wax.proto.transaction_pb2 import transaction as proto_transaction
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
     from wax import IWaxBaseInterface
     from wax._private.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
@@ -47,7 +49,7 @@ class Transaction(ITransaction):
         self,
         api: IWaxBaseInterface,
         tapos_block_id: TaposBlockId | ProtoTransaction,
-        expiration_time: timedelta = timedelta(minutes=30),
+        expiration_time: timedelta = DEFAULT_TRANSACTION_EXPIRATION_TIME,
         head_block_time: HiveDateTime | None = None,
     ) -> None:
         self._api = api
