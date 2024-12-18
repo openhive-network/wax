@@ -8,6 +8,7 @@ from typing_extensions import Self
 
 from schemas.fields.basic import PublicKey
 from wax._private.core.constants import PUBLIC_KEY_ADDRESS_PREFIX
+from wax._private.core.encoders import to_cpp_string
 from wax._private.core.python_price_converter import convert_to_python_price
 from wax._private.exceptions import WaxValidationFailedError
 from wax._private.models.asset import (
@@ -161,7 +162,7 @@ class WaxBaseApi(WaxBaseInterface):
 
     @staticmethod
     def get_public_key_from_signature(sig_digest: Hex, signature: Signature) -> PublicKey:
-        public_key = get_public_key_from_signature(sig_digest.encode(), signature.encode())
+        public_key = get_public_key_from_signature(to_cpp_string(sig_digest), to_cpp_string(signature))
         validate_wax_result(public_key)
 
         return PublicKey(expose_result(public_key))

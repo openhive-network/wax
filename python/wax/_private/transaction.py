@@ -9,6 +9,7 @@ from typing_extensions import Self
 
 from schemas.fields.hex import Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
+from wax._private.core.encoders import to_cpp_string
 from wax._private.models.required_authorities import TransactionRequiredAuthorities
 from wax._private.result_tools import decode_impacted_account_names, expose_result, validate_wax_result
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
@@ -48,7 +49,7 @@ class Transaction(ITransaction):
         self._head_block_time = head_block_time
 
         self.tapos = (
-            get_tapos_data(tapos_block_id.encode())
+            get_tapos_data(to_cpp_string(tapos_block_id))
             if isinstance(tapos_block_id, str)
             else self._resolve_tapos_from_transaction(tapos_block_id)
         )
@@ -71,7 +72,7 @@ class Transaction(ITransaction):
 
     @property
     def sig_digest(self) -> Signature:
-        sig_digest = calculate_proto_sig_digest(self._encoded, self._api.chain_id.encode())
+        sig_digest = calculate_proto_sig_digest(self._encoded, to_cpp_string(self._api.chain_id))
         validate_wax_result(sig_digest)
 
         return Signature(expose_result(sig_digest))
@@ -95,7 +96,7 @@ class Transaction(ITransaction):
 
     @property
     def required_authorities(self) -> TransactionRequiredAuthorities:
-        required_authorities = get_transaction_required_authorities(self.to_api_json().encode())
+        required_authorities = get_transaction_required_authorities(to_cpp_string(self.to_api_json()))
         return TransactionRequiredAuthorities(required_authorities)
 
     def validate(self) -> None:
@@ -126,7 +127,7 @@ class Transaction(ITransaction):
     @property
     def _encoded(self) -> bytes:
         """Current state of the transaction as bytes."""
-        return MessageToJson(self._target).encode()
+        return to_cpp_string(MessageToJson(self._target))
 
     def _flush_transaction(self) -> None:
         if not bool(self._target.expiration):
