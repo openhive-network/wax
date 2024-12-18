@@ -28,6 +28,46 @@ test.describe('Wax complex operation tests', () => {
     await page.goto('http://localhost:8080/wasm/__tests__/assets/test.html', { waitUntil: 'load' });
   });
 
+  test('Should be able to replace keyentry during authority update operation', async ({ waxTest }) => {
+    const keyToReplace = "STM5N4a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZp";
+    const replacement = "STM5N4a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZZ";
+
+    const retVal = await waxTest.dynamic(async({ wax, chain }, keyToReplace, replacemenet) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      const prefix = "STM";
+      const n = 4;
+
+      const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "gtg"); 
+
+      const activeAuthority = op.role("active");
+      activeAuthority.add(keyToReplace);//"STM5N4a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZp", 1);
+      /// intentionally messed to produce different objects representing same string value
+      let key1 = `${prefix}5N${n}a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZp}`;
+      let key2 = replacemenet;
+      console.log(key1);
+      console.log(key2);
+      activeAuthority.replace(`${key1}`, 2, key2);
+      /// switch to literal version to see it works
+      //activeAuthority.replace("STM5N4a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZp", 2, "STM5N4a5uAQ3h2yGPAJmA2VgjKeEwxjTEjYwpzqnYLSY4fRSvihZZ");
+
+      const activeAuthorityString = JSON.stringify(activeAuthority);
+
+      console.log(activeAuthorityString);
+
+      tx.pushOperation(op);
+
+      return tx.transaction.operations[0];
+    }, keyToReplace, replacement);
+
+    expect(retVal).toBeDefined();
+    expect("account_update2" in retVal).toBeTruthy();
+    expect(retVal.account_update2?.account).toBe("gtg");
+    expect(replacement in retVal.account_update2!.active!.key_auths!).toBeTruthy();
+    expect(keyToReplace in retVal.account_update2?.active?.key_auths!).toBeFalsy();
+  });
+
+
   test('Should be able to initialize pushOperation on WitnessSetPropertiesOperation with basic witness_set_properties_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
