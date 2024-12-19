@@ -1,7 +1,8 @@
 import {HiveChainApi, TAccountAuthorityCollection}  from "../chain_api";
 import { TAccountName } from "../hive_apps_operations";
-import type { IAccountAuthorityProvider, wax_authorities } from "../../wax_module";
+import type { IAccountAuthorityProvider, wax_authority } from "../../wax_module";
 import type { TPublicKey } from "../../interfaces";
+import { WaxError } from "../../errors";
 
 /**
  * Helper class used during traced authority verification process.
@@ -52,9 +53,21 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
     return this.requestedAccounts.size > 0;
   }
 
-  public getAccountAuthority(account: string): [wax_authorities, TPublicKey] | undefined {
-    if(this.cache.has(account))
-      return this.cache.get(account)!;
+  public getAuthority(account: TAccountName, role: string): wax_authority | undefined {
+    if(this.cache.has(account)) {
+      const authorities = this.cache.get(account)!;
+
+      switch(role) {
+        case "posting":
+          return authorities[0].posting;
+        case "active":
+          return authorities[0].active;
+        case "owner":
+          return authorities[0].owner;
+        default:
+          throw new WaxError(`Unknown role: ${role}`);
+      }
+    }
 
     if(this.unknownAccounts.has(account))
         return undefined;
@@ -63,7 +76,7 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
     return undefined;
   }
 
-  public getWitnessPublicKey(account: string): string|undefined {
+  public getWitnessPublicKey(account: TAccountName): TPublicKey|undefined {
     if(this.witnessDataCache.has(account))
       return this.witnessDataCache.get(account)!;
 
@@ -72,6 +85,12 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
 
     this.requestedWitnessAccounts.add(account);
     return undefined;
+  }
+
+  public delete(): void {
+    this.cache.clear();
+    this.unknownAccounts.clear();
+    this.requestedAccounts.clear();
   }
 
 };
