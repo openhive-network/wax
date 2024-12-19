@@ -8,6 +8,7 @@ export type {
   error_code,
   IAccountAuthorityProvider,
   json_asset,
+  path_entry,
   proto_protocol,
   protocol,
   protocol_foundation,
