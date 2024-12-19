@@ -1,7 +1,7 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "../interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../wax_module";
-import { ApiAuthority, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
+import { ApiAuthority, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type ApiWitness, type RcAccount } from "./api";
 
 import { WaxError } from "../errors.js";
 import { safeWasmCall } from './util/wasm_errors.js';
@@ -13,6 +13,7 @@ import { dateFromString } from "./util/expiration_parser.js";
 
 import Long from "long";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
+
 import { TAccountName } from "./hive_apps_operations";
 
 export enum EManabarType {
@@ -30,6 +31,8 @@ export enum EChainApiType {
   JSON_RPC = "json_rpc",
   REST = "rest"
 }
+
+export type TAccountAuthorityCollection = Map<TAccountName, [wax_authorities, TPublicKey]>;
 
 export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public get restApi () {
@@ -162,12 +165,33 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return account;
   }
 
-  private async findAccounts(...accountNames: string[]): Promise<Array<ApiAccount>> {
+  private async findAccountsNoThrow(...accountNames: string[]): Promise<Array<ApiAccount>> {
     const { accounts } = await this.api.database_api.find_accounts({ accounts: accountNames });
+    return accounts;
+  }
+
+  private async findAccounts(...accountNames: string[]): Promise<Array<ApiAccount>> {
+    const accounts = await this.findAccountsNoThrow(...accountNames);
     if(accounts.length !== accountNames.length) {
       const notFoundAccounts = accounts.map(node => node.name).filter(node => !accountNames.includes(node));
 
       throw new WaxError(`No such account(s) on chain with given name(s): "${notFoundAccounts.join(', ')}"`);
+    }
+
+    return accounts;
+  }
+
+  private async findWitnessAccountsNoThrow(...witnessNames: string[]): Promise<Array<ApiWitness>> {
+    const { witnesses } = await this.api.database_api.find_witnesses({ owners: witnessNames }); 
+    return witnesses;
+  }
+
+  private async findWitnessAccounts(...witnessNames: string[]): Promise<Array<ApiWitness>> {
+    const accounts = await this.findWitnessAccountsNoThrow(...witnessNames);
+    if(accounts.length !== witnessNames.length) {
+      const notFoundAccounts = accounts.map(node => node.owner).filter(node => !witnessNames.includes(node));
+
+      throw new WaxError(`No such witness(s) on chain with given name(s): "${notFoundAccounts.join(', ')}"`);
     }
 
     return accounts;
@@ -194,11 +218,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       return retVal;
   }
 
-  public async collectAccountAuthorities(...accountNames: string[]): Promise<Map<TAccountName, [wax_authorities, TPublicKey]>> {
+  public async collectAccountAuthorities(throwIfMissing: boolean, ...accountNames: string[]): Promise<TAccountAuthorityCollection> {
     if(accountNames.length === 0)
       return new Map();
 
-    const accountData = await this.findAccounts(...accountNames);
+    const accountData = throwIfMissing ? await this.findAccounts(...accountNames) : await this.findAccountsNoThrow(...accountNames);
 
     const retVal = new Map<TAccountName, [wax_authorities, TPublicKey]>();
 
@@ -216,6 +240,20 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       retVal.set(name, [account_authority, accountData[i].memo_key]);
     }
+
+    return retVal;
+  }
+
+  public async collectWitnessSigningKeys(throwIfMissing: boolean, ...accountNames: string[]): Promise<Map<TAccountName, TPublicKey>> { 
+    if(accountNames.length === 0)
+      return new Map();
+
+    const accountData = throwIfMissing ? await this.findWitnessAccounts(...accountNames) : await this.findWitnessAccountsNoThrow(...accountNames);
+
+    const retVal = new Map<TAccountName, TPublicKey>();
+
+    for(let i = 0; i < accountData.length; ++i)
+      retVal.set(accountData[i].owner, accountData[i].signing_key);
 
     return retVal;
   }
