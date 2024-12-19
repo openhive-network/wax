@@ -294,17 +294,20 @@ hive::protocol::authority_verification_trace protocol_impl<FoundationProvider>::
     virtual std::optional<public_key_type> get_witness_key(const std::string& account) const override
     {
       std::optional<public_key_type> retval;
-      const std::string signingKey = _authorityProvider.getWitnessPublicKey(account);
-      if(signingKey.empty() == false)
-        retval = fc::ecc::public_key::from_base58_with_prefix(signingKey, HIVE_ADDRESS_PREFIX);
+      const auto signingKey = _authorityProvider.getWitnessPublicKey(account);
+      if(signingKey)
+        retval = fc::ecc::public_key::from_base58_with_prefix(*signingKey, HIVE_ADDRESS_PREFIX);
       return retval;
     }
 
   private:
     std::optional<authority> acquireAuthority(const std::string& account, const char* role) const
     {
-      const wax_authority wAuth = _authorityProvider.getAuthority(account, role);
-      return convert_wax_authority_to_protocol_authority(wAuth);
+      auto wAuth = _authorityProvider.getAuthority(account, role);
+      if(wAuth)
+        return convert_wax_authority_to_protocol_authority(*wAuth);
+
+      return std::optional<authority>();
     }
 
   private:
