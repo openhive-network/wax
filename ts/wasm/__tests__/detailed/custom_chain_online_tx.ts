@@ -83,6 +83,44 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const mirrornetSkeletonKey = '5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n';
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
 
+  test('Should be able to get authority trace for direct sign', async ({ waxTest, config }) => {
+    /// similar tx to https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
+    const retVal = await waxTest(async({ beekeeper, wax }, mirrornetSkeletonKey: string) => {
+
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      const matchingPublicKey = await wallet.importKey(mirrornetSkeletonKey);
+
+      const myCustomChain = await wax.createHiveChain(config);
+
+      // Create online transaction
+      const tx: IOnlineTransaction = await myCustomChain.createTransaction();
+
+      // Fill it with some operation
+      const transferOp: transfer = {
+        from_account: "splinterboost",
+        to_account: "bluehy20",
+        amount: myCustomChain.hiveSatoshis(14),
+        memo: 'Thank you for delegating to Splinterboost here is your daily HIVE payout!'
+      };
+
+      const op: operation = { transfer: transferOp };
+      tx.pushOperation(op);
+      tx.sign(wallet, matchingPublicKey);
+
+      const authTrace = await tx.generateAuthorityVerificationTrace();
+
+      const authTraceStr = JSON.stringify(authTrace);
+      console.log(`Authority trace: ${authTraceStr }`);
+
+      return authTraceStr;
+    }, mirrornetSkeletonKey);
+
+    /// TODO improve comparison to avoid string form
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+   });
+
+
   test('Should catch private key leak using online transaction interface during explicit online validation', async ({ waxTest, config }) => {
       const retVal = await waxTest(txSecurityLeakBody, mirrornetSkeletonKey, config!, false);
     expect(retVal.detectedLeakError).toStrictEqual({
