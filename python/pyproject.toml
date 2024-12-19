@@ -33,7 +33,7 @@ python = "^3.10"
 protobuf = "4.24.4"
 pydantic = "1.10.18"
 schemas = "0.0.1.dev320+f4fdcfe"
-beekeepy = "0.0.1.dev273+7461832"
+beekeepy = "0.0.1.dev274+4d85d1e"
 
 [tool.poetry.dev-dependencies]
 mypy = "1.11.2"
