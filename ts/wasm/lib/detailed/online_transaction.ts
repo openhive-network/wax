@@ -1,7 +1,7 @@
 import { DEFAULT_WAX_OPTIONS } from "./base";
 import { HiveChainApi, TChainReferenceData } from "./chain_api";
 import { OperationBase } from "./operation_base";
-import { Transaction } from "./transaction";
+import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "../protocol";
 import { OperationVisitor } from "../visitor";
 
@@ -9,13 +9,18 @@ import { IOnlineTransaction, TTimestamp } from "../interfaces";
 import { operation } from "../protocol";
 import type { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "../verify_authority_trace_interface";
-import { WaxError} from "../errors";
+import type { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../wax_module";
+
+import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
+import { convertAuthorityTrace } from "./verify_authority_trace";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
   active?: authority,
   posting?: authority
 };
+
+type TAuthorityEntriesCollection = { [key: string]: number };
 
 /**
  * Helper operation visitor class, perforiming on-chain verification in a way specific to given operation type.
@@ -91,7 +96,7 @@ class OnChainOperationValidator extends OperationVisitor {
 
   private async processSecurityLeakScannerData(): Promise<void> {
     const inputAccounts = this.privateKeyScannerData.keys();
-    const accountAuthorities = await this.chain.collectAccountAuthorities(...Array.from(inputAccounts));
+    const accountAuthorities = await this.chain.collectAccountAuthorities(true, ...Array.from(inputAccounts));
 
     /// TODO: Maybe it would be worth to try create a promise for each call and spawn them asynchronuously
 
@@ -132,12 +137,36 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
   }
 
   public async generateAuthorityVerificationTrace(): Promise<IVerifyAuthorityTrace> {
-    const finalTransaction = this.transaction;
+    const requiredAuths = this.requiredAuthorities;
+    const signatureKeys = this.signatureKeys;
 
-    if(finalTransaction.signatures.length === 0)
-      throw new WaxError("Transaction is not signed yet");
+    const actualSignatureKeys = new this.api.wax.VectorString();
+    for(const key of signatureKeys)
+      actualSignatureKeys.push_back(key);
 
-    throw new WaxError("Not implemented yet");
+    const actualRequiredAuthorities = this.convertRequiredAuthorities(requiredAuths);
+
+    const commonAccountSet = new Set(requiredAuths.active);
+    for(const a of requiredAuths.posting)
+      commonAccountSet.add(a);
+
+    for(const a of requiredAuths.owner)
+      commonAccountSet.add(a);
+
+    const authorityCache = new AccountAuthorityCachingProvider(this.chain, commonAccountSet);
+
+    const impl = this.api.wax.IAccountAuthorityProvider.implement(authorityCache);
+
+    let receivedTrace: authority_verification_trace;
+
+    do {
+      /// Acquire data for each authority layer
+      await authorityCache.acquireData();
+      receivedTrace = this.api.protocol.cpp_trace_authority_verification(actualRequiredAuthorities, actualSignatureKeys, impl);
+    }
+    while(authorityCache.canContinue);
+
+    return convertAuthorityTrace(receivedTrace);
   }
 
   public async performOnChainVerification(): Promise<void> {
@@ -148,5 +177,45 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     await validator.validate(finalTransaction.operations);
   }
 
+  public convertRequiredAuthorities(requiredAuthorities: TTransactionRequiredAuthorities): required_authority_collection {
+    const posting_accounts = new this.api.wax.VectorString();
+    const active_accounts = new this.api.wax.VectorString()
+    const owner_accounts = new this.api.wax.VectorString()
+    const other_authorities = new this.api.wax.VectorWaxAuthority();
+
+    for(const account of requiredAuthorities.posting)
+      posting_accounts.push_back(account);
+
+    for(const account of requiredAuthorities.active)
+      active_accounts.push_back(account);
+
+    for(const account of requiredAuthorities.owner)
+      owner_accounts.push_back(account);
+
+    const transformEntries = (entries: TAuthorityEntriesCollection, storage: MapStringUInt16): MapStringUInt16 => {
+      Object.keys(entries).reduce((storage: MapStringUInt16, keyOrAccount: string): MapStringUInt16 => {
+        storage.set(keyOrAccount, entries[keyOrAccount]);
+      return storage;
+      }, storage);
+
+      return storage;
+    }
+
+    for(const a of requiredAuthorities.other) {
+      const targetAuthority: wax_authority = {
+        weight_threshold: a.weight_threshold,
+        account_auths: transformEntries(a.account_auths, new this.api.wax.MapStringUInt16()),
+        key_auths: transformEntries(a.key_auths, new this.api.wax.MapStringUInt16())
+      };
+      other_authorities.push_back(targetAuthority);
+    }
+
+    return {
+      posting_accounts,
+      active_accounts,
+      owner_accounts,
+      other_authorities
+    };
+  }
 
 };
