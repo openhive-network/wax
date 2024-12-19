@@ -8,7 +8,7 @@ from typing_extensions import Self
 from wax.proto.transaction_pb2 import transaction as proto_transaction
 
 if TYPE_CHECKING:
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
     from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
@@ -127,7 +127,7 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
-    def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
+    def sign(self, wallet: UnlockedWallet, public_key: PublicKey | str) -> Signature:
         """
         Signs the transaction using given public key. Applies the transaction expiration time.
 
@@ -143,7 +143,7 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
-    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey | str) -> Signature:
         """
         Signs asynchronously the transaction using given public key. Applies the transaction expiration time.
 
@@ -477,4 +477,19 @@ class WaxBaseInterface(ABC):
 
         Raises:
             CannotCreateAssetError: When passed asset is incorrect.
+        """
+
+    @abstractmethod
+    def create_transaction_with_tapos(
+        self, tapos_block_id: str, expiration: datetime | timedelta | None = None
+    ) -> ITransaction:
+        """
+        Creates transaction object using basic information from chain.
+
+        Args:
+            tapos_block_id: Block id (mostly head) that transaction should refer to
+            expiration: time (UTC) till transaction is valid. Default to +1 minute.
+
+        Returns:
+            Transaction object
         """
