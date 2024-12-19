@@ -110,14 +110,14 @@ class Transaction(ITransaction):
         validation_result = validate_proto_transaction(self._encoded)
         validate_wax_result(validation_result)
 
-    def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
+    def sign(self, wallet: UnlockedWallet, public_key: PublicKey | str) -> Signature:
         self.validate()
         sig = wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
         self._target.signatures.append(sig)
 
         return sig
 
-    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey | str) -> Signature:
         self.validate()
         sig = await wallet.sign_digest(sig_digest=self.sig_digest, key=public_key)
         self._target.signatures.append(sig)
