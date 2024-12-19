@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, cast
 
 from pydantic import ValidationError
 from typing_extensions import Self
 
 from schemas.fields.basic import PublicKey
-from wax._private.core.constants import PUBLIC_KEY_ADDRESS_PREFIX
+from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME, PUBLIC_KEY_ADDRESS_PREFIX
 from wax._private.core.encoders import to_cpp_string
 from wax._private.core.python_price_converter import convert_to_python_price
 from wax._private.exceptions import WaxValidationFailedError
@@ -33,6 +33,7 @@ from wax._private.models.operations import (
     prepare_operation_to_validate,
 )
 from wax._private.result_tools import decode_impacted_account_names, expose_result, validate_wax_result
+from wax._private.transaction import Transaction
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_account_hp,
     calculate_current_manabar_value,
@@ -51,6 +52,7 @@ from wax.interfaces import WaxBaseInterface
 
 if TYPE_CHECKING:
     from schemas.fields.hex import Hex, Signature
+    from wax.interfaces import ITransaction
 
 
 class WaxBaseApi(WaxBaseInterface):
@@ -228,6 +230,15 @@ class WaxBaseApi(WaxBaseInterface):
         )
 
         return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+
+    def create_transaction_with_tapos(
+        self, tapos_block_id: str, expiration: datetime | timedelta | None = None
+    ) -> ITransaction:
+        expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
+        if isinstance(expiration, datetime):
+            expiration = expiration - datetime.now(timezone.utc)
+        assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
+        return Transaction(api=self, tapos_block_id=tapos_block_id, expiration_time=expiration)
 
     @classmethod
     def _create_instance(cls, chain_id: ChainId) -> Self:
