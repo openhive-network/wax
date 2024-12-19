@@ -4,12 +4,15 @@ import type { MainModule } from './build_wasm/wax.common.js';
 import MainModuleFunction from './build_wasm/wax.common.js';
 
 export type {
+  authority_verification_trace,
   MainModule,
   error_code,
+  IAccountAuthorityProvider,
   json_asset,
   proto_protocol,
   protocol,
   protocol_foundation,
+  required_authority_collection,
   result,
   json_price,
   witness_set_properties_data,
