@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from wax._private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES, PUBLIC_KEY_ADDRESS_PREFIX
+from wax._private.core.constants import (
+    DEFAULT_TRANSACTION_EXPIRATION_TIME,
+    HIVE_PERCENT_PRECISION_DOT_PLACES,
+    PUBLIC_KEY_ADDRESS_PREFIX,
+)
 from wax._private.core.decimal_converter import DecimalConverter
 from wax._private.core.python_price_converter import convert_to_python_price
 from wax._private.models.asset import (
@@ -30,6 +34,7 @@ from wax._private.result_tools import (
     to_python_string,
     validate_wax_result,
 )
+from wax._private.transaction import Transaction
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_account_hp,
     calculate_current_manabar_value,
@@ -47,12 +52,13 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     suggest_brain_key,
     validate_operation,
 )
-from wax.interfaces import ChainConfig, IWaxBaseInterface
+from wax.interfaces import ChainConfig, IWaxBaseInterface, TTimestamp
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
     from wax._private.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
+    from wax.interfaces import ITransaction
 
 
 class WaxBaseApi(IWaxBaseInterface):
@@ -268,3 +274,10 @@ class WaxBaseApi(IWaxBaseInterface):
         return DecimalConverter.convert(
             expose_result_as_python_string(result), precision=HIVE_PERCENT_PRECISION_DOT_PLACES
         )
+
+    def create_transaction_with_tapos(self, tapos_block_id: str, expiration: TTimestamp | None = None) -> ITransaction:
+        expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
+        if isinstance(expiration, datetime):
+            expiration = expiration.replace(microsecond=0) - datetime.now(timezone.utc).replace(microsecond=0)
+        assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
+        return Transaction(api=self, tapos_block_id=tapos_block_id, expiration_time=expiration)

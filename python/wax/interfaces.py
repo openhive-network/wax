@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, TypeAlias
 
 from typing_extensions import Self
@@ -9,7 +10,6 @@ from typing_extensions import Self
 from wax.proto.transaction_pb2 import transaction as proto_transaction
 
 if TYPE_CHECKING:
-    from datetime import datetime
     from decimal import Decimal
 
     from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
@@ -30,6 +30,8 @@ if TYPE_CHECKING:
 
 ProtoTransaction: TypeAlias = proto_transaction
 JsonTransaction: TypeAlias = str
+
+TTimestamp: TypeAlias = datetime | timedelta
 
 ChainConfig: TypeAlias = dict[str, str]
 
@@ -573,4 +575,17 @@ class IWaxBaseInterface(ABC):
 
         Raises:
             WaxValidationFailedError: When passed parameters are wrong.
+        """
+
+    @abstractmethod
+    def create_transaction_with_tapos(self, tapos_block_id: str, expiration: TTimestamp | None = None) -> ITransaction:
+        """
+        Creates transaction object using basic information from chain.
+
+        Args:
+            tapos_block_id: Block id (mostly head) that transaction should refer to
+            expiration: time (UTC) till transaction is valid. Default to +1 minute.
+
+        Returns:
+            Transaction object
         """
