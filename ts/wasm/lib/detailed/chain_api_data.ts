@@ -3,6 +3,7 @@ import { GetBlockRequest, GetBlockResponse } from "./api/block_api/get_block.js"
 import { GetBlockHeaderRequest, GetBlockHeaderResponse } from "./api/block_api/get_block_header.js";
 import { GetBlockRangeRequest, GetBlockRangeResponse } from "./api/block_api/get_block_range.js";
 import { FindAccountsRequest, FindAccountsResponse } from "./api/database_api/find_accounts.js";
+import { FindWitnessesRequest, FindWitnessesResponse } from "./api/database_api/find_witnesses.js";
 import { GetDynamicGlobalPropertiesRequest, GetDynamicGlobalPropertiesResponse } from "./api/database_api/get_dynamic_global_properties.js";
 import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find_rc_accounts.js";
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
@@ -44,6 +45,10 @@ export const HiveApiTypes = {
     find_accounts: {
       params: FindAccountsRequest,
       result: FindAccountsResponse
+    },
+    find_witnesses: {
+      params: FindWitnessesRequest,
+      result: FindWitnessesResponse
     },
     get_dynamic_global_properties: {
       params: GetDynamicGlobalPropertiesRequest,
