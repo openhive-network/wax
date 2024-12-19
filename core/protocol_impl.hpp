@@ -4,6 +4,7 @@
 
 #include <hive/protocol/authority_trace_data.hpp>
 
+#include <optional>
 #include <vector>
 #include <string>
 #include <map>
@@ -18,9 +19,9 @@ class IAccountAuthorityProvider
 public:
   /** Allows to query for given account authority and specific role (owner, active, posting).
   */
-  virtual wax_authority getAuthority(std::string account_name, std::string authorityRole) = 0;
+  virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) = 0;
   /// Allows to query for given witness signing key.
-  virtual std::string getWitnessPublicKey(std::string witness_name) = 0;
+  virtual std::optional<std::string> getWitnessPublicKey(std::string witness_name) = 0;
 
   virtual ~IAccountAuthorityProvider() = default;
 };

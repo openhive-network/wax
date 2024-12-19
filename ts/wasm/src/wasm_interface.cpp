@@ -150,11 +150,6 @@ bool cpp_is_valid_account_name( const std::string& name ) const
   return foundation::cpp_is_valid_account_name( name );
 }
 
-wax_authority test_overrided_getAuthority(IAccountAuthorityProvider& provider, std::string account, std::string role)
-{
-  return provider.getAuthority(account, role);
-}
-
 };
 
 class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
@@ -162,14 +157,14 @@ class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccoun
 public:
   EMSCRIPTEN_WRAPPER(AccountAuthorityProviderWrapper);
 
-  virtual wax_authority getAuthority(std::string account_name, std::string authorityRole) override
+  virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) override
   {
-    return call<wax_authority>("getAuthority", account_name, authorityRole);
+    return call<std::optional<wax_authority>>("getAuthority", account_name, authorityRole);
   }
 
-  virtual std::string getWitnessPublicKey(std::string account_name) override
+  virtual std::optional<std::string> getWitnessPublicKey(std::string account_name) override
   {
-    return call<std::string>("getWitnessPublicKey", account_name);
+    return call<std::optional<std::string>>("getWitnessPublicKey", account_name);
   }
 };
 
@@ -344,7 +339,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
-    .function("test_overrided_getAuthority", &foundation_wasm::test_overrided_getAuthority)
     ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
