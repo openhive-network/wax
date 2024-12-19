@@ -32,11 +32,28 @@ test.describe('Wax object interface chain tests', () => {
         hc.on("data", (data: Array<TScoredEndpoint>) => { console.log(JSON.stringify(data)); }); // New data from all endpoint checks - scores ready
         hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, undefined, [testEndpoint]);
       });
     }, testEndpoint);
 
     expect(retVal).toStrictEqual("https://api.hive.blog");
+   });
+
+  test('Should be able to validate response and result with proper info', async ({ waxTest }) => {
+    const testEndpoint = "https://api.hive.blog";
+
+    const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
+      return new Promise<string>((resolve, reject) => {
+        const hc = new wax.HealthChecker();
+
+        hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
+        hc.on("validationerror", error => { hc.unregisterAll(); resolve(error.failedReason);}); // Error handled
+
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000" ? "This message should be thrown" : 'Malformed first block - may be a fork', [testEndpoint]);
+      });
+    }, testEndpoint);
+
+    expect(retVal).toStrictEqual("This message should be thrown");
    });
 
   test('Should be able to create endpoint healthchecker and retrieve data 2 times', async ({ waxTest }) => {
@@ -58,7 +75,7 @@ test.describe('Wax object interface chain tests', () => {
         });
         hc.on("error", error => { hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', [testEndpoint]);
       });
     }, testEndpoint);
 
@@ -96,7 +113,7 @@ test.describe('Wax object interface chain tests', () => {
 
         hc.on("error", error => { console.error(`Received HC specific error: ${error.message}`); });
 
-        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", testEndpoints);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', testEndpoints);
       });
     }, testEndpoints);
 
@@ -121,7 +138,7 @@ test.describe('Wax object interface chain tests', () => {
           }); // New data from all endpoint checks - scores ready
         hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1);
+        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain');
       });
     }, testEndpoint);
 
@@ -146,7 +163,7 @@ test.describe('Wax object interface chain tests', () => {
           }); // New data from all endpoint checks - scores ready
         hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num !== 1, [testEndpoint]);
+        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain', [testEndpoint]);
       });
     }, testEndpoint);
 
@@ -165,16 +182,16 @@ test.describe('Wax object interface chain tests', () => {
 
         hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
-        hc.register(chain.api.block_api.get_block_header, { block_num: 1 }, data => data.header.previous === "0000000000000000000000000000000000000000", [testEndpoint]),
-        hc.register(chain.api.block_api.get_block_range, { starting_block_num: 1, count: 1 }, data => data.blocks[0]?.previous === "0000000000000000000000000000000000000000", [testEndpoint])
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', [testEndpoint]),
+        hc.register(chain.api.block_api.get_block_header, { block_num: 1 }, data => data.header.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', [testEndpoint]),
+        hc.register(chain.api.block_api.get_block_range, { starting_block_num: 1, count: 1 }, data => data.blocks[0]?.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', [testEndpoint])
         await new Promise(newDataRes => hc.on('data', newDataRes ));
         await new Promise(promiseRes => setTimeout(promiseRes, 10_000));
         hc.unregisterAll();
         hc.unregisterAll();
         hc.unregisterAll();
         // Register again and wait for data
-        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000", [testEndpoint]);
+        hc.register(chain.api.block_api.get_block, { block_num: 1 }, data => data.block?.previous === "0000000000000000000000000000000000000000" ? true : 'Malformed first block - may be a fork', [testEndpoint]);
         // This should result in a new best endpoint
         hc.on("data", (data: Array<TScoredEndpoint>) => { hc.unregisterAll(); resolve(data[0].endpointUrl); });
       });
