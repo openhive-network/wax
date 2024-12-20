@@ -84,6 +84,16 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
     }
   }
 
+  protected getTuple(accountOrKey: TPublicKey | TAccountName): ([string, number]) | void {
+    if (accountOrKey.startsWith(this.HIVE_ADDRESS_PREFIX)) {
+      if(this.authority.key_auths[accountOrKey])
+        return [accountOrKey, this.authority.key_auths[accountOrKey]];
+    } else if (accountOrKey.length <= this.HIVE_MAX_ACCOUNT_NAME_LENGTH) {
+      if(this.authority.account_auths[accountOrKey])
+        return [accountOrKey, this.authority.account_auths[accountOrKey]];
+    }
+  }
+
   /**
    * Adds an account or key to the currently selected role with specified weight.
    * If the account or key already exists, its weight is updated.
@@ -127,6 +137,24 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
     this.removeFromRole(accountOrKey);
 
     return this;
+  }
+
+  /**
+   * Checks if the account or key is present in the currently selected role.
+   *
+   * @param {TPublicKey | TAccountName} accountOrKey Account or key to be checked.
+   * @param {?number} weight Account or key weight in the authority. If provided, the weight is checked as well.
+   * @returns {boolean} Either true or false depending on whether the account or key is present in the currently selected role.
+   */
+  public has(accountOrKey: TPublicKey | TAccountName, weight?: number): boolean {
+    const tuple = this.getTuple(accountOrKey);
+
+    if (weight !== undefined && tuple) {
+      if (tuple[1] !== weight)
+        return false;
+    }
+
+    return !!tuple;
   }
 
   /**
