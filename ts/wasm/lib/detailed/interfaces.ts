@@ -539,8 +539,10 @@ export interface IOnlineTransaction extends ITransaction {
    * Allows to generate authority verification trace for the currently loaded/built transaction.
    * Transaction should be already signed, othwerwise the function throws.
    * The authority trace process requires online access to the chain APIs to retrieve account data.
+   *
+   * @param {ITransaction} externalTx optional external transaction to be used for authority verification trace generation
    */
-  generateAuthorityVerificationTrace(): Promise<IVerifyAuthorityTrace>;
+  generateAuthorityVerificationTrace(externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
 
   /** Overrided only to change return type.
    *  {@inheritdoc ITransaction.pushOperation}

@@ -5,7 +5,7 @@ import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import { IOnlineTransaction, TTimestamp } from "./interfaces";
+import { IOnlineTransaction, ITransaction, TTimestamp } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
@@ -167,9 +167,11 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     return this;
   }
 
-  public async generateAuthorityVerificationTrace(): Promise<IVerifyAuthorityTrace> {
-    const requiredAuths = this.requiredAuthorities;
-    const signatureKeys = this.signatureKeys;
+  public async generateAuthorityVerificationTrace(externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
+    const dataSource = externalTx ?? this;
+
+    const requiredAuths = dataSource.requiredAuthorities;
+    const signatureKeys = dataSource.signatureKeys;
 
     const actualSignatureKeys = new this.api.wax.VectorString();
     for(const key of signatureKeys)
