@@ -1,35 +1,12 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
-
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp, recoverAccountTransaction, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
 import { IsArray, IsObject, IsString } from 'class-validator';
 
-let browser!: ChromiumBrowser;
-
 const HIVE_BLOCK_INTERVAL = 3 * 1000; // 3 seconds
 
 test.describe('Wax object interface chain tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ beekeeper, chain }, protoVoteOp) => {
       // Create wallet:
@@ -650,8 +627,4 @@ test.describe('Wax object interface chain tests', () => {
 
       expect(retVal).toBe("9007199254740992");
     });
-
-  test.afterAll(async () => {
-    await browser.close();
-  });
 });

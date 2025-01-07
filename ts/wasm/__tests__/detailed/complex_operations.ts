@@ -1,33 +1,10 @@
 import { expect } from '@playwright/test';
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 
 import { test } from '../assets/jest-helper';
-
-import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper/node';
-import fs from 'fs';
-
-let browser!: ChromiumBrowser;
 
 const app = `${process.env.npm_package_name}/${process.env.npm_package_version}`;
 
 test.describe('Wax complex operation tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto('http://localhost:8080/wasm/__tests__/assets/test.html', { waitUntil: 'load' });
-  });
-
   test('Should be able to initialize pushOperation on WitnessSetPropertiesOperation with basic witness_set_properties_operation', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain, wax }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
@@ -1158,10 +1135,6 @@ test.describe('Wax complex operation tests', () => {
     expect(retVal.account_update2!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBeUndefined();
     expect(retVal.account_update2?.owner?.account_auths).toBeDefined();
     expect(retVal.account_update2!.owner!.account_auths["gtg"]).toBe(1);
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });
 

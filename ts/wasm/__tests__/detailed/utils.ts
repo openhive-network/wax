@@ -1,27 +1,8 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from "playwright";
 import { expect } from "@playwright/test";
 import { test } from "../assets/jest-helper";
 import { objectToQueryString } from "../../dist/lib/detailed/util/query_string";
 
-let browser!: ChromiumBrowser;
-
 test.describe("Utility functions test", () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true,
-    });
-  });
-
-  test.beforeEach(async ({ page }) => {
-    page.on("console", (msg: ConsoleMessage) => {
-      console.log(">>", msg.type(), msg.text());
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", {
-      waitUntil: "load",
-    });
-  });
-
   test("Should be able to convert empty object to a correct query string", () => {
     const params = {};
 
@@ -65,9 +46,5 @@ test.describe("Utility functions test", () => {
     const querified = objectToQueryString(params);
     expect(querified).toEqual(encoded);
     expect(decodeURIComponent(querified)).toEqual(decoded);
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

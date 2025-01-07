@@ -1,28 +1,11 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, protoTx, legacyTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
 
-let browser!: ChromiumBrowser;
-
 let privateKey!: string;
 
 test.describe('WASM Proto Protocol', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ proto_protocol }) => {
       return proto_protocol.cpp_generate_private_key();
@@ -340,9 +323,5 @@ test.describe('WASM Proto Protocol', () => {
     }, toApi.content);
 
     expect(retVal.exception_message).toHaveLength(0);
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

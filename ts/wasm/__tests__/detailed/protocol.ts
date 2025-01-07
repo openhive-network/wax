@@ -1,12 +1,9 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation } from "../assets/data.protocol";
 import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
-
-let browser!: ChromiumBrowser;
 
 let privateKey!: string;
 
@@ -31,20 +28,6 @@ const parseBinaryChildren = (data: VectorBinaryDataNode) => {
 };
 
 test.describe('WASM Protocol', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }) => {
       return protocol.cpp_generate_private_key();
@@ -572,9 +555,5 @@ test.describe('WASM Protocol', () => {
       precision: 3,
       amount: "1065988"
     });
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

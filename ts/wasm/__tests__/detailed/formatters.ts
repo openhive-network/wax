@@ -1,33 +1,11 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
-
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
 import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperationData, WaxFormattable, operation } from '../../dist/lib';
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax object interface formatters tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async() => {
     const { wax, base } = await createWaxTestFor('node');
 
@@ -727,9 +705,5 @@ test.describe('Wax object interface formatters tests', () => {
     ).toStrictEqual([
       "gtg delegated 0 to initminer"
     ]);
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

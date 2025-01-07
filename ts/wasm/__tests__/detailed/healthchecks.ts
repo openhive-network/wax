@@ -1,26 +1,9 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { TScoredEndpoint } from '../../dist/bundle/index-full';
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax object interface chain tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to create endpoint healthchecker', async ({ waxTest }) => {
     const testEndpoint = "https://api.hive.blog";
 
@@ -199,8 +182,4 @@ test.describe('Wax object interface chain tests', () => {
 
     expect(retVal).toStrictEqual("https://api.hive.blog");
    });
-
-  test.afterAll(async () => {
-    await browser.close();
-  });
 });

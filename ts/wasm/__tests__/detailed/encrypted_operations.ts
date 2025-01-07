@@ -1,10 +1,7 @@
 import { expect } from '@playwright/test';
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 
 import { test } from '../assets/jest-helper';
 
-import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper/node';
-import fs from 'fs';
 import { IEncryptingTransaction } from '../../dist/bundle/index-full';
 
 import {
@@ -19,25 +16,7 @@ import {
   voteOp,
 } from '../assets/data.encryption-operations';
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax encrypted operations tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true,
-    });
-  });
-
-  test.beforeEach(async ({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text());
-    });
-
-    if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto('http://localhost:8080/wasm/__tests__/assets/test.html', { waitUntil: 'load' });
-  });
-
   test('Should be able to encrypt transaction with comment operation', async () => {
     const retVal = await utilFunctionTest((tx: IEncryptingTransaction) => {
       tx.pushOperation(commentOp);
@@ -171,9 +150,5 @@ test.describe('Wax encrypted operations tests', () => {
     }, [1, 2, 3, 5], true);
 
     expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp]);
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

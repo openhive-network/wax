@@ -1,27 +1,10 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 
 import { customCommunityJsonsTransaction, customJsonsTransaction, customMultipleJsonsTransaction, protoVoteOp } from '../assets/data.proto-protocol';
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax hive apps operations tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to create transaction with hive apps follow operation using transaction interface', async ({ waxTest }) => {
     const retVal = await waxTest(({ base, wax }, protoVoteOp) => {
       const tx = base.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
@@ -275,9 +258,5 @@ test.describe('Wax hive apps operations tests', () => {
       ref_block_num: 1960,
       ref_block_prefix: 3915120327
     });
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

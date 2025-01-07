@@ -1,8 +1,4 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
-
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
@@ -10,25 +6,7 @@ import { IWaxOptionsChain, WaxPrivateKeyLeakDetectedException } from '../../dist
 
 import { IOnlineTransaction, operation, transfer } from '../../dist/bundle/index-full';
 
-let browser!: ChromiumBrowser;
 test.describe('Wax chain tests to cover Online Transaction flow', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   const txSecurityLeakBody = async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
     // Create wallet:
     const session = beekeeper.createSession("salt");
@@ -133,8 +111,4 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     
     expect(retVal.signerKey).toBe(retVal.expectedKey);
    });
-   
-  test.afterAll(async () => {
-    await browser.close();
-  });
 });

@@ -1,7 +1,4 @@
-import { chromium, ChromiumBrowser, ConsoleMessage } from "playwright";
 import { test } from "../assets/jest-helper";
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 import { expect } from "@playwright/test";
 import {
   account_create,
@@ -54,26 +51,7 @@ import {
   witness_update
 } from "../../dist/bundle/index-full";
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax transaction hive operations regression tests', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Vote opeartion Test', async ({ waxTest }) => {
     const retVal = await waxTest(({ chain }) => {
       const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
@@ -1882,9 +1860,5 @@ test.describe('Wax transaction hive operations regression tests', () => {
         extensions: []
       }
     });
-  });
-
-  test.afterAll(async () => {
-    await browser.close();
   });
 });

@@ -1,32 +1,9 @@
-import { ChromiumBrowser, ConsoleMessage, chromium } from 'playwright';
 import { expect } from '@playwright/test';
-
-import { DEFAULT_STORAGE_ROOT } from "@hiveio/beekeeper/node";
-import fs from "fs";
 
 import { test } from '../assets/jest-helper';
 import { serialization_sensitive_transaction, legacyApiTransaction, signatureTransaction } from '../assets/data.protocol';
 
-let browser!: ChromiumBrowser;
-
 test.describe('Wax object interface chain tests (using custom options)', () => {
-  test.beforeAll(async () => {
-    browser = await chromium.launch({
-      headless: true
-    });
-  });
-
-  test.beforeEach(async({ page }) => {
-    page.on('console', (msg: ConsoleMessage) => {
-      console.log('>>', msg.type(), msg.text())
-    });
-
-    if(fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-
-    await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-  });
-
   test('Should be able to use different options', async ({ waxTest, config }) => {
     expect(config).toBeDefined;
 
@@ -159,9 +136,5 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
     });
 
     expect(retVal).toBe('thatcryptodave');
-  });
-
-   test.afterAll(async () => {
-    await browser.close();
   });
 });
