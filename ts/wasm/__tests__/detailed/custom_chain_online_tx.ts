@@ -117,7 +117,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     }, mirrornetSkeletonKey);
 
     /// TODO improve comparison to avoid string form
-    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
    });
 
    test('Should be able to get authority trace for direct sign from already existing transaction', async ({ waxTest }) => {
@@ -125,7 +125,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
       ///2. the transaction is valid, authority should be satisfied
-      test.fail();
+      //test.fail();
 
       /// tx from https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
       const txJson = '{"ref_block_num":33561,"ref_block_prefix":2922397352,"extensions":[],"expiration":"2024-09-20T12:16:45","operations":[{"type":"transfer_operation","value":{"to":"bluehy20","from":"splinterboost","memo":"Thank you for delegating to Splinterboost here is your daily HIVE payout!","amount":{"nai":"@@000000021","amount":"14","precision":3}}}],"signatures":["203eed491a1e032bc889b030861a80bf3f0bc8ba7fa30843041825c4f542411fb3678fd527c598dcc6646a5dabf2110691a4d6355c72d7638ffdaa11ac10451d07"]}';
@@ -142,7 +142,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     });
 
     /// TODO improve comparison to avoid string form
-    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
    });
 
 
