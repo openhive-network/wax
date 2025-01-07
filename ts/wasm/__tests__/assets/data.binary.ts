@@ -382,7 +382,7 @@ const binaryDataLegacyTransferOperationBase = (offset = 0) => ([
             "type": "scalar",
             "offset": 30 + offset,
             "size": 8,
-            "value": "HIVE",
+            "value": "STEEM",
             "length": undefined,
             "children": undefined
           }
