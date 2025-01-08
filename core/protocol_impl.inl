@@ -236,8 +236,10 @@ hive::protocol::authority convert_wax_authority_to_protocol_authority(const wax_
   using authority = hive::protocol::authority;
   auto convert_wax_key_auth_map_to_hive_key_auth_map = [](const wax_authority::authority_map& auth_map) -> authority::key_authority_map {
     authority::key_authority_map result;
-    for (const auto& auth : auth_map)
+    for (const auto& auth : auth_map) {
+      ilog("Received authority entry: ${n}: ${w}", ("n", auth.first)("w", auth.second));
       result.emplace(auth.first, auth.second);
+      }
     return result;
     };
 
@@ -303,9 +305,13 @@ hive::protocol::authority_verification_trace protocol_impl<FoundationProvider>::
   private:
     std::optional<authority> acquireAuthority(const std::string& account, const char* role) const
     {
+      ilog("acquireAuthority: ${account} ${role}", ("account", account)("role", role));
       auto wAuth = _authorityProvider.getAuthority(account, role);
       if(wAuth)
+      {
+        ilog("filledAuthority: ${account} ${role}", ("account", account)("role", role));
         return convert_wax_authority_to_protocol_authority(*wAuth);
+      }
 
       return std::optional<authority>();
     }
