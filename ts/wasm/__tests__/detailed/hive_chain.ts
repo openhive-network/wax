@@ -169,7 +169,7 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
-    test('Should be able to extend hive chain and validate properties interface by custom definitions', async () => {
+    test('Should be able to extend hive chain and validate properties interface by custom definitions', async ({}, testInfo) => {
       class MyRequest {
         @IsString()
         method!: string;
@@ -181,7 +181,7 @@ test.describe('Wax object interface chain tests', () => {
         ret!: [];
       }
 
-      const { chain } = await createWaxTestFor('node');
+      const { chain } = await createWaxTestFor('node', testInfo.outputDir);
       const extended = chain.extend({
         jsonrpc: {
           get_signature: {

@@ -1,9 +1,8 @@
-import { ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
+import { TestInfo, ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
 
 import "./globals";
-import type { IWaxGlobals, IWasmGlobals, TEnvType } from './globals';
+import { type IWaxGlobals, type IWasmGlobals, type TEnvType } from './globals';
 import { IWaxOptionsChain } from '../../dist/bundle/index-full';
-import { DEFAULT_STORAGE_ROOT } from '@hiveio/beekeeper';
 
 import fs from 'fs';
 
@@ -13,9 +12,9 @@ type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args:
 export interface IWaxedTest {
   config: IWaxOptionsChain | undefined;
 
-
   beforeEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
 
+  afterEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
 
   /**
    * Runs given function in both environments: web and Node.js
@@ -56,19 +55,23 @@ interface IWaxedWorker {
 
 const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
   page: Page,
-  globalFunction: (env: TEnvType) => Promise<GlobalType>
+  globalFunction: (env: TEnvType, outputPath: string) => Promise<GlobalType>,
+  testInfo: TestInfo
 ): IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'] => {
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args): Promise<R> => {
 
     let nodeData, webData;
 
     try {
-      nodeData = await fn(await (globalFunction as Function)('node'), ...args);
-      webData = await page.evaluate(async({ args, globalFunction, webFn, customConfig }) => {
+      const outputPath: string = testInfo.outputDir;
+
+      nodeData = await fn(await (globalFunction as Function)('node', outputPath), ...args);
+      webData = await page.evaluate(async({ args, globalFunction, webFn, customConfig, outputPath }) => {
         eval(`window.webEvalFn = ${webFn};`);
         globalThis.config = customConfig;
-        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web'), ...args);
-      }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config });
+        globalThis.outputPath = outputPath;
+        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', outputPath), ...args);
+      }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config, outputPath: outputPath.toString()});
     } catch(error) {
       if(!(error instanceof Error) || error.name !== "WebAssembly.Exception")
         throw error;
@@ -113,15 +116,49 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
       console.log('>>', msg.type(), msg.text());
     });
 
-    console.log(testInfo.parallelIndex);
+    const webStoragePath = `${testInfo.outputDir}/web`;
+    const nodeStoragePath = `${testInfo.outputDir}/node`;
 
-    if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
-      fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+    if (fs.existsSync(webStoragePath)) {
+      console.log('removing beekeeper root: ', webStoragePath);
+
+      fs.rmSync(webStoragePath, { recursive: true });
     }
+
+    // This is needed for the web environment.
+    //fs.mkdirSync(webStoragePath, { recursive: true });
+
+    if (fs.existsSync(nodeStoragePath)) {
+      console.log('removing beekeeper root: ', nodeStoragePath);
+
+      fs.rmSync(nodeStoragePath, { recursive: true });
+    }
+
+    // This is needed for the node environment (otherwise beekeeper does not work).
+    fs.mkdirSync(nodeStoragePath, { recursive: true });
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
 
     await use(async () => {});
+  }, { auto: true }],
+
+  afterEach: [async ({ }, use, testInfo) => {
+    await use(async () => {});
+
+    const webStoragePath = '/storage_root';
+    const nodeStoragePath = `${testInfo.outputDir}`;
+
+    if (fs.existsSync(webStoragePath)) {
+      console.log('After removing beekeeper root: ', webStoragePath);
+
+      fs.rmSync(webStoragePath, { recursive: true });
+    }
+
+    if (fs.existsSync(nodeStoragePath)) {
+      console.log('After removing beekeeper root: ', nodeStoragePath);
+
+      fs.rmSync(nodeStoragePath, { recursive: true });
+    }
   }, { auto: true }],
 
   afterAll: [async ({ browser }, use) => {
@@ -130,71 +167,13 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     await browser.close();
   }, { scope: 'worker', auto: true }],
 
-  // forEachWorker: [async ({}, use) => {
-  //   const browser = await chromium.launch({
-  //     headless: true
-  //   });
-
-  //   await use();
-
-  //   await browser.close();
-  // }, { scope: 'worker', auto: true }],
-
-  // forEachTest: [async ({ page }, use, testInfo) => {
-  //   page.on('console', (msg: ConsoleMessage) => {
-  //     console.log('>>', msg.type(), msg.text());
-  //   });
-
-  //   console.log(testInfo.parallelIndex);
-
-  //   if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
-  //     fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-  //   }
-
-  //   await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-
-  //   await use();
-  // }, { auto: true }],
-
-  waxTest: async({ page, config }, use) => {
+  waxTest: async({ page, config }, use, testInfo) => {
     globalThis.config = config;
-    use(envTestFor(page, createWaxTestFor));
+
+    use(envTestFor(page, createWaxTestFor, testInfo));
   },
 
-  wasmTest: async({ page }, use) => {
-    use(envTestFor(page, createWasmTestFor));
+  wasmTest: async({ page }, use, testInfo) => {
+    use(envTestFor(page, createWasmTestFor, testInfo));
   }
 });
-
-// Solution nr. 2
-// export const defineTestSuite = (testSuiteName: string, testSuiteBody: (test: typeof base) => void) => {
-//   test.describe(testSuiteName, () => {
-//     let browser: ChromiumBrowser;
-
-//     test.beforeAll(async () => {
-//       browser = await chromium.launch({
-//         headless: true
-//       });
-//     });
-
-//     test.beforeEach(async ({ page }, testInfo) => {
-//       page.on('console', (msg: ConsoleMessage) => {
-//         console.log('>>', msg.type(), msg.text());
-//       });
-
-//       console.log(testInfo.parallelIndex);
-
-//       if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`)) {
-//         fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
-//       }
-
-//       await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
-//     });
-
-//     testSuiteBody(test);
-
-//     test.afterAll(async () => {
-//       await browser.close();
-//     });
-//   });
-// };

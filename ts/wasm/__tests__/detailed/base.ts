@@ -65,8 +65,8 @@ test.describe('WASM Base tests', () => {
     expect(moduleType).toBe('object');
   });
 
-  test('Should test throw 0', async () => {
-    const { protocol } = await createWasmTestFor('node');
+  test('Should test throw 0', async ({}, testInfo) => {
+    const { protocol } = await createWasmTestFor('node', testInfo.outputDir);
 
     expect(() => {
       try {
@@ -80,8 +80,8 @@ test.describe('WASM Base tests', () => {
     }).toThrow();
   });
 
-  test('Should test throw 1', async () => {
-    const { protocol } = await createWasmTestFor('node');
+  test('Should test throw 1', async ({}, testInfo) => {
+    const { protocol } = await createWasmTestFor('node', testInfo.outputDir);
 
     expect(() => {
       try {
@@ -95,8 +95,8 @@ test.describe('WASM Base tests', () => {
     }).toThrow();
   });
 
-  test('Should test throw 2', async () => {
-    const { protocol } = await createWasmTestFor('node');
+  test('Should test throw 2', async ({}, testInfo) => {
+    const { protocol } = await createWasmTestFor('node', testInfo.outputDir);
 
     expect(() => {
       try {
@@ -110,8 +110,8 @@ test.describe('WASM Base tests', () => {
     }).toThrow();
   });
 
-  test('Should test throw 3', async () => {
-    const { protocol } = await createWasmTestFor('node');
+  test('Should test throw 3', async ({}, testInfo) => {
+    const { protocol } = await createWasmTestFor('node', testInfo.outputDir);
 
     expect(() => {
       try {
@@ -125,8 +125,8 @@ test.describe('WASM Base tests', () => {
     }).toThrow();
   });
 
-  test('Should test throw 4', async () => {
-    const { protocol, provider } = await createWasmTestFor('node');
+  test('Should test throw 4', async ({}, testInfo) => {
+    const { protocol, provider } = await createWasmTestFor('node', testInfo.outputDir);
 
     expect(() => {
       try {

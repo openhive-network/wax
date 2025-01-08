@@ -21,14 +21,22 @@ export interface IWasmGlobals {
 }
 
 declare global {
-  function createWaxTestFor(env: TEnvType): Promise<IWaxGlobals>;
-  function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
+  function createWaxTestFor(env: TEnvType, outputpath: string): Promise<IWaxGlobals>;
+  function createWasmTestFor(env: TEnvType, _: string): Promise<IWasmGlobals>;
   function createWaxMockTestFor(env: TEnvType, mockData: any): Promise<IWaxGlobals>;
   var config: IWaxOptionsChain | undefined;
 }
 
+export const getBeekeeperStoragePath = (env: TEnvType, outputPath: string): string => {
+  const pathSuffix = env === "web" ? 'web' : 'node';
+
+  const path = env === 'node' ? `${outputPath}/${pathSuffix}` : '/storage_root';
+
+  return path;
+};
+
 // Use function as we later extract the function name in the jest-helpers
-globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
+globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string) {
   const locWax = env === "web" ? "../../dist/bundle/index-full.js" : "../../dist/bundle/index.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
@@ -36,32 +44,41 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType) {
   const wax = await import(locWax) as typeof import("../../dist/bundle/index-full.js");
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
-  // Initialize data
-  const bk = await beekeeper.default({ enableLogs: false }) as IBeekeeperInstance;
-  const wx = await wax.createWaxFoundation();
+  const beekeeperRoot = getBeekeeperStoragePath(env, outputPath);
 
-  let chain: IHiveChainInterface;
+  try {
+    // Initialize data
+    console.log('creating beekeeper using storage root', beekeeperRoot);
+    const bk = await beekeeper.default({ enableLogs: true, storageRoot: beekeeperRoot }) as IBeekeeperInstance;
+    const wx = await wax.createWaxFoundation();
 
-  if(globalThis.config === undefined)
-    chain = await wax.createHiveChain();
-  else {
-    chain = await wax.createHiveChain(globalThis.config);
+    console.log('beekeeper instance created.');
 
-    console.log(`Using custom config: API endpoint: ${globalThis.config.apiEndpoint}, chain id: ${globalThis.config.chainId}`);
+    let chain: IHiveChainInterface;
+
+    if (globalThis.config === undefined)
+      chain = await wax.createHiveChain();
+    else {
+      chain = await wax.createHiveChain(globalThis.config);
+
+      console.log(`Using custom config: API endpoint: ${globalThis.config.apiEndpoint}, chain id: ${globalThis.config.chainId}`);
+    }
+
+    // Provide results
+    return {
+      beekeeper: bk,
+      base: wx,
+      chain,
+      wax
+    };
+  } catch(e) {
+    console.log(JSON.stringify(e));
+    throw e;
   }
-
-
-  // Provide results
-  return {
-    beekeeper: bk,
-    base: wx,
-    chain,
-    wax
-  };
 };
 
 // Use function as we later extract the function name in the jest-helpers
-globalThis.createWasmTestFor = async function createWasmTestFor(_env: TEnvType) {
+globalThis.createWasmTestFor = async function createWasmTestFor(_env: TEnvType, _: string) {
   // Import required libraries env-dependent
   const wasm = await import("../../dist/lib/build_wasm/wax.common.js");
 

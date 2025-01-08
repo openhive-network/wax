@@ -6,8 +6,8 @@ import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, ser
 import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperationData, WaxFormattable, operation } from '../../dist/lib';
 
 test.describe('Wax object interface formatters tests', () => {
-  test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async() => {
-    const { wax, base } = await createWaxTestFor('node');
+  test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async({}, testInfo) => {
+    const { wax, base } = await createWaxTestFor('node', testInfo.outputDir);
 
     const BottomKey1 = "bottomKey1";
     const BottomKey2 = "bottomKey2";
@@ -608,7 +608,7 @@ test.describe('Wax object interface formatters tests', () => {
     }]);
   });
 
-  test('Should be able to format values using custom formatters extended from hive chain interface', async() => {
+  test('Should be able to format values using custom formatters extended from hive chain interface', async({}, testInfo) => {
     class MyFormatters {
       myFunction(value) {
         return value.toString();
@@ -620,7 +620,7 @@ test.describe('Wax object interface formatters tests', () => {
       }
     }
 
-    const { chain } = await createWaxTestFor('node');
+    const { chain } = await createWaxTestFor('node', testInfo.outputDir);
     const formatter = chain.formatter.extend(MyFormatters);
     const data = {
       myCustomProp: 12542
@@ -631,7 +631,7 @@ test.describe('Wax object interface formatters tests', () => {
     ).toBe("MyData: 12542");
   });
 
-  test('Should be able to format values using custom formatters extended from hive chain interface and require defined values', async() => {
+  test('Should be able to format values using custom formatters extended from hive chain interface and require defined values', async({}, testInfo) => {
     class MyFormatters {
       @WaxFormattable({ requireDefined: true, matchProperty: "requiredProperty" })
       myCustomPropFormatter() {
@@ -645,7 +645,7 @@ test.describe('Wax object interface formatters tests', () => {
       }
     }
 
-    const { chain } = await createWaxTestFor('node');
+    const { chain } = await createWaxTestFor('node', testInfo.outputDir);
     const formatter = chain.formatter.extend(MyFormatters);
     const data = {
       requiredProperty: undefined,
@@ -657,7 +657,7 @@ test.describe('Wax object interface formatters tests', () => {
     ).toBe("Result: This should be called");
   });
 
-  test('Should be able to match values on properties using custom formatters extended from hive chain interface', async() => {
+  test('Should be able to match values on properties using custom formatters extended from hive chain interface', async({}, testInfo) => {
     class OperationsFormatter {
       @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
       public transferOperationFormatter({ source }): string {
@@ -670,7 +670,7 @@ test.describe('Wax object interface formatters tests', () => {
       }
     }
 
-    const { chain } = await createWaxTestFor('node');
+    const { chain } = await createWaxTestFor('node', testInfo.outputDir);
     const formatter = chain.formatter.extend(OperationsFormatter);
 
     const ops = [ transfer_operation, vote_operation ];
@@ -683,8 +683,8 @@ test.describe('Wax object interface formatters tests', () => {
     ]);
   });
 
-  test('Should be able to match instances of the hive apps operations using custom formatters extended from hive chain interface', async() => {
-    const { wax, chain } = await createWaxTestFor('node');
+  test('Should be able to match instances of the hive apps operations using custom formatters extended from hive chain interface', async({}, testInfo) => {
+    const { wax, chain } = await createWaxTestFor('node', testInfo.outputDir);
 
     class HiveAppsOperationsFormatter {
       @wax.WaxFormattable({ matchInstanceOf: wax.ResourceCreditsOperationData })
