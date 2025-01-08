@@ -70,6 +70,8 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
       }
     }
 
+    console.log(`No data for: ${account}@${role}`);
+
     if(this.unknownAccounts.has(account))
         return undefined;
 
