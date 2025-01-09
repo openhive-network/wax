@@ -34,8 +34,6 @@ export type TTransactionRequiredAuthorities = {
 export class Transaction implements ITransaction, IEncryptingTransaction {
   private target: transaction;
 
-  private expirationTime?: TTimestamp;
-
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return safeWasmCall(() => this.api.proto.cpp_get_tapos_data(hex));
   }
@@ -46,7 +44,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     public readonly api: WaxBaseApi,
     taposBlockId: TBlockHash | string | transaction,
     private chainHeadBlockTime?: Date,
-    expirationTime?: TTimestamp) {
+    private readonly expirationTime: TTimestamp = "+1m") {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
 
@@ -63,8 +61,6 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
       operations: [],
       signatures: []
     };
-
-    this.expirationTime = expirationTime as TTimestamp;
   }
 
   public get impactedAccounts(): Set<TAccountName> {
@@ -288,10 +284,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
   }
 
   private applyExpiration(): void {
-    const expiration = calculateExpiration(this.chainHeadBlockTime, this.expirationTime);
+    const expiration = calculateExpiration(this.expirationTime, this.chainHeadBlockTime);
 
-    if(expiration instanceof Date)
-      this.target.expiration = expiration.toISOString().slice(0, -5);
+    this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
   public decrypt(wallet: IBeekeeperUnlockedWallet): transaction {

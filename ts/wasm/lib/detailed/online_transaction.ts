@@ -121,7 +121,7 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
      *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
     */
     const expirationRefTime = chain.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
-    super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime ?? "+1m");
+    super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime);
   }
     
   public override pushOperation(op: operation | OperationBase): OnlineTransaction {

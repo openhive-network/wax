@@ -7,11 +7,7 @@ export const dateFromString = (dateTimeString: string): Date => {
     return new Date(`${dateTimeString}Z`);
 };
 
-export const calculateExpiration = (referenceTime?: Date, expirationTime?: number | string | Date): Date | void => {
-  // Transaction directly initialized from protobuf JSON or API. No expiration time given, so do not apply expiration time
-  if(typeof expirationTime === 'undefined')
-    return;
-
+export const calculateExpiration = (expirationTime: number | string | Date, referenceTime?: Date): Date => {
   let expiration: Date;
   if(typeof expirationTime === 'string') {
     if (expirationTime[0] !== "+")
