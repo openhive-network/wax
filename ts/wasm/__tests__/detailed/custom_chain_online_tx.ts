@@ -62,11 +62,12 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
 
   test('Should be able to get authority trace for direct multi-sig from already existing transaction', async ({ waxTest }) => {
+   
     const retVal = await waxTest(async({ chain }) => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
       ///2. the transaction is valid, authority should be satisfied
-      //test.fail();
+      test.fail();
 
       /// tx from https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
       const txJson = '{"ref_block_num":808,"ref_block_prefix":1359279161,"extensions":[],"expiration":"2024-08-02T12:09:03","operations":[{"type":"vote_operation","value":{"voter":"ecency","author":"el-panal","weight":100,"permlink":"el-panal-presentacion-de-autores-destacados-dia31072024"}},{"type":"vote_operation","value":{"voter":"ecency.stats","author":"el-panal","weight":100,"permlink":"el-panal-presentacion-de-autores-destacados-dia31072024"}},{"type":"vote_operation","value":{"voter":"esteem.app","author":"el-panal","weight":100,"permlink":"el-panal-presentacion-de-autores-destacados-dia31072024"}},{"type":"vote_operation","value":{"voter":"good-karma","author":"el-panal","weight":100,"permlink":"el-panal-presentacion-de-autores-destacados-dia31072024"}},{"type":"vote_operation","value":{"voter":"esteemapp","author":"el-panal","weight":100,"permlink":"el-panal-presentacion-de-autores-destacados-dia31072024"}}],"signatures":["1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726","20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f","20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1","2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a","205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5"]}';
