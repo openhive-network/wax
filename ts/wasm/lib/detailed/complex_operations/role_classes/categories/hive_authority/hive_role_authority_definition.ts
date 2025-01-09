@@ -88,6 +88,11 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
     }
   }
 
+  protected ensureValidAccountOrKey(accountOrKey: TPublicKey | TAccountName): void {
+    if (!accountOrKey.startsWith(this.HIVE_ADDRESS_PREFIX) && accountOrKey.length > this.HIVE_MAX_ACCOUNT_NAME_LENGTH)
+      throw new WaxError("Invalid account or key");
+  }
+
   protected getTuple(accountOrKey: TPublicKey | TAccountName): ([string, number]) | void {
     if (accountOrKey.startsWith(this.HIVE_ADDRESS_PREFIX)) {
       if(this.authority.key_auths[accountOrKey])
@@ -102,15 +107,15 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * Adds an account or key to the currently selected role with specified weight.
    * If the account or key already exists, its weight is updated.
    *
-   * This function is an alias to {@link replace} method.
-   *
    * @note If you want to change the role, you need to call {@link withRole} method first.
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
    * @param {?number} weight Account or key weight in the authority. Default is 1.
    * @returns itself
    */
   public add(accountOrKey: TPublicKey | TAccountName, weight: number = 1): this {
-    return this.replace(accountOrKey, weight);
+    this.addToRole(accountOrKey, weight);
+
+    return this;
   }
 
   /**
@@ -119,12 +124,15 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @note If you want to change the role, you need to call {@link withRole} method first.
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
    * @param {number} weight Account or key weight in the authority.
-   * @param {?(TPublicKey | TAccountName)} newKeyOrAccount Account or key to replace the old one. If not provided, the account or key is not replaced, but weight is changed.
+   * @param {(TPublicKey | TAccountName)} newKeyOrAccount Account or key to replace the old one. If not provided, the account or key is not replaced, but weight is changed.
    * @returns itself
    */
-  public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName = accountOrKey): this {
-    if (accountOrKey !== newKeyOrAccount)
-      this.remove(accountOrKey)
+  public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName): this {
+    if (accountOrKey !== newKeyOrAccount) {
+      this.ensureValidAccountOrKey(newKeyOrAccount);
+
+      this.remove(accountOrKey);
+    }
     this.addToRole(newKeyOrAccount, weight);
 
     return this;
