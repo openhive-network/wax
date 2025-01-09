@@ -48,7 +48,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     suggest_brain_key,
     validate_operation,
 )
-from wax.interfaces import WaxBaseInterface
+from wax.interfaces import ProtoTransaction, WaxBaseInterface
 
 if TYPE_CHECKING:
     from schemas.fields.hex import Hex, Signature
@@ -239,6 +239,9 @@ class WaxBaseApi(WaxBaseInterface):
             expiration = expiration - datetime.now(timezone.utc)
         assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
         return Transaction(api=self, tapos_block_id=tapos_block_id, expiration_time=expiration)
+
+    def create_transaction_from_proto(self, transaction: ProtoTransaction) -> ITransaction:
+        return Transaction(api=self, tapos_block_id=transaction)
 
     @classmethod
     def _create_instance(cls, chain_id: ChainId) -> Self:

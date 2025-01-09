@@ -493,3 +493,15 @@ class WaxBaseInterface(ABC):
         Returns:
             Transaction object
         """
+
+    @abstractmethod
+    def create_transaction_from_proto(self, transaction: ProtoTransaction) -> ITransaction:
+        """
+        Creates transaction object from proto transaction.
+
+        Args:
+            transaction: Proto transaction object.
+
+        Returns:
+            Transaction object
+        """

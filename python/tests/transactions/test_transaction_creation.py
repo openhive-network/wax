@@ -3,14 +3,18 @@ from __future__ import annotations
 import json
 from typing import Final
 
+from utils.refs import PROTO_REF_TRANSACTION
+
 from beekeepy import Beekeeper
 from schemas.operations.comment_operation import CommentOperation
 from schemas.operations.vote_operation import VoteOperation
 from wax import create_wax_foundation
 from wax.proto.comment_pb2 import comment
+from wax.proto.transaction_pb2 import transaction as proto_transaction
 from wax.proto.vote_pb2 import vote
 
 EXPECTED_OPERATIONS_COUNT: Final[int] = 2
+EXPECTED_SIGNATURES_COUNT: Final[int] = 1
 WALLET_NAME: Final[str] = "alice"
 WALLET_PASSWORD: Final[str] = "password"
 EXPECTED_IMPACTED_ACCOUNT: Final[str] = "alice"
@@ -45,6 +49,29 @@ def test_create_transaction() -> None:
 
     # ASSERT
     assert len(transaction.transaction.operations) == EXPECTED_OPERATIONS_COUNT
+
+
+def test_create_transaction_with_already_created_transaction() -> None:
+    # ARRANGE
+    wax = create_wax_foundation()
+
+    # ACT
+    transaction = wax.create_transaction_from_proto(proto_transaction(**PROTO_REF_TRANSACTION))  # type: ignore[arg-type]
+    transaction.push_operation(
+        comment(
+            parent_permlink="/",
+            parent_author="",
+            author="alice",
+            permlink="/",
+            title="Best comment",
+            body="<span>comment</span>",
+            json_metadata="{}",
+        )
+    )
+
+    # ASSERT
+    assert len(transaction.transaction.operations) == EXPECTED_OPERATIONS_COUNT
+    assert len(transaction.transaction.signatures) == EXPECTED_SIGNATURES_COUNT
 
 
 def test_create_and_sign_transaction() -> None:
