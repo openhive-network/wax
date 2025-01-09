@@ -52,7 +52,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     suggest_brain_key,
     validate_operation,
 )
-from wax.interfaces import ChainConfig, IWaxBaseInterface, TTimestamp
+from wax.interfaces import ChainConfig, IWaxBaseInterface, JsonTransaction, ProtoTransaction, TTimestamp
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -281,3 +281,9 @@ class WaxBaseApi(IWaxBaseInterface):
             expiration = expiration.replace(microsecond=0) - datetime.now(timezone.utc).replace(microsecond=0)
         assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
         return Transaction(api=self, tapos_block_id=tapos_block_id, expiration_time=expiration)
+
+    def create_transaction_from_proto(self, transaction: ProtoTransaction) -> ITransaction:
+        return Transaction(api=self, tapos_block_id=transaction)
+
+    def create_transaction_from_json(self, transaction: JsonTransaction) -> ITransaction:
+        return Transaction.from_api(api=self, transaction=transaction)

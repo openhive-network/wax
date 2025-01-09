@@ -589,3 +589,30 @@ class IWaxBaseInterface(ABC):
         Returns:
             Transaction object
         """
+
+    @abstractmethod
+    def create_transaction_from_proto(self, transaction: ProtoTransaction) -> ITransaction:
+        """
+        Creates transaction object from proto transaction.
+
+        Args:
+            transaction: Proto transaction object.
+
+        Returns:
+            Transaction object
+        """
+
+    @abstractmethod
+    def create_transaction_from_json(self, transaction: JsonTransaction) -> ITransaction:
+        """
+        Creates transaction object from JSON transaction.
+
+        Args:
+            transaction: JSON transaction object.
+
+        Returns:
+            Transaction object
+
+        Raises:
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
