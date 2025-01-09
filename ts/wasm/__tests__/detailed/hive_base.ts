@@ -29,6 +29,43 @@ test.describe('Wax object interface foundation tests', () => {
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
   });
 
+  test('Should be able to create TAPOS transaction using implicit expiration time', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax, beekeeper, base }, protoVoteOp) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
+
+      const now = Date.now();
+
+      // Create transaction
+      const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2");
+
+      // Create signed transaction
+      tx.pushOperation(protoVoteOp).validate();
+
+      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const stx = tx.transaction;
+
+      const appliedExpirationTime: Date = wax.dateFromString(stx.expiration);
+
+      const appliedExpirationTimeMs = appliedExpirationTime.getTime();
+
+      /// We can't compare absolute values, so let's estimate that applied estimation is in given range
+      const expirationValid = now < appliedExpirationTimeMs + 60*1000;
+
+      return {
+        expirationValid: expirationValid,
+        signees: tx.signatureKeys
+      };
+    }, protoVoteOp);
+
+    expect(retVal.expirationValid).toBeTruthy();
+    expect(retVal.signees).toHaveLength(1);
+    expect(retVal.signees[0]).toBe('STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh');
+  });
+
+
   test('Should be able to convert HIVE to HBD - numbers', async ({ waxTest }) => {
     const retVal = await waxTest(async ({ base }) => {
       const feedPriceQuote = 1000;
