@@ -1,11 +1,9 @@
 import { createHiveChain, IEncryptingTransaction, transaction, WaxError } from '../../dist/bundle/index-full';
 import { EncryptionVisitor, EEncryptionType } from '../../dist/lib/detailed/encryption_visitor.js';
-import beekeeperFactory, { DEFAULT_STORAGE_ROOT, TPublicKey } from '@hiveio/beekeeper';
-
-import fs from 'node:fs'
+import beekeeperFactory, { TPublicKey } from '@hiveio/beekeeper';
+import { test } from './jest-helper.js';
 
 const chain = await createHiveChain();
-const beekeeper = await beekeeperFactory();
 
 const operationEncryptionTest = (shouldBeEncrypted: boolean): EncryptionVisitor => {
   const encryptionVisitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
@@ -26,10 +24,9 @@ export const utilFunctionTest = async (
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
 ): Promise<transaction> => {
-  const session = beekeeper.createSession('salt');
+  const beekeeper = await beekeeperFactory({ enableLogs: true, storageRoot: `${test.info().outputDir}/node` });
 
-  if (fs.existsSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`))
-    fs.rmSync(`${DEFAULT_STORAGE_ROOT}/.beekeeper/w0.wallet`);
+  const session = beekeeper.createSession('salt')
 
   const { wallet } = await session.createWallet('w0');
 
