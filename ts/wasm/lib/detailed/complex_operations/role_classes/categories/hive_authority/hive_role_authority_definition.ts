@@ -19,6 +19,10 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
 
   private previousAuthority!: authority;
 
+  public reset(): void {
+    this.authority = structuredClone(this.previousAuthority);
+  }
+
   /**
    * Checks if the authority has changed since the last update.
    *

@@ -16,4 +16,9 @@ export abstract class LevelBase<TRole extends string> {
   public abstract get value(): any;
 
   public abstract get changed(): boolean;
+
+  /**
+   * Resets the level to its initial state.
+   */
+  public abstract reset(): void;
 }

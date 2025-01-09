@@ -14,6 +14,10 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
   private publicKey!: TPublicKey;
   private previousPublicKey!: TPublicKey;
 
+  public reset(): void {
+    this.publicKey = this.previousPublicKey;
+  }
+
   public init(hiveAddressPrefix: string, publicKey: TPublicKey) {
     this.publicKey = publicKey;
     this.previousPublicKey = publicKey;
