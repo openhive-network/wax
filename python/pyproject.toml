@@ -14,10 +14,7 @@ version = "0.0.0"
 description = ""
 repository = "https://gitlab.syncad.com/hive/wax"
 authors = []
-packages = [
-    { include = "wax"},
-    { include = "wax/proto" }
-]
+packages = [{ include = "wax"}]
 source = [
     { name = "PyPI", priority = "primary" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
