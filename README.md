@@ -40,10 +40,16 @@ python3 -m venv venv
 source ./venv/bin/activate
 ```
 
+Before installing the wax module to python, set env variables to the following value:
+
+```bash
+export FIRST_INDEX="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple" SECOND_INDEX="https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+```
+
 Now in order to install wax module to python, one need to type.
 
 ```bash
-python3 -m pip install ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
+python3 -m pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
 ```
 
 You can always take prebuilt PyPI package also pushed to Gitlab package registry - here is for example some `develop` related version: `0.0.3a2.dev131+bb99c4e`:
