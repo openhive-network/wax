@@ -16,7 +16,6 @@ repository = "https://gitlab.syncad.com/hive/wax"
 authors = []
 packages = [
     { include = "wax"},
-    { include = "wax/proto" }
 ]
 source = [
     { name = "PyPI", priority = "primary" },

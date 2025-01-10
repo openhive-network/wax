@@ -53,14 +53,6 @@ build_wheel:
     reports:
       dotenv: "build_wheel.env"
 
-verify_poetry_lock_sanity:
-  extends: .verify_poetry_lock_sanity_template
-  stage: static_code_analysis
-  variables:
-    PYPROJECT_DIR: "$CI_PROJECT_DIR/python"
-  tags:
-    - public-runner-docker
-
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
@@ -130,6 +122,30 @@ generate_docs:
 
     when: always
     expire_in: 1 week
+
+pre_commit_checks:
+  stage: static_code_analysis
+  extends: .pre_commit_checks_template
+  before_script:
+    - export PYPROJECT_DIR="$CI_PROJECT_DIR/python"
+    - cd ${PYPROJECT_DIR}
+    - ./scripts/compile_proto.sh
+    - !reference [.project_develop_configuration_template, before_script]
+  after_script:
+    - cd ${CI_PROJECT_DIR}
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - python/poetry.lock
+
+verify_poetry_lock_sanity:
+  extends: .verify_poetry_lock_sanity_template
+  stage: static_code_analysis
+  variables:
+    PYPROJECT_DIR: "$CI_PROJECT_DIR/python"
+  tags:
+    - public-runner-docker
 
 push_to_wiki:
   extends: .npm_push_doc_template
