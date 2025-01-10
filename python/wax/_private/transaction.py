@@ -61,7 +61,7 @@ class Transaction(ITransaction):
             else self._resolve_tapos_from_transaction(tapos_block_id)
         )
 
-        if isinstance(tapos_block_id, ProtoTransaction):
+        if isinstance(tapos_block_id, ProtoTransaction):  # type: ignore[misc] # for CI to pass
             self._target = deepcopy(tapos_block_id)
         else:
             self._target = proto_transaction(
