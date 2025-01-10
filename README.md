@@ -40,6 +40,12 @@ python3 -m venv venv
 source ./venv/bin/activate
 ```
 
+Before installing the wax module to python, set `PIP_EXTRA_INDEX_URL` to the following value:
+
+```bash
+export PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+```
+
 Now in order to install wax module to python, one need to type.
 
 ```bash
