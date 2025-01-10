@@ -1,12 +1,4 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-<<<<<<< HEAD
-=======
-import type { IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
-import type { json_price, MainModule, proto_protocol, protocol, result, VectorString, witness_set_properties_data } from "../wax_module";
-import { ApiOperation, ApiTransaction, NaiAsset } from "./api";
-import type { TAccountName } from "./hive_apps_operations";
-import type { operation, transaction } from "../protocol";
->>>>>>> b159202 (Change wasm call interface for converting transaction from binary form)
 
 import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
 import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities, IChainConfig } from "../wax_module";
@@ -27,11 +19,8 @@ import { WaxFormatter } from "./formatters/waxify.js";
 import { isNaiAsset } from "./util/asset_util.js";
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
-<<<<<<< HEAD
 
 import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
-=======
->>>>>>> b159202 (Change wasm call interface for converting transaction from binary form)
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;

@@ -215,6 +215,25 @@ test_wax_wasm:
       artifacts: true
   tags:
     - public-runner-docker
+  parallel:
+    matrix:
+      - PROJECT: [
+        wax_testsuite,
+        healthchecker_tests,
+        wax_testsuite_custom_chain_options,
+        wax_regression_tests,
+        wax_operation_factories,
+        wax_encrypted_operations,
+        wax_non_encrypted_operations,
+        wax_utils,
+        wax_custom_chain_online_tx,
+        wax_mock_tests
+      ]
+  script:
+    - cd ts
+    - npx playwright install
+    - unset CI
+    - npx playwright test --workers 1 --max-failures 1 --project=$PROJECT
 
 test_wax_wasm_proto_pattern:
   extends: .npm_process_built_package_tarball
