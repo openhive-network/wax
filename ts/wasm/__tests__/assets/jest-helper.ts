@@ -1,12 +1,13 @@
 import { TestInfo, ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
 
 import "./globals";
-import { type IWaxGlobals, type IWasmGlobals, type TEnvType } from './globals';
+import type { IWaxGlobals, IWasmGlobals, IWaxEncryptionGlobals, TEnvType } from './globals';
 import { IWaxOptionsChain } from '../../dist/bundle/index-full';
 
 import fs from 'fs';
 
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
+type TWaxEncryptionTestCallable<R, Args extends any[]> = (globals: IWaxEncryptionGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 export interface IWaxedTest {
@@ -31,6 +32,9 @@ export interface IWaxedTest {
      */
     dynamic<R, Args extends any[]>(fn: TWaxTestCallable<R, Args>, ...args: Args): Promise<R>;
   };
+
+  encryptionTest: (<R, Args extends any[]>(fn: TWaxEncryptionTestCallable<R, Args>, ...args: Args) => Promise<R>);
+
   /**
    * Runs given function in both environments: web and Node.js
    * Created specifically for testing WASM code
@@ -53,25 +57,30 @@ interface IWaxedWorker {
   afterAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
 }
 
-const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
+type TTestCallable<GlobalType extends IWaxGlobals | IWasmGlobals, R, Args extends any[]> =
+  GlobalType extends IWaxEncryptionGlobals ? TWaxEncryptionTestCallable<R, Args> :
+    (GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>);
+
+type TTestEnvBuilderFn<GlobalType extends IWaxGlobals | IWasmGlobals, Args extends any[]> = (envType: TEnvType, ...args: Args) => Promise<GlobalType>;
+
+const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals, RetFunType extends keyof IWaxedTest,
+  TEnvBuilderAdditionalArgs extends any[]
+  >(
+  _: RetFunType,
   page: Page,
-  globalFunction: (env: TEnvType, outputPath: string) => Promise<GlobalType>,
-  testInfo: TestInfo
-): IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'] => {
-  const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args): Promise<R> => {
+  globalFunction: TTestEnvBuilderFn<GlobalType, TEnvBuilderAdditionalArgs>,
+  ...envArgs: TEnvBuilderAdditionalArgs): IWaxedTest[RetFunType] => {
+  const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: TTestCallable<GlobalType, R, Args>, ...args: Args): Promise<R> => {
 
     let nodeData, webData;
 
     try {
-      const outputPath: string = testInfo.outputDir;
-
-      nodeData = await fn(await (globalFunction as Function)('node', outputPath), ...args);
-      webData = await page.evaluate(async({ args, globalFunction, webFn, customConfig, outputPath }) => {
+      nodeData = await fn(await (globalFunction as Function)('node', ...envArgs), ...args);
+      webData = await page.evaluate(async({ args, envArgs, globalFunction, webFn, customConfig }) => {
         eval(`window.webEvalFn = ${webFn};`);
         globalThis.config = customConfig;
-        globalThis.outputPath = outputPath;
-        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', outputPath), ...args);
-      }, { args, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config, outputPath: outputPath.toString()});
+        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', ...envArgs), ...args);
+      }, { args, envArgs, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config});
     } catch(error) {
       if(!(error instanceof Error) || error.name !== "WebAssembly.Exception")
         throw error;
@@ -89,12 +98,12 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals>(
     return webData;
   };
 
-  const using = function<R, Args extends any[]>(fn: GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>, ...args: Args) {
+  const using = function<R, Args extends any[]>(fn: TTestCallable<GlobalType, R, Args>, ...args: Args) {
     return runner.bind(undefined, true)(fn as any, ...args);
   };
   using.dynamic = runner.bind(undefined, false);
 
-  return using as IWaxedTest[GlobalType extends IWaxGlobals ? 'waxTest' : 'wasmTest'];
+  return using as IWaxedTest[RetFunType];
 };
 
 export const test = base.extend<IWaxedTest, IWaxedWorker>({
@@ -167,13 +176,17 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     await browser.close();
   }, { scope: 'worker', auto: true }],
 
-  waxTest: async({ page, config }, use, testInfo) => {
+  waxTest: async({ page, config }, use, testInfo: TestInfo) => {
     globalThis.config = config;
 
-    use(envTestFor(page, createWaxTestFor, testInfo));
+    use(envTestFor('waxTest', page, createWaxTestFor, testInfo.outputDir));
   },
 
-  wasmTest: async({ page }, use, testInfo) => {
-    use(envTestFor(page, createWasmTestFor, testInfo));
+  wasmTest: async({ page }, use) => {
+    use(envTestFor('wasmTest', page, createWasmTestFor));
+  },
+
+  encryptionTest: async ({ page }, use, testInfo: TestInfo) => {
+    use(envTestFor('encryptionTest', page, createWaxEncryptionTestFor, testInfo.outputDir));
   }
 });
