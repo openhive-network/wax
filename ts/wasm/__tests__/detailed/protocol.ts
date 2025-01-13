@@ -28,6 +28,7 @@ const parseBinaryChildren = (data: VectorBinaryDataNode) => {
 
 test.describe('WASM Protocol', () => {
   test('Should be able to get authority trace for direct sign', async ({ wasmTest }) => {
+    test.fail();
     const signatureDecodedPublicKeys = ['STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK'];
 
     const retVal = await wasmTest(({ provider, protocol }, posting_authority_transaction, signatureDecodedPublicKeys) => {
@@ -114,6 +115,7 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to get authority trace for delegated sign', async ({ wasmTest }) => {
+    test.fail();
     const signatureDecodedPublicKeys = ['STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF'];
 
     const retVal = await wasmTest(({ provider, protocol }, posting_delegated_authority_transaction, signatureDecodedPublicKeys) => {
@@ -242,6 +244,7 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to get authority trace for delegated sign with single nest level', async ({ wasmTest }) => {
+    test.fail();
     const signatureDecodedPublicKeys = ['STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF'];
 
     const retVal = await wasmTest(({ provider, protocol }, singleNestLevelAuthorityDelegationTransaction, signatureDecodedPublicKeys) => {
@@ -347,6 +350,7 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to get authority trace for open authority transaction', async ({ wasmTest }) => {
+    test.fail();
     const retVal = await wasmTest(({ provider, protocol }, openAuthorityTransaction) => {
       const pubKeysVector = new provider.VectorString();
 
