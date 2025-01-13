@@ -160,12 +160,12 @@ public:
 
   virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) override
   {
-    return call<wax_authority>("getAuthority", account_name, authorityRole);
+    return call<std::optional<wax_authority>>("getAuthority", account_name, authorityRole);
   }
 
   virtual std::optional<std::string> getWitnessPublicKey(std::string account_name) override
   {
-    return call<std::string>("getWitnessPublicKey", account_name);
+    return call<std::optional<std::string>>("getWitnessPublicKey", account_name);
   }
 };
 
