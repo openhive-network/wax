@@ -121,24 +121,25 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   }, { scope: 'worker', auto: true }],
 
   beforeEach: [async ({ page }, use, testInfo) => {
+    /// use >> marker for each texts printed in the browser context
     page.on('console', (msg: ConsoleMessage) => {
       console.log('>>', msg.type(), msg.text());
     });
 
-    const webStoragePath = `${testInfo.outputDir}/web`;
-    const nodeStoragePath = `${testInfo.outputDir}/node`;
+    const webStoragePath = getBeekeeperStoragePath('web', testInfo.outputDir);
+    const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
 
     if (fs.existsSync(webStoragePath)) {
-      console.log('removing beekeeper root: ', webStoragePath);
+      console.log('Before-Each: removing beekeeper root: ', webStoragePath);
 
       fs.rmSync(webStoragePath, { recursive: true });
     }
 
-    // This is needed for the web environment.
+    // Beekeeper fails if storage root path is created for the web environment.
     //fs.mkdirSync(webStoragePath, { recursive: true });
 
     if (fs.existsSync(nodeStoragePath)) {
-      console.log('removing beekeeper root: ', nodeStoragePath);
+      console.log('Before-Each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
@@ -154,17 +155,17 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   afterEach: [async ({ }, use, testInfo) => {
     await use(async () => {});
 
-    const webStoragePath = '/storage_root';
-    const nodeStoragePath = `${testInfo.outputDir}`;
+    const webStoragePath = getBeekeeperStoragePath('web', testInfo.outputDir);
+    const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
 
     if (fs.existsSync(webStoragePath)) {
-      console.log('After removing beekeeper root: ', webStoragePath);
+      console.log('After-each: removing beekeeper root: ', webStoragePath);
 
       fs.rmSync(webStoragePath, { recursive: true });
     }
 
     if (fs.existsSync(nodeStoragePath)) {
-      console.log('After removing beekeeper root: ', nodeStoragePath);
+      console.log('After-each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }

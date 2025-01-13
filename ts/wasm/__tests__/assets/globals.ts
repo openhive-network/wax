@@ -1,4 +1,5 @@
 // We only want to import types here!
+/// The reason is lack of actual import map (what would be troblesome) in the assets/test.html where this script is referenced.
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle/index-full.js";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/index-full.js";
@@ -29,14 +30,13 @@ declare global {
   function createWaxEncryptionTestFor(env: TEnvType, outputpath: string): Promise<IWaxEncryptionGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
   function createWaxMockTestFor(env: TEnvType, mockData: any): Promise<IWaxGlobals>;
+  function getBeekeeperStoragePath(env: TEnvType, outputPath: string): string;
   var config: IWaxOptionsChain | undefined;
 }
 
-export const getBeekeeperStoragePath = (env: TEnvType, outputPath: string): string => {
-  const pathSuffix = env === "web" ? 'web' : 'node';
-
-  const path = env === 'node' ? `${outputPath}/${pathSuffix}` : '/storage_root';
-
+globalThis.getBeekeeperStoragePath = function getBeekeeperStoragePath(env: TEnvType, outputPath: string): string {
+  /// Don't use subdirectory for node/web env (according to outputPath) to simplify cleanup which should remove whole directory pointed by outputPath
+  const path = env === 'node' ? outputPath : '/storage_root';
   return path;
 };
 
@@ -49,7 +49,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
   const wax = await import(locWax) as typeof import("../../dist/bundle/index-full.js");
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
-  const beekeeperRoot = getBeekeeperStoragePath(env, outputPath);
+  const beekeeperRoot = globalThis.getBeekeeperStoragePath(env, outputPath);
 
   try {
     // Initialize data

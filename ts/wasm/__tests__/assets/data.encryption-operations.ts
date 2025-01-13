@@ -1,7 +1,8 @@
 import { createHiveChain, IEncryptingTransaction, transaction, WaxError } from '../../dist/bundle/index-full';
 import { EncryptionVisitor, EEncryptionType } from '../../dist/lib/detailed/encryption_visitor.js';
-import beekeeperFactory, { TPublicKey } from '@hiveio/beekeeper';
+import { TPublicKey } from '@hiveio/beekeeper';
 import { test } from './jest-helper.js';
+import "./globals.js";
 
 const chain = await createHiveChain();
 
@@ -24,7 +25,11 @@ export const utilFunctionTest = async (
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
 ): Promise<transaction> => {
-  const beekeeper = await beekeeperFactory({ enableLogs: true, storageRoot: `${test.info().outputDir}/node` });
+  const outputDir = test.info().outputDir;
+  /// TODO: run such tests also in web mode (via dedicated encryptionTest fixture function)
+  const testEnv = await createWaxEncryptionTestFor('node', outputDir);
+
+  const {beekeeper, chain} = testEnv;
 
   const session = beekeeper.createSession('salt')
 
