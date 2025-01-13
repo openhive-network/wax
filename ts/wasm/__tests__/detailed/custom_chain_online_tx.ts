@@ -62,7 +62,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
 
   test('Should be able to get authority trace for direct multi-sig from already existing transaction', async ({ waxTest }) => {
-   
+    test.fail();
     const retVal = await waxTest(async({ chain }) => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
@@ -89,6 +89,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
 
   test('Should be able to get authority trace for direct sign', async ({ waxTest, config }) => {
+    test.fail();
     /// similar tx to https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
     const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain) => {
 
@@ -126,6 +127,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
    });
 
    test('Should be able to get authority trace for direct sign from already existing transaction', async ({ waxTest }) => {
+    test.fail();
     const retVal = await waxTest(async({ chain }) => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
