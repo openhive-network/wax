@@ -5,8 +5,6 @@ import { numToHighLow, transaction, serialization_sensitive_transaction, witness
 import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
 
-let privateKey!: string;
-
 const parseBinaryChildren = (data: VectorBinaryDataNode) => {
   const offsets: Array<Omit<binary_data_node, 'length' | 'children'> & { length?: number; children?: binary_data_node[]; }> = [];
 
@@ -34,8 +32,6 @@ test.describe('WASM Protocol', () => {
     });
 
     expect(retVal.exception_message).toHaveLength(0);
-
-    privateKey = retVal.content as string;
   });
   test('Should be able to generate binary metadata information - tx with vote operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
@@ -137,10 +133,10 @@ test.describe('WASM Protocol', () => {
   test('Should be able to calculate public key', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, privateKey) => {
       return protocol.cpp_calculate_public_key(privateKey);
-    }, privateKey);
+    }, '5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12');
 
     expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toMatch(/^[1-9A-HJ-NP-Za-km-z]+$/m);
+    expect(retVal.content).toBe('STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3');
   });
 
   test('Should be able to calculate the transaction id', async ({ wasmTest }) => {

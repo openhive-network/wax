@@ -3,8 +3,6 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import { numToHighLow, protoTx, legacyTx, transaction, protoVoteOp, vote_operation } from "../assets/data.proto-protocol";
 
-let privateKey!: string;
-
 test.describe('WASM Proto Protocol', () => {
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ proto_protocol }) => {
@@ -12,14 +10,13 @@ test.describe('WASM Proto Protocol', () => {
     });
 
     expect(retVal.exception_message).toHaveLength(0);
-
-    privateKey = retVal.content as string;
   });
 
   test('Should be able to calculate public key', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ proto_protocol }, privateKey) => {
+    const retVal = await wasmTest.dynamic(({ proto_protocol }) => {
+      const privateKey = proto_protocol.cpp_generate_private_key().content;
       return proto_protocol.cpp_calculate_public_key(privateKey);
-    }, privateKey);
+    });
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toMatch(/^[1-9A-HJ-NP-Za-km-z]+$/m);
