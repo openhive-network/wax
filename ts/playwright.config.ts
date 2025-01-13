@@ -3,6 +3,7 @@ import { defineConfig } from '@playwright/test';
 import { IWaxedTest } from './wasm/__tests__/assets/jest-helper';
 
 export default defineConfig<IWaxedTest>({
+  fullyParallel: true,
   reporter: [
     ['junit', { outputFile: 'results.xml' }],
     ['json',  { outputFile: 'results.json' }]
