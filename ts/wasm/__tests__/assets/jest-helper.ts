@@ -130,7 +130,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
 
     if (fs.existsSync(webStoragePath)) {
-      console.log('Before-Each: removing beekeeper root: ', webStoragePath);
+      //console.log('Before-Each: removing beekeeper root: ', webStoragePath);
 
       fs.rmSync(webStoragePath, { recursive: true });
     }
@@ -139,7 +139,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     //fs.mkdirSync(webStoragePath, { recursive: true });
 
     if (fs.existsSync(nodeStoragePath)) {
-      console.log('Before-Each: removing beekeeper root: ', nodeStoragePath);
+      //console.log('Before-Each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
@@ -159,13 +159,13 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
 
     if (fs.existsSync(webStoragePath)) {
-      console.log('After-each: removing beekeeper root: ', webStoragePath);
+      //console.log('After-each: removing beekeeper root: ', webStoragePath);
 
       fs.rmSync(webStoragePath, { recursive: true });
     }
 
     if (fs.existsSync(nodeStoragePath)) {
-      console.log('After-each: removing beekeeper root: ', nodeStoragePath);
+      //console.log('After-each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }

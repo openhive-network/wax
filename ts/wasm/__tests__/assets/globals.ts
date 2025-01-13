@@ -53,11 +53,11 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
 
   try {
     // Initialize data
-    console.log('creating beekeeper using storage root', beekeeperRoot);
-    const bk = await beekeeper.default({ enableLogs: true, storageRoot: beekeeperRoot }) as IBeekeeperInstance;
+    //console.log('creating beekeeper using storage root', beekeeperRoot);
+    const bk = await beekeeper.default({ enableLogs: false, storageRoot: beekeeperRoot }) as IBeekeeperInstance;
     const wx = await wax.createWaxFoundation();
 
-    console.log('beekeeper instance created.');
+    //console.log('beekeeper instance created.');
 
     let chain: IHiveChainInterface;
 
@@ -77,7 +77,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
       wax
     };
   } catch(e) {
-    console.log(JSON.stringify(e));
+    console.log("Error caught at createWaxTestFor call: ", JSON.stringify(e));
     throw e;
   }
 };
