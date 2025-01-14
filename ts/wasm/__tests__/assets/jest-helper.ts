@@ -77,10 +77,26 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals, RetFunType ex
     try {
       nodeData = await fn(await (globalFunction as Function)('node', ...envArgs), ...args);
       webData = await page.evaluate(async({ args, envArgs, globalFunction, webFn, customConfig }) => {
+        const finalArgs: any[] = [];
+        for(const { initialType, value } of args)
+            if (initialType === "function")
+                finalArgs.push(eval(value));
+            else
+                finalArgs.push(value);
+
         eval(`window.webEvalFn = ${webFn};`);
         globalThis.config = customConfig;
-        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', ...envArgs), ...args);
-      }, { args, envArgs, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config});
+        return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', ...envArgs), ...finalArgs);
+      }, { args: args.map(value => {
+        const initialType = typeof value;
+        if (initialType === "function")
+            value = value.toString();
+
+        return {
+          initialType,
+          value
+        };
+      }), envArgs, globalFunction: globalFunction.name, webFn: fn.toString(), customConfig: globalThis.config});
     } catch(error) {
       if(!(error instanceof Error) || error.name !== "WebAssembly.Exception")
         throw error;
