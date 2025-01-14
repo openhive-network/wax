@@ -1,10 +1,14 @@
 // We only want to import types here!
-/// The reason is lack of actual import map (what would be troblesome) in the assets/test.html where this script is referenced.
+// Type imports are automatically stripped out from the output-JS-code by the TypeScript compiler, which leads to full type safety, but no direct dependencies on the imported modules.
+// When this file is ran in Node environment, JS-imports of "@hiveio/beekeeper/web" make no sense as we are testing Node.js
+// Also when testing in Web environment, we would have to import only fully-bundled packages here as we lack any import resolution in the browser except explicitly defined importmap
+// for imports defined in functions "createWaxTestFor" and "createWasmTestFor"
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle/index-full.js";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/index-full.js";
 import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common.js";
 
+// Declare global types
 type TMainModuleFn = () => Promise<MainModule>;
 export type TEnvType = 'web' | 'node';
 
@@ -30,17 +34,12 @@ declare global {
   function createWaxEncryptionTestFor(env: TEnvType, outputpath: string): Promise<IWaxEncryptionGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
   function createWaxMockTestFor(env: TEnvType, mockData: any): Promise<IWaxGlobals>;
-  function getBeekeeperStoragePath(env: TEnvType, outputPath: string): string;
   var config: IWaxOptionsChain | undefined;
 }
 
-globalThis.getBeekeeperStoragePath = function getBeekeeperStoragePath(env: TEnvType, outputPath: string): string {
-  /// Don't use subdirectory for node/web env (according to outputPath) to simplify cleanup which should remove whole directory pointed by outputPath
-  const path = env === 'node' ? outputPath : '/storage_root';
-  return path;
-};
+// Define the actual global function bodies
+// We are also using function expressions here to be able to extract the function names in the jest-helpers
 
-// Use function as we later extract the function name in the jest-helpers
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string) {
   const locWax = env === "web" ? "../../dist/bundle/index-full.js" : "../../dist/bundle/index.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
@@ -49,12 +48,10 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
   const wax = await import(locWax) as typeof import("../../dist/bundle/index-full.js");
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
-  const beekeeperRoot = globalThis.getBeekeeperStoragePath(env, outputPath);
-
   try {
     // Initialize data
     //console.log('creating beekeeper using storage root', beekeeperRoot);
-    const bk = await beekeeper.default({ enableLogs: false, storageRoot: beekeeperRoot }) as IBeekeeperInstance;
+    const bk = await beekeeper.default({ enableLogs: false, storageRoot: outputPath }) as IBeekeeperInstance;
     const wx = await wax.createWaxFoundation();
 
     //console.log('beekeeper instance created.');

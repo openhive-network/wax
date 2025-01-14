@@ -1,8 +1,22 @@
 import type { Request, Response } from 'express';
 
-export interface IMockData {
-  [key: string]: (params: Record<string, any>) => any | void;
+export type TTestAnySerializableTypeExceptUndefined = string | number | boolean | Record<string, any> | Array<any>;
+
+export type IJsonRpcResponse = {
+  id: number;
+  jsonrpc: string;
+  result: TTestAnySerializableTypeExceptUndefined;
+};
+
+export interface IApiMockData {
+  [key: string]: (params: Record<string, any>) => TTestAnySerializableTypeExceptUndefined | void;
 }
+
+export interface IJsonRpcMockData {
+  [key: string]: (params: Record<string, any>) => IJsonRpcResponse | void;
+}
+
+export type TMockData = IApiMockData | IJsonRpcMockData;
 
 export abstract class AProxyMockResolver {
   public abstract hasHandler(req: Request): boolean;
@@ -12,7 +26,7 @@ export abstract class AProxyMockResolver {
 
 export class JsonRpcMock extends AProxyMockResolver {
   public constructor(
-    private readonly mockData: IMockData
+    private readonly mockData: TMockData
   ) {
     super();
   }

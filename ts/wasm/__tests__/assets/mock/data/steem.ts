@@ -1,4 +1,4 @@
-import { ApiAccount } from '../../../../dist/bundle/index-full';
+import type { ApiAccount } from '../../../../dist/bundle/index-full';
 
 export default {
   id: 1,

@@ -1,4 +1,4 @@
-import { IMockData } from "../api-mock";
+import type { IJsonRpcMockData } from "../api-mock";
 import sunnyvo from "./data/sunnyvo";
 import steem from "./data/steem";
 
@@ -15,6 +15,6 @@ export default {
     if (accounts.length === 1 && accounts[0] === 'steem')
       return steem;
 
-    return [];
+    return;
   }
-} satisfies IMockData;
+} satisfies IJsonRpcMockData;

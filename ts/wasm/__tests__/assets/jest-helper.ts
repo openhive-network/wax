@@ -126,17 +126,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
       console.log('>>', msg.type(), msg.text());
     });
 
-    const webStoragePath = getBeekeeperStoragePath('web', testInfo.outputDir);
-    const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
-
-    if (fs.existsSync(webStoragePath)) {
-      //console.log('Before-Each: removing beekeeper root: ', webStoragePath);
-
-      fs.rmSync(webStoragePath, { recursive: true });
-    }
-
-    // Beekeeper fails if storage root path is created for the web environment.
-    //fs.mkdirSync(webStoragePath, { recursive: true });
+    const nodeStoragePath = testInfo.outputDir;
 
     if (fs.existsSync(nodeStoragePath)) {
       //console.log('Before-Each: removing beekeeper root: ', nodeStoragePath);
@@ -144,31 +134,21 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
 
-    // This is needed for the node environment (otherwise beekeeper does not work).
-    fs.mkdirSync(nodeStoragePath, { recursive: true });
-
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
 
     await use(async () => {});
   }, { auto: true }],
 
   afterEach: [async ({ }, use, testInfo) => {
-    await use(async () => {});
-
-    const webStoragePath = getBeekeeperStoragePath('web', testInfo.outputDir);
-    const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
-
-    if (fs.existsSync(webStoragePath)) {
-      //console.log('After-each: removing beekeeper root: ', webStoragePath);
-
-      fs.rmSync(webStoragePath, { recursive: true });
-    }
+    const nodeStoragePath = testInfo.outputDir;
 
     if (fs.existsSync(nodeStoragePath)) {
       //console.log('After-each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
+
+    await use(async () => {});
   }, { auto: true }],
 
   afterAll: [async ({ browser }, use) => {

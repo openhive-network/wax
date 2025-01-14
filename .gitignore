@@ -64,6 +64,7 @@ coverage.xml
 .pytest_cache/
 cover/
 wax/tests/report.xml
+/ts/test-results
 
 # Translations
 *.mo
