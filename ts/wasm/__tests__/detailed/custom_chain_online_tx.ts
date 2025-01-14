@@ -82,7 +82,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 });
 
   test('Should be able to create and sign transaction using online transaction interface', async ({ waxTest, config }) => {
-    const retVal = await waxTest(async({ beekeeper, wax }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey) => {
+    const retVal = await waxTest(async({ beekeeper, wax }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, config) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -106,9 +106,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         signerKey: tx.signatureKeys[0],
         expectedKey: mirrornetSkeletonPublicKey
       };
-    }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey);
+    }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, config);
 
-    
     expect(retVal.signerKey).toBe(retVal.expectedKey);
    });
 });
