@@ -6,6 +6,13 @@ import { IWaxOptionsChain } from '../../dist/bundle/index-full';
 
 import fs from 'fs';
 
+type StaticAssert<T extends true> = T;
+type TypesAreEqual<T, U> = T extends U ? U extends T ? true : false : false;
+type IncludeMatchingProperties<T, V> = Pick<
+  T,
+  { [K in keyof T]-?: T[K] extends V ?  K : never }[keyof T]
+  >;
+
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
@@ -50,6 +57,11 @@ export interface IWaxFixtureMethods {
 
 };
 
+type TAllCallableProperties = IncludeMatchingProperties<IWaxFixtureMethods, Function>;
+
+//@ts-expect-error ts(6196) Type _T is declared but never used
+type _T = StaticAssert< TypesAreEqual<TAllCallableProperties, IWaxFixtureMethods>>;
+
 export interface IWaxedTest extends IWaxFixtureMethods, IWaxedTestPlaywright {
   config: IWaxOptionsChain | undefined;
 };
@@ -58,9 +70,7 @@ interface IWaxedWorker {
   forEachWorker: void;
 };
 
-export type TCallableWaxedTestProperties = {
-  [key in keyof IWaxFixtureMethods]: IWaxFixtureMethods[key] extends (...args: any[]) => any ? IWaxFixtureMethods[key] : never;
-}[keyof IWaxFixtureMethods];
+export type TCallableWaxedTestProperties = IWaxFixtureMethods[keyof IWaxFixtureMethods]
 
 type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
 
@@ -76,7 +86,6 @@ const envTestFor = <
       webData = await page.evaluate(async({ args, envArgs, globalFunction, webFn }) => {
         // Transform previously encoded test-body args to deserialize functions passed as arguments
         const finalArgs: any[] = [];
-        /// Transform previously encoded test-body args to deserialize functions passed as arguments
         for(const { initialType, value } of args)
           if (initialType === "function")
             finalArgs.push(eval(value));
