@@ -1,4 +1,4 @@
-import { TestInfo, ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
+import { TestInfo, ConsoleMessage, Page, test as base, expect } from '@playwright/test';
 
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals } from './globals';
@@ -141,14 +141,6 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
 
   /// According to PW docs, ever hook must be wrapped into tuple holding additional information related to its scope and automatic installation:
   /// https://playwright.dev/docs/test-fixtures#adding-global-beforeeachaftereach-hooks
-
-  beforeAll: [async ({}, use) => {
-    await chromium.launch({
-      headless: true
-    });
-
-    await use(async () => {});
-  }, { scope: 'worker', auto: true }],
 
   beforeEach: [async ({ page }, use, testInfo) => {
     /// use >> marker for each texts printed in the browser context
