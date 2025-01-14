@@ -10,8 +10,7 @@ type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: A
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 interface IWaxedTestPlaywright {
-  beforeEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
-  afterEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+  forEachTest: void;
 }
 
 export interface IWaxedTest extends IWaxedTestPlaywright {
@@ -50,9 +49,7 @@ export interface IWaxedTest extends IWaxedTestPlaywright {
 }
 
 interface IWaxedWorker {
-  beforeAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
-
-  afterAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+  forEachWorker: void;
 }
 
 export type TCallableWaxedTestProperties = {
@@ -126,7 +123,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   /// According to PW docs, ever hook must be wrapped into tuple holding additional information related to its scope and automatic installation:
   /// https://playwright.dev/docs/test-fixtures#adding-global-beforeeachaftereach-hooks
 
-  beforeEach: [async ({ page }, use, testInfo) => {
+  forEachTest: [async ({ page }, use, testInfo) => {
     /// use >> marker for each texts printed in the browser context
     page.on('console', (msg: ConsoleMessage) => {
       console.log('>>', msg.type(), msg.text());
@@ -142,23 +139,17 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
 
-    await use(async () => {});
-  }, { auto: true }],
-
-  afterEach: [async ({ }, use, testInfo) => {
-    const nodeStoragePath = testInfo.outputDir;
+    await use();
 
     if (fs.existsSync(nodeStoragePath)) {
       //console.log('After-each: removing beekeeper root: ', nodeStoragePath);
 
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
-
-    await use(async () => {});
   }, { auto: true }],
 
-  afterAll: [async ({ browser }, use) => {
-    await use(async () => {});
+  forEachWorker: [async ({ browser }, use) => {
+    await use();
 
     await browser.close();
   }, { scope: 'worker', auto: true }],
