@@ -13,9 +13,7 @@ type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args:
 export interface IWaxedTest {
   config: IWaxOptionsChain | undefined;
 
-  beforeEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
-
-  afterEach: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+  forEachTest: void;
 
   /**
    * Runs given function in both environments: web and Node.js
@@ -52,9 +50,7 @@ export interface IWaxedTest {
 }
 
 interface IWaxedWorker {
-  beforeAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
-
-  afterAll: (inner: (args: any) => Promise<any> | any) => Promise<void>;
+  forEachWorker: void;
 }
 
 type TTestCallable<GlobalType extends IWaxGlobals | IWasmGlobals, R, Args extends any[]> =
@@ -112,15 +108,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   /// According to PW docs, ever hook must be wrapped into tuple holding additional information related to its scope and automatic installation:
   /// https://playwright.dev/docs/test-fixtures#adding-global-beforeeachaftereach-hooks
 
-  beforeAll: [async ({}, use) => {
-    await chromium.launch({
-      headless: true
-    });
-
-    await use(async () => {});
-  }, { scope: 'worker', auto: true }],
-
-  beforeEach: [async ({ page }, use, testInfo) => {
+  forEachTest: [async ({ page }, use, testInfo) => {
     /// use >> marker for each texts printed in the browser context
     page.on('console', (msg: ConsoleMessage) => {
       console.log('>>', msg.type(), msg.text());
@@ -149,14 +137,7 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
 
     await page.goto("http://localhost:8080/wasm/__tests__/assets/test.html", { waitUntil: "load" });
 
-    await use(async () => {});
-  }, { auto: true }],
-
-  afterEach: [async ({ }, use, testInfo) => {
-    await use(async () => {});
-
-    const webStoragePath = getBeekeeperStoragePath('web', testInfo.outputDir);
-    const nodeStoragePath = getBeekeeperStoragePath('node', testInfo.outputDir);
+    await use();
 
     if (fs.existsSync(webStoragePath)) {
       //console.log('After-each: removing beekeeper root: ', webStoragePath);
@@ -171,8 +152,12 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
     }
   }, { auto: true }],
 
-  afterAll: [async ({ browser }, use) => {
-    await use(async () => {});
+  forEachWorker: [async ({}, use) => {
+    const browser = await chromium.launch({
+      headless: true
+    });
+
+    await use();
 
     await browser.close();
   }, { scope: 'worker', auto: true }],
