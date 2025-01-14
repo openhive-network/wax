@@ -13,9 +13,10 @@ interface IWaxedTestPlaywright {
   forEachTest: void;
 }
 
-export interface IWaxedTest extends IWaxedTestPlaywright {
-  config: IWaxOptionsChain | undefined;
-
+/** Holds definition of all methods able to run test provided by the wax fixture
+ * By design only callable types shall be defined here.
+*/
+export interface IWaxFixtureMethods {
   /**
    * Runs given function in both environments: web and Node.js
    * Created specifically for testing the wax code - base and chain
@@ -46,20 +47,25 @@ export interface IWaxedTest extends IWaxedTestPlaywright {
      */
     dynamic<R, Args extends any[]>(fn: TWasmTestCallable<R, Args>, ...args: Args): Promise<R>;
   };
-}
+
+};
+
+export interface IWaxedTest extends IWaxFixtureMethods, IWaxedTestPlaywright {
+  config: IWaxOptionsChain | undefined;
+};
 
 interface IWaxedWorker {
   forEachWorker: void;
-}
+};
 
-export type TCallablWaxedTestProperties = {
-  [key in Exclude<keyof IWaxedTest, keyof IWaxedTestPlaywright>]: IWaxedTest[key] extends (...args: any[]) => any ? IWaxedTest[key] : never;
-}[Exclude<keyof IWaxedTest, keyof IWaxedTestPlaywright>];
+export type TCallableWaxedTestProperties = {
+  [key in keyof IWaxFixtureMethods]: IWaxFixtureMethods[key] extends (...args: any[]) => any ? IWaxFixtureMethods[key] : never;
+}[keyof IWaxFixtureMethods];
 
 type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
 
 const envTestFor = <
-  ExpectedWaxedTestFunction extends TCallablWaxedTestProperties
+  ExpectedWaxedTestFunction extends TCallableWaxedTestProperties
 >(page: Page, globalFunction: TAvailableGlobalWaxFunction, ...envArgs: any[]): ExpectedWaxedTestFunction => {
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: Parameters<ExpectedWaxedTestFunction>[0], ...args: Args): Promise<R> => {
     let nodeData: any, webData: any;
