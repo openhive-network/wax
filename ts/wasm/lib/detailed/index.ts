@@ -8,5 +8,6 @@ export * from './hive_apps_operations/index.js';
 export * from './complex_operations/index.js';
 export * from './util/index.js';
 export * from './healthchecker/index.js';
+export * from "./encryption_visitor.js";
 export { IOperationSink, OperationBase } from './operation_base.js';
 export { TTransactionRequiredAuthorities } from './transaction.js';

@@ -1,36 +1,16 @@
-import { createHiveChain, IEncryptingTransaction, transaction, WaxError } from '../../dist/bundle/index-full';
-import { EncryptionVisitor, EEncryptionType } from '../../dist/lib/detailed/encryption_visitor.js';
+import { createHiveChain, IEncryptingTransaction, transaction } from '../../dist/bundle/index-full';
 import { TPublicKey } from '@hiveio/beekeeper';
-import { test } from './jest-helper.js';
 import "./globals.js";
+import type { IWaxGlobals } from './globals.js';
 
 const chain = await createHiveChain();
 
-const operationEncryptionTest = (shouldBeEncrypted: boolean): EncryptionVisitor => {
-  const encryptionVisitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
-    if (shouldBeEncrypted && !data.startsWith('#'))
-      throw new WaxError(`Expected encrypted operation data: ${data}`);
-
-    if (!shouldBeEncrypted && data.startsWith('#'))
-      throw new WaxError(`Expected non-encrypted operation data: ${data}`);
-
-    return data;
-  });
-
-  return encryptionVisitor;
-};
-
 export const utilFunctionTest = async (
+  { beekeeper, chain, wax }: Pick<IWaxGlobals, 'beekeeper' | 'chain' | 'wax'>,
   txOperationsLambda: (tx: IEncryptingTransaction, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
 ): Promise<transaction> => {
-  const outputDir = test.info().outputDir;
-  /// TODO: run such tests also in web mode (via dedicated encryptionTest fixture function)
-  const testEnv = await createWaxEncryptionTestFor('node', outputDir);
-
-  const {beekeeper, chain} = testEnv;
-
   const session = beekeeper.createSession('salt')
 
   const { wallet } = await session.createWallet('w0');
@@ -60,7 +40,15 @@ export const utilFunctionTest = async (
     for (let i = 0; i < builtTransaction.operations.length; ++i) {
       const shouldBeEncrypted = !nonEncryptedSet.has(i); // If set object does not contain the index than the operation should be encrypted
 
-      const visitor = operationEncryptionTest(shouldBeEncrypted);
+      const visitor = new wax.EncryptionVisitor(wax.EEncryptionType.DECRYPT, (data: string) => {
+        if (shouldBeEncrypted && !data.startsWith('#'))
+          throw new Error(`Expected encrypted operation data: ${data}`);
+
+        if (!shouldBeEncrypted && data.startsWith('#'))
+          throw new Error(`Expected non-encrypted operation data: ${data}`);
+
+        return data;
+      });
 
       visitor.accept(builtTransaction.operations[i]);
     }
