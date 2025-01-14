@@ -62,12 +62,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
 
   test('Should be able to get authority trace for direct multi-sig from already existing transaction', async ({ waxTest }) => {
-    test.fail();
-    const retVal = await waxTest(async({ wax }) => {
-      /// seems this case does not work.
-      ///1. trace generator throws instead of producing a trace
-      ///2. the transaction is valid, authority should be satisfied
 
+    const retVal = await waxTest(async({ wax }) => {
       /// warning: this tx is taken from mainnet - regular chainid must be used, so let's use default initialized chain object
       const chain = await wax.createHiveChain();
 
@@ -86,12 +82,11 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     });
 
     /// TODO improve comparison to avoid string form
-    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"good-karma","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},"finalAuthorityPath":[{"processedEntry":"ecency","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},{"processedEntry":"ecency.stats","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},{"processedEntry":"esteem.app","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},{"processedEntry":"esteemapp","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},{"processedEntry":"good-karma","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR","processedRole":"posting","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
    });
 
 
   test('Should be able to get authority trace for direct sign', async ({ waxTest, config }) => {
-    test.fail();
     /// similar tx to https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
     const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain) => {
 
@@ -125,16 +120,18 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     }, mirrornetSkeletonKey, config!);
 
     /// TODO improve comparison to avoid string form
-    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":0,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},{"processedEntry":"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
    });
 
    test('Should be able to get authority trace for direct sign from already existing transaction', async ({ waxTest }) => {
     test.fail();
-    const retVal = await waxTest(async({ chain }) => {
+    const retVal = await waxTest(async({wax}) => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
       ///2. the transaction is valid, authority should be satisfied
-      //test.fail();
+
+      /// warning: this tx is taken from mainnet - regular chainid must be used, so let's use default initialized chain object
+      const chain = await wax.createHiveChain();
 
       /// tx from https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
       const txJson = '{"ref_block_num":33561,"ref_block_prefix":2922397352,"extensions":[],"expiration":"2024-09-20T12:16:45","operations":[{"type":"transfer_operation","value":{"to":"bluehy20","from":"splinterboost","memo":"Thank you for delegating to Splinterboost here is your daily HIVE payout!","amount":{"nai":"@@000000021","amount":"14","precision":3}}}],"signatures":["203eed491a1e032bc889b030861a80bf3f0bc8ba7fa30843041825c4f542411fb3678fd527c598dcc6646a5dabf2110691a4d6355c72d7638ffdaa11ac10451d07"]}';
