@@ -18,6 +18,7 @@ export interface IWaxGlobals {
   base: IWaxBaseInterface;
   chain: IHiveChainInterface;
   wax: typeof Wax;
+  outputPath: string;
 }
 export interface IWasmGlobals {
   protocol: protocolT;
@@ -71,7 +72,8 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
       beekeeper: bk,
       base: wx,
       chain,
-      wax
+      wax,
+      outputPath
     };
   } catch(e) {
     console.log("Error caught at createWaxTestFor call: ", JSON.stringify(e));
@@ -86,7 +88,7 @@ globalThis.createWaxEncryptionTestFor = async function createWaxEncryptionTestFo
   const chain = baseData.chain;
 
   /// TODO: implement actual encryption env. init
-  return {beekeeper, chain, base: baseData.base, wax: baseData.wax};
+  return {beekeeper, chain, base: baseData.base, wax: baseData.wax, outputPath: baseData.outputPath};
 };
 
 // Use function as we later extract the function name in the jest-helpers
