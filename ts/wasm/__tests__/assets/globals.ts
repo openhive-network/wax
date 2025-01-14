@@ -26,13 +26,8 @@ export interface IWasmGlobals {
   provider: MainModule;
 }
 
-export interface IWaxEncryptionGlobals extends IWaxGlobals {
-  /// TODO: extend base interface by data needed by encryption tests
-};
-
 declare global {
   function createWaxTestFor(env: TEnvType, outputpath: string): Promise<IWaxGlobals>;
-  function createWaxEncryptionTestFor(env: TEnvType, outputpath: string): Promise<IWaxEncryptionGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
   function createWaxMockTestFor(env: TEnvType, mockData: any): Promise<IWaxGlobals>;
   var config: IWaxOptionsChain | undefined;
@@ -79,16 +74,6 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
     console.log("Error caught at createWaxTestFor call: ", JSON.stringify(e));
     throw e;
   }
-};
-
-globalThis.createWaxEncryptionTestFor = async function createWaxEncryptionTestFor(env: TEnvType, outputpath: string): Promise<IWaxEncryptionGlobals> {
-  const baseData = await globalThis.createWaxTestFor(env, outputpath);
-
-  const beekeeper = baseData.beekeeper;
-  const chain = baseData.chain;
-
-  /// TODO: implement actual encryption env. init
-  return {beekeeper, chain, base: baseData.base, wax: baseData.wax, outputPath: baseData.outputPath};
 };
 
 // Use function as we later extract the function name in the jest-helpers

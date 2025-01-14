@@ -1,13 +1,12 @@
 import { TestInfo, ConsoleMessage, Page, test as base, chromium, expect } from '@playwright/test';
 
 import "./globals";
-import type { IWaxGlobals, IWasmGlobals, IWaxEncryptionGlobals, TEnvType } from './globals';
+import type { IWaxGlobals, IWasmGlobals, TEnvType } from './globals';
 import { IWaxOptionsChain } from '../../dist/bundle/index-full';
 
 import fs from 'fs';
 
 type TWaxTestCallable<R, Args extends any[]> = (globals: IWaxGlobals, ...args: Args) => (R | Promise<R>);
-type TWaxEncryptionTestCallable<R, Args extends any[]> = (globals: IWaxEncryptionGlobals, ...args: Args) => (R | Promise<R>);
 type TWasmTestCallable<R, Args extends any[]> = (globals: IWasmGlobals, ...args: Args) => (R | Promise<R>);
 
 export interface IWaxedTest {
@@ -33,8 +32,6 @@ export interface IWaxedTest {
     dynamic<R, Args extends any[]>(fn: TWaxTestCallable<R, Args>, ...args: Args): Promise<R>;
   };
 
-  encryptionTest: (<R, Args extends any[]>(fn: TWaxEncryptionTestCallable<R, Args>, ...args: Args) => Promise<R>);
-
   /**
    * Runs given function in both environments: web and Node.js
    * Created specifically for testing WASM code
@@ -58,8 +55,7 @@ interface IWaxedWorker {
 }
 
 type TTestCallable<GlobalType extends IWaxGlobals | IWasmGlobals, R, Args extends any[]> =
-  GlobalType extends IWaxEncryptionGlobals ? TWaxEncryptionTestCallable<R, Args> :
-    (GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>);
+  GlobalType extends IWaxGlobals ? TWaxTestCallable<R, Args> : TWasmTestCallable<R, Args>;
 
 type TTestEnvBuilderFn<GlobalType extends IWaxGlobals | IWasmGlobals, Args extends any[]> = (envType: TEnvType, ...args: Args) => Promise<GlobalType>;
 
@@ -78,6 +74,7 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals, RetFunType ex
       nodeData = await fn(await (globalFunction as Function)('node', ...envArgs), ...args);
       webData = await page.evaluate(async({ args, envArgs, globalFunction, webFn, customConfig }) => {
         const finalArgs: any[] = [];
+        /// Transform previously encoded test-body args to deserialize functions passed as arguments
         for(const { initialType, value } of args)
             if (initialType === "function")
                 finalArgs.push(eval(value));
@@ -87,7 +84,9 @@ const envTestFor = <GlobalType extends IWaxGlobals | IWasmGlobals, RetFunType ex
         eval(`window.webEvalFn = ${webFn};`);
         globalThis.config = customConfig;
         return (window as Window & typeof globalThis & { webEvalFn: Function }).webEvalFn(await globalThis[globalFunction]('web', ...envArgs), ...finalArgs);
-      }, { args: args.map(value => {
+      }, {
+        /// Transform arguments passed to the test body function, to serializable values (functions are converted to their textual representation)
+        args: args.map(value => {
         const initialType = typeof value;
         if (initialType === "function")
             value = value.toString();
@@ -182,8 +181,4 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   wasmTest: async({ page }, use) => {
     use(envTestFor('wasmTest', page, createWasmTestFor));
   },
-
-  encryptionTest: async ({ page }, use, testInfo: TestInfo) => {
-    use(envTestFor('encryptionTest', page, createWaxEncryptionTestFor, testInfo.outputDir));
-  }
 });
