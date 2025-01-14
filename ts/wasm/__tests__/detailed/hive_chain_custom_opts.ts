@@ -7,7 +7,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
   test('Should be able to use different options', async ({ waxTest, config }) => {
     expect(config).toBeDefined;
 
-    const retVal = await waxTest(async({ wax, chain }) => {
+    const retVal = await waxTest(async({ wax, chain }, config) => {
       const myChain = await wax.createHiveChain(config);
       const chainEndpointUrl = chain.endpointUrl;
 
@@ -17,7 +17,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
         myChainEndpointUrl,
         chainEndpointUrl
       };
-    });
+    }, config);
 
     expect(retVal.myChainEndpointUrl).toBe('https://api.hive.blog/');
     expect(config!.chainId).toBe('beeab0de00000000000000000000000000000000000000000000000000000000');

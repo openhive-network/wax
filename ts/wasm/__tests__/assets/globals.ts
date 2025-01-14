@@ -27,16 +27,19 @@ export interface IWasmGlobals {
 }
 
 declare global {
-  function createWaxTestFor(env: TEnvType, outputpath: string): Promise<IWaxGlobals>;
+  function createWaxTestFor(env: TEnvType, outputpath: string, config?: IWaxOptionsChain): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
-  function createWaxMockTestFor(env: TEnvType, mockData: any): Promise<IWaxGlobals>;
-  var config: IWaxOptionsChain | undefined;
+
+  // Reexport every function as a namespace for type extraction in jest-helper - if you add new functions to the global scope, you need to add them here too
+  namespace WaxTestGlobalFunctions {
+    export { createWaxTestFor, createWasmTestFor };
+  }
 }
 
 // Define the actual global function bodies
 // We are also using function expressions here to be able to extract the function names in the jest-helpers
 
-globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string) {
+globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string, config?: IWaxOptionsChain) {
   const locWax = env === "web" ? "../../dist/bundle/index-full.js" : "../../dist/bundle/index.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
@@ -54,12 +57,12 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
 
     let chain: IHiveChainInterface;
 
-    if (globalThis.config === undefined)
+    if (config === undefined)
       chain = await wax.createHiveChain();
     else {
-      chain = await wax.createHiveChain(globalThis.config);
+      chain = await wax.createHiveChain(config);
 
-      console.log(`Using custom config: API endpoint: ${globalThis.config.apiEndpoint}, chain id: ${globalThis.config.chainId}`);
+      console.log(`Using custom config: API endpoint: ${config.apiEndpoint}, chain id: ${config.chainId}`);
     }
 
     // Provide results
