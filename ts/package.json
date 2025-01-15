@@ -6,7 +6,7 @@
   "types": "wasm/dist/bundle/index.d.ts",
   "type": "module",
   "private": false,
-  "packageManager": "pnpm@9.1.1+sha256.9551e803dcb7a1839fdf5416153a844060c7bce013218ce823410532504ac10b",
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
   "scripts": {
     "prebuild": "cd ../ && husky install ts/.husky && cd ./ts && ./scripts/compile_proto_ts.sh && rimraf wasm/dist",
     "build": "wasm/build_wasm_wax.sh && tsc",
@@ -32,7 +32,7 @@
     "./package.json": "./package.json"
   },
   "devDependencies": {
-    "@playwright/test": "^1.39.0",
+    "@playwright/test": "^1.49.1",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^27.0.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
@@ -42,7 +42,7 @@
     "@types/events": "^3.0.3",
     "@types/express": "^5.0.0",
     "@types/express-http-proxy": "^1.6.6",
-    "@types/node": "^20.10.6",
+    "@types/node": "^22.10.6",
     "bundlesize": "^0.18.2",
     "cors": "^2.8.5",
     "express": "^4.21.2",
@@ -50,17 +50,18 @@
     "http-server": "^14.1.1",
     "husky": "8.0.3",
     "npm-run-all": "^4.1.5",
-    "playwright": "^1.39.0",
+    "playwright": "^1.49.1",
     "protobufjs": "^7.2.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.22.4",
     "rollup-plugin-dts": "^6.1.1",
+    "test@1.49.1": "link:playwright/test@1.49.1",
     "ts-proto": "^1.172.0",
-    "tslib": "^2.6.2",
+    "tslib": "^2.8.1",
     "typedoc": "0.27.3",
     "typedoc-gitlab-wiki-theme": "^2.1.0",
     "typedoc-plugin-markdown": "4.3.1",
-    "typescript": "5.2.2"
+    "typescript": "5.7.3"
   },
   "dependencies": {
     "@hiveio/beekeeper": "1.27.7-250114120041",
