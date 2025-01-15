@@ -25,6 +25,9 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
   }
 
   public async init(chain: IHiveChainInterface, account: TAccountName): Promise<void> {
+    if (account === chain.config.HIVE_TEMP_ACCOUNT)
+      throw new WaxError("Cannot edit temporary account authority in hive category");
+
     this.account = account;
 
     const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account] });
