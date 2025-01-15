@@ -24,11 +24,15 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
     return this.authorities.active.changed || this.authorities.owner.changed || this.authorities.posting.changed || this.authorities.memo.changed;
   }
 
+  private HIVE_MAX_AUTHORITY_MEMBERSHIP!: number;
+
   public async init(chain: IHiveChainInterface, account: TAccountName): Promise<void> {
     if (account === chain.config.HIVE_TEMP_ACCOUNT)
       throw new WaxError("Cannot edit temporary account authority in hive category");
 
     this.account = account;
+
+    this.HIVE_MAX_AUTHORITY_MEMBERSHIP = Number.parseInt(chain.config.HIVE_MAX_AUTHORITY_MEMBERSHIP);
 
     const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account] });
 
@@ -75,7 +79,14 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
   }
 
   private canAuthorityBeSatisfied(auth: authority): boolean {
-    if (Object.keys(auth.account_auths).length === 0 && Object.keys(auth.key_auths).length === 0)
+    const accountAuthsKeys = Object.keys(auth.account_auths);
+    const keyAuthsKeys = Object.keys(auth.key_auths);
+
+    const totalAuthSize = accountAuthsKeys.length + keyAuthsKeys.length;
+    if(totalAuthSize > this.HIVE_MAX_AUTHORITY_MEMBERSHIP) // hive_operations.cpp - validate_auth_size
+      throw new WaxError(`Authority membership exceeded. Max: ${this.HIVE_MAX_AUTHORITY_MEMBERSHIP} Current: ${totalAuthSize}`);
+
+    if (totalAuthSize === 0)
       return true; // Null authority - can be satisfied
 
     const totalAccountAuthsWeight = Object.values(auth.account_auths).reduce((total, weight) => total + weight, 0);
