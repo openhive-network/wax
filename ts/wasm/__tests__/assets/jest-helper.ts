@@ -58,7 +58,7 @@ export type TCallableWaxedTestProperties = {
   [key in keyof IWaxedTest]: IWaxedTest[key] extends Callable ? IWaxedTest[key] : never
 }[keyof IWaxedTest];
 
-type FirstArgType<T> = T extends (fn: infer FirstArgument, ...args: any[]) => any ? FirstArgument : never;
+type FirstArgType<T extends Callable> = T extends (fn: infer FirstArgument, ...args: any[]) => any ? FirstArgument : never;
 type RestArgType<T extends Callable> = T extends (first: any, ...args: infer ArgsType) => any ? ArgsType : never;
 
 type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
