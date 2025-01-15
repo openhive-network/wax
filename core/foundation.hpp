@@ -137,6 +137,17 @@ public:
    */
   json_asset cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const;
 
+  /**
+   * Check if given account name is valid, which means it follows given rules:
+   * - Names must comply with RFC 1035 grammar
+   * - All letters must be lowercase
+   * - Length is between (inclusive) HIVE_MIN_ACCOUNT_NAME_LENGTH and HIVE_MAX_ACCOUNT_NAME_LENGTH
+   *
+   * @param name - account name to be checked
+   * @returns true if account name is valid, false otherwise
+   */
+  bool cpp_is_valid_account_name( const std::string& name ) const;
+
 protected:
   /// use this only through derived classes
   foundation() = default;

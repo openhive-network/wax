@@ -603,6 +603,11 @@ json_asset foundation::cpp_estimate_hive_collateral( const json_price& current_m
   });
 }
 
+bool foundation::cpp_is_valid_account_name( const std::string& name )const
+{
+  return hive::protocol::is_valid_account_name(name);
+}
+
 } /// namespace cpp
 
 // Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,

@@ -300,6 +300,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public isValidAccountName(name: string): boolean {
+    return safeWasmCall(() => this.proto.cpp_is_valid_account_name(name));
+  }
+
   public createTransactionFromProto(protoTransaction: transaction): ITransaction {
     return new Transaction(this, protoTransaction);
   }

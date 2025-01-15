@@ -75,6 +75,31 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
+  test('Should be able to validate valid account names', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ base }) => {
+      return base.isValidAccountName("gtg");
+    });
+
+    expect(retVal).toBeTruthy();
+  });
+
+  test('Should be able to validate invalid account names', async ({ waxTest }) => {
+    // To short name
+    await expect(waxTest(async ({ base }) => {
+      return base.isValidAccountName("g");
+    })).resolves.toBeFalsy();
+
+    // Too long name
+    await expect(waxTest(async ({ base }) => {
+      return base.isValidAccountName("a".repeat(Number.parseInt(base.config.HIVE_MAX_ACCOUNT_NAME_LENGTH) + 1));
+    })).resolves.toBeFalsy();
+
+    // Invalid sequence
+    await expect(waxTest(async ({ base }) => {
+      return base.isValidAccountName("a..b");
+    })).resolves.toBeFalsy();
+  });
+
   test('Should be able to convert VESTS to HP (bug)', async ({ waxTest }) => {
     const retVal = await waxTest(async ({ base }) => {
       let blocktrades_delegated_hp = "";

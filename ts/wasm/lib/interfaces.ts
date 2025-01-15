@@ -566,6 +566,17 @@ export interface IWaxBaseInterface {
   get addressPrefix (): string;
 
   /**
+   * Check if given account name is valid, which means it follows given rules:
+   * - Names must comply with RFC 1035 grammar
+   * - All letters must be lowercase
+   * - Length is between (inclusive) HIVE_MIN_ACCOUNT_NAME_LENGTH and HIVE_MAX_ACCOUNT_NAME_LENGTH. See: {@link config}
+   *
+   * @param {string} name account name to be checked
+   * @returns {boolean} true if account name is valid, false otherwise
+   */
+  isValidAccountName(name: string): boolean;
+
+  /**
    * Retrieves the set of account names (not authorities!) that are impacted by a given operation.
    *
    * @param {operation | ApiOperation} operation The operation object which could be either a protobuf opereation or operation returned from the Hive Nodes API
