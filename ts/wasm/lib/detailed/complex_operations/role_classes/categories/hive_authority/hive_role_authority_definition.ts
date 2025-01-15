@@ -6,7 +6,8 @@ import { LevelBase } from "../../level_base.js";
 
 export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase<TRole> {
   public constructor(
-    role: TRole
+    role: TRole,
+    private readonly ensureCanUpdate: (level: TRole) => void = () => {},
   ) {
     super(role);
   }
@@ -113,6 +114,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public add(accountOrKey: TPublicKey | TAccountName, weight: number = 1): this {
+    this.ensureCanUpdate(this.level);
+
     this.addToRole(accountOrKey, weight);
 
     return this;
@@ -128,6 +131,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName): this {
+    this.ensureCanUpdate(this.level);
+
     if (accountOrKey !== newKeyOrAccount) {
       this.ensureValidAccountOrKey(newKeyOrAccount);
 
@@ -146,6 +151,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public remove(accountOrKey: TPublicKey | TAccountName): this {
+    this.ensureCanUpdate(this.level);
+
     this.removeFromRole(accountOrKey);
 
     return this;
@@ -176,6 +183,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public setTreshold(treshold: number = 1): this {
+    this.ensureCanUpdate(this.level);
+
     this.authority.weight_threshold = treshold;
 
     return this;
@@ -187,6 +196,8 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @returns itself
    */
   public clear(): this {
+    this.ensureCanUpdate(this.level);
+
     this.authority.account_auths = {};
     this.authority.key_auths = {};
     this.authority.weight_threshold = 1;

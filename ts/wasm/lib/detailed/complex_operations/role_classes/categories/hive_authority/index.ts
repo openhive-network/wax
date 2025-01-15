@@ -20,17 +20,6 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
 
   public category = "hive" as const;
 
-  public constructor() {
-    super();
-
-    this.authorities = {
-      active: new HiveRoleAuthorityDefinition("active"),
-      posting: new HiveRoleAuthorityDefinition("posting"),
-      owner: new HiveRoleAuthorityDefinition("owner"),
-      memo: new HiveRoleMemoKeyDefinition()
-    };
-  }
-
   public get changed(): boolean {
     return this.authorities.active.changed || this.authorities.owner.changed || this.authorities.posting.changed || this.authorities.memo.changed;
   }
@@ -39,6 +28,20 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
     this.account = account;
 
     const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account] });
+
+    const checkOwnerTimeDiff = (time: string): boolean => { // owner_update_limit_mgr.cpp
+      return Date.now() - new Date(`${time}Z`).getTime() > Number.parseInt(chain.config.HIVE_OWNER_UPDATE_LIMIT) / 1000;
+    };
+
+    this.authorities = {
+      active: new HiveRoleAuthorityDefinition("active"),
+      posting: new HiveRoleAuthorityDefinition("posting"),
+      owner: new HiveRoleAuthorityDefinition("owner", () => {
+        if( !checkOwnerTimeDiff(chainAccount.last_owner_update)  && checkOwnerTimeDiff(chainAccount.previous_owner_update) )
+          throw new WaxError("Owner authority cannot be updated due to owner authority update limit - twice an hour");
+      }),
+      memo: new HiveRoleMemoKeyDefinition()
+    }
 
     if (chainAccount === undefined)
       throw new WaxError(`Account ${account} not found on the chain`);
