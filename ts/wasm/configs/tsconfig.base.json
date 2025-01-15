@@ -24,12 +24,16 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
+    "diagnostics": true,
     "baseUrl": ".",
+
+    "extendedDiagnostics":true,
 
     "removeComments": false,
     "checkJs": false,
     "strict": true,
+    "noStrictGenericChecks": false,
+    "strictBindCallApply": true,
     "alwaysStrict": true,
 
     "allowJs": false,
