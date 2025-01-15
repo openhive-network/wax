@@ -27,7 +27,7 @@ export interface IWasmGlobals {
 }
 
 declare global {
-  function createWaxTestFor(env: TEnvType, outputpath: string): Promise<IWaxGlobals>;
+  function createWaxTestFor(env: TEnvType, outputpath: string, config?: IWaxOptionsChain): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
 
   // Reexport every function as a namespace for type extraction in jest-helper - if you add new functions to the global scope, you need to add them here too

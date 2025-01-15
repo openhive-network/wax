@@ -52,16 +52,24 @@ interface IWaxedWorker {
   forEachWorker: void;
 }
 
+type Callable<R = any, Args extends any[] =any[]> = (...args: Args) => R;
+
 export type TCallableWaxedTestProperties = {
-  [key in keyof IWaxedTest]: IWaxedTest[key] extends Function ? IWaxedTest[key] : never
+  [key in keyof IWaxedTest]: IWaxedTest[key] extends Callable ? IWaxedTest[key] : never
 }[keyof IWaxedTest];
+
+type FirstArgType<T> = T extends (fn: infer FirstArgument, ...args: any[]) => any ? FirstArgument : never;
+type RestArgType<T extends Callable> = T extends (first: any, ...args: infer ArgsType) => any ? ArgsType : never;
 
 type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
 
 const envTestFor = <
-  ExpectedWaxedTestFunction extends TCallableWaxedTestProperties
->(page: Page, globalFunction: TAvailableGlobalWaxFunction, ...envArgs: any[]): ExpectedWaxedTestFunction => {
-  const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: Parameters<ExpectedWaxedTestFunction>[0], ...args: Args): Promise<R> => {
+  ExpectedWaxedTestFunction extends TCallableWaxedTestProperties,
+  TGlobalFunction extends TAvailableGlobalWaxFunction,
+  TTestCallableFn extends Callable = FirstArgType<ExpectedWaxedTestFunction>
+  >
+  (page: Page, globalFunction: TGlobalFunction, ...envArgs: RestArgType<TGlobalFunction>): ExpectedWaxedTestFunction => {
+  const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: TTestCallableFn, ...args: Args): Promise<R> => {
     let nodeData: any, webData: any;
 
     try {
@@ -70,7 +78,6 @@ const envTestFor = <
       webData = await page.evaluate(async({ args, envArgs, globalFunction, webFn }) => {
         // Transform previously encoded test-body args to deserialize functions passed as arguments
         const finalArgs: any[] = [];
-        /// Transform previously encoded test-body args to deserialize functions passed as arguments
         for(const { initialType, value } of args)
           if (initialType === "function")
             finalArgs.push(eval(value));
@@ -109,8 +116,8 @@ const envTestFor = <
     return webData;
   };
 
-  const using = function<R, Args extends any[]>(fn: Parameters<ExpectedWaxedTestFunction>[0], ...args: Args): Promise<R> {
-    return runner.bind(undefined, true)(fn as any, ...args) as Promise<R>;
+  const using = function<R, Args extends any[]>(fn: TTestCallableFn, ...args: Args): Promise<R> {
+    return runner.bind(undefined, true)(fn, ...args) as Promise<R>;
   };
   using.dynamic = runner.bind(undefined, false);
 
@@ -155,10 +162,10 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   }, { scope: 'worker', auto: true }],
 
   waxTest: async({ page, config }, use, testInfo: TestInfo) => {
-    use(envTestFor<IWaxedTest['waxTest']>(page, createWaxTestFor, testInfo.outputDir, config));
+    use(envTestFor(page, createWaxTestFor, testInfo.outputDir, config));
   },
 
   wasmTest: async({ page }, use) => {
-    use(envTestFor<IWaxedTest['wasmTest']>(page, createWasmTestFor));
+    use(envTestFor(page, createWasmTestFor));
   }
 });
