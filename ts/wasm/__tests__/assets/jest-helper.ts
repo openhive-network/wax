@@ -60,13 +60,14 @@ export type TCallableWaxedTestProperties = {
 
 type FirstArgType<T extends Callable> = T extends (fn: infer FirstArgument, ...args: any[]) => any ? FirstArgument : never;
 type RestArgType<T extends Callable> = T extends (first: any, ...args: infer ArgsType) => any ? ArgsType : never;
+type FirstCallableArg<T extends Callable> = FirstArgType<T> extends Callable ? FirstArgType<T> : never;
 
 type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
 
 const envTestFor = <
   ExpectedWaxedTestFunction extends TCallableWaxedTestProperties,
   TGlobalFunction extends TAvailableGlobalWaxFunction,
-  TTestCallableFn extends Callable = FirstArgType<ExpectedWaxedTestFunction>
+  TTestCallableFn extends Callable = FirstCallableArg<ExpectedWaxedTestFunction>
   >
   (page: Page, globalFunction: TGlobalFunction, ...envArgs: RestArgType<TGlobalFunction>): ExpectedWaxedTestFunction => {
   const runner = async<R, Args extends any[]>(checkEqual: boolean, fn: TTestCallableFn, ...args: Args): Promise<R> => {
