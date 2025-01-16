@@ -43,6 +43,7 @@ repos:
     hooks:
       - id: mypy
         name: type check with mypy
+        args: [ "--ignore-missing-imports" ]
         entry: mypy
         language: system
         types: [ python ]

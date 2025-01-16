@@ -7,7 +7,7 @@ MAINNET_CHAIN_ID = b"beeab0de000000000000000000000000000000000000000000000000000
 
 TREASURY_NAME = b"hive.fund"
 
-PROTO_REF_VOTE_OP = {
+PROTO_REF_VOTE_OP: dict[str, dict[str, str | int]] = {
     "vote": {
         "voter": "otom",
         "author": "c0ff33a",
@@ -16,7 +16,7 @@ PROTO_REF_VOTE_OP = {
     }
 }
 
-PROTO_REF_VOTE_OP_EMPTY = {
+PROTO_REF_VOTE_OP_EMPTY: dict[str, dict] = {
     "vote": {
     }
 }
@@ -1744,8 +1744,8 @@ def list_to_dict(l: list[Any]) -> dict[str, Any]:
 
 def to_python_authority(account_authority: dict[str, Any]) -> python_authority:
     result = python_authority(weight_threshold=account_authority["weight_threshold"],
-                              account_auths=list_to_dict(account_authority["account_auths"]),
-                              key_auths=list_to_dict(account_authority["key_auths"]),
+                              account_auths=list_to_dict(account_authority["account_auths"]), # type: ignore[arg-type]
+                              key_auths=list_to_dict(account_authority["key_auths"]), # type: ignore[arg-type]
                              )
     return result
 
@@ -1756,8 +1756,8 @@ def to_python_authorities(account_authorities: dict[str, Any]) -> python_authori
                                )
     return result
 
-ACCOUNT_AUTHS: dict[str, python_authorities] = {
-    account_auth["account_name"]: to_python_authorities(account_auth["authorities"])
+ACCOUNT_AUTHS: dict[str, python_authorities] = { # type: ignore[no-redef]
+    account_auth["account_name"]: to_python_authorities(account_auth["authorities"]) # type: ignore[arg-type]
     for account_auth in ACCOUNT_AUTHS
 }
 

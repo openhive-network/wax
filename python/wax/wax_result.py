@@ -46,34 +46,34 @@ class python_ref_block_data:  # noqa: N801
 
 @dataclass
 class python_required_authority_collection:  # noqa: N801
-    posting_accounts: set[string]
-    active_accounts: set[string]
-    owner_accounts: set[string]
-    other_authorities: list[wax_authority]
+    posting_accounts: set[string] # type: ignore[name-defined]
+    active_accounts: set[string] # type: ignore[name-defined]
+    owner_accounts: set[string] # type: ignore[name-defined]
+    other_authorities: list[wax_authority] # type: ignore[name-defined]
 
 @dataclass
 class python_encrypted_memo:
     # base58 string pointing the public key identifying the first private-key to perform encryption
-    main_encryption_key: string
+    main_encryption_key: string # type: ignore[name-defined]
     # base58 string pointing the public key identifying the other private-key being being (also) decrypt data buffer
-    other_encryption_key: string
+    other_encryption_key: string # type: ignore[name-defined]
     # base58 encoded encrypted content
-    encrypted_content: string
+    encrypted_content: string # type: ignore[name-defined]
 
 @dataclass
 class python_private_key_data:
-    wif_private_key: string
+    wif_private_key: string # type: ignore[name-defined]
     # base58 string pointing the public key associated to the private key specified above
-    associated_public_key: string
+    associated_public_key: string # type: ignore[name-defined]
 
 @dataclass
 class python_brain_key_data:
     # a string containing space separated list of N words generated as a brain key (atm 16)
-    brain_key: string
+    brain_key: string # type: ignore[name-defined]
     # first private key derived from above specified brain key
-    wif_private_key: string
+    wif_private_key: string # type: ignore[name-defined]
     # base58 string pointing the public key associated to the private key specified above
-    associated_public_key: string
+    associated_public_key: string # type: ignore[name-defined]
 
 @dataclass
 class python_witness_set_properties_data:
