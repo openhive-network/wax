@@ -526,6 +526,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
   public delete(): void {
     safeWasmCall(() => this.proto.delete());
+    safeWasmCall(() => this.protocol.delete());
   }
 }
 
