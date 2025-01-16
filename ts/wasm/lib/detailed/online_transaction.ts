@@ -15,11 +15,14 @@ type TAuthorityHolder = {
   posting?: authority
 };
 
+const MAX_ACCOUNTS_PER_CALL = 100;
+
 /**
  * Helper operation visitor class, perforiming on-chain verification in a way specific to given operation type.
  */
 class OnChainOperationValidator extends OperationVisitor {
   private readonly privateKeyScannerData: Map<TAccountName, string[]> = new Map();
+  private readonly accountsToCheckExists = new Set<string>();
   private processedOperation!: operation;
   public constructor(private readonly chain: HiveChainApi) {
     super();
@@ -33,6 +36,7 @@ class OnChainOperationValidator extends OperationVisitor {
 
     await this.processSecurityLeakScannerData();
     await this.processChangedAuthorityData();
+    await this.ensureAccountsExist();
   }
 
   public override comment(op: comment): void {
@@ -71,8 +75,27 @@ class OnChainOperationValidator extends OperationVisitor {
     this.collectModifiedAuthorityData(op.account, op);
   }
 
-  public override account_update2(op: account_update2): void {
+  public async account_update2(op: account_update2): Promise<void> {
     this.collectModifiedAuthorityData(op.account, op);
+
+    this.collectOnlineAccounts(op.account, op);
+  }
+
+  private async ensureAccountsExist(): Promise<void> {
+    const accountsToCheck = Array.from(this.accountsToCheckExists);
+
+    for(let i = 0; i < accountsToCheck.length; i += MAX_ACCOUNTS_PER_CALL) {
+      const slice = accountsToCheck.slice(i, i + MAX_ACCOUNTS_PER_CALL);
+
+      // We use rc_api.find_rc_accounts instead of database_api.find_accounts, because rc api responds with less data, which results in faster response time, having same functionality
+      const { rc_accounts: rcAccounts } = await this.chain.api.rc_api.find_rc_accounts({ accounts: slice });
+
+      if (rcAccounts.length !== slice.length) {
+        const missingAccounts = slice.filter(account => !rcAccounts.some(rcAccount => rcAccount.account === account));
+
+        throw new Error(`Accounts "${missingAccounts.join('", "')}" do not exist!`);
+      }
+    }
   }
 
   private collectKeyLeakScannerData(...contents: string[]): void {
@@ -101,7 +124,7 @@ class OnChainOperationValidator extends OperationVisitor {
     }
   }
 
-  private collectModifiedAuthorityData(_:TAccountName, __: TAuthorityHolder): void {
+  private collectModifiedAuthorityData(_: TAccountName, __: TAuthorityHolder): void {
     /// TODO: implement actual collection
   }
 
@@ -109,13 +132,22 @@ class OnChainOperationValidator extends OperationVisitor {
     /// TODO: implement actual checks
   }
 
- };
+  private collectOnlineAccounts(accountName: TAccountName, authHolder: TAuthorityHolder): void {
+    this.accountsToCheckExists.add(accountName);
+
+    for(const authType of ["active", "posting", "owner"])
+      if (authHolder[authType])
+        for(const account in authHolder[authType].account_auths)
+          this.accountsToCheckExists.add(account);
+  }
+
+};
 
 /**
  * Extends standard Transaction implementation by ability to perform a verification step which requires a chain APIs access,
  */
 export class OnlineTransaction extends Transaction implements IOnlineTransaction {
-  
+
   public constructor(private readonly chain: HiveChainApi, chainReferenceData: TChainReferenceData, expirationTime?: TTimestamp) {
     /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
      *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
@@ -123,7 +155,7 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     const expirationRefTime = chain.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
     super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime);
   }
-    
+
   public override pushOperation(op: operation | OperationBase): OnlineTransaction {
     super.pushOperation(op);
     return this;
