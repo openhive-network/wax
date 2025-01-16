@@ -34,8 +34,15 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
-TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall )
-TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
+TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall
+  -Oz
+  #-gseparate-dwarf
+  )
+TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions 
+  -Oz
+  #-gsplit-dwarf
+  #-gseparate-dwarf
+  -sASSERTIONS=0
   -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
   -sEXCEPTION_STACK_TRACES=1
  )
@@ -78,9 +85,14 @@ function( DEFINE_WAX_TARGET_FOR env )
 
       target_link_options( ${exec_wasm_name} PUBLIC
         -sMODULARIZE=1
-        -sSINGLE_FILE=1
+        -sSINGLE_FILE=1 # switch to 0 to generate separate .wasm able to perform analysis
         -sEXPORT_ES6=1
         -sINITIAL_MEMORY=67108864
+        #-sEXPORTED_FUNCTIONS=[]
+        #-sAUTO_NATIVE_LIBRARIES=0
+        #-sMINIMAL_RUNTIME=1
+        #-gsource-map
+        --emit-symbol-map
         # Decreases runtime performance for 50kB decrease in packed .tgz code size
         # --closure 1
         # -Os
@@ -108,3 +120,6 @@ endfunction()
 DEFINE_WAX_TARGET_FOR(common)
 
 target_link_options( wax_wasm_common PUBLIC -sUSE_ES6_IMPORT_META=1 -sENVIRONMENT="web,node" )
+
+
+# bloaty usage: cd /storage1/src/wax/ts/wasm/build_wasm/ && /storage1/src/bloaty/install/bin/bloaty -d compileunits --source-map=wax.common.wasm.map=./wax.common.wasm.map wax.common.wasm > ./bloaty.txt
