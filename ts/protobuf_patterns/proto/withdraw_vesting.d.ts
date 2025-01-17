@@ -23,44 +23,8 @@ export interface withdraw_vesting {
 export declare const withdraw_vesting: {
     fromJSON(object: any): withdraw_vesting;
     toJSON(message: withdraw_vesting): unknown;
-    create<I extends {
-        account?: string | undefined;
-        vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        account?: string | undefined;
-        vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["vesting_shares"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof withdraw_vesting>]: never; }>(base?: I | undefined): withdraw_vesting;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        account?: string | undefined;
-        vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["vesting_shares"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof withdraw_vesting>]: never; }>(object: I_1): withdraw_vesting;
+    create<I extends Exact<DeepPartial<withdraw_vesting>, I>>(base?: I): withdraw_vesting;
+    fromPartial<I extends Exact<DeepPartial<withdraw_vesting>, I>>(object: I): withdraw_vesting;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

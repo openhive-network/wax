@@ -20,76 +20,8 @@ export interface transfer_to_vesting_completed {
 export declare const transfer_to_vesting_completed: {
     fromJSON(object: any): transfer_to_vesting_completed;
     toJSON(message: transfer_to_vesting_completed): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        hive_vested?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        vesting_shares_received?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        hive_vested?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["hive_vested"], keyof asset>]: never; }) | undefined;
-        vesting_shares_received?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["vesting_shares_received"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof transfer_to_vesting_completed>]: never; }>(base?: I | undefined): transfer_to_vesting_completed;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        hive_vested?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        vesting_shares_received?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        hive_vested?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["hive_vested"], keyof asset>]: never; }) | undefined;
-        vesting_shares_received?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["vesting_shares_received"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof transfer_to_vesting_completed>]: never; }>(object: I_1): transfer_to_vesting_completed;
+    create<I extends Exact<DeepPartial<transfer_to_vesting_completed>, I>>(base?: I): transfer_to_vesting_completed;
+    fromPartial<I extends Exact<DeepPartial<transfer_to_vesting_completed>, I>>(object: I): transfer_to_vesting_completed;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

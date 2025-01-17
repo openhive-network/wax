@@ -24,68 +24,8 @@ export interface claim_account {
 export declare const claim_account: {
     fromJSON(object: any): claim_account;
     toJSON(message: claim_account): unknown;
-    create<I extends {
-        creator?: string | undefined;
-        fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        creator?: string | undefined;
-        fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["fee"], keyof asset>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_1 in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_2 in Exclude<keyof I["extensions"][number], "void_t">]: never; })[] & { [K_3 in Exclude<keyof I["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_4 in Exclude<keyof I, keyof claim_account>]: never; }>(base?: I | undefined): claim_account;
-    fromPartial<I_1 extends {
-        creator?: string | undefined;
-        fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        creator?: string | undefined;
-        fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_5 in Exclude<keyof I_1["fee"], keyof asset>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_6 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_7 in Exclude<keyof I_1["extensions"][number], "void_t">]: never; })[] & { [K_8 in Exclude<keyof I_1["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_9 in Exclude<keyof I_1, keyof claim_account>]: never; }>(object: I_1): claim_account;
+    create<I extends Exact<DeepPartial<claim_account>, I>>(base?: I): claim_account;
+    fromPartial<I extends Exact<DeepPartial<claim_account>, I>>(object: I): claim_account;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

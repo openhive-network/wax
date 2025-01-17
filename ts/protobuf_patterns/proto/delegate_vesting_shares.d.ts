@@ -29,48 +29,8 @@ export interface delegate_vesting_shares {
 export declare const delegate_vesting_shares: {
     fromJSON(object: any): delegate_vesting_shares;
     toJSON(message: delegate_vesting_shares): unknown;
-    create<I extends {
-        delegator?: string | undefined;
-        delegatee?: string | undefined;
-        vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        delegator?: string | undefined;
-        delegatee?: string | undefined;
-        vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["vesting_shares"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof delegate_vesting_shares>]: never; }>(base?: I | undefined): delegate_vesting_shares;
-    fromPartial<I_1 extends {
-        delegator?: string | undefined;
-        delegatee?: string | undefined;
-        vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        delegator?: string | undefined;
-        delegatee?: string | undefined;
-        vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["vesting_shares"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof delegate_vesting_shares>]: never; }>(object: I_1): delegate_vesting_shares;
+    create<I extends Exact<DeepPartial<delegate_vesting_shares>, I>>(base?: I): delegate_vesting_shares;
+    fromPartial<I extends Exact<DeepPartial<delegate_vesting_shares>, I>>(object: I): delegate_vesting_shares;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

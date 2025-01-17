@@ -22,52 +22,8 @@ export interface transfer {
 export declare const transfer: {
     fromJSON(object: any): transfer;
     toJSON(message: transfer): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof transfer>]: never; }>(base?: I | undefined): transfer;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof transfer>]: never; }>(object: I_1): transfer;
+    create<I extends Exact<DeepPartial<transfer>, I>>(base?: I): transfer;
+    fromPartial<I extends Exact<DeepPartial<transfer>, I>>(object: I): transfer;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

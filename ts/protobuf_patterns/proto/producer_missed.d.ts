@@ -11,16 +11,8 @@ export interface producer_missed {
 export declare const producer_missed: {
     fromJSON(object: any): producer_missed;
     toJSON(message: producer_missed): unknown;
-    create<I extends {
-        producer?: string | undefined;
-    } & {
-        producer?: string | undefined;
-    } & { [K in Exclude<keyof I, "producer">]: never; }>(base?: I | undefined): producer_missed;
-    fromPartial<I_1 extends {
-        producer?: string | undefined;
-    } & {
-        producer?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "producer">]: never; }>(object: I_1): producer_missed;
+    create<I extends Exact<DeepPartial<producer_missed>, I>>(base?: I): producer_missed;
+    fromPartial<I extends Exact<DeepPartial<producer_missed>, I>>(object: I): producer_missed;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

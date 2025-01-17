@@ -21,48 +21,8 @@ export interface legacy_chain_properties {
 export declare const legacy_chain_properties: {
     fromJSON(object: any): legacy_chain_properties;
     toJSON(message: legacy_chain_properties): unknown;
-    create<I extends {
-        account_creation_fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        maximum_block_size?: number | undefined;
-        hbd_interest_rate?: number | undefined;
-    } & {
-        account_creation_fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["account_creation_fee"], keyof asset>]: never; }) | undefined;
-        maximum_block_size?: number | undefined;
-        hbd_interest_rate?: number | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof legacy_chain_properties>]: never; }>(base?: I | undefined): legacy_chain_properties;
-    fromPartial<I_1 extends {
-        account_creation_fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        maximum_block_size?: number | undefined;
-        hbd_interest_rate?: number | undefined;
-    } & {
-        account_creation_fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["account_creation_fee"], keyof asset>]: never; }) | undefined;
-        maximum_block_size?: number | undefined;
-        hbd_interest_rate?: number | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof legacy_chain_properties>]: never; }>(object: I_1): legacy_chain_properties;
+    create<I extends Exact<DeepPartial<legacy_chain_properties>, I>>(base?: I): legacy_chain_properties;
+    fromPartial<I extends Exact<DeepPartial<legacy_chain_properties>, I>>(object: I): legacy_chain_properties;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

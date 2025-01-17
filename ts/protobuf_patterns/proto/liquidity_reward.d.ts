@@ -15,44 +15,8 @@ export interface liquidity_reward {
 export declare const liquidity_reward: {
     fromJSON(object: any): liquidity_reward;
     toJSON(message: liquidity_reward): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        payout?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        payout?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["payout"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof liquidity_reward>]: never; }>(base?: I | undefined): liquidity_reward;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        payout?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        payout?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["payout"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof liquidity_reward>]: never; }>(object: I_1): liquidity_reward;
+    create<I extends Exact<DeepPartial<liquidity_reward>, I>>(base?: I): liquidity_reward;
+    fromPartial<I extends Exact<DeepPartial<liquidity_reward>, I>>(object: I): liquidity_reward;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

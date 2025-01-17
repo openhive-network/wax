@@ -14,44 +14,8 @@ export interface pow_reward {
 export declare const pow_reward: {
     fromJSON(object: any): pow_reward;
     toJSON(message: pow_reward): unknown;
-    create<I extends {
-        worker?: string | undefined;
-        reward?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        worker?: string | undefined;
-        reward?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["reward"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof pow_reward>]: never; }>(base?: I | undefined): pow_reward;
-    fromPartial<I_1 extends {
-        worker?: string | undefined;
-        reward?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        worker?: string | undefined;
-        reward?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["reward"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof pow_reward>]: never; }>(object: I_1): pow_reward;
+    create<I extends Exact<DeepPartial<pow_reward>, I>>(base?: I): pow_reward;
+    fromPartial<I extends Exact<DeepPartial<pow_reward>, I>>(object: I): pow_reward;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

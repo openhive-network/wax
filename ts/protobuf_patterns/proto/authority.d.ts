@@ -19,84 +19,20 @@ export interface authority_KeyAuthsEntry {
 export declare const authority: {
     fromJSON(object: any): authority;
     toJSON(message: authority): unknown;
-    create<I extends {
-        weight_threshold?: number | undefined;
-        account_auths?: {
-            [x: string]: number | undefined;
-        } | undefined;
-        key_auths?: {
-            [x: string]: number | undefined;
-        } | undefined;
-    } & {
-        weight_threshold?: number | undefined;
-        account_auths?: ({
-            [x: string]: number | undefined;
-        } & {
-            [x: string]: number | undefined;
-        } & { [K in Exclude<keyof I["account_auths"], string | number>]: never; }) | undefined;
-        key_auths?: ({
-            [x: string]: number | undefined;
-        } & {
-            [x: string]: number | undefined;
-        } & { [K_1 in Exclude<keyof I["key_auths"], string | number>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof authority>]: never; }>(base?: I | undefined): authority;
-    fromPartial<I_1 extends {
-        weight_threshold?: number | undefined;
-        account_auths?: {
-            [x: string]: number | undefined;
-        } | undefined;
-        key_auths?: {
-            [x: string]: number | undefined;
-        } | undefined;
-    } & {
-        weight_threshold?: number | undefined;
-        account_auths?: ({
-            [x: string]: number | undefined;
-        } & {
-            [x: string]: number | undefined;
-        } & { [K_3 in Exclude<keyof I_1["account_auths"], string | number>]: never; }) | undefined;
-        key_auths?: ({
-            [x: string]: number | undefined;
-        } & {
-            [x: string]: number | undefined;
-        } & { [K_4 in Exclude<keyof I_1["key_auths"], string | number>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof authority>]: never; }>(object: I_1): authority;
+    create<I extends Exact<DeepPartial<authority>, I>>(base?: I): authority;
+    fromPartial<I extends Exact<DeepPartial<authority>, I>>(object: I): authority;
 };
 export declare const authority_AccountAuthsEntry: {
     fromJSON(object: any): authority_AccountAuthsEntry;
     toJSON(message: authority_AccountAuthsEntry): unknown;
-    create<I extends {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & { [K in Exclude<keyof I, keyof authority_AccountAuthsEntry>]: never; }>(base?: I | undefined): authority_AccountAuthsEntry;
-    fromPartial<I_1 extends {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof authority_AccountAuthsEntry>]: never; }>(object: I_1): authority_AccountAuthsEntry;
+    create<I extends Exact<DeepPartial<authority_AccountAuthsEntry>, I>>(base?: I): authority_AccountAuthsEntry;
+    fromPartial<I extends Exact<DeepPartial<authority_AccountAuthsEntry>, I>>(object: I): authority_AccountAuthsEntry;
 };
 export declare const authority_KeyAuthsEntry: {
     fromJSON(object: any): authority_KeyAuthsEntry;
     toJSON(message: authority_KeyAuthsEntry): unknown;
-    create<I extends {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & { [K in Exclude<keyof I, keyof authority_KeyAuthsEntry>]: never; }>(base?: I | undefined): authority_KeyAuthsEntry;
-    fromPartial<I_1 extends {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & {
-        key?: string | undefined;
-        value?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof authority_KeyAuthsEntry>]: never; }>(object: I_1): authority_KeyAuthsEntry;
+    create<I extends Exact<DeepPartial<authority_KeyAuthsEntry>, I>>(base?: I): authority_KeyAuthsEntry;
+    fromPartial<I extends Exact<DeepPartial<authority_KeyAuthsEntry>, I>>(object: I): authority_KeyAuthsEntry;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

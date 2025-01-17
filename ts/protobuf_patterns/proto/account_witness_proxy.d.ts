@@ -25,20 +25,8 @@ export interface account_witness_proxy {
 export declare const account_witness_proxy: {
     fromJSON(object: any): account_witness_proxy;
     toJSON(message: account_witness_proxy): unknown;
-    create<I extends {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof account_witness_proxy>]: never; }>(base?: I | undefined): account_witness_proxy;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof account_witness_proxy>]: never; }>(object: I_1): account_witness_proxy;
+    create<I extends Exact<DeepPartial<account_witness_proxy>, I>>(base?: I): account_witness_proxy;
+    fromPartial<I extends Exact<DeepPartial<account_witness_proxy>, I>>(object: I): account_witness_proxy;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

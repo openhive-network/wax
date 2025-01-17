@@ -20,56 +20,8 @@ export interface escrow_approved {
 export declare const escrow_approved: {
     fromJSON(object: any): escrow_approved;
     toJSON(message: escrow_approved): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        escrow_id?: number | undefined;
-        fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        escrow_id?: number | undefined;
-        fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["fee"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof escrow_approved>]: never; }>(base?: I | undefined): escrow_approved;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        escrow_id?: number | undefined;
-        fee?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        escrow_id?: number | undefined;
-        fee?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["fee"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof escrow_approved>]: never; }>(object: I_1): escrow_approved;
+    create<I extends Exact<DeepPartial<escrow_approved>, I>>(base?: I): escrow_approved;
+    fromPartial<I extends Exact<DeepPartial<escrow_approved>, I>>(object: I): escrow_approved;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

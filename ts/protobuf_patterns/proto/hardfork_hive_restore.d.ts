@@ -20,76 +20,8 @@ export interface hardfork_hive_restore {
 export declare const hardfork_hive_restore: {
     fromJSON(object: any): hardfork_hive_restore;
     toJSON(message: hardfork_hive_restore): unknown;
-    create<I extends {
-        account?: string | undefined;
-        treasury?: string | undefined;
-        hbd_transferred?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        hive_transferred?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        account?: string | undefined;
-        treasury?: string | undefined;
-        hbd_transferred?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["hbd_transferred"], keyof asset>]: never; }) | undefined;
-        hive_transferred?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["hive_transferred"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof hardfork_hive_restore>]: never; }>(base?: I | undefined): hardfork_hive_restore;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        treasury?: string | undefined;
-        hbd_transferred?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        hive_transferred?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        account?: string | undefined;
-        treasury?: string | undefined;
-        hbd_transferred?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["hbd_transferred"], keyof asset>]: never; }) | undefined;
-        hive_transferred?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["hive_transferred"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof hardfork_hive_restore>]: never; }>(object: I_1): hardfork_hive_restore;
+    create<I extends Exact<DeepPartial<hardfork_hive_restore>, I>>(base?: I): hardfork_hive_restore;
+    fromPartial<I extends Exact<DeepPartial<hardfork_hive_restore>, I>>(object: I): hardfork_hive_restore;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

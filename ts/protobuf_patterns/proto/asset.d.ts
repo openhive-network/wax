@@ -7,24 +7,8 @@ export interface asset {
 export declare const asset: {
     fromJSON(object: any): asset;
     toJSON(message: asset): unknown;
-    create<I extends {
-        amount?: string | undefined;
-        precision?: number | undefined;
-        nai?: string | undefined;
-    } & {
-        amount?: string | undefined;
-        precision?: number | undefined;
-        nai?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof asset>]: never; }>(base?: I | undefined): asset;
-    fromPartial<I_1 extends {
-        amount?: string | undefined;
-        precision?: number | undefined;
-        nai?: string | undefined;
-    } & {
-        amount?: string | undefined;
-        precision?: number | undefined;
-        nai?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof asset>]: never; }>(object: I_1): asset;
+    create<I extends Exact<DeepPartial<asset>, I>>(base?: I): asset;
+    fromPartial<I extends Exact<DeepPartial<asset>, I>>(object: I): asset;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -7,22 +7,14 @@ export interface future_extensions {
 export declare const void_t: {
     fromJSON(_: any): void_t;
     toJSON(_: void_t): unknown;
-    create<I extends {} & {} & { [K in Exclude<keyof I, never>]: never; }>(base?: I | undefined): void_t;
-    fromPartial<I_1 extends {} & {} & { [K_1 in Exclude<keyof I_1, never>]: never; }>(_: I_1): void_t;
+    create<I extends Exact<DeepPartial<void_t>, I>>(base?: I): void_t;
+    fromPartial<I extends Exact<DeepPartial<void_t>, I>>(_: I): void_t;
 };
 export declare const future_extensions: {
     fromJSON(object: any): future_extensions;
     toJSON(message: future_extensions): unknown;
-    create<I extends {
-        void_t?: {} | undefined;
-    } & {
-        void_t?: ({} & {} & { [K in Exclude<keyof I["void_t"], never>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, "void_t">]: never; }>(base?: I | undefined): future_extensions;
-    fromPartial<I_1 extends {
-        void_t?: {} | undefined;
-    } & {
-        void_t?: ({} & {} & { [K_2 in Exclude<keyof I_1["void_t"], never>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, "void_t">]: never; }>(object: I_1): future_extensions;
+    create<I extends Exact<DeepPartial<future_extensions>, I>>(base?: I): future_extensions;
+    fromPartial<I extends Exact<DeepPartial<future_extensions>, I>>(object: I): future_extensions;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

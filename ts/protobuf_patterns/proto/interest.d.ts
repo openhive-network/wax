@@ -17,48 +17,8 @@ export interface interest {
 export declare const interest: {
     fromJSON(object: any): interest;
     toJSON(message: interest): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        interest?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        is_saved_into_hbd_balance?: boolean | undefined;
-    } & {
-        owner?: string | undefined;
-        interest?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["interest"], keyof asset>]: never; }) | undefined;
-        is_saved_into_hbd_balance?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof interest>]: never; }>(base?: I | undefined): interest;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        interest?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        is_saved_into_hbd_balance?: boolean | undefined;
-    } & {
-        owner?: string | undefined;
-        interest?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["interest"], keyof asset>]: never; }) | undefined;
-        is_saved_into_hbd_balance?: boolean | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof interest>]: never; }>(object: I_1): interest;
+    create<I extends Exact<DeepPartial<interest>, I>>(base?: I): interest;
+    fromPartial<I extends Exact<DeepPartial<interest>, I>>(object: I): interest;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

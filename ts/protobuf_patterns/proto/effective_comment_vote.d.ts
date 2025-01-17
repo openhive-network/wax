@@ -24,64 +24,8 @@ export interface effective_comment_vote {
 export declare const effective_comment_vote: {
     fromJSON(object: any): effective_comment_vote;
     toJSON(message: effective_comment_vote): unknown;
-    create<I extends {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: string | undefined;
-        rshares?: string | undefined;
-        total_vote_weight?: string | undefined;
-        pending_payout?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: string | undefined;
-        rshares?: string | undefined;
-        total_vote_weight?: string | undefined;
-        pending_payout?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["pending_payout"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof effective_comment_vote>]: never; }>(base?: I | undefined): effective_comment_vote;
-    fromPartial<I_1 extends {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: string | undefined;
-        rshares?: string | undefined;
-        total_vote_weight?: string | undefined;
-        pending_payout?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: string | undefined;
-        rshares?: string | undefined;
-        total_vote_weight?: string | undefined;
-        pending_payout?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["pending_payout"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof effective_comment_vote>]: never; }>(object: I_1): effective_comment_vote;
+    create<I extends Exact<DeepPartial<effective_comment_vote>, I>>(base?: I): effective_comment_vote;
+    fromPartial<I extends Exact<DeepPartial<effective_comment_vote>, I>>(object: I): effective_comment_vote;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

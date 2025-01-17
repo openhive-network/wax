@@ -21,56 +21,8 @@ export interface curation_reward {
 export declare const curation_reward: {
     fromJSON(object: any): curation_reward;
     toJSON(message: curation_reward): unknown;
-    create<I extends {
-        curator?: string | undefined;
-        reward?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        payout_must_be_claimed?: boolean | undefined;
-    } & {
-        curator?: string | undefined;
-        reward?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["reward"], keyof asset>]: never; }) | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        payout_must_be_claimed?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof curation_reward>]: never; }>(base?: I | undefined): curation_reward;
-    fromPartial<I_1 extends {
-        curator?: string | undefined;
-        reward?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        payout_must_be_claimed?: boolean | undefined;
-    } & {
-        curator?: string | undefined;
-        reward?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["reward"], keyof asset>]: never; }) | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        payout_must_be_claimed?: boolean | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof curation_reward>]: never; }>(object: I_1): curation_reward;
+    create<I extends Exact<DeepPartial<curation_reward>, I>>(base?: I): curation_reward;
+    fromPartial<I extends Exact<DeepPartial<curation_reward>, I>>(object: I): curation_reward;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

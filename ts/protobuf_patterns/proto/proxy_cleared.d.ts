@@ -26,20 +26,8 @@ export interface proxy_cleared {
 export declare const proxy_cleared: {
     fromJSON(object: any): proxy_cleared;
     toJSON(message: proxy_cleared): unknown;
-    create<I extends {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof proxy_cleared>]: never; }>(base?: I | undefined): proxy_cleared;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & {
-        account?: string | undefined;
-        proxy?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof proxy_cleared>]: never; }>(object: I_1): proxy_cleared;
+    create<I extends Exact<DeepPartial<proxy_cleared>, I>>(base?: I): proxy_cleared;
+    fromPartial<I extends Exact<DeepPartial<proxy_cleared>, I>>(object: I): proxy_cleared;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

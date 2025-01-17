@@ -19,76 +19,8 @@ export interface account_created {
 export declare const account_created: {
     fromJSON(object: any): account_created;
     toJSON(message: account_created): unknown;
-    create<I extends {
-        new_account_name?: string | undefined;
-        creator?: string | undefined;
-        initial_vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        initial_delegation?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        new_account_name?: string | undefined;
-        creator?: string | undefined;
-        initial_vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["initial_vesting_shares"], keyof asset>]: never; }) | undefined;
-        initial_delegation?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["initial_delegation"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof account_created>]: never; }>(base?: I | undefined): account_created;
-    fromPartial<I_1 extends {
-        new_account_name?: string | undefined;
-        creator?: string | undefined;
-        initial_vesting_shares?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        initial_delegation?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        new_account_name?: string | undefined;
-        creator?: string | undefined;
-        initial_vesting_shares?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["initial_vesting_shares"], keyof asset>]: never; }) | undefined;
-        initial_delegation?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["initial_delegation"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof account_created>]: never; }>(object: I_1): account_created;
+    create<I extends Exact<DeepPartial<account_created>, I>>(base?: I): account_created;
+    fromPartial<I extends Exact<DeepPartial<account_created>, I>>(object: I): account_created;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

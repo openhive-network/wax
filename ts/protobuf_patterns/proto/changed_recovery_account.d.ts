@@ -14,24 +14,8 @@ export interface changed_recovery_account {
 export declare const changed_recovery_account: {
     fromJSON(object: any): changed_recovery_account;
     toJSON(message: changed_recovery_account): unknown;
-    create<I extends {
-        account?: string | undefined;
-        old_recovery_account?: string | undefined;
-        new_recovery_account?: string | undefined;
-    } & {
-        account?: string | undefined;
-        old_recovery_account?: string | undefined;
-        new_recovery_account?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof changed_recovery_account>]: never; }>(base?: I | undefined): changed_recovery_account;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        old_recovery_account?: string | undefined;
-        new_recovery_account?: string | undefined;
-    } & {
-        account?: string | undefined;
-        old_recovery_account?: string | undefined;
-        new_recovery_account?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof changed_recovery_account>]: never; }>(object: I_1): changed_recovery_account;
+    create<I extends Exact<DeepPartial<changed_recovery_account>, I>>(base?: I): changed_recovery_account;
+    fromPartial<I extends Exact<DeepPartial<changed_recovery_account>, I>>(object: I): changed_recovery_account;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

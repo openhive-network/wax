@@ -34,84 +34,8 @@ export interface limit_order_create {
 export declare const limit_order_create: {
     fromJSON(object: any): limit_order_create;
     toJSON(message: limit_order_create): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-        amount_to_sell?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        min_to_receive?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        fill_or_kill?: boolean | undefined;
-        expiration?: string | undefined;
-    } & {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-        amount_to_sell?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount_to_sell"], keyof asset>]: never; }) | undefined;
-        min_to_receive?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["min_to_receive"], keyof asset>]: never; }) | undefined;
-        fill_or_kill?: boolean | undefined;
-        expiration?: string | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof limit_order_create>]: never; }>(base?: I | undefined): limit_order_create;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-        amount_to_sell?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        min_to_receive?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        fill_or_kill?: boolean | undefined;
-        expiration?: string | undefined;
-    } & {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-        amount_to_sell?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["amount_to_sell"], keyof asset>]: never; }) | undefined;
-        min_to_receive?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["min_to_receive"], keyof asset>]: never; }) | undefined;
-        fill_or_kill?: boolean | undefined;
-        expiration?: string | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof limit_order_create>]: never; }>(object: I_1): limit_order_create;
+    create<I extends Exact<DeepPartial<limit_order_create>, I>>(base?: I): limit_order_create;
+    fromPartial<I extends Exact<DeepPartial<limit_order_create>, I>>(object: I): limit_order_create;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

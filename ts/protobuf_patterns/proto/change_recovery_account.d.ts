@@ -22,44 +22,8 @@ export interface change_recovery_account {
 export declare const change_recovery_account: {
     fromJSON(object: any): change_recovery_account;
     toJSON(message: change_recovery_account): unknown;
-    create<I extends {
-        account_to_recover?: string | undefined;
-        new_recovery_account?: string | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        account_to_recover?: string | undefined;
-        new_recovery_account?: string | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_1 in Exclude<keyof I["extensions"][number], "void_t">]: never; })[] & { [K_2 in Exclude<keyof I["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I, keyof change_recovery_account>]: never; }>(base?: I | undefined): change_recovery_account;
-    fromPartial<I_1 extends {
-        account_to_recover?: string | undefined;
-        new_recovery_account?: string | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        account_to_recover?: string | undefined;
-        new_recovery_account?: string | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_4 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_5 in Exclude<keyof I_1["extensions"][number], "void_t">]: never; })[] & { [K_6 in Exclude<keyof I_1["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_7 in Exclude<keyof I_1, keyof change_recovery_account>]: never; }>(object: I_1): change_recovery_account;
+    create<I extends Exact<DeepPartial<change_recovery_account>, I>>(base?: I): change_recovery_account;
+    fromPartial<I extends Exact<DeepPartial<change_recovery_account>, I>>(object: I): change_recovery_account;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -19,20 +19,8 @@ export interface decline_voting_rights {
 export declare const decline_voting_rights: {
     fromJSON(object: any): decline_voting_rights;
     toJSON(message: decline_voting_rights): unknown;
-    create<I extends {
-        account?: string | undefined;
-        decline?: boolean | undefined;
-    } & {
-        account?: string | undefined;
-        decline?: boolean | undefined;
-    } & { [K in Exclude<keyof I, keyof decline_voting_rights>]: never; }>(base?: I | undefined): decline_voting_rights;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        decline?: boolean | undefined;
-    } & {
-        account?: string | undefined;
-        decline?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof decline_voting_rights>]: never; }>(object: I_1): decline_voting_rights;
+    create<I extends Exact<DeepPartial<decline_voting_rights>, I>>(base?: I): decline_voting_rights;
+    fromPartial<I extends Exact<DeepPartial<decline_voting_rights>, I>>(object: I): decline_voting_rights;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

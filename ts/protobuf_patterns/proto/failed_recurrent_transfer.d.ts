@@ -26,64 +26,8 @@ export interface failed_recurrent_transfer {
 export declare const failed_recurrent_transfer: {
     fromJSON(object: any): failed_recurrent_transfer;
     toJSON(message: failed_recurrent_transfer): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        consecutive_failures?: number | undefined;
-        remaining_executions?: number | undefined;
-        deleted?: boolean | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        consecutive_failures?: number | undefined;
-        remaining_executions?: number | undefined;
-        deleted?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof failed_recurrent_transfer>]: never; }>(base?: I | undefined): failed_recurrent_transfer;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        consecutive_failures?: number | undefined;
-        remaining_executions?: number | undefined;
-        deleted?: boolean | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        consecutive_failures?: number | undefined;
-        remaining_executions?: number | undefined;
-        deleted?: boolean | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof failed_recurrent_transfer>]: never; }>(object: I_1): failed_recurrent_transfer;
+    create<I extends Exact<DeepPartial<failed_recurrent_transfer>, I>>(base?: I): failed_recurrent_transfer;
+    fromPartial<I extends Exact<DeepPartial<failed_recurrent_transfer>, I>>(object: I): failed_recurrent_transfer;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

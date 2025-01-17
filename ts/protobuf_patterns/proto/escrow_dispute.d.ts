@@ -20,32 +20,8 @@ export interface escrow_dispute {
 export declare const escrow_dispute: {
     fromJSON(object: any): escrow_dispute;
     toJSON(message: escrow_dispute): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        who?: string | undefined;
-        escrow_id?: number | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        who?: string | undefined;
-        escrow_id?: number | undefined;
-    } & { [K in Exclude<keyof I, keyof escrow_dispute>]: never; }>(base?: I | undefined): escrow_dispute;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        who?: string | undefined;
-        escrow_id?: number | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        agent?: string | undefined;
-        who?: string | undefined;
-        escrow_id?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof escrow_dispute>]: never; }>(object: I_1): escrow_dispute;
+    create<I extends Exact<DeepPartial<escrow_dispute>, I>>(base?: I): escrow_dispute;
+    fromPartial<I extends Exact<DeepPartial<escrow_dispute>, I>>(object: I): escrow_dispute;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

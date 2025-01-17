@@ -33,28 +33,8 @@ export interface set_withdraw_vesting_route {
 export declare const set_withdraw_vesting_route: {
     fromJSON(object: any): set_withdraw_vesting_route;
     toJSON(message: set_withdraw_vesting_route): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        percent?: number | undefined;
-        auto_vest?: boolean | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        percent?: number | undefined;
-        auto_vest?: boolean | undefined;
-    } & { [K in Exclude<keyof I, keyof set_withdraw_vesting_route>]: never; }>(base?: I | undefined): set_withdraw_vesting_route;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        percent?: number | undefined;
-        auto_vest?: boolean | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        percent?: number | undefined;
-        auto_vest?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof set_withdraw_vesting_route>]: never; }>(object: I_1): set_withdraw_vesting_route;
+    create<I extends Exact<DeepPartial<set_withdraw_vesting_route>, I>>(base?: I): set_withdraw_vesting_route;
+    fromPartial<I extends Exact<DeepPartial<set_withdraw_vesting_route>, I>>(object: I): set_withdraw_vesting_route;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

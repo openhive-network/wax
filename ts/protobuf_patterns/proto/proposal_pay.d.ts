@@ -18,52 +18,8 @@ export interface proposal_pay {
 export declare const proposal_pay: {
     fromJSON(object: any): proposal_pay;
     toJSON(message: proposal_pay): unknown;
-    create<I extends {
-        proposal_id?: number | undefined;
-        receiver?: string | undefined;
-        payer?: string | undefined;
-        payment?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        proposal_id?: number | undefined;
-        receiver?: string | undefined;
-        payer?: string | undefined;
-        payment?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["payment"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof proposal_pay>]: never; }>(base?: I | undefined): proposal_pay;
-    fromPartial<I_1 extends {
-        proposal_id?: number | undefined;
-        receiver?: string | undefined;
-        payer?: string | undefined;
-        payment?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        proposal_id?: number | undefined;
-        receiver?: string | undefined;
-        payer?: string | undefined;
-        payment?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["payment"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof proposal_pay>]: never; }>(object: I_1): proposal_pay;
+    create<I extends Exact<DeepPartial<proposal_pay>, I>>(base?: I): proposal_pay;
+    fromPartial<I extends Exact<DeepPartial<proposal_pay>, I>>(object: I): proposal_pay;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

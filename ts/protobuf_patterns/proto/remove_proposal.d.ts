@@ -16,44 +16,8 @@ export interface remove_proposal {
 export declare const remove_proposal: {
     fromJSON(object: any): remove_proposal;
     toJSON(message: remove_proposal): unknown;
-    create<I extends {
-        proposal_owner?: string | undefined;
-        proposal_ids?: string[] | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        proposal_owner?: string | undefined;
-        proposal_ids?: (string[] & string[] & { [K in Exclude<keyof I["proposal_ids"], keyof string[]>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_1 in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_2 in Exclude<keyof I["extensions"][number], "void_t">]: never; })[] & { [K_3 in Exclude<keyof I["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_4 in Exclude<keyof I, keyof remove_proposal>]: never; }>(base?: I | undefined): remove_proposal;
-    fromPartial<I_1 extends {
-        proposal_owner?: string | undefined;
-        proposal_ids?: string[] | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        proposal_owner?: string | undefined;
-        proposal_ids?: (string[] & string[] & { [K_5 in Exclude<keyof I_1["proposal_ids"], keyof string[]>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_6 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_7 in Exclude<keyof I_1["extensions"][number], "void_t">]: never; })[] & { [K_8 in Exclude<keyof I_1["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_9 in Exclude<keyof I_1, keyof remove_proposal>]: never; }>(object: I_1): remove_proposal;
+    create<I extends Exact<DeepPartial<remove_proposal>, I>>(base?: I): remove_proposal;
+    fromPartial<I extends Exact<DeepPartial<remove_proposal>, I>>(object: I): remove_proposal;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

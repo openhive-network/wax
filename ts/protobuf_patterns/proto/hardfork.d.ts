@@ -10,16 +10,8 @@ export interface hardfork {
 export declare const hardfork: {
     fromJSON(object: any): hardfork;
     toJSON(message: hardfork): unknown;
-    create<I extends {
-        hardfork_id?: number | undefined;
-    } & {
-        hardfork_id?: number | undefined;
-    } & { [K in Exclude<keyof I, "hardfork_id">]: never; }>(base?: I | undefined): hardfork;
-    fromPartial<I_1 extends {
-        hardfork_id?: number | undefined;
-    } & {
-        hardfork_id?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "hardfork_id">]: never; }>(object: I_1): hardfork;
+    create<I extends Exact<DeepPartial<hardfork>, I>>(base?: I): hardfork;
+    fromPartial<I extends Exact<DeepPartial<hardfork>, I>>(object: I): hardfork;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

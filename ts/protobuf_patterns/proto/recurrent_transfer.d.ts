@@ -60,162 +60,20 @@ export interface recurrent_transfer {
 export declare const recurrent_transfer_pair_id: {
     fromJSON(object: any): recurrent_transfer_pair_id;
     toJSON(message: recurrent_transfer_pair_id): unknown;
-    create<I extends {
-        pair_id?: number | undefined;
-    } & {
-        pair_id?: number | undefined;
-    } & { [K in Exclude<keyof I, "pair_id">]: never; }>(base?: I | undefined): recurrent_transfer_pair_id;
-    fromPartial<I_1 extends {
-        pair_id?: number | undefined;
-    } & {
-        pair_id?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "pair_id">]: never; }>(object: I_1): recurrent_transfer_pair_id;
+    create<I extends Exact<DeepPartial<recurrent_transfer_pair_id>, I>>(base?: I): recurrent_transfer_pair_id;
+    fromPartial<I extends Exact<DeepPartial<recurrent_transfer_pair_id>, I>>(object: I): recurrent_transfer_pair_id;
 };
 export declare const recurrent_transfer_extension: {
     fromJSON(object: any): recurrent_transfer_extension;
     toJSON(message: recurrent_transfer_extension): unknown;
-    create<I extends {
-        void_t?: {} | undefined;
-        recurrent_transfer_pair_id?: {
-            pair_id?: number | undefined;
-        } | undefined;
-    } & {
-        void_t?: ({} & {} & { [K in Exclude<keyof I["void_t"], never>]: never; }) | undefined;
-        recurrent_transfer_pair_id?: ({
-            pair_id?: number | undefined;
-        } & {
-            pair_id?: number | undefined;
-        } & { [K_1 in Exclude<keyof I["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof recurrent_transfer_extension>]: never; }>(base?: I | undefined): recurrent_transfer_extension;
-    fromPartial<I_1 extends {
-        void_t?: {} | undefined;
-        recurrent_transfer_pair_id?: {
-            pair_id?: number | undefined;
-        } | undefined;
-    } & {
-        void_t?: ({} & {} & { [K_3 in Exclude<keyof I_1["void_t"], never>]: never; }) | undefined;
-        recurrent_transfer_pair_id?: ({
-            pair_id?: number | undefined;
-        } & {
-            pair_id?: number | undefined;
-        } & { [K_4 in Exclude<keyof I_1["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof recurrent_transfer_extension>]: never; }>(object: I_1): recurrent_transfer_extension;
+    create<I extends Exact<DeepPartial<recurrent_transfer_extension>, I>>(base?: I): recurrent_transfer_extension;
+    fromPartial<I extends Exact<DeepPartial<recurrent_transfer_extension>, I>>(object: I): recurrent_transfer_extension;
 };
 export declare const recurrent_transfer: {
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        recurrence?: number | undefined;
-        executions?: number | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[] | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        recurrence?: number | undefined;
-        executions?: number | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_1 in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
-            recurrent_transfer_pair_id?: ({
-                pair_id?: number | undefined;
-            } & {
-                pair_id?: number | undefined;
-            } & { [K_2 in Exclude<keyof I["extensions"][number]["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-        } & { [K_3 in Exclude<keyof I["extensions"][number], keyof recurrent_transfer_extension>]: never; })[] & { [K_4 in Exclude<keyof I["extensions"], keyof {
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I, keyof recurrent_transfer>]: never; }>(base?: I | undefined): recurrent_transfer;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        recurrence?: number | undefined;
-        executions?: number | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[] | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_6 in Exclude<keyof I_1["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        recurrence?: number | undefined;
-        executions?: number | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_7 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
-            recurrent_transfer_pair_id?: ({
-                pair_id?: number | undefined;
-            } & {
-                pair_id?: number | undefined;
-            } & { [K_8 in Exclude<keyof I_1["extensions"][number]["recurrent_transfer_pair_id"], "pair_id">]: never; }) | undefined;
-        } & { [K_9 in Exclude<keyof I_1["extensions"][number], keyof recurrent_transfer_extension>]: never; })[] & { [K_10 in Exclude<keyof I_1["extensions"], keyof {
-            void_t?: {} | undefined;
-            recurrent_transfer_pair_id?: {
-                pair_id?: number | undefined;
-            } | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_11 in Exclude<keyof I_1, keyof recurrent_transfer>]: never; }>(object: I_1): recurrent_transfer;
+    create<I extends Exact<DeepPartial<recurrent_transfer>, I>>(base?: I): recurrent_transfer;
+    fromPartial<I extends Exact<DeepPartial<recurrent_transfer>, I>>(object: I): recurrent_transfer;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -11,16 +11,8 @@ export interface expired_account_notification {
 export declare const expired_account_notification: {
     fromJSON(object: any): expired_account_notification;
     toJSON(message: expired_account_notification): unknown;
-    create<I extends {
-        account?: string | undefined;
-    } & {
-        account?: string | undefined;
-    } & { [K in Exclude<keyof I, "account">]: never; }>(base?: I | undefined): expired_account_notification;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-    } & {
-        account?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "account">]: never; }>(object: I_1): expired_account_notification;
+    create<I extends Exact<DeepPartial<expired_account_notification>, I>>(base?: I): expired_account_notification;
+    fromPartial<I extends Exact<DeepPartial<expired_account_notification>, I>>(object: I): expired_account_notification;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

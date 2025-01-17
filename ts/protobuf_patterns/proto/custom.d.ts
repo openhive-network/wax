@@ -16,24 +16,8 @@ export interface custom {
 export declare const custom: {
     fromJSON(object: any): custom;
     toJSON(message: custom): unknown;
-    create<I extends {
-        required_auths?: string[] | undefined;
-        id?: number | undefined;
-        data?: string | undefined;
-    } & {
-        required_auths?: (string[] & string[] & { [K in Exclude<keyof I["required_auths"], keyof string[]>]: never; }) | undefined;
-        id?: number | undefined;
-        data?: string | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof custom>]: never; }>(base?: I | undefined): custom;
-    fromPartial<I_1 extends {
-        required_auths?: string[] | undefined;
-        id?: number | undefined;
-        data?: string | undefined;
-    } & {
-        required_auths?: (string[] & string[] & { [K_2 in Exclude<keyof I_1["required_auths"], keyof string[]>]: never; }) | undefined;
-        id?: number | undefined;
-        data?: string | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof custom>]: never; }>(object: I_1): custom;
+    create<I extends Exact<DeepPartial<custom>, I>>(base?: I): custom;
+    fromPartial<I extends Exact<DeepPartial<custom>, I>>(object: I): custom;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

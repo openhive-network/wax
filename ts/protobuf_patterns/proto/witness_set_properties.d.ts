@@ -29,74 +29,14 @@ export interface witness_set_properties_PropsEntry {
 export declare const witness_set_properties: {
     fromJSON(object: any): witness_set_properties;
     toJSON(message: witness_set_properties): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        props?: {
-            [x: string]: string | undefined;
-        } | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        owner?: string | undefined;
-        props?: ({
-            [x: string]: string | undefined;
-        } & {
-            [x: string]: string | undefined;
-        } & { [K in Exclude<keyof I["props"], string | number>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_1 in Exclude<keyof I["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_2 in Exclude<keyof I["extensions"][number], "void_t">]: never; })[] & { [K_3 in Exclude<keyof I["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_4 in Exclude<keyof I, keyof witness_set_properties>]: never; }>(base?: I | undefined): witness_set_properties;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        props?: {
-            [x: string]: string | undefined;
-        } | undefined;
-        extensions?: {
-            void_t?: {} | undefined;
-        }[] | undefined;
-    } & {
-        owner?: string | undefined;
-        props?: ({
-            [x: string]: string | undefined;
-        } & {
-            [x: string]: string | undefined;
-        } & { [K_5 in Exclude<keyof I_1["props"], string | number>]: never; }) | undefined;
-        extensions?: ({
-            void_t?: {} | undefined;
-        }[] & ({
-            void_t?: {} | undefined;
-        } & {
-            void_t?: ({} & {} & { [K_6 in Exclude<keyof I_1["extensions"][number]["void_t"], never>]: never; }) | undefined;
-        } & { [K_7 in Exclude<keyof I_1["extensions"][number], "void_t">]: never; })[] & { [K_8 in Exclude<keyof I_1["extensions"], keyof {
-            void_t?: {} | undefined;
-        }[]>]: never; }) | undefined;
-    } & { [K_9 in Exclude<keyof I_1, keyof witness_set_properties>]: never; }>(object: I_1): witness_set_properties;
+    create<I extends Exact<DeepPartial<witness_set_properties>, I>>(base?: I): witness_set_properties;
+    fromPartial<I extends Exact<DeepPartial<witness_set_properties>, I>>(object: I): witness_set_properties;
 };
 export declare const witness_set_properties_PropsEntry: {
     fromJSON(object: any): witness_set_properties_PropsEntry;
     toJSON(message: witness_set_properties_PropsEntry): unknown;
-    create<I extends {
-        key?: string | undefined;
-        value?: string | undefined;
-    } & {
-        key?: string | undefined;
-        value?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof witness_set_properties_PropsEntry>]: never; }>(base?: I | undefined): witness_set_properties_PropsEntry;
-    fromPartial<I_1 extends {
-        key?: string | undefined;
-        value?: string | undefined;
-    } & {
-        key?: string | undefined;
-        value?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof witness_set_properties_PropsEntry>]: never; }>(object: I_1): witness_set_properties_PropsEntry;
+    create<I extends Exact<DeepPartial<witness_set_properties_PropsEntry>, I>>(base?: I): witness_set_properties_PropsEntry;
+    fromPartial<I extends Exact<DeepPartial<witness_set_properties_PropsEntry>, I>>(object: I): witness_set_properties_PropsEntry;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -12,16 +12,8 @@ export interface shutdown_witness {
 export declare const shutdown_witness: {
     fromJSON(object: any): shutdown_witness;
     toJSON(message: shutdown_witness): unknown;
-    create<I extends {
-        owner?: string | undefined;
-    } & {
-        owner?: string | undefined;
-    } & { [K in Exclude<keyof I, "owner">]: never; }>(base?: I | undefined): shutdown_witness;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-    } & {
-        owner?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "owner">]: never; }>(object: I_1): shutdown_witness;
+    create<I extends Exact<DeepPartial<shutdown_witness>, I>>(base?: I): shutdown_witness;
+    fromPartial<I extends Exact<DeepPartial<shutdown_witness>, I>>(object: I): shutdown_witness;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -58,40 +58,8 @@ export interface comment {
 export declare const comment: {
     fromJSON(object: any): comment;
     toJSON(message: comment): unknown;
-    create<I extends {
-        parent_author?: string | undefined;
-        parent_permlink?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        title?: string | undefined;
-        body?: string | undefined;
-        json_metadata?: string | undefined;
-    } & {
-        parent_author?: string | undefined;
-        parent_permlink?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        title?: string | undefined;
-        body?: string | undefined;
-        json_metadata?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof comment>]: never; }>(base?: I | undefined): comment;
-    fromPartial<I_1 extends {
-        parent_author?: string | undefined;
-        parent_permlink?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        title?: string | undefined;
-        body?: string | undefined;
-        json_metadata?: string | undefined;
-    } & {
-        parent_author?: string | undefined;
-        parent_permlink?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        title?: string | undefined;
-        body?: string | undefined;
-        json_metadata?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof comment>]: never; }>(object: I_1): comment;
+    create<I extends Exact<DeepPartial<comment>, I>>(base?: I): comment;
+    fromPartial<I extends Exact<DeepPartial<comment>, I>>(object: I): comment;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

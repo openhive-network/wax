@@ -17,72 +17,8 @@ export interface vesting_shares_split {
 export declare const vesting_shares_split: {
     fromJSON(object: any): vesting_shares_split;
     toJSON(message: vesting_shares_split): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        vesting_shares_before_split?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        vesting_shares_after_split?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        vesting_shares_before_split?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["vesting_shares_before_split"], keyof asset>]: never; }) | undefined;
-        vesting_shares_after_split?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["vesting_shares_after_split"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof vesting_shares_split>]: never; }>(base?: I | undefined): vesting_shares_split;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        vesting_shares_before_split?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        vesting_shares_after_split?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        vesting_shares_before_split?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["vesting_shares_before_split"], keyof asset>]: never; }) | undefined;
-        vesting_shares_after_split?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["vesting_shares_after_split"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof vesting_shares_split>]: never; }>(object: I_1): vesting_shares_split;
+    create<I extends Exact<DeepPartial<vesting_shares_split>, I>>(base?: I): vesting_shares_split;
+    fromPartial<I extends Exact<DeepPartial<vesting_shares_split>, I>>(object: I): vesting_shares_split;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

@@ -18,48 +18,8 @@ export interface limit_order_cancelled {
 export declare const limit_order_cancelled: {
     fromJSON(object: any): limit_order_cancelled;
     toJSON(message: limit_order_cancelled): unknown;
-    create<I extends {
-        seller?: string | undefined;
-        orderid?: number | undefined;
-        amount_back?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        seller?: string | undefined;
-        orderid?: number | undefined;
-        amount_back?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount_back"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof limit_order_cancelled>]: never; }>(base?: I | undefined): limit_order_cancelled;
-    fromPartial<I_1 extends {
-        seller?: string | undefined;
-        orderid?: number | undefined;
-        amount_back?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        seller?: string | undefined;
-        orderid?: number | undefined;
-        amount_back?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["amount_back"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof limit_order_cancelled>]: never; }>(object: I_1): limit_order_cancelled;
+    create<I extends Exact<DeepPartial<limit_order_cancelled>, I>>(base?: I): limit_order_cancelled;
+    fromPartial<I extends Exact<DeepPartial<limit_order_cancelled>, I>>(object: I): limit_order_cancelled;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

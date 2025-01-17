@@ -23,56 +23,8 @@ export interface fill_recurrent_transfer {
 export declare const fill_recurrent_transfer: {
     fromJSON(object: any): fill_recurrent_transfer;
     toJSON(message: fill_recurrent_transfer): unknown;
-    create<I extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        remaining_executions?: number | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        remaining_executions?: number | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof fill_recurrent_transfer>]: never; }>(base?: I | undefined): fill_recurrent_transfer;
-    fromPartial<I_1 extends {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        memo?: string | undefined;
-        remaining_executions?: number | undefined;
-    } & {
-        from_account?: string | undefined;
-        to_account?: string | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["amount"], keyof asset>]: never; }) | undefined;
-        memo?: string | undefined;
-        remaining_executions?: number | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof fill_recurrent_transfer>]: never; }>(object: I_1): fill_recurrent_transfer;
+    create<I extends Exact<DeepPartial<fill_recurrent_transfer>, I>>(base?: I): fill_recurrent_transfer;
+    fromPartial<I extends Exact<DeepPartial<fill_recurrent_transfer>, I>>(object: I): fill_recurrent_transfer;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

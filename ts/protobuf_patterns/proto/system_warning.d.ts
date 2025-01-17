@@ -20,16 +20,8 @@ export interface system_warning {
 export declare const system_warning: {
     fromJSON(object: any): system_warning;
     toJSON(message: system_warning): unknown;
-    create<I extends {
-        message?: string | undefined;
-    } & {
-        message?: string | undefined;
-    } & { [K in Exclude<keyof I, "message">]: never; }>(base?: I | undefined): system_warning;
-    fromPartial<I_1 extends {
-        message?: string | undefined;
-    } & {
-        message?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, "message">]: never; }>(object: I_1): system_warning;
+    create<I extends Exact<DeepPartial<system_warning>, I>>(base?: I): system_warning;
+    fromPartial<I extends Exact<DeepPartial<system_warning>, I>>(object: I): system_warning;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

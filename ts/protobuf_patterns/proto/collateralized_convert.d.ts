@@ -19,48 +19,8 @@ export interface collateralized_convert {
 export declare const collateralized_convert: {
     fromJSON(object: any): collateralized_convert;
     toJSON(message: collateralized_convert): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["amount"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof collateralized_convert>]: never; }>(base?: I | undefined): collateralized_convert;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        amount?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        amount?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["amount"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof collateralized_convert>]: never; }>(object: I_1): collateralized_convert;
+    create<I extends Exact<DeepPartial<collateralized_convert>, I>>(base?: I): collateralized_convert;
+    fromPartial<I extends Exact<DeepPartial<collateralized_convert>, I>>(object: I): collateralized_convert;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

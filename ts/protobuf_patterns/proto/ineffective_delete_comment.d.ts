@@ -14,20 +14,8 @@ export interface ineffective_delete_comment {
 export declare const ineffective_delete_comment: {
     fromJSON(object: any): ineffective_delete_comment;
     toJSON(message: ineffective_delete_comment): unknown;
-    create<I extends {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof ineffective_delete_comment>]: never; }>(base?: I | undefined): ineffective_delete_comment;
-    fromPartial<I_1 extends {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof ineffective_delete_comment>]: never; }>(object: I_1): ineffective_delete_comment;
+    create<I extends Exact<DeepPartial<ineffective_delete_comment>, I>>(base?: I): ineffective_delete_comment;
+    fromPartial<I extends Exact<DeepPartial<ineffective_delete_comment>, I>>(object: I): ineffective_delete_comment;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

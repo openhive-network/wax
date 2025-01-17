@@ -54,28 +54,8 @@ export interface vote {
 export declare const vote: {
     fromJSON(object: any): vote;
     toJSON(message: vote): unknown;
-    create<I extends {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: number | undefined;
-    } & {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: number | undefined;
-    } & { [K in Exclude<keyof I, keyof vote>]: never; }>(base?: I | undefined): vote;
-    fromPartial<I_1 extends {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: number | undefined;
-    } & {
-        voter?: string | undefined;
-        author?: string | undefined;
-        permlink?: string | undefined;
-        weight?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof vote>]: never; }>(object: I_1): vote;
+    create<I extends Exact<DeepPartial<vote>, I>>(base?: I): vote;
+    fromPartial<I extends Exact<DeepPartial<vote>, I>>(object: I): vote;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

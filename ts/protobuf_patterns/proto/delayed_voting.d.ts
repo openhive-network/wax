@@ -14,20 +14,8 @@ export interface delayed_voting {
 export declare const delayed_voting: {
     fromJSON(object: any): delayed_voting;
     toJSON(message: delayed_voting): unknown;
-    create<I extends {
-        voter?: string | undefined;
-        votes?: string | undefined;
-    } & {
-        voter?: string | undefined;
-        votes?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof delayed_voting>]: never; }>(base?: I | undefined): delayed_voting;
-    fromPartial<I_1 extends {
-        voter?: string | undefined;
-        votes?: string | undefined;
-    } & {
-        voter?: string | undefined;
-        votes?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof delayed_voting>]: never; }>(object: I_1): delayed_voting;
+    create<I extends Exact<DeepPartial<delayed_voting>, I>>(base?: I): delayed_voting;
+    fromPartial<I extends Exact<DeepPartial<delayed_voting>, I>>(object: I): delayed_voting;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

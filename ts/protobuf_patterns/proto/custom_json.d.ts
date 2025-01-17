@@ -25,28 +25,8 @@ export interface custom_json {
 export declare const custom_json: {
     fromJSON(object: any): custom_json;
     toJSON(message: custom_json): unknown;
-    create<I extends {
-        required_auths?: string[] | undefined;
-        required_posting_auths?: string[] | undefined;
-        id?: string | undefined;
-        json?: string | undefined;
-    } & {
-        required_auths?: (string[] & string[] & { [K in Exclude<keyof I["required_auths"], keyof string[]>]: never; }) | undefined;
-        required_posting_auths?: (string[] & string[] & { [K_1 in Exclude<keyof I["required_posting_auths"], keyof string[]>]: never; }) | undefined;
-        id?: string | undefined;
-        json?: string | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof custom_json>]: never; }>(base?: I | undefined): custom_json;
-    fromPartial<I_1 extends {
-        required_auths?: string[] | undefined;
-        required_posting_auths?: string[] | undefined;
-        id?: string | undefined;
-        json?: string | undefined;
-    } & {
-        required_auths?: (string[] & string[] & { [K_3 in Exclude<keyof I_1["required_auths"], keyof string[]>]: never; }) | undefined;
-        required_posting_auths?: (string[] & string[] & { [K_4 in Exclude<keyof I_1["required_posting_auths"], keyof string[]>]: never; }) | undefined;
-        id?: string | undefined;
-        json?: string | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof custom_json>]: never; }>(object: I_1): custom_json;
+    create<I extends Exact<DeepPartial<custom_json>, I>>(base?: I): custom_json;
+    fromPartial<I extends Exact<DeepPartial<custom_json>, I>>(object: I): custom_json;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

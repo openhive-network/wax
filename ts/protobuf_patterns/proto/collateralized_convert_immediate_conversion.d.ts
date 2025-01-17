@@ -16,48 +16,8 @@ export interface collateralized_convert_immediate_conversion {
 export declare const collateralized_convert_immediate_conversion: {
     fromJSON(object: any): collateralized_convert_immediate_conversion;
     toJSON(message: collateralized_convert_immediate_conversion): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        hbd_out?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        hbd_out?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["hbd_out"], keyof asset>]: never; }) | undefined;
-    } & { [K_1 in Exclude<keyof I, keyof collateralized_convert_immediate_conversion>]: never; }>(base?: I | undefined): collateralized_convert_immediate_conversion;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        hbd_out?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        owner?: string | undefined;
-        requestid?: number | undefined;
-        hbd_out?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_2 in Exclude<keyof I_1["hbd_out"], keyof asset>]: never; }) | undefined;
-    } & { [K_3 in Exclude<keyof I_1, keyof collateralized_convert_immediate_conversion>]: never; }>(object: I_1): collateralized_convert_immediate_conversion;
+    create<I extends Exact<DeepPartial<collateralized_convert_immediate_conversion>, I>>(base?: I): collateralized_convert_immediate_conversion;
+    fromPartial<I extends Exact<DeepPartial<collateralized_convert_immediate_conversion>, I>>(object: I): collateralized_convert_immediate_conversion;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

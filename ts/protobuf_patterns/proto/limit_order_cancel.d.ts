@@ -17,20 +17,8 @@ export interface limit_order_cancel {
 export declare const limit_order_cancel: {
     fromJSON(object: any): limit_order_cancel;
     toJSON(message: limit_order_cancel): unknown;
-    create<I extends {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-    } & {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-    } & { [K in Exclude<keyof I, keyof limit_order_cancel>]: never; }>(base?: I | undefined): limit_order_cancel;
-    fromPartial<I_1 extends {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-    } & {
-        owner?: string | undefined;
-        orderid?: number | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof limit_order_cancel>]: never; }>(object: I_1): limit_order_cancel;
+    create<I extends Exact<DeepPartial<limit_order_cancel>, I>>(base?: I): limit_order_cancel;
+    fromPartial<I extends Exact<DeepPartial<limit_order_cancel>, I>>(object: I): limit_order_cancel;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

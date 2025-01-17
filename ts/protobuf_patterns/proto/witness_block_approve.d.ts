@@ -15,20 +15,8 @@ export interface witness_block_approve {
 export declare const witness_block_approve: {
     fromJSON(object: any): witness_block_approve;
     toJSON(message: witness_block_approve): unknown;
-    create<I extends {
-        witness?: string | undefined;
-        block_id?: string | undefined;
-    } & {
-        witness?: string | undefined;
-        block_id?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof witness_block_approve>]: never; }>(base?: I | undefined): witness_block_approve;
-    fromPartial<I_1 extends {
-        witness?: string | undefined;
-        block_id?: string | undefined;
-    } & {
-        witness?: string | undefined;
-        block_id?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof witness_block_approve>]: never; }>(object: I_1): witness_block_approve;
+    create<I extends Exact<DeepPartial<witness_block_approve>, I>>(base?: I): witness_block_approve;
+    fromPartial<I extends Exact<DeepPartial<witness_block_approve>, I>>(object: I): witness_block_approve;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

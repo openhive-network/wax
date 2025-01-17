@@ -13,20 +13,8 @@ export interface comment_payout_update {
 export declare const comment_payout_update: {
     fromJSON(object: any): comment_payout_update;
     toJSON(message: comment_payout_update): unknown;
-    create<I extends {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & { [K in Exclude<keyof I, keyof comment_payout_update>]: never; }>(base?: I | undefined): comment_payout_update;
-    fromPartial<I_1 extends {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & {
-        author?: string | undefined;
-        permlink?: string | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof comment_payout_update>]: never; }>(object: I_1): comment_payout_update;
+    create<I extends Exact<DeepPartial<comment_payout_update>, I>>(base?: I): comment_payout_update;
+    fromPartial<I extends Exact<DeepPartial<comment_payout_update>, I>>(object: I): comment_payout_update;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

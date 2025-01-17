@@ -22,84 +22,8 @@ export interface fill_order {
 export declare const fill_order: {
     fromJSON(object: any): fill_order;
     toJSON(message: fill_order): unknown;
-    create<I extends {
-        current_owner?: string | undefined;
-        current_orderid?: number | undefined;
-        current_pays?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        open_owner?: string | undefined;
-        open_orderid?: number | undefined;
-        open_pays?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        current_owner?: string | undefined;
-        current_orderid?: number | undefined;
-        current_pays?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["current_pays"], keyof asset>]: never; }) | undefined;
-        open_owner?: string | undefined;
-        open_orderid?: number | undefined;
-        open_pays?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["open_pays"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof fill_order>]: never; }>(base?: I | undefined): fill_order;
-    fromPartial<I_1 extends {
-        current_owner?: string | undefined;
-        current_orderid?: number | undefined;
-        current_pays?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        open_owner?: string | undefined;
-        open_orderid?: number | undefined;
-        open_pays?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        current_owner?: string | undefined;
-        current_orderid?: number | undefined;
-        current_pays?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["current_pays"], keyof asset>]: never; }) | undefined;
-        open_owner?: string | undefined;
-        open_orderid?: number | undefined;
-        open_pays?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["open_pays"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof fill_order>]: never; }>(object: I_1): fill_order;
+    create<I extends Exact<DeepPartial<fill_order>, I>>(base?: I): fill_order;
+    fromPartial<I extends Exact<DeepPartial<fill_order>, I>>(object: I): fill_order;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

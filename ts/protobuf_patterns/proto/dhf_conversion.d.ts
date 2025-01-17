@@ -17,72 +17,8 @@ export interface dhf_conversion {
 export declare const dhf_conversion: {
     fromJSON(object: any): dhf_conversion;
     toJSON(message: dhf_conversion): unknown;
-    create<I extends {
-        treasury?: string | undefined;
-        hive_amount_in?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        hbd_amount_out?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        treasury?: string | undefined;
-        hive_amount_in?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K in Exclude<keyof I["hive_amount_in"], keyof asset>]: never; }) | undefined;
-        hbd_amount_out?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_1 in Exclude<keyof I["hbd_amount_out"], keyof asset>]: never; }) | undefined;
-    } & { [K_2 in Exclude<keyof I, keyof dhf_conversion>]: never; }>(base?: I | undefined): dhf_conversion;
-    fromPartial<I_1 extends {
-        treasury?: string | undefined;
-        hive_amount_in?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-        hbd_amount_out?: {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } | undefined;
-    } & {
-        treasury?: string | undefined;
-        hive_amount_in?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_3 in Exclude<keyof I_1["hive_amount_in"], keyof asset>]: never; }) | undefined;
-        hbd_amount_out?: ({
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & {
-            amount?: string | undefined;
-            precision?: number | undefined;
-            nai?: string | undefined;
-        } & { [K_4 in Exclude<keyof I_1["hbd_amount_out"], keyof asset>]: never; }) | undefined;
-    } & { [K_5 in Exclude<keyof I_1, keyof dhf_conversion>]: never; }>(object: I_1): dhf_conversion;
+    create<I extends Exact<DeepPartial<dhf_conversion>, I>>(base?: I): dhf_conversion;
+    fromPartial<I extends Exact<DeepPartial<dhf_conversion>, I>>(object: I): dhf_conversion;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {

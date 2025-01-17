@@ -23,24 +23,8 @@ export interface account_witness_vote {
 export declare const account_witness_vote: {
     fromJSON(object: any): account_witness_vote;
     toJSON(message: account_witness_vote): unknown;
-    create<I extends {
-        account?: string | undefined;
-        witness?: string | undefined;
-        approve?: boolean | undefined;
-    } & {
-        account?: string | undefined;
-        witness?: string | undefined;
-        approve?: boolean | undefined;
-    } & { [K in Exclude<keyof I, keyof account_witness_vote>]: never; }>(base?: I | undefined): account_witness_vote;
-    fromPartial<I_1 extends {
-        account?: string | undefined;
-        witness?: string | undefined;
-        approve?: boolean | undefined;
-    } & {
-        account?: string | undefined;
-        witness?: string | undefined;
-        approve?: boolean | undefined;
-    } & { [K_1 in Exclude<keyof I_1, keyof account_witness_vote>]: never; }>(object: I_1): account_witness_vote;
+    create<I extends Exact<DeepPartial<account_witness_vote>, I>>(base?: I): account_witness_vote;
+    fromPartial<I extends Exact<DeepPartial<account_witness_vote>, I>>(object: I): account_witness_vote;
 };
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>> : T extends {} ? {
