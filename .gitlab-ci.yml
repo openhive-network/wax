@@ -15,7 +15,8 @@ include:
 variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
-  GIT_SUBMODULE_STRATEGY: recursive
+  # only build steps needs to have access to the hive submodule
+  GIT_SUBMODULE_STRATEGY: none
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-2
   CI_BASE_IMAGE_TAG: "@sha256:128bfa65ab2725367fd024a9cd4ac78ee04e3d486af53a4499ab15f7e8264d14"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
@@ -39,6 +40,7 @@ build_wheel:
   extends: .build_wheel_template
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    GIT_SUBMODULE_STRATEGY: recursive
   stage: build
   script:
     - ./python/scripts/build_wax.sh 1
@@ -69,6 +71,7 @@ wax_wasm_proto_tsc_generation:
     DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
     NPM_PACKAGE_SCOPE: "@hiveio"
     NPM_PACKAGE_NAME: "wax"
+    GIT_SUBMODULE_STRATEGY: recursive
 
   artifacts:
     paths:
