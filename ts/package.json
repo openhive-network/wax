@@ -10,7 +10,7 @@
   "scripts": {
     "prebuild": "cd ../ && husky install ts/.husky && cd ./ts && ./scripts/compile_proto_ts.sh && rimraf wasm/dist",
     "build": "wasm/build_wasm_wax.sh && tsc",
-    "postbuild": "rollup -c",
+    "postbuild": "rollup -c && bundlesize",
     "build:test": "tsc --project wasm/configs/tsconfig.tests.json",
     "pretest": "playwright install chromium",
     "test": "unset CI && playwright test --workers 4 --max-failures 1 --project=wax_testsuite --project=healthchecker_tests --project=wax_testsuite_custom_chain_options --project=wax_regression_tests --project=wax_operation_factories --project=wax_encrypted_operations --project=wax_non_encrypted_operations --project=wax_utils --project=wax_custom_chain_online_tx --project=wax_mock_tests",
@@ -43,6 +43,7 @@
     "@types/express": "^5.0.0",
     "@types/express-http-proxy": "^1.6.6",
     "@types/node": "^20.10.6",
+    "bundlesize": "^0.18.2",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-http-proxy": "^2.1.1",
@@ -51,7 +52,7 @@
     "npm-run-all": "^4.1.5",
     "playwright": "^1.39.0",
     "protobufjs": "^7.2.5",
-    "rimraf": "^5.0.1",
+    "rimraf": "^6.0.1",
     "rollup": "^4.22.4",
     "rollup-plugin-dts": "^6.1.1",
     "ts-proto": "^1.172.0",
@@ -69,6 +70,18 @@
     "long": "^5.2.3",
     "reflect-metadata": "^0.1.13"
   },
+  "bundlesize": [
+    {
+      "path": "./wasm/dist/bundle/index.js",
+      "maxSize": "8400 kB",
+      "compression": "none"
+    },
+    {
+      "path": "./wasm/dist/bundle/index.d.ts",
+      "maxSize": "1650 kB",
+      "compression": "none"
+    }
+  ],
   "license": "SEE LICENSE IN LICENSE.md",
   "keywords": [
     "blockchain",
