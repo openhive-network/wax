@@ -9,7 +9,8 @@
   "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
   "scripts": {
     "prebuild": "cd ../ && husky install ts/.husky && cd ./ts && ./scripts/compile_proto_ts.sh && rimraf wasm/dist",
-    "build": "wasm/build_wasm_wax.sh && tsc",
+    "rebuildall": "rimraf wasm/dist && rimraf wasm/build_wasm && wasm/build_wasm_wax.sh && tsc && ls -la ./wasm/build_wasm/wax.common.wasm",
+    "build": "wasm/build_wasm_wax.sh && tsc && ls -la ./wasm/build_wasm/wax.common.wasm",
     "postbuild": "rollup -c && bundlesize",
     "build:test": "tsc --project wasm/configs/tsconfig.tests.json",
     "pretest": "playwright install chromium",
@@ -54,6 +55,7 @@
     "protobufjs": "^7.2.5",
     "rimraf": "^6.0.1",
     "rollup": "^4.22.4",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-dts": "^6.1.1",
     "test@1.49.1": "link:playwright/test@1.49.1",
     "ts-proto": "^1.172.0",
