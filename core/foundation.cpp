@@ -2,9 +2,11 @@
 
 #include "core/types.hpp"
 #include "core/utils.hpp"
-#include "fc/crypto/elliptic.hpp"
+
 #include <fc/reflect/reflect.hpp>
 #include <fc/io/json.hpp>
+#include <fc/crypto/elliptic.hpp>
+#include <fc/crypto/hex.hpp>
 
 #include <boost/lexical_cast.hpp>
 

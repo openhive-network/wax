@@ -20,6 +20,8 @@
 #include <fc/bitutil.hpp>
 #include <fc/container/flat.hpp>
 
+#include <fc/crypto/hex.hpp>
+
 #include <algorithm>
 
 namespace cpp {

@@ -5,6 +5,7 @@
 
 #include <fc/optional.hpp>
 #include <fc/static_variant.hpp>
+#include <fc/crypto/hex.hpp>
 
 #include <string>
 
