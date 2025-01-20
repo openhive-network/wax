@@ -34,10 +34,18 @@ add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
-TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall )
+TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall
+  -Oz
+  #-gseparate-dwarf
+  #-gsplit-dwarf
+  )
 TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
+  -Oz
   -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
   -sEXCEPTION_STACK_TRACES=1
+  -sELIMINATE_DUPLICATE_FUNCTIONS=1
+  #-gsource-map
+  #-gseparate-dwarf
  )
 
 file(GLOB HEADERS "core/*.hpp")
@@ -78,17 +86,25 @@ function( DEFINE_WAX_TARGET_FOR env )
 
       target_link_options( ${exec_wasm_name} PUBLIC
         -sMODULARIZE=1
-        -sSINGLE_FILE=1
+        -sSINGLE_FILE=0
         -sEXPORT_ES6=1
+        -sUSE_ES6_IMPORT_META=0
         -sINITIAL_MEMORY=67108864
+        --emit-symbol-map
         # Decreases runtime performance for 50kB decrease in packed .tgz code size
         # --closure 1
         # -Os
       )
       set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
+
       INSTALL( TARGETS ${exec_wasm_name}
         COMPONENT "${exec_wasm_name}_runtime"
         RUNTIME DESTINATION .
+        )
+
+      INSTALL( FILES "$<TARGET_FILE_DIR:${exec_wasm_name}>/wax.${env}.wasm"
+        COMPONENT "${exec_wasm_name}_runtime"
+        DESTINATION .
         )
 
       # Helper target, just to perform TypeScript wrapper generation
