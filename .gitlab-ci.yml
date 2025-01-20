@@ -83,6 +83,7 @@ wax_wasm_proto_tsc_generation:
       - "${DIST_DIR}/lib/proto" # For protobuf pattern tests
       - "${DIST_DIR}/lib" # For Node.js tests
       - "${DIST_DIR}/bundle/index-full.js" # For web tests
+      - "${DIST_DIR}/bundle/*.wasm"
 
   tags:
     - public-runner-docker
