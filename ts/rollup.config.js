@@ -4,9 +4,10 @@ import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
 import terser from '@rollup/plugin-terser';
+import copy from 'rollup-plugin-copy';
 
 const commonConfiguration = packEntire => ([
-  {
+    {
     input: `wasm/dist/lib/index.js`,
     output: {
       format: 'es',
@@ -19,10 +20,13 @@ const commonConfiguration = packEntire => ([
           { find: '@hiveio/beekeeper', replacement: "@hiveio/beekeeper/web" }
         ] : []
       }),
+      copy(
+        { targets: [{ src: 'wasm/build_wasm/wax.common.wasm', dest: 'wasm/dist/bundle' } ]}
+      ),
       replace({
         delimiters: ['', ''],
         values: {
-          // Generated Emscripten WASM code contains fs, which is not actually used by our code, so remove it to prevent client bundler errors:
+/*          // Generated Emscripten WASM code contains fs, which is not actually used by our code, so remove it to prevent client bundler errors:
           'fs.readFileSync(filename,binary?undefined:"utf8")': null,
           'fs.readFile(filename,binary?undefined:"utf8",(err,data)=>{if(err)onerror(err);else onload(binary?data.buffer:data)})': null,
           'fs.readSync(fd,buf)': '0', // fallback - readSync returns the number of bytesRead
@@ -35,7 +39,7 @@ const commonConfiguration = packEntire => ([
           'createRequire(import.meta.url);': '',
           'var nodePath=require("path")': 'var nodePath=await import("path")',
           // new URL("./") throws - use import.meta.url instead:
-          'require("url").fileURLToPath(new URL("./",import.meta.url))': 'import.meta.url',
+          'require("url").fileURLToPath(new URL("./",import.meta.url))': 'import.meta.url',*/
           // Hardcode package name and version for later use in the code:
           'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
           'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
