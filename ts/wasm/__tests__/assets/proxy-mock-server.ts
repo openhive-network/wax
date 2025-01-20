@@ -35,8 +35,13 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
 
   let server: Server;
 
-  await new Promise<void>(resolve => {
-    server = app.listen(port, resolve)
+  await new Promise<void>((resolve, reject) => {
+    server = app.listen(port, (error?: Error) => {
+      if(error != undefined)
+        reject(error);
+      else
+        resolve();
+    })
   });
 
   return () => new Promise<void>((resolve, reject) => {
