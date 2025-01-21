@@ -3,3 +3,4 @@ package/package.json
 package/LICENSE.md
 package/README.md
 package/wasm/dist/bundle/index.d.ts
+package/wasm/dist/bundle/wax.common.wasm
