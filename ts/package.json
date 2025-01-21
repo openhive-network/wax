@@ -93,14 +93,15 @@
     "LICENSE.md",
     "README.md",
     "wasm/dist/bundle/index.js",
-    "wasm/dist/bundle/index.d.ts"
+    "wasm/dist/bundle/index.d.ts",
+    "wasm/dist/bundle/wax.common.wasm"
   ],
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"
   },
   "engines": {
-    "node": ">= 18"
+    "node": "^20.11 || >= 21.2"
   },
   "publishConfig": {
     "registry": "https://RegistryPlaceholder",

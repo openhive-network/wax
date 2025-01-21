@@ -22,7 +22,10 @@ const configFor = (name: string): ConstructorParameters<typeof Parcel>[0] => ({
   const port = 8000;
 
   const server = createServer({
-    root: path.resolve(__dirname, 'dist')
+    root: path.resolve(__dirname, 'dist'),
+    logFn(req, res) {
+      console.log(req.method, req.url, res.statusCode);
+    },
   });
 
   server.listen(port);
