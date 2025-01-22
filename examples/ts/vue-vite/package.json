@@ -1,0 +1,22 @@
+{
+  "name": "vue-vite",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_vue_vite_testsuite"
+  },
+  "dependencies": {
+    "vue": "^3.5.13",
+    "@hiveio/wax": "file:../../../ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "playwright": "^1.49.1",
+    "vite": "^6.0.5"
+  }
+}
