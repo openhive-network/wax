@@ -2,10 +2,8 @@ import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
-import alias from '@rollup/plugin-alias';
 import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
-import path from 'node:path';
 
 export default [
   // Generate .JS bundles for each environment

@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 
-import { IEncryptingTransaction } from '../../dist/bundle/index-full';
+import type { IEncryptingTransaction } from '../../dist/bundle';
 
 import {
   utilFunctionTest,

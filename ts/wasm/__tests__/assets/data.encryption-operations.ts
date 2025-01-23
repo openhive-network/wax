@@ -1,4 +1,5 @@
-import { createHiveChain, IEncryptingTransaction, transaction } from '../../dist/bundle/index-full';
+import type { IEncryptingTransaction, transaction } from '../../dist/bundle';
+import { createHiveChain } from '../../dist/bundle/node.js';
 import { TPublicKey } from '@hiveio/beekeeper';
 import "./globals.js";
 import type { IWaxGlobals } from './globals.js';

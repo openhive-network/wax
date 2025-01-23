@@ -4,9 +4,9 @@
 // Also when testing in Web environment, we would have to import only fully-bundled packages here as we lack any import resolution in the browser except explicitly defined importmap
 // for imports defined in functions "createWaxTestFor" and "createWasmTestFor"
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
-import type Wax from "../../dist/bundle/index-full.js";
-import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle/index-full.js";
-import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common.js";
+import type Wax from "../../dist/bundle";
+import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
+import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../lib/build_wasm/wax.web.js";
 
 // Declare global types
 type TMainModuleFn = () => Promise<MainModule>;
@@ -40,11 +40,11 @@ declare global {
 // We are also using function expressions here to be able to extract the function names in the jest-helpers
 
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string, config?: IWaxOptionsChain) {
-  const locWax = env === "web" ? "../../dist/bundle/index-full.js" : "../../dist/bundle/index.js";
+  const locWax = env === "web" ? "../../dist/bundle/web.js" : "../../dist/bundle/node.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
   // Import required libraries env-dependent
-  const wax = await import(locWax) as typeof import("../../dist/bundle/index-full.js");
+  const wax = await import(locWax) as typeof import("../../dist/bundle");
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
   try {
@@ -80,9 +80,9 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
 };
 
 // Use function as we later extract the function name in the jest-helpers
-globalThis.createWasmTestFor = async function createWasmTestFor(_env: TEnvType) {
+globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
   // Import required libraries env-dependent
-  const wasm = await import("../../dist/lib/build_wasm/wax.common.js");
+  const wasm = env === "web" ? await import("../../dist/bundle/wax.web.js") : await import("../../dist/bundle/wax.node.js");
 
   // Initialize data
   const provider = await (wasm as unknown as { default: TMainModuleFn }).default();

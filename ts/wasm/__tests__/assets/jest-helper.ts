@@ -2,7 +2,7 @@ import { TestInfo, ConsoleMessage, Page, test as base, expect } from '@playwrigh
 
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals } from './globals';
-import { IWaxOptionsChain } from '../../dist/bundle/index-full';
+import type { IWaxOptionsChain } from '../../dist/bundle';
 
 import fs from 'fs';
 

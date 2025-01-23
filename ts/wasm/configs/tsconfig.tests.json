@@ -4,13 +4,15 @@
     "rootDir": "../__tests__",
     "baseUrl": ".",
     "outDir": "../dist",
-    "paths": {},
+    "paths": {
+      "wasm/build_wasm/*": ["../lib/build_wasm/*"]
+    },
     "target": "ES2022",
     "lib": [
       "ES2022",
       "DOM"
     ],
-    "module": "ES2022",
+    "module": "ES2022"
   },
   "include": [
     "../__tests__"

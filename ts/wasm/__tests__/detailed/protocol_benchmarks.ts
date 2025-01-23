@@ -2,11 +2,12 @@ import fs from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import WaxModule, { protocol } from '../../dist/lib/wax_module.js';
+import WaxModule, { protocol } from '../../lib/build_wasm/wax.node.js';
 import { test } from '../assets/jest-helper';
 import { numToHighLow, specificBenchmarkTransaction, vote_operation } from "../assets/data.protocol";
-import { createHiveChain, IHiveChainInterface } from '../../dist/bundle/index-full';
-import { MainModule } from '../../dist/lib/wax_module.js';
+import type { IHiveChainInterface } from '../../dist/bundle';
+import { createHiveChain } from '../../dist/bundle/node.js';
+import type { MainModule } from '../../lib/build_wasm/wax.node.js';
 
 interface IBenchmarkData {
   functionName: string;
@@ -24,10 +25,10 @@ let chain!: IHiveChainInterface;
 let transaction!: string;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const statBundle = fs.statSync(path.resolve(__dirname, '../bundle/index-full.js'));
+const statBundle = fs.statSync(path.resolve(__dirname, '../../dist/bundle/wax.common.wasm'));
 
 const collectedBenchmarkData: (IBenchmarkData | string)[] = [
-  `index-full.js file size: ${statBundle.size} bytes`
+  `WASM file size: ${statBundle.size} bytes`
 ];
 
 const utilFunctionTest = (functionName: string, totalCallsCount: number, functionToTest: () => number): void => {
@@ -55,7 +56,7 @@ const utilFunctionTest = (functionName: string, totalCallsCount: number, functio
 
 test.describe('WASM Protocol benchmarks', () => {
   test.beforeAll(async () => {
-    provider = await WaxModule();
+    provider = await (WaxModule as unknown as () => Promise<MainModule>)();
     protocol = new provider.protocol();
     chain = await createHiveChain();
 

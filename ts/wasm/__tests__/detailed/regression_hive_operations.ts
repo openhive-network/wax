@@ -1,6 +1,6 @@
 import { test } from "../assets/jest-helper";
 import { expect } from "@playwright/test";
-import {
+import type {
   account_create,
   account_create_with_delegation,
   account_update,
@@ -49,7 +49,7 @@ import {
   witness_block_approve,
   witness_set_properties,
   witness_update
-} from "../../dist/bundle/index-full";
+} from "../../dist/bundle";
 
 test.describe('Wax transaction hive operations regression tests', () => {
   test('Vote opeartion Test', async ({ waxTest }) => {

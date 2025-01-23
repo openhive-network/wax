@@ -3,7 +3,8 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
-import { ECommunityOperationActions, EFollowActions, IFormatFunctionArguments, ResourceCreditsOperationData, WaxFormattable, operation } from '../../dist/lib';
+import type { IFormatFunctionArguments, ResourceCreditsOperationData, operation } from '../../dist/bundle/index';
+import { ECommunityOperationActions, EFollowActions, WaxFormattable } from '../../dist/bundle/node';
 
 test.describe('Wax object interface formatters tests', () => {
   test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async({}, testInfo) => {

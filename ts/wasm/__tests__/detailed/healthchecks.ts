@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { TScoredEndpoint } from '../../dist/bundle/index-full';
+import type { TScoredEndpoint } from '../../dist/bundle';
 
 test.describe('Wax object interface chain tests', () => {
   test('Should be able to create endpoint healthchecker', async ({ waxTest }) => {

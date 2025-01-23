@@ -5,7 +5,7 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
-import { ApiTransaction } from '../../dist/bundle/index-full';
+import type { ApiTransaction } from '../../dist/bundle';
 
 
 test.describe('Wax object interface foundation tests', () => {

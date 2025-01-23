@@ -2,9 +2,9 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { IWaxOptionsChain, WaxPrivateKeyLeakDetectedException } from '../../dist/bundle/index-full';
+import type { IWaxOptionsChain, WaxPrivateKeyLeakDetectedException } from '../../dist/bundle';
 
-import { IOnlineTransaction, operation, transfer } from '../../dist/bundle/index-full';
+import type { IOnlineTransaction, operation, transfer } from '../../dist/bundle';
 
 test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const txSecurityLeakBody = async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
