@@ -17,17 +17,10 @@ export default defineConfig({
   ],
 +  optimizeDeps: { // Affects only dev build
 +    exclude: ['@hiveio/wax'],
-+    include: [
-+      '@hiveio/wax > class-validator',
-+      '@hiveio/wax > class-transformer',
-+      '@hiveio/wax > long',
-+      '@hiveio/wax > events',
-+      '@hiveio/wax > reflect-metadata'
-+    ]
 +  }
 })
 ```
 
-As you can see, we excluded `@hiveio/wax` from the optimized dependencies list, keeping its sub-dependencies optimized. This results in WASM being downloaded from the proper directory during development build.
+As you can see, we excluded `@hiveio/wax` from the optimized dependencies list. This results in WASM being downloaded from the proper directory during development build.
 
-During production WASM file is automatically copied to the build directory.
+During production WASM file is automatically copied to the build directory and wax is optimized.

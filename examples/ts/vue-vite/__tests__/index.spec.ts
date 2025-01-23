@@ -7,6 +7,9 @@ test.describe('Proper WASM Wax loading on playwright ', () => {
       console.log('>>', msg.type(), msg.text());
     });
 
+    // Wait ~500ms for the Vite server to warm up
+    await new Promise(resolve => { setTimeout(resolve, 500); });
+
     await page.goto("http://localhost:5173", { waitUntil: "load" });
   });
 

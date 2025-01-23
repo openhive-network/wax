@@ -7,10 +7,6 @@ export default defineConfig({
     vue()
   ],
   optimizeDeps: { // Affects only dev build
-    exclude: ['@hiveio/wax'],
-    include: [
-      '@hiveio/wax > long',
-      '@hiveio/wax > events'
-    ]
+    exclude: ['@hiveio/wax']
   }
 })
