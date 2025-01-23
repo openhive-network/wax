@@ -1,5 +1,5 @@
 import { HiveAppsOperation, TAccountName } from './factory.js';
-import { WaxError } from '../../errors.js';
+import { WaxError } from '../errors.js';
 
 export class ReblogOperationData {
   public constructor(

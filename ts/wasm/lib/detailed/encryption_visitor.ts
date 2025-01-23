@@ -1,5 +1,5 @@
-import { comment, custom_json, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings } from "../protocol.js";
-import { OperationVisitor } from "../visitor.js";
+import { comment, custom_json, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings } from "./protocol.js";
+import { OperationVisitor } from "./visitor.js";
 
 export type TEncryptFn = (data: string) => string;
 

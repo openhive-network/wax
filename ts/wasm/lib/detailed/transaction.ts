@@ -1,12 +1,12 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBinaryViewNode, IBinaryViewOutputData, IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTimestamp, TTransactionId } from "../interfaces";
+import type { IBinaryViewNode, IBinaryViewOutputData, IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTimestamp, TTransactionId } from "./interfaces";
 
-import { authority, transaction, type operation } from "../protocol.js";
+import { authority, transaction, type operation } from "./protocol.js";
 import { WaxBaseApi } from "./base_api.js";
 import { calculateExpiration } from "./util/expiration_parser.js";
 import { OperationBase } from "./operation_base";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
-import { WaxError } from "../errors.js";
+import { WaxError } from "./errors.js";
 import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";

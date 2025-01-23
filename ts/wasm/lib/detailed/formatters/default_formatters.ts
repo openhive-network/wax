@@ -1,7 +1,7 @@
 import type { ApiTransaction, NaiAsset } from "../api";
 import type { DeepReadonly, IFormatFunctionArguments, IWaxCustomFormatter, IWaxFormatterOptions } from "./types";
-import type { IWaxBaseInterface } from "../../interfaces";
-import type { custom_json, transaction, witness_set_properties } from "../../protocol";
+import type { IWaxBaseInterface } from "../interfaces";
+import type { custom_json, transaction, witness_set_properties } from "../protocol.js";
 
 import { WaxFormattable } from "../decorators/formatters";
 import { CommunityOperationData, ECommunityOperationActions, EFollowActions, EFollowOperationActions, FollowOperationData, ReblogOperationData, ResourceCreditsOperationData } from "../hive_apps_operations";

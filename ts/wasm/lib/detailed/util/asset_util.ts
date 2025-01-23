@@ -1,4 +1,4 @@
-import { type TNaiAssetSource } from "../../interfaces.js";
+import { type TNaiAssetSource } from "../interfaces.js";
 
 
 export const isNaiAsset = (asset: TNaiAssetSource): boolean => {

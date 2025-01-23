@@ -1,4 +1,4 @@
-import { WaxError } from "../../errors.js";
+import { WaxError } from "../errors.js";
 import { IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
 import { IHiveEndpoint } from "./endpoint.js";
 

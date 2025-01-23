@@ -1,7 +1,7 @@
-import type { IWaxBaseInterface } from "../../interfaces";
+import type { IWaxBaseInterface } from "../interfaces";
 import type { WaxFormattable } from "../decorators/formatters";
 import type Long from "long";
-import type { ITransaction } from "../../interfaces";
+import type { ITransaction } from "../interfaces";
 
 export type DeepPartial<T> = T extends object ? {
   [P in keyof T]?: DeepPartial<T[P]>;

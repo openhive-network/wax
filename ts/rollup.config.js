@@ -5,48 +5,41 @@ import replace from '@rollup/plugin-replace';
 import alias from '@rollup/plugin-alias';
 import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
+import path from 'node:path';
 
-const commonConfiguration = packEntire => ([
-    {
-    input: `wasm/dist/lib/index.js`,
+export default [
+  // Generate .JS bundles for each environment
+  {
+    input: 'wasm/dist/lib/detailed/index.js',
     output: {
       format: 'es',
-      name: 'wax',
-      file: `wasm/dist/bundle/index${packEntire ? '-full' : ''}.js`
+      file: 'wasm/dist/bundle/detailed/index.js'
     },
     plugins: [
-      alias({
-        entries: packEntire ? [
-          { find: '@hiveio/beekeeper', replacement: "@hiveio/beekeeper/web" }
-        ] : []
+      copy({
+        targets: [
+          {
+            src: [
+              'wasm/lib/build_wasm/wax.common.wasm',
+              'wasm/lib/build_wasm/wax.node.js',
+              'wasm/lib/build_wasm/wax.web.js'
+            ],
+            dest: 'wasm/dist/bundle'
+          }
+        ]
       }),
-      copy(
-        { targets: [{ src: 'wasm/build_wasm/wax.common.wasm', dest: 'wasm/dist/bundle' } ]}
-      ),
       replace({
         delimiters: ['', ''],
         values: {
-          // Equivalent and Supported by Node.js >=20.11 - replacing this results in less imports during runtime
-          'require("url").fileURLToPath(new URL("./",import.meta.url))': 'import.meta.dirname',
           // Hardcode package name and version for later use in the code:
           'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
-          'process.env.npm_package_version': `"${process.env.npm_package_version}"`,
-          // WASM requires process.argv[1] argument to be set. We can mock it in web browser environment:
-          'process.argv': '(typeof process=="object"&&typeof process.argv=="object"?process.argv:["",""])',
-          // Keeping process.env in the code will cause errors in the browser environment - remove it:
-          'process.env': null
+          'process.env.npm_package_version': `"${process.env.npm_package_version}"`
         },
         preventAssignment: true
       }),
-      nodeResolve({
+      nodeResolve({ // This will bundle all of our not crucial sub-dependencies, like class-validator and class-transformer
         preferBuiltins: false,
-        browser: true,
-        modulePaths: [
-          'wasm/dist/lib'
-        ],
-        resolveOnly: packEntire ? [] : [
-          'build_wasm'
-        ]
+        browser: false
       }),
       commonjs(),
       terser({
@@ -57,18 +50,55 @@ const commonConfiguration = packEntire => ([
         }
       })
     ]
-  }, {
+  },
+  {
+    input: 'wasm/dist/lib/index.js',
+    output: {
+      format: 'es',
+      file: 'wasm/dist/bundle/web.js'
+    },
+    external: [
+      './wax.web.js',
+      './detailed/index.js'
+    ],
+    plugins: [
+      replace({
+        delimiters: ['', ''],
+        values: {
+          'wasm/lib/wax_module.js': './wax.web.js'
+        },
+        preventAssignment: true
+      })
+    ]
+  },
+  {
+    input: 'wasm/dist/lib/index.js',
+    output: {
+      format: 'es',
+      file: 'wasm/dist/bundle/node.js'
+    },
+    external: [
+      './wax.node.js',
+      './detailed/index.js'
+    ],
+    plugins: [
+      replace({
+        delimiters: ['', ''],
+        values: {
+          'wasm/lib/wax_module.js': './wax.node.js'
+        },
+        preventAssignment: true
+      })
+    ]
+  },
+  // Type declarations are common for all environments
+  {
     input: `wasm/dist/lib/index.d.ts`,
     output: [
-      { file: `wasm/dist/bundle/index${packEntire ? '-full' : ''}.d.ts`, format: "es" }
+      { file: `wasm/dist/bundle/index.d.ts`, format: "es" }
     ],
     plugins: [
       dts()
     ]
   }
-]);
-
-export default [
-  ...commonConfiguration(false),
-  ...commonConfiguration(true)
 ];

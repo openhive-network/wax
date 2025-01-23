@@ -1,10 +1,10 @@
-import { IHiveChainInterface } from "../../../../../interfaces.js";
-import { authority, operation } from "../../../../../protocol.js";
+import { IHiveChainInterface } from "../../../../interfaces.js";
+import { authority, operation } from "../../../../protocol.js";
 import { TAccountName } from "../../../../hive_apps_operations/factory.js";
 import { IOperationSink } from "../../../../operation_base.js";
 import { RoleCategoryBase } from "../../role_category_base.js";
 import { account_update2 } from '../../../../../proto/account_update2.js';
-import { WaxError } from "../../../../../errors.js";
+import { WaxError } from "../../../../errors.js";
 import { HiveRoleAuthorityDefinition } from "./hive_role_authority_definition.js";
 import { HiveRoleMemoKeyDefinition } from "./hive_role_memo_key.js";
 

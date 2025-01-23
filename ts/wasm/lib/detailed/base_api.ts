@@ -1,14 +1,14 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
-import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "../interfaces";
+import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "./interfaces";
 import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities, IChainConfig } from "../wax_module";
 import type { ApiOperation, NaiAsset } from "./api";
 
 import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
-import { operation, transaction } from "../protocol";
+import { operation, transaction } from "./protocol";
 
-import { WaxError, WaxPrivateKeyLeakDetectedException } from '../errors.js';
+import { WaxError, WaxPrivateKeyLeakDetectedException } from './errors.js';
 import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
 import { JSON_stringify_operation, JSON_stringify_transaction, matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";

@@ -1,4 +1,4 @@
-import { operation, transaction } from "../../protocol";
+import { operation, transaction } from "../protocol";
 import type { ApiOperation, ApiTransaction } from "../api";
 
 /**

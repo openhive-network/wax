@@ -1,4 +1,4 @@
-import { TAccountName } from "./detailed";
+import type { TAccountName } from "./hive_apps_operations/index.js";
 
 export class WaxError extends Error {}
 

@@ -1,4 +1,4 @@
-import { WaxError } from "../../errors.js";
+import { WaxError } from "../errors.js";
 
 export type TWaxStdExceptionData = {
   msg: string;

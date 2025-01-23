@@ -1,4 +1,4 @@
-import { asset, operation, witness_set_properties } from "../../protocol.js";
+import { asset, operation, witness_set_properties } from "../protocol.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import { type witness_set_properties_data } from "../../wax_module.js";
 import { type TPublicKey } from "@hiveio/beekeeper";

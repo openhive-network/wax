@@ -45,10 +45,13 @@ else
 
   cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_common_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_common_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
-  cmake --install "${BUILD_DIR}" --component wax_wasm_common_runtime --prefix "${EXECUTION_PATH}/ts/wasm/dist/lib/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_common_dts --prefix "${EXECUTION_PATH}/ts/wasm/dist/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
+  # TODO: Maybe find emcc options to set a WASM output name
+  sed -i 's/wax.node.wasm/wax.common.wasm/g' "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i 's/wax.web.wasm/wax.common.wasm/g' "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.web.js"
 fi

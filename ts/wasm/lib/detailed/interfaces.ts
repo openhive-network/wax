@@ -4,17 +4,17 @@ export type { TPublicKey } from "@hiveio/beekeeper";
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
-import type { EManabarType } from "./detailed/chain_api";
-import type { HiveApiTypes, HiveRestApiTypes } from "./detailed/chain_api_data";
-import type { IWaxExtendableFormatter } from "./detailed/formatters/types";
-import type { ApiOperation, ApiTransaction, NaiAsset } from "./detailed";
-import type { EAssetName } from "./detailed/base_api";
-import type { TTransactionRequiredAuthorities } from './detailed';
+import type { EManabarType } from "./chain_api";
+import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
+import type { IWaxExtendableFormatter } from "./formatters/types";
+import type { ApiOperation, ApiTransaction, NaiAsset } from ".";
+import type { EAssetName } from "./base_api";
+import type { TTransactionRequiredAuthorities } from '.';
 import type Long from "long";
-import type { OperationBase } from "./detailed/operation_base";
-import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./detailed/complex_operations";
-import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './detailed/hive_apps_operations';
-import type { IChainConfig } from "./wax_module";
+import type { OperationBase } from "./operation_base";
+import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
+import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
+import type { IChainConfig } from "../wax_module";
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 

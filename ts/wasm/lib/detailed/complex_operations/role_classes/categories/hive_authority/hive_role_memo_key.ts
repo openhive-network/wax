@@ -1,5 +1,5 @@
 import type { TPublicKey } from "@hiveio/beekeeper";
-import { WaxError } from "../../../../../errors.js";
+import { WaxError } from "../../../../errors.js";
 import { LevelBase } from "../../level_base.js";
 
 export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {

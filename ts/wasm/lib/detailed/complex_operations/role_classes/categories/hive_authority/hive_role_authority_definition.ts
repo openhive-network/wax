@@ -1,7 +1,7 @@
 import type { TPublicKey } from "@hiveio/beekeeper";
-import { authority } from "../../../../../protocol.js";
+import { authority } from "../../../../protocol.js";
 import { TAccountName } from "../../../../hive_apps_operations/index.js";
-import { WaxError } from "../../../../../errors.js";
+import { WaxError } from "../../../../errors.js";
 import { LevelBase } from "../../level_base.js";
 
 export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase<TRole> {

@@ -2,11 +2,11 @@ import { DEFAULT_WAX_OPTIONS } from "./base";
 import { HiveChainApi, TChainReferenceData } from "./chain_api";
 import { OperationBase } from "./operation_base";
 import { Transaction } from "./transaction";
-import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "../protocol";
-import { OperationVisitor } from "../visitor";
+import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
+import { OperationVisitor } from "./visitor";
 
-import { IOnlineTransaction, TTimestamp } from "../interfaces";
-import { operation } from "../protocol";
+import { IOnlineTransaction, TTimestamp } from "./interfaces";
+import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 
 type TAuthorityHolder = {

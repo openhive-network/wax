@@ -1,4 +1,4 @@
-import { type DeepPartial } from '../../proto/claim_reward_balance';
+import { type DeepPartial } from '../formatters/types.js';
 
 export const iterate = <T extends Record<string, any>>(source: DeepPartial<T>, target: T): DeepPartial<T> => {
   if (typeof target !== "object")
@@ -17,7 +17,7 @@ export const iterate = <T extends Record<string, any>>(source: DeepPartial<T>, t
       if (source[itKey] === undefined)
         source[itKey] = {} as any;
 
-      iterate(source[itKey] as object, target[itKey]);
+      iterate(source[itKey] as any, target[itKey]);
     }
   }
 

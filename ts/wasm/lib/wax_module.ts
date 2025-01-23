@@ -1,7 +1,7 @@
-import type { MainModule } from './build_wasm/wax.common.js';
+import type { MainModule } from 'wasm/build_wasm/wax.node.js';
 
 // Parse the main module
-import MainModuleFunction from './build_wasm/wax.common.js';
+import MainModuleFunction from 'wasm/build_wasm/wax.node.js';
 
 export type {
   MainModule,
@@ -23,7 +23,7 @@ export type {
   wax_authority,
   wax_authorities,
   MapStringUInt16
-} from './build_wasm/wax.common.js';
+} from 'wasm/build_wasm/wax.node.js';
 
 export type {
   IChainConfig

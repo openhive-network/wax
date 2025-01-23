@@ -1,8 +1,7 @@
-import type { IHiveChainInterface, IWaxOptionsChain } from "../interfaces.js";
+import { type IWaxOptionsChain, type IHiveChainInterface } from "./index.js";
 
-import { HiveChainApi } from "./chain_api.js";
 import { safeAsyncWasmCall } from "./util/wasm_errors.js";
-import MainModuleFunction from "../wax_module.js";
+import { HiveChainApi } from "./chain_api.js";
 import { DEFAULT_WAX_OPTIONS } from "./base.js";
 
 export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
@@ -11,17 +10,9 @@ export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
   restApiEndpoint: "https://api.syncad.com"
 }
 
-/**
- * Creates a Wax Hive chain instance
- *
- * @param {?Partial<IWaxOptionsChain>} options wax options
- *
- * @returns {Promise<IHiveChainInterface>} Wax Hive chain API Instance
- *
- * @throws {WaxError} on any Wax API-related error
- */
-export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  const waxProvider = await safeAsyncWasmCall(() => MainModuleFunction());
+// We have to keep wasmFn as any because createHiveChain is exported and will require wasmFn to have a type of module, we do not want to expose
+export const createHiveChain = async(wasmFn: any, options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
+  const waxProvider = await safeAsyncWasmCall(() => wasmFn());
 
   const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
 

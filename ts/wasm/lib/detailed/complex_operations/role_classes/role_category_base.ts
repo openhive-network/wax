@@ -1,5 +1,5 @@
-import { IHiveChainInterface } from "../../../interfaces.js";
-import { operation } from "../../../protocol.js";
+import { IHiveChainInterface } from "../../interfaces.js";
+import { operation } from "../../protocol.js";
 import { TAccountName } from "../../hive_apps_operations/index.js";
 import { IOperationSink } from "../../operation_base.js";
 import { LevelBase } from "./level_base.js";

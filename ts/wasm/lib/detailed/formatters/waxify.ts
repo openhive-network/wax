@@ -1,5 +1,5 @@
 import type { TWaxCustomFormatterConstructor, IWaxFormatterOptions, TFormatFunction, IWaxExtendableFormatter, DeepPartial } from "./types";
-import type { IWaxBaseInterface } from "../../interfaces";
+import type { IWaxBaseInterface } from "../interfaces";
 
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";

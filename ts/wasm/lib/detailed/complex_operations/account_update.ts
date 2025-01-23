@@ -1,10 +1,10 @@
-import { operation } from "../../protocol.js";
+import { operation } from "../protocol.js";
 import type { TAccountName } from "../hive_apps_operations/index.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
-import type { IHiveChainInterface } from "../../interfaces.js";
+import type { IHiveChainInterface } from "../interfaces.js";
 import { HiveAccountCategory } from "./role_classes/categories/hive_authority/index.js";
 import { RoleCategoryBase } from "./role_classes/role_category_base.js";
-import { WaxError } from "../../errors.js";
+import { WaxError } from "../errors.js";
 
 // Here are all of the role categories. They are automatically parsed. Add new categories here
 const AuthorityRoleCategories = [

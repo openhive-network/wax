@@ -1,4 +1,4 @@
-import { type ITransaction } from "../../../interfaces.js";
+import { type ITransaction } from "../../interfaces.js";
 import { Type, plainToInstance } from "class-transformer";
 import { Min, Max, IsDateString, IsInt, IsObject, IsString, ValidateNested } from "class-validator";
 

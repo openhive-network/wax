@@ -88,7 +88,7 @@ function( DEFINE_WAX_TARGET_FOR env )
         -sMODULARIZE=1
         -sSINGLE_FILE=0
         -sEXPORT_ES6=1
-        -sUSE_ES6_IMPORT_META=0
+        -sUSE_ES6_IMPORT_META=1
         -sINITIAL_MEMORY=67108864
         --emit-symbol-map
         # Decreases runtime performance for 50kB decrease in packed .tgz code size
@@ -103,6 +103,8 @@ function( DEFINE_WAX_TARGET_FOR env )
         )
 
       INSTALL( FILES "$<TARGET_FILE_DIR:${exec_wasm_name}>/wax.${env}.wasm"
+        # WASM binary code is common for both node and web
+        RENAME "wax.common.wasm"
         COMPONENT "${exec_wasm_name}_runtime"
         DESTINATION .
         )
@@ -121,6 +123,8 @@ function( DEFINE_WAX_TARGET_FOR env )
         )
 endfunction()
 
-DEFINE_WAX_TARGET_FOR(common)
+DEFINE_WAX_TARGET_FOR(node)
+DEFINE_WAX_TARGET_FOR(web)
 
-target_link_options( wax_wasm_common PUBLIC -sUSE_ES6_IMPORT_META=1 -sENVIRONMENT="web,node" )
+target_link_options( wax_wasm_node PUBLIC -sENVIRONMENT="node" )
+target_link_options( wax_wasm_web PUBLIC -sENVIRONMENT="web,webview,worker" )

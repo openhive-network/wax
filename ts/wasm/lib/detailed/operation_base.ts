@@ -1,5 +1,5 @@
-import { operation } from '../protocol';
-import type { IWaxBaseInterface } from '../interfaces';
+import { operation } from './protocol';
+import type { IWaxBaseInterface } from './interfaces';
 
 export interface IOperationSink {
   api: IWaxBaseInterface;

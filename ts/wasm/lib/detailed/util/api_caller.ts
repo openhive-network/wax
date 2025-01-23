@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
-import { WaxChainApiError } from "../../../lib/errors";
-import { type TWaxApiRequest } from "../../../lib/interfaces";
+import { WaxChainApiError } from "../errors";
+import { type TWaxApiRequest } from "../interfaces";
 import { extractBracedStrings } from "../rest-api/utils.js";
 import { objectToQueryString } from "./query_string.js";
 import { type IDetailedResponseData, type IRequestOptions, RequestHelper } from "./request_helper.js";
