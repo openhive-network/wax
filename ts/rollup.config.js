@@ -6,6 +6,55 @@ import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 
 export default [
+  {
+    input: 'wasm/lib/build_wasm/wax.web.js',
+    output: {
+      format: 'es',
+      file: 'wasm/dist/bundle/wax.web.js'
+    },
+    plugins: [
+      replace({
+        delimiters: ['', ''],
+        values: {
+          'wax.web.wasm': 'wax.common.wasm'
+        },
+        preventAssignment: true
+      }),
+      terser({
+        format: {
+          inline_script: false,
+          comments: false,
+          max_line_len: 100
+        }
+      })
+    ]
+  },
+  {
+    input: 'wasm/lib/build_wasm/wax.node.js',
+    output: {
+      format: 'es',
+      file: 'wasm/dist/bundle/wax.node.js'
+    },
+    plugins: [
+      copy({
+        targets: [{ src: ['wasm/lib/build_wasm/wax.common.wasm'], dest: 'wasm/dist/bundle' }]
+      }),
+      replace({
+        delimiters: ['', ''],
+        values: {
+          'wax.node.wasm': 'wax.common.wasm'
+        },
+        preventAssignment: true
+      }),
+      terser({
+        format: {
+          inline_script: false,
+          comments: false,
+          max_line_len: 100
+        }
+      })
+    ]
+  },
   // Generate .JS bundles for each environment
   {
     input: 'wasm/dist/lib/detailed/index.js',
@@ -14,18 +63,6 @@ export default [
       file: 'wasm/dist/bundle/detailed/index.js'
     },
     plugins: [
-      copy({
-        targets: [
-          {
-            src: [
-              'wasm/lib/build_wasm/wax.common.wasm',
-              'wasm/lib/build_wasm/wax.node.js',
-              'wasm/lib/build_wasm/wax.web.js'
-            ],
-            dest: 'wasm/dist/bundle'
-          }
-        ]
-      }),
       replace({
         delimiters: ['', ''],
         values: {
