@@ -16,11 +16,11 @@ if TYPE_CHECKING:
     from schemas.fields.basic import PublicKey
     from schemas.fields.hex import Hex, Signature, TransactionId
     from wax._private.models.asset import (
-        Asset,
         AssetFactory,
         AssetHbdHF26Convertible,
         AssetHiveHF26Convertible,
         AssetVestsHF26Convertible,
+        WaxAsset,
     )
     from wax._private.models.basic import AccountName, ChainId, HbdExchangeRate, Price
     from wax._private.models.brain_key_data import BrainKeyData
@@ -260,7 +260,7 @@ class IWaxBaseInterface(ABC):
         current_median_history: HbdExchangeRate,
         current_min_history: HbdExchangeRate,
         hbd_amount_to_get: AssetHbdHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         """
         Estimate hive collateral.
 
@@ -270,7 +270,7 @@ class IWaxBaseInterface(ABC):
             hbd_amount_to_get: HBD asset used to get HIVE asset.
 
         Returns:
-            Asset.HiveHF26: Estimated HIVE collateral.
+            WaxAsset: Estimated HIVE collateral.
 
         Raises:
             WaxValidationFailedError: When passed parameters are wrong.
@@ -279,17 +279,17 @@ class IWaxBaseInterface(ABC):
 
     @property
     @abstractmethod
-    def hive(self) -> AssetFactory[Asset.HiveHF26]:
+    def hive(self) -> AssetFactory:
         """Returns set of methods to create HIVE asset."""
 
     @property
     @abstractmethod
-    def hbd(self) -> AssetFactory[Asset.HbdHF26]:
+    def hbd(self) -> AssetFactory:
         """Returns set of methods to create HBD asset."""
 
     @property
     @abstractmethod
-    def vests(self) -> AssetFactory[Asset.VestsHF26]:
+    def vests(self) -> AssetFactory:
         """Returns set of methods to create VESTS asset."""
 
     @classmethod
@@ -299,7 +299,7 @@ class IWaxBaseInterface(ABC):
         vests: AssetVestsHF26Convertible,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         """
         Converts given VESTS into HP, both in nai form.
 
@@ -309,7 +309,7 @@ class IWaxBaseInterface(ABC):
             total_vesting_shares: VESTS asset total vesting shares.
 
         Returns:
-            Asset.HiveHF26: converted asset into HP (HIVE).
+            WaxAsset: converted asset into HP (HIVE).
 
         Raises:
             CannotCreateAssetError: When passed asset is incorrect.
@@ -317,7 +317,7 @@ class IWaxBaseInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def hbd_to_hive(hbd: AssetHbdHF26Convertible, price_feed: Price) -> Asset.HiveHF26:
+    def hbd_to_hive(hbd: AssetHbdHF26Convertible, price_feed: Price) -> WaxAsset:
         """
         Converts given HBD into HIVE, both in nai form.
 
@@ -326,7 +326,7 @@ class IWaxBaseInterface(ABC):
             price_feed: Price feed (base and quote) with HBD as base and HIVE as quote.
 
         Returns:
-            Asset.HiveHF26: asset converted asset into HIVE.
+            WaxAsset: asset converted asset into HIVE.
 
         Raises:
             UnknownAssetTypeError: if passed unknown type of asset.
@@ -335,7 +335,7 @@ class IWaxBaseInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def hive_to_hbd(hive: AssetHiveHF26Convertible, price_feed: Price) -> Asset.HbdHF26:
+    def hive_to_hbd(hive: AssetHiveHF26Convertible, price_feed: Price) -> WaxAsset:
         """
         Converts given HIVE into HBD, both in nai form.
 
@@ -344,7 +344,7 @@ class IWaxBaseInterface(ABC):
             price_feed: Price feed (base and quote) with HIVE as base and HBD as quote.
 
         Returns:
-            Asset.HbdHF26: converted asset into HBD.
+            WaxAsset: converted asset into HBD.
 
         Raises:
             UnknownAssetTypeError: if passed unknown type of asset.
@@ -455,7 +455,7 @@ class IWaxBaseInterface(ABC):
         vests: AssetVestsHF26Convertible,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         """
         Calculates account HP based on given vests, total vesting fund HIVE and total vesting shares.
 
@@ -465,7 +465,7 @@ class IWaxBaseInterface(ABC):
             total_vesting_shares: VESTS asset total vesting shares.
 
         Returns:
-            Asset.HiveHF26: calculated HP for the given vests, total vesting fund HIVE and total vesting shares.
+            WaxAsset: calculated HP for the given vests, total vesting fund HIVE and total vesting shares.
 
         Raises:
             CannotCreateAssetError: When passed asset is incorrect.
@@ -477,7 +477,7 @@ class IWaxBaseInterface(ABC):
         number: int,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         """
         Calculates witness votes HP based on given votes, total vesting fund HIVE and total vesting shares.
 
@@ -487,7 +487,7 @@ class IWaxBaseInterface(ABC):
             total_vesting_shares: VESTS asset total vesting shares.
 
         Returns:
-            Asset.HiveHF26: Calculated votes in nai asset form.
+            WaxAsset: Calculated votes in nai asset form.
 
         Raises:
             CannotCreateAssetError: When passed asset is incorrect.

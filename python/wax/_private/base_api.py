@@ -1,21 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, cast
-
-from pydantic import ValidationError
+from typing import TYPE_CHECKING
 
 from schemas.fields.basic import PublicKey
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME, PUBLIC_KEY_ADDRESS_PREFIX
 from wax._private.core.encoders import to_cpp_string
 from wax._private.core.python_price_converter import convert_to_python_price
-from wax._private.exceptions import WaxValidationFailedError
+from wax._private.exceptions import CannotCreateAssetError, WaxValidationFailedError
 from wax._private.models.asset import (
     Asset,
     AssetFactory,
     AssetHbdHF26Convertible,
     AssetHiveHF26Convertible,
     AssetVestsHF26Convertible,
+    WaxAsset,
 )
 from wax._private.models.basic import (
     AccountName,
@@ -84,32 +83,32 @@ class WaxBaseApi(IWaxBaseInterface):
         current_median_history: HbdExchangeRate,
         current_min_history: HbdExchangeRate,
         hbd_amount_to_get: AssetHbdHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         try:
             current_median_history = HbdExchangeRateHF26.create(current_median_history)
             current_min_history = HbdExchangeRateHF26.create(current_min_history)
             hbd_amount_to_get = Asset.resolve_from_convertible_type(Asset.HbdHF26, hbd_amount_to_get)
-        except ValidationError as error:
-            raise WaxValidationFailedError(f"Error while parsing object: {error.model}.") from error
+        except CannotCreateAssetError as error:
+            raise WaxValidationFailedError(f"Error while parsing asset: {error.potential_asset}.") from error
 
         result = estimate_hive_collateral(
             current_median_history=convert_to_python_price(current_median_history),
             current_min_history=convert_to_python_price(current_min_history),
-            hbd_amount_to_get=Asset.to_python_json_asset(hbd_amount_to_get),
+            hbd_amount_to_get=Asset.to_python_json_asset(Asset.HbdHF26, hbd_amount_to_get),
         )
 
-        return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     @property
-    def hive(self) -> AssetFactory[Asset.HiveHF26]:
+    def hive(self) -> AssetFactory:
         return Asset.create_asset_factory(Asset.HiveHF26)
 
     @property
-    def hbd(self) -> AssetFactory[Asset.HbdHF26]:
+    def hbd(self) -> AssetFactory:
         return Asset.create_asset_factory(Asset.HbdHF26)
 
     @property
-    def vests(self) -> AssetFactory[Asset.VestsHF26]:
+    def vests(self) -> AssetFactory:
         return Asset.create_asset_factory(Asset.VestsHF26)
 
     @classmethod
@@ -118,46 +117,46 @@ class WaxBaseApi(IWaxBaseInterface):
         vests: AssetVestsHF26Convertible,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         vests = Asset.resolve_from_convertible_type(Asset.VestsHF26, vests)
         total_vesting_fund_hive = Asset.resolve_from_convertible_type(Asset.HiveHF26, total_vesting_fund_hive)
         total_vesting_shares = Asset.resolve_from_convertible_type(Asset.VestsHF26, total_vesting_shares)
 
         result = calculate_vests_to_hp(
-            Asset.to_python_json_asset(vests),
-            Asset.to_python_json_asset(total_vesting_fund_hive),
-            Asset.to_python_json_asset(total_vesting_shares),
+            Asset.to_python_json_asset(Asset.VestsHF26, vests),
+            Asset.to_python_json_asset(Asset.HiveHF26, total_vesting_fund_hive),
+            Asset.to_python_json_asset(Asset.VestsHF26, total_vesting_shares),
         )
 
-        return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     @staticmethod
-    def hbd_to_hive(hbd: AssetHbdHF26Convertible, price_feed: Price) -> Asset.HiveHF26:
+    def hbd_to_hive(hbd: AssetHbdHF26Convertible, price_feed: Price) -> WaxAsset:
         price_feed = PriceHF26.create(price_feed)
         hbd = Asset.resolve_from_convertible_type(Asset.HbdHF26, hbd)
         converted_price_feed = convert_to_python_price(price_feed)
 
         result = calculate_hbd_to_hive(
-            Asset.to_python_json_asset(hbd),
+            Asset.to_python_json_asset(Asset.HbdHF26, hbd),
             converted_price_feed.base,
             converted_price_feed.quote,
         )
 
-        return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     @staticmethod
-    def hive_to_hbd(hive: AssetHiveHF26Convertible, price_feed: Price) -> Asset.HbdHF26:
+    def hive_to_hbd(hive: AssetHiveHF26Convertible, price_feed: Price) -> WaxAsset:
         price_feed = PriceHF26.create(price_feed)
         hive = Asset.resolve_from_convertible_type(Asset.HiveHF26, hive)
         converted_price_feed = convert_to_python_price(price_feed)
 
         result = calculate_hive_to_hbd(
-            Asset.to_python_json_asset(hive),
+            Asset.to_python_json_asset(Asset.HiveHF26, hive),
             converted_price_feed.base,
             converted_price_feed.quote,
         )
 
-        return cast(Asset.HbdHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     @staticmethod
     def get_public_key_from_signature(sig_digest: Hex, signature: Signature) -> PublicKey:
@@ -198,35 +197,35 @@ class WaxBaseApi(IWaxBaseInterface):
         vests: AssetVestsHF26Convertible,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         vests = Asset.resolve_from_convertible_type(Asset.VestsHF26, vests)
         total_vesting_fund_hive = Asset.resolve_from_convertible_type(Asset.HiveHF26, total_vesting_fund_hive)
         total_vesting_shares = Asset.resolve_from_convertible_type(Asset.VestsHF26, total_vesting_shares)
 
         result = calculate_account_hp(
-            Asset.to_python_json_asset(vests),
-            Asset.to_python_json_asset(total_vesting_fund_hive),
-            Asset.to_python_json_asset(total_vesting_shares),
+            Asset.to_python_json_asset(Asset.VestsHF26, vests),
+            Asset.to_python_json_asset(Asset.HiveHF26, total_vesting_fund_hive),
+            Asset.to_python_json_asset(Asset.VestsHF26, total_vesting_shares),
         )
 
-        return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     @staticmethod
     def calculate_witness_votes_hp(
         number: int,
         total_vesting_fund_hive: AssetHiveHF26Convertible,
         total_vesting_shares: AssetVestsHF26Convertible,
-    ) -> Asset.HiveHF26:
+    ) -> WaxAsset:
         total_vesting_fund_hive = Asset.resolve_from_convertible_type(Asset.HiveHF26, total_vesting_fund_hive)
         total_vesting_shares = Asset.resolve_from_convertible_type(Asset.VestsHF26, total_vesting_shares)
 
         result = calculate_witness_votes_hp(
             number,
-            Asset.to_python_json_asset(total_vesting_fund_hive),
-            Asset.to_python_json_asset(total_vesting_shares),
+            Asset.to_python_json_asset(Asset.HiveHF26, total_vesting_fund_hive),
+            Asset.to_python_json_asset(Asset.VestsHF26, total_vesting_shares),
         )
 
-        return cast(Asset.HiveHF26, Asset.from_python_json_asset(result))
+        return Asset.from_python_json_asset(result)
 
     def create_transaction_with_tapos(
         self, tapos_block_id: str, expiration: datetime | timedelta | None = None

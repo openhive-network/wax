@@ -9,7 +9,6 @@ from beekeepy import Beekeeper
 from schemas.operations.comment_operation import CommentOperation
 from schemas.operations.vote_operation import VoteOperation
 from wax import create_wax_foundation
-from wax.proto.asset_pb2 import asset
 from wax.proto.comment_pb2 import comment
 from wax.proto.operation_pb2 import operation
 from wax.proto.transaction_pb2 import transaction as proto_transaction
@@ -165,9 +164,7 @@ def test_signature_key_the_same_as_key_used_to_sign() -> None:
 
     # ACT
     transaction = wax.create_transaction_with_tapos(TAPOS)
-    transaction.push_operation(
-        transfer(from_account="alice", to_account="bob", amount=asset(**wax.hive.coins(1).dict()), memo="")
-    )
+    transaction.push_operation(transfer(from_account="alice", to_account="bob", amount=wax.hive.coins(1), memo=""))
 
     brain_key_data = wax.suggest_brain_key()
     public_key, private_key = brain_key_data.associated_public_key, brain_key_data.wif_private_key
@@ -193,7 +190,7 @@ def test_impacted_operation_accounts_the_same_as_impacted_transaction_accounts()
     transfer_operation = transfer(
         from_account=EXPECTED_IMPACTED_ACCOUNT,
         to_account=EXPECTED_IMPACTED_ACCOUNT_2,
-        amount=asset(**wax.hive.coins(1).dict()),
+        amount=wax.hive.coins(1),
         memo="",
     )
     transaction.push_operation(transfer_operation)
