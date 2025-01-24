@@ -1,8 +1,5 @@
 import type { MainModule } from 'wasm/build_wasm/wax.node.js';
 
-// Parse the main module
-import MainModuleFunction from 'wasm/build_wasm/wax.node.js';
-
 export type {
   MainModule,
   error_code,
@@ -31,4 +28,4 @@ export type {
 
 declare function waxmodule(): Promise<MainModule>;
 
-export default MainModuleFunction as unknown as typeof waxmodule;
+export default waxmodule;
