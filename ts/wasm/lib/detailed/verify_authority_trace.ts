@@ -61,14 +61,20 @@ const transformAuthorityPath = (path: VectorPathEntry): Array<IAuthorityPathEntr
   return result;
 }
 
+const getAuthorityTraceLastRoot = (path: VectorPathEntry): path_entry => {
+  const size = path.size();
+  const result: path_entry = path.get(size -1)!;
+  return result;
+}
+
 /**
  * Converts low level authority verification trace from C++ (wasm) version to the public TS interface.
  */
 export const convertAuthorityTrace = (trace: authority_verification_trace): IVerifyAuthorityTrace => {
 
-  const rootEntry: IAuthorityPathEntry = transformPathEntry(trace.root);
+  const rootEntry: IAuthorityPathEntry = transformPathEntry(getAuthorityTraceLastRoot(trace.root));
   const finalAuthorityPath: IAuthorityPathEntry[] = transformAuthorityPath(trace.final_authority_path);
-  const verificationStatus: TAuthorityEntryProcessingStatus = transformProcessingStatus(trace.root);
+  const verificationStatus: TAuthorityEntryProcessingStatus = transformProcessingStatus(getAuthorityTraceLastRoot(trace.root));
 
   return {
     rootEntry,
