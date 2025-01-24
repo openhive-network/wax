@@ -8,8 +8,8 @@ export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
 };
 
 // We have to keep wasmFn as any because createWaxFoundation is exported and will require wasmFn to have a type of module, we do not want to expose
-export const createWaxFoundation = async(wasmFn: any, options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  const waxProvider = await safeAsyncWasmCall(() => wasmFn());
+export const createWaxFoundation = async(wasmFn: any, ModuleExt: Partial<Record<string, any>> = {}, options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
+  const waxProvider = await safeAsyncWasmCall(() => wasmFn(ModuleExt));
 
   const apiOptions: IWaxOptions = { ...DEFAULT_WAX_OPTIONS, ...options };
 

@@ -1,5 +1,6 @@
 package/wasm/dist/bundle/detailed/index.js
 package/wasm/dist/bundle/node.js
+package/wasm/dist/bundle/vite.js
 package/wasm/dist/bundle/wax.node.js
 package/wasm/dist/bundle/wax.web.js
 package/wasm/dist/bundle/web.js

@@ -25,11 +25,12 @@
 
 1. Now, having all of the dependencies in place (generated in previous steps), main [TS & JS implementation](./wasm/lib) sources can be compiled by [TypeScript compiler](https://www.npmjs.com/package/typescript) using settings specified in [given configuration](tsconfig.json). This phase outputs are placed in `wasm/dist/lib` directory.
 
-1. Finally, all of produced JavaScript sources and type declarations can be bundled together using [Rollup](https://www.npmjs.com/package/rollup) in order to create files that will be available in the [final bundle](#final-bundle-files). Rollup, currently has 5 stages configured with bundle directory `wasm/dist/bundle`:
+1. Finally, all of produced JavaScript sources and type declarations can be bundled together using [Rollup](https://www.npmjs.com/package/rollup) in order to create files that will be available in the [final bundle](#final-bundle-files). Rollup, currently has 6 stages configured with bundle directory `wasm/dist/bundle`:
     1. Copy [wax.web.js](#waxwebjs) and [wax.node.js](#waxnodejs) into the bundle directory along setting proper WASM file path. Also terser will slice lines into smaller parts for more readable error stack trace reading.
     1. Copy [wax.common.wasm](#waxcommonwasm) into the bundle directory.
     1. Bundle ["second layer" of Wax library](wasm/lib/detailed) into one file imported by [web.js](#webjs) and [node.js](#nodejs) files. Also proper environment variables will be hardcoded, such as: version and package name. Terser will optimize code and all non-crucial dependencies will be inlined
     1. Transpile [library entry file](wasm/lib/index.ts) into two files: [web.js](#webjs) and [node.js](#nodejs), properly replacing WASM imports. Note that file [wasm/lib/wax_module.js](wasm/lib/wax_module.ts) is just a dummy file representing proper type declarations for the [wax.web.js](#waxwebjs) and [wax.node.js](#waxnodejs) files and it will not be bundled, but replaced with the mentioned files instead.
+    1. Transpile [library entry file](wasm/lib/index.ts) into [vite.js](#vitejs), simirarly to the previous point, but properly adjusting WASM import paths for Vite to work, see [Vue Vite example](../examples/ts/vue-vite/README.md#wasm-related-vite-issues).
     1. Bundle all of the type declarations and output them into the [index.d.ts](#indexdts) file
 
 ## Final bundle files
@@ -53,6 +54,10 @@ Index file to load the environment-specific code in the browser. Its main purpos
 ### node.js
 
 Index file to load the environment-specific code in the Node.js. Its main purpose is to load `wax.node.js` and `detailed/index.js`
+
+### vite.js
+
+Index file to load the environment-specific code in the browser with Vite bundler as there are some WASM-loading-related issues. Its main purpose is to load `wax.web.js`, `detailed/index.js` and specify proper WASM package path
 
 ### detailed/index.js
 

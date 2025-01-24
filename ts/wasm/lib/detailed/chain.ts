@@ -11,8 +11,8 @@ export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
 }
 
 // We have to keep wasmFn as any because createHiveChain is exported and will require wasmFn to have a type of module, we do not want to expose
-export const createHiveChain = async(wasmFn: any, options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  const waxProvider = await safeAsyncWasmCall(() => wasmFn());
+export const createHiveChain = async(wasmFn: any, ModuleExt: Partial<Record<string, any>> = {}, options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
+  const waxProvider = await safeAsyncWasmCall(() => wasmFn(ModuleExt));
 
   const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
 

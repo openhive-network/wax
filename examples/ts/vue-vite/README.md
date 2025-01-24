@@ -2,25 +2,35 @@
 
 Created by command: `pnpm create vue@latest .`
 
-[src/App.vue](src/App.vue) file was modified
+[src/App.vue](src/App.vue) file was modified.
+
+Important note!:
+
+__**When importing Wax in Vite, remember to import dedicated Vite bundle everywhere in your project: `@hiveio/wax/vite`**__
 
 Changes made in order for Vue + Vite to work:
 
 ```diff
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
++ import wasm from "vite-plugin-wasm";
++ import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue()
-  ],
-+  optimizeDeps: { // Affects only dev build
-+    exclude: ['@hiveio/wax'],
-+  }
+    vue(),
++   wasm(),
++   topLevelAwait()
+  ]
 })
 ```
 
-As you can see, we excluded `@hiveio/wax` from the optimized dependencies list. This results in WASM being downloaded from the proper directory during development build.
+Vite currently does not fully support .WASM files as described [here](https://vite.dev/guide/features#webassembly), so we have to use recommended plugin [vite-plugin-wasm](https://www.npmjs.com/package/vite-plugin-wasm)
 
-During production WASM file is automatically copied to the build directory and wax is optimized.
+## WASM-related Vite issues
+
+* https://github.com/rustwasm/wasm-pack/issues/1106#issuecomment-2237247752
+* https://stackoverflow.com/a/79204138
+* https://github.com/vitejs/vite/issues/10761#issuecomment-1334844871
+* https://vite.dev/guide/assets#explicit-url-imports

@@ -5,6 +5,8 @@ import { constructHiveChainWithWasm, constructWaxFoundationWithWasm, type IWaxOp
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "wasm/lib/wax_module.js";
 
+import wasmUrl from "wax_wasm_location.wasm";
+
 /**
  * Creates a Wax Hive chain instance
  *
@@ -15,7 +17,14 @@ import MainModuleFunction from "wasm/lib/wax_module.js";
  * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, {}, options);
+  return constructHiveChainWithWasm(MainModuleFunction, {
+    locateFile: (path: string, scriptDirectory: string) => {
+      if (path === "wax.common.wasm")
+        return wasmUrl;
+
+      return scriptDirectory + path;
+    }
+  }, options);
 };
 
 /**
@@ -28,5 +37,12 @@ export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promis
  * @throws {WaxError} on any Wax API-related error
  */
 export const createWaxFoundation = (options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, {}, options);
+  return constructWaxFoundationWithWasm(MainModuleFunction, {
+    locateFile: (path: string, scriptDirectory: string) => {
+      if (path === "wax.common.wasm")
+        return wasmUrl;
+
+      return scriptDirectory + path;
+    }
+  }, options);
 };

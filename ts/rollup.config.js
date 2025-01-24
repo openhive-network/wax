@@ -126,6 +126,28 @@ export default [
       })
     ]
   },
+  {
+    input: 'wasm/dist/lib/vite.js',
+    output: {
+      format: 'es',
+      file: 'wasm/dist/bundle/vite.js'
+    },
+    external: [
+      './wax.web.js',
+      './detailed/index.js',
+      './wax.common.wasm?url'
+    ],
+    plugins: [
+      replace({
+        delimiters: ['', ''],
+        values: {
+          'wasm/lib/wax_module.js': './wax.web.js',
+          'wax_wasm_location.wasm': './wax.common.wasm?url'
+        },
+        preventAssignment: true
+      })
+    ]
+  },
   // Type declarations are common for all environments
   {
     input: `wasm/dist/lib/index.d.ts`,

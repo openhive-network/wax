@@ -44,6 +44,12 @@
         "default": "./wasm/dist/bundle/web.js"
       }
     },
+    "./vite": {
+      "import": {
+        "types": "./wasm/dist/bundle/index.d.ts",
+        "default": "./wasm/dist/bundle/vite.js"
+      }
+    },
     "./node": {
       "import": {
         "types": "./wasm/dist/bundle/index.d.ts",
@@ -102,6 +108,7 @@
         "./wasm/dist/bundle/index.d.ts",
         "./wasm/dist/bundle/node.js",
         "./wasm/dist/bundle/web.js",
+        "./wasm/dist/bundle/vite.js",
         "./wasm/dist/bundle/detailed/index.js",
         "./wasm/dist/bundle/wax.common.wasm"
       ],
@@ -122,6 +129,7 @@
     "wasm/dist/bundle/index.d.ts",
     "wasm/dist/bundle/node.js",
     "wasm/dist/bundle/web.js",
+    "./wasm/dist/bundle/vite.js",
     "wasm/dist/bundle/detailed/index.js",
     "wasm/dist/bundle/wax.common.wasm"
   ],
