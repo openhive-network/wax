@@ -142,7 +142,7 @@ export default [
         delimiters: ['', ''],
         values: {
           'wasm/lib/wax_module.js': './wax.web.js',
-          'wax_wasm_location.wasm': './wax.common.wasm?url'
+          'wax.common.wasm?url': './wax.common.wasm?url'
         },
         preventAssignment: true
       })

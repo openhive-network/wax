@@ -5,7 +5,29 @@ import { constructHiveChainWithWasm, constructWaxFoundationWithWasm, type IWaxOp
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "wasm/lib/wax_module.js";
 
-import wasmUrl from "wax_wasm_location.wasm";
+// This will be empty when SSR is disabled (client-side), but enable static import for SSR
+import possibleFs from 'node:fs/promises';
+
+const isSSR = typeof (import.meta as any).env === "object" && (import.meta as any).env.SSR;
+
+import resolvedUrl from 'wax.common.wasm?url';
+
+const moduleArgs = (async () => {
+  let wasmBinary: any;
+
+  if (isSSR)
+    wasmBinary = await possibleFs.readFile('wax.common.wasm');
+
+  return {
+    wasmBinary,
+    locateFile: (path: string, scriptDirectory: string) => {
+      if (path === "wax.common.wasm")
+        return resolvedUrl;
+
+      return scriptDirectory + path;
+    }
+  };
+})();
 
 /**
  * Creates a Wax Hive chain instance
@@ -16,15 +38,8 @@ import wasmUrl from "wax_wasm_location.wasm";
  *
  * @throws {WaxError} on any Wax API-related error
  */
-export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, {
-    locateFile: (path: string, scriptDirectory: string) => {
-      if (path === "wax.common.wasm")
-        return wasmUrl;
-
-      return scriptDirectory + path;
-    }
-  }, options);
+export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
+  return constructHiveChainWithWasm(MainModuleFunction, await moduleArgs, options);
 };
 
 /**
@@ -36,13 +51,6 @@ export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promis
  *
  * @throws {WaxError} on any Wax API-related error
  */
-export const createWaxFoundation = (options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, {
-    locateFile: (path: string, scriptDirectory: string) => {
-      if (path === "wax.common.wasm")
-        return wasmUrl;
-
-      return scriptDirectory + path;
-    }
-  }, options);
+export const createWaxFoundation = async(options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
+  return constructWaxFoundationWithWasm(MainModuleFunction, await moduleArgs, options);
 };

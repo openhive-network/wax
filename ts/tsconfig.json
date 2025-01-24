@@ -6,7 +6,7 @@
     "outDir": "./wasm/dist/lib",
     "paths": {
       // Dummy path to satisfy the TypeScript compiler
-      "wax_wasm_location.wasm": [ "./wasm/lib/build_wasm/wax.node" ]
+      "wax.common.wasm?url": [ "./wasm/lib/build_wasm/wax.node" ]
     }
   },
   "include": [
