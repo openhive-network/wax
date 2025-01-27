@@ -57,7 +57,7 @@ from .cpp_python_bridge import (
 )
 from .interfaces import ITransaction, IWaxBaseInterface
 from .wax_factory import create_wax_foundation
-from .wax_options import WaxOptions
+from .wax_options import WaxChainOptions, WaxOptions
 from .wax_result import (
     python_authorities,
     python_authority,
@@ -79,6 +79,7 @@ __all__ = [
     "IWaxBaseInterface",
     "ITransaction",
     "WaxOptions",
+    "WaxChainOptions",
     "create_wax_foundation",
     "python_error_code",
     "python_result",
