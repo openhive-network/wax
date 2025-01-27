@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from utils.refs import API_REF_TRANSACTION
+from python.tests.utils.refs import API_REF_TRANSACTION
 from wax import get_transaction_required_authorities, python_authority
 
 

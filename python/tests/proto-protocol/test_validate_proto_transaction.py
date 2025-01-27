@@ -1,6 +1,6 @@
 import json
 
-from utils.refs import (
+from python.tests.utils.refs import (
     PROTO_REF_TRANSACTION,
     API_REF_TRANSACTION,
     PROTO_REF_TRANSACTION_NO_OPERATIONS,

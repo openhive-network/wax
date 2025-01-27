@@ -1,4 +1,4 @@
-from utils.checkers import check_operations, check_transaction
+from python.tests.utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     request_account_recovery_pb2,
