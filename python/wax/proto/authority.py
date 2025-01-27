@@ -1,4 +1,4 @@
-from wax._private.exceptions import WaxImportProtoBeforeCompileError
+from wax.exceptions import WaxImportProtoBeforeCompileError
 
 try:
     from wax._private.proto.authority_pb2 import authority

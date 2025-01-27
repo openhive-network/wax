@@ -8,9 +8,10 @@ from schemas.transaction import Transaction as ApiTransaction
 from beekeepy.interfaces import HttpUrl
 from wax._private.api.api_caller import WaxApiCaller
 from wax._private.base_api import WaxBaseApi
-from wax._private.exceptions import WaxError
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.online_transaction import OnlineTransaction
+from wax.exceptions.chain_errors import AccountNotFoundError
+from wax.exceptions.validation_errors import InvalidAccountNameError
 from wax.interfaces import IHiveChainInterface, IOnlineTransaction
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAuthority
 from wax.models.basic import ChainReferenceData
@@ -24,29 +25,6 @@ if TYPE_CHECKING:
     from wax._private.api.api_collection import ApiCollection
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
-
-
-class InvalidAccountNameError(WaxError):
-    """
-    Raised when an account name is invalid.
-
-    Note that this error is different from `AccountNotFoundError` and is created to not make an API call
-    when the account name is invalid.
-    """
-
-    def __init__(self, account: AccountName) -> None:
-        self.account = account
-        self.message = f"Account name '{account}' is invalid."
-        super().__init__(self.message)
-
-
-class AccountNotFoundError(WaxError):
-    """Raised when an account is not found when calling `find_accounts` API call."""
-
-    def __init__(self, account: AccountName) -> None:
-        self.account = account
-        self.message = f"Account '{account}' not found."
-        super().__init__(self.message)
 
 
 class HiveChainApi(IHiveChainInterface, WaxBaseApi):

@@ -4,13 +4,13 @@ import json
 from typing import TYPE_CHECKING, Final
 
 from wax._private.converters.decimal_converter import DecimalConverter
-from wax._private.exceptions import (
+from wax._private.result_tools import to_python_string
+from wax.cpp_python_bridge import hbd, hive, vests
+from wax.exceptions.asset_errors import (
     CannotCreateAssetError,
     UnknownAssetNaiError,
     UnknownAssetTypeError,
 )
-from wax._private.result_tools import to_python_string
-from wax.cpp_python_bridge import hbd, hive, vests
 from wax.models.asset import AnyNaiAssetConvertible, AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset
 from wax.proto.asset import asset as proto_asset
 

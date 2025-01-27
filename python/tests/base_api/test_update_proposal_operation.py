@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, Final
 import pytest
 from google.protobuf.json_format import MessageToDict
 
-from wax._private.exceptions import WaxError
 from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax.exceptions import WaxError
 from wax.proto.operations import update_proposal
 
 if TYPE_CHECKING:

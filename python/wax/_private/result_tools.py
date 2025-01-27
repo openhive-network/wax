@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.exceptions import WaxValidationFailedError
+from wax.exceptions.validation_errors import WaxValidationFailedError
 from wax.wax_result import python_error_code, python_result
 
 if TYPE_CHECKING:

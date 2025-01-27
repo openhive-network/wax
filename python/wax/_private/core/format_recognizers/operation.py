@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from google.protobuf.message import Message
 from typing_extensions import TypeIs
 
-from wax._private.exceptions import InvalidOperationFormatError
+from wax.exceptions.validation_errors import InvalidOperationFormatError
 
 if TYPE_CHECKING:
     from wax.models.operations import Operation, ProtocolOperation

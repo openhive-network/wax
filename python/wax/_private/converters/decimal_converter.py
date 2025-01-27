@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import ROUND_DOWN, Decimal, InvalidOperation
 
-from wax._private.exceptions import DecimalConversionNegativePrecisionError, DecimalConversionNotANumberError
+from wax.exceptions.conversion_errors import DecimalConversionNegativePrecisionError, DecimalConversionNotANumberError
 
 DecimalConvertible = int | str | float | Decimal
 
