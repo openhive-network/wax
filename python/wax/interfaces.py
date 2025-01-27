@@ -233,6 +233,10 @@ class ITransaction(ITransactionBase):
         """
 
 
+class IOnlineTransaction(ITransaction, ABC):
+    """In the future it will extend ITransaction with ability to perform a verification step (which requires API)."""
+
+
 @dataclass
 class IManabarData(ABC):
     """Manabar data contains: max mana, current mana and percent."""
