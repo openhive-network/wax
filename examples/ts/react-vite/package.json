@@ -1,0 +1,27 @@
+{
+  "name": "vite-react-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_react_vite_testsuite"
+  },
+  "dependencies": {
+    "@hiveio/wax": "file:../../../ts",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@playwright/test": "1.49.1",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "globals": "^15.14.0",
+    "playwright": "1.49.1",
+    "vite": "^6.0.11"
+  }
+}

@@ -21,7 +21,8 @@
     "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install && pnpm run build && cd ../../../ts",
     "examples:node-app": "cd ../examples/ts/node-app && pnpm install && pnpm run test && cd ../../../ts",
     "examples:vue-webpack": "cd ../examples/ts/vue-webpack && pnpm install && pnpm run build && cd ../../../ts",
-    "examples:vue-vite": "cd ../examples/ts/vue-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts"
+    "examples:vue-vite": "cd ../examples/ts/vue-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:react-vite": "cd ../examples/ts/react-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts"
   },
   "exports": {
     ".": {
