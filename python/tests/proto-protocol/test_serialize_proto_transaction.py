@@ -2,7 +2,7 @@ import json
 
 from google.protobuf.json_format import ParseDict
 
-from utils.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
+from python.tests.utils.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
 
 from wax import serialize_proto_transaction, deserialize_proto_transaction
 

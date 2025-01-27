@@ -1,6 +1,6 @@
 import json
 
-from utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
+from python.tests.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import proto_to_api
 

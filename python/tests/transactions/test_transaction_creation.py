@@ -3,9 +3,8 @@ from __future__ import annotations
 import json
 from typing import Final
 
-from utils.refs import PROTO_REF_TRANSACTION
-
 from beekeepy import AsyncBeekeeper
+from python.tests.utils.refs import PROTO_REF_TRANSACTION
 from wax import create_wax_foundation
 from wax.proto.comment_pb2 import comment
 from wax.proto.operation_pb2 import operation
@@ -112,7 +111,7 @@ async def test_create_and_sign_transaction() -> None:
         await session.open_wallet(name=WALLET_NAME)
     ).unlock(WALLET_PASSWORD) as wallet:
         await wallet.import_key(private_key=keys.wif_private_key)
-        await transaction.sign(wallet, keys.associated_public_key)
+        await transaction.sign(wallet, keys.associated_public_key)  # type: ignore[arg-type, misc]
 
     # ASSERT
     assert len(transaction.transaction.operations) == EXPECTED_OPERATIONS_COUNT
@@ -175,7 +174,7 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
         await session.open_wallet(name=WALLET_NAME)
     ).unlock(WALLET_PASSWORD) as wallet:
         await wallet.import_key(private_key=private_key)
-        await transaction.sign(wallet, public_key)
+        await transaction.sign(wallet, public_key)  # type: ignore[arg-type, misc]
 
     # ASSERT
     assert transaction.signature_keys[0] == public_key

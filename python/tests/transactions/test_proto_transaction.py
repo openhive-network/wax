@@ -1,5 +1,4 @@
-from utils.checkers import check_transaction
-
+from python.tests.utils.checkers import check_transaction
 from wax.proto import comment_pb2, operation_pb2, transaction_pb2, vote_pb2
 
 

@@ -1,6 +1,6 @@
 import json
 
-from utils.refs import API_REF_TRANSACTION, API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_TRANSACTION
+from python.tests.utils.refs import API_REF_TRANSACTION, API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import calculate_sig_digest, calculate_legacy_sig_digest
 
