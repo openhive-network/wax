@@ -55,8 +55,8 @@ from .cpp_python_bridge import (
     verify_exception_handling,
     vests,
 )
-from .interfaces import IOnlineTransaction, ITransaction, IWaxBaseInterface
-from .wax_factory import create_wax_foundation
+from .interfaces import IHiveChainInterface, IOnlineTransaction, ITransaction, IWaxBaseInterface
+from .wax_factory import create_hive_chain, create_wax_foundation
 from .wax_options import WaxChainOptions, WaxOptions
 from .wax_result import (
     python_authorities,
@@ -77,11 +77,13 @@ __version__ = "0.0.0"
 
 __all__ = [
     "IWaxBaseInterface",
+    "IHiveChainInterface",
     "ITransaction",
     "IOnlineTransaction",
     "WaxOptions",
     "WaxChainOptions",
     "create_wax_foundation",
+    "create_hive_chain",
     "python_error_code",
     "python_result",
     "python_json_asset",

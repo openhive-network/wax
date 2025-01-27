@@ -295,3 +295,10 @@ class WaxBaseApi(IWaxBaseInterface):
 
     def create_transaction_from_json(self, transaction: JsonTransaction) -> ITransaction:
         return Transaction.from_api(api=self, transaction=transaction)
+
+    def _resolve_expiration(self, expiration: datetime | timedelta | None) -> timedelta:
+        expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
+        if isinstance(expiration, datetime):
+            expiration = expiration - datetime.now(timezone.utc)
+        assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
+        return expiration

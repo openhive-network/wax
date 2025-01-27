@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
+    from beekeepy.interfaces import HttpUrl
     from wax.models.asset import (
         AssetFactory,
         HbdNaiAssetConvertible,
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax.models.authority import ITransactionRequiredAuthorities
+    from wax.models.authority import ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
     from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.key_data import IBrainKeyData, IPrivateKeyData
     from wax.models.operations import Operation, WaxMetaOperation
@@ -614,4 +615,68 @@ class IWaxBaseInterface(ABC):
 
         Raises:
             WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+
+class IHiveChainInterface(IWaxBaseInterface):
+    @property
+    @abstractmethod
+    def endpoint_url(self) -> HttpUrl:
+        """Returns the selected endpoint url used to perform API calls."""
+
+    @endpoint_url.setter
+    @abstractmethod
+    def endpoint_url(self, value: HttpUrl | str) -> None:
+        """
+        Sets the selected endpoint url used to perform API calls.
+
+        Args:
+            value: Endpoint url.
+
+        Raises:
+            TypeError: When the url is incorrect.
+        """
+
+    @abstractmethod
+    async def create_transaction(self, expiration: TTimestamp | None = None) -> IOnlineTransaction:
+        """
+        Same as `IWaxBaseInterface.create_transaction_with_tapos` but pulls the reference block data from the remote.
+
+        Args:
+            expiration: time (UTC) till transaction is valid. Default to +1 minute.
+
+        Returns:
+            Transaction object
+
+        Raises:
+            AssertionError: when expiration is not valid type.
+        """
+
+    @abstractmethod
+    async def broadcast(self, transaction: ITransaction | IOnlineTransaction) -> None:
+        """
+        Broadcast transaction to the selected during Wax Chain initialization Hive Node.
+
+        Args:
+            transaction: Transaction object to be broadcasted.
+
+        Raises:
+            TransactionNotSignedError: When the transaction is not signed.
+            WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    async def collect_account_authorities(self, account: AccountName) -> WaxAccountAuthorityInfo:
+        """
+        Collects account authorities.
+
+        Args:
+            account: Account name.
+
+        Returns:
+            WaxAccountAuthorityInfo: Account authority info.
+
+        Raises:
+            InvalidAccountNameError: When the account name is invalid.
+            AccountNotFoundError: When the account is not found in the HIVE api node.
         """
