@@ -22,7 +22,7 @@ export const price = {
         return obj;
     },
     create(base) {
-        return price.fromPartial(base !== null && base !== void 0 ? base : {});
+        return price.fromPartial(base ?? {});
     },
     fromPartial(object) {
         const message = createBaseprice();

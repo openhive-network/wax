@@ -22,12 +22,11 @@ export const producer_reward = {
         return obj;
     },
     create(base) {
-        return producer_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return producer_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseproducer_reward();
-        message.producer = (_a = object.producer) !== null && _a !== void 0 ? _a : "";
+        message.producer = object.producer ?? "";
         message.vesting_shares = (object.vesting_shares !== undefined && object.vesting_shares !== null)
             ? asset.fromPartial(object.vesting_shares)
             : undefined;

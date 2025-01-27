@@ -549,7 +549,7 @@ export const operation = {
         return obj;
     },
     create(base) {
-        return operation.fromPartial(base !== null && base !== void 0 ? base : {});
+        return operation.fromPartial(base ?? {});
     },
     fromPartial(object) {
         const message = createBaseoperation();

@@ -21,13 +21,12 @@ export const decline_voting_rights = {
         return obj;
     },
     create(base) {
-        return decline_voting_rights.fromPartial(base !== null && base !== void 0 ? base : {});
+        return decline_voting_rights.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasedecline_voting_rights();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.decline = (_b = object.decline) !== null && _b !== void 0 ? _b : false;
+        message.account = object.account ?? "";
+        message.decline = object.decline ?? false;
         return message;
     },
 };

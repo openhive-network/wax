@@ -52,14 +52,13 @@ export const comment_benefactor_reward = {
         return obj;
     },
     create(base) {
-        return comment_benefactor_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return comment_benefactor_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBasecomment_benefactor_reward();
-        message.benefactor = (_a = object.benefactor) !== null && _a !== void 0 ? _a : "";
-        message.author = (_b = object.author) !== null && _b !== void 0 ? _b : "";
-        message.permlink = (_c = object.permlink) !== null && _c !== void 0 ? _c : "";
+        message.benefactor = object.benefactor ?? "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
         message.hbd_payout = (object.hbd_payout !== undefined && object.hbd_payout !== null)
             ? asset.fromPartial(object.hbd_payout)
             : undefined;
@@ -69,7 +68,7 @@ export const comment_benefactor_reward = {
         message.vesting_payout = (object.vesting_payout !== undefined && object.vesting_payout !== null)
             ? asset.fromPartial(object.vesting_payout)
             : undefined;
-        message.payout_must_be_claimed = (_d = object.payout_must_be_claimed) !== null && _d !== void 0 ? _d : false;
+        message.payout_must_be_claimed = object.payout_must_be_claimed ?? false;
         return message;
     },
 };

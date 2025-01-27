@@ -47,19 +47,18 @@ export const authority = {
         return obj;
     },
     create(base) {
-        return authority.fromPartial(base !== null && base !== void 0 ? base : {});
+        return authority.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseauthority();
-        message.weight_threshold = (_a = object.weight_threshold) !== null && _a !== void 0 ? _a : 0;
-        message.account_auths = Object.entries((_b = object.account_auths) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
+        message.weight_threshold = object.weight_threshold ?? 0;
+        message.account_auths = Object.entries(object.account_auths ?? {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
                 acc[key] = globalThis.Number(value);
             }
             return acc;
         }, {});
-        message.key_auths = Object.entries((_c = object.key_auths) !== null && _c !== void 0 ? _c : {}).reduce((acc, [key, value]) => {
+        message.key_auths = Object.entries(object.key_auths ?? {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
                 acc[key] = globalThis.Number(value);
             }
@@ -89,13 +88,12 @@ export const authority_AccountAuthsEntry = {
         return obj;
     },
     create(base) {
-        return authority_AccountAuthsEntry.fromPartial(base !== null && base !== void 0 ? base : {});
+        return authority_AccountAuthsEntry.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseauthority_AccountAuthsEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : 0;
+        message.key = object.key ?? "";
+        message.value = object.value ?? 0;
         return message;
     },
 };
@@ -120,13 +118,12 @@ export const authority_KeyAuthsEntry = {
         return obj;
     },
     create(base) {
-        return authority_KeyAuthsEntry.fromPartial(base !== null && base !== void 0 ? base : {});
+        return authority_KeyAuthsEntry.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseauthority_KeyAuthsEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : 0;
+        message.key = object.key ?? "";
+        message.value = object.value ?? 0;
         return message;
     },
 };

@@ -25,14 +25,13 @@ export const changed_recovery_account = {
         return obj;
     },
     create(base) {
-        return changed_recovery_account.fromPartial(base !== null && base !== void 0 ? base : {});
+        return changed_recovery_account.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasechanged_recovery_account();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.old_recovery_account = (_b = object.old_recovery_account) !== null && _b !== void 0 ? _b : "";
-        message.new_recovery_account = (_c = object.new_recovery_account) !== null && _c !== void 0 ? _c : "";
+        message.account = object.account ?? "";
+        message.old_recovery_account = object.old_recovery_account ?? "";
+        message.new_recovery_account = object.new_recovery_account ?? "";
         return message;
     },
 };

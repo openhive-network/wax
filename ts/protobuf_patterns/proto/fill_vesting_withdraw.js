@@ -30,13 +30,12 @@ export const fill_vesting_withdraw = {
         return obj;
     },
     create(base) {
-        return fill_vesting_withdraw.fromPartial(base !== null && base !== void 0 ? base : {});
+        return fill_vesting_withdraw.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasefill_vesting_withdraw();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
         message.withdrawn = (object.withdrawn !== undefined && object.withdrawn !== null)
             ? asset.fromPartial(object.withdrawn)
             : undefined;

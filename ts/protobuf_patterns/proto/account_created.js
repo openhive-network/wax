@@ -32,13 +32,12 @@ export const account_created = {
         return obj;
     },
     create(base) {
-        return account_created.fromPartial(base !== null && base !== void 0 ? base : {});
+        return account_created.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseaccount_created();
-        message.new_account_name = (_a = object.new_account_name) !== null && _a !== void 0 ? _a : "";
-        message.creator = (_b = object.creator) !== null && _b !== void 0 ? _b : "";
+        message.new_account_name = object.new_account_name ?? "";
+        message.creator = object.creator ?? "";
         message.initial_vesting_shares =
             (object.initial_vesting_shares !== undefined && object.initial_vesting_shares !== null)
                 ? asset.fromPartial(object.initial_vesting_shares)

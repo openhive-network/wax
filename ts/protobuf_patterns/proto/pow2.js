@@ -26,14 +26,13 @@ export const pow2_input = {
         return obj;
     },
     create(base) {
-        return pow2_input.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow2_input.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasepow2_input();
-        message.worker_account = (_a = object.worker_account) !== null && _a !== void 0 ? _a : "";
-        message.prev_block = (_b = object.prev_block) !== null && _b !== void 0 ? _b : "";
-        message.nonce = (_c = object.nonce) !== null && _c !== void 0 ? _c : "0";
+        message.worker_account = object.worker_account ?? "";
+        message.prev_block = object.prev_block ?? "";
+        message.nonce = object.nonce ?? "0";
         return message;
     },
 };
@@ -58,15 +57,14 @@ export const pow2_pow = {
         return obj;
     },
     create(base) {
-        return pow2_pow.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow2_pow.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasepow2_pow();
         message.input = (object.input !== undefined && object.input !== null)
             ? pow2_input.fromPartial(object.input)
             : undefined;
-        message.pow_summary = (_a = object.pow_summary) !== null && _a !== void 0 ? _a : 0;
+        message.pow_summary = object.pow_summary ?? 0;
         return message;
     },
 };
@@ -79,13 +77,12 @@ export const equihash_proof = {
             n: isSet(object.n) ? globalThis.Number(object.n) : 0,
             k: isSet(object.k) ? globalThis.Number(object.k) : 0,
             seed: isSet(object.seed) ? globalThis.String(object.seed) : "",
-            inputs: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.inputs)
+            inputs: globalThis.Array.isArray(object?.inputs)
                 ? object.inputs.map((e) => globalThis.Number(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.n !== undefined) {
             obj.n = Math.round(message.n);
@@ -96,21 +93,20 @@ export const equihash_proof = {
         if (message.seed !== undefined) {
             obj.seed = message.seed;
         }
-        if ((_a = message.inputs) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.inputs?.length) {
             obj.inputs = message.inputs.map((e) => Math.round(e));
         }
         return obj;
     },
     create(base) {
-        return equihash_proof.fromPartial(base !== null && base !== void 0 ? base : {});
+        return equihash_proof.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBaseequihash_proof();
-        message.n = (_a = object.n) !== null && _a !== void 0 ? _a : 0;
-        message.k = (_b = object.k) !== null && _b !== void 0 ? _b : 0;
-        message.seed = (_c = object.seed) !== null && _c !== void 0 ? _c : "";
-        message.inputs = ((_d = object.inputs) === null || _d === void 0 ? void 0 : _d.map((e) => e)) || [];
+        message.n = object.n ?? 0;
+        message.k = object.k ?? 0;
+        message.seed = object.seed ?? "";
+        message.inputs = object.inputs?.map((e) => e) || [];
         return message;
     },
 };
@@ -143,10 +139,9 @@ export const equihash_pow = {
         return obj;
     },
     create(base) {
-        return equihash_pow.fromPartial(base !== null && base !== void 0 ? base : {});
+        return equihash_pow.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseequihash_pow();
         message.input = (object.input !== undefined && object.input !== null)
             ? pow2_input.fromPartial(object.input)
@@ -154,8 +149,8 @@ export const equihash_pow = {
         message.proof = (object.proof !== undefined && object.proof !== null)
             ? equihash_proof.fromPartial(object.proof)
             : undefined;
-        message.prev_block = (_a = object.prev_block) !== null && _a !== void 0 ? _a : "";
-        message.pow_summary = (_b = object.pow_summary) !== null && _b !== void 0 ? _b : 0;
+        message.prev_block = object.prev_block ?? "";
+        message.pow_summary = object.pow_summary ?? 0;
         return message;
     },
 };
@@ -180,7 +175,7 @@ export const pow2_work = {
         return obj;
     },
     create(base) {
-        return pow2_work.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow2_work.fromPartial(base ?? {});
     },
     fromPartial(object) {
         const message = createBasepow2_work();
@@ -216,13 +211,12 @@ export const pow2 = {
         return obj;
     },
     create(base) {
-        return pow2.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow2.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasepow2();
         message.work = (object.work !== undefined && object.work !== null) ? pow2_work.fromPartial(object.work) : undefined;
-        message.new_owner_key = (_a = object.new_owner_key) !== null && _a !== void 0 ? _a : "STM1111111111111111111111111111111114T1Anm";
+        message.new_owner_key = object.new_owner_key ?? "STM1111111111111111111111111111111114T1Anm";
         message.props = (object.props !== undefined && object.props !== null)
             ? legacy_chain_properties.fromPartial(object.props)
             : undefined;

@@ -25,14 +25,13 @@ export const account_witness_vote = {
         return obj;
     },
     create(base) {
-        return account_witness_vote.fromPartial(base !== null && base !== void 0 ? base : {});
+        return account_witness_vote.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseaccount_witness_vote();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.witness = (_b = object.witness) !== null && _b !== void 0 ? _b : "";
-        message.approve = (_c = object.approve) !== null && _c !== void 0 ? _c : false;
+        message.account = object.account ?? "";
+        message.witness = object.witness ?? "";
+        message.approve = object.approve ?? false;
         return message;
     },
 };

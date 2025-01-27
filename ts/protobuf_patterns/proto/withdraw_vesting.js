@@ -22,12 +22,11 @@ export const withdraw_vesting = {
         return obj;
     },
     create(base) {
-        return withdraw_vesting.fromPartial(base !== null && base !== void 0 ? base : {});
+        return withdraw_vesting.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasewithdraw_vesting();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         message.vesting_shares = (object.vesting_shares !== undefined && object.vesting_shares !== null)
             ? asset.fromPartial(object.vesting_shares)
             : undefined;

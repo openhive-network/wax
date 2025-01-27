@@ -30,17 +30,16 @@ export const transfer = {
         return obj;
     },
     create(base) {
-        return transfer.fromPartial(base !== null && base !== void 0 ? base : {});
+        return transfer.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasetransfer();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;
-        message.memo = (_c = object.memo) !== null && _c !== void 0 ? _c : "";
+        message.memo = object.memo ?? "";
         return message;
     },
 };

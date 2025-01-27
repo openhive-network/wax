@@ -38,12 +38,11 @@ export const account_update = {
         return obj;
     },
     create(base) {
-        return account_update.fromPartial(base !== null && base !== void 0 ? base : {});
+        return account_update.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseaccount_update();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         message.owner = (object.owner !== undefined && object.owner !== null)
             ? authority.fromPartial(object.owner)
             : undefined;
@@ -53,8 +52,8 @@ export const account_update = {
         message.posting = (object.posting !== undefined && object.posting !== null)
             ? authority.fromPartial(object.posting)
             : undefined;
-        message.memo_key = (_b = object.memo_key) !== null && _b !== void 0 ? _b : "";
-        message.json_metadata = (_c = object.json_metadata) !== null && _c !== void 0 ? _c : "";
+        message.memo_key = object.memo_key ?? "";
+        message.json_metadata = object.json_metadata ?? "";
         return message;
     },
 };

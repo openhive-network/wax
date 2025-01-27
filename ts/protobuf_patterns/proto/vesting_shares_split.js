@@ -30,12 +30,11 @@ export const vesting_shares_split = {
         return obj;
     },
     create(base) {
-        return vesting_shares_split.fromPartial(base !== null && base !== void 0 ? base : {});
+        return vesting_shares_split.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasevesting_shares_split();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
+        message.owner = object.owner ?? "";
         message.vesting_shares_before_split =
             (object.vesting_shares_before_split !== undefined && object.vesting_shares_before_split !== null)
                 ? asset.fromPartial(object.vesting_shares_before_split)

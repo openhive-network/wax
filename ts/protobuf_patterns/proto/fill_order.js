@@ -45,18 +45,17 @@ export const fill_order = {
         return obj;
     },
     create(base) {
-        return fill_order.fromPartial(base !== null && base !== void 0 ? base : {});
+        return fill_order.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBasefill_order();
-        message.current_owner = (_a = object.current_owner) !== null && _a !== void 0 ? _a : "";
-        message.current_orderid = (_b = object.current_orderid) !== null && _b !== void 0 ? _b : 0;
+        message.current_owner = object.current_owner ?? "";
+        message.current_orderid = object.current_orderid ?? 0;
         message.current_pays = (object.current_pays !== undefined && object.current_pays !== null)
             ? asset.fromPartial(object.current_pays)
             : undefined;
-        message.open_owner = (_c = object.open_owner) !== null && _c !== void 0 ? _c : "";
-        message.open_orderid = (_d = object.open_orderid) !== null && _d !== void 0 ? _d : 0;
+        message.open_owner = object.open_owner ?? "";
+        message.open_orderid = object.open_orderid ?? 0;
         message.open_pays = (object.open_pays !== undefined && object.open_pays !== null)
             ? asset.fromPartial(object.open_pays)
             : undefined;

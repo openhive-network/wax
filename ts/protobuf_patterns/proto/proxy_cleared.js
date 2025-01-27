@@ -21,13 +21,12 @@ export const proxy_cleared = {
         return obj;
     },
     create(base) {
-        return proxy_cleared.fromPartial(base !== null && base !== void 0 ? base : {});
+        return proxy_cleared.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseproxy_cleared();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.proxy = (_b = object.proxy) !== null && _b !== void 0 ? _b : "";
+        message.account = object.account ?? "";
+        message.proxy = object.proxy ?? "";
         return message;
     },
 };

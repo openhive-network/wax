@@ -50,17 +50,16 @@ export const effective_comment_vote = {
         return obj;
     },
     create(base) {
-        return effective_comment_vote.fromPartial(base !== null && base !== void 0 ? base : {});
+        return effective_comment_vote.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
         const message = createBaseeffective_comment_vote();
-        message.voter = (_a = object.voter) !== null && _a !== void 0 ? _a : "";
-        message.author = (_b = object.author) !== null && _b !== void 0 ? _b : "";
-        message.permlink = (_c = object.permlink) !== null && _c !== void 0 ? _c : "";
-        message.weight = (_d = object.weight) !== null && _d !== void 0 ? _d : "0";
-        message.rshares = (_e = object.rshares) !== null && _e !== void 0 ? _e : "0";
-        message.total_vote_weight = (_f = object.total_vote_weight) !== null && _f !== void 0 ? _f : "0";
+        message.voter = object.voter ?? "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
+        message.weight = object.weight ?? "0";
+        message.rshares = object.rshares ?? "0";
+        message.total_vote_weight = object.total_vote_weight ?? "0";
         message.pending_payout = (object.pending_payout !== undefined && object.pending_payout !== null)
             ? asset.fromPartial(object.pending_payout)
             : undefined;

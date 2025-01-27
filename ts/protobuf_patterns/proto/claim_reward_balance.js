@@ -30,12 +30,11 @@ export const claim_reward_balance = {
         return obj;
     },
     create(base) {
-        return claim_reward_balance.fromPartial(base !== null && base !== void 0 ? base : {});
+        return claim_reward_balance.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseclaim_reward_balance();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         message.reward_hive = (object.reward_hive !== undefined && object.reward_hive !== null)
             ? asset.fromPartial(object.reward_hive)
             : undefined;

@@ -26,12 +26,11 @@ export const dhf_conversion = {
         return obj;
     },
     create(base) {
-        return dhf_conversion.fromPartial(base !== null && base !== void 0 ? base : {});
+        return dhf_conversion.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasedhf_conversion();
-        message.treasury = (_a = object.treasury) !== null && _a !== void 0 ? _a : "";
+        message.treasury = object.treasury ?? "";
         message.hive_amount_in = (object.hive_amount_in !== undefined && object.hive_amount_in !== null)
             ? asset.fromPartial(object.hive_amount_in)
             : undefined;

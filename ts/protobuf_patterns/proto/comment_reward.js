@@ -54,17 +54,16 @@ export const comment_reward = {
         return obj;
     },
     create(base) {
-        return comment_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return comment_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasecomment_reward();
-        message.author = (_a = object.author) !== null && _a !== void 0 ? _a : "";
-        message.permlink = (_b = object.permlink) !== null && _b !== void 0 ? _b : "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
         message.payout = (object.payout !== undefined && object.payout !== null)
             ? asset.fromPartial(object.payout)
             : undefined;
-        message.author_rewards = (_c = object.author_rewards) !== null && _c !== void 0 ? _c : "0";
+        message.author_rewards = object.author_rewards ?? "0";
         message.total_payout_value = (object.total_payout_value !== undefined && object.total_payout_value !== null)
             ? asset.fromPartial(object.total_payout_value)
             : undefined;

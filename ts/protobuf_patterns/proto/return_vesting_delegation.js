@@ -22,12 +22,11 @@ export const return_vesting_delegation = {
         return obj;
     },
     create(base) {
-        return return_vesting_delegation.fromPartial(base !== null && base !== void 0 ? base : {});
+        return return_vesting_delegation.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasereturn_vesting_delegation();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         message.vesting_shares = (object.vesting_shares !== undefined && object.vesting_shares !== null)
             ? asset.fromPartial(object.vesting_shares)
             : undefined;

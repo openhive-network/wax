@@ -15,12 +15,11 @@ export const expired_account_notification = {
         return obj;
     },
     create(base) {
-        return expired_account_notification.fromPartial(base !== null && base !== void 0 ? base : {});
+        return expired_account_notification.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseexpired_account_notification();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         return message;
     },
 };

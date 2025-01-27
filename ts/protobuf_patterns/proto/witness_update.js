@@ -35,14 +35,13 @@ export const witness_update = {
         return obj;
     },
     create(base) {
-        return witness_update.fromPartial(base !== null && base !== void 0 ? base : {});
+        return witness_update.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasewitness_update();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
-        message.url = (_b = object.url) !== null && _b !== void 0 ? _b : "";
-        message.block_signing_key = (_c = object.block_signing_key) !== null && _c !== void 0 ? _c : "";
+        message.owner = object.owner ?? "";
+        message.url = object.url ?? "";
+        message.block_signing_key = object.block_signing_key ?? "";
         message.props = (object.props !== undefined && object.props !== null)
             ? legacy_chain_properties.fromPartial(object.props)
             : undefined;

@@ -12,7 +12,7 @@ export const void_t = {
         return obj;
     },
     create(base) {
-        return void_t.fromPartial(base !== null && base !== void 0 ? base : {});
+        return void_t.fromPartial(base ?? {});
     },
     fromPartial(_) {
         const message = createBasevoid_t();
@@ -34,7 +34,7 @@ export const future_extensions = {
         return obj;
     },
     create(base) {
-        return future_extensions.fromPartial(base !== null && base !== void 0 ? base : {});
+        return future_extensions.fromPartial(base ?? {});
     },
     fromPartial(object) {
         const message = createBasefuture_extensions();

@@ -50,20 +50,19 @@ export const failed_recurrent_transfer = {
         return obj;
     },
     create(base) {
-        return failed_recurrent_transfer.fromPartial(base !== null && base !== void 0 ? base : {});
+        return failed_recurrent_transfer.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
         const message = createBasefailed_recurrent_transfer();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;
-        message.memo = (_c = object.memo) !== null && _c !== void 0 ? _c : "";
-        message.consecutive_failures = (_d = object.consecutive_failures) !== null && _d !== void 0 ? _d : 0;
-        message.remaining_executions = (_e = object.remaining_executions) !== null && _e !== void 0 ? _e : 0;
-        message.deleted = (_f = object.deleted) !== null && _f !== void 0 ? _f : false;
+        message.memo = object.memo ?? "";
+        message.consecutive_failures = object.consecutive_failures ?? 0;
+        message.remaining_executions = object.remaining_executions ?? 0;
+        message.deleted = object.deleted ?? false;
         return message;
     },
 };

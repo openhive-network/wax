@@ -17,12 +17,11 @@ export const update_proposal_end_date = {
         return obj;
     },
     create(base) {
-        return update_proposal_end_date.fromPartial(base !== null && base !== void 0 ? base : {});
+        return update_proposal_end_date.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseupdate_proposal_end_date();
-        message.end_date = (_a = object.end_date) !== null && _a !== void 0 ? _a : "";
+        message.end_date = object.end_date ?? "";
         return message;
     },
 };
@@ -49,7 +48,7 @@ export const update_proposal_extension = {
         return obj;
     },
     create(base) {
-        return update_proposal_extension.fromPartial(base !== null && base !== void 0 ? base : {});
+        return update_proposal_extension.fromPartial(base ?? {});
     },
     fromPartial(object) {
         const message = createBaseupdate_proposal_extension();
@@ -74,13 +73,12 @@ export const update_proposal = {
             daily_pay: isSet(object.daily_pay) ? asset.fromJSON(object.daily_pay) : undefined,
             subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
             permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => update_proposal_extension.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.proposal_id !== undefined) {
             obj.proposal_id = message.proposal_id;
@@ -97,25 +95,24 @@ export const update_proposal = {
         if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => update_proposal_extension.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return update_proposal.fromPartial(base !== null && base !== void 0 ? base : {});
+        return update_proposal.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e;
         const message = createBaseupdate_proposal();
-        message.proposal_id = (_a = object.proposal_id) !== null && _a !== void 0 ? _a : "0";
-        message.creator = (_b = object.creator) !== null && _b !== void 0 ? _b : "";
+        message.proposal_id = object.proposal_id ?? "0";
+        message.creator = object.creator ?? "";
         message.daily_pay = (object.daily_pay !== undefined && object.daily_pay !== null)
             ? asset.fromPartial(object.daily_pay)
             : undefined;
-        message.subject = (_c = object.subject) !== null && _c !== void 0 ? _c : "";
-        message.permlink = (_d = object.permlink) !== null && _d !== void 0 ? _d : "";
-        message.extensions = ((_e = object.extensions) === null || _e === void 0 ? void 0 : _e.map((e) => update_proposal_extension.fromPartial(e))) || [];
+        message.subject = object.subject ?? "";
+        message.permlink = object.permlink ?? "";
+        message.extensions = object.extensions?.map((e) => update_proposal_extension.fromPartial(e)) || [];
         return message;
     },
 };

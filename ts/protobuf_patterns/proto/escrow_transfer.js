@@ -65,15 +65,14 @@ export const escrow_transfer = {
         return obj;
     },
     create(base) {
-        return escrow_transfer.fromPartial(base !== null && base !== void 0 ? base : {});
+        return escrow_transfer.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f, _g;
         const message = createBaseescrow_transfer();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
-        message.agent = (_c = object.agent) !== null && _c !== void 0 ? _c : "";
-        message.escrow_id = (_d = object.escrow_id) !== null && _d !== void 0 ? _d : 0;
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
+        message.agent = object.agent ?? "";
+        message.escrow_id = object.escrow_id ?? 0;
         message.hbd_amount = (object.hbd_amount !== undefined && object.hbd_amount !== null)
             ? asset.fromPartial(object.hbd_amount)
             : undefined;
@@ -81,9 +80,9 @@ export const escrow_transfer = {
             ? asset.fromPartial(object.hive_amount)
             : undefined;
         message.fee = (object.fee !== undefined && object.fee !== null) ? asset.fromPartial(object.fee) : undefined;
-        message.ratification_deadline = (_e = object.ratification_deadline) !== null && _e !== void 0 ? _e : "";
-        message.escrow_expiration = (_f = object.escrow_expiration) !== null && _f !== void 0 ? _f : "";
-        message.json_meta = (_g = object.json_meta) !== null && _g !== void 0 ? _g : "";
+        message.ratification_deadline = object.ratification_deadline ?? "";
+        message.escrow_expiration = object.escrow_expiration ?? "";
+        message.json_meta = object.json_meta ?? "";
         return message;
     },
 };

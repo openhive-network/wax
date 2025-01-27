@@ -41,18 +41,17 @@ export const comment = {
         return obj;
     },
     create(base) {
-        return comment.fromPartial(base !== null && base !== void 0 ? base : {});
+        return comment.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f, _g;
         const message = createBasecomment();
-        message.parent_author = (_a = object.parent_author) !== null && _a !== void 0 ? _a : "";
-        message.parent_permlink = (_b = object.parent_permlink) !== null && _b !== void 0 ? _b : "";
-        message.author = (_c = object.author) !== null && _c !== void 0 ? _c : "";
-        message.permlink = (_d = object.permlink) !== null && _d !== void 0 ? _d : "";
-        message.title = (_e = object.title) !== null && _e !== void 0 ? _e : "";
-        message.body = (_f = object.body) !== null && _f !== void 0 ? _f : "";
-        message.json_metadata = (_g = object.json_metadata) !== null && _g !== void 0 ? _g : "";
+        message.parent_author = object.parent_author ?? "";
+        message.parent_permlink = object.parent_permlink ?? "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
+        message.title = object.title ?? "";
+        message.body = object.body ?? "";
+        message.json_metadata = object.json_metadata ?? "";
         return message;
     },
 };

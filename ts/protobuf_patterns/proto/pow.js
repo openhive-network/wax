@@ -30,15 +30,14 @@ export const pow_work = {
         return obj;
     },
     create(base) {
-        return pow_work.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow_work.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBasepow_work();
-        message.worker = (_a = object.worker) !== null && _a !== void 0 ? _a : "";
-        message.input = (_b = object.input) !== null && _b !== void 0 ? _b : "";
-        message.signature = (_c = object.signature) !== null && _c !== void 0 ? _c : "";
-        message.work = (_d = object.work) !== null && _d !== void 0 ? _d : "";
+        message.worker = object.worker ?? "";
+        message.input = object.input ?? "";
+        message.signature = object.signature ?? "";
+        message.work = object.work ?? "";
         return message;
     },
 };
@@ -75,14 +74,13 @@ export const pow = {
         return obj;
     },
     create(base) {
-        return pow.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasepow();
-        message.worker_account = (_a = object.worker_account) !== null && _a !== void 0 ? _a : "";
-        message.block_id = (_b = object.block_id) !== null && _b !== void 0 ? _b : "";
-        message.nonce = (_c = object.nonce) !== null && _c !== void 0 ? _c : "0";
+        message.worker_account = object.worker_account ?? "";
+        message.block_id = object.block_id ?? "";
+        message.nonce = object.nonce ?? "0";
         message.work = (object.work !== undefined && object.work !== null) ? pow_work.fromPartial(object.work) : undefined;
         message.props = (object.props !== undefined && object.props !== null)
             ? legacy_chain_properties.fromPartial(object.props)

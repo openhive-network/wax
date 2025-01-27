@@ -28,16 +28,15 @@ export const interest = {
         return obj;
     },
     create(base) {
-        return interest.fromPartial(base !== null && base !== void 0 ? base : {});
+        return interest.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseinterest();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
+        message.owner = object.owner ?? "";
         message.interest = (object.interest !== undefined && object.interest !== null)
             ? asset.fromPartial(object.interest)
             : undefined;
-        message.is_saved_into_hbd_balance = (_b = object.is_saved_into_hbd_balance) !== null && _b !== void 0 ? _b : false;
+        message.is_saved_into_hbd_balance = object.is_saved_into_hbd_balance ?? false;
         return message;
     },
 };

@@ -54,13 +54,12 @@ export const author_reward = {
         return obj;
     },
     create(base) {
-        return author_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return author_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseauthor_reward();
-        message.author = (_a = object.author) !== null && _a !== void 0 ? _a : "";
-        message.permlink = (_b = object.permlink) !== null && _b !== void 0 ? _b : "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
         message.hbd_payout = (object.hbd_payout !== undefined && object.hbd_payout !== null)
             ? asset.fromPartial(object.hbd_payout)
             : undefined;
@@ -74,7 +73,7 @@ export const author_reward = {
             (object.curators_vesting_payout !== undefined && object.curators_vesting_payout !== null)
                 ? asset.fromPartial(object.curators_vesting_payout)
                 : undefined;
-        message.payout_must_be_claimed = (_c = object.payout_must_be_claimed) !== null && _c !== void 0 ? _c : false;
+        message.payout_must_be_claimed = object.payout_must_be_claimed ?? false;
         return message;
     },
 };

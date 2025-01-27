@@ -50,15 +50,14 @@ export const escrow_rejected = {
         return obj;
     },
     create(base) {
-        return escrow_rejected.fromPartial(base !== null && base !== void 0 ? base : {});
+        return escrow_rejected.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBaseescrow_rejected();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
-        message.agent = (_c = object.agent) !== null && _c !== void 0 ? _c : "";
-        message.escrow_id = (_d = object.escrow_id) !== null && _d !== void 0 ? _d : 0;
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
+        message.agent = object.agent ?? "";
+        message.escrow_id = object.escrow_id ?? 0;
         message.hbd_amount = (object.hbd_amount !== undefined && object.hbd_amount !== null)
             ? asset.fromPartial(object.hbd_amount)
             : undefined;

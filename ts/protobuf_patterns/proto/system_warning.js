@@ -15,12 +15,11 @@ export const system_warning = {
         return obj;
     },
     create(base) {
-        return system_warning.fromPartial(base !== null && base !== void 0 ? base : {});
+        return system_warning.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasesystem_warning();
-        message.message = (_a = object.message) !== null && _a !== void 0 ? _a : "";
+        message.message = object.message ?? "";
         return message;
     },
 };

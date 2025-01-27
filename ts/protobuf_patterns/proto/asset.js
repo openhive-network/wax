@@ -25,14 +25,13 @@ export const asset = {
         return obj;
     },
     create(base) {
-        return asset.fromPartial(base !== null && base !== void 0 ? base : {});
+        return asset.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseasset();
-        message.amount = (_a = object.amount) !== null && _a !== void 0 ? _a : "";
-        message.precision = (_b = object.precision) !== null && _b !== void 0 ? _b : 0;
-        message.nai = (_c = object.nai) !== null && _c !== void 0 ? _c : "";
+        message.amount = object.amount ?? "";
+        message.precision = object.precision ?? 0;
+        message.nai = object.nai ?? "";
         return message;
     },
 };

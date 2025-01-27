@@ -30,13 +30,12 @@ export const fill_convert_request = {
         return obj;
     },
     create(base) {
-        return fill_convert_request.fromPartial(base !== null && base !== void 0 ? base : {});
+        return fill_convert_request.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasefill_convert_request();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
-        message.requestid = (_b = object.requestid) !== null && _b !== void 0 ? _b : 0;
+        message.owner = object.owner ?? "";
+        message.requestid = object.requestid ?? 0;
         message.amount_in = (object.amount_in !== undefined && object.amount_in !== null)
             ? asset.fromPartial(object.amount_in)
             : undefined;

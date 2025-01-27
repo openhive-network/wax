@@ -34,18 +34,17 @@ export const transfer_from_savings = {
         return obj;
     },
     create(base) {
-        return transfer_from_savings.fromPartial(base !== null && base !== void 0 ? base : {});
+        return transfer_from_savings.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBasetransfer_from_savings();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.request_id = (_b = object.request_id) !== null && _b !== void 0 ? _b : 0;
-        message.to_account = (_c = object.to_account) !== null && _c !== void 0 ? _c : "";
+        message.from_account = object.from_account ?? "";
+        message.request_id = object.request_id ?? 0;
+        message.to_account = object.to_account ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;
-        message.memo = (_d = object.memo) !== null && _d !== void 0 ? _d : "";
+        message.memo = object.memo ?? "";
         return message;
     },
 };

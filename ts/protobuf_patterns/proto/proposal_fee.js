@@ -30,14 +30,13 @@ export const proposal_fee = {
         return obj;
     },
     create(base) {
-        return proposal_fee.fromPartial(base !== null && base !== void 0 ? base : {});
+        return proposal_fee.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseproposal_fee();
-        message.creator = (_a = object.creator) !== null && _a !== void 0 ? _a : "";
-        message.treasury = (_b = object.treasury) !== null && _b !== void 0 ? _b : "";
-        message.proposal_id = (_c = object.proposal_id) !== null && _c !== void 0 ? _c : 0;
+        message.creator = object.creator ?? "";
+        message.treasury = object.treasury ?? "";
+        message.proposal_id = object.proposal_id ?? 0;
         message.fee = (object.fee !== undefined && object.fee !== null) ? asset.fromPartial(object.fee) : undefined;
         return message;
     },

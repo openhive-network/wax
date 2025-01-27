@@ -15,12 +15,11 @@ export const producer_missed = {
         return obj;
     },
     create(base) {
-        return producer_missed.fromPartial(base !== null && base !== void 0 ? base : {});
+        return producer_missed.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseproducer_missed();
-        message.producer = (_a = object.producer) !== null && _a !== void 0 ? _a : "";
+        message.producer = object.producer ?? "";
         return message;
     },
 };

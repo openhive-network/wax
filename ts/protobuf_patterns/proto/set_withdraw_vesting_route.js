@@ -29,15 +29,14 @@ export const set_withdraw_vesting_route = {
         return obj;
     },
     create(base) {
-        return set_withdraw_vesting_route.fromPartial(base !== null && base !== void 0 ? base : {});
+        return set_withdraw_vesting_route.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBaseset_withdraw_vesting_route();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
-        message.percent = (_c = object.percent) !== null && _c !== void 0 ? _c : 0;
-        message.auto_vest = (_d = object.auto_vest) !== null && _d !== void 0 ? _d : false;
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
+        message.percent = object.percent ?? 0;
+        message.auto_vest = object.auto_vest ?? false;
         return message;
     },
 };

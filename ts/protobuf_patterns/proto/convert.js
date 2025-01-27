@@ -26,13 +26,12 @@ export const convert = {
         return obj;
     },
     create(base) {
-        return convert.fromPartial(base !== null && base !== void 0 ? base : {});
+        return convert.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaseconvert();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
-        message.requestid = (_b = object.requestid) !== null && _b !== void 0 ? _b : 0;
+        message.owner = object.owner ?? "";
+        message.requestid = object.requestid ?? 0;
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;

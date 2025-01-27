@@ -30,13 +30,12 @@ export const hardfork_hive_restore = {
         return obj;
     },
     create(base) {
-        return hardfork_hive_restore.fromPartial(base !== null && base !== void 0 ? base : {});
+        return hardfork_hive_restore.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasehardfork_hive_restore();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.treasury = (_b = object.treasury) !== null && _b !== void 0 ? _b : "";
+        message.account = object.account ?? "";
+        message.treasury = object.treasury ?? "";
         message.hbd_transferred = (object.hbd_transferred !== undefined && object.hbd_transferred !== null)
             ? asset.fromPartial(object.hbd_transferred)
             : undefined;

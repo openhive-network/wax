@@ -26,13 +26,12 @@ export const transfer_to_vesting = {
         return obj;
     },
     create(base) {
-        return transfer_to_vesting.fromPartial(base !== null && base !== void 0 ? base : {});
+        return transfer_to_vesting.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasetransfer_to_vesting();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;

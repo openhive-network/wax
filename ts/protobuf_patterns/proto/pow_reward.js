@@ -22,12 +22,11 @@ export const pow_reward = {
         return obj;
     },
     create(base) {
-        return pow_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return pow_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasepow_reward();
-        message.worker = (_a = object.worker) !== null && _a !== void 0 ? _a : "";
+        message.worker = object.worker ?? "";
         message.reward = (object.reward !== undefined && object.reward !== null)
             ? asset.fromPartial(object.reward)
             : undefined;

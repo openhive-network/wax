@@ -37,17 +37,16 @@ export const escrow_approve = {
         return obj;
     },
     create(base) {
-        return escrow_approve.fromPartial(base !== null && base !== void 0 ? base : {});
+        return escrow_approve.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f;
         const message = createBaseescrow_approve();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.to_account = (_b = object.to_account) !== null && _b !== void 0 ? _b : "";
-        message.agent = (_c = object.agent) !== null && _c !== void 0 ? _c : "";
-        message.who = (_d = object.who) !== null && _d !== void 0 ? _d : "";
-        message.escrow_id = (_e = object.escrow_id) !== null && _e !== void 0 ? _e : 0;
-        message.approve = (_f = object.approve) !== null && _f !== void 0 ? _f : false;
+        message.from_account = object.from_account ?? "";
+        message.to_account = object.to_account ?? "";
+        message.agent = object.agent ?? "";
+        message.who = object.who ?? "";
+        message.escrow_id = object.escrow_id ?? 0;
+        message.approve = object.approve ?? false;
         return message;
     },
 };

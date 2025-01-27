@@ -21,13 +21,12 @@ export const limit_order_cancel = {
         return obj;
     },
     create(base) {
-        return limit_order_cancel.fromPartial(base !== null && base !== void 0 ? base : {});
+        return limit_order_cancel.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaselimit_order_cancel();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
-        message.orderid = (_b = object.orderid) !== null && _b !== void 0 ? _b : 0;
+        message.owner = object.owner ?? "";
+        message.orderid = object.orderid ?? 0;
         return message;
     },
 };

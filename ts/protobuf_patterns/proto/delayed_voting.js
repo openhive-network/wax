@@ -21,13 +21,12 @@ export const delayed_voting = {
         return obj;
     },
     create(base) {
-        return delayed_voting.fromPartial(base !== null && base !== void 0 ? base : {});
+        return delayed_voting.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasedelayed_voting();
-        message.voter = (_a = object.voter) !== null && _a !== void 0 ? _a : "";
-        message.votes = (_b = object.votes) !== null && _b !== void 0 ? _b : "0";
+        message.voter = object.voter ?? "";
+        message.votes = object.votes ?? "0";
         return message;
     },
 };

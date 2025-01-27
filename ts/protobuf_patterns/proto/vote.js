@@ -29,15 +29,14 @@ export const vote = {
         return obj;
     },
     create(base) {
-        return vote.fromPartial(base !== null && base !== void 0 ? base : {});
+        return vote.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d;
         const message = createBasevote();
-        message.voter = (_a = object.voter) !== null && _a !== void 0 ? _a : "";
-        message.author = (_b = object.author) !== null && _b !== void 0 ? _b : "";
-        message.permlink = (_c = object.permlink) !== null && _c !== void 0 ? _c : "";
-        message.weight = (_d = object.weight) !== null && _d !== void 0 ? _d : 0;
+        message.voter = object.voter ?? "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
+        message.weight = object.weight ?? 0;
         return message;
     },
 };

@@ -28,16 +28,15 @@ export const legacy_chain_properties = {
         return obj;
     },
     create(base) {
-        return legacy_chain_properties.fromPartial(base !== null && base !== void 0 ? base : {});
+        return legacy_chain_properties.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBaselegacy_chain_properties();
         message.account_creation_fee = (object.account_creation_fee !== undefined && object.account_creation_fee !== null)
             ? asset.fromPartial(object.account_creation_fee)
             : undefined;
-        message.maximum_block_size = (_a = object.maximum_block_size) !== null && _a !== void 0 ? _a : 0;
-        message.hbd_interest_rate = (_b = object.hbd_interest_rate) !== null && _b !== void 0 ? _b : 0;
+        message.maximum_block_size = object.maximum_block_size ?? 0;
+        message.hbd_interest_rate = object.hbd_interest_rate ?? 0;
         return message;
     },
 };

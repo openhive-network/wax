@@ -15,12 +15,11 @@ export const shutdown_witness = {
         return obj;
     },
     create(base) {
-        return shutdown_witness.fromPartial(base !== null && base !== void 0 ? base : {});
+        return shutdown_witness.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseshutdown_witness();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
+        message.owner = object.owner ?? "";
         return message;
     },
 };

@@ -13,13 +13,12 @@ export const request_account_recovery = {
             new_owner_authority: isSet(object.new_owner_authority)
                 ? authority.fromJSON(object.new_owner_authority)
                 : undefined,
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.recovery_account !== undefined) {
             obj.recovery_account = message.recovery_account;
@@ -30,23 +29,22 @@ export const request_account_recovery = {
         if (message.new_owner_authority !== undefined) {
             obj.new_owner_authority = authority.toJSON(message.new_owner_authority);
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return request_account_recovery.fromPartial(base !== null && base !== void 0 ? base : {});
+        return request_account_recovery.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaserequest_account_recovery();
-        message.recovery_account = (_a = object.recovery_account) !== null && _a !== void 0 ? _a : "";
-        message.account_to_recover = (_b = object.account_to_recover) !== null && _b !== void 0 ? _b : "";
+        message.recovery_account = object.recovery_account ?? "";
+        message.account_to_recover = object.account_to_recover ?? "";
         message.new_owner_authority = (object.new_owner_authority !== undefined && object.new_owner_authority !== null)
             ? authority.fromPartial(object.new_owner_authority)
             : undefined;
-        message.extensions = ((_c = object.extensions) === null || _c === void 0 ? void 0 : _c.map((e) => future_extensions.fromPartial(e))) || [];
+        message.extensions = object.extensions?.map((e) => future_extensions.fromPartial(e)) || [];
         return message;
     },
 };

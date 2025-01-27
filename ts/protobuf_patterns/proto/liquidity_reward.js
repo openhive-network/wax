@@ -22,12 +22,11 @@ export const liquidity_reward = {
         return obj;
     },
     create(base) {
-        return liquidity_reward.fromPartial(base !== null && base !== void 0 ? base : {});
+        return liquidity_reward.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBaseliquidity_reward();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
+        message.owner = object.owner ?? "";
         message.payout = (object.payout !== undefined && object.payout !== null)
             ? asset.fromPartial(object.payout)
             : undefined;

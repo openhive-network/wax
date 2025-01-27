@@ -30,14 +30,13 @@ export const proposal_pay = {
         return obj;
     },
     create(base) {
-        return proposal_pay.fromPartial(base !== null && base !== void 0 ? base : {});
+        return proposal_pay.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBaseproposal_pay();
-        message.proposal_id = (_a = object.proposal_id) !== null && _a !== void 0 ? _a : 0;
-        message.receiver = (_b = object.receiver) !== null && _b !== void 0 ? _b : "";
-        message.payer = (_c = object.payer) !== null && _c !== void 0 ? _c : "";
+        message.proposal_id = object.proposal_id ?? 0;
+        message.receiver = object.receiver ?? "";
+        message.payer = object.payer ?? "";
         message.payment = (object.payment !== undefined && object.payment !== null)
             ? asset.fromPartial(object.payment)
             : undefined;

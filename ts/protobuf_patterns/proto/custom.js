@@ -6,7 +6,7 @@ function createBasecustom() {
 export const custom = {
     fromJSON(object) {
         return {
-            required_auths: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.required_auths)
+            required_auths: globalThis.Array.isArray(object?.required_auths)
                 ? object.required_auths.map((e) => globalThis.String(e))
                 : [],
             id: isSet(object.id) ? globalThis.Number(object.id) : 0,
@@ -14,9 +14,8 @@ export const custom = {
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
-        if ((_a = message.required_auths) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.required_auths?.length) {
             obj.required_auths = message.required_auths;
         }
         if (message.id !== undefined) {
@@ -28,14 +27,13 @@ export const custom = {
         return obj;
     },
     create(base) {
-        return custom.fromPartial(base !== null && base !== void 0 ? base : {});
+        return custom.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasecustom();
-        message.required_auths = ((_a = object.required_auths) === null || _a === void 0 ? void 0 : _a.map((e) => e)) || [];
-        message.id = (_b = object.id) !== null && _b !== void 0 ? _b : 0;
-        message.data = (_c = object.data) !== null && _c !== void 0 ? _c : "";
+        message.required_auths = object.required_auths?.map((e) => e) || [];
+        message.id = object.id ?? 0;
+        message.data = object.data ?? "";
         return message;
     },
 };

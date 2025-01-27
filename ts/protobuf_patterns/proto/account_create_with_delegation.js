@@ -29,13 +29,12 @@ export const account_create_with_delegation = {
             posting: isSet(object.posting) ? authority.fromJSON(object.posting) : undefined,
             memo_key: isSet(object.memo_key) ? globalThis.String(object.memo_key) : "",
             json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.fee !== undefined) {
             obj.fee = asset.toJSON(message.fee);
@@ -64,23 +63,22 @@ export const account_create_with_delegation = {
         if (message.json_metadata !== undefined) {
             obj.json_metadata = message.json_metadata;
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return account_create_with_delegation.fromPartial(base !== null && base !== void 0 ? base : {});
+        return account_create_with_delegation.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e;
         const message = createBaseaccount_create_with_delegation();
         message.fee = (object.fee !== undefined && object.fee !== null) ? asset.fromPartial(object.fee) : undefined;
         message.delegation = (object.delegation !== undefined && object.delegation !== null)
             ? asset.fromPartial(object.delegation)
             : undefined;
-        message.creator = (_a = object.creator) !== null && _a !== void 0 ? _a : "";
-        message.new_account_name = (_b = object.new_account_name) !== null && _b !== void 0 ? _b : "";
+        message.creator = object.creator ?? "";
+        message.new_account_name = object.new_account_name ?? "";
         message.owner = (object.owner !== undefined && object.owner !== null)
             ? authority.fromPartial(object.owner)
             : undefined;
@@ -90,9 +88,9 @@ export const account_create_with_delegation = {
         message.posting = (object.posting !== undefined && object.posting !== null)
             ? authority.fromPartial(object.posting)
             : undefined;
-        message.memo_key = (_c = object.memo_key) !== null && _c !== void 0 ? _c : "";
-        message.json_metadata = (_d = object.json_metadata) !== null && _d !== void 0 ? _d : "";
-        message.extensions = ((_e = object.extensions) === null || _e === void 0 ? void 0 : _e.map((e) => future_extensions.fromPartial(e))) || [];
+        message.memo_key = object.memo_key ?? "";
+        message.json_metadata = object.json_metadata ?? "";
+        message.extensions = object.extensions?.map((e) => future_extensions.fromPartial(e)) || [];
         return message;
     },
 };

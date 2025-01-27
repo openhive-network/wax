@@ -22,12 +22,11 @@ export const feed_publish = {
         return obj;
     },
     create(base) {
-        return feed_publish.fromPartial(base !== null && base !== void 0 ? base : {});
+        return feed_publish.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasefeed_publish();
-        message.publisher = (_a = object.publisher) !== null && _a !== void 0 ? _a : "";
+        message.publisher = object.publisher ?? "";
         message.exchange_rate = (object.exchange_rate !== undefined && object.exchange_rate !== null)
             ? price.fromPartial(object.exchange_rate)
             : undefined;

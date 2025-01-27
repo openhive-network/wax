@@ -21,13 +21,12 @@ export const cancel_transfer_from_savings = {
         return obj;
     },
     create(base) {
-        return cancel_transfer_from_savings.fromPartial(base !== null && base !== void 0 ? base : {});
+        return cancel_transfer_from_savings.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasecancel_transfer_from_savings();
-        message.from_account = (_a = object.from_account) !== null && _a !== void 0 ? _a : "";
-        message.request_id = (_b = object.request_id) !== null && _b !== void 0 ? _b : 0;
+        message.from_account = object.from_account ?? "";
+        message.request_id = object.request_id ?? 0;
         return message;
     },
 };

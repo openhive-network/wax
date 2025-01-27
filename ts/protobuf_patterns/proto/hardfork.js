@@ -15,12 +15,11 @@ export const hardfork = {
         return obj;
     },
     create(base) {
-        return hardfork.fromPartial(base !== null && base !== void 0 ? base : {});
+        return hardfork.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasehardfork();
-        message.hardfork_id = (_a = object.hardfork_id) !== null && _a !== void 0 ? _a : 0;
+        message.hardfork_id = object.hardfork_id ?? 0;
         return message;
     },
 };

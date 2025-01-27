@@ -24,13 +24,12 @@ export const create_proposal = {
             daily_pay: isSet(object.daily_pay) ? asset.fromJSON(object.daily_pay) : undefined,
             subject: isSet(object.subject) ? globalThis.String(object.subject) : "",
             permlink: isSet(object.permlink) ? globalThis.String(object.permlink) : "",
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.creator !== undefined) {
             obj.creator = message.creator;
@@ -53,27 +52,26 @@ export const create_proposal = {
         if (message.permlink !== undefined) {
             obj.permlink = message.permlink;
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return create_proposal.fromPartial(base !== null && base !== void 0 ? base : {});
+        return create_proposal.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e, _f, _g;
         const message = createBasecreate_proposal();
-        message.creator = (_a = object.creator) !== null && _a !== void 0 ? _a : "";
-        message.receiver = (_b = object.receiver) !== null && _b !== void 0 ? _b : "";
-        message.start_date = (_c = object.start_date) !== null && _c !== void 0 ? _c : "";
-        message.end_date = (_d = object.end_date) !== null && _d !== void 0 ? _d : "";
+        message.creator = object.creator ?? "";
+        message.receiver = object.receiver ?? "";
+        message.start_date = object.start_date ?? "";
+        message.end_date = object.end_date ?? "";
         message.daily_pay = (object.daily_pay !== undefined && object.daily_pay !== null)
             ? asset.fromPartial(object.daily_pay)
             : undefined;
-        message.subject = (_e = object.subject) !== null && _e !== void 0 ? _e : "";
-        message.permlink = (_f = object.permlink) !== null && _f !== void 0 ? _f : "";
-        message.extensions = ((_g = object.extensions) === null || _g === void 0 ? void 0 : _g.map((e) => future_extensions.fromPartial(e))) || [];
+        message.subject = object.subject ?? "";
+        message.permlink = object.permlink ?? "";
+        message.extensions = object.extensions?.map((e) => future_extensions.fromPartial(e)) || [];
         return message;
     },
 };

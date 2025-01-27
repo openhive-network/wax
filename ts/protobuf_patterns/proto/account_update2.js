@@ -15,13 +15,12 @@ export const account_update2 = {
             memo_key: isSet(object.memo_key) ? globalThis.String(object.memo_key) : undefined,
             json_metadata: isSet(object.json_metadata) ? globalThis.String(object.json_metadata) : "",
             posting_json_metadata: isSet(object.posting_json_metadata) ? globalThis.String(object.posting_json_metadata) : "",
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.account !== undefined) {
             obj.account = message.account;
@@ -44,18 +43,17 @@ export const account_update2 = {
         if (message.posting_json_metadata !== undefined) {
             obj.posting_json_metadata = message.posting_json_metadata;
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return account_update2.fromPartial(base !== null && base !== void 0 ? base : {});
+        return account_update2.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c, _d, _e;
         const message = createBaseaccount_update2();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
+        message.account = object.account ?? "";
         message.owner = (object.owner !== undefined && object.owner !== null)
             ? authority.fromPartial(object.owner)
             : undefined;
@@ -65,10 +63,10 @@ export const account_update2 = {
         message.posting = (object.posting !== undefined && object.posting !== null)
             ? authority.fromPartial(object.posting)
             : undefined;
-        message.memo_key = (_b = object.memo_key) !== null && _b !== void 0 ? _b : "STM1111111111111111111111111111111114T1Anm";
-        message.json_metadata = (_c = object.json_metadata) !== null && _c !== void 0 ? _c : "";
-        message.posting_json_metadata = (_d = object.posting_json_metadata) !== null && _d !== void 0 ? _d : "";
-        message.extensions = ((_e = object.extensions) === null || _e === void 0 ? void 0 : _e.map((e) => future_extensions.fromPartial(e))) || [];
+        message.memo_key = object.memo_key ?? "STM1111111111111111111111111111111114T1Anm";
+        message.json_metadata = object.json_metadata ?? "";
+        message.posting_json_metadata = object.posting_json_metadata ?? "";
+        message.extensions = object.extensions?.map((e) => future_extensions.fromPartial(e)) || [];
         return message;
     },
 };

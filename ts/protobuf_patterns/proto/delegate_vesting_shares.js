@@ -26,13 +26,12 @@ export const delegate_vesting_shares = {
         return obj;
     },
     create(base) {
-        return delegate_vesting_shares.fromPartial(base !== null && base !== void 0 ? base : {});
+        return delegate_vesting_shares.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasedelegate_vesting_shares();
-        message.delegator = (_a = object.delegator) !== null && _a !== void 0 ? _a : "";
-        message.delegatee = (_b = object.delegatee) !== null && _b !== void 0 ? _b : "";
+        message.delegator = object.delegator ?? "";
+        message.delegatee = object.delegatee ?? "";
         message.vesting_shares = (object.vesting_shares !== undefined && object.vesting_shares !== null)
             ? asset.fromPartial(object.vesting_shares)
             : undefined;

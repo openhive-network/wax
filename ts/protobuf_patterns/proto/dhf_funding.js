@@ -22,12 +22,11 @@ export const dhf_funding = {
         return obj;
     },
     create(base) {
-        return dhf_funding.fromPartial(base !== null && base !== void 0 ? base : {});
+        return dhf_funding.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a;
         const message = createBasedhf_funding();
-        message.treasury = (_a = object.treasury) !== null && _a !== void 0 ? _a : "";
+        message.treasury = object.treasury ?? "";
         message.additional_funds = (object.additional_funds !== undefined && object.additional_funds !== null)
             ? asset.fromPartial(object.additional_funds)
             : undefined;

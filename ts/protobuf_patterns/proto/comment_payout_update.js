@@ -21,13 +21,12 @@ export const comment_payout_update = {
         return obj;
     },
     create(base) {
-        return comment_payout_update.fromPartial(base !== null && base !== void 0 ? base : {});
+        return comment_payout_update.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasecomment_payout_update();
-        message.author = (_a = object.author) !== null && _a !== void 0 ? _a : "";
-        message.permlink = (_b = object.permlink) !== null && _b !== void 0 ? _b : "";
+        message.author = object.author ?? "";
+        message.permlink = object.permlink ?? "";
         return message;
     },
 };

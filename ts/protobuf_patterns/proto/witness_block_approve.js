@@ -21,13 +21,12 @@ export const witness_block_approve = {
         return obj;
     },
     create(base) {
-        return witness_block_approve.fromPartial(base !== null && base !== void 0 ? base : {});
+        return witness_block_approve.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasewitness_block_approve();
-        message.witness = (_a = object.witness) !== null && _a !== void 0 ? _a : "";
-        message.block_id = (_b = object.block_id) !== null && _b !== void 0 ? _b : "";
+        message.witness = object.witness ?? "";
+        message.block_id = object.block_id ?? "";
         return message;
     },
 };

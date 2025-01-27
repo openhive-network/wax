@@ -14,13 +14,12 @@ export const witness_set_properties = {
                     return acc;
                 }, {})
                 : {},
-            extensions: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.extensions)
+            extensions: globalThis.Array.isArray(object?.extensions)
                 ? object.extensions.map((e) => future_extensions.fromJSON(e))
                 : [],
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.owner !== undefined) {
             obj.owner = message.owner;
@@ -34,25 +33,24 @@ export const witness_set_properties = {
                 });
             }
         }
-        if ((_a = message.extensions) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.extensions?.length) {
             obj.extensions = message.extensions.map((e) => future_extensions.toJSON(e));
         }
         return obj;
     },
     create(base) {
-        return witness_set_properties.fromPartial(base !== null && base !== void 0 ? base : {});
+        return witness_set_properties.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasewitness_set_properties();
-        message.owner = (_a = object.owner) !== null && _a !== void 0 ? _a : "";
-        message.props = Object.entries((_b = object.props) !== null && _b !== void 0 ? _b : {}).reduce((acc, [key, value]) => {
+        message.owner = object.owner ?? "";
+        message.props = Object.entries(object.props ?? {}).reduce((acc, [key, value]) => {
             if (value !== undefined) {
                 acc[key] = globalThis.String(value);
             }
             return acc;
         }, {});
-        message.extensions = ((_c = object.extensions) === null || _c === void 0 ? void 0 : _c.map((e) => future_extensions.fromPartial(e))) || [];
+        message.extensions = object.extensions?.map((e) => future_extensions.fromPartial(e)) || [];
         return message;
     },
 };
@@ -77,13 +75,12 @@ export const witness_set_properties_PropsEntry = {
         return obj;
     },
     create(base) {
-        return witness_set_properties_PropsEntry.fromPartial(base !== null && base !== void 0 ? base : {});
+        return witness_set_properties_PropsEntry.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b;
         const message = createBasewitness_set_properties_PropsEntry();
-        message.key = (_a = object.key) !== null && _a !== void 0 ? _a : "";
-        message.value = (_b = object.value) !== null && _b !== void 0 ? _b : "";
+        message.key = object.key ?? "";
+        message.value = object.value ?? "";
         return message;
     },
 };

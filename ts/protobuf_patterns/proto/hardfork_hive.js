@@ -17,7 +17,7 @@ export const hardfork_hive = {
         return {
             account: isSet(object.account) ? globalThis.String(object.account) : "",
             treasury: isSet(object.treasury) ? globalThis.String(object.treasury) : "",
-            other_affected_accounts: globalThis.Array.isArray(object === null || object === void 0 ? void 0 : object.other_affected_accounts)
+            other_affected_accounts: globalThis.Array.isArray(object?.other_affected_accounts)
                 ? object.other_affected_accounts.map((e) => globalThis.String(e))
                 : [],
             hbd_transferred: isSet(object.hbd_transferred) ? asset.fromJSON(object.hbd_transferred) : undefined,
@@ -29,7 +29,6 @@ export const hardfork_hive = {
         };
     },
     toJSON(message) {
-        var _a;
         const obj = {};
         if (message.account !== undefined) {
             obj.account = message.account;
@@ -37,7 +36,7 @@ export const hardfork_hive = {
         if (message.treasury !== undefined) {
             obj.treasury = message.treasury;
         }
-        if ((_a = message.other_affected_accounts) === null || _a === void 0 ? void 0 : _a.length) {
+        if (message.other_affected_accounts?.length) {
             obj.other_affected_accounts = message.other_affected_accounts;
         }
         if (message.hbd_transferred !== undefined) {
@@ -55,14 +54,13 @@ export const hardfork_hive = {
         return obj;
     },
     create(base) {
-        return hardfork_hive.fromPartial(base !== null && base !== void 0 ? base : {});
+        return hardfork_hive.fromPartial(base ?? {});
     },
     fromPartial(object) {
-        var _a, _b, _c;
         const message = createBasehardfork_hive();
-        message.account = (_a = object.account) !== null && _a !== void 0 ? _a : "";
-        message.treasury = (_b = object.treasury) !== null && _b !== void 0 ? _b : "";
-        message.other_affected_accounts = ((_c = object.other_affected_accounts) === null || _c === void 0 ? void 0 : _c.map((e) => e)) || [];
+        message.account = object.account ?? "";
+        message.treasury = object.treasury ?? "";
+        message.other_affected_accounts = object.other_affected_accounts?.map((e) => e) || [];
         message.hbd_transferred = (object.hbd_transferred !== undefined && object.hbd_transferred !== null)
             ? asset.fromPartial(object.hbd_transferred)
             : undefined;
