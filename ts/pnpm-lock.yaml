@@ -21,9 +21,6 @@ importers:
       '@playwright/test':
         specifier: ^1.49.1
         version: 1.49.1
-      '@rollup/plugin-alias':
-        specifier: ^5.1.1
-        version: 5.1.1(rollup@4.24.0)
       '@rollup/plugin-commonjs':
         specifier: ^27.0.0
         version: 27.0.0(rollup@4.24.0)
@@ -223,15 +220,6 @@ packages:
 
   '@protobufjs/utf8@1.1.0':
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
-
-  '@rollup/plugin-alias@5.1.1':
-    resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
 
   '@rollup/plugin-commonjs@27.0.0':
     resolution: {integrity: sha512-zSq7xlCb5aLRAS+rE6mE+++fEWvWQ8RQ+A4HkBT8bUW/cdYnrFJKRlgdb76XSekgU1n4Rssi/mrOG4GL8D9AwQ==}
@@ -1905,10 +1893,6 @@ snapshots:
   '@protobufjs/pool@1.1.0': {}
 
   '@protobufjs/utf8@1.1.0': {}
-
-  '@rollup/plugin-alias@5.1.1(rollup@4.24.0)':
-    optionalDependencies:
-      rollup: 4.24.0
 
   '@rollup/plugin-commonjs@27.0.0(rollup@4.24.0)':
     dependencies:

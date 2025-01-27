@@ -60,7 +60,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
-    "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^27.0.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-replace": "^6.0.1",
@@ -103,14 +102,7 @@
   "size-limit": [
     {
       "path": [
-        "./wasm/dist/bundle/wax.web.js",
-        "./wasm/dist/bundle/wax.node.js",
-        "./wasm/dist/bundle/index.d.ts",
-        "./wasm/dist/bundle/node.js",
-        "./wasm/dist/bundle/web.js",
-        "./wasm/dist/bundle/vite.js",
-        "./wasm/dist/bundle/detailed/index.js",
-        "./wasm/dist/bundle/wax.common.wasm"
+        "./wasm/dist/bundle"
       ],
       "limit": "5700 kB",
       "brotli": false
@@ -124,14 +116,7 @@
   "files": [
     "LICENSE.md",
     "README.md",
-    "wasm/dist/bundle/wax.web.js",
-    "wasm/dist/bundle/wax.node.js",
-    "wasm/dist/bundle/index.d.ts",
-    "wasm/dist/bundle/node.js",
-    "wasm/dist/bundle/web.js",
-    "./wasm/dist/bundle/vite.js",
-    "wasm/dist/bundle/detailed/index.js",
-    "wasm/dist/bundle/wax.common.wasm"
+    "wasm/dist/bundle"
   ],
   "repository": {
     "type": "git",
