@@ -1,6 +1,6 @@
 export * from "./detailed/index.js";
 
-import { constructHiveChainWithWasm, constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
+import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
 
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "wasm/lib/wax_module.js";

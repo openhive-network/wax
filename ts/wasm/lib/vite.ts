@@ -1,6 +1,6 @@
 export * from "./detailed/index.js";
 
-import { constructHiveChainWithWasm, constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
+import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
 
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "wasm/lib/wax_module.js";
@@ -13,7 +13,7 @@ const isSSR = typeof (import.meta as any).env === "object" && (import.meta as an
 import resolvedUrl from 'wax.common.wasm?url';
 
 const moduleArgs = (async () => {
-  let wasmBinary: any;
+  let wasmBinary: Buffer | undefined;
 
   if (isSSR)
     wasmBinary = await possibleFs.readFile('wax.common.wasm');
@@ -22,7 +22,7 @@ const moduleArgs = (async () => {
     wasmBinary,
     locateFile: (path: string, scriptDirectory: string) => {
       if (path === "wax.common.wasm")
-        return resolvedUrl;
+        return resolvedUrl as unknown as string;
 
       return scriptDirectory + path;
     }
@@ -39,7 +39,7 @@ const moduleArgs = (async () => {
  * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, await moduleArgs, options);
+  return constructHiveChainWithWasm(MainModuleFunction, Object.assign({}, await moduleArgs), options);
 };
 
 /**
@@ -52,5 +52,5 @@ export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): P
  * @throws {WaxError} on any Wax API-related error
  */
 export const createWaxFoundation = async(options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, await moduleArgs, options);
+  return constructWaxFoundationWithWasm(MainModuleFunction, Object.assign({}, await moduleArgs), options);
 };

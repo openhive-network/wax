@@ -1,3 +1,5 @@
+// During bundle - this module will be replaced with the actual wasm module based on your environment. This file is kept mainly for the purpose of type checking and documentation.
+
 import type { MainModule } from 'wasm/build_wasm/wax.node.js';
 
 export type {
@@ -26,6 +28,11 @@ export type {
   IChainConfig
 } from "./build_wasm/config.js";
 
-declare function waxmodule(): Promise<MainModule>;
+export interface IOptionalModuleArgs {
+  wasmBinary?: Buffer;
+  locateFile?: (path: string, scriptDirectory: string) => string;
+}
+
+declare function waxmodule(ModuleArg?: IOptionalModuleArgs): Promise<MainModule>;
 
 export default waxmodule;
