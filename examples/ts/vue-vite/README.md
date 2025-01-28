@@ -8,8 +8,6 @@ Important note!:
 
 __**When importing Wax in Vite, remember to import dedicated Vite bundle everywhere in your project: `@hiveio/wax/vite`**__
 
-This should enable partial SSR support along static site generation (based on the `import.meta.env.SSR`)
-
 ## WASM-related Vite issues
 
 Internal Note:

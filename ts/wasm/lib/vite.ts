@@ -5,21 +5,10 @@ import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as c
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "wasm/lib/wax_module.js";
 
-// This will be empty when SSR is disabled (client-side), but enable static import for SSR
-import possibleFs from 'node:fs/promises';
-
-const isSSR = typeof (import.meta as any).env === "object" && (import.meta as any).env.SSR;
-
 import resolvedUrl from 'wax.common.wasm?url';
 
 const moduleArgs = (async () => {
-  let wasmBinary: Buffer | undefined;
-
-  if (isSSR)
-    wasmBinary = await possibleFs.readFile('wax.common.wasm');
-
   return {
-    wasmBinary,
     locateFile: (path: string, scriptDirectory: string) => {
       if (path === "wax.common.wasm")
         return resolvedUrl as unknown as string;
