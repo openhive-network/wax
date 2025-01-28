@@ -1,0 +1,21 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --host 0.0.0.0 --port 5173",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_nuxt_vite_testsuite"
+  },
+  "dependencies": {
+    "@hiveio/wax": "file:../../../ts",
+    "@playwright/test": "1.49.1",
+    "nuxt": "^3.15.3",
+    "playwright": "1.49.1",
+    "vue": "latest",
+    "vue-router": "latest"
+  }
+}
