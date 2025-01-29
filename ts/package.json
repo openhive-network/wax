@@ -97,7 +97,7 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.7-250114120041",
+    "@hiveio/beekeeper": "1.27.8-stable.250130141326",
     "events": "^3.3.0",
     "long": "^5.2.3"
   },
