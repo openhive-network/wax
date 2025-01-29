@@ -217,6 +217,7 @@ python/wax.cpp
 results.json
 results.xml
 storage_root-node
+test-results
 
 # We use pnpm
 /ts/package-lock.json

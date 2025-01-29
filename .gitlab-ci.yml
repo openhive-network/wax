@@ -217,23 +217,19 @@ test_wax_wasm:
     - public-runner-docker
   parallel:
     matrix:
-      - PROJECT: [
-        wax_testsuite,
-        healthchecker_tests,
-        wax_testsuite_custom_chain_options,
-        wax_regression_tests,
-        wax_operation_factories,
-        wax_encrypted_operations,
-        wax_non_encrypted_operations,
-        wax_utils,
-        wax_custom_chain_online_tx,
-        wax_mock_tests
+      - TEST_GROUPS: [
+        --project=wax_testsuite --project=healthchecker_tests,
+        --project=wax_testsuite_custom_chain_options,
+        --project=wax_regression_tests --project=wax_operation_factories --project=wax_encrypted_operations,
+        --project=wax_non_encrypted_operations,
+        --project=wax_utils,
+        --project=wax_custom_chain_online_tx --project=wax_mock_tests
       ]
   script:
     - cd ts
     - npx playwright install
     - unset CI
-    - npx playwright test --workers 1 --max-failures 1 --project=$PROJECT
+    - npx playwright test --workers 1 --max-failures 1 $TEST_GROUPS
 
 test_wax_wasm_proto_pattern:
   extends: .npm_process_built_package_tarball
