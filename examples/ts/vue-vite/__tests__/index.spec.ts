@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const waitForServerReady = async (url: string, interval: number = 100, attempts: number = 10): Promise<void> => {
+const waitForServerReady = async (url: string, interval: number = 1000, attempts: number = 10): Promise<void> => {
   console.log(`Awaiting a server: ${url}...`);
 
   for (let count = 0; count < attempts; ++count) {
