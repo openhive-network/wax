@@ -216,6 +216,17 @@ test_wax_wasm:
       artifacts: true
   tags:
     - public-runner-docker
+  parallel:
+    matrix:
+      - TEST_GROUPS: [
+        --project=wax_testsuite,
+        --project=healthchecker_tests,
+        --project=wax_utils --project=wax_non_encrypted_operations --project=wax_mock_tests --project=wax_encrypted_operations --project=wax_custom_chain_online_tx --project=wax_testsuite_custom_chain_options,
+        --project=wax_regression_tests --project=wax_operation_factories --project=wax_testsuite_protocol_benchmarks,
+      ]
+  script:
+    - cd ts
+    - npm run test -- $TEST_GROUPS
 
 test_wax_wasm_proto_pattern:
   extends: .npm_process_built_package_tarball
