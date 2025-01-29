@@ -31,13 +31,12 @@ We currently support multiple environments / bundlers / frameworks, such as:
 - [Nuxt](https://nuxt.com/) ([Vite](https://vite.dev/)), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nuxt-app) (__Requires different import - `/vite`__)
 - [Vue](https://vuejs.org/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-vite) (__Requires different import - `/vite`__)
 - [Vue.js](https://vuejs.org/) + [Webpack](https://webpack.js.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-webpack)
-- [Parcel](https://parceljs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/html)
+- [Parcel](https://parceljs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/html). Parcel will probably require [`Buffer` polyfill](https://www.npmjs.com/package/buffer) installation
 - Web "Vanilla JS" (you have to provide sourcemap in order to properly resolve our imports, simirarly as in [our tests](./wasm/__tests__/assets/test.html)) (__not recommended__)
 
 Imports should automatically resolve to either `@hiveio/wax/web` or `@hiveio/wax/node` based on your environment, but it is required to use `@hiveio/wax/vite` when using Vite in your stack.
 
 You can also force the usage of specific Wax version by providing proper import alias as mentioned above.
-
 
 ## Usage
 

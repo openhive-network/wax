@@ -16,7 +16,11 @@ export default [
       replace({
         delimiters: ['', ''],
         values: {
-          'wax.web.wasm': 'wax.common.wasm'
+          'wax.web.wasm': 'wax.common.wasm',
+          // Remove unused `process` from code to prevent bundlers to include polyfills when not required
+          'process': null,
+          'process.versions': null,
+          'process.versions.node': null
         },
         preventAssignment: true
       }),
@@ -66,6 +70,10 @@ export default [
       replace({
         delimiters: ['', ''],
         values: {
+          // Make sure we do not include `process` in the code:
+          'process': null,
+          'process.env': null,
+          'process.env.REFLECT_METADATA_USE_MAP_POLYFILL': null, // Bundled dependency - reflect-metadata - uses this - we do not need it
           // Hardcode package name and version for later use in the code:
           'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
           'process.env.npm_package_version': `"${process.env.npm_package_version}"`
