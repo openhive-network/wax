@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import WaxModule, { protocol } from '../../lib/build_wasm/wax.node.js';
+import WaxModule from '../../dist/bundle/wax.node.js';
+import type {protocol} from '../../lib/build_wasm/wax.node.js';
+
 import { test } from '../assets/jest-helper';
 import { numToHighLow, specificBenchmarkTransaction, vote_operation } from "../assets/data.protocol";
 import type { IHiveChainInterface } from '../../dist/bundle';
