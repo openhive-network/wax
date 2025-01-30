@@ -7,7 +7,7 @@
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_react_vite_testsuite"
+    "test": "rm -rf ./dist && unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_react_vite_testsuite"
   },
   "dependencies": {
     "@hiveio/wax": "file:../../../ts",

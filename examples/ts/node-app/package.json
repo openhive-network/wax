@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "npm run build && npm run start"
+    "test": "rm -rf ./dist && npm run build && npm run start"
   },
   "dependencies": {
     "@hiveio/wax": "file:../../../ts"
