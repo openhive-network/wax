@@ -10,7 +10,7 @@ export type TCustomExceptionHandlerFunction = (error: TWaxStdExceptionData) => v
 
 const handleWaxStdException = (e: any, customExceptionHandler?: TCustomExceptionHandlerFunction): void => {
   /// unfortunately we can't use instanceof FinalExceptionClass here (probably because of Playwright's context isolation)
-  if(e instanceof Object && "message" in e) {
+  if(typeof e === "object" && e && "message" in e) {
     const eObject: {message: string} = e as {message: string};
     /// Warning: toString() is necessary here, because otherwise string methods do not work
     const msg = eObject.message.toString();
@@ -28,7 +28,12 @@ const handleWaxStdException = (e: any, customExceptionHandler?: TCustomException
 
       customExceptionHandler(waxStdExceptionData);
 
-      throw new WaxError(`Error during Wasm call: ${msg}`);
+      const error = new WaxError(`Error during Wasm call: ${msg}`);
+
+      if ("stack" in e)
+        throw Object.assign(error, { stack: e.stack });
+
+      throw error;
     }
   }
 
@@ -48,7 +53,13 @@ export const safeWasmCall = <T extends () => any>(fn: T, customExceptionHandler?
   } catch (e) {
     handleWaxStdException(e, customExceptionHandler);
     //console.log("Non-typed Error during Wasm call...", e);
-    throw new WaxError(`Non-typed Error during Wasm call: ${e}`); // it should be inside handleWaxStdException but compiler complains about missing retval
+
+    const error = new WaxError(`Non-typed Error during Wasm call: ${e}`);
+
+    if (typeof e === "object" && e && "stack" in e)
+      throw Object.assign(error, { stack: e.stack });
+
+    throw error; // it should be inside handleWaxStdException but compiler complains about missing retval
   }
 };
 
@@ -58,6 +69,12 @@ export const safeAsyncWasmCall = async <T extends () => any>(fn: T, customExcept
   } catch (e) {
     handleWaxStdException(e, customExceptionHandler);
     //console.log("Non-typed Error during Wasm call...", e); 
-    throw new WaxError(`Non-typed Error during Wasm call: ${e}`); // it should be inside handleWaxStdException but compiler complains about missing retval
+
+    const error = new WaxError(`Non-typed Error during Wasm call: ${e}`);
+
+    if (typeof e === "object" && e && "stack" in e)
+      throw Object.assign(error, { stack: e.stack });
+
+    throw error; // it should be inside handleWaxStdException but compiler complains about missing retval
   }
 };
