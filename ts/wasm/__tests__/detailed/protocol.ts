@@ -115,6 +115,120 @@ test.describe('WASM Protocol', () => {
     });
   });
 
+  test('Should be able to get authority trace for different role direct sign', async ({ wasmTest }) => {
+    //test.fail();
+    const signatureDecodedPublicKeys = ['STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK'];
+
+    const retVal = await wasmTest(({ provider, protocol }, posting_authority_transaction, signatureDecodedPublicKeys) => {
+      const pubKeysVector = new provider.VectorString();
+
+      for(const key of signatureDecodedPublicKeys)
+        pubKeysVector.push_back(key);
+
+      const ownerKeysMap = new provider.MapStringUInt16();
+      ownerKeysMap.set('STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK', 1);
+
+      const keysMap = new provider.MapStringUInt16();
+      keysMap.set('STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF', 1);
+
+      const accountsMap = new provider.MapStringUInt16();
+      accountsMap.set('andablackwidow', 1);
+
+      const expectedWitnessKey = 'STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF';
+
+      const expectedOwner: wax_authority = { weight_threshold: 1, account_auths: accountsMap, key_auths: ownerKeysMap };
+      const expectedActive: wax_authority = { weight_threshold: 1, account_auths: accountsMap, key_auths: keysMap };
+      const expectedPosting: wax_authority = { weight_threshold: 1, account_auths: accountsMap, key_auths: keysMap };
+
+      class MyImplementation {
+        getAuthority (account: string, role: string): wax_authority {
+          console.log(`Querying for authority role: ${role} of account: ${account}`);
+
+          if (role === 'owner')
+            return expectedOwner;
+
+          if (role === 'active')
+            return expectedActive;
+
+          return expectedPosting;
+        }
+
+        getWitnessPublicKey (account: string): string {
+          console.log(`Querying for witness: ${account} signing key`);
+
+          return expectedWitnessKey;
+        }
+      }
+
+      const impl = provider.IAccountAuthorityProvider.implement(new MyImplementation());
+
+      const reqAuths = protocol.cpp_collect_transaction_required_authorities(posting_authority_transaction);
+
+      const trace = protocol.cpp_trace_authority_verification(reqAuths, pubKeysVector, impl)
+
+      console.log(JSON.stringify([expectedOwner, expectedActive, expectedPosting]));
+
+      const transformVectorToArray = (vector: any) => new Array(vector.size()).fill(0).map((_, i) => vector.get(i));
+
+      const last_root = trace.root.get(trace.root.size() -1)!;
+
+      return {
+        ...trace,
+        final_authority_path: transformVectorToArray(trace.final_authority_path),
+        root: {
+          ...trace.root,
+          visited_entries: transformVectorToArray(last_root.visited_entries)
+        }
+      }
+    }, posting_authority_transaction, signatureDecodedPublicKeys);
+
+    expect(retVal).toStrictEqual({
+      "final_authority_path": [
+        {
+          "flags": 10,
+          "processed_entry": "andablackwidow",
+          "processed_role": "posting",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 0
+        },
+        {
+          "flags": 10,
+          "processed_entry": "andablackwidow",
+          "processed_role": "active",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 0
+        },
+        {
+          "flags": 0,
+          "processed_entry": "andablackwidow",
+          "processed_role": "owner",
+          "recursion_depth": 0,
+          "threshold": 1,
+          "visited_entries": {},
+          "weight": 1
+        },
+      ],
+      "root": {
+        "visited_entries": [
+          {
+            "flags": 4,
+            "processed_entry": "STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK",
+            "processed_role": "owner",
+            "recursion_depth": 0,
+            "threshold": 1,
+            "visited_entries": {},
+            "weight": 1
+          },
+        ],
+      },
+      "verification_status": 0
+    });
+  });
+
   test('Should be able to get authority trace for delegated sign', async ({ wasmTest }) => {
     test.fail();
     const signatureDecodedPublicKeys = ['STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF'];
