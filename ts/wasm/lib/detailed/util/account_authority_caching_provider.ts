@@ -1,6 +1,6 @@
 import {HiveChainApi, TAccountAuthorityCollection}  from "../chain_api";
 import { TAccountName } from "../hive_apps_operations";
-import type { IAccountAuthorityProvider, wax_authority } from "../../wax_module";
+import type { IAccountAuthorityProvider, wax_authority, ClassHandle } from "../../wax_module";
 import type { TPublicKey } from "../interfaces";
 import { WaxError } from "../errors";
 
@@ -22,6 +22,7 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
   private readonly unknownWitnessAccounts: Set<TAccountName> = new Set();
   private readonly requestedWitnessAccounts: Set<TAccountName> = new Set();
 
+  private deletedInstance: boolean = false;
   constructor(private readonly chain: HiveChainApi, private readonly requestedAccounts: Set<TAccountName> = new Set()) {
   }
 
@@ -91,6 +92,24 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
     this.cache.clear();
     this.unknownAccounts.clear();
     this.requestedAccounts.clear();
+
+    this.deletedInstance = true;
+  }
+
+  public isAliasOf(other: ClassHandle): boolean {
+    return this === other;
+  }
+
+  public deleteLater(): this {
+    return this;
+  }
+
+  public isDeleted(): boolean {
+    return this.deletedInstance;
+  }
+
+  public clone(): this {
+    return structuredClone(this);
   }
 
 };

@@ -22,6 +22,8 @@ export type {
   wax_authority,
   wax_authorities,
   MapStringUInt16
+  ,ClassHandle
+  ,VectorPathEntry
 } from 'wasm/build_wasm/wax.node.js';
 
 export type {
