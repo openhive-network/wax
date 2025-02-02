@@ -5,7 +5,7 @@ import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import { IOnlineTransaction, ITransaction, TTimestamp } from "./interfaces";
+import type { IOnlineTransaction, ITransaction, TPublicKey, TTimestamp } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
@@ -13,6 +13,7 @@ import type { authority_verification_trace, MapStringUInt16, required_authority_
 
 import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
 import { convertAuthorityTrace } from "./verify_authority_trace";
+import type { TSignature } from "@hiveio/beekeeper";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
@@ -167,12 +168,13 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     return this;
   }
 
-  public async generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
+  public async generateAuthorityVerificationTrace(useLegacySerialization: boolean = false, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
     const dataSource = externalTx ?? this;
-    const legacySerialization = useLegacySerialization ?? false;
+
+    const signatures = dataSource.transaction.signatures;
 
     const requiredAuths = dataSource.requiredAuthorities;
-    const signatureKeys = legacySerialization? dataSource.legacy_signatureKeys : dataSource.signatureKeys;
+    const signatureKeys = useLegacySerialization? dataSource.legacy_signatureKeys : dataSource.signatureKeys;
 
     const actualSignatureKeys = new this.api.wax.VectorString();
     for(const key of signatureKeys)
@@ -200,7 +202,16 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     }
     while(authorityCache.canContinue);
 
-    return convertAuthorityTrace(receivedTrace);
+    const signatureKeyInfo: Map<TPublicKey, TSignature> = new Map();
+
+    for(let i = 0; i < signatureKeys.length; ++i) {
+      const key = signatureKeys[i];
+      const signature = signatures[i];
+
+      signatureKeyInfo.set(key, signature);
+    }
+
+    return convertAuthorityTrace(signatureKeyInfo, receivedTrace);
   }
 
   public async performOnChainVerification(): Promise<void> {
