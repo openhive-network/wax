@@ -73,10 +73,12 @@ const getAuthorityTraceLastRoot = (path: VectorPathEntry): path_entry => {
 export const convertAuthorityTrace = (trace: authority_verification_trace): IVerifyAuthorityTrace => {
 
   const rootEntry: IAuthorityPathEntry = transformPathEntry(getAuthorityTraceLastRoot(trace.root));
+  const rootEntries: IAuthorityPathEntry[] = transformAuthorityPath(trace.root);
   const finalAuthorityPath: IAuthorityPathEntry[] = transformAuthorityPath(trace.final_authority_path);
   const verificationStatus: TAuthorityEntryProcessingStatus = transformProcessingStatus(getAuthorityTraceLastRoot(trace.root));
 
   return {
+    rootEntries,
     rootEntry,
     finalAuthorityPath,
     verificationStatus

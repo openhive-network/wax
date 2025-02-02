@@ -107,9 +107,17 @@ export interface IAuthorityPathEntry {
 export interface IVerifyAuthorityTrace
  {
   /**
-   * Holds informations specific to the account which signed a transaction.
+   * Holds information specific to the account which signed a transaction.
+   * Each array element can be specific to separate authority & signature needed to satisfy transaction.
+   */
+  rootEntries: Array<IAuthorityPathEntry>;
+
+  /**
+   * Holds information specific to the account which signed a transaction.
+   * Link to last element of {@link rootEntries} array.
    */
   rootEntry: IAuthorityPathEntry;
+
   /**
    * Stores data specific to the authority path chosen:
    * - if verification process has been satisfied, it contains successfull path
