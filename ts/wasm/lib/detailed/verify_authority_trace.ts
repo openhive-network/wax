@@ -1,5 +1,6 @@
-import type { IAuthorityPathEntry, IVerifyAuthorityTrace, TAuthorityEntryProcessingStatus } from "./verify_authority_trace_interface";
-import type { authority_verification_trace, path_entry, VectorPathEntry } from "../wax_module";
+import { authority_verification_trace, path_entry, VectorPathEntry } from "../build_wasm/wax.common";
+import type { IAuthorityPathEntry, IAuthorityPathTraceData, IAuthorityTraceSignatureInfo, IVerifyAuthorityTrace, TAuthorityEntryProcessingStatus } from "./verify_authority_trace_interface";
+import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 
 /// TODO export it through embind
 enum authority_entry_processing_flags
@@ -38,14 +39,20 @@ const transformProcessingStatus = (entry: path_entry): TAuthorityEntryProcessing
   };
 }
 
-const transformPathEntry = (entry: path_entry): IAuthorityPathEntry => {
+const pureTransformPathEntry = (entry: path_entry): Omit<IAuthorityPathEntry, 'visitedEntries'> => {
   return {
     processedEntry: entry.processed_entry.toString(),
     processedRole: entry.processed_role.toString(),
     threshold: entry.threshold,
     weight: entry.weight,
     recursionDepth: entry.recursion_depth,
-    processingStatus: transformProcessingStatus(entry),
+    processingStatus: transformProcessingStatus(entry)
+  };
+}
+
+const transformPathEntry = (entry: path_entry): IAuthorityPathEntry => {
+  return {
+    ...pureTransformPathEntry(entry),
     visitedEntries: transformAuthorityPath(entry.visited_entries)
   };
 };
@@ -67,16 +74,84 @@ const getAuthorityTraceLastRoot = (path: VectorPathEntry): path_entry => {
   return result;
 }
 
+const buildAuthorityPathTraceData = (signatureKeyInfo: Map<TPublicKey, TSignature>,
+  entry: path_entry): IAuthorityPathTraceData => {
+  const size = entry.visited_entries.size();
+  const visitedEntries: IAuthorityPathEntry[]=[];
+
+  /**
+   * \warning Here visitedEntries are stored by reference. finalAuthorityPath object can be returned also from
+   * execution branch where source visited_entries are not empty, so array declared above is filled then
+   */
+  const finalAuthorityPath: IAuthorityPathEntry = {
+    ...pureTransformPathEntry(entry),
+    visitedEntries
+  };
+
+  if(size === 0) {
+    /** On visited authority path leaves we can try to look for matching key - otherwise it make no sense since entries
+     *  at higher levels usually point redirected account
+     */
+    const signature = signatureKeyInfo.get(finalAuthorityPath.processedEntry);
+    if(signature !== undefined) {
+      const signatureKey = finalAuthorityPath.processedEntry;
+
+      return {
+        finalAuthorityPath,
+        matchingSignature: {
+          signature,
+          signatureKey
+        }
+      };
+    }
+    else {
+      return {
+        finalAuthorityPath,
+        matchingSignature: undefined
+      };
+    }
+  }
+
+  let matchingSignature: IAuthorityTraceSignatureInfo|undefined;
+
+  for (let i = 0; i < size; i++) {
+    const visitedEntry = entry.visited_entries.get(i)!;
+    const data = buildAuthorityPathTraceData(signatureKeyInfo, visitedEntry);
+    visitedEntries.push(data.finalAuthorityPath);
+
+    if(data.matchingSignature !== undefined)
+      matchingSignature = data.matchingSignature;
+  }
+
+  return {
+    finalAuthorityPath,
+    matchingSignature
+  };
+}
+
 /**
  * Converts low level authority verification trace from C++ (wasm) version to the public TS interface.
  */
-export const convertAuthorityTrace = (trace: authority_verification_trace): IVerifyAuthorityTrace => {
+export const convertAuthorityTrace = (signatureKeyInfo: Map<TPublicKey, TSignature>,
+  trace: authority_verification_trace): IVerifyAuthorityTrace => {
 
+  const collectedData: IAuthorityPathTraceData[] = [];
+
+  for(let i = 0; i < trace.final_authority_path.size(); ++i)
+    collectedData.push(buildAuthorityPathTraceData(signatureKeyInfo, trace.final_authority_path.get(i)!));
+
+  const rootEntries: IAuthorityPathEntry[] = transformAuthorityPath(trace.root);
+  const verificationStatus: TAuthorityEntryProcessingStatus = transformProcessingStatus(
+    getAuthorityTraceLastRoot(trace.root));
+
+  /// to be removed as deprecated part of IVerifyAuthorityTrace
   const rootEntry: IAuthorityPathEntry = transformPathEntry(getAuthorityTraceLastRoot(trace.root));
+  /// to be removed as deprecated part of IVerifyAuthorityTrace
   const finalAuthorityPath: IAuthorityPathEntry[] = transformAuthorityPath(trace.final_authority_path);
-  const verificationStatus: TAuthorityEntryProcessingStatus = transformProcessingStatus(getAuthorityTraceLastRoot(trace.root));
 
   return {
+    collectedData,
+    rootEntries,
     rootEntry,
     finalAuthorityPath,
     verificationStatus

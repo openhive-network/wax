@@ -1,8 +1,8 @@
 import {HiveChainApi, TAccountAuthorityCollection}  from "../chain_api";
 import { TAccountName } from "../hive_apps_operations";
-import type { IAccountAuthorityProvider, wax_authority, ClassHandle } from "../../wax_module";
 import type { TPublicKey } from "../interfaces";
 import { WaxError } from "../errors";
+import { ClassHandle, IAccountAuthorityProvider, wax_authority } from "wasm/lib/build_wasm/wax.common";
 
 /**
  * Helper class used during traced authority verification process.
