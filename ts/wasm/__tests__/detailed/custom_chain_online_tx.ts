@@ -73,7 +73,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       // Create online transaction
       const tx = await chain.createTransaction();
-      const authTrace = await tx.generateAuthorityVerificationTrace(sourceTx);
+      const authTrace = await tx.generateAuthorityVerificationTrace(undefined, sourceTx);
 
       const authTraceStr = JSON.stringify(authTrace);
       console.log(`Authority trace: ${authTraceStr }`);
@@ -124,7 +124,6 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
    });
 
    test('Should be able to get authority trace for direct sign from already existing transaction', async ({ waxTest }) => {
-    test.fail();
     const retVal = await waxTest(async({wax}) => {
       /// seems this case does not work.
       ///1. trace generator throws instead of producing a trace
@@ -139,7 +138,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       // Create online transaction
       const tx = await chain.createTransaction();
-      const authTrace = await tx.generateAuthorityVerificationTrace(sourceTx);
+      const authTrace = await tx.generateAuthorityVerificationTrace(true, sourceTx);
 
       const authTraceStr = JSON.stringify(authTrace);
       console.log(`Authority trace: ${authTraceStr }`);
@@ -148,8 +147,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     });
 
     /// TODO improve comparison to avoid string form
-    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
-   });
+    expect(retVal).toBe('{"rootEntry":{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM7jDAdjyLYgqhyCwSafVzNGN4PLBGWrYB9uJun4AitZA8TERgif","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]},"finalAuthorityPath":[{"processedEntry":"splinterboost","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[{"processedEntry":"STM7jDAdjyLYgqhyCwSafVzNGN4PLBGWrYB9uJun4AitZA8TERgif","processedRole":"active","threshold":1,"weight":1,"recursionDepth":0,"processingStatus":{"entryAccepted":true,"isOpenAuthority":false},"visitedEntries":[]}]}],"verificationStatus":{"entryAccepted":true,"isOpenAuthority":false}}');
+  });
 
   test('Should catch private key leak using online transaction interface during explicit online validation', async ({ waxTest, config }) => {
       const retVal = await waxTest(txSecurityLeakBody, mirrornetSkeletonKey, config!, false);
