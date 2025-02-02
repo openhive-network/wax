@@ -1,4 +1,4 @@
-import type { TPublicKey } from "@hiveio/beekeeper";
+import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 import type { TAccountName } from './hive_apps_operations';
 
 export type TAuthorityRole = string; /// TODO: unify with role type defined in account authority update meta operation
@@ -101,19 +101,62 @@ export interface IAuthorityPathEntry {
 
 /**
  * Holds data produced during authority verification process.
+ *
+ * @category Authority
+ */
+export interface IAuthorityTraceSignatureInfo {
+  signatureKey: TPublicKey;
+  signature: TSignature;
+};
+
+/**
+ * Holds data produced during authority verification process.
+ *
+ * @category Authority
+ */
+export interface IAuthorityPathTraceData {
+  /**
+   * Optionally filled when procesed authority path matched to the signature and its decoded public key.
+   */
+  matchingSignature?: IAuthorityTraceSignatureInfo;
+
+  /**
+   * Stores data specific to the authority path chosen:
+   * - if verification process has been satisfied, it contains successfull path
+   * - when it failed points last processed path.
+   */
+  finalAuthorityPath: IAuthorityPathEntry;
+};
+
+/**
+ * Holds data produced during authority verification process.
  * 
  * @category Authority
  */
 export interface IVerifyAuthorityTrace
  {
   /**
-   * Holds informations specific to the account which signed a transaction.
+   * Stores data acquired during authority verification process associated to given public key (decoded from signature). Simplifies matching data to signatures in multiple signature case.
+   */
+  collectedData: Array<IAuthorityPathTraceData>;
+  /**
+   * Holds information specific to the account which signed a transaction.
+   * Each array element can be specific to separate authority & signature needed to satisfy transaction.
+   */
+  rootEntries: Array<IAuthorityPathEntry>;
+
+  /**
+   * Holds information specific to the account which signed a transaction.
+   * Link to last element of {@link rootEntries} array.
+   * @deprecated
    */
   rootEntry: IAuthorityPathEntry;
+
   /**
    * Stores data specific to the authority path chosen:
    * - if verification process has been satisfied, it contains successfull path
    * - when it failed points last processed path.
+   * @deprecated
    */
   finalAuthorityPath: Array<IAuthorityPathEntry>;
   /**
