@@ -14,7 +14,6 @@ export default [
     },
     plugins: [
       replace({
-        delimiters: ['', ''],
         values: {
           'wax.web.wasm': 'wax.common.wasm',
           // Remove unused `process` from code to prevent bundlers to include polyfills when not required
@@ -44,7 +43,6 @@ export default [
         targets: [{ src: ['wasm/lib/build_wasm/wax.common.wasm'], dest: 'wasm/dist/bundle' }]
       }),
       replace({
-        delimiters: ['', ''],
         values: {
           'wax.node.wasm': 'wax.common.wasm'
         },
@@ -68,7 +66,6 @@ export default [
     },
     plugins: [
       replace({
-        delimiters: ['', ''],
         values: {
           // Make sure we do not include `process` in the code:
           'process': null,
@@ -106,7 +103,6 @@ export default [
     ],
     plugins: [
       replace({
-        delimiters: ['', ''],
         values: {
           'wasm/lib/wax_module.js': './wax.web.js'
         },
@@ -126,7 +122,6 @@ export default [
     ],
     plugins: [
       replace({
-        delimiters: ['', ''],
         values: {
           'wasm/lib/wax_module.js': './wax.node.js'
         },
@@ -147,7 +142,6 @@ export default [
     ],
     plugins: [
       replace({
-        delimiters: ['', ''],
         values: {
           'wasm/lib/wax_module.js': './wax.web.js',
           'wax.common.wasm?url': './wax.common.wasm?url'
