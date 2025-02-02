@@ -540,9 +540,10 @@ export interface IOnlineTransaction extends ITransaction {
    * Transaction should be already signed, othwerwise the function throws.
    * The authority trace process requires online access to the chain APIs to retrieve account data.
    *
-   * @param {ITransaction} externalTx optional external transaction to be used for authority verification trace generation
+   * @param {boolean} useLegacySerialization optional flag to force using legacy (pre HF26) serialization mode on processed transaction
+   * @param {ITransaction} externalTx optional external transaction to be used for authority verification trace generation. If omitted, defaults to HF26
    */
-  generateAuthorityVerificationTrace(externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
+  generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
 
   /** Overrided only to change return type.
    *  {@inheritdoc ITransaction.pushOperation}

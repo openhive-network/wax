@@ -167,11 +167,12 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     return this;
   }
 
-  public async generateAuthorityVerificationTrace(externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
+  public async generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
     const dataSource = externalTx ?? this;
+    const legacySerialization = useLegacySerialization ?? false;
 
     const requiredAuths = dataSource.requiredAuthorities;
-    const signatureKeys = dataSource.signatureKeys;
+    const signatureKeys = legacySerialization? dataSource.legacy_signatureKeys : dataSource.signatureKeys;
 
     const actualSignatureKeys = new this.api.wax.VectorString();
     for(const key of signatureKeys)
