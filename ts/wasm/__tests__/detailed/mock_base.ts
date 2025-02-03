@@ -36,6 +36,815 @@ test.describe('Wax base mock tests', () => {
     expect(retVal).toBe(true);
   });
 
+  test('Should be able to get authority trace with mock data', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 47527,
+        "ref_block_prefix": 1507238693,
+        "extensions": [],
+        "expiration": "2024-11-12T10:34:48",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "andablackwidow",
+              "author": "hbd.funder",
+              "weight": 10000,
+              "permlink": "re-upvote-this-post-to-fund-hbdstabilizer-20241112t045515z"
+            }
+          }
+        ],
+        "signatures": [
+          "1f411808fe07ba78c8e0d1edc7e4bdf14b8af1b85a26437fd7e082054fc0fa5b503627072e4cc482d1a4e60ea5f318a85539282c5beb9747e83a429bcd369d1ece"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      //console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toEqual([
+      {
+        "finalAuthorityPath": {
+          "processedEntry": "andablackwidow",
+          "processedRole": "posting",
+          "threshold": 1,
+          "weight": 1,
+          "recursionDepth": 0,
+          "processingStatus": {
+            "entryAccepted": true,
+            "isOpenAuthority": false
+          },
+          "visitedEntries": [
+            {
+              "processedEntry": "STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK",
+              "processedRole": "posting",
+              "threshold": 1,
+              "weight": 1,
+              "recursionDepth": 0,
+              "processingStatus": {
+                "entryAccepted": true,
+                "isOpenAuthority": false
+              },
+              "visitedEntries": []
+            }
+          ]
+        },
+        "matchingSignature": {
+          "signature": "1f411808fe07ba78c8e0d1edc7e4bdf14b8af1b85a26437fd7e082054fc0fa5b503627072e4cc482d1a4e60ea5f318a85539282c5beb9747e83a429bcd369d1ece",
+          "signatureKey": "STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK"
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace with mock data with delegated authority where 2 accounts are required to satisfy threshold', async ({ waxTest }) => {
+    test.fail(); // The trace proccess is stopped after first account beacuse of incorrect weight calculation (Only one account satisfied threshold, but indicated from mock API response, 2 accounts are required).
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 59824,
+        "ref_block_prefix": 3761625792,
+        "extensions": [],
+        "expiration": "2024-12-12T12:30:00",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "sunnyvo",
+              "author": "franciscomarval",
+              "weight": 475,
+              "permlink": "alegoria-sirenida-mermaid-allegory"
+            }
+          }
+        ],
+        "signatures": [
+          "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toEqual([
+      {
+        "finalAuthorityPath":       {
+          "processedEntry": "sunnyvo",
+          "processedRole": "posting",
+          "processingStatus": {
+            "accountAuthorityCountExceeded": false,
+            "accountAuthorityPointsMissingAccount": false,
+            "accountAuthorityProcessingDepthExceeded": false,
+            "entryAccepted": false,
+            "hasAccountAuthorityCycle": false,
+            "hasInsufficientWeight": true,
+            "hasMatchingPublicKey": false,
+          },
+          "recursionDepth": 0,
+          "threshold": 2,
+          "weight": 2,
+          "visitedEntries": [
+            {
+              "processedEntry": "threespeak",
+              "processedRole": "posting",
+              "threshold": 2,
+              "weight": 1,
+              "recursionDepth": 1,
+              "processingStatus": {
+                "entryAccepted": true,
+                "isOpenAuthority": false
+              },
+              "visitedEntries": [
+                {
+                  "processedEntry": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
+                  "processedRole": "posting",
+                  "threshold": 1,
+                  "weight": 1,
+                  "recursionDepth": 1,
+                  "processingStatus": {
+                    "entryAccepted": true,
+                    "isOpenAuthority": false
+                  },
+                  "visitedEntries": []
+                }
+              ]
+            },
+            {
+              "processedEntry": "steemauto",
+              "processedRole": "posting",
+              "threshold": 2,
+              "weight": 1,
+              "recursionDepth": 1,
+              "processingStatus": {
+                "entryAccepted": true,
+                "isOpenAuthority": false
+              },
+              "visitedEntries": [
+                {
+                  "processedEntry": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
+                  "processedRole": "posting",
+                  "threshold": 1,
+                  "weight": 1,
+                  "recursionDepth": 1,
+                  "processingStatus": {
+                    "entryAccepted": true,
+                    "isOpenAuthority": false
+                  },
+                  "visitedEntries": []
+                }
+              ]
+            }
+          ]
+        },
+        "matchingSignature": {
+          "signature": "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e",
+          "signatureKey": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF"
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace with mock data for 6 signatures where one of the public keys (in the middle of public keys array) does not match any account', async ({ waxTest }) => {
+    test.fail(); // The proccess of getting authority trace is stopped when public key placed in the middle does not match any account, istead of continuing to the end of the public keys array.
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 59525,
+        "ref_block_prefix": 1587984329,
+        "extensions": [],
+        "expiration": "2025-02-07T11:50:42",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency.stats",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency.waves",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteem.app",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "good-karma",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteemapp",
+              "author": "alzee",
+              "weight": 100,
+              "permlink": "13562877099-8088131425"
+            }
+          }
+        ],
+        "signatures": [
+          "1f4149e010568da05380ae5beb143bb94db658567c20b73228ea84b269da7bc82208b9493535515ad4aef8c347bd8c9681b7827af9720130c20999774518cb620b",
+          "1f475ba65d89c97fc82c7858ae863154d6770b0dea7aafc94e111a9c8a3bcb7cba17d29a86e93c5eae3a5f8b51f963a8532c33313bf7e3d5a43a31d8ddfaef8251",
+          "1f73e14ee975d584f121c7ad3de059d4f361cdbb417a0020b911efe77632bd86044c33d276ea72fb45d1138d061c90226f6127dc163e1ac92baf3340eb1848b09f",
+          "2027682ab7577d97da39f6e6ec3bfc26221e45e93336b17027523080c83843d2cc5be76380e6fda21f28ada5194adb345f6a172600cdab9377e475935a3af7e7b4",
+          "2043c1aadca24f71aab3efb48aa809d06f644ef17fe7016febea9d75fb2207710a14ed0a7ae72180acab16676bdce6d05638e6bd9b719a4b41eaf201095776aab9",
+          "205e09b4e5af6338f2a2d90a5d7a0a7c64203668f53beb0dd24b401cec25a347190988aaa102af008674803d6665647258f99076b3a1dc2da7c2629b1f61332d60"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toEqual([
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"ecency",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5",
+          "signatureKey":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"ecency.stats",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+          "signatureKey":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"ecency.waves",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"1f73e14ee975d584f121c7ad3de059d4f361cdbb417a0020b911efe77632bd86044c33d276ea72fb45d1138d061c90226f6127dc163e1ac92baf3340eb1848b09f",
+          "signatureKey":"STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"esteem.app",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+          "signatureKey":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"esteemapp",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":
+              "STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+          "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"tattooworld",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":1,
+              "processingStatus":{
+                "entryAccepted":false,
+                "accountAuthorityProcessingDepthExceeded":false,
+                "accountAuthorityCountExceeded":false,
+                "accountAuthorityPointsMissingAccount":false,
+                "hasAccountAuthorityCycle":false,
+                "hasInsufficientWeight":true,
+                "hasMatchingPublicKey":false
+              },
+              "visitedEntries":[
+                {
+                  "processedEntry":"threespeak",
+                  "processedRole":"posting",
+                  "threshold":1,
+                  "weight":1,
+                  "recursionDepth":2,
+                  "processingStatus":{
+                    "entryAccepted":false,
+                    "accountAuthorityProcessingDepthExceeded":true,
+                    "accountAuthorityCountExceeded":false,
+                    "accountAuthorityPointsMissingAccount":false,
+                    "hasAccountAuthorityCycle":false,
+                    "hasInsufficientWeight":true,
+                    "hasMatchingPublicKey":false
+                  },
+                  "visitedEntries":[]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"active",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[]
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"owner",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[]
+        }
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace with mock data for 5 signatures where one of the public keys does not match any account', async ({ waxTest }) => {
+    test.fail();
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 808,
+        "ref_block_prefix": 1359279161,
+        "extensions": [],
+        "expiration": "2024-08-02T12:09:03",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency.stats",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteem.app",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "good-karma",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteemapp",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          }
+        ],
+        "signatures": [
+          "1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+          "20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+          "20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+          "2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a",
+          "205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toBe([
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"ecency",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5",
+          "signatureKey":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"ecency.stats",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+          "signatureKey":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"esteem.app",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+          "signatureKey":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"esteemapp",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":1,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":true,
+            "isOpenAuthority":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":
+              "STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":0,
+              "processingStatus":{
+                "entryAccepted":true,
+                "isOpenAuthority":false
+              },
+              "visitedEntries":[]
+            }
+          ]
+        },
+        "matchingSignature":{
+          "signature":"1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+          "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"posting",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[
+            {
+              "processedEntry":"tattooworld",
+              "processedRole":"posting",
+              "threshold":1,
+              "weight":1,
+              "recursionDepth":1,
+              "processingStatus":{
+                "entryAccepted":false,
+                "accountAuthorityProcessingDepthExceeded":false,
+                "accountAuthorityCountExceeded":false,
+                "accountAuthorityPointsMissingAccount":false,
+                "hasAccountAuthorityCycle":false,
+                "hasInsufficientWeight":true,
+                "hasMatchingPublicKey":false
+              },
+              "visitedEntries":[
+                {
+                  "processedEntry":"threespeak",
+                  "processedRole":"posting",
+                  "threshold":1,
+                  "weight":1,
+                  "recursionDepth":2,
+                  "processingStatus":{
+                    "entryAccepted":false,
+                    "accountAuthorityProcessingDepthExceeded":true,
+                    "accountAuthorityCountExceeded":false,
+                    "accountAuthorityPointsMissingAccount":false,
+                    "hasAccountAuthorityCycle":false,
+                    "hasInsufficientWeight":true,
+                    "hasMatchingPublicKey":false
+                  },
+                  "visitedEntries":[]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"active",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[]
+        }
+      },
+      {
+        "finalAuthorityPath":{
+          "processedEntry":"good-karma",
+          "processedRole":"owner",
+          "threshold":1,
+          "weight":0,
+          "recursionDepth":0,
+          "processingStatus":{
+            "entryAccepted":false,
+            "accountAuthorityProcessingDepthExceeded":false,
+            "accountAuthorityCountExceeded":false,
+            "accountAuthorityPointsMissingAccount":false,
+            "hasAccountAuthorityCycle":false,
+            "hasInsufficientWeight":true,
+            "hasMatchingPublicKey":false
+          },
+          "visitedEntries":[]
+        }
+      }
+    ]);
+  });
+
   test.afterAll(async () => {
     await closeServer();
   });

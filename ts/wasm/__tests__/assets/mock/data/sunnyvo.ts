@@ -51,7 +51,7 @@ export default {
             ['threespeak', 1],
           ],
           key_auths: [['STM8jRobEtRCFUXmNXuf46RsomxHQoPase9KXZf1QjPcXSUH7MQrD', 1]],
-          weight_threshold: 1,
+          weight_threshold: 2,
         },
         posting_json_metadata:
           '{"profile":{"name":"Sunny the wanderlust","location":"Ho Chi Minh","website":"https://www.facebook.com/thanhnguyen.vo.58","profile_image":"https://files.peakd.com/file/peakd-hive/sunnyvo/VC3B520Thanh20ThE1BAA3o20NguyC3AAn-20NhC3B3m209.jpg","version":2,"cover_image":"https://files.peakd.com/file/peakd-hive/sunnyvo/ban201.png","about":"A work in progress - Nature lover - Outdoor activities - Amateur guitarist - Foodie - Culture exchange."}}',
