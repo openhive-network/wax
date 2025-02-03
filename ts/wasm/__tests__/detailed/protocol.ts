@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation, posting_authority_transaction, posting_delegated_authority_transaction, singleNestLevelAuthorityDelegationTransaction, openAuthorityTransaction } from "../assets/data.protocol";
-import { binary_data_node, json_price, VectorBinaryDataNode, wax_authority } from '../../dist/lib/wax_module';
+import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation } from "../assets/data.protocol";
+import { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/wax_module';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
 import { wax_authority } from '../../dist/lib/build_wasm/wax.common';
 
