@@ -151,6 +151,231 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 );
   });
 
+  test('Should be able to get authority trace for delegated sign', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 31682,
+        "ref_block_prefix": 1691585842,
+        "extensions": [],
+        "expiration": "2024-10-01T20:10:59",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "tattooworld",
+              "author": "mamaemigrante",
+              "weight": 10000,
+              "permlink": "buscando-ollas-nuevas-para-mi-cocina-looking-for-new-pots-and-pans-for-my-kitchen"
+            }
+          }
+        ],
+        "signatures": [
+          "20543c6e9e5ea2acfb94e9c5cd6672f302d067b62a4c71832dcaec7caf5e83a83b45ae76c55e3f51f8eb254b460a0585e7f911a93d6e5a58522429b7a4678dc22e"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      return trace.finalAuthorityPath;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "processedEntry": "tattooworld",
+        "processedRole": "posting",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "leofinance",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 1,
+            "threshold": 1,
+            "visitedEntries": [
+              {
+                "processedEntry": "steemauto",
+                "processedRole": "posting",
+                "processingStatus": {
+                  "entryAccepted": true,
+                  "isOpenAuthority": false
+                },
+                "recursionDepth": 2,
+                "threshold": 1,
+                "visitedEntries": [
+                  {
+                    "processedEntry": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
+                    "processedRole": "posting",
+                    "processingStatus": {
+                      "entryAccepted": true,
+                      "isOpenAuthority": false
+                    },
+                    "recursionDepth": 2,
+                    "threshold": 1,
+                    "visitedEntries": [],
+                    "weight": 1
+                  }
+                ],
+                "weight": 2
+              }
+            ],
+            "weight": 2
+          }
+        ],
+        "weight": 1
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace for delegated sign with single nest level', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 59824,
+        "ref_block_prefix": 3761625792,
+        "extensions": [],
+        "expiration": "2024-12-12T12:30:00",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "sunnyvo",
+              "author": "franciscomarval",
+              "weight": 475,
+              "permlink": "alegoria-sirenida-mermaid-allegory"
+            }
+          }
+        ],
+        "signatures": [
+          "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      return trace.finalAuthorityPath;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "processedEntry": "sunnyvo",
+        "processedRole": "posting",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "steemauto",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 1,
+            "threshold": 1,
+            "visitedEntries": [
+              {
+                "processedEntry": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
+                "processedRole": "posting",
+                "processingStatus": {
+                  "entryAccepted": true,
+                  "isOpenAuthority": false
+                },
+                "recursionDepth": 1,
+                "threshold": 1,
+                "visitedEntries": [],
+                "weight": 1
+              }
+            ],
+            "weight": 2
+          }
+        ],
+        "weight": 1
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace for open authority transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 35292,
+        "ref_block_prefix": 2546881088,
+        "extensions": [],
+        "expiration": "2024-07-27T20:43:36",
+        "operations": [
+          {
+            "type": "comment_operation",
+            "value": {
+              "body": "With no response, we have no recourse but to release the source code to exploit this will be publicly released on Sunday July 28, 2024.",
+              "title": "",
+              "author": "temp",
+              "permlink": "37",
+              "json_metadata": "",
+              "parent_author": "hive-engine",
+              "parent_permlink": "market-smart-contract-23"
+            }
+          }
+        ],
+        "signatures": []
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      return trace.finalAuthorityPath;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "processedEntry": "temp",
+        "processedRole": "posting",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 0,
+        "visitedEntries": [],
+        "weight": 0
+      }
+    ]);
+  });
+
   test('Should catch private key leak using online transaction interface during explicit online validation', async ({ waxTest, config }) => {
       const retVal = await waxTest(txSecurityLeakBody, mirrornetSkeletonKey, config!, false);
     expect(retVal.detectedLeakError).toStrictEqual({
