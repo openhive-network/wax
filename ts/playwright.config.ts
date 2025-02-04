@@ -77,7 +77,16 @@ export default defineConfig<IWaxedTest>({
     {
       name: 'wax_mock_tests',
       testDir: './wasm/dist',
-      testMatch: 'mock*'
+      testMatch: 'mock*',
+      use:
+      {
+        config: {
+          apiEndpoint: "http://localhost:8000/",
+          restApiEndpoint: "https://unusedendpoint/",
+          chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
+        }
+      }
+
     }
   ],
   // Run your local dev server before starting the tests
