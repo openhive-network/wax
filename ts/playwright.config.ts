@@ -78,6 +78,7 @@ export default defineConfig<IWaxedTest>({
       name: 'wax_mock_tests',
       testDir: './wasm/dist',
       testMatch: 'mock*',
+      fullyParallel: false,
       use:
       {
         config: {
