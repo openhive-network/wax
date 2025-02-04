@@ -48,6 +48,7 @@ export class RequestHelper {
       const finalUrl = config.endpoint + config.url;
 
       const response = await fetch(finalUrl, {
+        headers: typeof config.data === "undefined" ? undefined : new Headers({'content-type': 'application/json'}),
         method: config.method,
         signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
         body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data
