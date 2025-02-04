@@ -1,4 +1,4 @@
-import type { TPublicKey } from "@hiveio/beekeeper";
+import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 import type { TAccountName } from './hive_apps_operations';
 
 export type TAuthorityRole = string; /// TODO: unify with role type defined in account authority update meta operation
@@ -97,7 +97,25 @@ export interface IAuthorityPathEntry {
    * This structure allows to see all paths entered during authority verification process, i.e. just to simplify debugging or analysis.
    */
   visitedEntries: Array<IAuthorityPathEntry>;
-}
+};
+
+export interface IAurhorityTraceSignatureInfo {
+  signatureKey: TPublicKey;
+  signature: TSignature;
+};
+
+export interface IAuthorityPathTraceData {
+  /**
+   * Optionally filled when procesed authority path matched to the signature and its decoded public key.
+   */
+  matchingSignature?: IAurhorityTraceSignatureInfo;
+  /**
+   * Stores data specific to the authority path chosen:
+   * - if verification process has been satisfied, it contains successfull path
+   * - when it failed points last processed path.
+   */
+  finalAuthorityPath: Array<IAuthorityPathEntry>;
+};
 
 /**
  * Holds data produced during authority verification process.
@@ -107,23 +125,14 @@ export interface IAuthorityPathEntry {
 export interface IVerifyAuthorityTrace
  {
   /**
+   * Stores data acquired during authority verification process associated to given public key (decoded from signature). Simplifies matching data to signatures in multiple signature case.
+   */
+  collectedData: Array<IAuthorityPathTraceData>;
+  /**
    * Holds information specific to the account which signed a transaction.
    * Each array element can be specific to separate authority & signature needed to satisfy transaction.
    */
   rootEntries: Array<IAuthorityPathEntry>;
-
-  /**
-   * Holds information specific to the account which signed a transaction.
-   * Link to last element of {@link rootEntries} array.
-   */
-  rootEntry: IAuthorityPathEntry;
-
-  /**
-   * Stores data specific to the authority path chosen:
-   * - if verification process has been satisfied, it contains successfull path
-   * - when it failed points last processed path.
-   */
-  finalAuthorityPath: Array<IAuthorityPathEntry>;
   /**
    * Holds set of gathered information described by {@link TAuthorityEntryProcessingStatus} type specific to whole authority verification process.
    */
