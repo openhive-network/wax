@@ -5,6 +5,7 @@ import { createServer } from '../assets/proxy-mock-server';
 import { JsonRpcMock } from '../assets/api-mock';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
 import steem from '../assets/mock/data/steem';
+import data4nonexistingAccount from "../assets/mock/data/data4nonexistingaccount";
 
 let closeServer: () => Promise<void>;
 
@@ -21,6 +22,18 @@ test.describe('Wax base mock tests', () => {
 
       return JSON.stringify(foundAccount) === JSON.stringify(account.result);
     }, steem);
+
+    expect(retVal).toBe(true);
+  });
+
+  test('Should be able to find NONEXISTING account based on mock interface', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }, accountData) => {
+      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['0steem'] }); /// Intentionally use invalid name in Hive
+
+      console.log(JSON.stringify(foundAccount));
+
+      return JSON.stringify(foundAccount) === JSON.stringify(accountData.result);
+    }, data4nonexistingAccount);
 
     expect(retVal).toBe(true);
   });
