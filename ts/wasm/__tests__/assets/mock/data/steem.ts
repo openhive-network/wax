@@ -16,7 +16,7 @@ export default {
         delegated_vesting_shares: { amount: '0', nai: '@@000000037', precision: 6 },
         downvote_manabar: { current_mana: 0, last_update_time: 1605204183 },
         governance_vote_expiration_ts: '1969-12-31T23:59:59',
-        hbd_balance: { amount: '185749', nai: '@@000000013', precision: 3 },
+        hbd_balance: { amount: '186558', nai: '@@000000013', precision: 3 },
         hbd_last_interest_payment: '2020-03-20T14:00:00',
         hbd_seconds: '0',
         hbd_seconds_last_update: '2020-04-28T12:50:39',

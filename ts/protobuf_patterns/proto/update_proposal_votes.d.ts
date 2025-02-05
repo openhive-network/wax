@@ -17,7 +17,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
 export interface update_proposal_votes {
     /** @param {string} voter - Account name. */
     voter: string;
-    /** @param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored. */
+    /** @param {number} proposal_ids - IDs of proposals to vote for/against. Before HF28 nonexisting IDs are ignored from HF28 they trigger an error. */
     proposal_ids: string[];
     /**
      * @param {bool} approve - To vote for the proposal, the approve = true.

@@ -42,5 +42,12 @@ INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/config.ts"
   DESTINATION .
 )
 
-DEFINE_WASM_TARGET_FOR(wax)
-target_link_libraries( wax.common PUBLIC hive_protocol )
+DEFINE_WASM_TARGET_FOR( wax
+  TARGET_ENVIRONMENT "web"
+  LINK_LIBRARIES hive_protocol
+)
+
+DEFINE_WASM_TARGET_FOR( wax
+  TARGET_ENVIRONMENT "node"
+  LINK_LIBRARIES hive_protocol
+)

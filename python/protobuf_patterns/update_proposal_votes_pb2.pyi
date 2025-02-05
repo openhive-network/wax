@@ -43,7 +43,7 @@ class update_proposal_votes(google.protobuf.message.Message):
     """@param {string} voter - Account name."""
     @property
     def proposal_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]:
-        """@param {number} proposal_ids - IDs of proposals to vote for/against. Nonexisting IDs are ignored."""
+        """@param {number} proposal_ids - IDs of proposals to vote for/against. Before HF28 nonexisting IDs are ignored from HF28 they trigger an error."""
     approve: builtins.bool
     """@param {bool} approve - To vote for the proposal, the approve = true.
                             To remove the vote, the approve = false.

@@ -15,15 +15,13 @@ test.describe('Wax base mock tests', () => {
   });
 
   test('Should be able to find account based on mock interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain }, account) => {
+    const retVal = await waxTest(async({ chain }) => {
       const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['steem'] });
 
-      console.log(JSON.stringify(foundAccount));
+      return foundAccount;
+    });
 
-      return JSON.stringify(foundAccount) === JSON.stringify(account.result);
-    }, steem);
-
-    expect(retVal).toBe(true);
+    expect(retVal).toStrictEqual(steem.result);
   });
 
   test('Should be able to find NONEXISTING account based on mock interface', async ({ waxTest }) => {
