@@ -1,6 +1,6 @@
 import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "./interfaces";
-import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../wax_module";
+import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
 import { WaxError } from "./errors.js";

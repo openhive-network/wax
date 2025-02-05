@@ -82,7 +82,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
 // Use function as we later extract the function name in the jest-helpers
 globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
   // Import required libraries env-dependent
-  const wasm = env === "web" ? await import("../../dist/bundle/wax.web.js") : await import("../../dist/bundle/wax.node.js");
+  const wasm = env === "web" ? await import("../../dist/bundle/build_wasm/wax.web.js") : await import("../../dist/bundle/build_wasm/wax.node.js");
 
   // Initialize data
   const provider = await (wasm as unknown as { default: TMainModuleFn }).default();

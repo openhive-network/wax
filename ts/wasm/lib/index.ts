@@ -3,7 +3,21 @@ export * from "./detailed/index.js";
 import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
 
 // During bundle - this module will be replaced with the actual wasm module based on your environment
-import MainModuleFunction from "wasm/lib/wax_module.js";
+import MainModuleFunction from "./build_wasm/wax.common.js";
+
+// Polyfill for web workers in WASM
+declare global {
+  var WorkerGlobalScope: /* object extends */ EventTarget | undefined;
+}
+const ENVIRONMENT_IS_WORKER = typeof WorkerGlobalScope != 'undefined';
+
+const getModuleExt = () => ({
+  locateFile: (path, scriptDirectory) => {
+    if (path === "wax.common.wasm")
+        return new URL("./build_wasm/wax.common.wasm", ENVIRONMENT_IS_WORKER ? self.location.href : import.meta.url).href;
+    return scriptDirectory + path;
+  }
+})
 
 /**
  * Creates a Wax Hive chain instance
@@ -15,7 +29,7 @@ import MainModuleFunction from "wasm/lib/wax_module.js";
  * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, {}, options);
+  return constructHiveChainWithWasm(MainModuleFunction, getModuleExt(), options);
 };
 
 /**
@@ -28,5 +42,5 @@ export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promis
  * @throws {WaxError} on any Wax API-related error
  */
 export const createWaxFoundation = (options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, {}, options);
+  return constructWaxFoundationWithWasm(MainModuleFunction, getModuleExt(), options);
 };

@@ -1,6 +1,6 @@
 import { asset, operation, witness_set_properties } from "../protocol.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
-import { type witness_set_properties_data } from "../../wax_module.js";
+import { type witness_set_properties_data } from "../../build_wasm/wax.common.js";
 import { type TPublicKey } from "@hiveio/beekeeper";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
 import type Long from "long";

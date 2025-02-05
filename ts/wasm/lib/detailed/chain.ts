@@ -2,8 +2,8 @@ import { type IWaxOptionsChain, type IHiveChainInterface } from "./index.js";
 
 import { safeAsyncWasmCall } from "./util/wasm_errors.js";
 import { HiveChainApi } from "./chain_api.js";
-import type waxmodule from "../wax_module.js";
-import type { IOptionalModuleArgs } from "../wax_module.js";
+import type waxmodule from "../build_wasm/wax.common.js";
+import type { IOptionalModuleArgs } from "./module_types.js";
 import { DEFAULT_WAX_OPTIONS } from "./base.js";
 
 export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {

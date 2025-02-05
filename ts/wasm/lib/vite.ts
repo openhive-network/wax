@@ -3,12 +3,12 @@ export * from "./detailed/index.js";
 import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
 
 // During bundle - this module will be replaced with the actual wasm module based on your environment
-import MainModuleFunction from "wasm/lib/wax_module.js";
+import MainModuleFunction from "./build_wasm/wax.common.js";
 
 const moduleArgs = (async () => {
   // Resolve WASM url only for Nuxt client (first condition) or Vite client (second condition)
   if ((import.meta as any).client || (!("client" in import.meta) && typeof (import.meta as any).env === "object" && "SSR" in (import.meta as any).env)) {
-      const resolvedUrl = (await import('wax.common.wasm?url')).default;
+      const resolvedUrl = (await import('./build_wasm/wax.common.wasm' + '?url')).default;
 
       return {
           locateFile: (path, scriptDirectory) => {
