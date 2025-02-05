@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 40451cfbe8c2995c66b2d4150dbb3c4d11fd8590
+    ref: 94a6b023db6125970a062002d416c1ea322684fb
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -85,6 +85,18 @@ wax_wasm_proto_tsc_generation:
   tags:
     - public-runner-docker
 
+compare_generated_wasm:
+  extends: .wasm_compare_job_template
+  stage: build
+  variables:
+    SOURCE_DIR: "${CI_PROJECT_DIR}/ts/"
+    BINARIES_DIR: "${CI_PROJECT_DIR}/ts/wasm/build_wasm"
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  tags:
+    - public-runner-docker
+
 wax_wasm_build_tests:
   extends: .npm_process_built_package_tarball
   stage: build
@@ -141,6 +153,7 @@ push_to_wiki:
     DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
   needs:
+    - job: compare_generated_wasm
     - job: generate_docs
       artifacts: true
 
@@ -332,6 +345,7 @@ deploy_wax_wasm_dev_package:
     NPM_PACKAGE_SCOPE: "@hiveio"
 
   needs:
+    - job: compare_generated_wasm
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
@@ -350,6 +364,7 @@ deploy_wax_wasm_production_public_npm:
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
   needs:
+    - job: compare_generated_wasm
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
     - job: test_wax_wasm_proto_pattern
