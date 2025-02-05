@@ -9,14 +9,11 @@ set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
 
-SET( CMAKE_VERBOSE_MAKEFILE ON )
-
-cmake_policy(SET CMP0057 NEW)
-
 set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
+include( ${HIVE_ROOT_PATH}/programs/beekeeper/beekeeper_wasm/cmake/wasm_project.cmake )
 
 set(BOOST_COMPONENTS)
 LIST(APPEND BOOST_COMPONENTS
@@ -27,26 +24,8 @@ LIST(APPEND BOOST_COMPONENTS
       program_options
       system)
 
-set(HIVE_BUILD_ON_MINIMAL_FC ON)
-
-add_subdirectory( ${HIVE_ROOT_PATH}/libraries/fc build_fc_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
-
-# Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
-TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions -Wall
-  -Oz
-  #-gseparate-dwarf
-  #-gsplit-dwarf
-  )
-TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE -fwasm-exceptions
-  -Oz
-  -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
-  -sEXCEPTION_STACK_TRACES=1
-  -sELIMINATE_DUPLICATE_FUNCTIONS=1
-  #-gsource-map
-  #-gseparate-dwarf
- )
 
 file(GLOB HEADERS "core/*.hpp")
 
@@ -70,61 +49,7 @@ generate_get_config(
 INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/config.ts"
   COMPONENT "wax_config_ts"
   DESTINATION .
-  )
+)
 
-function( DEFINE_WAX_TARGET_FOR env )
-      set( exec_wasm_name "wax_wasm_${env}" )
-      set( exec_ts_gen "wax_ts_gen_${env}" )
-
-      message(NOTICE "Configuring '${exec_wasm_name}' and '${exec_ts_gen}'")
-
-      ADD_EXECUTABLE( ${exec_wasm_name} ${SOURCES} )
-
-      target_include_directories( ${exec_wasm_name} PUBLIC ${INCLUDES} )
-
-      target_link_libraries( ${exec_wasm_name} PUBLIC embind hive_protocol )
-
-      target_link_options( ${exec_wasm_name} PUBLIC
-        -sMODULARIZE=1
-        -sSINGLE_FILE=0
-        -sEXPORT_ES6=1
-        -sUSE_ES6_IMPORT_META=1
-        -sINITIAL_MEMORY=67108864
-        --emit-symbol-map
-        # Decreases runtime performance for 50kB decrease in packed .tgz code size
-        # --closure 1
-        # -Os
-      )
-      set_target_properties( ${exec_wasm_name} PROPERTIES OUTPUT_NAME "wax.${env}.js" )
-
-      INSTALL( TARGETS ${exec_wasm_name}
-        COMPONENT "${exec_wasm_name}_runtime"
-        RUNTIME DESTINATION .
-        )
-
-      INSTALL( FILES "$<TARGET_FILE_DIR:${exec_wasm_name}>/wax.${env}.wasm"
-        # WASM binary code is common for both node and web
-        RENAME "wax.common.wasm"
-        COMPONENT "${exec_wasm_name}_runtime"
-        DESTINATION .
-        )
-
-      # Helper target, just to perform TypeScript wrapper generation
-      ADD_EXECUTABLE( ${exec_ts_gen} ${SOURCES} )
-
-      target_include_directories( ${exec_ts_gen} PUBLIC ${INCLUDES} )
-      target_link_libraries( ${exec_ts_gen} PUBLIC embind hive_protocol )
-
-      set_target_properties( ${exec_ts_gen} PROPERTIES OUTPUT_NAME "wax_ts_gen.${env}.cjs" )
-      target_link_options( ${exec_ts_gen} PUBLIC --emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts" )
-      INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/wax.${env}.d.ts"
-        COMPONENT "${exec_wasm_name}_dts"
-        DESTINATION .
-        )
-endfunction()
-
-DEFINE_WAX_TARGET_FOR(node)
-DEFINE_WAX_TARGET_FOR(web)
-
-target_link_options( wax_wasm_node PUBLIC -sENVIRONMENT="node" )
-target_link_options( wax_wasm_web PUBLIC -sENVIRONMENT="web,webview,worker" )
+DEFINE_WASM_TARGET_FOR(wax)
+target_link_libraries( wax.common PUBLIC hive_protocol )
