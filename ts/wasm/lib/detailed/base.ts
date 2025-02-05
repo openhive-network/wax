@@ -2,8 +2,8 @@ import type { IWaxBaseInterface, IWaxOptions } from "./index.js";
 
 import { safeAsyncWasmCall } from "./util/wasm_errors.js";
 import { WaxBaseApi } from "./base_api.js";
-import type waxmodule from "../wax_module.js";
-import type { IOptionalModuleArgs } from "../wax_module.js";
+import type waxmodule from "../build_wasm/wax.common.js";
+import type { IOptionalModuleArgs } from "./module_types.js";
 
 export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
   chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"

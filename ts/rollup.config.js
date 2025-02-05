@@ -6,57 +6,6 @@ import terser from '@rollup/plugin-terser';
 import copy from 'rollup-plugin-copy';
 
 export default [
-  {
-    input: 'wasm/lib/build_wasm/wax.web.js',
-    output: {
-      format: 'es',
-      file: 'wasm/dist/bundle/wax.web.js'
-    },
-    plugins: [
-      replace({
-        values: {
-          'wax.web.wasm': 'wax.common.wasm',
-          // Remove unused `process` from code to prevent bundlers to include polyfills when not required
-          'process': null,
-          'process.versions': null,
-          'process.versions.node': null
-        },
-        preventAssignment: true
-      }),
-      terser({
-        format: {
-          inline_script: false,
-          comments: false,
-          max_line_len: 100
-        }
-      })
-    ]
-  },
-  {
-    input: 'wasm/lib/build_wasm/wax.node.js',
-    output: {
-      format: 'es',
-      file: 'wasm/dist/bundle/wax.node.js'
-    },
-    plugins: [
-      copy({
-        targets: [{ src: ['wasm/lib/build_wasm/wax.common.wasm'], dest: 'wasm/dist/bundle' }]
-      }),
-      replace({
-        values: {
-          'wax.node.wasm': 'wax.common.wasm'
-        },
-        preventAssignment: true
-      }),
-      terser({
-        format: {
-          inline_script: false,
-          comments: false,
-          max_line_len: 100
-        }
-      })
-    ]
-  },
   // Generate .JS bundles for each environment
   {
     input: 'wasm/dist/lib/detailed/index.js',
@@ -65,6 +14,12 @@ export default [
       file: 'wasm/dist/bundle/detailed/index.js'
     },
     plugins: [
+      copy({
+        targets: [
+          { src: ['wasm/lib/build_wasm/wax.common.wasm', 'wasm/lib/build_wasm/wax.common.d.ts', 'wasm/lib/build_wasm/wax.*.js'], dest: 'wasm/dist/bundle/build_wasm' },
+          { src: ['wasm/lib/build_wasm/wax.common.d.ts'], dest: 'wasm/dist/lib/build_wasm' }
+        ]
+      }),
       replace({
         values: {
           // Make sure we do not include `process` in the code:
@@ -81,14 +36,7 @@ export default [
         preferBuiltins: false,
         browser: false
       }),
-      commonjs(),
-      terser({
-        format: {
-          inline_script: false,
-          comments: false,
-          max_line_len: 100
-        }
-      })
+      commonjs()
     ]
   },
   {
@@ -98,13 +46,14 @@ export default [
       file: 'wasm/dist/bundle/web.js'
     },
     external: [
-      './wax.web.js',
+      './build_wasm/wax.web.js',
       './detailed/index.js'
     ],
     plugins: [
       replace({
+        delimiters: ['[\'"]', '[\'"]'],
         values: {
-          'wasm/lib/wax_module.js': './wax.web.js'
+          './build_wasm/wax.common.js': '"./build_wasm/wax.web.js"'
         },
         preventAssignment: true
       })
@@ -117,13 +66,14 @@ export default [
       file: 'wasm/dist/bundle/node.js'
     },
     external: [
-      './wax.node.js',
+      './build_wasm/wax.node.js',
       './detailed/index.js'
     ],
     plugins: [
       replace({
+        delimiters: ['[\'"]', '[\'"]'],
         values: {
-          'wasm/lib/wax_module.js': './wax.node.js'
+          './build_wasm/wax.common.js': '"./build_wasm/wax.node.js"'
         },
         preventAssignment: true
       })
@@ -136,15 +86,16 @@ export default [
       file: 'wasm/dist/bundle/vite.js'
     },
     external: [
-      './wax.web.js',
+      './build_wasm/wax.web.js',
       './detailed/index.js',
-      './wax.common.wasm?url'
+      './build_wasm/wax.common.wasm?url'
     ],
     plugins: [
       replace({
+        delimiters: ['[\'"]', '[\'"]'],
         values: {
-          'wasm/lib/wax_module.js': './wax.web.js',
-          'wax.common.wasm?url': './wax.common.wasm?url'
+          './build_wasm/wax.common.js': '"./build_wasm/wax.web.js"',
+          "./build_wasm/wax.common.wasm' + '?url": "'./build_wasm/wax.common.wasm?url'"
         },
         preventAssignment: true
       })

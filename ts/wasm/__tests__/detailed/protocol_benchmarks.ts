@@ -2,14 +2,14 @@ import fs from 'node:fs';
 import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import WaxModule from '../../dist/bundle/wax.node.js';
-import type {protocol} from '../../lib/build_wasm/wax.node.js';
+import WaxModule from '../../dist/bundle/build_wasm/wax.node.js';
+import type {protocol} from '../../dist/lib/build_wasm/wax.common';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, specificBenchmarkTransaction, vote_operation } from "../assets/data.protocol";
 import type { IHiveChainInterface } from '../../dist/bundle';
 import { createHiveChain } from '../../dist/bundle/node.js';
-import type { MainModule } from '../../lib/build_wasm/wax.node.js';
+import type { MainModule } from '../../dist/lib/build_wasm/wax.common';
 
 interface IBenchmarkData {
   functionName: string;
@@ -27,7 +27,7 @@ let chain!: IHiveChainInterface;
 let transaction!: string;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const statBundle = fs.statSync(path.resolve(__dirname, '../../dist/bundle/wax.common.wasm'));
+const statBundle = fs.statSync(path.resolve(__dirname, '../../dist/bundle/build_wasm/wax.common.wasm'));
 
 const collectedBenchmarkData: (IBenchmarkData | string)[] = [
   `WASM file size: ${statBundle.size} bytes`

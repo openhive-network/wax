@@ -14,7 +14,7 @@ import type Long from "long";
 import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
-import type { IChainConfig } from "../wax_module";
+import type { IChainConfig } from "../build_wasm/config";
 
 export type TNaiAssetConvertible = number | string | BigInt | Long;
 
