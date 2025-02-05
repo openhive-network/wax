@@ -20,6 +20,25 @@ fi
 DIRECT_EXECUTION=${1:-${DIRECT_EXECUTION_DEFAULT}}
 EXECUTION_PATH=${2:-"${EXECUTION_PATH_DEFAULT}"}
 
+build() {
+  CONFIG="$1"
+  BUILD_DIR="${EXECUTION_PATH}/ts/wasm/build_wasm/${CONFIG}"
+  mkdir -vp "${BUILD_DIR}"
+  cd "${BUILD_DIR}"
+
+  #-DBoost_DEBUG=TRUE -DBoost_VERBOSE=TRUE -DCMAKE_STATIC_LIBRARY_SUFFIX=".a;.bc"
+  cmake \
+    -DBoost_NO_WARN_NEW_VERSIONS=1 \
+    -DBoost_USE_STATIC_RUNTIME=ON \
+    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Ninja" \
+    -S "${EXECUTION_PATH}/ts/wasm/src" -DTARGET_ENVIRONMENT="${CONFIG}" -B "${BUILD_DIR}" 2>&1 | tee -i "${BUILD_DIR}/cmake.log"
+  ninja -v -j8 2>&1 | tee -i "${BUILD_DIR}/build.log"
+
+  cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+
+  cmake --install "${BUILD_DIR}" --component wax.common_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+}
+
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
   echo "Performing a docker run"
   docker run \
@@ -31,23 +50,6 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
 else
   echo "Performing a build"
   cd "${EXECUTION_PATH}"
-  BUILD_DIR="${EXECUTION_PATH}/ts/wasm/build_wasm"
-  mkdir -vp "${BUILD_DIR}"
-  cd "${BUILD_DIR}"
-
-  #-DBoost_DEBUG=TRUE -DBoost_VERBOSE=TRUE -DCMAKE_STATIC_LIBRARY_SUFFIX=".a;.bc"
-  cmake \
-    -DBoost_NO_WARN_NEW_VERSIONS=1 \
-    -DBoost_USE_STATIC_RUNTIME=ON \
-    -DCMAKE_TOOLCHAIN_FILE=/emsdk/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DCMAKE_BUILD_TYPE=Release -G "Ninja" \
-    -S "${EXECUTION_PATH}/ts/wasm/src" -B "${BUILD_DIR}" 2>&1 | tee -i "${BUILD_DIR}/cmake.log"
-  ninja -v -j8 2>&1 | tee -i "${BUILD_DIR}/build.log"
-
-  cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
-
-  cmake --install "${BUILD_DIR}" --component wax_wasm_node_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_node_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
-
-  cmake --install "${BUILD_DIR}" --component wax_wasm_web_runtime --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
-  cmake --install "${BUILD_DIR}" --component wax_wasm_web_dts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+  build "web"
+  build "node"
 fi
