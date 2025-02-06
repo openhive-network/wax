@@ -14,7 +14,10 @@ const GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT = 10;
 
 export interface IScoredEndpointUp extends IHiveEndpointDataBase {
   score: number;
-  lastLatency: number;
+  /**
+   * Note: Latencies are listed in a way that the last element is the newest in history
+   */
+  latencies: number[];
   up: true;
 }
 

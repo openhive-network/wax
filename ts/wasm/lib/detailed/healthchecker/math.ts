@@ -53,7 +53,7 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
         endpointUrl,
         score: avg(standardScoreValue) / upTimes,
         up: true,
-        lastLatency: lastUp!.latency
+        latencies: endpointData.filter(value => value.up).map(value => value.latency)
       });
     }
 
