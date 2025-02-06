@@ -1,71 +1,80 @@
-import { type THiveEndpointData, type IHiveEndpointDataUp, type IHiveEndpointDataDown } from "./endpoint.js";
-import { type TCalculateScoresFunction, type TScoredEndpoint } from "./healthchecker.js";
+import type { THiveEndpointData, IHiveEndpointDataDown } from "./endpoint.js";
+import type { IScoredEndpointDown, IScoredEndpointUp, TCalculateScoresFunction, TScoredEndpoint } from "./healthchecker.js";
 
-// XXX: Maybe use Opentelemetry histogram: https://github.com/open-telemetry/opentelemetry-js/blob/main/packages/sdk-metrics/src/aggregator/Histogram.ts
+// Utility math functions:
+const scale = (inputY: number, yMin: number, yMax: number, xMin: number, xMax: number): number => ((inputY - yMin) / ((yMax - yMin) || 1)) * (xMax - xMin) + xMin;
+const avg = (arr: number[]): number => arr.reduce((a, b) => a + b, 0) / arr.length;
+const median = (arr: number[]): number => {
+  arr = arr.sort((a, b) => a - b);
+  if (arr.length % 2 === 0)
+    return (arr[(arr.length / 2) - 1] + arr[arr.length / 2]) / 2;
+  else
+    return arr[(arr.length - 1) / 2];
+};
+const standardDeviation = (arr: number[]): number => {
+  const averageValue = avg(arr);
+
+  return Math.sqrt(avg(arr.map(x => Math.pow(x - averageValue, 2))));
+};
+const standardScore = (arr: number[]): number[] => {
+  const avgForArr = avg(arr);
+  const stdDevForArr = standardDeviation(arr);
+
+  return arr.map(value => (value - avgForArr)/(stdDevForArr || 1));
+};
+
 export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>): Array<TScoredEndpoint> => {
-    // Handle initial stats - on not enough data
-    const topStats = data.map(value => value[1]).reduce((prev, curr) => curr.length > prev ? curr.length : prev, 0);
+  // Calculate For endpoint down penalty
+  const maxLatency = data.map(value => value[1]).reduce((prev, curr) => {
+    const max = curr.reduce((prev, curr) => curr.up ? (curr.latency > prev ? curr.latency : prev) : prev, 0);
+    return max > prev ? max : prev;
+  }, 0);
 
-    const scale = (inputY: number, yMin: number, yMax: number, xMin: number, xMax: number): number => ((inputY - yMin) / ((yMax - yMin) || 1)) * (xMax - xMin) + xMin;
-    const avg = (arr: number[]): number => arr.reduce((a, b) => a + b, 0) / arr.length;
-    const standardDeviation = (arr: number[]): number => Math.sqrt(avg(arr.map(x => Math.pow(x - avg(arr), 2))));
-    const standardScore = (arr: number[]): number[] => {
-      const avgForArr = avg(arr);
-      const stdDevForArr = standardDeviation(arr);
+  const resultsUp: Array<IScoredEndpointUp> = [];
+  const resultsDown: Array<IScoredEndpointDown> = [];
 
-      return arr.map(value => (value - avgForArr)/(stdDevForArr || 1));
-    };
+  for(const [endpointUrl, endpointData] of data) {
+    // Skip endpoints with no data yet
+    if (endpointData.length === 0)
+      continue;
 
-    const results: Array<TScoredEndpoint> = [];
+    // Rewrite latencies applying penalty for down times
+    const latenciesForCalculation = endpointData.map(value => value.up ? value.latency : maxLatency);
 
-    for(const [endpointUrl, endpointData] of data) {
-      // Start with 1 to avoid division by 0. If all of the fields are down it will be 0 no matter what: 0/1 = 1
-      const upTimes = endpointData.reduce((prev, curr) => curr.up ? prev + 1 : prev, 1);
+    // Get amount of times endpoint was up
+    const timesUp = endpointData.filter(value => value.up).length;
 
-      let lastUp: IHiveEndpointDataUp | undefined = undefined, lastDown: IHiveEndpointDataDown | undefined = undefined;
-      for(let i = endpointData.length - 1; i >= 0; --i) {
-        if(endpointData[i].up && !lastUp)
-          lastUp = endpointData[i] as IHiveEndpointDataUp;
-        else if(!endpointData[i].up && !lastDown)
-          lastDown = endpointData[i] as IHiveEndpointDataDown;
-        if (lastUp !== undefined && lastDown !== undefined)
-          break;
-      }
-
-      if(upTimes === 1) {
-        results.push({
-          endpointUrl,
-          score: 0,
-          up: false,
-          lastErrorReason: lastDown!.reason
-        });
-
-        continue;
-      }
-
-      const topValue = endpointData.reduce((prev, curr) => curr.up ? (curr.latency > prev ? curr.latency : prev) : 0, 0);
-
-      // Calculate the average from the standardization of timeouts (we assume here that down = topValue*2 ms) <- by the way, it calculates the stability of the response time from endpoints
-      const dataFilledMissing = [...endpointData.map(value => value.up ? value.latency : topValue * 2), ...Array(topStats - endpointData.length).fill(topValue * 2)];
-      const standardScoreValue = standardScore(dataFilledMissing);
-
-      results.push({
+    // If endpoint was down all the time, add it to down results
+    if (timesUp === 0) {
+      resultsDown.push({
         endpointUrl,
-        score: avg(standardScoreValue) / upTimes,
-        up: true,
-        latencies: endpointData.filter(value => value.up).map(value => value.latency)
+        score: 0,
+        up: false,
+        lastErrorReason: (endpointData[endpointData.length - 1] as IHiveEndpointDataDown).reason
       });
+
+      continue;
     }
 
-    // Now the less the score is the better it is
+    // Add endpoint to up results with score as median latency
+    resultsUp.push({
+      endpointUrl,
+      score: median(latenciesForCalculation),
+      up: true,
+      latencies: endpointData.filter(value => value.up).map(value => value.latency)
+    });
+  }
 
-    // Sort by score in descending order to retrieve min and max values for normalization
-    // Remove endpoints with 0 score - totally down
-    const sortedDesc = results.filter(value => value.up).sort((a, b) => a.score - b.score);
+  // Calculate standard score of median latencies and sort in ascending order with matched up results
+  const sortedDesc: IScoredEndpointUp[] = standardScore(resultsUp.map(value => value.score)).map((value, index) => ({
+    ...resultsUp[index],
+    score: value
+  })).sort((a, b) => a.score - b.score);
 
-    const min = sortedDesc[0]?.score;
-    const max = sortedDesc[sortedDesc.length - 1]?.score;
+  // Retrieve extreme values
+  const min = sortedDesc[0].score;
+  const max = sortedDesc[sortedDesc.length - 1].score;
 
-    // Normalize data to range 0.1 - 1
-    return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...results.filter(value => !value.up)];
+  // Normalize data to range 0 - 1 (including down results with score 0) - all endpoints will be sorted in descending order based on the calculated score
+  return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...resultsDown];
 };
