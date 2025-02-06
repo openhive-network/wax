@@ -1,71 +1,132 @@
-import { type THiveEndpointData, type IHiveEndpointDataUp, type IHiveEndpointDataDown } from "./endpoint.js";
-import { type TCalculateScoresFunction, type TScoredEndpoint } from "./healthchecker.js";
+import type { THiveEndpointData, IHiveEndpointDataDown } from "./endpoint.js";
+import type { IScoredEndpointDown, IScoredEndpointUp, TCalculateScoresFunction, TScoredEndpoint } from "./healthchecker.js";
 
-// XXX: Maybe use Opentelemetry histogram: https://github.com/open-telemetry/opentelemetry-js/blob/main/packages/sdk-metrics/src/aggregator/Histogram.ts
+// Utility math functions:
+const scale = (inputY: number, yMin: number, yMax: number, xMin: number, xMax: number): number => ((inputY - yMin) / ((yMax - yMin) || 1)) * (xMax - xMin) + xMin;
+const avg = (arr: number[]): number => arr.reduce((a, b) => a + b, 0) / arr.length;
+const median = (arr: number[]): number => {
+  arr = arr.sort((a, b) => a - b);
+  if (arr.length % 2 === 0)
+    return (arr[(arr.length / 2) - 1] + arr[arr.length / 2]) / 2;
+  else
+    return arr[(arr.length - 1) / 2];
+};
+const standardDeviation = (arr: number[]): number => {
+  if (arr.length < 2)
+    return 0;
+
+  const averageValue = avg(arr);
+
+  return Math.sqrt(avg(arr.map(x => Math.pow(x - averageValue, 2))));
+};
+const coef = (arr: number[]): number => {
+  if (arr.length < 2)
+    return 0;
+
+  const avgValue = avg(arr);
+  if (avgValue === 0)
+    return 0;
+
+  const stdDev = standardDeviation(arr);
+
+  return stdDev / avgValue;
+};
+
+const PENALTY_MULTIPLIER = 1.2;
+
+// Connection issues multiplier - if endpoint has unstable connection, it will be penalized by this value * coefficient of variation
+const CONNECTION_ISSUES_MULTIPLIER = 0.2;
+
 export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>): Array<TScoredEndpoint> => {
-    // Handle initial stats - on not enough data
-    const topStats = data.map(value => value[1]).reduce((prev, curr) => curr.length > prev ? curr.length : prev, 0);
+  // Calculate For endpoint down penalty
+  let minLatency = Number.MAX_SAFE_INTEGER, maxLatency = 0;
 
-    const scale = (inputY: number, yMin: number, yMax: number, xMin: number, xMax: number): number => ((inputY - yMin) / ((yMax - yMin) || 1)) * (xMax - xMin) + xMin;
-    const avg = (arr: number[]): number => arr.reduce((a, b) => a + b, 0) / arr.length;
-    const standardDeviation = (arr: number[]): number => Math.sqrt(avg(arr.map(x => Math.pow(x - avg(arr), 2))));
-    const standardScore = (arr: number[]): number[] => {
-      const avgForArr = avg(arr);
-      const stdDevForArr = standardDeviation(arr);
+  let hasUpEndpoints = false;
+  for(const [, endpointData] of data) {
+    for(const entry of endpointData)
+      if (entry.up) {
+        hasUpEndpoints = true;
 
-      return arr.map(value => (value - avgForArr)/(stdDevForArr || 1));
-    };
-
-    const results: Array<TScoredEndpoint> = [];
-
-    for(const [endpointUrl, endpointData] of data) {
-      // Start with 1 to avoid division by 0. If all of the fields are down it will be 0 no matter what: 0/1 = 1
-      const upTimes = endpointData.reduce((prev, curr) => curr.up ? prev + 1 : prev, 1);
-
-      let lastUp: IHiveEndpointDataUp | undefined = undefined, lastDown: IHiveEndpointDataDown | undefined = undefined;
-      for(let i = endpointData.length - 1; i >= 0; --i) {
-        if(endpointData[i].up && !lastUp)
-          lastUp = endpointData[i] as IHiveEndpointDataUp;
-        else if(!endpointData[i].up && !lastDown)
-          lastDown = endpointData[i] as IHiveEndpointDataDown;
-        if (lastUp !== undefined && lastDown !== undefined)
-          break;
+        if (entry.latency > maxLatency)
+          maxLatency = entry.latency;
+        if (entry.latency < minLatency)
+          minLatency = entry.latency;
       }
+  }
 
-      if(upTimes === 1) {
-        results.push({
-          endpointUrl,
-          score: 0,
-          up: false,
-          lastErrorReason: lastDown!.reason
-        });
+  if (!hasUpEndpoints)
+    return [];
 
-        continue;
-      }
+  // No up times at all - return all endpoints as down and skip all the redundant calculation
+  if (maxLatency === 0)
+    return data.map(([endpointUrl, endpointData]) => ({
+      endpointUrl,
+      score: 0,
+      up: false,
+      lastErrorReason: (endpointData[endpointData.length - 1] as IHiveEndpointDataDown).reason || 'other'
+    }));
 
-      const topValue = endpointData.reduce((prev, curr) => curr.up ? (curr.latency > prev ? curr.latency : prev) : 0, 0);
+  // Apply penalty for down times
+  const penaltyMs = maxLatency * PENALTY_MULTIPLIER;
 
-      // Calculate the average from the standardization of timeouts (we assume here that down = topValue*2 ms) <- by the way, it calculates the stability of the response time from endpoints
-      const dataFilledMissing = [...endpointData.map(value => value.up ? value.latency : topValue * 2), ...Array(topStats - endpointData.length).fill(topValue * 2)];
-      const standardScoreValue = standardScore(dataFilledMissing);
+  const resultsUp: Array<IScoredEndpointUp> = [];
+  const resultsDown: Array<IScoredEndpointDown> = [];
+  const coefs: number[] = [];
 
-      results.push({
+  let minMedian = Number.MAX_SAFE_INTEGER, maxMedian = 0;
+
+  for(const [endpointUrl, endpointData] of data) {
+    // Skip endpoints with no data yet
+    if (endpointData.length === 0)
+      continue;
+
+    // Rewrite latencies applying penalty for down times
+    const latenciesForCalculation = endpointData.map(value => value.up ? value.latency : penaltyMs);
+
+    // Get amount of times endpoint was up
+    const timesUp = endpointData.filter(value => value.up).length;
+
+    // If endpoint was down all the time, add it to down results
+    if (timesUp === 0) {
+      resultsDown.push({
         endpointUrl,
-        score: avg(standardScoreValue) / upTimes,
-        up: true,
-        latencies: endpointData.filter(value => value.up).map(value => value.latency)
+        score: 0,
+        up: false,
+        lastErrorReason: (endpointData[endpointData.length - 1] as IHiveEndpointDataDown).reason
       });
+
+      continue;
     }
 
-    // Now the less the score is the better it is
+    // Calculate score as median latency and Coefficient of variation of latencies as a penalty for unstable connection
+    const score = median(latenciesForCalculation);
+    const coefScore = coef(latenciesForCalculation);
 
-    // Sort by score in descending order to retrieve min and max values for normalization
-    // Remove endpoints with 0 score - totally down
-    const sortedDesc = results.filter(value => value.up).sort((a, b) => a.score - b.score);
+    if (score < minMedian)
+      minMedian = score;
+    if (score > maxMedian)
+      maxMedian = score;
 
-    const min = sortedDesc[0]?.score;
-    const max = sortedDesc[sortedDesc.length - 1]?.score;
+    coefs.push(coefScore);
 
-    // Normalize data to range 0.1 - 1
-    return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...results.filter(value => !value.up)];
+    // Add endpoint to up results with score as median latency
+    resultsUp.push({
+      endpointUrl,
+      score,
+      up: true,
+      latencies: endpointData.filter(value => value.up).map(value => value.latency)
+    });
+  }
+
+  for(let i = 0; i < resultsUp.length; ++i)
+    resultsUp[i].score = (scale(resultsUp[i].score, minMedian, maxMedian, 0, 100) * (1 - CONNECTION_ISSUES_MULTIPLIER)) + (coefs[i] * 100 * CONNECTION_ISSUES_MULTIPLIER);
+
+  // Calculate standard score of median latencies and sort in ascending order with matched up results
+  const sortedDesc: IScoredEndpointUp[] = resultsUp.sort((a, b) => a.score - b.score);
+
+  const min = sortedDesc[0].score;
+  const max = sortedDesc[sortedDesc.length - 1].score;
+
+  // Normalize data to range 0 - 1 (including down results with score 0) - all endpoints will be sorted in descending order based on the calculated score
+  return [...sortedDesc.map(value => { value.score = 1.1 - scale(value.score, min, max, 0.1, 1); return value; }), ...resultsDown];
 };
