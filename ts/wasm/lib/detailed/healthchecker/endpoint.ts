@@ -1,7 +1,7 @@
 import { type HealthChecker } from "./healthchecker.js";
 import { type IDetailedResponseData } from "../util/request_helper.js";
 import { EChainApiType } from "../chain_api.js";
-import { WaxHealthCheckerEndpointUrlError, WaxRequestTimeoutError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser } from "./errors.js";
+import { WaxHealthCheckerEndpointUrlError, WaxRequestTimeoutError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxHealthCheckerValidatorFailedError } from "./errors.js";
 
 export interface IHiveEndpoint {
   /**
@@ -46,7 +46,7 @@ export interface INewBestEvent {
   apiEndpoint: string;
 }
 
-export type TErrorReason = "timeout" | "servererror" | "userabort" | "other";
+export type TErrorReason = "timeout" | "servererror" | "validationerror" | "userabort" | "other";
 
 export interface IHiveEndpointDataBase {
   endpointUrl: string;
@@ -115,6 +115,8 @@ export class HiveEndpoint implements IHiveEndpoint {
         reason = "servererror";
       else if (error instanceof WaxRequestAbortedByUser)
         reason = "userabort";
+      else if (error instanceof WaxHealthCheckerValidatorFailedError)
+        reason = "validationerror";
 
       const data: IHiveEndpointDataDown = {
         endpointUrl,
