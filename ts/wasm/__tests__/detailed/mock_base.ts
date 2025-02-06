@@ -11,7 +11,7 @@ let closeServer: () => Promise<void>;
 
 test.describe('Wax base mock tests', () => {
   test.beforeAll(async () => {
-    closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'localhost', 8000);
+    closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000);
   });
 
   test('Should be able to find account based on mock interface', async ({ waxTest }) => {
