@@ -22,6 +22,12 @@ export interface IHiveEndpoint {
   readonly endpointUrls: Readonly<Array<string>>;
 
   /**
+   * Unique identifier for this endpoint
+   * Can be used upon validationerror parsing to properly identify the endpoint
+   */
+  readonly id: number;
+
+  /**
    * Lists sorted endpoint url statuses (latency in descending order)
    */
   list(): Array<THiveEndpointData>;

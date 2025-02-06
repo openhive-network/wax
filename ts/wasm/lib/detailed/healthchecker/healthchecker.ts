@@ -126,6 +126,22 @@ export class HealthChecker extends EventEmitter {
   }
 
   /**
+   * Returns the endpoint by id if exists
+   * @param {number} id - Id of the endpoint
+   * @returns {IHiveEndpoint | undefined} endpoint if found, undefined otherwise
+   */
+  public getEndpoint(id: number): IHiveEndpoint | undefined {
+    return this.endpoints.get(id);
+  }
+
+  /**
+   * @returns {IterableIterator<IHiveEndpoint>} iterator for all registered endpoints
+   */
+  public [Symbol.iterator](): IterableIterator<IHiveEndpoint> {
+    return this.endpoints.values();
+  }
+
+  /**
    * Registers the checker to the healthcheck intervals
    *
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
