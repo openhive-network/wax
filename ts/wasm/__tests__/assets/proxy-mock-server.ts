@@ -28,9 +28,8 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
   // Create a transparent proxy
   app.use('/', proxy(req => req.headers['x-hive-target'] as string || target, {
     https: true,
-    preserveHostHdr: true,
-    parseReqBody: false,
-    reqBodyEncoding: null
+    memoizeHost: false,
+    preserveHostHdr: false
   }));
 
   let server: Server;
