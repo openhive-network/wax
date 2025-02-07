@@ -96,8 +96,13 @@ export class HiveEndpoint implements IHiveEndpoint {
     this.endpointUrls.add(endpointUrl);
   }
 
-  public removeEndpointUrl(endpointUrl: string): boolean {
-    return this.endpointUrls.delete(endpointUrl);
+  public removeEndpointUrl(endpointUrl: string, clearUnusedEndpointUrlsFromStats: boolean = true): boolean {
+    const deleted = this.endpointUrls.delete(endpointUrl);
+
+    if (clearUnusedEndpointUrlsFromStats)
+      this.checker.emit("clearunused", {});
+
+    return deleted;
   }
 
   public async performCheck(): Promise<void> {
