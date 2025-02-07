@@ -85,6 +85,31 @@ export class HealthChecker extends EventEmitter {
     "https://api.syncad.com"
   ];
 
+  /**
+   * Adds URL to endpoints matching given criteria
+   *
+   * @param {string} endpointUrl Endpoint URL to add
+   * @param {EChainApiType} type Type of the endpoint
+   */
+  public addEndpointUrl(endpointUrl: string, type: EChainApiType): void {
+    for(const endpoint of this.endpoints.values())
+      if (type === endpoint.apiCallerId)
+        endpoint.addEndpointUrl(endpointUrl);
+  }
+
+  /**
+   * Removes URL from endpoints matching given criteria
+   * @param {string} endpointUrl Endpoint URL to remove
+   * @param type Type of the endpoint
+   */
+  public removeEndpointUrl(endpointUrl: string, type: EChainApiType): void {
+    for(const endpoint of this.endpoints.values())
+      if (type === endpoint.apiCallerId)
+        endpoint.removeEndpointUrl(endpointUrl, false);
+
+    this.clearUnusedEndpointUrlsFromStats();
+  }
+
   private ensureRunning(): void {
     if(this.nextScheduledCheck === undefined)
       this.nextScheduledCheck = Date.now();
@@ -125,6 +150,11 @@ export class HealthChecker extends EventEmitter {
 
     this.on('stats' as any, (data: THiveEndpointData) => {
       this.pushEndpointData(data);
+    });
+
+    // clearunused event is our internal event
+    this.on('clearunused' as any, () => {
+      this.clearUnusedEndpointUrlsFromStats();
     });
   }
 
@@ -180,7 +210,7 @@ export class HealthChecker extends EventEmitter {
       : this.defaultEndpoints
     ) : testOnEndpoints;
 
-    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, endpoints, async (endpointToTest: string) => {
+    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, new Set(endpoints), async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
       let request: IRequestOptions;
