@@ -19,13 +19,26 @@ export interface IHiveEndpoint {
   /**
    * Endpoints that will be checked
    */
-  readonly endpointUrls: Readonly<Array<string>>;
+  readonly endpointUrls: Readonly<Set<string>>;
 
   /**
    * Unique identifier for this endpoint
    * Can be used upon validationerror parsing to properly identify the endpoint
    */
   readonly id: number;
+
+  /**
+   * Adds new endpoint url to the list of urls to check
+   * @param {string} endpointUrl url to add
+   */
+  addEndpointUrl(endpointUrl: string): void;
+
+  /**
+   * Removes endpoint url from the list of urls to check
+   * @param {string} endpointUrl url to remove
+   * @returns {boolean} true if endpoint was removed, false if it was not found
+   */
+  removeEndpointUrl(endpointUrl: string): boolean;
 
   /**
    * Lists sorted endpoint url statuses (latency in descending order)
@@ -75,12 +88,26 @@ export class HiveEndpoint implements IHiveEndpoint {
     public readonly id: number,
     public readonly apiCallerId: EChainApiType,
     public readonly paths: string[],
-    public readonly endpointUrls: Readonly<Array<string>>,
+    public readonly endpointUrls: Readonly<Set<string>>,
     private readonly caller: (apiUrl: string) => Promise<IDetailedResponseData<any>>) {
   }
 
+  public addEndpointUrl(endpointUrl: string): void {
+    this.endpointUrls.add(endpointUrl);
+  }
+
+  public removeEndpointUrl(endpointUrl: string): boolean {
+    return this.endpointUrls.delete(endpointUrl);
+  }
+
   public async performCheck(): Promise<void> {
-    const results = await Promise.allSettled(this.endpointUrls.map(url => this.verifyUponUrl(url)));
+    const resultPromises: Array<Promise<any>> = [];
+
+    // We copy the endpointUrl values here into a new array so it doesn't change during the loop
+    for(const url of [...this.endpointUrls.values()])
+      resultPromises.push(this.verifyUponUrl(url));
+
+    const results = await Promise.allSettled(resultPromises);
 
     for (let i = 0; i < results.length; ++i) {
       const result = results[i];

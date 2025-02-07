@@ -180,7 +180,7 @@ export class HealthChecker extends EventEmitter {
       : this.defaultEndpoints
     ) : testOnEndpoints;
 
-    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, endpoints, async (endpointToTest: string) => {
+    const hiveEndpointObject = new HiveEndpoint(this, this.id++, apiType, paths, new Set(endpoints), async (endpointToTest: string) => {
       let timings!: IDetailedResponseData<any>;
 
       let request: IRequestOptions;
