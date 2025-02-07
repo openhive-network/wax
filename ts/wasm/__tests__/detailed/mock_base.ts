@@ -550,8 +550,88 @@ test.describe('Wax base mock tests', () => {
     ]);
   });
 
+  test('Should be able to get authority trace with mock data for transaction with one required authority with threshold 2', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 15353,
+        "ref_block_prefix": 1141939857,
+        "expiration": "2025-02-10T12:11:41",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "alice",
+              "author": "bob",
+              "permlink": "example-post",
+              "weight": 10000
+            }
+          },
+          {
+            "type":"vote_operation",
+            "value": {
+              "voter": "alice",
+              "author": "bob",
+              "permlink": "example-post",
+              "weight": 10000
+            }
+          }
+        ],
+        "signatures": [
+          "1f32e76fbebe2a92a2b83953e62460ef150bac1ab0989bc5338bbc3a3978c077573403787d509b669f548ccdc06ec6c1995dadd51b5221172635df0f1a443a4d8f",
+          "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "finalAuthorityPath": {
+          "processedEntry": "alice",
+          "processedRole": "posting",
+          "processingStatus": {
+            "entryAccepted": true,
+            "isOpenAuthority": false
+          },
+          "recursionDepth": 0,
+          "threshold": 2,
+          "visitedEntries": [
+            {
+              "processedEntry": "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45",
+              "processedRole": "posting",
+              "processingStatus": {
+                "accountAuthorityCountExceeded": false,
+                "accountAuthorityPointsMissingAccount": false,
+                "accountAuthorityProcessingDepthExceeded": false,
+                "entryAccepted": false,
+                "hasAccountAuthorityCycle": false,
+                "hasInsufficientWeight": true,
+                "hasMatchingPublicKey": true
+              },
+              "recursionDepth": 0,
+              "threshold": 2,
+              "visitedEntries": [],
+              "weight": 1
+            }
+          ],
+          "weight": 2
+        },
+        "matchingSignature": {
+          "signature": "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1",
+          "signatureKey": "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45"
+        }
+      }
+    ]);
+  });
+
   test('Should be able to get authority trace with mock data for 5 signatures where one of the public keys does not match any account', async ({ waxTest }) => {
-    test.fail();
     const retVal = await waxTest(async({ chain }) => {
       const sourceTx = chain.createTransactionFromJson({
         "ref_block_num": 808,
@@ -623,7 +703,7 @@ test.describe('Wax base mock tests', () => {
       return trace.collectedData;
     });
 
-    expect(retVal).toBe([
+    expect(retVal).toStrictEqual([
       {
         "finalAuthorityPath":{
           "processedEntry":"ecency",
@@ -747,80 +827,6 @@ test.describe('Wax base mock tests', () => {
         "matchingSignature":{
           "signature":"1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
           "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
-        }
-      },
-      {
-        "finalAuthorityPath":{
-          "processedEntry":"good-karma",
-          "processedRole":"posting",
-          "threshold":1,
-          "weight":0,
-          "recursionDepth":0,
-          "processingStatus":{
-            "entryAccepted":false,
-            "accountAuthorityProcessingDepthExceeded":false,
-            "accountAuthorityCountExceeded":false,
-            "accountAuthorityPointsMissingAccount":false,
-            "hasAccountAuthorityCycle":false,
-            "hasInsufficientWeight":true,
-            "hasMatchingPublicKey":false
-          },
-          "visitedEntries":[
-            {
-              "processedEntry":"tattooworld",
-              "processedRole":"posting",
-              "threshold":1,
-              "weight":1,
-              "recursionDepth":1,
-              "processingStatus":{
-                "entryAccepted":false,
-                "accountAuthorityProcessingDepthExceeded":false,
-                "accountAuthorityCountExceeded":false,
-                "accountAuthorityPointsMissingAccount":false,
-                "hasAccountAuthorityCycle":false,
-                "hasInsufficientWeight":true,
-                "hasMatchingPublicKey":false
-              },
-              "visitedEntries":[
-                {
-                  "processedEntry":"threespeak",
-                  "processedRole":"posting",
-                  "threshold":1,
-                  "weight":1,
-                  "recursionDepth":2,
-                  "processingStatus":{
-                    "entryAccepted":false,
-                    "accountAuthorityProcessingDepthExceeded":true,
-                    "accountAuthorityCountExceeded":false,
-                    "accountAuthorityPointsMissingAccount":false,
-                    "hasAccountAuthorityCycle":false,
-                    "hasInsufficientWeight":true,
-                    "hasMatchingPublicKey":false
-                  },
-                  "visitedEntries":[]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "finalAuthorityPath":{
-          "processedEntry":"good-karma",
-          "processedRole":"active",
-          "threshold":1,
-          "weight":0,
-          "recursionDepth":0,
-          "processingStatus":{
-            "entryAccepted":false,
-            "accountAuthorityProcessingDepthExceeded":false,
-            "accountAuthorityCountExceeded":false,
-            "accountAuthorityPointsMissingAccount":false,
-            "hasAccountAuthorityCycle":false,
-            "hasInsufficientWeight":true,
-            "hasMatchingPublicKey":false
-          },
-          "visitedEntries":[]
         }
       },
       {

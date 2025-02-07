@@ -106,8 +106,7 @@ const buildAuthorityPathTraceData = (signatureKeyInfo: Map<TPublicKey, TSignatur
     }
     else {
       return {
-        finalAuthorityPath,
-        matchingSignature: undefined
+        finalAuthorityPath
       };
     }
   }
