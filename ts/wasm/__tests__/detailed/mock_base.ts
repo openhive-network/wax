@@ -550,8 +550,89 @@ test.describe('Wax base mock tests', () => {
     ]);
   });
 
+  test('Should be able to get authority trace with mock data for transaction with one required authority with threshold 2', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 15353,
+        "ref_block_prefix": 1141939857,
+        "expiration": "2025-02-10T12:11:41",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "alice",
+              "author": "bob",
+              "permlink": "example-post",
+              "weight": 10000
+            }
+          },
+          {
+            "type":"vote_operation",
+            "value": {
+              "voter": "alice",
+              "author": "bob",
+              "permlink": "example-post",
+              "weight": 10000
+            }
+          }
+        ],
+        "signatures": [
+          "1f32e76fbebe2a92a2b83953e62460ef150bac1ab0989bc5338bbc3a3978c077573403787d509b669f548ccdc06ec6c1995dadd51b5221172635df0f1a443a4d8f",
+          "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "finalAuthorityPath": {
+          "processedEntry": "alice",
+          "processedRole": "posting",
+          "processingStatus": {
+            "entryAccepted": true,
+            "isOpenAuthority": false
+          },
+          "recursionDepth": 0,
+          "threshold": 2,
+          "visitedEntries": [
+            {
+              "processedEntry": "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45",
+              "processedRole": "posting",
+              "processingStatus": {
+                "accountAuthorityCountExceeded": false,
+                "accountAuthorityPointsMissingAccount": false,
+                "accountAuthorityProcessingDepthExceeded": false,
+                "entryAccepted": false,
+                "hasAccountAuthorityCycle": false,
+                "hasInsufficientWeight": true,
+                "hasMatchingPublicKey": true
+              },
+              "recursionDepth": 0,
+              "threshold": 2,
+              "visitedEntries": [],
+              "weight": 1
+            }
+          ],
+          "weight": 2
+        },
+        "matchingSignature": {
+          "signature": "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1",
+          "signatureKey": "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45"
+        }
+      }
+    ]);
+  });
+
   test('Should be able to get authority trace with mock data for 5 signatures where one of the public keys does not match any account', async ({ waxTest }) => {
-    test.fail();
+    test.fail(); // The proccess of getting authority trace is stopped when public key does not match any account, istead of continuing to the end of the public keys array.
     const retVal = await waxTest(async({ chain }) => {
       const sourceTx = chain.createTransactionFromJson({
         "ref_block_num": 808,
@@ -623,7 +704,7 @@ test.describe('Wax base mock tests', () => {
       return trace.collectedData;
     });
 
-    expect(retVal).toBe([
+    expect(retVal).toStrictEqual([
       {
         "finalAuthorityPath":{
           "processedEntry":"ecency",

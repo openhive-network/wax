@@ -6,6 +6,7 @@ import andablackwidow from "./data/andablackwidow";
 import sunnyvoAccounts from "./data/sunnyvoAccounts";
 import directSigners_5 from "./data/directSigners_5";
 import directSigners_6 from "./data/directSigners_6";
+import alice from "./data/alice";
 
 export default {
   "database_api.find_accounts": (params: Record<string, any>) => {
@@ -33,6 +34,9 @@ export default {
 
     if (accounts.length === 6 && accounts[0] === 'ecency' && accounts[1] === 'ecency.stats' && accounts[2] === 'ecency.waves' && accounts[3] === 'esteem.app' && accounts[4] === 'esteemapp' && accounts[5] === 'good-karma')
       return directSigners_6;
+
+    if (accounts.length === 1 && accounts[0] === 'alice')
+      return alice;
 
     return;
   }
