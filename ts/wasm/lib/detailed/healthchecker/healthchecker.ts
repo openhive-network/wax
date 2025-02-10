@@ -10,8 +10,6 @@ import { EChainApiType } from "../chain_api.js";
 const INITIAL_CHECKER_INTERVAL_MS = 10_000;
 const PERFORM_CHECK_INTERVAL_MS = 1_000;
 
-const GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT = 10;
-
 export interface IScoredEndpointUp extends IHiveEndpointDataBase {
   score: number;
   /**
@@ -68,6 +66,8 @@ export class HealthChecker extends EventEmitter {
   private lastBest?: string;
 
   private cachedScoredList: Array<TScoredEndpoint> = [];
+
+  private cachedScoredListLimit: number = 1;
 
   public get best (): string | undefined {
     return this.lastBest;
@@ -248,7 +248,18 @@ export class HealthChecker extends EventEmitter {
     if (this.endpoints.size === 1)
       this.ensureRunning();
 
+    this.calculateCachedScoredListSize();
+
     return hiveEndpointObject;
+  }
+
+  private calculateCachedScoredListSize(): void {
+    let limit = 1;
+
+    for(const endpoint of this.endpoints.values())
+      limit = Math.max(limit, endpoint.endpointUrls.size);
+
+    this.cachedScoredListLimit = limit * this.endpoints.size;
   }
 
   private clearUnusedEndpointUrlsFromStats(): void {
@@ -262,6 +273,8 @@ export class HealthChecker extends EventEmitter {
     for(const statUrl of this.endpointStats.keys())
       if(!endpointUrls.has(statUrl))
         this.endpointStats.delete(statUrl);
+
+    this.calculateCachedScoredListSize();
   }
 
   /**
@@ -375,8 +388,8 @@ export class HealthChecker extends EventEmitter {
     }
 
     // Do not gather more data than required
-    if(results.length === GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT)
-      results.splice(0, 1);
+    if(results.length >= this.cachedScoredListLimit)
+      results.splice(0, results.length - this.cachedScoredListLimit + 1);
 
     results.push(data);
   }
