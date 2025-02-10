@@ -69,6 +69,8 @@ export class HealthChecker extends EventEmitter {
 
   private cachedScoredList: Array<TScoredEndpoint> = [];
 
+  private cachedScoredListLimit: number = GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT;
+
   public get best (): string | undefined {
     return this.lastBest;
   }
@@ -248,7 +250,24 @@ export class HealthChecker extends EventEmitter {
     if (this.endpoints.size === 1)
       this.ensureRunning();
 
+    this.calculateCachedScoredListSize();
+
     return hiveEndpointObject;
+  }
+
+  private calculateCachedScoredListSize(): void {
+    let limit = GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT;
+
+    const domainsCount: Record<string, number> = {};
+
+    for(const endpoint of this.endpoints.values())
+      for(const url of endpoint.endpointUrls)
+        domainsCount[url] = (domainsCount[url] ?? 0) + 1;
+
+    for(const count of Object.values(domainsCount))
+      limit = Math.max(limit, count * 2);
+
+    this.cachedScoredListLimit = limit;
   }
 
   private clearUnusedEndpointUrlsFromStats(): void {
@@ -262,6 +281,8 @@ export class HealthChecker extends EventEmitter {
     for(const statUrl of this.endpointStats.keys())
       if(!endpointUrls.has(statUrl))
         this.endpointStats.delete(statUrl);
+
+    this.calculateCachedScoredListSize();
   }
 
   /**
@@ -375,8 +396,8 @@ export class HealthChecker extends EventEmitter {
     }
 
     // Do not gather more data than required
-    if(results.length === GATHER_STATS_FROM_PREVIOUS_CALLS_AMOUNT)
-      results.splice(0, 1);
+    if(results.length >= this.cachedScoredListLimit)
+      results.splice(0, results.length - this.cachedScoredListLimit + 1);
 
     results.push(data);
   }
