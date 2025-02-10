@@ -19,15 +19,43 @@ const standardDeviation = (arr: number[]): number => {
 
   return Math.sqrt(avg(arr.map(x => Math.pow(x - averageValue, 2))));
 };
+const coef = (arr: number[]): number => {
+  if (arr.length < 2)
+    return 0;
+
+  const avgValue = avg(arr);
+  if (avgValue === 0)
+    return 0;
+
+  const stdDev = standardDeviation(arr);
+
+  return stdDev / avgValue;
+};
 
 const PENALTY_MULTIPLIER = 1.2;
 
+// Connection issues multiplier - if endpoint has unstable connection, it will be penalized by this value * coefficient of variation
+const CONNECTION_ISSUES_MULTIPLIER = 0.2;
+
 export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>): Array<TScoredEndpoint> => {
   // Calculate For endpoint down penalty
-  const maxLatency = data.map(value => value[1]).reduce((prev, curr) => {
-    const max = curr.reduce((prev, curr) => curr.up ? (curr.latency > prev ? curr.latency : prev) : prev, 0);
-    return max > prev ? max : prev;
-  }, 0);
+  let minLatency = Number.MAX_SAFE_INTEGER, maxLatency = 0;
+
+  let hasUpEndpoints = false;
+  for(const [, endpointData] of data) {
+    for(const entry of endpointData)
+      if (entry.up) {
+        hasUpEndpoints = true;
+
+        if (entry.latency > maxLatency)
+          maxLatency = entry.latency;
+        if (entry.latency < minLatency)
+          minLatency = entry.latency;
+      }
+  }
+
+  if (!hasUpEndpoints)
+    return [];
 
   // No up times at all - return all endpoints as down and skip all the redundant calculation
   if (maxLatency === 0)
@@ -43,6 +71,9 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
 
   const resultsUp: Array<IScoredEndpointUp> = [];
   const resultsDown: Array<IScoredEndpointDown> = [];
+  const coefs: number[] = [];
+
+  let minMedian = Number.MAX_SAFE_INTEGER, maxMedian = 0;
 
   for(const [endpointUrl, endpointData] of data) {
     // Skip endpoints with no data yet
@@ -67,8 +98,16 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
       continue;
     }
 
-    // Calculate score as median latency + standard deviation of latencies as a penalty for unstable connection
-    const score = median(latenciesForCalculation) + standardDeviation(latenciesForCalculation);
+    // Calculate score as median latency and Coefficient of variation of latencies as a penalty for unstable connection
+    const score = median(latenciesForCalculation);
+    const coefScore = coef(latenciesForCalculation);
+
+    if (score < minMedian)
+      minMedian = score;
+    if (score > maxMedian)
+      maxMedian = score;
+
+    coefs.push(coefScore);
 
     // Add endpoint to up results with score as median latency
     resultsUp.push({
@@ -79,10 +118,12 @@ export const defaultCalcScores: TCalculateScoresFunction = (data: Readonly<Array
     });
   }
 
+  for(let i = 0; i < resultsUp.length; ++i)
+    resultsUp[i].score = (scale(resultsUp[i].score, minMedian, maxMedian, 0, 100) * (1 - CONNECTION_ISSUES_MULTIPLIER)) + (coefs[i] * 100 * CONNECTION_ISSUES_MULTIPLIER);
+
   // Calculate standard score of median latencies and sort in ascending order with matched up results
   const sortedDesc: IScoredEndpointUp[] = resultsUp.sort((a, b) => a.score - b.score);
 
-  // Retrieve extreme values
   const min = sortedDesc[0].score;
   const max = sortedDesc[sortedDesc.length - 1].score;
 
