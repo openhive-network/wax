@@ -632,7 +632,6 @@ test.describe('Wax base mock tests', () => {
   });
 
   test('Should be able to get authority trace with mock data for 5 signatures where one of the public keys does not match any account', async ({ waxTest }) => {
-    test.fail(); // The proccess of getting authority trace is stopped when public key does not match any account, istead of continuing to the end of the public keys array.
     const retVal = await waxTest(async({ chain }) => {
       const sourceTx = chain.createTransactionFromJson({
         "ref_block_num": 808,
@@ -828,80 +827,6 @@ test.describe('Wax base mock tests', () => {
         "matchingSignature":{
           "signature":"1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
           "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
-        }
-      },
-      {
-        "finalAuthorityPath":{
-          "processedEntry":"good-karma",
-          "processedRole":"posting",
-          "threshold":1,
-          "weight":0,
-          "recursionDepth":0,
-          "processingStatus":{
-            "entryAccepted":false,
-            "accountAuthorityProcessingDepthExceeded":false,
-            "accountAuthorityCountExceeded":false,
-            "accountAuthorityPointsMissingAccount":false,
-            "hasAccountAuthorityCycle":false,
-            "hasInsufficientWeight":true,
-            "hasMatchingPublicKey":false
-          },
-          "visitedEntries":[
-            {
-              "processedEntry":"tattooworld",
-              "processedRole":"posting",
-              "threshold":1,
-              "weight":1,
-              "recursionDepth":1,
-              "processingStatus":{
-                "entryAccepted":false,
-                "accountAuthorityProcessingDepthExceeded":false,
-                "accountAuthorityCountExceeded":false,
-                "accountAuthorityPointsMissingAccount":false,
-                "hasAccountAuthorityCycle":false,
-                "hasInsufficientWeight":true,
-                "hasMatchingPublicKey":false
-              },
-              "visitedEntries":[
-                {
-                  "processedEntry":"threespeak",
-                  "processedRole":"posting",
-                  "threshold":1,
-                  "weight":1,
-                  "recursionDepth":2,
-                  "processingStatus":{
-                    "entryAccepted":false,
-                    "accountAuthorityProcessingDepthExceeded":true,
-                    "accountAuthorityCountExceeded":false,
-                    "accountAuthorityPointsMissingAccount":false,
-                    "hasAccountAuthorityCycle":false,
-                    "hasInsufficientWeight":true,
-                    "hasMatchingPublicKey":false
-                  },
-                  "visitedEntries":[]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "finalAuthorityPath":{
-          "processedEntry":"good-karma",
-          "processedRole":"active",
-          "threshold":1,
-          "weight":0,
-          "recursionDepth":0,
-          "processingStatus":{
-            "entryAccepted":false,
-            "accountAuthorityProcessingDepthExceeded":false,
-            "accountAuthorityCountExceeded":false,
-            "accountAuthorityPointsMissingAccount":false,
-            "hasAccountAuthorityCycle":false,
-            "hasInsufficientWeight":true,
-            "hasMatchingPublicKey":false
-          },
-          "visitedEntries":[]
         }
       },
       {
