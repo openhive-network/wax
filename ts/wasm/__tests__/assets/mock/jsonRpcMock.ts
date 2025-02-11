@@ -7,6 +7,7 @@ import sunnyvoAccounts from "./data/sunnyvoAccounts";
 import directSigners_5 from "./data/directSigners_5";
 import directSigners_6 from "./data/directSigners_6";
 import alice from "./data/alice";
+import hivebuzz from "./data/hivebuzz";
 
 export default {
   "database_api.find_accounts": (params: Record<string, any>) => {
@@ -37,6 +38,9 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'alice')
       return alice;
+
+    if (accounts.length === 1 && accounts[0] === 'hivebuzz')
+      return hivebuzz;
 
     return;
   }
