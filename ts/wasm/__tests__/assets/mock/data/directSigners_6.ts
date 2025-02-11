@@ -15,27 +15,27 @@ export default {
           "weight_threshold": 1
         },
         "balance": {
-          "amount": "361434",
+          "amount": "692590",
           "nai": "@@000000021",
           "precision": 3
         },
         "can_vote": true,
         "comment_count": 0,
         "created": "2020-05-13T07:50:06",
-        "curation_rewards": 491160352,
+        "curation_rewards": 493391132,
         "delayed_votes": [],
         "delegated_vesting_shares": {
-          "amount": "75483243843537",
+          "amount": "75223310843537",
           "nai": "@@000000037",
           "precision": 6
         },
         "downvote_manabar": {
-          "current_mana": 568430384234782,
-          "last_update_time": 1738743477
+          "current_mana": 574408803199761,
+          "last_update_time": 1739364222
         },
         "governance_vote_expiration_ts": "2025-10-29T17:41:51",
         "hbd_balance": {
-          "amount": "33000",
+          "amount": "99013",
           "nai": "@@000000013",
           "precision": 3
         },
@@ -51,12 +51,12 @@ export default {
         "last_post": "2025-02-05T08:16:51",
         "last_post_edit": "2025-02-05T08:16:51",
         "last_root_post": "2025-02-01T09:34:57",
-        "last_vote_time": "2025-02-05T08:17:57",
+        "last_vote_time": "2025-02-12T12:43:42",
         "lifetime_vote_count": 0,
         "memo_key": "STM5vCxUjSAZAgKBornswBuzXgAZasbE3EkPHpLmDEVHmPVGMnnah",
         "mined": false,
         "name": "ecency",
-        "next_vesting_withdrawal": "2025-02-11T16:17:21",
+        "next_vesting_withdrawal": "2025-02-18T16:17:21",
         "open_recurrent_transfers": 0,
         "owner": {
           "account_auths": [],
@@ -68,22 +68,17 @@ export default {
           ],
           "weight_threshold": 1
         },
-        "pending_claimed_accounts": 91486,
+        "pending_claimed_accounts": 92468,
         "pending_transfers": 0,
         "post_bandwidth": 0,
         "post_count": 260696,
         "post_voting_power": {
-          "amount": "2273721536939130",
+          "amount": "2297635212799044",
           "nai": "@@000000037",
           "precision": 6
         },
         "posting": {
-          "account_auths": [
-            [
-              "tattooworld",
-              1
-            ]
-          ],
+          "account_auths": [],
           "key_auths": [
             [
               "STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK",
@@ -93,17 +88,17 @@ export default {
           "weight_threshold": 1
         },
         "posting_json_metadata": "{\"profile\":{\"name\":\"Ecency\",\"about\":\"You love something set it free! Join immutable, uncensored, rewarding communities! https://ecency.com\",\"cover_image\":\"\",\"profile_image\":\"https://images.ecency.com/DQmWCcJcicyck5atZcgXt5rQstoQVSrumHdsmeQNKXHjgPa/ecenct_logo.png\",\"website\":\"https://ecency.com\",\"location\":\"Blockchain\",\"pinned\":\"ecency-development-and-maintenance-4\",\"version\":2,\"tokens\":[]}}",
-        "posting_rewards": 24913005,
+        "posting_rewards": 24969110,
         "previous_owner_update": "1970-01-01T00:00:00",
         "proxied_vsf_votes": [
-          572014647889,
-          0,
+          575441988809,
+          22550690440,
           0,
           0
         ],
         "proxy": "good-karma",
         "received_vesting_shares": {
-          "amount": "2227836611615011",
+          "amount": "2251019497408368",
           "nai": "@@000000037",
           "precision": 6
         },
@@ -120,12 +115,12 @@ export default {
           "precision": 3
         },
         "reward_vesting_balance": {
-          "amount": "34096930621",
+          "amount": "12594943170",
           "nai": "@@000000037",
           "precision": 6
         },
         "reward_vesting_hive": {
-          "amount": "20195",
+          "amount": "7464",
           "nai": "@@000000021",
           "precision": 3
         },
@@ -145,7 +140,7 @@ export default {
         "savings_withdraw_requests": 0,
         "to_withdraw": 43933983139076,
         "vesting_shares": {
-          "amount": "124747706332201",
+          "amount": "125218563398758",
           "nai": "@@000000037",
           "precision": 6
         },
@@ -155,11 +150,11 @@ export default {
           "precision": 6
         },
         "voting_manabar": {
-          "current_mana": 1893761186869146,
-          "last_update_time": 1738743477
+          "current_mana": 1916398960129607,
+          "last_update_time": 1739364222
         },
         "withdraw_routes": 0,
-        "withdrawn": 6759074329090,
+        "withdrawn": 10138611493635,
         "witnesses_voted_for": 0
       },
       {
@@ -174,14 +169,14 @@ export default {
           "weight_threshold": 1
         },
         "balance": {
-          "amount": "373770",
+          "amount": "373772",
           "nai": "@@000000021",
           "precision": 3
         },
         "can_vote": true,
         "comment_count": 0,
         "created": "2020-07-02T07:49:06",
-        "curation_rewards": 275708,
+        "curation_rewards": 277369,
         "delayed_votes": [],
         "delegated_vesting_shares": {
           "amount": "0",
@@ -190,7 +185,7 @@ export default {
         },
         "downvote_manabar": {
           "current_mana": 570220944073,
-          "last_update_time": 1738743477
+          "last_update_time": 1739364222
         },
         "governance_vote_expiration_ts": "1969-12-31T23:59:59",
         "hbd_balance": {
@@ -210,7 +205,7 @@ export default {
         "last_post": "2023-09-12T03:10:27",
         "last_post_edit": "2023-09-12T03:10:27",
         "last_root_post": "2023-09-12T03:10:27",
-        "last_vote_time": "2025-02-05T08:17:57",
+        "last_vote_time": "2025-02-12T12:43:42",
         "lifetime_vote_count": 0,
         "memo_key": "STM73YE8rEQoDh6Y6EvrX2tXmmzhEnoTTwrL5jh3Wet3iMxKBJJty",
         "mined": false,
@@ -283,12 +278,12 @@ export default {
           "precision": 3
         },
         "reward_vesting_balance": {
-          "amount": "338039400012",
+          "amount": "340843006222",
           "nai": "@@000000037",
           "precision": 6
         },
         "reward_vesting_hive": {
-          "amount": "193316",
+          "amount": "194977",
           "nai": "@@000000021",
           "precision": 3
         },
@@ -318,173 +313,171 @@ export default {
           "precision": 6
         },
         "voting_manabar": {
-          "current_mana": 2133231199037,
-          "last_update_time": 1738743477
+          "current_mana": 2079286154445,
+          "last_update_time": 1739364222
         },
         "withdraw_routes": 0,
         "withdrawn": 0,
         "witnesses_voted_for": 0
       },
       {
-        "2": {
-          "active": {
-            "account_auths": [],
-            "key_auths": [
-              [
-                "STM7NLtY73dVT7W3Ymsc8kMBd165hRK9XKpUePqMoRAMrJCb8551L",
-                1
-              ]
-            ],
-            "weight_threshold": 1
-          },
-          "balance": {
-            "amount": "0",
-            "nai": "@@000000021",
-            "precision": 3
-          },
-          "can_vote": true,
-          "comment_count": 0,
-          "created": "2023-05-22T06:40:12",
-          "curation_rewards": 0,
-          "delayed_votes": [],
-          "delegated_vesting_shares": {
-            "amount": "0",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "downvote_manabar": {
-            "current_mana": 2959612394,
-            "last_update_time": 1738930797
-          },
-          "governance_vote_expiration_ts": "1969-12-31T23:59:59",
-          "hbd_balance": {
-            "amount": "496",
-            "nai": "@@000000013",
-            "precision": 3
-          },
-          "hbd_last_interest_payment": "1970-01-01T00:00:00",
-          "hbd_seconds": "0",
-          "hbd_seconds_last_update": "1970-01-01T00:00:00",
-          "id": 2458013,
-          "is_smt": false,
-          "json_metadata": "",
-          "last_account_recovery": "1970-01-01T00:00:00",
-          "last_account_update": "2023-05-24T06:30:57",
-          "last_owner_update": "1970-01-01T00:00:00",
-          "last_post": "2025-02-07T00:00:06",
-          "last_post_edit": "2025-02-07T00:00:06",
-          "last_root_post": "2025-02-07T00:00:06",
-          "last_vote_time": "2025-02-07T12:19:57",
-          "lifetime_vote_count": 0,
-          "memo_key": "STM6jdqDjTGdbdeJQHUTe7j2Z94q48GJrx2VVifvHb9AgpuvD2978",
-          "mined": false,
-          "name": "ecency.waves",
-          "next_vesting_withdrawal": "1969-12-31T23:59:59",
-          "open_recurrent_transfers": 0,
-          "owner": {
-            "account_auths": [],
-            "key_auths": [
-              [
-                "STM6JYdPvRXJ2nzLqW2CWSi7Jw89yFuRm24NZ21hPeC55omdH8UxJ",
-                1
-              ]
-            ],
-            "weight_threshold": 1
-          },
-          "pending_claimed_accounts": 0,
-          "pending_transfers": 0,
-          "post_bandwidth": 0,
-          "post_count": 516,
-          "post_voting_power": {
-            "amount": "11838449578",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "posting": {
-            "account_auths": [
-              [
-                "ecency.app",
-                1
-              ]
-            ],
-            "key_auths": [
-              [
-                "STM8UxNA8pQpL7wtvzZUrfFFz1qGxgGH6a1VnJqDTGbivsU3Mi4Mz",
-                1
-              ]
-            ],
-            "weight_threshold": 1
-          },
-          "posting_json_metadata": "{\"profile\":{\"about\":\"\",\"cover_image\":\"\",\"location\":\"\",\"name\":\"\",\"profile_image\":\"https://images.ecency.com/DQmP46HdmCTxUiPRd8ZdVv3HiXaPqnFnPRyE4a4mfLsWW1b/warning.png\",\"website\":\"\",\"version\":2}}",
-          "posting_rewards": 17895,
-          "previous_owner_update": "1970-01-01T00:00:00",
-          "proxied_vsf_votes": [
-            0,
-            0,
-            0,
-            0
+        "active": {
+          "account_auths": [],
+          "key_auths": [
+            [
+              "STM7NLtY73dVT7W3Ymsc8kMBd165hRK9XKpUePqMoRAMrJCb8551L",
+              1
+            ]
           ],
-          "proxy": "",
-          "received_vesting_shares": {
-            "amount": "0",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "recovery_account": "ecency",
-          "reset_account": "null",
-          "reward_hbd_balance": {
-            "amount": "779",
-            "nai": "@@000000013",
-            "precision": 3
-          },
-          "reward_hive_balance": {
-            "amount": "0",
-            "nai": "@@000000021",
-            "precision": 3
-          },
-          "reward_vesting_balance": {
-            "amount": "3333171133",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "reward_vesting_hive": {
-            "amount": "1973",
-            "nai": "@@000000021",
-            "precision": 3
-          },
-          "savings_balance": {
-            "amount": "0",
-            "nai": "@@000000021",
-            "precision": 3
-          },
-          "savings_hbd_balance": {
-            "amount": "0",
-            "nai": "@@000000013",
-            "precision": 3
-          },
-          "savings_hbd_last_interest_payment": "1970-01-01T00:00:00",
-          "savings_hbd_seconds": "0",
-          "savings_hbd_seconds_last_update": "1970-01-01T00:00:00",
-          "savings_withdraw_requests": 0,
-          "to_withdraw": 0,
-          "vesting_shares": {
-            "amount": "11838449578",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "vesting_withdraw_rate": {
-            "amount": "0",
-            "nai": "@@000000037",
-            "precision": 6
-          },
-          "voting_manabar": {
-            "current_mana": 11185691019,
-            "last_update_time": 1738930797
-          },
-          "withdraw_routes": 0,
-          "withdrawn": 0,
-          "witnesses_voted_for": 0
-        }
+          "weight_threshold": 1
+        },
+        "balance": {
+          "amount": "0",
+          "nai": "@@000000021",
+          "precision": 3
+        },
+        "can_vote": true,
+        "comment_count": 0,
+        "created": "2023-05-22T06:40:12",
+        "curation_rewards": 0,
+        "delayed_votes": [],
+        "delegated_vesting_shares": {
+          "amount": "0",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "downvote_manabar": {
+          "current_mana": 3957475111,
+          "last_update_time": 1739364222
+        },
+        "governance_vote_expiration_ts": "1969-12-31T23:59:59",
+        "hbd_balance": {
+          "amount": "1392",
+          "nai": "@@000000013",
+          "precision": 3
+        },
+        "hbd_last_interest_payment": "1970-01-01T00:00:00",
+        "hbd_seconds": "0",
+        "hbd_seconds_last_update": "1970-01-01T00:00:00",
+        "id": 2458013,
+        "is_smt": false,
+        "json_metadata": "",
+        "last_account_recovery": "1970-01-01T00:00:00",
+        "last_account_update": "2023-05-24T06:30:57",
+        "last_owner_update": "1970-01-01T00:00:00",
+        "last_post": "2025-02-12T00:00:06",
+        "last_post_edit": "2025-02-12T00:00:06",
+        "last_root_post": "2025-02-12T00:00:06",
+        "last_vote_time": "2025-02-12T12:43:42",
+        "lifetime_vote_count": 0,
+        "memo_key": "STM6jdqDjTGdbdeJQHUTe7j2Z94q48GJrx2VVifvHb9AgpuvD2978",
+        "mined": false,
+        "name": "ecency.waves",
+        "next_vesting_withdrawal": "1969-12-31T23:59:59",
+        "open_recurrent_transfers": 0,
+        "owner": {
+          "account_auths": [],
+          "key_auths": [
+            [
+              "STM6JYdPvRXJ2nzLqW2CWSi7Jw89yFuRm24NZ21hPeC55omdH8UxJ",
+              1
+            ]
+          ],
+          "weight_threshold": 1
+        },
+        "pending_claimed_accounts": 0,
+        "pending_transfers": 0,
+        "post_bandwidth": 0,
+        "post_count": 521,
+        "post_voting_power": {
+          "amount": "15829900447",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "posting": {
+          "account_auths": [
+            [
+              "ecency.app",
+              1
+            ]
+          ],
+          "key_auths": [
+            [
+              "STM8UxNA8pQpL7wtvzZUrfFFz1qGxgGH6a1VnJqDTGbivsU3Mi4Mz",
+              1
+            ]
+          ],
+          "weight_threshold": 1
+        },
+        "posting_json_metadata": "{\"profile\":{\"about\":\"\",\"cover_image\":\"\",\"location\":\"\",\"name\":\"\",\"profile_image\":\"https://images.ecency.com/DQmP46HdmCTxUiPRd8ZdVv3HiXaPqnFnPRyE4a4mfLsWW1b/warning.png\",\"website\":\"\",\"version\":2}}",
+        "posting_rewards": 19179,
+        "previous_owner_update": "1970-01-01T00:00:00",
+        "proxied_vsf_votes": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "proxy": "",
+        "received_vesting_shares": {
+          "amount": "0",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "recovery_account": "ecency",
+        "reset_account": "null",
+        "reward_hbd_balance": {
+          "amount": "79",
+          "nai": "@@000000013",
+          "precision": 3
+        },
+        "reward_hive_balance": {
+          "amount": "0",
+          "nai": "@@000000021",
+          "precision": 3
+        },
+        "reward_vesting_balance": {
+          "amount": "426952749",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "reward_vesting_hive": {
+          "amount": "253",
+          "nai": "@@000000021",
+          "precision": 3
+        },
+        "savings_balance": {
+          "amount": "0",
+          "nai": "@@000000021",
+          "precision": 3
+        },
+        "savings_hbd_balance": {
+          "amount": "0",
+          "nai": "@@000000013",
+          "precision": 3
+        },
+        "savings_hbd_last_interest_payment": "1970-01-01T00:00:00",
+        "savings_hbd_seconds": "0",
+        "savings_hbd_seconds_last_update": "1970-01-01T00:00:00",
+        "savings_withdraw_requests": 0,
+        "to_withdraw": 0,
+        "vesting_shares": {
+          "amount": "15829900447",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "vesting_withdraw_rate": {
+          "amount": "0",
+          "nai": "@@000000037",
+          "precision": 6
+        },
+        "voting_manabar": {
+          "current_mana": 14634242204,
+          "last_update_time": 1739364222
+        },
+        "withdraw_routes": 0,
+        "withdrawn": 0,
+        "witnesses_voted_for": 0
       },
       {
         "active": {
@@ -505,7 +498,7 @@ export default {
         "can_vote": true,
         "comment_count": 0,
         "created": "2017-09-06T09:46:12",
-        "curation_rewards": 870948,
+        "curation_rewards": 872023,
         "delayed_votes": [],
         "delegated_vesting_shares": {
           "amount": "0",
@@ -514,7 +507,7 @@ export default {
         },
         "downvote_manabar": {
           "current_mana": 538648065790,
-          "last_update_time": 1738743477
+          "last_update_time": 1739364222
         },
         "governance_vote_expiration_ts": "1969-12-31T23:59:59",
         "hbd_balance": {
@@ -534,7 +527,7 @@ export default {
         "last_post": "1970-01-01T00:00:00",
         "last_post_edit": "1970-01-01T00:00:00",
         "last_root_post": "1970-01-01T00:00:00",
-        "last_vote_time": "2025-02-05T08:17:57",
+        "last_vote_time": "2025-02-12T12:43:42",
         "lifetime_vote_count": 0,
         "memo_key": "STM7rYhpTmVrhBmLcEaoxWvVk5M3FrN4xtapk1utikFD8hhrNmzAf",
         "mined": false,
@@ -603,12 +596,12 @@ export default {
           "precision": 3
         },
         "reward_vesting_balance": {
-          "amount": "6743675583",
+          "amount": "8558134873",
           "nai": "@@000000037",
           "precision": 6
         },
         "reward_vesting_hive": {
-          "amount": "3991",
+          "amount": "5066",
           "nai": "@@000000021",
           "precision": 3
         },
@@ -638,8 +631,8 @@ export default {
           "precision": 6
         },
         "voting_manabar": {
-          "current_mana": 2015146417418,
-          "last_update_time": 1738743477
+          "current_mana": 1964163291384,
+          "last_update_time": 1739364222
         },
         "withdraw_routes": 0,
         "withdrawn": 0,
@@ -657,14 +650,14 @@ export default {
           "weight_threshold": 1
         },
         "balance": {
-          "amount": "1975",
+          "amount": "1977",
           "nai": "@@000000021",
           "precision": 3
         },
         "can_vote": true,
         "comment_count": 0,
         "created": "2016-11-03T15:59:27",
-        "curation_rewards": 76575480,
+        "curation_rewards": 76589433,
         "delayed_votes": [],
         "delegated_vesting_shares": {
           "amount": "0",
@@ -673,7 +666,7 @@ export default {
         },
         "downvote_manabar": {
           "current_mana": 3941622393419,
-          "last_update_time": 1738743477
+          "last_update_time": 1739364222
         },
         "governance_vote_expiration_ts": "1969-12-31T23:59:59",
         "hbd_balance": {
@@ -693,7 +686,7 @@ export default {
         "last_post": "2024-09-16T14:47:39",
         "last_post_edit": "2024-09-16T14:47:39",
         "last_root_post": "2020-07-06T19:20:18",
-        "last_vote_time": "2025-02-05T08:17:57",
+        "last_vote_time": "2025-02-12T12:43:42",
         "lifetime_vote_count": 0,
         "memo_key": "STM6W6WwFy5P8putgwPppiyG1ySM65wvSQSPKErkDCNG9sTSevhjf",
         "mined": false,
@@ -774,12 +767,12 @@ export default {
           "precision": 3
         },
         "reward_vesting_balance": {
-          "amount": "79797292189",
+          "amount": "103348622624",
           "nai": "@@000000037",
           "precision": 6
         },
         "reward_vesting_hive": {
-          "amount": "47220",
+          "amount": "61173",
           "nai": "@@000000021",
           "precision": 3
         },
@@ -809,8 +802,8 @@ export default {
           "precision": 6
         },
         "voting_manabar": {
-          "current_mana": 14745985507639,
-          "last_update_time": 1738743477
+          "current_mana": 14372984022030,
+          "last_update_time": 1739364222
         },
         "withdraw_routes": 1,
         "withdrawn": 0,
@@ -828,14 +821,14 @@ export default {
           "weight_threshold": 1
         },
         "balance": {
-          "amount": "444",
+          "amount": "451",
           "nai": "@@000000021",
           "precision": 3
         },
         "can_vote": true,
         "comment_count": 0,
         "created": "2016-07-07T08:15:03",
-        "curation_rewards": 41133065,
+        "curation_rewards": 41189987,
         "delayed_votes": [],
         "delegated_vesting_shares": {
           "amount": "108917239599",
@@ -843,12 +836,12 @@ export default {
           "precision": 6
         },
         "downvote_manabar": {
-          "current_mana": 14481595294378,
-          "last_update_time": 1738743489
+          "current_mana": 14312890639896,
+          "last_update_time": 1739364516
         },
         "governance_vote_expiration_ts": "2026-02-03T03:28:45",
         "hbd_balance": {
-          "amount": "77",
+          "amount": "79",
           "nai": "@@000000013",
           "precision": 3
         },
@@ -864,12 +857,12 @@ export default {
         "last_post": "2024-09-21T09:14:36",
         "last_post_edit": "2024-09-21T09:14:36",
         "last_root_post": "2024-01-18T05:30:57",
-        "last_vote_time": "2025-02-05T08:17:57",
+        "last_vote_time": "2025-02-12T12:43:42",
         "lifetime_vote_count": 0,
         "memo_key": "STM8mZcbokoRM8LvRk1CGibFyfuTXp77w72ktgJrZNsjKYmoF3gTx",
         "mined": false,
         "name": "good-karma",
-        "next_vesting_withdrawal": "2025-02-10T07:04:15",
+        "next_vesting_withdrawal": "2025-02-17T07:04:15",
         "open_recurrent_transfers": 0,
         "owner": {
           "account_auths": [],
@@ -886,7 +879,7 @@ export default {
         "post_bandwidth": 10000,
         "post_count": 5605,
         "post_voting_power": {
-          "amount": "57926381177512",
+          "amount": "57251562559586",
           "nai": "@@000000037",
           "precision": 6
         },
@@ -913,9 +906,9 @@ export default {
         "posting_rewards": 123649561,
         "previous_owner_update": "2017-08-09T16:20:06",
         "proxied_vsf_votes": [
-          317949611063387,
-          572014647889,
-          0,
+          318805902417737,
+          575441988809,
+          22550690440,
           0
         ],
         "proxy": "",
@@ -937,12 +930,12 @@ export default {
           "precision": 3
         },
         "reward_vesting_balance": {
-          "amount": "30984453547",
+          "amount": "31505453640",
           "nai": "@@000000037",
           "precision": 6
         },
         "reward_vesting_hive": {
-          "amount": "18350",
+          "amount": "18669",
           "nai": "@@000000021",
           "precision": 3
         },
@@ -962,7 +955,7 @@ export default {
         "savings_withdraw_requests": 0,
         "to_withdraw": 70389791043431,
         "vesting_shares": {
-          "amount": "63421106892987",
+          "amount": "62746288275061",
           "nai": "@@000000037",
           "precision": 6
         },
@@ -972,11 +965,11 @@ export default {
           "precision": 6
         },
         "voting_manabar": {
-          "current_mana": 55338437095487,
-          "last_update_time": 1738743489
+          "current_mana": 54353060735039,
+          "last_update_time": 1739364516
         },
         "withdraw_routes": 1,
-        "withdrawn": 43316794488272,
+        "withdrawn": 48731393799306,
         "witnesses_voted_for": 30
       }
     ]

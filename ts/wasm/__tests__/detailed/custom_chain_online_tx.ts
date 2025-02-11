@@ -445,10 +445,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
                       "weight": 1
                     }
                   ],
-                  "weight": 2
+                  "weight": 1
                 }
               ],
-              "weight": 2
+              "weight": 1
             }
           ],
           "weight": 1
@@ -528,7 +528,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
                   "weight": 1
                 }
               ],
-              "weight": 2
+              "weight": 1
             }
           ],
           "weight": 1
