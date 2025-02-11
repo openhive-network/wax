@@ -35,7 +35,7 @@ interface IHealthCheckerEvents {
   'newbest': (endpoint: TScoredEndpoint) => void | Promise<void>;
   'newup': (endpoint: TScoredEndpoint) => void | Promise<void>;
   'newdown': (endpoint: TScoredEndpoint) => void | Promise<void>;
-  'data': (endpoints: Array<TScoredEndpoint>) => void | Promise<void>;
+  'data': (endpoints: Array<TScoredEndpoint>, collectedLatenciesMaxLength?: number) => void | Promise<void>;
   'error': (error: WaxHealthCheckerError) => void | Promise<void>;
   'validationerror': (error: WaxHealthCheckerValidatorFailedError) => void | Promise<void>;
 }
@@ -439,7 +439,7 @@ export class HealthChecker extends EventEmitter {
 
     this.cachedScoredList = this.calculateCachedScored();
 
-    this.emit('data', this.cachedScoredList);
+    this.emit('data', this.cachedScoredList, this.cachedScoredListLimit);
 
     this.nextScheduledCheck = Date.now() + Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
   }
