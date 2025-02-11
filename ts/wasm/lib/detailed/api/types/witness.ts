@@ -1,4 +1,6 @@
-import { IsDateString, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsNumber, IsString, Validate } from "class-validator";
+import { IsPublicKey } from "../../decorators/is_public_key";
+import { TPublicKey } from "@hiveio/beekeeper";
 
 export class ApiWitness {
   @IsNumber()
@@ -10,7 +12,7 @@ export class ApiWitness {
   @IsDateString()
   public created!: string;
 
-  @IsString()
-  public signing_key!: string;
+  @Validate(IsPublicKey)
+  public signing_key!: TPublicKey;
 };
 
