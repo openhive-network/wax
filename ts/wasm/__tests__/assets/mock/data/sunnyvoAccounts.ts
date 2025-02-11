@@ -396,12 +396,7 @@ export default {
           "precision": 6
         },
         "posting": {
-          "account_auths": [
-            [
-              "steemauto",
-              1
-            ]
-          ],
+          "account_auths": [],
           "key_auths": [
             [
               "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
@@ -577,47 +572,10 @@ export default {
           "precision": 6
         },
         "posting": {
-          "account_auths": [
-            [
-              "ecency.app",
-              1
-            ],
-            [
-              "peakd.app",
-              1
-            ],
-            [
-              "starkerz",
-              1
-            ],
-            [
-              "theycallmedan",
-              1
-            ],
-            [
-              "threespeak",
-              1
-            ]
-          ],
+          "account_auths": [],
           "key_auths": [
             [
               "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF",
-              1
-            ],
-            [
-              "STM57pLhv3CXgQaBK4javwp3hwhk5PLHxgAnv2MRHfdDUcb9QYGQD",
-              1
-            ],
-            [
-              "STM5rQM6wGE1CJmUnhcw6GWdwpdcBD6AzreRoMk5eEnXnK6t3P4UW",
-              1
-            ],
-            [
-              "STM5z9X4S7UH676q6aK7aR7mdAgve9JYXy2WjTVJY2wnsiVnMaaAf",
-              1
-            ],
-            [
-              "STM6a1oqzMM7qTtNxjPmmpzbrDz4FBXgeL4p64dwPWV9GcrckRP2m",
               1
             ]
           ],

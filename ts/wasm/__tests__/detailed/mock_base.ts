@@ -103,6 +103,65 @@ test.describe('Wax base mock tests', () => {
     ]);
   });
 
+  test('Should be able to get authority trace with mock data for account which declares itself as account authority', async ({ waxTest }) => {
+    test.fail(); // The cycle flag should be true because account declares itself as account authority.
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 41973,
+        "ref_block_prefix": 2696396446,
+        "extensions": [],
+        "expiration": "2025-02-11T10:33:18",
+        "operations": [
+          {
+            "type": "comment_operation",
+            "value": {
+              "body": "Edite su comentario. La **primera línea** debe contener **solo el nombre del usuario**, ¡nada más!<div><a href=\"https://engage.hivechain.app\">![](https://i.imgur.com/XsrNmcl.png)</a></div>",
+              "title": "",
+              "author": "hivebuzz",
+              "permlink": "re-1739269398362",
+              "json_metadata": "{\"app\":\"engage\"}",
+              "parent_author": "numa26",
+              "parent_permlink": "re-hivebuzz-srhhfn"
+            }
+          }
+        ],
+        "signatures": [
+          "1f6a2c32c04a3def7d91832c6b476abaeb686472036ef9fb80a920baab9c63dac31a0c3ac67f4c66e42eecfd1cceb0e926ab6e224b97fa3fa0150435ca0db804f3"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toEqual([
+      {
+        "finalAuthorityPath": {
+          "processedEntry": "hivebuzz",
+          "processedRole": "owner",
+          "threshold": 1,
+          "weight": 0,
+          "recursionDepth": 0,
+          "processingStatus": {
+            "entryAccepted": false,
+            "accountAuthorityProcessingDepthExceeded": false,
+            "accountAuthorityCountExceeded": false,
+            "accountAuthorityPointsMissingAccount": false,
+            "hasAccountAuthorityCycle": true, // It should be true, because account declares itself as account authority.
+            "hasInsufficientWeight": true,
+            "hasMatchingPublicKey": false
+          },
+          "visitedEntries": []
+        }
+      }
+    ]);
+  });
+
   test('Should be able to get authority trace with mock data with delegated authority where 2 accounts are required to satisfy threshold', async ({ waxTest }) => {
     test.fail(); // The trace proccess is stopped after first account beacuse of incorrect weight calculation (Only one account satisfied threshold, but indicated from mock API response, 2 accounts are required).
     const retVal = await waxTest(async({ chain }) => {
