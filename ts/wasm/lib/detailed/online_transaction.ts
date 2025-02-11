@@ -22,7 +22,7 @@ type TAuthorityHolder = {
 };
 
 const MAX_ACCOUNTS_PER_CALL = 100;
-type TAuthorityEntriesCollection = { [key: string]: number };
+type TAuthorityEntriesCollection = Record<string, number>;
 
 /**
  * Helper operation visitor class, perforiming on-chain verification in a way specific to given operation type.
