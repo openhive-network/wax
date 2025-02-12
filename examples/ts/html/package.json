@@ -18,7 +18,7 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.8-stable.250129121514",
+    "@hiveio/beekeeper": "1.27.8-stable.250212212919",
     "@hiveio/wax": "file:../../../ts"
   },
   "type": "module",
