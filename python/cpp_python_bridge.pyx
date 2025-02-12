@@ -4,6 +4,7 @@
 from typing import Callable
 from functools import wraps
 
+from libcpp cimport bool
 from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
@@ -279,6 +280,10 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
 
     response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
     return response.amount, response.precision, response.nai
+
+def is_valid_account_name(account_name: bytes) -> bool:
+    cdef proto_protocol obj
+    return obj.cpp_is_valid_account_name(account_name)
 
 def proto_operation_get_impacted_accounts(operation: bytes) -> vector[string]:
     cdef proto_protocol obj
