@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.8-stable.250131103618
-        version: 1.27.8-stable.250131103618
+        specifier: 1.27.8-stable.250212212919
+        version: 1.27.8-stable.250212212919
       events:
         specifier: ^3.3.0
         version: 3.3.0
@@ -138,8 +138,8 @@ packages:
   '@gerrit0/mini-shiki@1.24.4':
     resolution: {integrity: sha512-YEHW1QeAg6UmxEmswiQbOVEg1CW22b1XUD/lNTliOsu0LD0wqoyleFMnmbTp697QE0pcadQiR5cVtbbAPncvpw==}
 
-  '@hiveio/beekeeper@1.27.8-stable.250131103618':
-    resolution: {integrity: sha1-0IYuFBbxIIKfRTrI6ZZc7Jf+qLA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.8-stable.250131103618.tgz}
+  '@hiveio/beekeeper@1.27.8-stable.250212212919':
+    resolution: {integrity: sha1-SnBDMQ3bu3VPowdvPk8F/EUv3UI=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.8-stable.250212212919.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
@@ -1817,7 +1817,7 @@ snapshots:
       '@shikijs/types': 1.24.2
       '@shikijs/vscode-textmate': 9.3.1
 
-  '@hiveio/beekeeper@1.27.8-stable.250131103618': {}
+  '@hiveio/beekeeper@1.27.8-stable.250212212919': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
