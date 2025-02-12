@@ -281,6 +281,19 @@ class IWaxBaseInterface(ABC):
 
     @staticmethod
     @abstractmethod
+    def is_valid_account_name(account_name: AccountName) -> bool:
+        """
+        Checks if the given account name is valid.
+
+        Args:
+            account_name: Account name to be checked.
+
+        Returns:
+            bool: True if the account name is valid, False otherwise.
+        """
+
+    @staticmethod
+    @abstractmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:
         """
         Retrieves the list of account names (not authorities!) that are impacted by a given operation.

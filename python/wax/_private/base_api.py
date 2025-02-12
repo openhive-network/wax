@@ -48,6 +48,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     generate_password_based_private_key,
     get_hive_protocol_config,
     get_public_key_from_signature,
+    is_valid_account_name,
     operation_get_impacted_accounts,
     suggest_brain_key,
     validate_operation,
@@ -84,6 +85,10 @@ class WaxBaseApi(IWaxBaseInterface):
     @property
     def address_prefix(self) -> str:
         return self.config.get("HIVE_ADDRESS_PREFIX", PUBLIC_KEY_ADDRESS_PREFIX)
+
+    @staticmethod
+    def is_valid_account_name(account_name: AccountName) -> bool:
+        return is_valid_account_name(to_cpp_string(account_name))
 
     @staticmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:

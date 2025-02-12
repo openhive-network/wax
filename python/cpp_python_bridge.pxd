@@ -194,3 +194,4 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_proto_to_api( string operation_or_tx )
         result cpp_proto_to_legacy_api( string operation_or_tx )
         result cpp_api_to_proto( string operation_or_tx )
+        bool cpp_is_valid_account_name (string name )
