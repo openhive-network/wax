@@ -3,12 +3,11 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Final, cast
 
-from schemas.transaction import Transaction as ApiTransaction
-
 from beekeepy.interfaces import HttpUrl
 from wax._private.api.api_caller import WaxApiCaller
 from wax._private.base_api import WaxBaseApi
 from wax._private.models.hive_date_time import HiveDateTime
+from wax._private.models.schemas import ApiTransaction
 from wax._private.online_transaction import OnlineTransaction
 from wax.exceptions.chain_errors import AccountNotFoundError
 from wax.exceptions.validation_errors import InvalidAccountNameError
@@ -19,10 +18,8 @@ from wax.models.basic import ChainReferenceData
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from schemas.apis.database_api.response_schemas import FindAccounts as FindAccountsApiResponse
-    from schemas.fields.compound import Authority as ApiAuthority
-
     from wax._private.api.api_collection import ApiCollection
+    from wax._private.models.schemas import ApiAuthority, FindAccountsApiResponse
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
 

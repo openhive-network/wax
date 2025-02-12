@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from schemas.apis import database_api  # noqa: TCH002
-
 from beekeepy._handle.abc.api import AbstractAsyncApi
+from wax._private.models.schemas import database_api  # NOQA: TCH001
 
 
 class DatabaseApi(AbstractAsyncApi):
