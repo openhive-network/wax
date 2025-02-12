@@ -14,7 +14,7 @@ const ENVIRONMENT_IS_WORKER = typeof WorkerGlobalScope != 'undefined';
 const getModuleExt = () => ({
   locateFile: (path, scriptDirectory) => {
     if (path === "wax.common.wasm")
-        return new URL("./build_wasm/wax.common.wasm", ENVIRONMENT_IS_WORKER ? self.location.href : import.meta.url).href;
+        return (ENVIRONMENT_IS_WORKER ? new URL("./build_wasm/wax.common.wasm", self.location.href) : new URL("./build_wasm/wax.common.wasm",  import.meta.url)).href;
     return scriptDirectory + path;
   }
 })
