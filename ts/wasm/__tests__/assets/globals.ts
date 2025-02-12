@@ -6,7 +6,7 @@
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
-import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../lib/build_wasm/wax.web.js";
+import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common";
 
 // Declare global types
 type TMainModuleFn = () => Promise<MainModule>;
