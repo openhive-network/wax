@@ -709,6 +709,42 @@ test.describe('Wax object interface foundation tests', () => {
     });
   });
 
+  test('Should be able to calculate witness votes HP with big values (mainnet 5M)', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateWitnessVotesHp("147408633689698596", "180520335089", "304505804867506145");
+    });
+
+    expect(retVal).toEqual({
+      amount: "87388337178",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate witness votes HP with big values (mainnet 5M) - typed asset version', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateWitnessVotesHp(base.vestsSatoshis("147408633689698596"), base.hiveSatoshis("180520335089"), base.vestsSatoshis("304505804867506145"));
+    });
+
+    expect(retVal).toEqual({
+      amount: "87388337178",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
+  test('Should be able to calculate witness votes HP with big values (mainnet 5M)-mixed param types', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.calculateWitnessVotesHp("147408633689698596", base.hiveSatoshis("180520335089"), base.vestsSatoshis("304505804867506145"));
+    });
+
+    expect(retVal).toEqual({
+      amount: "87388337178",
+      nai: "@@000000021",
+      precision: 3
+    });
+  });
+
   test('Should be able to calculate HP APR', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.calculateHpApr(1_000_000, 1_500, 10, 10);
