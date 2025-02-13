@@ -505,8 +505,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const vestsAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, vests);
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
     const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
-
-    return safeWasmCall(() => this.proto.cpp_calculate_account_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
+    return this.vestsToHp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset);
   }
 
   public calculateWitnessVotesHp(votes: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {

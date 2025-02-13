@@ -14,7 +14,6 @@ using namespace emscripten;
 
 using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t);
 using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
-using calculate_witness_votes_hp_fn_t = json_asset(const int32_t, const int32_t, const json_asset&, const json_asset&) const;
 
 /// unfortunetely emscripten can't handle correctly C++ set -> JS Set transformation, so we have to use a vector instead.
 struct required_authority_collectionV
@@ -132,11 +131,6 @@ json_asset cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, con
 json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
 {
   return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
-}
-
-json_asset cpp_calculate_witness_votes_hp(const int32_t vests_low, const int32_t vests_high, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
-{
-  return foundation::cpp_vests_to_hp(cpp_vests(vests_low, vests_high), total_vesting_fund_hive, total_vesting_shares);
 }
 
 result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
@@ -298,8 +292,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_get_tapos_data", &foundation_wasm::cpp_get_tapos_data)
 
     .function("cpp_calculate_hp_apr", &foundation_wasm::cpp_calculate_hp_apr)
-    .function("cpp_calculate_account_hp", &foundation_wasm::cpp_vests_to_hp)
-    .function("cpp_calculate_witness_votes_hp", select_overload<calculate_witness_votes_hp_fn_t>(&foundation_wasm::cpp_calculate_witness_votes_hp))
     .function("cpp_calculate_inflation_rate_for_block", &foundation_wasm::cpp_calculate_inflation_rate_for_block)
     .function("cpp_vests_to_hp", &foundation_wasm::cpp_vests_to_hp)
     .function("cpp_hbd_to_hive", &foundation_wasm::cpp_hbd_to_hive)
