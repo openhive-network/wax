@@ -251,37 +251,6 @@ test.describe('WASM Protocol benchmarks', () => {
     console.log(noDiscard);
   });
 
-  test('Should be able to calculate account hp', () => {
-    const vests = protocol.cpp_vests(...numToHighLow(1_100_000_000));
-    const total_vesting_fund_hive = protocol.cpp_hive(...numToHighLow(100_000_000_000));
-    const total_vesting_shares = protocol.cpp_vests(...numToHighLow(100_000));
-    let noDiscard = 0;
-
-    utilFunctionTest('Calculate account hp', 300_000, () => {
-      for(let i = 0; i < 300_000; ++i)
-        noDiscard += (protocol.cpp_calculate_account_hp(vests, total_vesting_fund_hive, total_vesting_shares).amount as string).length % 10 + i;
-
-      return noDiscard;
-    });
-
-    console.log(noDiscard);
-  });
-
-  test('Should be able to calculate witness vote hp', () => {
-    const total_vesting_fund_hive = protocol.cpp_hive(...numToHighLow(100_000));
-    const total_vesting_shares = protocol.cpp_vests(...numToHighLow(100_000_000_000));
-    let noDiscard = 0;
-
-    utilFunctionTest('Calculate witness vote hp', 300_000, () => {
-      for(let i = 0; i < 15_000; ++i)
-        noDiscard += (protocol.cpp_calculate_witness_votes_hp(...numToHighLow(1_100_000_000 + i), total_vesting_fund_hive, total_vesting_shares).amount as string).length % 10;
-
-      return noDiscard;
-    });
-
-    console.log(noDiscard);
-  });
-
   test('Should be able to calculate inflation rate for block', () => {
     let noDiscard = 0;
 
