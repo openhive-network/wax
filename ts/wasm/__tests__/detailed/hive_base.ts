@@ -1,10 +1,11 @@
 
 import { expect } from '@playwright/test';
 
+import Long from "long";
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
+import { numToHighLow, naiAsset, transaction, vote_operation } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
@@ -732,6 +733,37 @@ test.describe('Wax object interface foundation tests', () => {
       precision: 3
     });
   });
+
+  test('Should be able to calculate account hp 1', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, ...args) => {
+      const vests = base.vestsSatoshis(Long.fromValue({low: args[0], high: args[1], unsigned: true}));
+      const total_vesting_fund_hive = base.hiveSatoshis(Long.fromValue({low: args[2], high: args[3], unsigned: true}));
+      const total_vesting_shares = base.vestsSatoshis(Long.fromValue({low: args[4], high: args[5], unsigned: true}));
+      return base.calculateAccountHp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1100"
+    });
+  });
+
+  test('Should be able to calculate account hp 2', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, ...args) => {
+      const vests = base.vestsSatoshis(Long.fromValue({low: args[0], high: args[1], unsigned: true}));
+      const total_vesting_fund_hive = base.hiveSatoshis(Long.fromValue({low: args[2], high: args[3], unsigned: true}));
+      const total_vesting_shares = base.vestsSatoshis(Long.fromValue({low: args[4], high: args[5], unsigned: true}));
+      return base.calculateAccountHp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, ...numToHighLow(2_268_225_009_295_472), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1304909734"
+    });
+  });
+
 
   test('Should be able to calculate witness votes HP with big values (mainnet 5M)-mixed param types', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
