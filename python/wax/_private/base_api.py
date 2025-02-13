@@ -9,6 +9,9 @@ from wax._private.core.constants import (
     PUBLIC_KEY_ADDRESS_PREFIX,
 )
 from wax._private.core.decimal_converter import DecimalConverter
+from wax._private.core.format_recognizers.operation import is_hive_protocol_format
+from wax._private.core.operation_converters.from_proto_to_cpp_string import from_proto_to_cpp_string
+from wax._private.core.operation_converters.from_protocol_to_cpp_string import from_protocol_to_cpp_string
 from wax._private.core.python_price_converter import convert_to_python_price
 from wax._private.models.asset import (
     Asset,
@@ -21,11 +24,6 @@ from wax._private.models.asset import (
 )
 from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
-from wax._private.models.operations import (
-    Operation,
-    prepare_operation_to_get_impacted_accounts,
-    prepare_operation_to_validate,
-)
 from wax._private.models.private_key_data import PrivateKeyData
 from wax._private.result_tools import (
     decode_impacted_account_names,
@@ -50,8 +48,10 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     get_public_key_from_signature,
     is_valid_account_name,
     operation_get_impacted_accounts,
+    proto_operation_get_impacted_accounts,
     suggest_brain_key,
     validate_operation,
+    validate_proto_operation,
 )
 from wax.interfaces import ChainConfig, IWaxBaseInterface, JsonTransaction, ProtoTransaction, TTimestamp
 
@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from wax._private.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
+    from wax._private.models.operations import Operation
     from wax.interfaces import ITransaction
 
 
@@ -92,12 +93,14 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:
-        validation_result = validate_operation(prepare_operation_to_validate(operation))
-        validate_wax_result(validation_result)
-
-        prepared_operation = prepare_operation_to_get_impacted_accounts(operation)
-
-        impacted_accounts = operation_get_impacted_accounts(prepared_operation)
+        if is_hive_protocol_format(operation):
+            converted = from_protocol_to_cpp_string(operation)
+            validate_wax_result(validate_operation(converted))
+            impacted_accounts = operation_get_impacted_accounts(converted)
+        else:
+            converted = from_proto_to_cpp_string(operation)
+            validate_wax_result(validate_proto_operation(converted))
+            impacted_accounts = proto_operation_get_impacted_accounts(converted)
 
         return decode_impacted_account_names(impacted_accounts)
 
