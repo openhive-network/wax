@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 
+from wax._private.converters.decimal_converter import DecimalConverter
 from wax._private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
-from wax._private.core.decimal_converter import DecimalConverter
 from wax.interfaces import IManabarData
 
 

@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any
 from google.protobuf.json_format import MessageToJson
 from google.protobuf.message import Message
 
-from wax._private.core.encoders import to_cpp_string
 from wax._private.exceptions import InvalidOperationFormatError
+from wax._private.result_tools import to_cpp_string
 
 if TYPE_CHECKING:
     from wax._private.models.operations import ProtoOperation
