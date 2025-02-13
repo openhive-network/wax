@@ -24,9 +24,9 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     get_tapos_data,
     get_transaction_required_authorities,
     proto_to_api,
+    proto_transaction_get_impacted_accounts,
     python_ref_block_data,
     serialize_proto_transaction,
-    transaction_get_impacted_accounts,
     validate_proto_transaction,
 )
 from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
@@ -87,7 +87,7 @@ class Transaction(ITransaction):
 
     @property
     def impacted_accounts(self) -> list[AccountName]:
-        impacted_accounts = transaction_get_impacted_accounts(to_cpp_string(self.to_string()))
+        impacted_accounts = proto_transaction_get_impacted_accounts(to_cpp_string(self.to_string()))
         return decode_impacted_account_names(impacted_accounts)
 
     @property
