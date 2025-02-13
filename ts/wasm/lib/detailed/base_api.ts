@@ -509,11 +509,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return safeWasmCall(() => this.proto.cpp_calculate_account_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
   }
 
-  public calculateWitnessVotesHp(votes: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+  public calculateWitnessVotesHp(votes: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const voteVests = this.createAssetWithRequiredSymbol(EAssetName.VESTS, votes);
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
     const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
-    return safeWasmCall(() => this.proto.cpp_calculate_witness_votes_hp(votes, votes, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
+    return this.vestsToHp(voteVests, totalVestingFundHiveAsset, totalVestingSharesAsset);
   }
 
   public calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource): number {

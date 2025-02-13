@@ -891,14 +891,14 @@ export interface IWaxBaseInterface {
   calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
-   * Calculates witness votes HP based on given votes, total vesting fund HIVE and total vesting shares
+   * Calculates witness votes HP based on given votes (expressed in VESTS), total vesting fund HIVE and total vesting shares
    *
-   * @param {number} votes witness votes
+   * @param {TNaiAssetSource} votes power of witness votes (assumed in VESTS asset)
    * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
    * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
    * @returns {NaiAsset} HP in nai form
    */
-  calculateWitnessVotesHp(votes: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
+  calculateWitnessVotesHp(votes: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
    * Calculate current HP APR
