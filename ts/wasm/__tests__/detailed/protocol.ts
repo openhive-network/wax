@@ -402,35 +402,6 @@ test.describe('WASM Protocol', () => {
     expect(retVal.content).toEqual("2.97");
   });
 
-
-  test('Should be able to calculate witness votes hp 1', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, ...args) => {
-      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
-      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
-      return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
-    }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
-
-    expect(retVal).toEqual({
-      nai: "@@000000021",
-      precision: 3,
-      amount: "1100"
-    });
-  });
-
-  test('Should be able to calculate witness votes hp 2', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, ...args) => {
-      const total_vesting_fund_hive = protocol.cpp_hive(args[2], args[3]);
-      const total_vesting_shares = protocol.cpp_vests(args[4], args[5]);
-      return protocol.cpp_calculate_witness_votes_hp(args[0], args[1], total_vesting_fund_hive, total_vesting_shares);
-    }, ...numToHighLow("142103996686715320"), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
-
-    expect(retVal).toEqual({
-      nai: "@@000000021",
-      precision: 3,
-      amount: "81752422223"
-    });
-  });
-
   test('Should be able to calculate inflation rate for block 1_000_000', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, block_num) => {
       return protocol.cpp_calculate_inflation_rate_for_block(block_num);

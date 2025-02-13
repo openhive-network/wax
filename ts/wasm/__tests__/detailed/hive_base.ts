@@ -1,11 +1,9 @@
 
 import { expect } from '@playwright/test';
 
-import Long from "long";
-
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { numToHighLow, naiAsset, transaction, vote_operation } from "../assets/data.protocol";
+import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
@@ -736,11 +734,11 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to calculate account hp 1', async ({ waxTest }) => {
     const retVal = await waxTest(({ base }, ...args) => {
-      const vests = base.vestsSatoshis(Long.fromValue({low: args[0], high: args[1], unsigned: true}));
-      const total_vesting_fund_hive = base.hiveSatoshis(Long.fromValue({low: args[2], high: args[3], unsigned: true}));
-      const total_vesting_shares = base.vestsSatoshis(Long.fromValue({low: args[4], high: args[5], unsigned: true}));
+      const vests = base.vestsSatoshis(args[0]);
+      const total_vesting_fund_hive = base.hiveSatoshis(args[1]);
+      const total_vesting_shares = base.vestsSatoshis(args[2]);
       return base.calculateAccountHp(vests, total_vesting_fund_hive, total_vesting_shares);
-    }, ...numToHighLow(1_100_000_000), ...numToHighLow(100_000), ...numToHighLow(100_000_000_000));
+    }, "1100000000", 100000, "100000000000");
 
     expect(retVal).toEqual({
       nai: "@@000000021",
@@ -751,16 +749,46 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to calculate account hp 2', async ({ waxTest }) => {
     const retVal = await waxTest(({ base }, ...args) => {
-      const vests = base.vestsSatoshis(Long.fromValue({low: args[0], high: args[1], unsigned: true}));
-      const total_vesting_fund_hive = base.hiveSatoshis(Long.fromValue({low: args[2], high: args[3], unsigned: true}));
-      const total_vesting_shares = base.vestsSatoshis(Long.fromValue({low: args[4], high: args[5], unsigned: true}));
+      const vests = base.vestsSatoshis(args[0]);
+      const total_vesting_fund_hive = base.hiveSatoshis(args[1]);
+      const total_vesting_shares = base.vestsSatoshis(args[2]);
       return base.calculateAccountHp(vests, total_vesting_fund_hive, total_vesting_shares);
-    }, ...numToHighLow(2_268_225_009_295_472), ...numToHighLow(173_009_633_181), ...numToHighLow("300729442281783339"));
+    }, "2268225009295472", "173009633181", "300729442281783339");
 
     expect(retVal).toEqual({
       nai: "@@000000021",
       precision: 3,
       amount: "1304909734"
+    });
+  });
+
+  test('Should be able to calculate witness votes hp 1', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, ...args) => {
+      const vests = args[0];
+      const total_vesting_fund_hive = base.hiveSatoshis(args[1]);
+      const total_vesting_shares = base.vestsSatoshis(args[2]);
+      return base.calculateWitnessVotesHp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, "1100000000", 100_000, "100000000000");
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1100"
+    });
+  });
+
+  test('Should be able to calculate witness votes hp 2', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, ...args) => {
+      const vests = args[0];
+      const total_vesting_fund_hive = base.hiveSatoshis(args[1]);
+      const total_vesting_shares = base.vestsSatoshis(args[2]);
+      return base.calculateWitnessVotesHp(vests, total_vesting_fund_hive, total_vesting_shares);
+    }, "142103996686715320", 173_009_633_181, "300729442281783339");
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "81752422223"
     });
   });
 
