@@ -4,8 +4,8 @@ import json
 from functools import singledispatch
 from typing import TYPE_CHECKING, Any
 
-from wax._private.core.encoders import to_cpp_string
 from wax._private.exceptions import InvalidOperationFormatError
+from wax._private.result_tools import to_cpp_string
 
 if TYPE_CHECKING:
     from wax._private.models.operations import ProtocolOperation

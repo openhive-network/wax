@@ -6,7 +6,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, Final, Protocol, TypeAlias
 
-from wax._private.core.decimal_converter import DecimalConverter
+from wax._private.converters.decimal_converter import DecimalConverter
 from wax._private.exceptions import (
     CannotCreateAssetError,
     UnknownAssetNaiError,
