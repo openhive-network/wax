@@ -50,6 +50,10 @@ from .wax import (
     check_memo_for_private_keys,
     minimize_required_signatures,
     get_hive_protocol_config,
+    operation_get_impacted_accounts,
+    transaction_get_impacted_accounts,
+    proto_operation_get_impacted_accounts,
+    proto_transaction_get_impacted_accounts,
 )
 
 from .wax_result import (
@@ -131,4 +135,8 @@ __all__ = [
     "check_memo_for_private_keys",
     "minimize_required_signatures",
     "get_hive_protocol_config",
+    "operation_get_impacted_accounts",
+    "transaction_get_impacted_accounts",
+    "proto_operation_get_impacted_accounts",
+    "proto_transaction_get_impacted_accounts",
 ]
