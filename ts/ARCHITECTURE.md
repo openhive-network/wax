@@ -12,12 +12,12 @@
 
 1. Then [Wax C++ core](./core) and direct [TS <-> C++ bridge](./wasm/src) parts are compiled into the WASM representation using [Emscripten compiler](https://emscripten.org/). This process involves building of multiple project targets:
 
-    1. `wax_wasm_node` targeting NodeJS environment generating: [wax.node.js](#waxnodejs) and [wax.node.wasm](#waxcommonwasm), `wax_node.d.ts` files
-    1. `wax_wasm_web` targeting Web Browser resulting in [wax.web.js](#waxwebjs), [wax.web.wasm](#waxcommonwasm) and `wax_web.d.ts` outputs
+    1. `wax.node` targeting NodeJS environment generating: [wax.node.js](#waxnodejs) and [wax.common.wasm](#waxcommonwasm), `wax_node.d.ts` files
+    1. `wax.web` targeting Web Browser resulting in [wax.web.js](#waxwebjs), [wax.common.wasm](#waxcommonwasm) and `wax_web.d.ts` outputs
 
     **What important to note, both targets should generate files having the same content**:
 
-      - wasm outputs ( [wax.node.wasm](#waxcommonwasm) and [wax.web.wasm](#waxcommonwasm) ) finally renamed during installation to `wax.common.wasm`
+      - wasm outputs ([wax.common.wasm](#waxcommonwasm) )
       - `*.d.ts` files containing type generated C++ <-> TS interface types
       - `config.ts` - this file is just for full typing of protocol config
 
