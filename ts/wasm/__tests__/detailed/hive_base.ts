@@ -691,7 +691,7 @@ test.describe('Wax object interface foundation tests', () => {
     });
 
     expect(retVal).toEqual({
-      amount: "42949672970",
+      amount: "10",
       nai: "@@000000021",
       precision: 3
     });
@@ -703,7 +703,7 @@ test.describe('Wax object interface foundation tests', () => {
     });
 
     expect(retVal).toEqual({
-      amount: "42949672970",
+      amount: "10",
       nai: "@@000000021",
       precision: 3
     });
