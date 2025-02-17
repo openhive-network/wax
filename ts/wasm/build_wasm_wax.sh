@@ -44,7 +44,7 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
     -it --rm \
     -v "${PROJECT_DIR}/":"${EXECUTION_PATH}" \
     -u $(id -u):$(id -g) \
-    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:4.0.1-1@sha256:2212741aa9c6647ece43a9ac222c677589f18b27cc8e39921636f125705155dd \
+    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:4.0.1-2@sha256:d0c5fbd811ef2447fdf411ee1e2a111c50ad0ec610cf3d6bf2d186530bc883ad \
     /bin/bash "${EXECUTION_PATH}/ts/wasm/build_wasm_wax.sh" 1 "${EXECUTION_PATH}"
 else
   echo "Performing a build"
