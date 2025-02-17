@@ -1136,5 +1136,28 @@ test.describe('Wax complex operation tests', () => {
     expect(retVal.account_update2?.owner?.account_auths).toBeDefined();
     expect(retVal.account_update2!.owner!.account_auths["gtg"]).toBe(1);
   });
+
+  test('Should be able to replace initminer owner key weight', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async ({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "initminer");
+
+      const ownerKey = Object.keys(op.role("owner").value.key_auths)[0];
+
+      op.role("owner").replace(ownerKey, 2);
+
+      tx.pushOperation(op);
+
+      return tx.transaction.operations[0];
+    });
+
+    expect(retVal).toBeDefined();
+    expect("account_update2" in retVal).toBeTruthy();
+    expect(retVal.account_update2?.account).toBe("initminer");
+    expect(retVal.account_update2?.owner?.key_auths).toBeDefined();
+    expect(retVal.account_update2!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBe(2);
+  });
 });
+
 
