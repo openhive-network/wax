@@ -1,3 +1,6 @@
 [submodule "hive"]
 	path = hive
 	url = ../hive.git
+[submodule "ts/npm-common-config"]
+	path = ts/npm-common-config
+	url = ../common-ci-configuration.git
