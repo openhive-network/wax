@@ -130,7 +130,7 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * @param {(TPublicKey | TAccountName)} newKeyOrAccount Account or key to replace the old one. If not provided, the account or key is not replaced, but weight is changed.
    * @returns itself
    */
-  public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName): this {
+  public replace(accountOrKey: TPublicKey | TAccountName, weight: number, newKeyOrAccount: TPublicKey | TAccountName = accountOrKey): this {
     this.ensureCanUpdate(this.level);
 
     if (accountOrKey !== newKeyOrAccount) {
