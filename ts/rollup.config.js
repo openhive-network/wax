@@ -15,7 +15,7 @@ export default [
     plugins: [
       copy({
         targets: [
-          { src: ['wasm/lib/build_wasm/wax.common.wasm', 'wasm/lib/build_wasm/wax.common.d.ts', 'wasm/lib/build_wasm/wax.*.js'], dest: 'wasm/dist/bundle/build_wasm' },
+          { src: ['wasm/lib/build_wasm/wax.common.wasm', 'wasm/lib/build_wasm/wax.*.js'], dest: 'wasm/dist/bundle/build_wasm' },
           { src: ['wasm/lib/build_wasm/wax.common.d.ts'], dest: 'wasm/dist/lib/build_wasm' }
         ]
       }),

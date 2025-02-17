@@ -1,10 +1,10 @@
 # Typescript part architecture design
 
-## Library source code consist of three main parts:
+## Library source code consist of three main parts
 
-  - [Hive protocol ProtoBuf definitions (.proto files)](../hive/libraries/protocol/proto) - directly shared from [Hive](gitlab.syncad.com/hive/hive) repository, resulting in generating Typescript code containing blockchain operation definitions
-  - C++ core part (reusing [Hive protocol structures and algirithms](../hive/libraries/protocol) built into [WASM](https://webassembly.org/) form being ready for execution in Web Browser
-  - Typescript & JavaScript implementation of public Wax interfaces, joining together previously mentioned parts
+- [Hive protocol ProtoBuf definitions (.proto files)](../hive/libraries/protocol/proto) - directly shared from [Hive](gitlab.syncad.com/hive/hive) repository, resulting in generating Typescript code containing blockchain operation definitions
+- C++ core part (reusing [Hive protocol structures and algorithm](../hive/libraries/protocol) built into [WASM](https://webassembly.org/) form being ready for execution in Web Browser)
+- Typescript & JavaScript implementation of public Wax interfaces, joining together previously mentioned parts
 
 ## Generation flow
 
@@ -12,26 +12,23 @@
 
 1. Then [Wax C++ core](./core) and direct [TS <-> C++ bridge](./wasm/src) parts are compiled into the WASM representation using [Emscripten compiler](https://emscripten.org/). This process involves building of multiple project targets:
 
-    1. `wax.node` targeting NodeJS environment generating: [wax.node.js](#waxnodejs) and [wax.common.wasm](#waxcommonwasm), `wax_node.d.ts` files
-    1. `wax.web` targeting Web Browser resulting in [wax.web.js](#waxwebjs), [wax.common.wasm](#waxcommonwasm) and `wax_web.d.ts` outputs
+    1. `wax.node` targeting NodeJS environment generating: [wax.node.js](#waxnodejs), [wax.common.wasm](#waxcommonwasm) and `wax.common.d.ts` type declarations
+    1. `wax.web` targeting Web Browser resulting in [wax.web.js](#waxwebjs), [wax.common.wasm](#waxcommonwasm) and `wax.common.d.ts` type declarations
 
-    **What important to note, both targets should generate files having the same content**:
-
-      - wasm outputs ([wax.common.wasm](#waxcommonwasm) )
-      - `*.d.ts` files containing type generated C++ <-> TS interface types
-      - `config.ts` - this file is just for full typing of protocol config
+    **What important to note WASM outputs ([wax.common.wasm](#waxcommonwasm)) should have the same content for both targets**
 
     All outputs are generated into `wasm/build_wasm` directory (containing also intermediate build files). Final outpus are installed into `wasm/lib/build_wasm`.
 
 1. Now, having all of the dependencies in place (generated in previous steps), main [TS & JS implementation](./wasm/lib) sources can be compiled by [TypeScript compiler](https://www.npmjs.com/package/typescript) using settings specified in [given configuration](tsconfig.json). This phase outputs are placed in `wasm/dist/lib` directory.
 
-1. Finally, all of produced JavaScript sources and type declarations can be bundled together using [Rollup](https://www.npmjs.com/package/rollup) in order to create files that will be available in the [final bundle](#final-bundle-files). Rollup, currently has 6 stages configured with bundle directory `wasm/dist/bundle`:
-    1. Copy [wax.web.js](#waxwebjs) and [wax.node.js](#waxnodejs) into the bundle directory along setting proper WASM file path. Also terser will slice lines into smaller parts for more readable error stack trace reading.
-    1. Copy [wax.common.wasm](#waxcommonwasm) into the bundle directory.
+1. Finally, all of produced JavaScript sources and type declarations can be bundled together using [Rollup](https://www.npmjs.com/package/rollup) in order to create files that will be available in the [final bundle](#final-bundle-files). Rollup, currently has 5 stages configured with bundle directory `wasm/dist/bundle`:
+    1. Copy WASM file - [wax.common.wasm](#waxcommonwasm) and WASM wrappers - [wax.web.js](#waxwebjs), [wax.node.js](#waxnodejs) into the bundle directory
     1. Bundle ["second layer" of Wax library](wasm/lib/detailed) into one file imported by [web.js](#webjs) and [node.js](#nodejs) files. Also proper environment variables will be hardcoded, such as: version and package name. Terser will optimize code and all non-crucial dependencies will be inlined
     1. Transpile [library entry file](wasm/lib/index.ts) into two files: [web.js](#webjs) and [node.js](#nodejs), properly replacing WASM imports. Note that file [./build_wasm/wax.common.js](wasm/lib/wax_module.ts) is just a dummy file representing proper type declarations for the [wax.web.js](#waxwebjs) and [wax.node.js](#waxnodejs) files and it will not be bundled, but replaced with the mentioned files instead.
-    1. Transpile [library entry file](wasm/lib/index.ts) into [vite.js](#vitejs), simirarly to the previous point, but properly adjusting WASM import paths for Vite to work, see [Vue Vite example](../examples/ts/vue-vite/README.md#wasm-related-vite-issues).
+    1. Transpile [library entry file](wasm/lib/index.ts) into [vite.js](#vitejs), similarly to the previous point, but properly adjusting WASM import paths for Vite to work, see [Vue Vite example](../examples/ts/vue-vite/README.md#wasm-related-vite-issues).
     1. Bundle all of the type declarations and output them into the [index.d.ts](#indexdts) file
+
+1. Now just for bundle size optimization we run [terser-based script](./terser.ts) on all of the bundle files, keeping the function and class names for better stacktrace readability
 
 ## Final bundle files
 
