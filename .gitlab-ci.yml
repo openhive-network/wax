@@ -328,6 +328,7 @@ deploy_wax_wasm_dev_package:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
     NPM_PACKAGE_SCOPE: "@hiveio"
+    GIT_SUBMODULE_STRATEGY: "normal"
 
   needs:
     - job: test_wax_wasm_examples
@@ -346,6 +347,7 @@ deploy_wax_wasm_production_public_npm:
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    GIT_SUBMODULE_STRATEGY: "normal"
 
   needs:
     - job: test_wax_wasm_examples
