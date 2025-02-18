@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
+ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-13
 FROM $BASE_IMAGE AS base_builder
 
 USER hived_admin
