@@ -7,6 +7,7 @@
     "dev": "vite --host 0.0.0.0 --port 5173",
     "build": "vite build",
     "preview": "vite preview",
+    "pretest": "playwright install chromium",
     "test": "rm -rf ./node_modules/.vite && unset CI && DEBUG=pw:webserver playwright test --workers 1 --max-failures 1 --project=wax_vue_vite_testsuite"
   },
   "dependencies": {
