@@ -203,6 +203,8 @@ pyrightconfig.json
 # Custom
 .build/
 build_wasm
+tmp_doc
+built_package_info.json
 
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope

@@ -87,6 +87,7 @@ wax_wasm_build_tests:
   extends: .npm_process_built_package_tarball
   stage: build
   variables:
+    GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
 
@@ -112,6 +113,7 @@ generate_docs:
   stage: build
   extends: .npm_process_built_package_tarball
   variables:
+    GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
@@ -298,11 +300,15 @@ supplement_documentation_url:
       artifacts: true
 
   script:
-    - ./ts/scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}" "${GEN_DOC_URL}" tmp_doc
     # built package must be repacked to include supplemented README.md file
-    - cd "${SOURCE_DIR}"
-    - pnpm pack --pack-destination "${DIST_DIR}"
-    - echo BUILT_PACKAGE_PATH="${PACKAGE_TGZ_PATH}" > "${SOURCE_DIR}/built_package_info.env"
+    - |
+      set -xe
+      cd "${SOURCE_DIR}"
+      echo "Attempting to replace generated documentation url placeholder: "${GEN_DOC_URL}""
+      sed -i "s<\${GEN_DOC_URL}<${GEN_DOC_URL}<g" README.md
+      if grep -q "\${GEN_DOC_URL}" README.md; then exit 1; fi # Ensure that the placeholder was replaced
+      pnpm pack --pack-destination "${DIST_DIR}"
+      echo BUILT_PACKAGE_PATH="${PACKAGE_TGZ_PATH}" > "${SOURCE_DIR}/built_package_info.env"
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
