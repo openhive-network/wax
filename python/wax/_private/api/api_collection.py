@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from beekeepy._handle.abc.api_collection import AbstractAsyncApiCollection
+from beekeepy.handle.remote import AbstractAsyncApiCollection
 from wax._private.api.database_api import DatabaseApi
 from wax._private.api.network_broadcast_api import NetworkBroadcastApi
 
 if TYPE_CHECKING:
-    from beekeepy._handle.abc.api import AsyncHandleT
+    from beekeepy._remote_handle.abc.api import AsyncHandleT
 
 
 class ApiCollection(AbstractAsyncApiCollection):

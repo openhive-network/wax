@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from beekeepy._handle.abc.api import AbstractAsyncApi
+from beekeepy.handle.remote import AbstractAsyncApi
 from wax._private.models.schemas import database_api  # NOQA: TCH001
 
 
