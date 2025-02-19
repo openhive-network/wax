@@ -35,8 +35,7 @@ from wax.proto.transaction_pb2 import transaction as proto_transaction
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
-    from beekeepy._interface.abc.synchronous.wallet import UnlockedWallet
+    from beekeepy import AsyncUnlockedWallet, UnlockedWallet
     from wax import IWaxBaseInterface
     from wax._private.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax._private.models.operations import WaxMetaOperation
