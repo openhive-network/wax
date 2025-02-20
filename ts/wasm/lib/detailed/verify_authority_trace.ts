@@ -1,5 +1,5 @@
+import { authority_verification_trace, path_entry, VectorPathEntry } from "../build_wasm/wax.common";
 import type { IAuthorityPathEntry, IAuthorityPathTraceData, IAuthorityTraceSignatureInfo, IVerifyAuthorityTrace, TAuthorityEntryProcessingStatus } from "./verify_authority_trace_interface";
-import type { authority_verification_trace, path_entry, VectorPathEntry } from "../wax_module";
 import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 
 /// TODO export it through embind

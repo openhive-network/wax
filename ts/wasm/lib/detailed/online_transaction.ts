@@ -9,11 +9,11 @@ import type { IOnlineTransaction, ITransaction, TPublicKey, TTimestamp } from ".
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
-import type { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../wax_module";
 
 import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
 import { convertAuthorityTrace } from "./verify_authority_trace";
 import type { TSignature } from "@hiveio/beekeeper";
+import { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../build_wasm/wax.common";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
