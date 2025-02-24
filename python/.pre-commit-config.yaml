@@ -2,7 +2,8 @@ files: |
     (?x)(
             ^python/wax/.*$|
             ^python/tests/base_api/.*$|
-            ^python/tests/transactions/.*$
+            ^python/tests/transactions/.*$|
+              ^python/tests/helpy_test/.*$
     )
 exclude: |
     (?x)(
