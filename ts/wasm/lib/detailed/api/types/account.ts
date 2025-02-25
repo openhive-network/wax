@@ -1,4 +1,3 @@
-import type { TPublicKey } from "@hiveio/beekeeper";
 import { Type } from "class-transformer";
 import { IsArray, IsBoolean, IsDateString, IsNumber, IsNumberString, IsString, Validate, ValidateNested } from "class-validator";
 
@@ -6,6 +5,7 @@ import { NaiAsset } from "./asset.js";
 import { IsNumberOrStringNumber } from "../../decorators/is_number_or_number_string.js";
 import { IsPublicKey } from "../../decorators/is_public_key.js";
 import { IsAuth } from "../../decorators/is_auth.js";
+import type { TPublicKey } from "../../interfaces";
 
 export class ApiAccountAuth {
   @IsString()

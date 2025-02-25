@@ -1,6 +1,4 @@
-import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-
-import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TTimestamp } from "./interfaces";
+import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
 import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
 import type { ApiOperation, NaiAsset } from "./api";
@@ -22,6 +20,7 @@ import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
 
 import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
+import { ISignatureProvider } from "./extensions/signatures";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -358,7 +357,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.extract(publicKey);
   }
 
-  public encrypt(wallet: IBeekeeperUnlockedWallet, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
+  public encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
     const encrypted = wallet.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
 
     return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
@@ -388,7 +387,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.cachedConfig;
   }
 
-  public decrypt(wallet: IBeekeeperUnlockedWallet, encrypted: string): string {
+  public decrypt(wallet: ISignatureProvider, encrypted: string): string {
     const data = safeWasmCall(() => this.proto.cpp_crypto_memo_from_string(encrypted));
 
     return wallet.decryptData(data.content as string, data.from as string, data.to as string);

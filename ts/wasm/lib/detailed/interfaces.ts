@@ -1,5 +1,5 @@
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-export type { TPublicKey } from "@hiveio/beekeeper";
+export type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";

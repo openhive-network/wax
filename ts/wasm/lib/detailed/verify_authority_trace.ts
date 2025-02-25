@@ -1,6 +1,6 @@
 import { authority_verification_trace, path_entry, VectorPathEntry } from "../build_wasm/wax.common";
 import type { IAuthorityPathEntry, IAuthorityPathTraceData, IAuthorityTraceSignatureInfo, IVerifyAuthorityTrace, TAuthorityEntryProcessingStatus } from "./verify_authority_trace_interface";
-import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
+import type { TPublicKey, TSignature } from "./interfaces";
 
 /// TODO export it through embind
 enum authority_entry_processing_flags
