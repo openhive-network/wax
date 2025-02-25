@@ -16,6 +16,7 @@ export { TTransactionRequiredAuthorities } from './transaction.js';
 export { DEFAULT_WAX_OPTIONS_CHAIN, createHiveChain } from "./chain.js";
 export { DEFAULT_WAX_OPTIONS, createWaxFoundation } from "./base.js";
 
+export * from './extensions/signatures/index.js';
 export * from './interfaces.js';
 
 // Protobuf definitions
