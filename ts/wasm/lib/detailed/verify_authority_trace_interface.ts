@@ -1,4 +1,4 @@
-import type { TPublicKey, TSignature } from "@hiveio/beekeeper";
+import type { TPublicKey, TSignature } from './interfaces';
 import type { TAccountName } from './hive_apps_operations';
 
 export type TAuthorityRole = string; /// TODO: unify with role type defined in account authority update meta operation

@@ -5,14 +5,13 @@ import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import type { IOnlineTransaction, ITransaction, TPublicKey, TTimestamp } from "./interfaces";
+import type { IOnlineTransaction, ITransaction, TPublicKey, TSignature, TTimestamp } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 
 import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
 import { convertAuthorityTrace } from "./verify_authority_trace";
-import type { TSignature } from "@hiveio/beekeeper";
 import { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../build_wasm/wax.common";
 
 type TAuthorityHolder = {

@@ -1,4 +1,3 @@
-import type { IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, ApiWitness, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
@@ -15,6 +14,7 @@ import Long from "long";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
 
 import { TAccountName } from "./hive_apps_operations";
+import { ISignatureProvider } from "./extensions/signatures";
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -258,7 +258,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return retVal;
   }
 
-  public async encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount: string): Promise<string> {
+  public async encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount: string): Promise<string> {
     let from: string, to: string;
 
     ([ { memo_key: from }, { memo_key: to } ] = await this.findAccounts(...[... new Set([ fromAccount, toAccount ])]));

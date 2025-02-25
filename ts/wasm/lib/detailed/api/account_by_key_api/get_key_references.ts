@@ -1,7 +1,7 @@
-import type { TPublicKey } from "@hiveio/beekeeper";
 import { IsString, Validate } from "class-validator";
 
 import { IsPublicKey } from "../../decorators/is_public_key.js";
+import type { TPublicKey } from "../../interfaces";
 
 export class GetKeyReferencesRequest {
   @Validate(IsPublicKey, { each: true })

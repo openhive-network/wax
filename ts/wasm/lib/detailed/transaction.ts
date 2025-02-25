@@ -1,5 +1,4 @@
-import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import type { IBinaryViewNode, IBinaryViewOutputData, IEncryptingTransaction, ITransaction, TBlockHash, THexString, TTimestamp, TTransactionId } from "./interfaces";
+import type { IBinaryViewNode, IBinaryViewOutputData, IEncryptingTransaction, ITransaction, TBlockHash, THexString, TPublicKey, TTimestamp, TTransactionId } from "./interfaces";
 
 import { authority, transaction, type operation } from "./protocol.js";
 import { WaxBaseApi } from "./base_api.js";
@@ -10,6 +9,7 @@ import { WaxError } from "./errors.js";
 import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
+import { ISignatureProvider } from "./extensions/signatures";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -289,7 +289,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
-  public decrypt(wallet: IBeekeeperUnlockedWallet): transaction {
+  public decrypt(wallet: ISignatureProvider): transaction {
     const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
       if(data.startsWith('#'))
         return this.api.decrypt(wallet, data)
@@ -303,7 +303,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return this.target;
   }
 
-  private encryptOperations(wallet: IBeekeeperUnlockedWallet): void {
+  private encryptOperations(wallet: ISignatureProvider): void {
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
         const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
@@ -314,7 +314,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
       }
   }
 
-  public sign(walletOrSignature: IBeekeeperUnlockedWallet | THexString, publicKey?: TPublicKey): THexString {
+  public sign(walletOrSignature: ISignatureProvider | THexString, publicKey?: TPublicKey): THexString {
     this.validate();
 
     if (typeof walletOrSignature === 'string') {
