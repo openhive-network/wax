@@ -1,4 +1,4 @@
-import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
+import type { TPublicKey } from "@hiveio/beekeeper";
 export type { TPublicKey, TSignature } from "@hiveio/beekeeper";
 
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
@@ -15,6 +15,7 @@ import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
 import type { IChainConfig } from "../build_wasm/config";
+import { ISignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 
 export * from "./verify_authority_trace_interface";
@@ -207,13 +208,13 @@ interface ITransactionBase {
   /**
    * Decrypts all underlying encrypted operations
    *
-   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for decryption
+   * @param {ISignatureProvider} wallet unlocked wallet to be used for decryption
    *
    * @returns {transaction} protobuf transaction object
    *
    * @throws {WaxError} on any Wax API-related error including validation error
    */
-  decrypt(wallet: IBeekeeperUnlockedWallet): transaction;
+  decrypt(wallet: ISignatureProvider): transaction;
 
   /**
    * Returns required authority accounts from the transaction
@@ -245,14 +246,14 @@ interface ITransactionBase {
    *
    * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
    *
-   * @param {IBeekeeperUnlockedWallet} wallet unlocked wallet to be used for signing
+   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
    * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
    * @returns {THexString} transaction signature signed using given key
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
-  sign(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): THexString;
+  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
 
 /**
    * Adds your signature to the internal signatures array inside underlying transaction.
@@ -843,7 +844,7 @@ export interface IWaxBaseInterface {
   /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
-   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys
+   * @param {ISignatureProvider} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys
    * @param {string} content Content to be encoded
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
    * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
@@ -851,17 +852,17 @@ export interface IWaxBaseInterface {
    *
    * @returns {string} Encrypted content
    */
-  encrypt(wallet: IBeekeeperUnlockedWallet, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+  encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
 
   /**
    * Decrypts given data from the encrypted string in `#encrypted` format
    *
-   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported encryption keys
+   * @param {ISignatureProvider} wallet Wallet with imported encryption keys
    * @param {string} encrypted Content to be decoded
    *
    * @returns {string} Decoded content
    */
-  decrypt(wallet: IBeekeeperUnlockedWallet, encrypted: string): string;
+  decrypt(wallet: ISignatureProvider, encrypted: string): string;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments
@@ -1119,14 +1120,14 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format
    *
-   * @param {IBeekeeperUnlockedWallet} wallet Wallet with imported {@link fromAccount} and {@link toAccount} memo public keys
+   * @param {ISignatureProvider} wallet Wallet with imported {@link fromAccount} and {@link toAccount} memo public keys
    * @param {string} content Content to be encoded
    * @param {string} fromAccount first account to retrieve the memo public key used for encryption
    * @param {?string} toAccount second account to retrieve the memo public key used for encryption
    *
    * @returns {Promise<string>} Encrypted content
    */
-  encryptForAccounts(wallet: IBeekeeperUnlockedWallet, content: string, fromAccount: string, toAccount?: string): Promise<string>;
+  encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount?: string): Promise<string>;
 
   /**
    * Allows to override default endpoint URL used to call RPC APIs initially configured by {@link IWaxOptionsChain} passed to {@link createHiveChain} builder function.
