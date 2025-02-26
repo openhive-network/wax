@@ -75,8 +75,8 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     return keys;
   }
 
-  private getBinaryViewMetadataImpl(isHf26Serialization: boolean): IBinaryViewOutputData {
-    const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString(), isHf26Serialization));
+  private getBinaryViewMetadataImpl(isHf26Serialization: boolean, stripSignatureContainer: boolean = false): IBinaryViewOutputData {
+    const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString(), isHf26Serialization, stripSignatureContainer));
 
     return {
       binary: binaryData.binary as string,
@@ -124,8 +124,8 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     return JSON.parse(this.toApi());
   }
 
-  public toBinaryForm(): THexString {
-    const conversionResult = safeWasmCall(() => this.api.proto.cpp_serialize_transaction(this.toString()));
+  public toBinaryForm(stripSignatureContainer: boolean = false): THexString {
+    const conversionResult = safeWasmCall(() => this.api.proto.cpp_serialize_transaction(this.toString(), stripSignatureContainer));
 
     const serialized = this.api.extract(conversionResult);
 
