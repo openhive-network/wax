@@ -31,7 +31,7 @@ export type TTransactionRequiredAuthorities = {
   other: Array<authority>;
 }
 
-export class Transaction implements ITransaction, IEncryptingTransaction {
+export class Transaction implements ITransaction, IEncryptingTransaction<ITransaction> {
   private target: transaction;
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
@@ -152,10 +152,10 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return JSON.stringify(transaction.toJSON(this.target));
   }
 
-  public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): Transaction {
+  public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): this & IEncryptingTransaction<this> {
     this.indexKeeper.push({ mainEncryptionKey, otherEncryptionKey: otherEncryptionKey ?? mainEncryptionKey, begin: this.target.operations.length });
 
-    return this;
+    return this as IEncryptingTransaction<this> & this;
   }
 
   public stopEncrypt(): Transaction {
@@ -179,7 +179,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction {
     return this;
   }
 
-  public pushOperation(op: operation | OperationBase): Transaction {
+  public pushOperation(op: operation | OperationBase): this {
     if ("finalize" in op) // Complex operation (to be built)
       this.produceOperations(op);
     else // Standard raw-object operation

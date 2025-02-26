@@ -2,8 +2,6 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 
-import type { IEncryptingTransaction } from '../../dist/bundle';
-
 import {
   utilFunctionTest,
   commentOp,
@@ -19,7 +17,7 @@ import {
 test.describe('Wax encrypted operations tests', () => {
   test('Should be able to encrypt transaction with comment operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, commentOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(commentOp);
       });
     }, utilFunctionTest, commentOp);
@@ -29,7 +27,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, transferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(transferOp);
       });
     }, utilFunctionTest, transferOp);
@@ -39,7 +37,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with custom json operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, customJsonOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(customJsonOp);
       });
     }, utilFunctionTest, customJsonOp);
@@ -49,7 +47,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer to savings operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, transferToSavingsOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(transferToSavingsOp);
       });
     }, utilFunctionTest, transferToSavingsOp);
@@ -59,7 +57,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer from savings operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, transferFromSavingsOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(transferFromSavingsOp);
       });
     }, utilFunctionTest, transferFromSavingsOp);
@@ -69,7 +67,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with recurrent transfer operation', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(recurrentTransferOp);
       });
     }, utilFunctionTest, recurrentTransferOp);
@@ -79,7 +77,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with different operations', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
        tx.pushOperation(recurrentTransferOp).pushOperation(convertOp).pushOperation(transferToSavingsOp).pushOperation(voteOp).pushOperation(commentOp).pushOperation(transferOp);
      }, [1, 3]);
     }, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp);
@@ -89,7 +87,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with comment operation with different keys', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, commentOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(commentOp);
       }, [], true);
     }, utilFunctionTest, commentOp);
@@ -99,7 +97,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with recurrent transfer operation with different keys', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(recurrentTransferOp);
       }, [], true);
     }, utilFunctionTest, recurrentTransferOp);
@@ -109,7 +107,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with transfer to savings operation with different keys', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, transferToSavingsOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction) => {
+      return await utilFunctionTest(globals, tx => {
         tx.pushOperation(transferToSavingsOp);
       }, [], true);
     }, utilFunctionTest, transferToSavingsOp);
@@ -119,7 +117,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt transaction with different operations with different keys', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction, encryptionKeys) => {
+      return await utilFunctionTest(globals, (tx, encryptionKeys) => {
         tx
         .pushOperation(recurrentTransferOp)
         .stopEncrypt()
@@ -139,7 +137,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt some specific operations in transaction', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction, encryptionKeys) => {
+      return await utilFunctionTest(globals, (tx, encryptionKeys) => {
         tx
           .pushOperation(recurrentTransferOp)
           .stopEncrypt()
@@ -160,7 +158,7 @@ test.describe('Wax encrypted operations tests', () => {
 
   test('Should be able to encrypt some specific operations in transaction with a barren keys pair at the end', async ({ waxTest }) => {
     const retVal = await waxTest(async (globals, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp) => {
-      return await utilFunctionTest(globals, (tx: IEncryptingTransaction, encryptionKeys) => {
+      return await utilFunctionTest(globals, (tx, encryptionKeys) => {
         tx
           .pushOperation(recurrentTransferOp)
           .stopEncrypt()

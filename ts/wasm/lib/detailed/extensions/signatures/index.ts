@@ -1,4 +1,4 @@
-import type { TPublicKey, TSignature, THexString } from "../../interfaces";
+import type { TPublicKey, TSignature, THexString, ITransaction } from "../../interfaces";
 
 export interface ISignatureProvider {
   /**
@@ -31,4 +31,15 @@ export interface ISignatureProvider {
    * @returns {string} decrypted buffer
    */
   decryptData(content: string, key: TPublicKey, anotherKey?: TPublicKey): string;
+};
+
+export interface IOnlineSignatureProvider {
+  /**
+   * Signs a transaction by signing a digest of the transaction
+   *
+   * @param {ITransaction} transaction transaction to be signed
+   *
+   * @returns {Promise<void>} signed data in hex format
+   */
+  signTransaction(transaction: ITransaction): Promise<void>;
 };
