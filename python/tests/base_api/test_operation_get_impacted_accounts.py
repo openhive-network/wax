@@ -51,3 +51,31 @@ def test_operation_get_impacted_accounts(wax: IWaxBaseInterface, operation: Oper
     # ASSERT
     assert len(result) == EXPECTED_AMOUNT_OF_IMPACTED_ACCOUNTS
     assert result[0] == EXPECTED_IMPACTED_ACCOUNT
+
+
+@pytest.mark.description("Should be able to get impacted accounts from example api operation")
+def test_get_operation_impacted_accounts_0(wax: IWaxBaseInterface) -> None:
+    result = wax.get_operation_impacted_accounts(
+        operation={
+            "type": "vote_operation",
+            "value": {"voter": "otom", "author": "c0ff33a", "permlink": "ewxhnjbj", "weight": 2200},
+        }
+    )
+
+    assert result == ["c0ff33a", "otom"]
+
+
+@pytest.mark.description("Should be able to get impacted accounts from example proto operation")
+def test_get_operation_impacted_accounts_1(wax: IWaxBaseInterface) -> None:
+    result = wax.get_operation_impacted_accounts(
+        operation=operation_pb2.operation(
+            vote=vote(
+                author="c0ff33a",
+                permlink="ewxhnjbj",
+                voter="otom",
+                weight=2200,
+            )
+        )
+    )
+
+    assert result == ["c0ff33a", "otom"]
