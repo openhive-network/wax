@@ -1,11 +1,10 @@
 import { DEFAULT_WAX_OPTIONS } from "./base";
 import { HiveChainApi, TChainReferenceData } from "./chain_api";
-import { OperationBase } from "./operation_base";
 import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import type { IOnlineTransaction, ITransaction, TPublicKey, TSignature, TTimestamp } from "./interfaces";
+import type { IOnlineTransaction, ITransaction, THexString, TPublicKey, TSignature, TTimestamp } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
@@ -13,6 +12,7 @@ import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
 import { convertAuthorityTrace } from "./verify_authority_trace";
 import { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../build_wasm/wax.common";
+import type { IOnlineSignatureProvider, ISignatureProvider } from "./extensions/signatures";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
@@ -162,9 +162,14 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime);
   }
 
-  public override pushOperation(op: operation | OperationBase): OnlineTransaction {
-    super.pushOperation(op);
-    return this;
+  public sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
+  public sign(wallet: IOnlineSignatureProvider): Promise<void>;
+  public sign(signature: THexString): THexString;
+  public sign(walletOrSignature: IOnlineSignatureProvider | ISignatureProvider | THexString, publicKey?: TPublicKey): Promise<void> | THexString {
+    if (typeof walletOrSignature === "object" && "signTransaction" in walletOrSignature)
+      return walletOrSignature.signTransaction(this as ITransaction);
+
+    return super.sign(walletOrSignature, publicKey);
   }
 
   public async generateAuthorityVerificationTrace(useLegacySerialization: boolean = false, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {

@@ -1,4 +1,4 @@
-import type { IEncryptingTransaction, transaction } from '../../dist/bundle';
+import type { IEncryptingTransaction, ITransaction, transaction } from '../../dist/bundle';
 import { createHiveChain } from '../../dist/bundle/node.js';
 import { TPublicKey } from '@hiveio/beekeeper';
 import "./globals.js";
@@ -8,7 +8,7 @@ const chain = await createHiveChain();
 
 export const utilFunctionTest = async (
   { beekeeper, chain, wax }: Pick<IWaxGlobals, 'beekeeper' | 'chain' | 'wax'>,
-  txOperationsLambda: (tx: IEncryptingTransaction, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
+  txOperationsLambda: (tx: ITransaction & IEncryptingTransaction<ITransaction>, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
 ): Promise<transaction> => {

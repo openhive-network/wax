@@ -15,7 +15,7 @@ import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
 import type { IChainConfig } from "../build_wasm/config";
-import { ISignatureProvider } from "./extensions/signatures";
+import { ISignatureProvider, IOnlineSignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 
 export * from "./verify_authority_trace_interface";
@@ -132,7 +132,7 @@ export interface IWaxOptionsChain extends IWaxOptions {
   restApiEndpoint: string;
 }
 
-interface ITransactionBase {
+export interface ITransactionBase {
 
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
@@ -242,30 +242,6 @@ interface ITransactionBase {
   toString(): string;
 
   /**
-   * Signs the transaction using given public key. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
-   *
-   * @returns {THexString} transaction signature signed using given key
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   */
-  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
-
-/**
-   * Adds your signature to the internal signatures array inside underlying transaction.
-   *
-   * @param {THexString} signature signature to add
-   *
-   * @returns {THexString} added transaction signature
-   *
- */
-  sign(signature: THexString): THexString;
-
-  /**
    * Checks if underlying transaction has been already signed at least one time (after {@link sign})
    *
    * @returns {boolean} either true or false based on the signatures amount
@@ -313,6 +289,19 @@ interface ITransactionBase {
   toApiJson(): ApiTransaction;
 
   /**
+   * Starts encryption chain
+   *
+   * Remember that in order to encrypt operations with given {@link mainEncryptionKey} and optional {@link otherEncryptionKey}
+   * you have to import those keys into the wallet passed to the {@link ITransactionBase.sign} method
+   *
+   * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
+   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
+   *
+   * @returns {this & IEncryptingTransaction<this>} current transaction instance
+   */
+ startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): this & IEncryptingTransaction<this>;
+
+  /**
    * Converts the created transaction into the Hive API-legacy form JSON string.
    *
    * Legacy form differs in few aspects to regular (HF26) one:
@@ -337,6 +326,57 @@ interface ITransactionBase {
    * Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
    */
   toBinaryForm(): THexString;
+
+  /**
+   * Pushes given operation to the operations array in the transaction
+   * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
+   *
+   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link OperationBase} class.
+   *
+   * @param {operation | OperationBase} op operation to append to the transaction (can be hive apps operation)
+   * or Class instance for a complex operation that will produce operations including given params
+   *
+   * @see Complex operations:
+   *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
+   *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
+   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
+   *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
+   *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
+   *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
+   *
+   * @see Hive Apps operations:
+   *  {@link CommunityOperation} Allows to manipulate the community options,
+   *  {@link FollowOperation} Allows to manipulate the follow options,
+   *  {@link ResourceCreditsOperation} Allows to delegate or remove delegation of resource credits to given account(s),
+   *
+   * @example Building blog post
+   * ```typescript
+   *  tx.pushOperation(new BlogPostOperation({
+   *    category: "test-category",
+   *    author: "gtg",
+   *    title: "Post with category",
+   *    body: "Post with category",
+   *    permlink: "post-with-category",
+   *    tags: ["spam"],
+   *    description: "Post with category"
+   *  }));
+   * ```
+   *
+   * @example Building recurrent transfer with pair id and automaically generated removal
+   * ```typescript
+   *  tx.pushOperation(new DefineRecurrentTransferOperation({
+   *    from: "initminer",
+   *    to: "gtg",
+   *    pairId: 100
+   *  }));
+   * ```
+   *
+   * @returns {this} current transaction instance
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  pushOperation(op: operation | OperationBase): this;
 }
 
 /**
@@ -366,68 +406,28 @@ interface ITransactionBase {
  */
 export interface ITransaction extends ITransactionBase {
   /**
-   * Pushes given operation to the operations array in the transaction
-   * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
+   * Signs the transaction using given public key. Applies the transaction expiration time
    *
-   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link OperationBase} class.
+   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
    *
-   * @param {operation | OperationBase} op operation to append to the transaction (can be hive apps operation)
-   * or Class instance for a complex operation that will produce operations including given params
+   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
+   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
    *
-   * @see Complex operations:
-   *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
-   *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
-   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
-   *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
-   *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
-   *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
+   * @returns {THexString} transaction signature signed using given key
    *
-   * @see Hive Apps operations:
-   *  {@link CommunityOperation} Allows to manipulate the community options,
-   *  {@link FollowOperation} Allows to manipulate the follow options,
-   *  {@link ResourceCreditsOperation} Allows to delegate or remove delegation of resource credits to given account(s),
-   *
-   * @example Building blog post
-   * ```typescript
-   *  tx.pushOperation(new BlogPostOperation({
-   *    category: "test-category",
-   *    author: "gtg",
-   *    title: "Post with category",
-   *    body: "Post with category",
-   *    permlink: "post-with-category",
-   *    tags: ["spam"],
-   *    description: "Post with category"
-   *  }));
-   * ```
-   *
-   * @example Building recurrent transfer with pair id and automaically generated removal
-   * ```typescript
-   *  tx.pushOperation(new DefineRecurrentTransferOperation({
-   *    from: "initminer",
-   *    to: "gtg",
-   *    pairId: 100
-   *  }));
-   * ```
-   *
-   * @returns {ITransaction} current transaction instance
-   *
-   * @throws {WaxError} on any Wax API-related error
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
-  pushOperation(op: operation | OperationBase): ITransaction;
+  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
 
-  /**
-   * Starts encryption chain
+ /**
+   * Adds your signature to the internal signatures array inside underlying transaction.
    *
-   * Remember that in order to encrypt operations with given {@link mainEncryptionKey} and optional {@link otherEncryptionKey}
-   * you have to import those keys into the wallet passed to the {@link ITransactionBase.sign} method
+   * @param {THexString} signature signature to add
    *
-   * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
-   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
+   * @returns {THexString} added transaction signature
    *
-   * @returns {IEncryptingTransaction} current transaction instance
-   */
- startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): IEncryptingTransaction;
+ */
+  sign(signature: THexString): THexString;
 }
 
 /**
@@ -457,73 +457,22 @@ export interface ITransaction extends ITransactionBase {
  * }).stopEncrypt();
  * ```
  */
-export interface IEncryptingTransaction extends ITransactionBase {
-  /**
-   * Pushes given operation to the operations array in the transaction
-   * This can also add **multiple** operations to the transaction using a straightforward complex operation interface.
-   *
-   * We provide a standard set of factories with our implementation, but you can also create custom factories by extending the {@link OperationBase} class.
-   *
-   * @param {operation | OperationBase} op operation to append to the transaction (can be hive apps operation)
-   * or Class instance for a complex operation that will produce operations including given params
-   *
-   * @see Complex operations:
-   *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
-   *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
-   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
-   *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
-   *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
-   *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
-   *  {@link WitnessSetPropertiesOperation} Creates a witness set properties operation with automatic data serialization,
-   *
-   * @see Hive Apps operations:
-   *  {@link CommunityOperation} Allows to manipulate the community options,
-   *  {@link FollowOperation} Allows to manipulate the follow options,
-   *  {@link ResourceCreditsOperation} Allows to delegate or remove delegation of resource credits to given account(s),
-   *
-   * @example Building blog post
-   * ```typescript
-   *  tx.pushOperation(new BlogPostOperation({
-   *    category: "test-category",
-   *    author: "gtg",
-   *    title: "Post with category",
-   *    body: "Post with category",
-   *    permlink: "post-with-category",
-   *    tags: ["spam"],
-   *    description: "Post with category"
-   *  }));
-   * ```
-   *
-   * @example Building recurrent transfer with pair id and automaically generated removal
-   * ```typescript
-   *  tx.pushOperation(new DefineRecurrentTransferOperation({
-   *    from: "initminer",
-   *    to: "gtg",
-   *    pairId: 100
-   *  }));
-   * ```
-   *
-   * @returns {IEncryptingTransaction} current transaction instance
-   *
-   * @throws {WaxError} on any Wax API-related error
-   */
-  pushOperation(op: operation | OperationBase): IEncryptingTransaction;
-
+export interface IEncryptingTransaction<StopEncryptResult extends ITransactionBase> {
   /**
    * Stops encryption chain
    *
    * Note: This call is optional if you are not going to push any other decrypted operations
    *
-   * @returns {ITransaction} current transaction instance
+   * @returns {StopEncryptResult} current transaction instance
    */
-  stopEncrypt(): ITransaction;
+  stopEncrypt(): StopEncryptResult;
 };
 
 /**
  * Extends {@link ITransaction} interface by functionality which requires online chain access (i.e. accessing account
  * authority to prevent private keys leak).
  */
-export interface IOnlineTransaction extends ITransaction {
+export interface IOnlineTransaction extends ITransactionBase {
   /**
    * Allows to perform transaction checks which require additional access to chain APIs i.e. to retrieve account data.
    *
@@ -546,10 +495,42 @@ export interface IOnlineTransaction extends ITransaction {
    */
   generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
 
-  /** Overrided only to change return type.
-   *  {@inheritdoc ITransaction.pushOperation}
+  /**
+   * Signs the transaction using given public key. Applies the transaction expiration time
+   *
+   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
+   *
+   * @param {IOnlineSignatureProvider} wallet unlocked wallet to be used for signing
+   *
+   * @returns {Promise<void>} transaction signature signed using given key
+   *
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
-  pushOperation(op: operation | OperationBase): IOnlineTransaction;
+  sign(wallet: IOnlineSignatureProvider): Promise<void>;
+
+  /**
+   * Signs the transaction using given public key. Applies the transaction expiration time
+   *
+   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
+   *
+   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
+   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
+   *
+   * @returns {THexString} transaction signature signed using given key
+   *
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   */
+  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
+
+ /**
+   * Adds your signature to the internal signatures array inside underlying transaction.
+   *
+   * @param {THexString} signature signature to add
+   *
+   * @returns {THexString} added transaction signature
+   *
+ */
+  sign(signature: THexString): THexString;
 };
 
 export interface IHiveAssetData {
