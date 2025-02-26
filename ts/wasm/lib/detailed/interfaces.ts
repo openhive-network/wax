@@ -324,8 +324,10 @@ export interface ITransactionBase {
 
   /**
    * Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
+   * @param {boolean} stripToUnsignedTransaction optional flag to strip the transaction to unsigned form (without signature container).
+   *        This form can be useful for external transaction hash calculation.
    */
-  toBinaryForm(): THexString;
+  toBinaryForm(stripToUnsignedTransaction?: boolean): THexString;
 
   /**
    * Pushes given operation to the operations array in the transaction
@@ -947,10 +949,11 @@ export interface IWaxBaseInterface {
    * Converts given transaction from Hive API-form JSON to HF26 specific binary form
    *
    * @param {ApiTransaction} transaction transaction in Hive API-form JSON
-   *
+   * @param {boolean} stripToUnsignedTransaction optional flag to strip the transaction to unsigned form (without signature container).
+   *        This form can be useful for external transaction hash calculation.
    * @returns {THexString} transaction in hexstring
    */
-  convertTransactionToBinaryForm(transaction: ApiTransaction): THexString;
+  convertTransactionToBinaryForm(transaction: ApiTransaction, stripToUnsignedTransaction?: boolean): THexString;
 
   /**
    * Converts given transaction from HF26 specific binary form to Hive API-form JSON
