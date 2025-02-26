@@ -33,7 +33,7 @@ test.describe('WASM Proto Protocol', () => {
 
   test('Should be able to serialize the transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ proto_protocol }, transaction) => {
-      return proto_protocol.cpp_serialize_transaction(transaction);
+      return proto_protocol.cpp_serialize_transaction(transaction, false);
     }, protoTx);
 
     expect(retVal.exception_message).toHaveLength(0);
