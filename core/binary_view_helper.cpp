@@ -288,7 +288,7 @@ uint32_t static_variant_visitor::operator()( const T& v ) const
   return binary_view_visitor< T >::get_size( v );
 }
 
-binary_data generate_binary_transaction_metadata( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization )
+binary_data generate_binary_transaction_metadata( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization /*=true*/, bool strip_to_unsigned_transaction /*= false*/ )
 {
   const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
 
@@ -296,7 +296,7 @@ binary_data generate_binary_transaction_metadata( const hive::protocol::signed_t
   hive::protocol::serialization_mode_controller::set_pack( serialization_type );
 
   binary_data result;
-  result.binary = serialize_transaction( tx, use_hf26_serialization );
+  result.binary = serialize_transaction( tx, use_hf26_serialization, strip_to_unsigned_transaction );
 
   std::vector< binary_data_node > nodes;
 
@@ -332,13 +332,19 @@ binary_data generate_binary_operation_metadata( const hive::protocol::operation&
   return result;
 }
 
-std::string serialize_transaction( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization )
+std::string serialize_transaction( const hive::protocol::signed_transaction& tx, bool use_hf26_serialization /*=true*/, bool strip_to_unsigned_transaction /*=false*/ )
 {
   const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
 
   hive::protocol::serialization_mode_controller::mode_guard guard( serialization_type );
   hive::protocol::serialization_mode_controller::set_pack( serialization_type );
 
-  return fc::to_hex( fc::raw::pack_to_vector( tx ) );
+  std::vector<char> binForm;
+  if(strip_to_unsigned_transaction)
+    binForm = fc::raw::pack_to_vector( static_cast<const hive::protocol::transaction&>(tx) );
+  else
+    binForm = fc::raw::pack_to_vector( tx );
+
+  return fc::to_hex( binForm );
 }
 } // namespace cpp
