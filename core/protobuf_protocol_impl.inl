@@ -480,13 +480,14 @@ std::vector<std::string> proto_protocol_impl<FoundationProvider>::cpp_transactio
 }
 
 template <class FoundationProvider>
-binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization) const
+binary_data proto_protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization, bool strip_to_unsigned_transaction) const
 {
   protocol_impl<FoundationProvider> provider;
 
   return provider.cpp_generate_binary_transaction_metadata(
     cpp_proto_to_api_impl(transaction),
-    use_hf26_serialization
+    use_hf26_serialization,
+    strip_to_unsigned_transaction
   );
 }
 
@@ -585,13 +586,14 @@ typename proto_protocol_impl<FoundationProvider>::required_authority_collection_
 }
 
 template <class FoundationProvider>
-result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
+result proto_protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction, bool strip_to_unsigned_transaction)
 {
   return method_wrapper([&](result& _result)
     {
       protocol_impl<FoundationProvider> provider;
       _result = provider.cpp_serialize_transaction(
-        cpp_proto_to_api_impl(transaction)
+        cpp_proto_to_api_impl(transaction),
+        strip_to_unsigned_transaction
       );
     });
 }

@@ -19,7 +19,7 @@ public:
   std::vector<std::string> cpp_operation_get_impacted_accounts(const std::string& operation) const;
   std::vector<std::string> cpp_transaction_get_impacted_accounts(const std::string& transaction) const;
 
-  binary_data cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization)const;
+  binary_data cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
   binary_data cpp_generate_binary_operation_metadata(const std::string& operation, bool use_hf26_serialization)const;
 
   result cpp_validate_operation(const std::string& operation);
@@ -28,7 +28,7 @@ public:
   result cpp_calculate_legacy_transaction_id(const std::string& transaction);
   result cpp_calculate_sig_digest(const std::string& transaction, const std::string& chain_id);
   result cpp_calculate_legacy_sig_digest(const std::string& transaction, const std::string& chain_id);
-  result cpp_serialize_transaction(const std::string& transaction);
+  result cpp_serialize_transaction(const std::string& transaction, bool strip_to_unsigned_transaction);
   result cpp_deserialize_transaction(const std::string& transaction);
   required_authority_collection_t cpp_collect_transaction_required_authorities(const std::string& transaction);
 

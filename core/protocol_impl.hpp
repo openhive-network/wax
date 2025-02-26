@@ -38,7 +38,7 @@ public:
   std::vector<std::string> cpp_operation_get_impacted_accounts(const std::string& operation) const;
   std::vector<std::string> cpp_transaction_get_impacted_accounts(const std::string& transaction) const;
 
-  binary_data cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization)const;
+  binary_data cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
   binary_data cpp_generate_binary_operation_metadata(const std::string& operation, bool use_hf26_serialization)const;
 
   result cpp_validate_operation(const std::string& operation);
@@ -59,8 +59,11 @@ public:
 
   /** Allows to perform binary serialization of specified transaction.
   *   Uses HF26 serialization form.
+  *
+  *  @param transaction - JSON form of transaction to serialize
+  *  @param strip_to_unsigned_transaction - if true, then only unsigned part of transaction will be serialized (signature container is always stripped)
   */
-  result cpp_serialize_transaction(const std::string& transaction);
+  result cpp_serialize_transaction(const std::string& transaction, bool strip_to_unsigned_transaction);
 
   /** Allows to restore a transaction object from HF26 binary serialization form.
   *   Returns a JSON form of deserialized transaction.

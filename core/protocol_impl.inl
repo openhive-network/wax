@@ -71,13 +71,13 @@ std::vector<std::string> protocol_impl<FoundationProvider>::cpp_transaction_get_
 
 template <class FoundationProvider>
 inline
-binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization) const
+binary_data protocol_impl<FoundationProvider>::cpp_generate_binary_transaction_metadata(const std::string& transaction, bool use_hf26_serialization, bool strip_to_unsigned_transaction) const
 {
   fc::variant _v = fc::json::from_string(transaction, fc::json::format_validation_mode::full);
 
   hive::protocol::signed_transaction _transaction = _v.as<hive::protocol::signed_transaction>();
 
-  return cpp::generate_binary_transaction_metadata(_transaction, use_hf26_serialization);
+  return cpp::generate_binary_transaction_metadata(_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
 }
 
 template <class FoundationProvider>
@@ -120,7 +120,8 @@ result protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std
 {
   return method_wrapper([&](result& _result)
     {
-      _result.content = get_transaction(transaction).id(hive::protocol::transaction_serialization_type::hf26).str();
+      const auto txId = get_transaction(transaction).id(hive::protocol::transaction_serialization_type::hf26);
+      _result.content = txId.str();
     });
 }
 
@@ -162,13 +163,13 @@ result protocol_impl<FoundationProvider>::cpp_calculate_legacy_sig_digest(const 
 
 template <class FoundationProvider>
 inline
-result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction)
+result protocol_impl<FoundationProvider>::cpp_serialize_transaction(const std::string& transaction, bool strip_to_unsigned_transaction)
 {
   return method_wrapper([&](result& _result)
     {
       const auto _transaction = get_transaction(transaction);
 
-      _result.content = serialize_transaction(_transaction);
+      _result.content = serialize_transaction(_transaction, true, strip_to_unsigned_transaction);
     });
 }
 
