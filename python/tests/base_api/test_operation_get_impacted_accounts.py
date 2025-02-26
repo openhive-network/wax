@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from wax import create_wax_foundation
 from wax.proto import authority_pb2, operation_pb2, recover_account_pb2
+from wax.proto.vote_pb2 import vote
 
 if TYPE_CHECKING:
+    from wax.interfaces import IWaxBaseInterface
     from wax.models.operations import Operation
 
 
@@ -43,10 +44,7 @@ EXPECTED_AMOUNT_OF_IMPACTED_ACCOUNTS: Final[int] = 1
 
 
 @pytest.mark.parametrize("operation", [PROTO_OPERATION, API_OPERATION_DICT, API_OPERATION_JSON])
-def test_operation_get_impacted_accounts(operation: Operation) -> None:
-    # ARRANGE
-    wax = create_wax_foundation()
-
+def test_operation_get_impacted_accounts(wax: IWaxBaseInterface, operation: Operation) -> None:
     # ACT
     result = wax.get_operation_impacted_accounts(operation)
 
