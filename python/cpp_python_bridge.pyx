@@ -28,6 +28,7 @@ from .wax_result import (
     python_price,
     python_authority,
     python_authorities,
+    python_minimize_required_signatures_data,
 )
 
 def return_python_result(foo):
@@ -116,7 +117,7 @@ def get_public_key_from_signature(digest: bytes, signature: bytes) -> python_res
 @return_python_result
 def serialize_transaction(transaction: bytes) -> python_result:
     cdef protocol obj
-    response = obj.cpp_serialize_transaction(transaction)
+    response = obj.cpp_serialize_transaction(transaction, False)
     return response.value, response.content, response.exception_message
 
 @return_python_result
@@ -326,7 +327,7 @@ def calculate_proto_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> py
 @return_python_result
 def serialize_proto_transaction(transaction: bytes) -> python_result:
   cdef proto_protocol obj
-  response = obj.cpp_serialize_transaction( transaction )
+  response = obj.cpp_serialize_transaction( transaction, False )
   return response.value, response.content, response.exception_message
 
 @return_python_result
