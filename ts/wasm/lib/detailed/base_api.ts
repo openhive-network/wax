@@ -180,7 +180,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return props;
   }
 
-  public convertTransactionToBinaryForm(transaction: ApiTransaction): THexString {
+  public convertTransactionToBinaryForm(transaction: ApiTransaction, stripToUnsignedTransaction: boolean = false): THexString {
     const validationErrors = validateSync(plainToInstance(ApiTransaction, transaction));
 
     if(validationErrors.length > 0)
@@ -188,7 +188,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     const tx = this.createTransactionFromJson(transaction);
 
-    const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString()));
+    const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString(), stripToUnsignedTransaction));
 
     return this.extract(conversionResult);
   }
