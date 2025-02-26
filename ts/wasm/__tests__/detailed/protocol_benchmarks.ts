@@ -111,7 +111,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Serialize transaction', 7_500, () => {
       for(let i = 0; i < 7_500; ++i)
-        noDiscard += (protocol.cpp_serialize_transaction(transaction).content as string).length % 10 + i;
+        noDiscard += (protocol.cpp_serialize_transaction(transaction, false).content as string).length % 10 + i;
 
       return noDiscard;
     });

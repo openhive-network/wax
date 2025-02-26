@@ -35,7 +35,7 @@ test.describe('WASM Protocol', () => {
   });
   test('Should be able to generate binary metadata information - tx with vote operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true);
+      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -50,7 +50,7 @@ test.describe('WASM Protocol', () => {
   });
   test('Should be able to generate binary metadata information using hf26 pack type - tx with transfer', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true);
+      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -66,7 +66,7 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to generate binary metadata information using legacy pack type - tx with transfer', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, false);
+      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, false, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -168,11 +168,22 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to serialize the transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
-      return protocol.cpp_serialize_transaction(transaction);
+      return protocol.cpp_serialize_transaction(transaction, false);
     }, transaction);
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000");
+  });
+
+  test('Should be able to serialize the (stripped) transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, transaction) => {
+      /// Even transaction is unsigned, we can strip the signature container to preserve original binary form
+      //  of the transaction i.e. specific to calculate its id
+      return protocol.cpp_serialize_transaction(transaction, true);
+    }, transaction);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a980800");
   });
 
   test('Should be able to calculate sig digest of the transaction', async ({ wasmTest }) => {
