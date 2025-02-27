@@ -79,6 +79,7 @@ wax_wasm_proto_tsc_generation:
     when: always
     paths:
       - "${DIST_DIR}/*.tgz"  # Built package
+      - "${SOURCE_DIR}/packages/*/dist"
       - "${REPLACE_FILE_PATH}"  # Modified README
       - "${CI_PROJECT_DIR}/ts/wasm/lib/proto" # For documentation generator
       - "${CI_PROJECT_DIR}/ts/wasm/lib/build_wasm" # For documentation generator
