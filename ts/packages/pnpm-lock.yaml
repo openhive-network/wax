@@ -17,6 +17,9 @@ importers:
       '@hiveio/wax-signers-keychain':
         specifier: workspace:./signers-keychain
         version: link:signers-keychain
+      '@hiveio/wax-signers-peakvault':
+        specifier: workspace:./signers-peakvault
+        version: link:signers-peakvault
 
   signers-keychain:
     dependencies:
@@ -26,6 +29,19 @@ importers:
       keychain-sdk:
         specifier: ^0.8.5
         version: 0.8.5
+    devDependencies:
+      typescript:
+        specifier: catalog:typescript-toolset
+        version: 5.7.3
+
+  signers-peakvault:
+    dependencies:
+      '@hiveio/wax':
+        specifier: workspace:../..
+        version: link:../..
+      '@peakd/hive-wallet-sdk':
+        specifier: ^0.2.3
+        version: 0.2.3
     devDependencies:
       typescript:
         specifier: catalog:typescript-toolset
@@ -58,6 +74,9 @@ packages:
   '@noble/hashes@1.7.1':
     resolution: {integrity: sha512-B8XBPsn4vT/KJAGqDzbwztd+6Yte3P4V7iafm24bxgDe/mlRuK6xmWPuCNrKt2vDafZ8MfJLlchDG/vYafQEjQ==}
     engines: {node: ^14.21.3 || >=16}
+
+  '@peakd/hive-wallet-sdk@0.2.3':
+    resolution: {integrity: sha512-vuhGhlEJKD4CLhE7tGtJH/52HjIj/2Ms5aH8MUB80G9kz9O/oPUQbISMTsycyvKIhBZ4I/bc4Y3My+FRkQg6nQ==}
 
   '@types/node@18.19.76':
     resolution: {integrity: sha512-yvR7Q9LdPz2vGpmpJX5LolrgRdWvB67MJKDPSgIIzpFbaf9a1j/f5DnLp5VDyHGMR0QZHlTr1afsD87QCXFHKw==}
@@ -486,6 +505,8 @@ snapshots:
       '@noble/hashes': 1.7.1
 
   '@noble/hashes@1.7.1': {}
+
+  '@peakd/hive-wallet-sdk@0.2.3': {}
 
   '@types/node@18.19.76':
     dependencies:

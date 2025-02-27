@@ -4,6 +4,7 @@
     "pack": "pnpm run -r pack"
   },
   "dependencies": {
-    "@hiveio/wax-signers-keychain": "workspace:./signers-keychain"
+    "@hiveio/wax-signers-keychain": "workspace:./signers-keychain",
+    "@hiveio/wax-signers-peakvault": "workspace:./signers-peakvault"
   }
 }
