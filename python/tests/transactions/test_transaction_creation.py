@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from typing import Final
 
-from beekeepy import AsyncBeekeeper
+from beekeepy import Beekeeper
+
 from python.tests.utils.refs import PROTO_REF_TRANSACTION
 from wax import create_wax_foundation
 from wax.proto.comment_pb2 import comment
