@@ -96,7 +96,7 @@ ignore = [
     "S101",  # Use of assert detected; too restrictive
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
-
+    "PLR2004", # Ignore "magic value used in comparison" warnings; explicit constants not always necessary in tests
 ]
 
 [tool.ruff.lint.per-file-ignores]
