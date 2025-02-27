@@ -194,6 +194,13 @@ importers:
         specifier: catalog:typescript-toolset
         version: 5.7.3
 
+  packages:
+
+    dependencies:
+      '@hiveio/wax-signers-keychain':
+        specifier: workspace:./signers-keychain
+        version: link:signers-keychain
+
 packages:
 
   '@babel/code-frame@7.26.2':

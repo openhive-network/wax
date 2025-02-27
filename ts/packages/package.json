@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "build": "pnpm run -r build",
+    "pack": "pnpm run -r pack"
+  },
+  "dependencies": {
+    "@hiveio/wax-signers-keychain": "workspace:./signers-keychain"
+  }
+}

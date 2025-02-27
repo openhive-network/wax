@@ -1,0 +1,42 @@
+{
+  "name": "@hiveio/wax-signers-keychain",
+  "version": "0.0.0-Run-Prepack",
+  "description": "Wax signer library extending transaction signing possibilities by a 3rd party Web-only extension - Keychain",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "prepack": "jq --argfile source ../../package.json '.version = $source.version | .publishConfig.registry = $source.publishConfig.registry | .publishConfig.tag = $source.publishConfig.tag' package.json > package.json.tmp && mv package.json.tmp package.json",
+    "pack": "pnpm pack --pack-destination ../dist",
+    "prepublish": "pnpm run prepack"
+  },
+  "devDependencies": {
+    "typescript": "catalog:typescript-toolset"
+  },
+  "dependencies": {
+    "@hiveio/wax": "workspace:../..",
+    "keychain-sdk": "^0.8.5"
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": [
+    "wax",
+    "blockchain",
+    "hive"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.syncad.com/hive/wax.git"
+  },
+  "publishConfig": {
+    "registry": "https://RegistryPlaceholder",
+    "tag": "DistTagPlaceholder"
+  }
+}
