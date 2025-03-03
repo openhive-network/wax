@@ -39,6 +39,7 @@ requests = "2.27.1"
 mypy = "1.11.2"
 pre-commit = "2.21.0"
 pytest = "7.4.2"
+pytest-asyncio = "0.25.3"
 types-setuptools = ">=67.8.0"
 ruff = "0.6.5"
 grpcio = "1.59.0"
@@ -48,6 +49,8 @@ types-protobuf = "4.24.0.3"
 grpc-stubs = "1.53.0.2"
 grpcio-tools = "1.59.0"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.poetry-dynamic-versioning]
 enable = true
