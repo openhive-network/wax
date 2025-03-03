@@ -12,7 +12,7 @@ from wax.proto.transaction_pb2 import transaction as proto_transaction
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from beekeepy import AsyncUnlockedWallet, UnlockedWallet
+    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
     from wax._private.models.asset import (
         AssetFactory,
         HbdNaiAssetConvertible,
@@ -131,23 +131,7 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
-    def sign(self, wallet: UnlockedWallet, public_key: PublicKey) -> Signature:
-        """
-        Signs the transaction using given public key. Applies the transaction expiration time.
-
-        Args:
-            wallet: Unlocked wallet to be used for signing.
-            public_key: Public key for signing (remember that should be available in the wallet!)
-
-        Returns:
-            Signature: Transaction signature signed using given key.
-
-        Raises:
-            WaxValidationFailedError: When the transaction is incorrect.
-        """
-
-    @abstractmethod
-    async def async_sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
+    async def sign(self, wallet: AsyncUnlockedWallet, public_key: PublicKey) -> Signature:
         """
         Signs asynchronously the transaction using given public key. Applies the transaction expiration time.
 
