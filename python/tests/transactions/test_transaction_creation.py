@@ -3,8 +3,7 @@ from __future__ import annotations
 import json
 from typing import Final
 
-from beekeepy import Beekeeper
-
+from beekeepy import AsyncBeekeeper
 from python.tests.utils.refs import PROTO_REF_TRANSACTION
 from wax import create_wax_foundation
 from wax.proto.comment_pb2 import comment
@@ -104,13 +103,11 @@ async def test_create_and_sign_transaction() -> None:
         )
     )
 
-    async with await (
-        AsyncBeekeeper.factory()
-    ) as beekeeper, await beekeeper.create_session() as session, await session.create_wallet(
-        name=WALLET_NAME, password=WALLET_PASSWORD
-    ) if WALLET_NAME not in [w.name for w in await session.wallets_created] else await (
-        await session.open_wallet(name=WALLET_NAME)
-    ).unlock(WALLET_PASSWORD) as wallet:
+    async with await AsyncBeekeeper.factory() as beekeeper, await beekeeper.create_session() as session, (
+        await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
+        if WALLET_NAME not in [w.name for w in await session.wallets_created]
+        else await (await session.open_wallet(name=WALLET_NAME)).unlock(WALLET_PASSWORD)
+    ) as wallet:
         await wallet.import_key(private_key=keys.wif_private_key)
         await transaction.sign(wallet, keys.associated_public_key)  # type: ignore[arg-type, misc]
 
@@ -167,13 +164,11 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
     brain_key_data = wax.suggest_brain_key()
     public_key, private_key = brain_key_data.associated_public_key, brain_key_data.wif_private_key
 
-    async with await (
-        AsyncBeekeeper.factory()
-    ) as beekeeper, await beekeeper.create_session() as session, await session.create_wallet(
-        name=WALLET_NAME, password=WALLET_PASSWORD
-    ) if WALLET_NAME not in [w.name for w in await session.wallets_created] else await (
-        await session.open_wallet(name=WALLET_NAME)
-    ).unlock(WALLET_PASSWORD) as wallet:
+    async with await AsyncBeekeeper.factory() as beekeeper, await beekeeper.create_session() as session, (
+        await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
+        if WALLET_NAME not in [w.name for w in await session.wallets_created]
+        else await (await session.open_wallet(name=WALLET_NAME)).unlock(WALLET_PASSWORD)
+    ) as wallet:
         await wallet.import_key(private_key=private_key)
         await transaction.sign(wallet, public_key)  # type: ignore[arg-type, misc]
 
