@@ -4,6 +4,7 @@ import type { IWaxBaseInterface } from "../interfaces";
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
 import Long from "long";
+import { getMetadata } from "reflect-metadata/no-conflict";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;
@@ -100,11 +101,11 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
     const formatter = new formatterConstructor(this.wax);
 
     for(const key of Object.getOwnPropertyNames(formatterConstructor.prototype)) {
-      const matchedProperty = Reflect.getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
-      const explicitProp = Reflect.getMetadata("wax:formatter:explicitprop", formatter, key) as boolean | undefined;
-      const requireDefined = Reflect.getMetadata("wax:formatter:requiredefined", formatter, key) as boolean;
-      const matchedPropertyValue = Reflect.getMetadata("wax:formatter:propvalue", formatter, key) as any | undefined;
-      const matchInstanceOf = Reflect.getMetadata("wax:formatter:instanceof", formatter, key) as { new(...args: any[]): any } | undefined;
+      const matchedProperty = getMetadata("wax:formatter:prop", formatter, key) as string | undefined;
+      const explicitProp = getMetadata("wax:formatter:explicitprop", formatter, key) as boolean | undefined;
+      const requireDefined = getMetadata("wax:formatter:requiredefined", formatter, key) as boolean;
+      const matchedPropertyValue = getMetadata("wax:formatter:propvalue", formatter, key) as any | undefined;
+      const matchInstanceOf = getMetadata("wax:formatter:instanceof", formatter, key) as { new(...args: any[]): any } | undefined;
 
       if(!explicitProp && typeof matchInstanceOf === "function") { // Match only by the instance if requested
         const pred = newFormatter.instances.find(obj => obj.matchInstanceOf === matchInstanceOf);
