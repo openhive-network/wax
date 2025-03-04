@@ -20,6 +20,11 @@ public:
   */
   std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData);
 
+  /** Allows to convert raw public key form (expressed as hex string) into Hive WIF format (with prefix).
+  *   \param hexData - depending on length compressed or uncompressed key format is chosen
+  */
+  std::string cpp_convert_raw_public_key_to_wif(const std::string& hexData);
+
   brain_key_data cpp_suggest_brain_key();
 
   /** Returns map of hive::protocol constants in form:
