@@ -100,6 +100,11 @@ std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData)
   return foundation::cpp_convert_raw_private_key_to_wif(hexData);
 }
 
+std::string cpp_convert_raw_public_key_to_wif(const std::string& hexData)
+{
+  return foundation::cpp_convert_raw_public_key_to_wif(hexData);
+}
+
 result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
 { return foundation::cpp_get_public_key_from_signature(digest, signature); }
 
@@ -312,6 +317,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
     .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
     .function("cpp_convert_raw_private_key_to_wif", &foundation_wasm::cpp_convert_raw_private_key_to_wif)
+    .function("cpp_convert_raw_public_key_to_wif", &foundation_wasm::cpp_convert_raw_public_key_to_wif)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
 
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:
