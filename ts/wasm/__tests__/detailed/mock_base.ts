@@ -848,6 +848,108 @@ test.describe('Wax base mock tests', () => {
     ]);
   });
 
+  test('Should be able to get authority trace with mock data for transaction with one required authority with threshold 2 (one signature direct and the other one redirected)', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 55285,
+        "ref_block_prefix": 3183350724,
+        "expiration": "2025-03-04T09:40:37",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "alice",
+              "author": "test",
+              "permlink": "test",
+              "weight": 10000
+            }
+          }
+        ],
+        "signatures": [
+          "20a5932916064c776785df77821b0aaaa442af49faab4304083764de0a25de4ab660aec343efdb443ffa479446dfd1f433f3b968ad8f821c9497e4671f762e0d3a",
+          "2068fd39a6a9751877b707e56adf1b8a814b02a7168e0be906e295daf4e35fbe072bf5dba4bfe5567239ed88aab84449bec09237b504ee5a0afaa1fb1e51770947"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace.collectedData));
+
+      return trace.collectedData;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "finalAuthorityPath": {
+          "processedEntry": "alice",
+          "processedRole": "posting",
+          "threshold": 2,
+          "weight": 2,
+          "recursionDepth": 0,
+          "processingStatus": {
+            "entryAccepted": true,
+            "isOpenAuthority": false
+          },
+          "visitedEntries": [
+            {
+              "processedEntry": "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
+              "processedRole": "posting",
+              "threshold": 2,
+              "weight": 1,
+              "recursionDepth": 0,
+              "processingStatus": {
+                "entryAccepted": false,
+                "accountAuthorityProcessingDepthExceeded": false,
+                "accountAuthorityCountExceeded": false,
+                "accountAuthorityPointsMissingAccount": false,
+                "hasAccountAuthorityCycle": false,
+                "hasInsufficientWeight": true,
+                "hasMatchingPublicKey": true
+              },
+              "visitedEntries": []
+            },
+            {
+              "processedEntry": "guest4test8",
+              "processedRole": "posting",
+              "threshold": 1,
+              "weight": 1,
+              "recursionDepth": 1,
+              "processingStatus": {
+                "entryAccepted": true,
+                "isOpenAuthority": false
+              },
+              "visitedEntries": [
+                {
+                  "processedEntry": "STM6ooSpKC7jEhujcCakiH881MSgJhddrVb1dNCc1h47wF2nqB9zb",
+                  "processedRole": "posting",
+                  "threshold": 1,
+                  "weight": 1,
+                  "recursionDepth": 1,
+                  "processingStatus": {
+                    "entryAccepted": true,
+                    "isOpenAuthority": false
+                  },
+                  "visitedEntries": []
+                }
+              ]
+            }
+          ]
+        },
+        "matchingSignatures": [
+          {
+            "signature": "2068fd39a6a9751877b707e56adf1b8a814b02a7168e0be906e295daf4e35fbe072bf5dba4bfe5567239ed88aab84449bec09237b504ee5a0afaa1fb1e51770947",
+            "signatureKey": "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh"
+          },
+          {
+          "signature": "20a5932916064c776785df77821b0aaaa442af49faab4304083764de0a25de4ab660aec343efdb443ffa479446dfd1f433f3b968ad8f821c9497e4671f762e0d3a",
+          "signatureKey": "STM6ooSpKC7jEhujcCakiH881MSgJhddrVb1dNCc1h47wF2nqB9zb"
+        }]
+      }
+    ]);
+  });
+
   test.afterAll(async () => {
     await closeServer();
   });

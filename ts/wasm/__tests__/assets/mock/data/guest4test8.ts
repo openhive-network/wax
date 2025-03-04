@@ -76,7 +76,7 @@ export default {
         "lifetime_vote_count": 0,
         "memo_key": "STM8m7a4dNtBDAUXZQdjpjYQosEQA4ep1caTRSrwUwH7jhH5TCpJU",
         "mined": false,
-        "name": "alice",
+        "name": "guest4test8",
         "next_vesting_withdrawal": "1969-12-31T23:59:59",
         "open_recurrent_transfers": 0,
         "owner": {
@@ -99,23 +99,14 @@ export default {
           "precision": 6
         },
         "posting": {
-          "account_auths": [
-            [
-              "guest4test8",
-              1
-            ]
-          ],
+          "account_auths": [],
           "key_auths": [
             [
-              "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45",
-              1
-            ],
-            [
-              "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
+              "STM6ooSpKC7jEhujcCakiH881MSgJhddrVb1dNCc1h47wF2nqB9zb",
               1
             ]
           ],
-          "weight_threshold": 2
+          "weight_threshold": 1
         },
         "posting_json_metadata": "{\"profile\":{\"name\":\"Tattoo World\",\"about\":\"Tattoo World Community\",\"cover_image\":\"https://files.peakd.com/file/peakd-hive/tattooworld/Portada.jpg\",\"profile_image\":\"https://files.peakd.com/file/peakd-hive/tattooworld/IMG-20230514-WA0266.jpg\",\"website\":\"\",\"location\":\"\",\"pinned\":\"\",\"version\":2}}",
         "posting_rewards": 857992,
