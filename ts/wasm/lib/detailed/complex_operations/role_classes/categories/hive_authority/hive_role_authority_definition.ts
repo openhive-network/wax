@@ -3,6 +3,7 @@ import { TAccountName } from "../../../../hive_apps_operations/index.js";
 import { WaxError } from "../../../../errors.js";
 import { LevelBase } from "../../level_base.js";
 import type { TPublicKey } from "../../../../interfaces";
+import { structuredClone } from "../../../../shims/structuredclone.js";
 
 export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase<TRole> {
   public constructor(

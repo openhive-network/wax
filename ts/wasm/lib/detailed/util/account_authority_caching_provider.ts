@@ -3,6 +3,7 @@ import { TAccountName } from "../hive_apps_operations";
 import type { TPublicKey } from "../interfaces";
 import { WaxError } from "../errors";
 import { ClassHandle, IAccountAuthorityProvider, wax_authority } from "wasm/lib/build_wasm/wax.common";
+import { structuredClone } from "../shims/structuredclone.js";
 
 /**
  * Helper class used during traced authority verification process.

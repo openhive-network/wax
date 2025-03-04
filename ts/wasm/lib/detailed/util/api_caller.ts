@@ -3,6 +3,7 @@ import { type TWaxApiRequest } from "../interfaces";
 import { extractBracedStrings } from "../rest-api/utils.js";
 import { objectToQueryString } from "./query_string.js";
 import { type IDetailedResponseData, type IRequestOptions, RequestHelper } from "./request_helper.js";
+import { structuredClone } from "../shims/structuredclone.js";
 
 export type TInterceptorRequestOptions = IRequestOptions & { paths: string[]; apiCallerId: string };
 
