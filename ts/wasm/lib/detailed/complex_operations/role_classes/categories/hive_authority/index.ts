@@ -34,7 +34,7 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
 
     this.HIVE_MAX_AUTHORITY_MEMBERSHIP = Number.parseInt(chain.config.HIVE_MAX_AUTHORITY_MEMBERSHIP);
 
-    const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account] });
+    const { accounts: [chainAccount] } = await chain.api.database_api.find_accounts({ accounts: [account], delayed_votes_active: true });
 
     const checkOwnerTimeDiff = (time: string): boolean => { // owner_update_limit_mgr.cpp
       return Date.now() - new Date(`${time}Z`).getTime() > Number.parseInt(chain.config.HIVE_OWNER_UPDATE_LIMIT) / 1000;

@@ -1,172 +1,55 @@
-import { IsDateString, IsHexadecimal, IsNumber, IsOptional, IsString, Validate, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import type { NaiAsset } from "../types/asset.js";
 
-import { NaiAsset } from "../types/asset.js";
-import { IsNumberOrStringNumber } from "../../decorators/is_number_or_number_string.js";
+export interface GetDynamicGlobalPropertiesRequest {}
 
-export class GetDynamicGlobalPropertiesRequest {}
-
-export class GetDynamicGlobalPropertiesResponse {
-  @IsNumber()
-  public id!: number;
-
-  @IsNumber()
-  public head_block_number!: number;
-
-  @IsHexadecimal()
-  public head_block_id!: string;
-
-  @IsDateString()
-  public time!: string;
-
-  @IsString()
-  public current_witness!: string;
-
-  @Validate(IsNumberOrStringNumber)
-  public total_pow!: string | number;
-
-  @IsNumber()
-  public num_pow_witnesses!: number;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public virtual_supply!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public current_supply!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public confidential_supply!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public init_hbd_supply!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public current_hbd_supply!: NaiAsset;
-
-  @IsNumber()
-  public current_remove_threshold!: number;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public confidential_hbd_supply!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public total_vesting_fund_hive!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public total_vesting_shares!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public total_reward_fund_hive!: NaiAsset;
-
-  @IsString()
-  public total_reward_shares2!: string;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public pending_rewarded_vesting_shares!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public pending_rewarded_vesting_hive!: NaiAsset;
-
-  @IsNumber()
-  public hbd_interest_rate!: number;
-
-  @IsNumber()
-  public hbd_print_rate!: number;
-
-  @IsNumber()
-  public maximum_block_size!: number;
-
-  @Validate(IsNumberOrStringNumber)
-  public mid_voting_seconds!: number | string;
-
-  @IsNumber()
-  public min_recurrent_transfers_recurrence!: number;
-
-  @IsNumber()
-  @IsOptional()
-  public required_actions_partition_percent?: number;
-
-  @IsNumber()
-  public current_aslot!: number;
-
-  @IsString()
-  public recent_slots_filled!: string;
-
-  @IsNumber()
-  public participation_count!: number;
-
-  @IsNumber()
-  public last_irreversible_block_num!: number;
-
-  @IsNumber()
-  public max_consecutive_recurrent_transfer_failures!: number;
-
-  @IsNumber()
-  public max_open_recurrent_transfers!: number;
-
-  @IsNumber()
-  public max_recurrent_transfer_end_date!: number;
-
-  @IsOptional()
-  @IsNumber()
-  public target_votes_per_period?: number;
-
-  @IsNumber()
-  public delegation_return_period!: number;
-
-  @IsNumber()
-  public reverse_auction_seconds!: number;
-
-  @IsNumber()
-  public available_account_subsidies!: number;
-
-  @IsNumber()
-  public hbd_stop_percent!: number;
-
-  @IsNumber()
-  public hbd_start_percent!: number;
-
-  @IsDateString()
-  public next_daily_maintenance_time!: string;
-
-  @IsDateString()
-  public next_maintenance_time!: string;
-
-  @IsDateString()
-  public last_budget_time!: string;
-
-  @IsNumber()
-  public content_reward_percent!: number;
-
-  @IsNumber()
-  public vesting_reward_percent!: number;
-
-  @IsOptional()
-  @IsNumber()
-  public sps_fund_percent?: number;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public sps_interval_ledger!: NaiAsset;
-
-  @IsNumber()
-  public downvote_pool_percent!: number;
-
-  @Validate(IsNumberOrStringNumber)
-  public early_voting_seconds!: number | string;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public smt_creation_fee!: NaiAsset;
+export interface GetDynamicGlobalPropertiesResponse {
+  id: number;
+  head_block_number: number;
+  head_block_id: string;
+  time: string;
+  current_witness: string;
+  total_pow: string | number;
+  num_pow_witnesses: number;
+  virtual_supply: NaiAsset;
+  current_supply: NaiAsset;
+  confidential_supply: NaiAsset;
+  init_hbd_supply: NaiAsset;
+  current_hbd_supply: NaiAsset;
+  current_remove_threshold: number;
+  confidential_hbd_supply: NaiAsset;
+  total_vesting_fund_hive: NaiAsset;
+  total_vesting_shares: NaiAsset;
+  total_reward_fund_hive: NaiAsset;
+  total_reward_shares2: string;
+  pending_rewarded_vesting_shares: NaiAsset;
+  pending_rewarded_vesting_hive: NaiAsset;
+  hbd_interest_rate: number;
+  hbd_print_rate: number;
+  maximum_block_size: number;
+  mid_voting_seconds: number | string;
+  min_recurrent_transfers_recurrence: number;
+  required_actions_partition_percent?: number;
+  current_aslot: number;
+  recent_slots_filled: string;
+  participation_count: number;
+  last_irreversible_block_num: number;
+  max_consecutive_recurrent_transfer_failures: number;
+  max_open_recurrent_transfers: number;
+  max_recurrent_transfer_end_date: number;
+  target_votes_per_period?: number;
+  delegation_return_period: number;
+  reverse_auction_seconds: number;
+  available_account_subsidies: number;
+  hbd_stop_percent: number;
+  hbd_start_percent: number;
+  next_daily_maintenance_time: string;
+  next_maintenance_time: string;
+  last_budget_time: string;
+  content_reward_percent: number;
+  vesting_reward_percent: number;
+  sps_fund_percent?: number;
+  sps_interval_ledger: NaiAsset;
+  downvote_pool_percent: number;
+  early_voting_seconds: number | string;
+  smt_creation_fee: NaiAsset;
 }

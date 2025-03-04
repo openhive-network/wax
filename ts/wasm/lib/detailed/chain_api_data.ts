@@ -13,7 +13,7 @@ import { OperationTypeCountsRequest, OperationTypeCountsResponse } from "./rest-
 import { GetWitnessesByNameRequest, SingleWitnessResponse } from "./rest-api/hafbe/witnesses/by-name.js";
 import { GetAllWitnessesRequest } from "./rest-api/hafbe/witnesses/all.js";
 
-export const HiveRestApiTypes = {
+export type HiveRestApiTypes = {
   'hafbe-api': {
     witnesses: {
       params: GetAllWitnessesRequest,
@@ -34,7 +34,22 @@ export const HiveRestApiTypes = {
   }
 };
 
-export const HiveApiTypes = {
+export const HiveRestApiTypes = {
+  'hafbe-api': {
+    witnesses: {
+      responseArray: true,
+      accountName: {
+        urlPath: "{accountName}"
+      }
+    },
+    operationTypeCounts: {
+      responseArray: true,
+      urlPath: 'operation-type-counts'
+    }
+  }
+} as HiveRestApiTypes;
+
+export type HiveApiTypes = {
   account_by_key_api: {
     get_key_references: {
       params: GetKeyReferencesRequest,
@@ -86,3 +101,5 @@ export const HiveApiTypes = {
     }
   }
 };
+
+export const HiveApiTypes = {} as HiveApiTypes;

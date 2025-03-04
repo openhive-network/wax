@@ -16,7 +16,7 @@ test.describe('Wax base mock tests', () => {
 
   test('Should be able to find account based on mock interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
-      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['steem'] });
+      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['steem'], delayed_votes_active: true });
 
       return foundAccount;
     });
@@ -26,7 +26,7 @@ test.describe('Wax base mock tests', () => {
 
   test('Should be able to find NONEXISTING account based on mock interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }, accountData) => {
-      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['0steem'] }); /// Intentionally use invalid name in Hive
+      const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['0steem'], delayed_votes_active: true }); /// Intentionally use invalid name in Hive
 
       console.log(JSON.stringify(foundAccount));
 
