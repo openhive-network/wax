@@ -825,6 +825,13 @@ export interface IWaxBaseInterface {
   getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData;
 
   /**
+   * Allows to convert raw private key to WIF format.
+   * @param rawPrivateKey 32 bytes buffer (64 characters hex string) representing private key secret
+   * @returns WIF formatted private key
+   */
+  convertRawPrivateKeyToWif(rawPrivateKey: THexString): string;
+
+  /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
    * @param {ISignatureProvider} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys

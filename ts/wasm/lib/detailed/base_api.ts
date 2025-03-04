@@ -488,6 +488,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public convertRawPrivateKeyToWif(rawPrivateKey: THexString): string {
+    const wif = safeWasmCall(() => this.proto.cpp_convert_raw_private_key_to_wif(rawPrivateKey));
+    return wif;
+  }
+
   public calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
     const vestsAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, vests);
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
