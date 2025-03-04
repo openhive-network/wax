@@ -5,6 +5,7 @@ import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
 import Long from "long";
 import { getMetadata } from "reflect-metadata/no-conflict";
+import { structuredClone } from "../shims/structuredclone.js";
 
 export interface IMatchersData {
   matchValues: Map<string, TFormatFunction>;

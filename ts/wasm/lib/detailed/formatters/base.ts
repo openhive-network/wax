@@ -1,4 +1,5 @@
 import { DeepPartial, DeepReadonly, IWaxFormatter, IWaxFormatterOptions } from "./types";
+import { structuredClone } from "../shims/structuredclone.js";
 
 export const DEFAULT_FORMATTER_OPTIONS: IWaxFormatterOptions = {
   asset: {
