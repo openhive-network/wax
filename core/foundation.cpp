@@ -269,6 +269,16 @@ private_key_data foundation::cpp_generate_private_key(const std::string& account
   );
 }
 
+std::string foundation::cpp_convert_raw_private_key_to_wif(const std::string& hexData)
+{
+  FC_ASSERT(hexData.size() == 64 && "Expected hex string pointing 32 byte buffer");
+
+  fc::sha256 sharedSecret(hexData);
+
+  return fc::ecc::private_key::regenerate(sharedSecret).key_to_wif();
+}
+
+
 brain_key_data foundation::cpp_suggest_brain_key()
 {
   return cpp::safe_exception_wrapper(
