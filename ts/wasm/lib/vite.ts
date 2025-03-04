@@ -10,12 +10,17 @@ const moduleArgs = (async () => {
   if ((import.meta as any).client || (!("client" in import.meta) && typeof (import.meta as any).env === "object" && "SSR" in (import.meta as any).env)) {
       const resolvedUrl = (await import('./build_wasm/wax.common.wasm' + '?url')).default;
 
+      let wasmBinary: Buffer | undefined;
+      if (resolvedUrl.startsWith("data:application/wasm;base64,"))
+          wasmBinary = Buffer.from(resolvedUrl.slice(29), "base64");
+
       return {
-          locateFile: (path, scriptDirectory) => {
+          locateFile(path: string, scriptDirectory: string): string {
               if (path === "wax.common.wasm")
                   return resolvedUrl;
               return scriptDirectory + path;
-          }
+          },
+          wasmBinary
       };
   } else {
       return {};
