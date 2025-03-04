@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 export { EAssetName } from "./base_api.js";
 export { EManabarType } from './chain_api.js';
 export { isPublicKey } from "./decorators/is_public_key.js";

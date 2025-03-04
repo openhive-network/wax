@@ -187,54 +187,6 @@ const manaTime = await chain.calculateManabarFullRegenerationTimeForAccount("ini
 console.info(manaTime); // Date
 ```
 
-#### Extend API interface and call custom endpoints
-
-In this example we will extend the base Wax endpoints and create our classes with validators
-in order to use the [transaction_status_api.find_transaction](https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction) API:
-
-```ts
-import { IsHexadecimal, IsDateString, IsString } from 'class-validator';
-import { createHiveChain, TWaxExtended } from '@hiveio/wax';
-const chain = await createHiveChain();
-
-// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-parameter_json
-// Create a request class with validators that will require a valid input from the end user
-class FindTransactionRequest {
-  @IsHexadecimal()
-  public transaction_id!: string;
-
-  @IsDateString()
-  public expiration!: string;
-}
-
-// https://developers.hive.io/apidefinitions/#transaction_status_api.find_transaction-expected_response_json
-// Create a response class with validators that will require a valid output from the remote API
-class FindTransactionResponse {
-  @IsString()
-  public status!: 'unknown' | string;
-}
-
-// Create the proper API structure
-const ExtendedApi = {
-  transaction_status_api: { // API
-    find_transaction: { // Method
-      params: FindTransactionRequest, // params is our request
-      result: FindTransactionResponse // result is out response
-    }
-  }
-};
-
-const extended: TWaxExtended<typeof ExtendedApi> = chain.extend(ExtendedApi);
-
-// Call the transaction_status_api API using our extended interface
-const result = await extended.api.transaction_status_api.find_transaction({
-  transaction_id: "0000000000000000000000000000000000000000",
-  expiration: "2016-03-24T18:00:21"
-});
-
-console.info(result); // { status: 'unknown' }
-```
-
 #### Extend API interface using interfaces only and call custom endpoints
 
 In this example we will extend the base Wax endpoints without creating any validators.
@@ -273,42 +225,6 @@ const result = await extended.api.transaction_status_api.find_transaction({
 });
 
 console.info(result); // { status: 'unknown' }
-```
-
-#### Extend REST API interface and call custom endpoints
-
-In this example we will extend REST API Wax endpoints and create our classes with validators
-in order to use the [hafah_endpoints.get_transaction](https://api.syncad.com/?urls.primaryName=HAfAH#/Transactions/hafah_endpoints.get_transaction) API:
-
-```ts
-import { IsHexadecimal } from 'class-validator';
-import { createHiveChain, TWaxRestExtended } from '@hiveio/wax';
-const chain = await createHiveChain();
-
-class TransactionByIdRequest {
-  @IsHexadecimal()
-  public transactionId!: string;
-}
-
-// Create the proper API structure
-const ExtendedRestApi = {
-  'hafah-api': { // API type - structure-like - pushed to the query path during call
-    transactions: { // method name - also pushed to the query path during call
-      byId: { // next query path to be added. It will be replaced though due to the urlPath property defined
-        params: TransactionByIdRequest, // params is our request
-        result: Number, // result is our response (Number is a NumberConstructor - we cannot use number as a type in this context, so we pass NumberConstructor as a value)
-        urlPath: "{transactionId}" // url that will replace `byId`. We have `{}` format syntax here, so it means data from `params` matching given property names will be replaced in braces
-      }
-    }
-  }
-};
-
-const extended: TWaxRestExtended<typeof ExtendedRestApi> = chain.extendRest(ExtendedRestApi);
-
-// Call the REST API using our extended interface
-const result = await await extended.restApi['hafah-api'].transactions.byId({ transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0" });
-
-console.info(result); // URL response from "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
 ```
 
 #### Extend REST API interface using interfaces only and call custom endpoints

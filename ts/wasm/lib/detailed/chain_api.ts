@@ -1,6 +1,6 @@
 import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
-import { ApiAuthority, ApiWitness, BroadcastTransactionRequest, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
+import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
 import { WaxError } from "./errors.js";
 import { safeWasmCall } from './util/wasm_errors.js';
@@ -94,10 +94,10 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     if ("performOnChainVerification" in transaction)
       await transaction.performOnChainVerification();
 
-    const request = new BroadcastTransactionRequest();
-    request.trx = toBroadcast as ApiTransaction;
-
-    await this.api.network_broadcast_api.broadcast_transaction(request);
+    await this.api.network_broadcast_api.broadcast_transaction({
+      max_block_age: -1,
+      trx: toBroadcast as ApiTransaction
+    });
   }
 
   public withProxy(requestInterceptor: TRequestInterceptor, responseInterceptor: TResponseInterceptor): HiveChainApi {
@@ -166,7 +166,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private async findAccountsNoThrow(...accountNames: string[]): Promise<Array<ApiAccount>> {
-    const { accounts } = await this.api.database_api.find_accounts({ accounts: accountNames });
+    const { accounts } = await this.api.database_api.find_accounts({ accounts: accountNames, delayed_votes_active: true });
     return accounts;
   }
 
@@ -182,7 +182,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   private async findWitnessAccountsNoThrow(...witnessNames: string[]): Promise<Array<ApiWitness>> {
-    const { witnesses } = await this.api.database_api.find_witnesses({ owners: witnessNames }); 
+    const { witnesses } = await this.api.database_api.find_witnesses({ owners: witnessNames, delayed_votes_active: true });
     return witnesses;
   }
 

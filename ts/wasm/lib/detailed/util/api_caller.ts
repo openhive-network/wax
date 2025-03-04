@@ -1,5 +1,3 @@
-import { plainToInstance } from "class-transformer";
-import { validateOrReject } from "class-validator";
 import { WaxChainApiError } from "../errors";
 import { type TWaxApiRequest } from "../interfaces";
 import { extractBracedStrings } from "../rest-api/utils.js";
@@ -100,12 +98,6 @@ export class ApiCaller extends RequestHelper {
   public createApiCaller(): TRestChainCaller {
     const that = this;
     const callFn = async function(params: object | undefined, requestInterceptor: TRequestInterceptor = that.requestInterceptor, responseInterceptor: TResponseInterceptor = that.responseInterceptor): Promise<any> {
-      // Helper function to determine if we have to convert plain object to the instance of the given request or not
-      const isPlainObj = (value: unknown) => !!value && Object.getPrototypeOf(value) === Object.prototype;
-
-      if(typeof callFn.config === 'object' && callFn.config.params !== undefined && typeof params === "object")
-        await validateOrReject(isPlainObj(params) ? plainToInstance(callFn.config.params, params) : params);
-
       let path = '/' + callFn.paths.filter(node => node.length).join('/');
       const allToReplace = extractBracedStrings(path);
 
@@ -148,17 +140,6 @@ export class ApiCaller extends RequestHelper {
       if(typeof callFn.config === 'object') {
         if(result === undefined && callFn.config.result !== undefined)
           throw new WaxChainApiError('No result found in the Hive API response', data);
-
-        if (callFn.config.result !== undefined && callFn.config.result !== Number && callFn.config.result !== Boolean && callFn.config.result !== String) {
-          // Parse any other result type which is a valid validator constructor
-          result = plainToInstance(callFn.config.result, result) as object;
-
-          if (Array.isArray(result))
-            for(const node of result)
-              await validateOrReject(node);
-          else
-            await validateOrReject(result);
-        }
       }
 
       return result;

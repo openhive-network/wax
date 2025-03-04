@@ -21,10 +21,6 @@ export default [
       }),
       replace({
         values: {
-          // Make sure we do not include `process` in the code:
-          'process': null,
-          'process.env': null,
-          'process.env.REFLECT_METADATA_USE_MAP_POLYFILL': null, // Bundled dependency - reflect-metadata - uses this - we do not need it
           // Hardcode package name and version for later use in the code:
           'process.env.npm_package_name': `"${process.env.npm_package_name}"`,
           'process.env.npm_package_version': `"${process.env.npm_package_version}"`

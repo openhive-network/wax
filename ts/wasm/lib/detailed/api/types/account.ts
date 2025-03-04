@@ -1,263 +1,93 @@
-import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsDateString, IsNumber, IsNumberString, IsString, Validate, ValidateNested } from "class-validator";
-
 import { NaiAsset } from "./asset.js";
-import { IsNumberOrStringNumber } from "../../decorators/is_number_or_number_string.js";
-import { IsPublicKey } from "../../decorators/is_public_key.js";
-import { IsAuth } from "../../decorators/is_auth.js";
 import type { TPublicKey } from "../../interfaces";
 
-export class ApiAccountAuth {
-  @IsString()
-  public "0"!: string;
-
-  @IsNumber()
-  public "1"!: number;
+export interface ApiAccountAuth {
+  "0": string;
+  "1": number;
 }
 
-export class ApiKeyAuth {
-  @Validate(IsPublicKey)
-  public "0"!: TPublicKey;
-
-  @IsNumber()
-  public "1"!: number;
+export interface ApiKeyAuth {
+  "0": TPublicKey;
+  "1": number;
 }
 
-export class ApiDelayedVote {
-  @IsDateString()
-  public time!: string;
-
-  @Validate(IsNumberOrStringNumber)
-  public val!: number | string;
+export interface ApiDelayedVote {
+  time: string;
+  val: number | string;
 }
 
-export class ApiAuthority {
-  @IsNumber()
-  public weight_threshold!: number;
-
-  @IsArray()
-  @Type(() => ApiAccountAuth)
-  @Validate(IsAuth)
-  public account_auths!: Array<ApiAccountAuth>;
-
-  @IsArray()
-  @Type(() => ApiKeyAuth)
-  @Validate(IsAuth)
-  public key_auths!: Array<ApiKeyAuth>;
+export interface ApiAuthority {
+  weight_threshold: number;
+  account_auths: Array<ApiAccountAuth>;
+  key_auths: Array<ApiKeyAuth>;
 }
 
-export class ApiManabar {
-  @Validate(IsNumberOrStringNumber)
-  public current_mana!: string | number;
-
-  @IsNumber()
-  public last_update_time!: number;
+export interface ApiManabar {
+  current_mana: string | number;
+  last_update_time: number;
 }
 
-export class ApiAccount {
-  @IsNumber()
-  public id!: number;
-
-  @IsString()
-  public name!: string;
-
-  @Type(() => ApiAuthority)
-  @ValidateNested()
-  public owner!: ApiAuthority;
-
-  @Type(() => ApiAuthority)
-  @ValidateNested()
-  public active!: ApiAuthority;
-
-  @Type(() => ApiAuthority)
-  @ValidateNested()
-  public posting!: ApiAuthority;
-
-  @Validate(IsPublicKey)
-  public memo_key!: TPublicKey;
-
-  @IsString()
-  public json_metadata!: string;
-
-  @IsString()
-  public posting_json_metadata!: string;
-
-  @IsString()
-  public proxy!: string;
-
-  @IsDateString()
-  public previous_owner_update!: string;
-
-  @IsDateString()
-  public last_owner_update!: string;
-
-  @IsDateString()
-  public last_account_update!: string;
-
-  @IsDateString()
-  public created!: string;
-
-  @IsBoolean()
-  public mined!: boolean;
-
-  @IsString()
-  public recovery_account!: string;
-
-  @IsDateString()
-  public last_account_recovery!: string;
-
-  @IsString()
-  public reset_account!: string;
-
-  @IsNumber()
-  public comment_count!: number;
-
-  @IsNumber()
-  public lifetime_vote_count!: number;
-
-  @IsNumber()
-  public post_count!: number;
-
-  @IsBoolean()
-  public can_vote!: boolean;
-
-  @Type(() => ApiManabar)
-  @ValidateNested()
-  public voting_manabar!: ApiManabar;
-
-  @Type(() => ApiManabar)
-  @ValidateNested()
-  public downvote_manabar!: ApiManabar;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public balance!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public savings_balance!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public hbd_balance!: NaiAsset;
-
-  @IsNumberString()
-  public hbd_seconds!: string;
-
-  @IsDateString()
-  public hbd_seconds_last_update!: string;
-
-  @IsDateString()
-  public hbd_last_interest_payment!: string;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public savings_hbd_balance!: NaiAsset;
-
-  @IsNumberString()
-  public savings_hbd_seconds!: string;
-
-  @IsDateString()
-  public savings_hbd_seconds_last_update!: string;
-
-  @IsDateString()
-  public savings_hbd_last_interest_payment!: string;
-
-  @IsNumber()
-  public savings_withdraw_requests!: number;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public reward_hbd_balance!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public reward_hive_balance!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public reward_vesting_balance!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public reward_vesting_hive!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public vesting_shares!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public delegated_vesting_shares!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public received_vesting_shares!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public vesting_withdraw_rate!: NaiAsset;
-
-  @Type(() => NaiAsset)
-  @ValidateNested()
-  public post_voting_power!: NaiAsset;
-
-  @IsDateString()
-  public next_vesting_withdrawal!: string;
-
-  @Validate(IsNumberOrStringNumber)
-  public withdrawn!: number | string;
-
-  @Validate(IsNumberOrStringNumber)
-  public to_withdraw!: number | string;
-
-  @IsNumber()
-  public withdraw_routes!: number;
-
-  @IsNumber()
-  public pending_transfers!: number;
-
-  @Validate(IsNumberOrStringNumber)
-  public curation_rewards!: number | string;
-
-  @Validate(IsNumberOrStringNumber)
-  public posting_rewards!: number | string;
-
-  @Validate(IsNumberOrStringNumber, { each: true })
-  public proxied_vsf_votes!: Array<string | number>;
-
-  @IsNumber()
-  public witnesses_voted_for!: number;
-
-  @IsDateString()
-  public last_post!: string;
-
-  @IsDateString()
-  public last_root_post!: string;
-
-  @IsDateString()
-  public last_post_edit!: string;
-
-  @IsDateString()
-  public last_vote_time!: string;
-
-  @IsNumber()
-  public post_bandwidth!: number;
-
-  @Validate(IsNumberOrStringNumber)
-  public pending_claimed_accounts!: number | string;
-
-  @IsNumber()
-  public open_recurrent_transfers!: number;
-
-  @IsBoolean()
-  public is_smt!: boolean;
-
-  @IsArray()
-  @Type(() => ApiDelayedVote)
-  @ValidateNested({ each: true })
-  public delayed_votes!: ApiDelayedVote[];
-
-  @IsDateString()
-  public governance_vote_expiration_ts!: string;
+export interface ApiAccount {
+  id: number;
+  name: string;
+  owner: ApiAuthority;
+  active: ApiAuthority;
+  posting: ApiAuthority;
+  memo_key: TPublicKey;
+  json_metadata: string;
+  posting_json_metadata: string;
+  proxy: string;
+  previous_owner_update: string;
+  last_owner_update: string;
+  last_account_update: string;
+  created: string;
+  mined: boolean;
+  recovery_account: string;
+  last_account_recovery: string;
+  reset_account: string;
+  comment_count: number;
+  lifetime_vote_count: number;
+  post_count: number;
+  can_vote: boolean;
+  voting_manabar: ApiManabar;
+  downvote_manabar: ApiManabar;
+  balance: NaiAsset;
+  savings_balance: NaiAsset;
+  hbd_balance: NaiAsset;
+  hbd_seconds: string;
+  hbd_seconds_last_update: string;
+  hbd_last_interest_payment: string;
+  savings_hbd_balance: NaiAsset;
+  savings_hbd_seconds: string;
+  savings_hbd_seconds_last_update: string;
+  savings_hbd_last_interest_payment: string;
+  savings_withdraw_requests: number;
+  reward_hbd_balance: NaiAsset;
+  reward_hive_balance: NaiAsset;
+  reward_vesting_balance: NaiAsset;
+  reward_vesting_hive: NaiAsset;
+  vesting_shares: NaiAsset;
+  delegated_vesting_shares: NaiAsset;
+  received_vesting_shares: NaiAsset;
+  vesting_withdraw_rate: NaiAsset;
+  post_voting_power: NaiAsset;
+  next_vesting_withdrawal: string;
+  withdrawn: number | string;
+  to_withdraw: number | string;
+  withdraw_routes: number;
+  pending_transfers: number;
+  curation_rewards: number | string;
+  posting_rewards: number | string;
+  proxied_vsf_votes: Array<string | number>;
+  witnesses_voted_for: number;
+  last_post: string;
+  last_root_post: string;
+  last_post_edit: string;
+  last_vote_time: string;
+  post_bandwidth: number;
+  pending_claimed_accounts: number | string;
+  open_recurrent_transfers: number;
+  is_smt: boolean;
+  delayed_votes: ApiDelayedVote[];
+  governance_vote_expiration_ts: string;
 }

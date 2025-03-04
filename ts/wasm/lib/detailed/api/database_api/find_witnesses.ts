@@ -1,19 +1,10 @@
-import { Type } from "class-transformer";
-import { IsBoolean, IsOptional, IsString, ValidateNested } from "class-validator";
+import type { ApiWitness } from "../types/index.js";
 
-import { ApiWitness} from "../types/index.js";
-
-export class FindWitnessesRequest {
-  @IsString({ each: true })
-  public owners!: string[];
-
-  @IsOptional()
-  @IsBoolean()
-  public delayed_votes_active?: boolean = true;
+export interface FindWitnessesRequest {
+  owners: string[];
+  delayed_votes_active: boolean;
 }
 
-export class FindWitnessesResponse {
-  @Type(() => ApiWitness)
-  @ValidateNested({ each: true })
-  public witnesses!: Array<ApiWitness>;
+export interface FindWitnessesResponse {
+  witnesses: Array<ApiWitness>;
 }

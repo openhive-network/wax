@@ -16,8 +16,6 @@ import Long from "long";
 import { WaxFormatter } from "./formatters/waxify.js";
 
 import { isNaiAsset } from "./util/asset_util.js";
-import { plainToInstance } from "class-transformer";
-import { validateSync } from "class-validator";
 
 import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
 import { ISignatureProvider } from "./extensions/signatures";
@@ -181,11 +179,6 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public convertTransactionToBinaryForm(transaction: ApiTransaction, stripToUnsignedTransaction: boolean = false): THexString {
-    const validationErrors = validateSync(plainToInstance(ApiTransaction, transaction));
-
-    if(validationErrors.length > 0)
-      throw new WaxError(`Transaction validation failed: ${validationErrors.join(", ")}`);
-
     const tx = this.createTransactionFromJson(transaction);
 
     const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString(), stripToUnsignedTransaction));
@@ -195,11 +188,6 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
   public convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction {
     const conversionResult = safeWasmCall(() => this.protocol.cpp_deserialize_transaction(transaction));
-
-    const validationErrors = validateSync(plainToInstance(ApiTransaction, JSON.parse(this.extract(conversionResult))));
-
-    if(validationErrors.length > 0)
-      throw new WaxError(`Transaction validation failed: ${validationErrors.join(", ")}`);
 
     return JSON.parse(this.extract(conversionResult));
   }
