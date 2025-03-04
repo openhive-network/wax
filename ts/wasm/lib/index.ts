@@ -11,16 +11,25 @@ declare global {
 }
 const ENVIRONMENT_IS_WORKER = typeof WorkerGlobalScope != 'undefined';
 
-const getModuleExt = () => ({
-  locateFile: (path, scriptDirectory) => {
-    if (path === "wax.common.wasm") {
-      /// Warning: important change is moving conditional ternary expression outside of URL constructor call, what confused parcel analyzer.
-      /// Seems it must have simple variables & literals present to correctly translate code.
-      return (ENVIRONMENT_IS_WORKER ? new URL("./build_wasm/wax.common.wasm", self.location.href) : new URL("./build_wasm/wax.common.wasm",  import.meta.url)).href;
-    }
-    return scriptDirectory + path;
-  }
-})
+const getModuleExt = () => {
+  // Warning: important change is moving conditional ternary expression outside of URL constructor call, what confused parcel analyzer.
+  // Seems it must have simple variables & literals present to correctly translate code.
+  const wasmFilePath = (ENVIRONMENT_IS_WORKER ? new URL("./build_wasm/wax.common.wasm", self.location.href) : new URL("./build_wasm/wax.common.wasm", import.meta.url)).href;
+  // Fallback for client-bundled inlined WASM, e.g. when using webpack
+  let wasmBinary: Buffer | undefined;
+  if (wasmFilePath.startsWith("data:application/wasm;base64,"))
+      wasmBinary = Buffer.from(wasmFilePath.slice(29), "base64");
+
+  return {
+    locateFile(path: string, scriptDirectory: string): string {
+      if (path === "wax.common.wasm") {
+        return wasmFilePath;
+      }
+      return scriptDirectory + path;
+    },
+    wasmBinary
+  };
+};
 
 /**
  * Creates a Wax Hive chain instance
