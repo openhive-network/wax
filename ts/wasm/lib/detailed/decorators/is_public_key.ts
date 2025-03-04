@@ -1,5 +1,3 @@
-import { ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments, registerDecorator } from 'class-validator';
-
 export const isPublicKey = (value: string) => {
   if (typeof value !== "string")
     return false;
@@ -12,25 +10,3 @@ export const isPublicKey = (value: string) => {
   return base58Regex.test(value.slice(3));
 };
 
-@ValidatorConstraint({ name: "isPublicKey", async: false })
-export class IsPublicKeyValidator implements ValidatorConstraintInterface {
-  public validate(value: any, _args: ValidationArguments) {
-    return isPublicKey(value);
-  }
-
-  public defaultMessage(_args: ValidationArguments) {
-    return "The value must be a valid public key - start with 'STM' and be base58 encoded.";
-  }
-}
-
-export const IsPublicKey = () => {
-  return (object: Record<string, any>, propertyName: string) => {
-    registerDecorator({
-      name: 'isPublicKey',
-      target: object.constructor,
-      propertyName: propertyName,
-      constraints: [],
-      validator: IsPublicKeyValidator
-    });
-  };
-}

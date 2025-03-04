@@ -2,7 +2,6 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp, recoverAccountTransaction, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
-import { IsArray, IsObject, IsString } from 'class-validator';
 
 const HIVE_BLOCK_INTERVAL = 3 * 1000; // 3 seconds
 
@@ -32,75 +31,6 @@ test.describe('Wax object interface chain tests', () => {
     expect(retVal.sig).toBe('1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707');
     expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
    });
-
-   test('Should be able to transmit article transaction using hive chain interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ beekeeper, chain, wax }) => {
-      // Create wallet:
-      const session = beekeeper.createSession("salt");
-      const { wallet } = await session.createWallet("w0");
-      await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
-
-      const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-
-      tx.pushOperation(new wax.BlogPostOperation({
-        author: "mee",
-        body: "how r u",
-        category: "test",
-        title: "about you",
-        permlink: "permlink1",
-        percentHbd: 0,
-        maxAcceptedPayout: chain.hbdSatoshis(0)
-      }));
-
-      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
-
-      console.log(tx.toApi());
-
-      return new wax.BroadcastTransactionRequest(tx);
-    });
-
-    retVal.trx.signatures.splice(0, 1); // We do not want to test signing here which will change due to json_metadata app version and name values
-
-    expect(retVal).toStrictEqual({
-      max_block_age: -1,
-      trx: {
-        operations: [
-          {
-            type: "comment_operation",
-            value: {
-              parent_author: "",
-              parent_permlink: "test",
-              author: "mee",
-              permlink: "permlink1",
-              title: "about you",
-              body: "how r u",
-              json_metadata: `{\"format\":\"markdown+html\",\"app\":\"${process.env.npm_package_name}/${process.env.npm_package_version}\"}`
-            }
-          },
-          {
-            type: "comment_options_operation",
-            value: {
-              author: "mee",
-              permlink: "permlink1",
-              max_accepted_payout: {
-                amount: "0",
-                precision: 3,
-                nai: "@@000000013"
-              },
-              percent_hbd: 0,
-              allow_votes: true,
-              allow_curation_rewards: true
-            }
-          }
-         ],
-        extensions: [],
-        signatures: [],
-        ref_block_num: 51109,
-        ref_block_prefix: 2785934438,
-        expiration: '2023-08-01T15:38:48'
-      }
-    });
-  });
 
    test('Should be able to perform example API call', async ({ waxTest }) => {
      const retVal = await waxTest(async({ chain }) => {
@@ -169,47 +99,6 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
-    test('Should be able to extend hive chain and validate properties interface by custom definitions', async ({}, testInfo) => {
-      class MyRequest {
-        @IsString()
-        method!: string;
-      }
-      class MyResponse {
-        @IsObject()
-        args!: {};
-        @IsArray()
-        ret!: [];
-      }
-
-      const { chain } = await createWaxTestFor('node', testInfo.outputDir);
-      const extended = chain.extend({
-        jsonrpc: {
-          get_signature: {
-            params: MyRequest,
-            result: MyResponse
-          }
-        }
-      });
-
-      await expect(async() => {
-        await extended.api.jsonrpc.get_signature(new MyRequest());
-      }).rejects.toBeInstanceOf(Array); // Array<ValidationError>
-
-      await expect(async() => {
-        const req = new MyRequest();
-        (req.method as any) = 10; // Force invalid type on the method
-
-        await extended.api.jsonrpc.get_signature(req); // This should throw after validating
-      }).rejects.toBeInstanceOf(Array); // Array<ValidationError>
-
-      const result = await extended.api.jsonrpc.get_signature({ method: "jsonrpc.get_methods" });
-
-      const expectedResult = new MyResponse();
-      expectedResult.args = {};
-      expectedResult.ret = [];
-      expect(result).toStrictEqual(expectedResult);
-    });
-
     test('Should be able to extend hive chain interface by custom definitions using interfaces only', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         interface IMyRequest {
@@ -237,58 +126,6 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual({ args: {}, ret: [] });
     });
 
-    test('Should throw when creating broadcast transaction request from unsigned transaction', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain, wax }, protoVoteOp) => {
-        const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.pushOperation(protoVoteOp).transaction;
-
-        try {
-          new wax.BroadcastTransactionRequest(tx);
-          return false;
-        } catch {
-          return true;
-        }
-      }, protoVoteOp);
-
-      expect(retVal).toBeTruthy();
-    });
-
-    test('Should be able to transmit protobuf transaction using hive chain interface', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ beekeeper, chain, wax }, protoVoteOp) => {
-        // Create wallet:
-        const session = beekeeper.createSession("salt");
-        const { wallet } = await session.createWallet("w0");
-        await wallet.importKey('5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT');
-
-        const tx = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
-        tx.pushOperation(protoVoteOp).sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
-
-        return new wax.BroadcastTransactionRequest(tx);
-      }, protoVoteOp);
-
-      expect(retVal).toStrictEqual({
-        max_block_age: -1,
-        trx: {
-          operations: [ {
-            type: "vote_operation",
-            value: {
-              author: "c0ff33a",
-              permlink: "ewxhnjbj",
-              voter: "otom",
-              weight: 2200,
-            }
-          } ],
-          extensions: [],
-          signatures: [
-            "1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707"
-          ],
-          ref_block_num: 51109,
-          ref_block_prefix: 2785934438,
-          expiration: '2023-08-01T15:38:48'
-        }
-      });
-    });
-
     test('Should be able to calculate current manabar value using hive chain interface', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         const { current, max, percent } = chain.calculateCurrentManabarValue(
@@ -313,7 +150,7 @@ test.describe('Wax object interface chain tests', () => {
     test('Should be able to parse user manabar from API using hive chain interface', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain }) => {
         const { accounts: [ account ] } = await chain.api.database_api.find_accounts({
-          accounts: [ "initminer" ]
+          accounts: [ "initminer" ], delayed_votes_active: true
         });
         const dgpo = await chain.api.database_api.get_dynamic_global_properties({});
 

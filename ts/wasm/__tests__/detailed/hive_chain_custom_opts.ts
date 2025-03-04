@@ -106,7 +106,7 @@ test.describe('Wax object interface chain tests (using custom options)', () => {
 
   test('Should be able to find accounts from hive chain interafce', async({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
-      return (await chain.api.database_api.find_accounts({ accounts: ['thatcryptodave'] })).accounts[0];
+      return (await chain.api.database_api.find_accounts({ accounts: ['thatcryptodave'], delayed_votes_active: true })).accounts[0];
     });
 
     expect(retVal).toHaveProperty('active');
