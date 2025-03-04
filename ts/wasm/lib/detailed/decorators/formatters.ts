@@ -1,3 +1,5 @@
+import { defineMetadata } from "reflect-metadata/no-conflict";
+
 export interface IWaxFormatterDecoratorOptions<T = any> {
   /**
    * Property to match. If not specified defaults to the formatter method name
@@ -61,14 +63,14 @@ export const WaxFormattable = (options?: IWaxFormatterDecoratorOptions | string)
     const requireDefined = (options as IWaxFormatterDecoratorOptions | undefined)?.requireDefined as boolean | undefined ?? false;
     const matchInstanceOf = (options as IWaxFormatterDecoratorOptions | undefined)?.matchInstanceOf as { new(...args: any[]): any } | undefined;
 
-    Reflect.defineMetadata("wax:formatter:prop", matchProperty ?? propertyKey, target, propertyKey);
-    Reflect.defineMetadata("wax:formatter:explicitprop", typeof matchProperty === "string", target, propertyKey);
-    Reflect.defineMetadata("wax:formatter:requiredefined", requireDefined, target, propertyKey);
+    defineMetadata("wax:formatter:prop", matchProperty ?? propertyKey, target, propertyKey);
+    defineMetadata("wax:formatter:explicitprop", typeof matchProperty === "string", target, propertyKey);
+    defineMetadata("wax:formatter:requiredefined", requireDefined, target, propertyKey);
 
     if(typeof matchValue !== "undefined")
-      Reflect.defineMetadata("wax:formatter:propvalue", matchValue, target, propertyKey);
+      defineMetadata("wax:formatter:propvalue", matchValue, target, propertyKey);
 
     if(typeof matchInstanceOf !== "undefined")
-      Reflect.defineMetadata("wax:formatter:instanceof", matchInstanceOf, target, propertyKey);
+      defineMetadata("wax:formatter:instanceof", matchInstanceOf, target, propertyKey);
   };
 };

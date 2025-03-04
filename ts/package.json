@@ -81,7 +81,7 @@
     "npm-run-all": "^4.1.5",
     "playwright": "catalog:playwright-toolset",
     "protobufjs": "catalog:proto-toolset",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.2",
     "rimraf": "^6.0.1",
     "rollup": "catalog:rollup-toolset",
     "rollup-plugin-copy": "catalog:rollup-toolset",
