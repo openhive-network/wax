@@ -15,8 +15,11 @@ public:
 
   result cpp_calculate_public_key(const std::string& wif);
   result cpp_generate_private_key();
-
   private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password);
+  /** Allows to convert 32 bytes data buffer expressed as hex string (pointing private key secret) into private key encoded as WIF format.
+  */
+  std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData);
+
   brain_key_data cpp_suggest_brain_key();
 
   /** Returns map of hive::protocol constants in form:
