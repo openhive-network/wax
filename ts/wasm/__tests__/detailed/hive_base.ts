@@ -840,6 +840,14 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal.wifPrivateKey).toHaveLength(51);
   });
 
+  test('Should be able to convert between raw private key -> WIF formats', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.convertRawPrivateKeyToWif('48a9c812cafcd35eb761501768ba7e2eb9a238853548556c2c38431f51d63030');
+    });
+
+    expect(retVal).toBe('5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n');
+  });
+
   test('Should be able to estimate hive collateral', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.estimateHiveCollateral(201, 1000, 197, 1000, 100000);
