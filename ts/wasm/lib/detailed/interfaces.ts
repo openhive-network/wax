@@ -832,6 +832,13 @@ export interface IWaxBaseInterface {
   convertRawPrivateKeyToWif(rawPrivateKey: THexString): string;
 
   /**
+   * Allows to convert raw public key to WIF format.
+   * @param rawPublicKey 33 or 65 bytes buffer (doubled characters hex string) representing compressed or uncompressed public key data
+   * @returns WIF formatted public key (including prefix)
+   */
+  convertRawPublicKeyToWif(rawPublicKey: THexString): string;
+
+  /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
    * @param {ISignatureProvider} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys
