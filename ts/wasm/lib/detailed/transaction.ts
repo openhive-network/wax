@@ -10,6 +10,7 @@ import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
 import { ISignatureProvider } from "./extensions/signatures";
+import { structuredClone } from "./shims/structuredclone.js";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
