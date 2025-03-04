@@ -848,6 +848,22 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal).toBe('5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n');
   });
 
+  test('Should be able to convert between raw compressed public key -> WIF formats', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }) => {
+      return base.convertRawPublicKeyToWif('02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705');
+    });
+
+    expect(retVal).toBe('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
+  });
+
+  test('Should be able to convert between raw uncompressed public key -> WIF formats', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }) => {
+      return base.convertRawPublicKeyToWif('04be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c5017051a9cc2866c479818522ffd2b4a3d7a5a64d1b98c968f8f6ea2ef6745a637eb92');
+    });
+
+    expect(retVal).toBe('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
+  });
+
   test('Should be able to estimate hive collateral', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }) => {
       return base.estimateHiveCollateral(201, 1000, 197, 1000, 100000);
