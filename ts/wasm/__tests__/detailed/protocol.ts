@@ -33,6 +33,31 @@ test.describe('WASM Protocol', () => {
 
     expect(retVal.exception_message).toHaveLength(0);
   });
+
+  test('Should be able to convert between raw private key -> WIF formats', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_convert_raw_private_key_to_wif('48a9c812cafcd35eb761501768ba7e2eb9a238853548556c2c38431f51d63030');
+    });
+
+    expect(retVal).toBe('5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n');
+  });
+
+  test('Should be able to convert between raw compressed public key -> WIF formats', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_convert_raw_public_key_to_wif('02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705');
+    });
+
+    expect(retVal).toBe('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
+  });
+
+  test('Should be able to convert between raw uncompressed public key -> WIF formats', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_convert_raw_public_key_to_wif('04be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c5017051a9cc2866c479818522ffd2b4a3d7a5a64d1b98c968f8f6ea2ef6745a637eb92');
+    });
+
+    expect(retVal).toBe('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
+  });
+
   test('Should be able to generate binary metadata information - tx with vote operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
       const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true, false);
