@@ -278,6 +278,28 @@ std::string foundation::cpp_convert_raw_private_key_to_wif(const std::string& he
   return fc::ecc::private_key::regenerate(sharedSecret).key_to_wif();
 }
 
+std::string foundation::cpp_convert_raw_public_key_to_wif(const std::string& hexData)
+{
+  if(hexData.size() == 2 * sizeof(fc::ecc::public_key_data))
+  {
+    /// compressed form
+    fc::ecc::public_key_data keyData;
+    detail::convert_from_hex(hexData, keyData);
+
+    return fc::ecc::public_key::to_base58_with_prefix(keyData, HIVE_ADDRESS_PREFIX);
+
+  }
+  else
+  {
+    FC_ASSERT(hexData.size() == 2 * sizeof(fc::ecc::public_key_point_data), "Invalid size of raw public key buffer: ${s}", ("s", (hexData.size())));
+    /// uncompressed form
+    fc::ecc::public_key_point_data keyData;
+    detail::convert_from_hex(hexData, keyData);
+
+    fc::ecc::public_key key(keyData);
+    return key.to_base58_with_prefix(HIVE_ADDRESS_PREFIX);
+  }
+}
 
 brain_key_data foundation::cpp_suggest_brain_key()
 {
