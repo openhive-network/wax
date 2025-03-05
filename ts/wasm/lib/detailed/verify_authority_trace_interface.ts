@@ -116,9 +116,10 @@ export interface IAuthorityTraceSignatureInfo {
  */
 export interface IAuthorityPathTraceData {
   /**
-   * Optionally filled when procesed authority path matched to the signature and its decoded public key.
+   * Optionally filled when procesed authority path matched to the signatures and its decoded public key.
+   * Can be empty when no matching signature has been found.
    */
-  matchingSignature?: IAuthorityTraceSignatureInfo;
+  matchingSignatures: IAuthorityTraceSignatureInfo[];
 
   /**
    * Stores data specific to the authority path chosen:

@@ -98,33 +98,39 @@ const buildAuthorityPathTraceData = (signatureKeyInfo: Map<TPublicKey, TSignatur
 
       return {
         finalAuthorityPath,
-        matchingSignature: {
+        matchingSignatures: [{
           signature,
           signatureKey
-        }
+        }]
       };
     }
     else {
       return {
-        finalAuthorityPath
-      };
+        finalAuthorityPath,
+        matchingSignatures: []
     }
   }
+  }
 
-  let matchingSignature: IAuthorityTraceSignatureInfo|undefined;
+  const uniqueSignatures: Set<TSignature> = new Set();
+  let matchingSignatures: IAuthorityTraceSignatureInfo[] = [];
 
   for (let i = 0; i < size; i++) {
     const visitedEntry = entry.visited_entries.get(i)!;
     const data = buildAuthorityPathTraceData(signatureKeyInfo, visitedEntry);
     visitedEntries.push(data.finalAuthorityPath);
 
-    if(data.matchingSignature !== undefined)
-      matchingSignature = data.matchingSignature;
+    for(const sigInfo of data.matchingSignatures) {
+      if(!uniqueSignatures.has(sigInfo.signature)) {
+        matchingSignatures.push(sigInfo);
+        uniqueSignatures.add(sigInfo.signature);
+      }
+    }
   }
 
   return {
     finalAuthorityPath,
-    matchingSignature
+    matchingSignatures
   };
 }
 
