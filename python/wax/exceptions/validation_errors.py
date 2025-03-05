@@ -61,3 +61,11 @@ class InvalidMemoKeyError(WaxError):
         self.memo_key = memo_key
         self.message = f"Invalid memo key: {memo_key} provided."
         super().__init__(self.message)
+
+
+class NoAuthorityOperationGeneratedError(WaxError):
+    """Raised when no operations are generated."""
+
+    def __init__(self) -> None:
+        self.message = "No operations updating account authority generated."
+        super().__init__(self.message)

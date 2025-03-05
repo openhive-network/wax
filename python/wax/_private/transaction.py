@@ -10,6 +10,7 @@ from typing_extensions import Self
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
+from wax._private.operation_base import OperationBase
 from wax._private.result_tools import (
     decode_impacted_account_names,
     expose_result_as_cpp_string,
@@ -30,7 +31,6 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_proto_transaction,
 )
 from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
-from wax._private.operation_base import OperationBase
 from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
