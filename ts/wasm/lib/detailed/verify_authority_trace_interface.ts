@@ -35,6 +35,11 @@ export type TAuthorityEntryVerificationFailure = {
    * - false when authority does not contain any matching key
   */
   hasMatchingPublicKey: boolean;
+
+  /**
+   * Will be set to non-null value when given (decoded from signature) public key matched to some account, but it is not associated in any way to required authority account.
+   */
+  unrelatedAccountMatchedToPublicKey?: TAccountName;
 };
 
 /**
