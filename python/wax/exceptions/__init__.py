@@ -16,6 +16,7 @@ from .conversion_errors import (
 from .validation_errors import (
     InvalidAccountNameError,
     InvalidAccountOrKeyError,
+    InvalidMemoKeyError,
     InvalidOperationFormatError,
     WaxValidationFailedError,
 )
@@ -40,6 +41,7 @@ __all__ = [
     "InvalidAccountNameError",
     "InvalidAccountOrKeyError",
     "InvalidOperationFormatError",
+    "InvalidMemoKeyError",
     # Chain-related errors.
     "AccountNotFoundError",
 ]
