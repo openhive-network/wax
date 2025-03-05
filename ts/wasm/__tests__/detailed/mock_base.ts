@@ -95,10 +95,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "1f411808fe07ba78c8e0d1edc7e4bdf14b8af1b85a26437fd7e082054fc0fa5b503627072e4cc482d1a4e60ea5f318a85539282c5beb9747e83a429bcd369d1ece",
           "signatureKey": "STM7UEziXTT9CMCTLvSpWsS974XiYCGSb9jP3ycriAXFFoQVWxzZK"
-        }
+        }]
       }
     ]);
   });
@@ -260,10 +260,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e",
           "signatureKey": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF"
-        }
+        }]
       }
     ]);
   });
@@ -369,7 +369,8 @@ test.describe('Wax base mock tests', () => {
             "hasMatchingPublicKey":false
           },
           "visitedEntries":[]
-        }
+        },
+        "matchingSignatures": []
       },
       {
         "finalAuthorityPath":{
@@ -397,10 +398,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"205e09b4e5af6338f2a2d90a5d7a0a7c64203668f53beb0dd24b401cec25a347190988aaa102af008674803d6665647258f99076b3a1dc2da7c2629b1f61332d60",
           "signatureKey":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -428,10 +429,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"2043c1aadca24f71aab3efb48aa809d06f644ef17fe7016febea9d75fb2207710a14ed0a7ae72180acab16676bdce6d05638e6bd9b719a4b41eaf201095776aab9",
           "signatureKey":"STM8UxNA8pQpL7wtvzZUrfFFz1qGxgGH6a1VnJqDTGbivsU3Mi4Mz"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -459,10 +460,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"1f4149e010568da05380ae5beb143bb94db658567c20b73228ea84b269da7bc82208b9493535515ad4aef8c347bd8c9681b7827af9720130c20999774518cb620b",
           "signatureKey":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -491,10 +492,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"1f475ba65d89c97fc82c7858ae863154d6770b0dea7aafc94e111a9c8a3bcb7cba17d29a86e93c5eae3a5f8b51f963a8532c33313bf7e3d5a43a31d8ddfaef8251",
           "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -522,10 +523,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"1f73e14ee975d584f121c7ad3de059d4f361cdbb417a0020b911efe77632bd86044c33d276ea72fb45d1138d061c90226f6127dc163e1ac92baf3340eb1848b09f",
           "signatureKey":"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR"
-        }
+        }]
       }
     ]);
   });
@@ -620,10 +621,14 @@ test.describe('Wax base mock tests', () => {
           ],
           "weight": 2
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
+          "signature": "1f32e76fbebe2a92a2b83953e62460ef150bac1ab0989bc5338bbc3a3978c077573403787d509b669f548ccdc06ec6c1995dadd51b5221172635df0f1a443a4d8f",
+          "signatureKey": "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh"
+          },
+          {
           "signature": "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1",
           "signatureKey": "STM6a34GANY5LD8deYvvfySSWGd7sPahgVNYoFPapngMUD27pWb45"
-        }
+        }]
       }
     ]);
   });
@@ -727,10 +732,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5",
           "signatureKey":"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -758,10 +763,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
           "signatureKey":"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -789,10 +794,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
           "signatureKey":"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -821,10 +826,10 @@ test.describe('Wax base mock tests', () => {
             }
           ]
         },
-        "matchingSignature":{
+        "matchingSignatures":[{
           "signature":"1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
           "signatureKey":"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP"
-        }
+        }]
       },
       {
         "finalAuthorityPath":{
@@ -843,7 +848,8 @@ test.describe('Wax base mock tests', () => {
             "hasMatchingPublicKey":false
           },
           "visitedEntries":[]
-        }
+        },
+        "matchingSignatures": []
       }
     ]);
   });

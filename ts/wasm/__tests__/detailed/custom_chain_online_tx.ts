@@ -107,10 +107,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1,
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5",
           "signatureKey": "STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
-        },
+        }],
       },
       {
         "finalAuthorityPath": {
@@ -138,10 +138,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1,
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
           "signatureKey": "STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
-        },
+        }],
       },
       {
         "finalAuthorityPath": {
@@ -169,10 +169,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1,
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
           "signatureKey": "STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
-        },
+        }],
       },
       {
         "finalAuthorityPath": {
@@ -200,10 +200,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1,
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
           "signatureKey": "STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
-        },
+        }],
       },
       {
         "finalAuthorityPath": {
@@ -231,10 +231,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a",
           "signatureKey": "STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR"
-        }
+        }]
       }
     ]);
   });
@@ -267,7 +267,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       const authTrace = await tx.generateAuthorityVerificationTrace();
 
-      authTrace.collectedData[0].matchingSignature!.signature = 'fakeSignature'; // The signature changes every time so we need to fake it.
+      authTrace.collectedData[0].matchingSignatures[0].signature = 'fakeSignature'; // The signature changes every time so we need to fake it.
 
       const authTraceStr = JSON.stringify(authTrace);
       console.log(`Authority trace: ${authTraceStr }`);
@@ -302,10 +302,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "fakeSignature",
           "signatureKey": "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
-        }
+        }]
       }
     ]);
   });
@@ -360,10 +360,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "203eed491a1e032bc889b030861a80bf3f0bc8ba7fa30843041825c4f542411fb3678fd527c598dcc6646a5dabf2110691a4d6355c72d7638ffdaa11ac10451d07",
           "signatureKey": "STM7jDAdjyLYgqhyCwSafVzNGN4PLBGWrYB9uJun4AitZA8TERgif"
-        }
+        }]
       }
     ]);
   });
@@ -453,10 +453,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "20543c6e9e5ea2acfb94e9c5cd6672f302d067b62a4c71832dcaec7caf5e83a83b45ae76c55e3f51f8eb254b460a0585e7f911a93d6e5a58522429b7a4678dc22e",
           "signatureKey": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF"
-        }
+        }]
       }
     ]);
   });
@@ -533,10 +533,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           ],
           "weight": 1
         },
-        "matchingSignature": {
+        "matchingSignatures": [{
           "signature": "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e",
           "signatureKey": "STM8WWUYHMdHLgEHidYCztswzfZCViA16EqGkAxt7RG4dWwDpFtCF"
-        }
+        }]
       }
     ]);
   });
@@ -590,7 +590,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
             "isOpenAuthority": true
           },
           "visitedEntries":[]
-        }
+        },
+        "matchingSignatures": []
       }
     ]);
   });
