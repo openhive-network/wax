@@ -43,3 +43,12 @@ class InvalidEndpointUrlFormatError(WaxError):
         self.url = url
         self.message = f"Endpoint url '{url}' is in invalid format."
         super().__init__(self.message)
+
+
+class InvalidAccountOrKeyError(WaxError):
+    """Raised when account or key is invalid."""
+
+    def __init__(self, account_or_key: str) -> None:
+        self.account_or_key = account_or_key
+        self.message = f"Account or key '{account_or_key}' is invalid."
+        super().__init__(self.message)
