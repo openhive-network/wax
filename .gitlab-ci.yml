@@ -294,6 +294,8 @@ test_wax_wasm_examples:
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+    - job: build_wax_extensions
+      artifacts: true
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
