@@ -7,71 +7,71 @@ settings:
 catalogs:
   husky:
     husky:
-      specifier: 8.0.3
+      specifier: 9.1.5
       version: 8.0.3
   playwright-toolset:
     '@playwright/test':
-      specifier: ^1.50.1
+      specifier: 1.50.1
       version: 1.50.1
     http-server:
-      specifier: ^14.1.1
+      specifier: 14.1.1
       version: 14.1.1
     playwright:
-      specifier: ^1.50.1
+      specifier: 1.50.1
       version: 1.50.1
   proto-toolset:
     protobufjs:
-      specifier: ^7.2.5
+      specifier: 7.2.5
       version: 7.2.5
     ts-proto:
-      specifier: ^1.172.0
+      specifier: 1.172.0
       version: 1.172.0
   rollup-toolset:
     '@rollup/plugin-commonjs':
-      specifier: ^27.0.0
+      specifier: 27.0.0
       version: 27.0.0
     '@rollup/plugin-node-resolve':
-      specifier: ^15.3.1
+      specifier: 15.3.1
       version: 15.3.1
     '@rollup/plugin-replace':
-      specifier: ^6.0.2
+      specifier: 6.0.2
       version: 6.0.2
     rollup:
       specifier: 4.24.0
       version: 4.24.0
     rollup-plugin-copy:
-      specifier: ^3.5.0
+      specifier: 3.5.0
       version: 3.5.0
     rollup-plugin-dts:
-      specifier: ^6.1.1
+      specifier: 6.1.1
       version: 6.1.1
   size-limit-toolset:
     '@size-limit/file':
-      specifier: ^11.1.6
+      specifier: 11.1.6
       version: 11.1.6
     size-limit:
-      specifier: ^11.1.6
+      specifier: 11.1.6
       version: 11.1.6
   terser:
     terser:
-      specifier: ^5.39.0
+      specifier: 5.39.0
       version: 5.39.0
   typedoc-toolset:
     typedoc:
       specifier: 0.27.3
       version: 0.27.3
     typedoc-gitlab-wiki-theme:
-      specifier: ^2.1.0
+      specifier: 2.1.0
       version: 2.1.0
     typedoc-plugin-markdown:
       specifier: 4.3.1
       version: 4.3.1
   typescript-toolset:
     tslib:
-      specifier: ^2.8.1
+      specifier: 2.8.1
       version: 2.8.1
     tsx:
-      specifier: ^4.19.2
+      specifier: 4.19.2
       version: 4.19.2
     typescript:
       specifier: 5.7.3
@@ -82,8 +82,8 @@ importers:
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.9-stable.250219154236
-        version: 1.27.9-stable.250219154236
+        specifier: 1.27.10-stable.250305202831
+        version: 1.27.10-stable.250305202831
       events:
         specifier: ^3.3.0
         version: 3.3.0
@@ -351,8 +351,8 @@ packages:
   '@gerrit0/mini-shiki@1.24.4':
     resolution: {integrity: sha512-YEHW1QeAg6UmxEmswiQbOVEg1CW22b1XUD/lNTliOsu0LD0wqoyleFMnmbTp697QE0pcadQiR5cVtbbAPncvpw==}
 
-  '@hiveio/beekeeper@1.27.9-stable.250219154236':
-    resolution: {integrity: sha1-6fL+OgTwp6MSp0Xm3fwj+kFLzD8=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.9-stable.250219154236.tgz}
+  '@hiveio/beekeeper@1.27.10-stable.250305202831':
+    resolution: {integrity: sha1-mPx0QrDh3NSPSOYGyR1SUyi3lyA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.10-stable.250305202831.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
@@ -2068,7 +2068,7 @@ snapshots:
       '@shikijs/types': 1.24.2
       '@shikijs/vscode-textmate': 9.3.1
 
-  '@hiveio/beekeeper@1.27.9-stable.250219154236': {}
+  '@hiveio/beekeeper@1.27.10-stable.250305202831': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:

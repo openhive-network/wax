@@ -97,7 +97,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.9-stable.250219154236",
+    "@hiveio/beekeeper": "1.27.10-stable.250305202831",
     "events": "^3.3.0",
     "long": "^5.2.3"
   },
