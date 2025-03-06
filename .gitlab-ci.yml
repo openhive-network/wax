@@ -298,6 +298,7 @@ test_wax_wasm_examples:
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    GIT_SUBMODULE_STRATEGY: "normal"
 
   script:
     - cd "${SOURCE_DIR}"

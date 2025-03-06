@@ -8,7 +8,7 @@ This example presents different ways of implementing 3rd party apps authorizatio
 To test this example:
 
 1. Install keychain extension
-2. Import `guest4test` posting key to your wallet
+2. Import `guest4test1` active key to your wallet
 3. Install dependencies: `pnpm install`
-4. Run parcel: `pnpm test`
+4. Run parcel: `pnpm test:manual`
 5. Goto [http://localhost:1234](http://localhost:1234), sign the transaction and check logs

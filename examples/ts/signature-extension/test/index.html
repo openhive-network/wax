@@ -19,8 +19,8 @@
     const txResult = document.getElementById('tx-result');
 
     (async()=> {
-      const keychainProvider = KeychainProvider.for(accountName, "posting");
-      const peakVaultProvider = PeakVaultProvider.for(accountName, "posting");
+      const keychainProvider = KeychainProvider.for(accountName, "active");
+      const peakVaultProvider = PeakVaultProvider.for(accountName, "active");
 
       const chain = await createHiveChain();
 
