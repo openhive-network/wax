@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "parcel test/index.html"
+    "build": "tsc",
+    "test": "../../../ts/npm-common-config/scripts/bash/npm-helpers/npm_download_browser_extensions.sh \"${HOME}/preinstalled_browser_extensions\" && ln -sf \"${HOME}/preinstalled_browser_extensions\" ./__tests__/extensions && playwright test --max-failures 1",
+    "test:manual": "parcel test/index.html"
   },
   "dependencies": {
     "@hiveio/wax": "file:../../../ts",
@@ -13,8 +15,11 @@
   "devDependencies": {
     "@parcel/config-default": "^2.13.3",
     "@parcel/transformer-typescript-tsc": "^2.13.3",
+    "@playwright/test": "1.50.1",
+    "@types/node": "^22.13.9",
     "buffer": "^5.5.0||^6.0.0",
     "parcel": "^2.13.3",
     "process": "^0.11.10"
-  }
+  },
+  "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b"
 }
