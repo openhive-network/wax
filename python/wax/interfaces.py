@@ -13,18 +13,17 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
-    from wax._private.models.asset import (
+    from wax.models.asset import (
         AssetFactory,
         HbdNaiAssetConvertible,
         HiveNaiAssetConvertible,
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax._private.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
-    from wax._private.models.brain_key_data import BrainKeyData
-    from wax._private.models.operations import Operation, WaxMetaOperation
-    from wax._private.models.private_key_data import PrivateKeyData
-    from wax._private.models.required_authorities import TransactionRequiredAuthorities
+    from wax.models.authority import ITransactionRequiredAuthorities
+    from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
+    from wax.models.key_data import IBrainKeyData, IPrivateKeyData
+    from wax.models.operations import Operation, WaxMetaOperation
 
 
 ProtoTransaction: TypeAlias = proto_transaction
@@ -110,12 +109,12 @@ class ITransactionBase(ABC):
 
     @property
     @abstractmethod
-    def required_authorities(self) -> TransactionRequiredAuthorities:
+    def required_authorities(self) -> ITransactionRequiredAuthorities:
         """
         Returns required authority accounts from the transaction.
 
         Returns:
-            TransactionRequiredAuthorities: All possible authority types.
+            ITransactionRequiredAuthorities: All possible authority models.
         """
 
     @abstractmethod
@@ -411,7 +410,7 @@ class IWaxBaseInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def suggest_brain_key() -> BrainKeyData:
+    def suggest_brain_key() -> IBrainKeyData:
         """
         Returns brain key data.
 
@@ -424,7 +423,7 @@ class IWaxBaseInterface(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_private_key_from_password(account: AccountName, role: str, password: str) -> PrivateKeyData:
+    def get_private_key_from_password(account: AccountName, role: str, password: str) -> IPrivateKeyData:
         """
         Returns private key data.
 

@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from wax._private.result_tools import to_python_string
+from wax.models.key_data import IPrivateKeyData
 
 if TYPE_CHECKING:
     from wax.wax_result import python_private_key_data
 
 
-class PrivateKeyData:
+class PrivateKeyData(IPrivateKeyData):
     """
     Class for storing private key data.
 
@@ -24,5 +25,13 @@ class PrivateKeyData:
         Args:
             data: private key data.
         """
-        self.wif_private_key = to_python_string(data.wif_private_key)
-        self.associated_public_key = to_python_string(data.associated_public_key)
+        self._wif_private_key = to_python_string(data.wif_private_key)
+        self._associated_public_key = to_python_string(data.associated_public_key)
+
+    @property
+    def wif_private_key(self) -> str:
+        return self._wif_private_key
+
+    @property
+    def associated_public_key(self) -> str:
+        return self._associated_public_key

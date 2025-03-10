@@ -2,22 +2,38 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.models.authority import AccountAuths, KeyAuths, WaxAuthority
 from wax._private.result_tools import to_python_string
+from wax.models.authority import AccountAuths, ITransactionRequiredAuthorities, KeyAuths, WaxAuthority
 
 if TYPE_CHECKING:
-    from wax._private.models.basic import AccountName
+    from wax.models.basic import AccountName
     from wax.wax_result import python_authority, python_required_authority_collection
 
 
-class TransactionRequiredAuthorities:
+class TransactionRequiredAuthorities(ITransactionRequiredAuthorities):
     def __init__(self, required_authority_collection: python_required_authority_collection) -> None:
-        self.posting_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.posting_accounts)
-        self.active_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.active_accounts)
-        self.owner_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.owner_accounts)
-        self.other_authorities: list[WaxAuthority] = self.resolve_other_authorities(
+        self._posting_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.posting_accounts)
+        self._active_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.active_accounts)
+        self._owner_accounts: set[AccountName] = self._decode_accounts(required_authority_collection.owner_accounts)
+        self._other_authorities: list[WaxAuthority] = self.resolve_other_authorities(
             required_authority_collection.other_authorities
         )
+
+    @property
+    def posting_accounts(self) -> set[AccountName]:
+        return self._posting_accounts
+
+    @property
+    def active_accounts(self) -> set[AccountName]:
+        return self._active_accounts
+
+    @property
+    def owner_accounts(self) -> set[AccountName]:
+        return self._owner_accounts
+
+    @property
+    def other_authorities(self) -> list[WaxAuthority]:
+        return self._other_authorities
 
     def resolve_other_authorities(self, other_authorities: list[python_authority]) -> list[WaxAuthority]:
         return [

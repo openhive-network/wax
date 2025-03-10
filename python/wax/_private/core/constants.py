@@ -5,7 +5,7 @@ from math import floor, log10
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
-    from wax._private.models.basic import ChainId
+    from wax.models.basic import ChainId
 
 
 PUBLIC_KEY_ADDRESS_PREFIX: Final[str] = "STM"

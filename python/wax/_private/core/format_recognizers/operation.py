@@ -10,7 +10,7 @@ from typing_extensions import TypeIs
 from wax._private.exceptions import InvalidOperationFormatError
 
 if TYPE_CHECKING:
-    from wax._private.models.operations import Operation, ProtocolOperation
+    from wax.models.operations import Operation, ProtocolOperation
 
 
 @singledispatch
