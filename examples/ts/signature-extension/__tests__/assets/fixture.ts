@@ -8,7 +8,7 @@ export const test = base.extend<{
 }>({
   context: async ({}, use) => {
     const __dirname = dirname(fileURLToPath(import.meta.url));
-    const pathToExtension = path.join(__dirname, "../extensions/Hive-Keychain-Chrome-Web-Store");
+    const pathToExtension = path.join(__dirname, "../extensions/Hive-Keychain");
 
     const browserContext = await chromium.launchPersistentContext('', {
       headless: false,
