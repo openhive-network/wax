@@ -9,7 +9,7 @@ from wax import create_wax_foundation
 from wax.proto import authority_pb2, operation_pb2, recover_account_pb2
 
 if TYPE_CHECKING:
-    from wax._private.models.operations import Operation
+    from wax.models.operations import Operation
 
 
 AUTHORITY_1: Final[authority_pb2.authority] = authority_pb2.authority(

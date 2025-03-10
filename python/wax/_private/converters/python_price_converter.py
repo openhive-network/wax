@@ -6,7 +6,7 @@ from wax._private.models.asset import Asset, AssetName
 from wax.wax_result import python_price
 
 if TYPE_CHECKING:
-    from wax._private.models.asset import HbdNaiAssetConvertible, HiveNaiAssetConvertible
+    from wax.models.asset import HbdNaiAssetConvertible, HiveNaiAssetConvertible
 
 
 def convert_to_python_price(base: HbdNaiAssetConvertible, quote: HiveNaiAssetConvertible) -> python_price:

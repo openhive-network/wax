@@ -9,7 +9,7 @@ from typing_extensions import Self
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
-from wax._private.models.required_authorities import TransactionRequiredAuthorities
+from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.result_tools import (
     decode_impacted_account_names,
     expose_result_as_cpp_string,
@@ -37,8 +37,8 @@ if TYPE_CHECKING:
 
     from beekeepy import AsyncUnlockedWallet
     from wax import IWaxBaseInterface
-    from wax._private.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
-    from wax._private.models.operations import WaxMetaOperation
+    from wax.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
+    from wax.models.operations import WaxMetaOperation
 
 
 TaposBlockId: TypeAlias = str

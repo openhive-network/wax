@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from wax._private.core.constants import DEFAULT_CHAIN_ID
 
 if TYPE_CHECKING:
-    from wax._private.models.basic import ChainId
+    from wax.models.basic import ChainId
 
 
 class WaxOptions:

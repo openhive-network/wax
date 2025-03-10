@@ -13,15 +13,7 @@ from wax._private.core.constants import (
     PUBLIC_KEY_ADDRESS_PREFIX,
 )
 from wax._private.core.format_recognizers.operation import is_hive_protocol_format
-from wax._private.models.asset import (
-    Asset,
-    AssetFactory,
-    AssetName,
-    HbdNaiAssetConvertible,
-    HiveNaiAssetConvertible,
-    NaiAsset,
-    VestsNaiAssetConvertible,
-)
+from wax._private.models.asset import Asset
 from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
@@ -54,13 +46,21 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_proto_operation,
 )
 from wax.interfaces import ChainConfig, IWaxBaseInterface, JsonTransaction, ProtoTransaction, TTimestamp
+from wax.models.asset import (
+    AssetFactory,
+    AssetName,
+    HbdNaiAssetConvertible,
+    HiveNaiAssetConvertible,
+    NaiAsset,
+    VestsNaiAssetConvertible,
+)
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from wax._private.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
-    from wax._private.models.operations import Operation
     from wax.interfaces import ITransaction
+    from wax.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
+    from wax.models.operations import Operation
 
 
 class WaxBaseApi(IWaxBaseInterface):

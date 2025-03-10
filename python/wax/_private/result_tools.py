@@ -6,7 +6,7 @@ from wax._private.exceptions import WaxValidationFailedError
 from wax.wax_result import python_error_code, python_result
 
 if TYPE_CHECKING:
-    from wax._private.models.basic import AccountName
+    from wax.models.basic import AccountName
 
 
 def to_python_string(value: bytes | str) -> str:
