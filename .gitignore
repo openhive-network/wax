@@ -185,7 +185,7 @@ poetry.toml
 pyrightconfig.json
 
 ### VisualStudioCode ###
-.vscode/*
+.vscode/
 
 # Local History for Visual Studio Code
 .history/
@@ -230,5 +230,7 @@ storage_root-node
 
 # Ignore lock files in examples
 /examples/ts/**/pnpm-lock.yaml
+# Ignore directory holding browser extention binaries to verify external signers (like Hive Keychain)
+/examples/ts/signature-extension/__tests__/extensions
 
 .DS_Store
