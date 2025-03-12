@@ -30,6 +30,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_proto_transaction,
 )
 from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
+from wax._private.operation_base import OperationBase
 from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
@@ -156,7 +157,11 @@ class Transaction(ITransaction):
         return self.to_api()
 
     def push_operation(self, operation: WaxMetaOperation) -> Self:
-        self._target.operations.add(**{operation.__class__.__name__: operation})
+        if isinstance(operation, OperationBase):
+            for op in operation.finalize(self._api):
+                self._target.operations.add(**{op.__class__.__name__: op})
+        else:
+            self._target.operations.add(**{operation.__class__.__name__: operation})
         return self
 
     def _flush_transaction(self) -> None:
