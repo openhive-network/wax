@@ -16,8 +16,8 @@ export type TOperationVisitor<R = void> = {
 };
 
 // https://github.com/Microsoft/TypeScript/issues/8306#issuecomment-1636697326
-declare const _: unique symbol;
-type NoOverride = { [_]: typeof _; };
+export declare const _: unique symbol;
+export type NoOverride = { [_]: typeof _; };
 
 export class OperationVisitor<R = void> implements TOperationVisitor<R> {
   /**

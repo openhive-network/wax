@@ -109,7 +109,6 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * Adds an account or key to the currently selected role with specified weight.
    * If the account or key already exists, its weight is updated.
    *
-   * @note If you want to change the role, you need to call {@link withRole} method first.
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
    * @param {?number} weight Account or key weight in the authority. Default is 1.
    * @returns itself
@@ -125,7 +124,6 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
   /**
    * Replaces the account or key with a new one in the currently selected role or changes the weight of the existing account or key.
    *
-   * @note If you want to change the role, you need to call {@link withRole} method first.
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
    * @param {number} weight Account or key weight in the authority.
    * @param {(TPublicKey | TAccountName)} newKeyOrAccount Account or key to replace the old one. If not provided, the account or key is not replaced, but weight is changed.

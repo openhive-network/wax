@@ -289,7 +289,7 @@ Tested on the latest Chromium
 
 To run the tests on your own, clone the wax repo and install the dependencies and then compile the project:
 
-You should perform any development-related work in our devcontainers available in the [.devcontainer](.devcontainer) directory.
+You should perform any development-related work in our devcontainers defined by the [.devcontainer](.devcontainer/devcontainer.json) file.
 If you do not wish to use docker, then you will have to install project dependencies on your own:
 `protobuf-compiler`, `docker.io`, `npm`, `pnpm`, `nodejs`, `jq`
 

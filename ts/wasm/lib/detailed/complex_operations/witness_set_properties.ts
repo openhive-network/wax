@@ -6,7 +6,7 @@ import type Long from "long";
 import { TAccountName } from "../hive_apps_operations/index.js";
 import type { TPublicKey } from "../interfaces";
 
-type TInternalAsset = asset | Long | string | BigInt | number;
+export type TInternalAsset = asset | Long | string | BigInt | number;
 
 export interface IWitnessSetPropertiesData {
   /**

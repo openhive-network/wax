@@ -29,7 +29,7 @@ export type TScoredEndpoint = IScoredEndpointDown | IScoredEndpointUp;
 
 export type TCalculateScoresFunction = (data: Readonly<Array<[string, Array<THiveEndpointData>]>>) => Array<TScoredEndpoint>;
 
-interface IHealthCheckerEvents {
+export interface IHealthCheckerEvents {
   'newbest': (endpoint: TScoredEndpoint) => void | Promise<void>;
   'newup': (endpoint: TScoredEndpoint) => void | Promise<void>;
   'newdown': (endpoint: TScoredEndpoint) => void | Promise<void>;
@@ -128,7 +128,7 @@ export class HealthChecker extends EventEmitter {
    * Creates a new HealthChecker instance.
    *
    * @param {?Readonly<Array<string>>} defaultEndpoints default endpoints for checkers.
-   *  If `undefined` (default) uses {@link DefaultEndpoints} for json rpc or {@link DefaultRestApiEndpoints} for rest api
+   *  If `undefined` (default) uses {@link DefaultJsonRpcEndpoints} for json rpc or {@link DefaultRestApiEndpoints} for rest api
    *
    * @example
    * ```ts
@@ -178,7 +178,7 @@ export class HealthChecker extends EventEmitter {
    * Registers the checker to the healthcheck intervals
    *
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
-   * @param {Parameters<TFn>[0]} toSend param to {@link endpointToCheck}
+   * @param {Parameters<TFn>[0]} toSend param to endpointToCheck
    * @param {(data: Awaited<ReturnType<TFn>>) => (true | string)} validator optional validator for fields. Return true to pass validation and string to fail with given message
    * @param {?string[]} testOnEndpoints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
    *
@@ -322,7 +322,7 @@ export class HealthChecker extends EventEmitter {
    * ```ts
    * const hc = new wax.HealthChecker();
    *
-   * hc.subscribe(HealthChecker.DefaultEndpoints[0]);
+   * hc.subscribe(HealthChecker.DefaultJsonRpcEndpoints[0]);
    *
    * hc.on("newdown", ({ endpointUrl }) => { console.log(endpointUrl, 'is down. Changing endpoint url...'); });
    * hc.on("newup", ({ endpointUrl }) => { console.log(endpointUrl, 'is up. Changing to given endpoint...'); });

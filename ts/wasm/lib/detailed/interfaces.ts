@@ -18,6 +18,8 @@ import type { IChainConfig } from "../build_wasm/config";
 import { ISignatureProvider, IOnlineSignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 
+export type { IChainConfig };
+
 export * from "./verify_authority_trace_interface";
 
 export type {TAccountName};
@@ -242,7 +244,7 @@ export interface ITransactionBase {
   toString(): string;
 
   /**
-   * Checks if underlying transaction has been already signed at least one time (after {@link sign})
+   * Checks if underlying transaction has been already signed at least one time (after {@link ITransaction.sign})
    *
    * @returns {boolean} either true or false based on the signatures amount
    */
@@ -292,7 +294,7 @@ export interface ITransactionBase {
    * Starts encryption chain
    *
    * Remember that in order to encrypt operations with given {@link mainEncryptionKey} and optional {@link otherEncryptionKey}
-   * you have to import those keys into the wallet passed to the {@link ITransactionBase.sign} method
+   * you have to import those keys into the wallet passed to the {@link ITransaction.sign} method
    *
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
    * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
@@ -434,7 +436,7 @@ export interface ITransaction extends ITransactionBase {
 
 /**
  * Same as {@link ITransaction}, but marks operations as encrypted using given keys, which will be encrypted upon
- * {@link ITransactionBase.sign}.
+ * {@link ITransaction.sign}.
  *
  * Note: We are not able to encrypt all operations.
  * We are currently supporting:
@@ -947,7 +949,7 @@ export interface IWaxBaseInterface {
    *
    * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
    * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
-   *                                    Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
+   *                                    Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours
    *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
    *                                    Expiration time will be applied when calling any non-push-related method in {@link ITransaction}
@@ -987,7 +989,7 @@ export interface IWaxBaseInterface {
 /**
  * @internal
  */
-type JsonRpcApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
+export type JsonRpcApiData<T extends keyof typeof HiveApiTypes> = YourApiData<typeof HiveApiTypes[T]>;
 
 export type TWaxApiRequest<TReq, TRes> = {
   readonly params: TReq;
@@ -1004,7 +1006,7 @@ export type TDeepWaxApiRequestPartial<T> = T extends object ? {
 /**
  * @internal
  */
-type YourApiData<YourTypes> = {
+export type YourApiData<YourTypes> = {
   readonly [P in keyof YourTypes]:
   // First check for value type
   (YourTypes[P] extends object ? (
@@ -1100,10 +1102,10 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Allows to start transaction preparing process.
    *
-   * Same as {@link IWaxBaseInterface.createTransaction}, but pulls the reference block data from the remote
+   * Same as {@link IWaxBaseInterface.createTransactionWithTaPoS}, but pulls the reference block data from the remote
    *
    * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
-   *                                     Can be either any argument parsable by the {@link Date} constructor or relative time in seconds, minutes or hours
+   *                                     Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours
    *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`.
    *                                     Expiration time will be applied when calling any non-push-related method in {@link ITransaction}

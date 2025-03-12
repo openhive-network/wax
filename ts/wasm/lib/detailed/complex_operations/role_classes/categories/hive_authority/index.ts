@@ -8,6 +8,8 @@ import { WaxError } from "../../../../errors.js";
 import { HiveRoleAuthorityDefinition } from "./hive_role_authority_definition.js";
 import { HiveRoleMemoKeyDefinition } from "./hive_role_memo_key.js";
 
+export type { HiveRoleAuthorityDefinition, HiveRoleMemoKeyDefinition } ;
+
 export type THiveRoles = {
   active: HiveRoleAuthorityDefinition<"active">;
   owner: HiveRoleAuthorityDefinition<"owner">;
