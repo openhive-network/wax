@@ -1,7 +1,9 @@
 export { EAssetName } from "./base_api.js";
-export { EManabarType } from './chain_api.js';
+export { EManabarType, EChainApiType } from './chain_api.js';
+export { HiveApiTypes, HiveRestApiTypes } from './chain_api_data.js';
 export { isPublicKey } from "./decorators/is_public_key.js";
 export * from './api/index.js';
+export * from './rest-api/index.js';
 export * from './formatters/index.js';
 export * from './hive_apps_operations/index.js';
 export * from './complex_operations/index.js';

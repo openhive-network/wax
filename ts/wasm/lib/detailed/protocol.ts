@@ -75,7 +75,7 @@ export { limit_order_create2 } from "../proto/limit_order_create2.js";
 export { liquidity_reward } from "../proto/liquidity_reward.js";
 export { pow_reward } from "../proto/pow_reward.js";
 export { pow, pow_work } from "../proto/pow.js";
-export { pow2, pow2_work, equihash_pow, pow2_pow } from "../proto/pow2.js";
+export { pow2, pow2_work, pow2_input, equihash_proof, equihash_pow, pow2_pow } from "../proto/pow2.js";
 export { producer_missed } from "../proto/producer_missed.js";
 export { producer_reward } from "../proto/producer_reward.js";
 export { proposal_fee } from "../proto/proposal_fee.js";

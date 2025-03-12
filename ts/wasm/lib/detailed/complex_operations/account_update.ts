@@ -6,12 +6,14 @@ import { HiveAccountCategory } from "./role_classes/categories/hive_authority/in
 import { RoleCategoryBase } from "./role_classes/role_category_base.js";
 import { WaxError } from "../errors.js";
 
+export type { THiveRoles, HiveAccountCategory, HiveRoleAuthorityDefinition, HiveRoleMemoKeyDefinition } from "./role_classes/categories/hive_authority/index.js";
+
 // Here are all of the role categories. They are automatically parsed. Add new categories here
-const AuthorityRoleCategories = [
+export const AuthorityRoleCategories = [
   HiveAccountCategory
 ] as const satisfies Readonly<Array<(new () => RoleCategoryBase<any>)>>;
 
-type UnionToIntersection<U> =
+export type UnionToIntersection<U> =
   (U extends any ? (k: U) => void : never) extends
   (k: infer I) => void ? I : never;
 
