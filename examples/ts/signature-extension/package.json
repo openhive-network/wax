@@ -10,7 +10,8 @@
   "dependencies": {
     "@hiveio/wax": "file:../../../ts",
     "@hiveio/wax-signers-keychain": "file:../../../ts/packages/signers-keychain",
-    "@hiveio/wax-signers-peakvault": "file:../../../ts/packages/signers-peakvault"
+    "@hiveio/wax-signers-peakvault": "file:../../../ts/packages/signers-peakvault",
+    "@hiveio/beekeeper": "1.27.10-stable.250305202831"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.13.3",
