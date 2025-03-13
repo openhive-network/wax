@@ -16,7 +16,7 @@ PROTO_REF_VOTE_OP: dict[str, dict[str, str | int]] = {
     }
 }
 
-PROTO_REF_VOTE_OP_EMPTY: dict[str, dict] = {
+PROTO_REF_VOTE_OP_EMPTY: dict[str, dict[str, Any]] = {
     "vote": {
     }
 }

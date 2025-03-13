@@ -4,7 +4,7 @@ import json
 from typing import Final
 
 from wax import operation_get_impacted_accounts, transaction_get_impacted_accounts
-from python.tests.utils.refs import API_REF_VOTE_OP, API_REF_TRANSACTION
+from tests.utils.refs import API_REF_VOTE_OP, API_REF_TRANSACTION
 
 EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS: Final[list[str]] = [
     API_REF_TRANSACTION["operations"][0]["value"]["author"],

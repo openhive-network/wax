@@ -1,8 +1,10 @@
-from typing import Final
+from __future__ import annotations
+
+from typing import Any, Final
 
 from wax.wax_result import python_json_asset, python_price, python_witness_set_properties_data
 
-SIGNATURE_TRANSACTION: Final[dict] = {
+SIGNATURE_TRANSACTION: Final[dict[str, Any]] = {
     "expiration": "2024-02-21T06:55:40",
     "extensions": [],
     "operations": [
@@ -28,7 +30,7 @@ SIGNATURE_TRANSACTION: Final[dict] = {
     "ref_block_prefix": 26859167,
 }
 
-REQUIRED_ACTIVE_AUTHORITY_TRANSACTION: Final[dict] = {
+REQUIRED_ACTIVE_AUTHORITY_TRANSACTION: Final[dict[str, Any]] = {
     "ref_block_num": 59819,
     "ref_block_prefix": 1319397834,
     "extensions": [],
@@ -40,7 +42,7 @@ REQUIRED_ACTIVE_AUTHORITY_TRANSACTION: Final[dict] = {
 }
 
 
-REQUIRED_OWNER_AUTHORITY_TRANSACTION: Final[dict] = {
+REQUIRED_OWNER_AUTHORITY_TRANSACTION: Final[dict[str, Any]] = {
     "ref_block_num": 61120,
     "ref_block_prefix": 1820528888,
     "extensions": [],
@@ -100,7 +102,7 @@ REQUIRED_OWNER_AUTHORITY_TRANSACTION: Final[dict] = {
 }
 
 
-RECOVER_ACCOUNT_TRANSACTION: Final[dict] = {
+RECOVER_ACCOUNT_TRANSACTION: Final[dict[str, Any]] = {
     "ref_block_num": 36,
     "ref_block_prefix": 2180018243,
     "expiration": "2024-04-24T08:30:15",
@@ -159,7 +161,7 @@ WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = python_witness_s
 )
 
 
-WITNESS_PROPERTIES_HF26: Final[dict] = {
+WITNESS_PROPERTIES_HF26: Final[dict[str, Any]] = {
     "type": "witness_set_properties_operation",
     "value": {
         "owner": "gtg",

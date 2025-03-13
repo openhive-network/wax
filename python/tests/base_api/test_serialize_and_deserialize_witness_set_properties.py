@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from typing import Any
+
 import pytest
 
 import wax as wax_base
-from python.tests.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
+from tests.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
 
 
 def test_serialize_witness_set_properties_0() -> None:
@@ -10,7 +14,7 @@ def test_serialize_witness_set_properties_0() -> None:
     assert serialized[b"hbd_exchange_rate"].decode() == "11010000000000000320bcbee8030000000000002320bcbe"
 
 
-def test_serialize_witness_set_properties_1() -> dict:
+def test_serialize_witness_set_properties_1() -> Any:  # noqa: ANN401
     serialized = wax_base.serialize_witness_set_properties(WITNESS_PROPERTIES)
 
     assert serialized[b"account_creation_fee"].decode() == "88130000000000002320bcbe"

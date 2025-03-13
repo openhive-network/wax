@@ -1,7 +1,7 @@
 import json
 from google.protobuf.json_format import MessageToJson
 
-from python.tests.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
+from tests.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import api_to_proto, proto_to_api
 from wax.proto import (

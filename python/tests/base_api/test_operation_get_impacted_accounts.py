@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
@@ -28,7 +28,7 @@ RECOVER_ACCOUNT: Final[recover_account_pb2.recover_account] = recover_account_pb
 )
 
 PROTO_OPERATION: Final[operation_pb2.operation] = operation_pb2.operation(recover_account=RECOVER_ACCOUNT)
-API_OPERATION_DICT: Final[dict] = {
+API_OPERATION_DICT: Final[dict[str, Any]] = {
     "type": "claim_reward_balance_operation",
     "value": {
         "account": "account",

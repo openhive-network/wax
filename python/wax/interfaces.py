@@ -191,7 +191,7 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, str]:
         """
         Converts the created transaction into the Hive API-form dict.
 

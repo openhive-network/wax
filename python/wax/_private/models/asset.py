@@ -77,7 +77,7 @@ class Asset:
         return proto_asset(amount=str(int(amount_decimal * 10**precision)), precision=precision, nai=nai)
 
     def create_asset_factory(self, asset_name: AssetName) -> AssetFactory:
-        class AssetFactoryMethods:  # type: ignore[valid-type]
+        class AssetFactoryMethods:
             @staticmethod
             def coins(amount: AssetAmount) -> NaiAsset:
                 return self.create_wax_asset(asset_name, amount)
@@ -108,13 +108,13 @@ class Asset:
         if proper_asset is None:
             raise UnknownAssetTypeError(asset_name.value)
 
-        if isinstance(asset, NaiAsset):  # type: ignore[misc] # for CI to pass
+        if isinstance(asset, NaiAsset):  # type: ignore[misc, unused-ignore] # proto generated
             self._assert_asset_nai_valid(proper_asset, asset)
             return asset
 
         try:
             if isinstance(asset, dict):
-                asset = proto_asset(**asset)
+                asset = proto_asset(**asset)  # type: ignore[arg-type, unused-ignore] # proto generated
                 self._assert_asset_nai_valid(proper_asset, asset)
 
             asset = proto_asset(**json.loads(asset))  # type: ignore[arg-type] # check for the proto asset is done above
