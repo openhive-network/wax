@@ -5,52 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1>Signing example</h1>
-  <h3>Remember to unlock Peak Vault before using it</h3>
+  <h1>Signing example operating on official HIVE MIRRORNET instance, available at: https://api.fake.openhive.network</h1>
+  <h3>In order to successfully run this example, you need to properly configure wallets (i.e. Hive Keychain) you want to work with.</h3>
+  <h3>Wallets should have set above mirrornet instance node and 4200000000000000000000000000000000000000000000000000000000000000 as chainID.</h3>
+  <h3>Remember to unlock Peak Vault before using it...</h3>
+
   <button onclick="useKeychain()">Use Keychain</button>
   <button onclick="usePeakVault()">Use Peak Vault</button>
+  <button onclick="useBeekeeper()">Use Beekeeper</button>
+
+  <pre><code id="operating-private-key"></code></pre>
   <pre><code id="tx-result"></code></pre>
+  <pre><code id="key-matching-result"></code></pre>
+
   <script type="module">
     import { createHiveChain } from "@hiveio/wax";
-    import { accountName, publicKey, voteData } from "../common-data";
+    import { prepareTestingEnvironemnt, voteData } from "../common-data";
     import KeychainProvider from "@hiveio/wax-signers-keychain";
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
 
     const txResult = document.getElementById('tx-result');
+    const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
+    const keyMatchingPlaceholder = document.getElementById('key-matching-result');
 
     (async()=> {
-      const keychainProvider = KeychainProvider.for(accountName, "active");
-      const peakVaultProvider = PeakVaultProvider.for(accountName, "active");
+      const testEnv = await prepareTestingEnvironemnt();
+      const accountName = testEnv.accountName;
+      const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
+      const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
+      const beekeeperProvider = testEnv.preparedBeekeeperWallet;
 
-      const chain = await createHiveChain();
+      operatingPrivateKeyPlaceholder.textContent = `${accountName}@${testEnv.role} private key to be imported to wallets: ${testEnv.privateKey}`;
+
+      const chain = testEnv.configuredChain;
 
       const createTransaction = async () => {
         txResult.textContent = 'Signing...';
+
         const tx = await chain.createTransaction();
         tx.pushOperation({
           vote: voteData
         });
-        console.log(tx.transaction);
+
+        console.log(tx.toApi());
         console.log(`Sig digest: ${tx.sigDigest}`);
+        console.log(`Legacy Sig digest: ${tx.legacy_sigDigest}`);
         return tx;
       };
 
+      const verifySignature = async (tx) => {
+        try {
+        const apiJson = tx.toApi();
+        console.log('Transaction:', apiJson);
+        const hf26SerializationMatch = tx.signatureKeys[0] === testEnv.publicKey;
+        const legacySerializationMatch = tx.legacy_signatureKeys[0] === testEnv.publicKey;
+
+        if(hf26SerializationMatch || legacySerializationMatch) {
+          const verifyAuthorityResult = await chain.api.database_api.verify_authority({trx: tx.toApiJson(), pack: legacySerializationMatch? 'legacy' : 'hf26'});
+
+          keyMatchingPlaceholder.textContent = `Decoded and signing key match. Remote endpoint ${verifyAuthorityResult.valid? "accepted" : "REJECTED"} transaction authority. Transaction has been signed using: ${hf26SerializationMatch? 'HF26' : 'Legacy'} serialization form`;
+        }
+        else
+          keyMatchingPlaceholder.textContent = `Error: Keys decoded from signature: ${tx.signatureKeys[0]}, ${tx.legacy_signatureKeys[0]} DO NOT MATCH signer key: ${testEnv.publicKey}`;
+
+        txResult.textContent = apiJson;
+        } catch (error) {
+          console.error(error);
+          txResult.textContent = `Verify authority faiure. Error: ${error.message}`;
+        }
+      }
+
       const sign = async (provider) => {
         try {
+          console.log("Atttempting to create & sign transaction...");
           const tx = await createTransaction();
           await tx.sign(provider);
-          const apiJson = tx.toApiJson();
-          console.log('Transaction:', apiJson);
-          console.log(`Keys match: ${tx.signatureKeys[0] === publicKey}`);
-          txResult.textContent = JSON.stringify(apiJson, null, 2);
+          await verifySignature(tx);
         } catch (error) {
           console.error(error);
           txResult.textContent = `Error: ${error.message}`;
         }
       };
 
+      const beekeeperSign = async (provider) => {
+        try {
+          const tx = await createTransaction();
+          await tx.sign(provider, testEnv.publicKey);
+          await verifySignature(tx);
+        } catch (error) {
+          console.error(error);
+          txResult.textContent = `Error: ${error.message}`;
+        }
+      };
+
+
       window.useKeychain = () => void sign(keychainProvider);
       window.usePeakVault = () => void sign(peakVaultProvider);
+      window.useBeekeeper = () => void beekeeperSign(beekeeperProvider);
     })();
   </script>
 </body>
