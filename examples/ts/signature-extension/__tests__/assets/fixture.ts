@@ -1,27 +1,23 @@
 import { chromium, test as base, type BrowserContext } from "@playwright/test";
-import path, { dirname } from "path";
+import { dirname } from "path";
 import { fileURLToPath } from "url";
+
+import { type TTestAccountAuthorityData, prepareTestingEnvironemnt } from "../../common-data"; 
 
 export const test = base.extend<{
   context: BrowserContext,
   extensionId: string
+  ,baseDirectoryPath: string
+  ,testedAccountAuthorityData: TTestAccountAuthorityData
 }>({
   context: async ({}, use) => {
-    const __dirname = dirname(fileURLToPath(import.meta.url));
-    const pathToExtension = path.join(__dirname, "../extensions/Hive-Keychain");
+    console.log('Launched browser');
+    const browserContext = await chromium.launchPersistentContext('');
 
-    const browserContext = await chromium.launchPersistentContext('', {
-      headless: false,
-      args: [
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-        '--headless=chromium'
-      ],
-      ignoreDefaultArgs: ['--disable-component-extensions-with-background-pages'],
-    });
-
+    console.log('Before use browserContext');
     await use(browserContext);
 
+    console.log('Attempting to close browserContext');
     await browserContext.close();
   },
   extensionId: async ({ context }, use) => {
@@ -32,4 +28,12 @@ export const test = base.extend<{
     const extensionId = background.url().split('/')[2];
     await use(extensionId);
   },
+  baseDirectoryPath: async ({}, use) => {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
+    await use(__dirname);
+  },
+  testedAccountAuthorityData: async ({}, use) => {
+    const data = await prepareTestingEnvironemnt();
+    await use(data);
+  }
 });
