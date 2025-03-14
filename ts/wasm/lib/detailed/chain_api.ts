@@ -2,7 +2,7 @@ import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransactio
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
-import { WaxError } from "./errors.js";
+import { WaxError, WaxChainApiError } from "./errors.js";
 import { safeWasmCall } from './util/wasm_errors.js';
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
@@ -76,7 +76,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       if (typeof data.response === "object" && "result" in data.response)
         data.response = data.response.result;
       else
-        throw new WaxError(`Invalid response from API: ${JSON.stringify(data.response)}`);
+        throw new WaxChainApiError(`Invalid response from API: ${JSON.stringify(data.response)}`, data.response);
 
       return data;
     });
