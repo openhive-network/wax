@@ -62,7 +62,7 @@ class Transaction(ITransaction):
             else self._resolve_tapos_from_transaction(tapos_block_id)
         )
 
-        if isinstance(tapos_block_id, ProtoTransaction):  # type: ignore[misc] # for CI to pass
+        if isinstance(tapos_block_id, ProtoTransaction):  # type: ignore[misc, unused-ignore] # proto generated
             self._target = deepcopy(tapos_block_id)
         else:
             self._target = proto_transaction(
@@ -149,8 +149,8 @@ class Transaction(ITransaction):
 
         return json.dumps(as_dict)
 
-    def to_dict(self) -> dict:
-        return json.loads(self.to_api())
+    def to_dict(self) -> dict[str, str]:
+        return json.loads(self.to_api())  # type: ignore[no-any-return]
 
     def to_api_json(self) -> JsonTransaction:
         return self.to_api()

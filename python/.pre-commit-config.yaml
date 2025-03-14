@@ -3,7 +3,7 @@ files: |
             ^python/wax/.*$|
             ^python/tests/base_api/.*$|
             ^python/tests/transactions/.*$|
-              ^python/tests/helpy_test/.*$
+            ^python/tests/helpy_test/.*$
     )
 exclude: |
     (?x)(
@@ -43,8 +43,8 @@ repos:
     hooks:
       - id: mypy
         name: type check with mypy
-        args: [ "--ignore-missing-imports" ]
         entry: mypy
+        args: ["--config-file", "python/pyproject.toml"]
         language: system
         types: [ python ]
   - repo: https://github.com/codespell-project/codespell

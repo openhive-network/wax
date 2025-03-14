@@ -18,8 +18,8 @@ if TYPE_CHECKING:
 
 CounterGetterT = Callable[[CountingAppbaseNotificationHandler], int]
 smoke_test_cases: list[tuple[CounterGetterT, KnownNotificationT]] = [  # type: ignore[valid-type]
-    (lambda h: h.on_ws_webserver_bind_count, WebserverListening(type_="WS", address="127.0.0.1", port=9090)),  # type: ignore[call-arg]
-    (lambda h: h.on_http_webserver_bind_count, WebserverListening(type_="HTTP", address="127.0.0.1", port=9090)),  # type: ignore[call-arg]
+    (lambda h: h.on_ws_webserver_bind_count, WebserverListening(type_="WS", address="127.0.0.1", port=9090)),
+    (lambda h: h.on_http_webserver_bind_count, WebserverListening(type_="HTTP", address="127.0.0.1", port=9090)),
     (lambda h: h.on_error_count, Error(message="some error message")),
     (lambda h: h.on_status_changed_count, Status(current_status="syncing")),
 ]

@@ -1,6 +1,6 @@
 from typing import Any
 
-from wax import python_authority, python_authorities
+from wax.wax_result import python_authority, python_authorities
 
 
 MAINNET_CHAIN_ID = b"beeab0de00000000000000000000000000000000000000000000000000000000"
@@ -16,7 +16,7 @@ PROTO_REF_VOTE_OP: dict[str, dict[str, str | int]] = {
     }
 }
 
-PROTO_REF_VOTE_OP_EMPTY: dict[str, dict] = {
+PROTO_REF_VOTE_OP_EMPTY: dict[str, dict[str, Any]] = {
     "vote": {
     }
 }
@@ -1744,8 +1744,8 @@ def list_to_dict(l: list[Any]) -> dict[str, Any]:
 
 def to_python_authority(account_authority: dict[str, Any]) -> python_authority:
     result = python_authority(weight_threshold=account_authority["weight_threshold"],
-                              account_auths=list_to_dict(account_authority["account_auths"]), # type: ignore[arg-type]
-                              key_auths=list_to_dict(account_authority["key_auths"]), # type: ignore[arg-type]
+                              account_auths=list_to_dict(account_authority["account_auths"]), # type: ignore[arg-type] # TODO
+                              key_auths=list_to_dict(account_authority["key_auths"]), # type: ignore[arg-type] # TODO
                              )
     return result
 

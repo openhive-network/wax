@@ -7,7 +7,7 @@
 #   }
 # }
 
-from python.tests.utils.checkers import check_operations, check_transaction
+from tests.utils.checkers import check_operations, check_transaction
 
 from wax.proto import (
     account_witness_vote_pb2,

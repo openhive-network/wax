@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 from wax.wax_visitor import AbstractOperationVisitor
-
 from wax.proto import vote_pb2
-
 
 class MyOperationVisitor(AbstractOperationVisitor):
     def vote(self, op: vote_pb2.vote) -> None:

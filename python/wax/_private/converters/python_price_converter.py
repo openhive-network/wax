@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.models.asset import Asset, AssetName
+from wax._private.models.asset import Asset
+from wax.models.asset import AssetName
 from wax.wax_result import python_price
 
 if TYPE_CHECKING:

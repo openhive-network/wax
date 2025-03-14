@@ -10,9 +10,9 @@ from wax.proto.asset_pb2 import asset as proto_asset
 AssetAmount = int | float | Decimal
 NaiAsset: TypeAlias = proto_asset
 
-HiveNaiAssetConvertible = NaiAsset | dict | str
-HbdNaiAssetConvertible = NaiAsset | dict | str
-VestsNaiAssetConvertible = NaiAsset | dict | str
+HiveNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
+HbdNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
+VestsNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
 AnyNaiAssetConvertible = HiveNaiAssetConvertible | HbdNaiAssetConvertible | VestsNaiAssetConvertible
 
 

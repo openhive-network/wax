@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 from google.protobuf.json_format import MessageToDict
@@ -25,7 +25,7 @@ def test_initialize_update_proposal_with_mandatory_fields(transaction: ITransact
         )
     )
 
-    expected: Final[dict] = {
+    expected: Final[dict[str, Any]] = {
         "type": "update_proposal_operation",
         "value": {
             "creator": "alice",
@@ -55,7 +55,7 @@ def test_adds_end_date_to_update_proposal_when_provided(transaction: ITransactio
         )
     )
 
-    expected: Final[dict] = {
+    expected: Final[dict[str, Any]] = {
         "type": "update_proposal_operation",
         "value": {
             "creator": "alice",
@@ -92,7 +92,7 @@ def test_handles_update_proposal_with_timestamp_end_date(transaction: ITransacti
         )
     )
 
-    expected: Final[dict] = {
+    expected: Final[dict[str, Any]] = {
         "type": "update_proposal_operation",
         "value": {
             "creator": "alice",
@@ -131,7 +131,7 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(transaction: ITrans
         )
     )
 
-    expected_in_legacy_format: Final[list] = [
+    expected_in_legacy_format: Final[list[str | dict[str, Any]]] = [
         "update_proposal",
         {
             "creator": "alice",
@@ -205,7 +205,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
         )
     )
 
-    expected: Final[list] = [
+    expected: Final[list[dict[str, Any]]] = [
         {
             "update_proposal": {
                 "creator": "initminer",

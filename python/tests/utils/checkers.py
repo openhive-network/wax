@@ -1,10 +1,10 @@
 from google.protobuf.json_format import MessageToJson
 
-from wax import validate_proto_operation, validate_proto_transaction, proto_to_api
+from wax.cpp_python_bridge import validate_proto_operation, validate_proto_transaction, proto_to_api
 from wax.proto import operation_pb2, transaction_pb2
 
 
-def check_operations(operation: operation_pb2.operation):
+def check_operations(operation: operation_pb2.operation) -> None:
     operation_json = MessageToJson(operation)
     print(operation_json)
     result = proto_to_api(operation_json.encode())
@@ -14,7 +14,7 @@ def check_operations(operation: operation_pb2.operation):
     assert result.status == result.status.ok
 
 
-def check_transaction(transaction: transaction_pb2.transaction):
+def check_transaction(transaction: transaction_pb2.transaction) -> None:
     transaction_json = MessageToJson(transaction)
     result = validate_proto_transaction(transaction_json.encode())
     print(result)
