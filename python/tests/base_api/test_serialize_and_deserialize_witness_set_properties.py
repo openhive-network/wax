@@ -1,17 +1,21 @@
+from __future__ import annotations
+
+from typing import Any
+
 import pytest
 
-import wax as wax_base
-from python.tests.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
+from tests.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
+from wax import cpp_python_bridge
 
 
 def test_serialize_witness_set_properties_0() -> None:
-    serialized = wax_base.serialize_witness_set_properties(INPUT_WITNESS_PROPERTIES)
+    serialized = cpp_python_bridge.serialize_witness_set_properties(INPUT_WITNESS_PROPERTIES)
     assert serialized[b"key"].decode() == "029072da2e84ebd6eb520f944db3d1af718500b0f1ddf60e11e986f990acddd524"
     assert serialized[b"hbd_exchange_rate"].decode() == "11010000000000000320bcbee8030000000000002320bcbe"
 
 
-def test_serialize_witness_set_properties_1() -> dict:
-    serialized = wax_base.serialize_witness_set_properties(WITNESS_PROPERTIES)
+def test_serialize_witness_set_properties_1() -> Any:  # noqa: ANN401
+    serialized = cpp_python_bridge.serialize_witness_set_properties(WITNESS_PROPERTIES)
 
     assert serialized[b"account_creation_fee"].decode() == "88130000000000002320bcbe"
     assert serialized[b"account_subsidy_budget"].decode() == "1d030000"
@@ -32,5 +36,5 @@ def test_serialize_witness_set_properties_1() -> dict:
 @pytest.mark.describe("Should be able to serialize witness properties and then deserialize")
 def test_serialize_witness_set_properties_2() -> None:
     serialized = test_serialize_witness_set_properties_1()
-    deserialized = wax_base.deserialize_witness_set_properties(serialized)
+    deserialized = cpp_python_bridge.deserialize_witness_set_properties(serialized)
     assert deserialized == WITNESS_PROPERTIES

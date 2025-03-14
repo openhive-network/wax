@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
@@ -12,7 +12,7 @@ from wax.proto.recurrent_transfer_pb2 import (
 )
 
 if TYPE_CHECKING:
-    from python.wax import ITransaction, IWaxBaseInterface
+    from wax import ITransaction, IWaxBaseInterface
 
 
 @pytest.mark.parametrize("asset_type", ["hbd", "hive"])
@@ -31,7 +31,7 @@ def test_basic_recurrent_transfer_operation(wax: IWaxBaseInterface, transaction:
         )
     )
 
-    expected: Final[dict] = {
+    expected: Final[dict[str, Any]] = {
         "type": "recurrent_transfer_operation",
         "value": {
             "amount": {
@@ -74,7 +74,7 @@ def test_recurrent_transfer_with_pair_id_extension(
         )
     )
 
-    expected: Final[dict] = {
+    expected: Final[dict[str, Any]] = {
         "type": "recurrent_transfer_operation",
         "value": {
             "amount": {

@@ -7,7 +7,7 @@ import json
 import pytest
 
 from wax import collect_signing_keys, python_authority, python_authorities
-from python.tests.utils.refs import (
+from tests.utils.refs import (
     ACCOUNT_AUTHS,
     SIGNING_KEYS,
     API_TRX_SIG1,

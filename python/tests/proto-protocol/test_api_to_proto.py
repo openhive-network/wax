@@ -3,7 +3,7 @@ import pytest
 
 from google.protobuf.json_format import ParseDict
 
-from python.tests.utils.refs import (
+from tests.utils.refs import (
     API_REF_TRANSACTION,
     PROTO_REF_TRANSACTION,
     API_REF_RELEASE_BLOCK,

@@ -1,5 +1,5 @@
 from wax import get_tapos_data
-from python.tests.utils.refs import API_REF_HF_BLOCK
+from tests.utils.refs import API_REF_HF_BLOCK
 
 def test_get_tapos_data():
     block_id = API_REF_HF_BLOCK["previous"]

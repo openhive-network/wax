@@ -129,7 +129,7 @@ class Asset:
         """
         try:
             amount = cls.__convert_amount_to_internal_representation(amount, asset)  # type: ignore[arg-type]
-            return asset(amount=amount)  # type: ignore[arg-type, return-value]
+            return asset(amount=amount)  # type: ignore[return-value]
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount)) from error
 
@@ -222,7 +222,7 @@ class Asset:
     @classmethod
     def assert_is_asset(cls, *other: Any, error_detail: str) -> None:
         for asset in other:
-            if not isinstance(asset, cls.AnyT):  # type: ignore[arg-type]
+            if not isinstance(asset, cls.AnyT):
                 raise TypeError(f"Can't {error_detail} objects of type `{type(asset)}`.")
 
     class Range:
