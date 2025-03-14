@@ -54,7 +54,9 @@ export const safeWasmCall = <T extends () => any>(fn: T, customExceptionHandler?
     handleWaxStdException(e, customExceptionHandler);
     //console.log("Non-typed Error during Wasm call...", e);
 
-    const error = new WaxError(`Non-typed Error during Wasm call: ${e}`);
+    const errorMsg = e && typeof e === "object" && "message" in e ? e.message : String(e);
+
+    const error = new WaxError(`Non-typed Error during Wasm call: ${errorMsg}`);
 
     if (typeof e === "object" && e && "stack" in e)
       throw Object.assign(error, { stack: e.stack });
@@ -70,7 +72,9 @@ export const safeAsyncWasmCall = async <T extends () => any>(fn: T, customExcept
     handleWaxStdException(e, customExceptionHandler);
     //console.log("Non-typed Error during Wasm call...", e); 
 
-    const error = new WaxError(`Non-typed Error during Wasm call: ${e}`);
+    const errorMsg = e && typeof e === "object" && "message" in e ? e.message : String(e);
+
+    const error = new WaxError(`Non-typed Error during Wasm call: ${errorMsg}`);
 
     if (typeof e === "object" && e && "stack" in e)
       throw Object.assign(error, { stack: e.stack });
