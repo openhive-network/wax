@@ -596,6 +596,187 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     ]);
   });
 
+  test('Should be able to get authority trace for insufficient weight transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 18628,
+        "ref_block_prefix": 1429804722,
+        "expiration": "2025-03-14T12:37:20",
+        "operations": [
+          {
+            "type": "transfer_operation",
+            "value": {
+              "from": "guest4test4",
+              "to": "alice",
+              "amount": {
+                "amount": "1",
+                "precision": 3,
+                "nai": "@@000000021"
+              },
+              "memo": "This is a test transfer"
+            }
+          }
+        ],
+        "signatures": [
+          "1fd37b180bb46ed8fa6139d5f18521800ab19b7725d7fe337673c1033047371c4019fbabc0798b60d1cb0354439e5d67af5b82d1b4f262303fec0aa4905ddc5835"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace));
+
+      return trace;
+    });
+
+    expect(retVal).toStrictEqual({
+      "collectedData": [
+        {
+          "finalAuthorityPath": {
+            "processedEntry": "guest4test4",
+            "processedRole": "owner",
+            "processingStatus": {
+              "accountAuthorityCountExceeded": false,
+              "accountAuthorityPointsMissingAccount": false,
+              "accountAuthorityProcessingDepthExceeded": false,
+              "entryAccepted": false,
+              "hasAccountAuthorityCycle": false,
+              "hasInsufficientWeight": true,
+              "hasMatchingPublicKey": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 0
+          },
+          "matchingSignatures": []
+        }
+      ],
+      "finalAuthorityPath": [
+        {
+          "processedEntry": "guest4test4",
+          "processedRole": "owner",
+          "processingStatus": {
+            "accountAuthorityCountExceeded": false,
+            "accountAuthorityPointsMissingAccount": false,
+            "accountAuthorityProcessingDepthExceeded": false,
+            "entryAccepted": false,
+            "hasAccountAuthorityCycle": false,
+            "hasInsufficientWeight": true,
+            "hasMatchingPublicKey": false
+          },
+          "recursionDepth": 0,
+          "threshold": 1,
+          "visitedEntries": [],
+          "weight": 0
+        }
+      ],
+      "rootEntries": [
+        {
+          "processedEntry": "guest4test4",
+          "processedRole": "active",
+          "processingStatus": {
+            "accountAuthorityCountExceeded": false,
+            "accountAuthorityPointsMissingAccount": false,
+            "accountAuthorityProcessingDepthExceeded": false,
+            "entryAccepted": false,
+            "hasAccountAuthorityCycle": false,
+            "hasInsufficientWeight": true,
+            "hasMatchingPublicKey": false
+          },
+          "recursionDepth": 0,
+          "threshold": 2,
+          "visitedEntries": [
+            {
+              "processedEntry": "guest4test1",
+              "processedRole": "active",
+              "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+              "recursionDepth": 1,
+              "threshold": 1,
+              "visitedEntries": [
+                {
+                  "processedEntry": "STM8gQN2KodMgmVqTEY372XzZyEUpceKpLWU6igr39MF3D7Qv3Rqo",
+                  "processedRole": "active",
+                  "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+                  "recursionDepth": 1,
+                  "threshold": 1,
+                  "visitedEntries": [],
+                  "weight": 1
+                }
+              ],
+              "weight": 1
+            },
+            {
+              "processedEntry": "guest4test8",
+              "processedRole": "active",
+              "processingStatus": {
+                "accountAuthorityCountExceeded": false,
+                "accountAuthorityPointsMissingAccount": false,
+                "accountAuthorityProcessingDepthExceeded": false,
+                "entryAccepted": false,
+                "hasAccountAuthorityCycle": false,
+                "hasInsufficientWeight": true,
+                "hasMatchingPublicKey": false
+              },
+              "recursionDepth": 1,
+              "threshold": 1,
+              "visitedEntries": [],
+              "weight": 0
+            }
+          ],
+          "weight": 1
+        },
+        {
+          "processedEntry": "guest4test4",
+          "processedRole": "owner",
+          "processingStatus": {
+            "accountAuthorityCountExceeded": false,
+            "accountAuthorityPointsMissingAccount": false,
+            "accountAuthorityProcessingDepthExceeded": false,
+            "entryAccepted": false,
+            "hasAccountAuthorityCycle": false,
+            "hasInsufficientWeight": true,
+            "hasMatchingPublicKey": false
+          },
+          "recursionDepth": 0,
+          "threshold": 1,
+          "visitedEntries": [],
+          "weight": 0
+        }
+      ],
+      "rootEntry": {
+        "processedEntry": "guest4test4",
+        "processedRole": "owner",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [],
+        "weight": 0
+      },
+      "verificationStatus": {
+        "accountAuthorityCountExceeded": false,
+        "accountAuthorityPointsMissingAccount": false,
+        "accountAuthorityProcessingDepthExceeded": false,
+        "entryAccepted": false,
+        "hasAccountAuthorityCycle": false,
+        "hasInsufficientWeight": true,
+        "hasMatchingPublicKey": false
+      }
+    });
+  });
+
   test('Should catch private key leak using online transaction interface during explicit online validation', async ({ waxTest, config }) => {
       const retVal = await waxTest(txSecurityLeakBody, mirrornetSkeletonKey, config!, false);
     expect(retVal.detectedLeakError).toStrictEqual({
