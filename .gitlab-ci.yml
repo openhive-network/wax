@@ -97,9 +97,9 @@ build_wheel:
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   before_script:
-    - export PYPROJECT_DIR="$CI_PROJECT_DIR/python"
-    - export PRE_COMMIT_CONFIG="$PYPROJECT_DIR/.pre-commit-config.yaml"
     - cd ${PYPROJECT_DIR}
     - !reference [ .configuration_template, before_script ]
     - poetry install --no-root
