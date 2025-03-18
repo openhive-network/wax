@@ -5,11 +5,8 @@ from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
-from wax.proto.recurrent_transfer_pb2 import (
-    recurrent_transfer,
-    recurrent_transfer_extension,
-    recurrent_transfer_pair_id,
-)
+from wax._private.proto.recurrent_transfer_pb2 import recurrent_transfer_extension, recurrent_transfer_pair_id
+from wax.proto.operations import recurrent_transfer
 
 if TYPE_CHECKING:
     from wax import ITransaction, IWaxBaseInterface

@@ -20,23 +20,23 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    limit_order_create_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    limit_order_create,
+    operation,
 )
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
 
 def test_limit_order_create():
-    amount_to_sell: asset_pb2.asset = asset_pb2.asset(
+    amount_to_sell: asset =asset(
         nai="@@000000021", precision=3, amount="1000"
     )
-    min_to_receive: asset_pb2.asset = asset_pb2.asset(
+    min_to_receive: asset = asset(
         nai="@@000000013", precision=3, amount="3500"
     )
 
-    limit_order_create: limit_order_create_pb2.limit_order_create = (
-        limit_order_create_pb2.limit_order_create(
+    limit_order_create_proto: limit_order_create = (
+       limit_order_create(
             owner="linouxis9",
             orderid=10,
             amount_to_sell=amount_to_sell,
@@ -46,14 +46,14 @@ def test_limit_order_create():
         )
     )
 
-    limit_order_create_operation: operation_pb2.operation = operation_pb2.operation(
-        limit_order_create=limit_order_create
+    limit_order_create_operation: operation = operation(
+        limit_order_create=limit_order_create_proto
     )
 
     check_operations(limit_order_create_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[limit_order_create_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

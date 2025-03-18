@@ -16,22 +16,23 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    operation_pb2,
-    transaction_pb2,
-    update_proposal_pb2
+from wax.proto.operations import (
+    operation,
+    update_proposal,
 )
+from wax.proto.transaction import transaction
+from wax.proto.asset import asset
+from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
 
 def test_update_proposal():
-    daily_pay: asset_pb2.asset = asset_pb2.asset(
+    daily_pay: asset = asset(
         amount="135000", precision=3, nai="@@000000013"
     )
-    update_proposal_end_date: update_proposal_pb2.update_proposal_end_date = update_proposal_pb2.update_proposal_end_date(end_date="2035-10-29T06:32:22")
-    extension: update_proposal_pb2.update_proposal_extension = update_proposal_pb2.update_proposal_extension(update_proposal_end_date=update_proposal_end_date)
+    update_proposal_end_date_proto: update_proposal_end_date = update_proposal_end_date(end_date="2035-10-29T06:32:22")
+    extension: update_proposal_extension =update_proposal_extension(update_proposal_end_date=update_proposal_end_date_proto)
 
-    update_proposal: update_proposal_pb2.update_proposal = (
-        update_proposal_pb2.update_proposal(
+    update_proposal_proto: update_proposal = (
+       update_proposal(
             proposal_id=247,
             creator="arcange",
             daily_pay=daily_pay,
@@ -41,14 +42,14 @@ def test_update_proposal():
         )
     )
 
-    update_proposal_operation: operation_pb2.operation = operation_pb2.operation(
-        update_proposal=update_proposal
+    update_proposal_operation: operation = operation(
+        update_proposal=update_proposal_proto
     )
 
     check_operations(update_proposal_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[update_proposal_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

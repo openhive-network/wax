@@ -5,7 +5,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Protocol, TypeAlias
 
-from wax.proto.asset_pb2 import asset as proto_asset
+from wax.proto.asset import asset as proto_asset
 
 AssetAmount = int | float | Decimal
 NaiAsset: TypeAlias = proto_asset

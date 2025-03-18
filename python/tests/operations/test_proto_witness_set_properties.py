@@ -18,15 +18,15 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    operation_pb2,
-    transaction_pb2,
-    witness_set_properties_pb2
+from wax.proto.operations import (
+    operation,
+    witness_set_properties
 )
+from wax.proto.transaction import transaction
 
 
 def test_witness_set_properties():
-    witness_set_properties: witness_set_properties_pb2.witness_set_properties = witness_set_properties_pb2.witness_set_properties(
+    witness_set_properties_proto: witness_set_properties = witness_set_properties(
         owner="alloyxuast",
         props=[
             [
@@ -41,14 +41,14 @@ def test_witness_set_properties():
         extensions=[],
     )
 
-    witness_set_properties_operation: operation_pb2.operation = (
-        operation_pb2.operation(witness_set_properties=witness_set_properties)
+    witness_set_properties_operation: operation = (
+        operation(witness_set_properties=witness_set_properties_proto)
     )
 
     check_operations(witness_set_properties_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[witness_set_properties_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

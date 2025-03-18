@@ -1,37 +1,34 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    feed_publish_pb2,
-    price_pb2,
-    operation_pb2,
-    transaction_pb2
-)
+from wax.proto.operations import feed_publish, operation
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
+from wax._private.proto.price_pb2 import price
 
 def test_feed_publish():
-    base: asset_pb2.asset = asset_pb2.asset(
+    base: asset = asset(
         nai="@@000000021", precision=3, amount="1000"
     )
 
-    quote: asset_pb2.asset = asset_pb2.asset(
+    quote: asset = asset(
         nai="@@000000013", precision=3, amount="1000000"
     )
 
-    price: price_pb2.price = price_pb2.price(base=base, quote=quote)
+    price_proto: price = price(base=base, quote=quote)
 
-    feed_publish: feed_publish_pb2.feed_publish = feed_publish_pb2.feed_publish(
+    feed_publish_proto: feed_publish = feed_publish(
         publisher="abit",
-        exchange_rate=price,
+        exchange_rate=price_proto,
     )
 
-    feed_publish_operation: operation_pb2.operation = operation_pb2.operation(
-        feed_publish=feed_publish
+    feed_publish_operation: operation =operation(
+        feed_publish=feed_publish_proto
     )
 
     check_operations(feed_publish_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[feed_publish_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

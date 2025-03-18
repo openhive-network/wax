@@ -7,7 +7,8 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 
 from wax._private.exceptions import WaxError
-from wax.proto.update_proposal_pb2 import update_proposal, update_proposal_end_date, update_proposal_extension
+from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax.proto.operations import update_proposal
 
 if TYPE_CHECKING:
     from wax.interfaces import ITransaction, IWaxBaseInterface

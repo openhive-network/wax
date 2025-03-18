@@ -1,24 +1,24 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    limit_order_cancel_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    limit_order_cancel,
+    operation,
 )
+from wax.proto.transaction import transaction
 
 def test_limit_order_cancel():
-    limit_order_cancel: limit_order_cancel_pb2.limit_order_cancel = (
-        limit_order_cancel_pb2.limit_order_cancel(owner="adm", orderid=1)
+    limit_order_cancel_proto: limit_order_cancel = (
+        limit_order_cancel(owner="adm", orderid=1)
     )
 
-    limit_order_cancel_operation: operation_pb2.operation = operation_pb2.operation(
-        limit_order_cancel=limit_order_cancel
+    limit_order_cancel_operation: operation = operation(
+        limit_order_cancel=limit_order_cancel_proto
     )
 
     check_operations(limit_order_cancel_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[limit_order_cancel_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

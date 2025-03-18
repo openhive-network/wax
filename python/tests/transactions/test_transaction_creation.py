@@ -6,11 +6,8 @@ from typing import Final
 from beekeepy import AsyncBeekeeper
 from tests.utils.refs import PROTO_REF_TRANSACTION
 from wax import create_wax_foundation
-from wax.proto.comment_pb2 import comment
-from wax.proto.operation_pb2 import operation
-from wax.proto.transaction_pb2 import transaction as proto_transaction
-from wax.proto.transfer_pb2 import transfer
-from wax.proto.vote_pb2 import vote
+from wax.proto.operations import comment, operation, transfer, vote
+from wax.proto.transaction import transaction as proto_transaction
 
 WALLET_NAME: Final[str] = "alice"
 WALLET_PASSWORD: Final[str] = "password"

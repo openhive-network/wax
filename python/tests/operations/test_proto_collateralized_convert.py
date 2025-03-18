@@ -13,32 +13,32 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    collateralized_convert_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    collateralized_convert,
+    operation,
 )
+from wax.proto.transaction import transaction
+from wax.proto.asset import asset
 
 def test_collateralized_convert():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    amount: asset = asset(
         amount="102", precision=3, nai="@@000000021"
     )
 
-    collateralized_convert: collateralized_convert_pb2.collateralized_convert = (
-        collateralized_convert_pb2.collateralized_convert(
+    collateralized_convert_proto: collateralized_convert = (
+        collateralized_convert(
             owner="karbea", requestid=2, amount=amount
         )
     )
 
-    collateralized_convert_operation: operation_pb2.operation = (
-        operation_pb2.operation(collateralized_convert=collateralized_convert)
+    collateralized_convert_operation: operation = (
+        operation(collateralized_convert=collateralized_convert_proto)
     )
 
     check_operations(collateralized_convert_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[collateralized_convert_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

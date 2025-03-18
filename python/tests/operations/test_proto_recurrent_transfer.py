@@ -1,14 +1,15 @@
 from tests.utils.checkers import check_operations, check_transaction
+from wax._private.proto import recurrent_transfer_pb2
 
-from wax.proto import (
-    asset_pb2,
-    recurrent_transfer_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    recurrent_transfer,
+    operation,
 )
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
 
 def test_recurrent_transfer():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    amount: asset = asset(
         nai="@@000000021", precision=3, amount="10"
     )
     recurrent_transfer_pair_id: recurrent_transfer_pb2.recurrent_transfer_pair_id = (
@@ -19,8 +20,8 @@ def test_recurrent_transfer():
             recurrent_transfer_pair_id=recurrent_transfer_pair_id
         )
     )
-    recurrent_transfer: recurrent_transfer_pb2.recurrent_transfer = (
-        recurrent_transfer_pb2.recurrent_transfer(
+    recurrent_transfer_proto: recurrent_transfer = (
+        recurrent_transfer(
             from_account="alice",
             to_account="harry",
             amount=amount,
@@ -30,14 +31,14 @@ def test_recurrent_transfer():
             extensions=[extensions],
         )
     )
-    recurrent_transfer_operation: operation_pb2.operation = operation_pb2.operation(
-        recurrent_transfer=recurrent_transfer
+    recurrent_transfer_operation: operation = operation(
+        recurrent_transfer=recurrent_transfer_proto
     )
 
     check_operations(recurrent_transfer_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction =transaction(
         operations=[recurrent_transfer_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

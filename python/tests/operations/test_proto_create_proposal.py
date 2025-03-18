@@ -20,20 +20,20 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    create_proposal_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    create_proposal,
+    operation,
 )
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
 
 def test_create_proposal():
-    daily_pay: asset_pb2.asset = asset_pb2.asset(
+    daily_pay: asset = asset(
         amount="600000", precision=3, nai="@@000000013"
     )
 
-    create_proposal: create_proposal_pb2.create_proposal = (
-        create_proposal_pb2.create_proposal(
+    create_proposal_proto: create_proposal = (
+        create_proposal(
             creator="ecency",
             receiver="ecency",
             start_date="2022-11-30T00:00:00",
@@ -44,14 +44,14 @@ def test_create_proposal():
             extensions=[],
         )
     )
-    create_proposal_operation: operation_pb2.operation = operation_pb2.operation(
-        create_proposal=create_proposal
+    create_proposal_operation: operation = operation(
+        create_proposal=create_proposal_proto
     )
 
     check_operations(create_proposal_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[create_proposal_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

@@ -1,26 +1,27 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    operation_pb2,
-    transaction_pb2,
-    witness_block_approve_pb2
+from wax.proto.operations import (
+    operation,
+    witness_block_approve
 )
+from wax.proto.transaction import transaction
+
 
 def test_witness_block_approve():
-    witness_block_approve: witness_block_approve_pb2.witness_block_approve = (
-        witness_block_approve_pb2.witness_block_approve(
+    witness_block_approve_proto: witness_block_approve = (
+        witness_block_approve(
             witness="gtg", block_id="000004433bd4602cf5f74dbb564183837df9cef8"
         )
     )
 
-    witness_block_approve_operation: operation_pb2.operation = (
-        operation_pb2.operation(witness_block_approve=witness_block_approve)
+    witness_block_approve_operation: operation = (
+        operation(witness_block_approve=witness_block_approve_proto)
     )
 
     check_operations(witness_block_approve_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[witness_block_approve_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

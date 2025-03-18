@@ -6,7 +6,7 @@ from tests.utils.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
 
 from wax import serialize_proto_transaction, deserialize_proto_transaction
 
-from wax.proto import transaction_pb2
+from wax.proto.transaction import transaction
 
 
 def test_serialize_proto_transaction():
@@ -29,8 +29,8 @@ def test_serialize_proto_transaction():
     assert result.exception_message == b''
     assert result.result.decode() == tx_str.replace(" ", "").replace("\n","")
 
-    tx_ref = ParseDict(PROTO_REF_TRANSACTION, transaction_pb2.transaction())
-    tx = ParseDict(json.loads(result.result.decode()), transaction_pb2.transaction())
+    tx_ref = ParseDict(PROTO_REF_TRANSACTION, transaction())
+    tx = ParseDict(json.loads(result.result.decode()), transaction())
     assert(tx_ref == tx)
 
     # Negative test

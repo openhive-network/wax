@@ -1,12 +1,9 @@
 from tests.utils.checkers import check_operations, check_transaction
+from wax._private.proto import pow2_pb2, legacy_chain_properties_pb2
 
-from wax.proto import (
-    operation_pb2,
-    transaction_pb2,
-    asset_pb2,
-    legacy_chain_properties_pb2,
-    pow2_pb2
-)
+from wax.proto.operations import operation, pow2
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
 
 def test_pow2_1():
     pow2_input: pow2_pb2.pow2_input = pow2_pb2.pow2_input(
@@ -33,7 +30,7 @@ def test_pow2_1():
     pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(
         equihash_pow=equihash_pow
     )
-    amount: asset_pb2.asset = asset_pb2.asset(
+    amount: asset = asset(
         nai="@@000000021", precision=3, amount="1"
     )
     legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = legacy_chain_properties_pb2.legacy_chain_properties(
@@ -42,22 +39,22 @@ def test_pow2_1():
         hbd_interest_rate=1000
     )
 
-    pow2: pow2_pb2.pow2 = pow2_pb2.pow2(
+    pow2_proto: pow2 = pow2(
         work=pow2_work,
         props=legacy_chain_properties
     )
 
-    pow2_operation: operation_pb2.operation = operation_pb2.operation(
-        pow2=pow2
+    pow2_operation: operation = operation(
+        pow2=pow2_proto
     )
 
     check_operations(pow2_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[pow2_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)
 
 def test_pow2_2():
     pow2_input: pow2_pb2.pow2_input = pow2_pb2.pow2_input(
@@ -72,7 +69,7 @@ def test_pow2_2():
     pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(
         pow2=pow2_pow
     )
-    amount: asset_pb2.asset = asset_pb2.asset(
+    amount: asset = asset(
         nai="@@000000021", precision=3, amount="1"
     )
     legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = legacy_chain_properties_pb2.legacy_chain_properties(
@@ -81,19 +78,19 @@ def test_pow2_2():
         hbd_interest_rate=1000
     )
 
-    pow2: pow2_pb2.pow2 = pow2_pb2.pow2(
+    pow2_proto: pow2 = pow2(
         work=pow2_work,
         props=legacy_chain_properties
     )
 
-    pow2_operation: operation_pb2.operation = operation_pb2.operation(
-        pow2=pow2
+    pow2_operation: operation = operation(
+        pow2=pow2_proto
     )
 
     check_operations(pow2_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[pow2_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

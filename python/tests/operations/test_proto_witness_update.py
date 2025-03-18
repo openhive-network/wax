@@ -23,49 +23,49 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    legacy_chain_properties_pb2,
-    operation_pb2,
-    transaction_pb2,
-    witness_update_pb2,
+from wax.proto.operations import (
+    operation,
+    witness_update,
 )
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
+from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properties
 
 
 def test_witness_update():
-    account_creation_fee: asset_pb2.asset = asset_pb2.asset(
+    account_creation_fee: asset = asset(
         amount="100000", precision=3, nai="@@000000021"
     )
-    fee: asset_pb2.asset = asset_pb2.asset(
+    fee: asset = asset(
         amount="100000", precision=3, nai="@@000000021"
     )
 
-    legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = (
-        legacy_chain_properties_pb2.legacy_chain_properties(
+    legacy_chain_properties_proto: legacy_chain_properties = (
+        legacy_chain_properties(
             account_creation_fee=account_creation_fee,
             maximum_block_size=131072,
             hbd_interest_rate=1000,
         )
     )
 
-    witness_update: witness_update_pb2.witness_update = (
-        witness_update_pb2.witness_update(
+    witness_update_proto: witness_update = (
+        witness_update(
             owner="steempty",
             url="fmooo/steemd-docker",
             block_signing_key="STM8LoQjQqJHvotqBo7HjnqmUbFW9oJ2theyqonzUd9DdJ7YYHsvD",
-            props=legacy_chain_properties,
+            props=legacy_chain_properties_proto,
             fee=fee,
         )
     )
 
-    witness_update_operation: operation_pb2.operation = operation_pb2.operation(
-        witness_update=witness_update
+    witness_update_operation: operation = operation(
+        witness_update=witness_update_proto
     )
 
     check_operations(witness_update_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[witness_update_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

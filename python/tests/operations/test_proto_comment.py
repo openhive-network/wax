@@ -1,14 +1,14 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    comment_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    comment,
+    operation,
 )
+from wax.proto.transaction import transaction
 
 
 def test_comment():
-    comment: comment_pb2.comment = comment_pb2.comment(
+    comment_proto: comment = comment(
         parent_permlink="/",
         parent_author="",
         author="alice",
@@ -18,14 +18,14 @@ def test_comment():
         json_metadata="{}",
     )
 
-    comment_operation: operation_pb2.operation = operation_pb2.operation(
-        comment=comment
+    comment_operation: operation = operation(
+        comment=comment_proto
     )
 
     check_operations(comment_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[comment_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

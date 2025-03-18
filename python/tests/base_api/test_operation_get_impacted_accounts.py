@@ -5,29 +5,29 @@ from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 
-from wax.proto import authority_pb2, operation_pb2, recover_account_pb2
-from wax.proto.vote_pb2 import vote
+from wax.proto.authority import authority
+from wax.proto.operations import operation, recover_account, vote
 
 if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
     from wax.models.operations import Operation
 
 
-AUTHORITY_1: Final[authority_pb2.authority] = authority_pb2.authority(
+AUTHORITY_1: Final[authority] = authority(
     weight_threshold=1,
     account_auths={"account": 1, "account1": 2},
     key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1},
 )
-AUTHORITY_2: Final[authority_pb2.authority] = authority_pb2.authority(
+AUTHORITY_2: Final[authority] = authority(
     weight_threshold=1,
     account_auths={"account1": 1, "account2": 2},
     key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1},
 )
-RECOVER_ACCOUNT: Final[recover_account_pb2.recover_account] = recover_account_pb2.recover_account(
+RECOVER_ACCOUNT: Final[recover_account] = recover_account(
     account_to_recover="account", new_owner_authority=AUTHORITY_1, recent_owner_authority=AUTHORITY_2, extensions=[]
 )
 
-PROTO_OPERATION: Final[operation_pb2.operation] = operation_pb2.operation(recover_account=RECOVER_ACCOUNT)
+PROTO_OPERATION: Final[operation] = operation(recover_account=RECOVER_ACCOUNT)
 API_OPERATION_DICT: Final[dict[str, Any]] = {
     "type": "claim_reward_balance_operation",
     "value": {
@@ -68,7 +68,7 @@ def test_get_operation_impacted_accounts_0(wax: IWaxBaseInterface) -> None:
 @pytest.mark.description("Should be able to get impacted accounts from example proto operation")
 def test_get_operation_impacted_accounts_1(wax: IWaxBaseInterface) -> None:
     result = wax.get_operation_impacted_accounts(
-        operation=operation_pb2.operation(
+        operation=operation(
             vote=vote(
                 author="c0ff33a",
                 permlink="ewxhnjbj",

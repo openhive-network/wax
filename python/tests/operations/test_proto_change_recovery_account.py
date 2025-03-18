@@ -1,28 +1,28 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    change_recovery_account_pb2,
-    operation_pb2,
-    transaction_pb2,
-    future_extensions_pb2
+from wax.proto.operations import (
+    change_recovery_account,
+    operation,
 )
+from wax.proto.transaction import transaction
+from wax._private.proto.future_extensions_pb2 import future_extensions
 
 def test_change_recovery_account():
-    extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions()
-    change_recovery_account: change_recovery_account_pb2.change_recovery_account = change_recovery_account_pb2.change_recovery_account(
+    extension: future_extensions = future_extensions()
+    change_recovery_account_proto: change_recovery_account = change_recovery_account(
         account_to_recover="account",
         new_recovery_account="account1",
         extensions=[]
     )
 
-    change_recovery_account_operation: operation_pb2.operation = operation_pb2.operation(
-        change_recovery_account=change_recovery_account
+    change_recovery_account_operation: operation = operation(
+        change_recovery_account=change_recovery_account_proto
     )
 
     check_operations(change_recovery_account_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[change_recovery_account_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

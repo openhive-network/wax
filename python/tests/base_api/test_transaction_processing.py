@@ -11,10 +11,8 @@ if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
 
 from wax._private.models.hive_date_time import HiveDateTime
-from wax.proto.operation_pb2 import operation
-from wax.proto.recurrent_transfer_pb2 import recurrent_transfer
-from wax.proto.transaction_pb2 import transaction
-from wax.proto.vote_pb2 import vote
+from wax.proto.operations import operation, recurrent_transfer, vote
+from wax.proto.transaction import transaction
 
 from .templates import (
     RECOVER_ACCOUNT_TRANSACTION,

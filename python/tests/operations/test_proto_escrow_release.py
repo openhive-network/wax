@@ -1,21 +1,21 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    operation_pb2,
-    transaction_pb2,
-    escrow_release_pb2
+from wax.proto.operations import (
+    operation,
+    escrow_release
 )
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
 
 def test_escrow_release():
-    hbd_amount: asset_pb2.asset = asset_pb2.asset(
+    hbd_amount: asset = asset(
         nai="@@000000013", precision=3, amount="357000"
     )
-    hive_amount: asset_pb2.asset = asset_pb2.asset(
+    hive_amount: asset = asset(
         nai="@@000000021", precision=3, amount="357000"
     )
 
-    escrow_release: escrow_release_pb2.escrow_release = escrow_release_pb2.escrow_release(
+    escrow_release_proto: escrow_release = escrow_release(
         from_account="faddy",
         to_account="daddy",
         agent="agent",
@@ -26,14 +26,14 @@ def test_escrow_release():
         hive_amount=hive_amount
     )
 
-    escrow_release_operation: operation_pb2.operation = (
-        operation_pb2.operation(escrow_release=escrow_release)
+    escrow_release_operation: operation = (
+        operation(escrow_release=escrow_release_proto)
     )
 
     check_operations(escrow_release_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[escrow_release_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

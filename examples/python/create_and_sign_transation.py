@@ -3,7 +3,7 @@ import asyncio
 from beekeepy import AsyncBeekeeper
 from beekeepy.interfaces import HttpUrl
 from wax import create_wax_foundation
-from wax.proto.transfer_pb2 import transfer
+from wax.proto.operations import transfer
 
 
 PASSWORD = "pass"

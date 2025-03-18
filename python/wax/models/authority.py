@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TypeAlias
 
 from wax.models.basic import AccountName, PublicKey
-from wax.proto.authority_pb2 import authority as proto_authority
+from wax.proto.authority import authority as proto_authority
 
 WaxAuthority: TypeAlias = proto_authority
 KeyAuths: TypeAlias = dict[PublicKey, int]

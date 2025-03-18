@@ -13,32 +13,29 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    operation_pb2,
-    transaction_pb2,
-    transfer_to_vesting_pb2
-)
+from wax.proto.operations import operation, transfer_to_vesting
+from wax.proto.transaction import transaction
+from wax.proto.asset import asset
 
 def test_transfer_to_vesting():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    proto_asset: asset = asset(
         nai="@@000000021", precision=3, amount="357000"
     )
 
-    transfer_to_vesting: transfer_to_vesting_pb2.transfer_to_vesting = (
-        transfer_to_vesting_pb2.transfer_to_vesting(
-            from_account="faddy", to_account="", amount=amount
+    transfer_to_vesting_proto: transfer_to_vesting = (
+        transfer_to_vesting(
+            from_account="faddy", to_account="", amount=proto_asset
         )
     )
 
-    transfer_to_vesting_operation: operation_pb2.operation = (
-        operation_pb2.operation(transfer_to_vesting=transfer_to_vesting)
+    transfer_to_vesting_operation: operation = (
+        operation(transfer_to_vesting=transfer_to_vesting_proto)
     )
 
     check_operations(transfer_to_vesting_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[transfer_to_vesting_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

@@ -12,32 +12,27 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    operation_pb2,
-    transaction_pb2,
-    withdraw_vesting_pb2
-)
+from wax.proto.asset import asset
+from wax.proto.transaction import transaction
+from wax.proto.operations import operation, withdraw_vesting
+
 
 def test_withdraw_vesting():
-    vesting_shares: asset_pb2.asset = asset_pb2.asset(
+    vesting_shares: asset = asset(
         nai="@@000000037", precision=6, amount="200000000000"
     )
 
-    withdraw_vesting: withdraw_vesting_pb2.withdraw_vesting = (
-        withdraw_vesting_pb2.withdraw_vesting(
+    withdraw_vesting_proto: withdraw_vesting = (
+        withdraw_vesting(
             account="steemit", vesting_shares=vesting_shares
         )
     )
 
-    withdraw_vesting_operation: operation_pb2.operation = operation_pb2.operation(
-        withdraw_vesting=withdraw_vesting
-    )
-
+    withdraw_vesting_operation: operation = operation(withdraw_vesting=withdraw_vesting_proto)
     check_operations(withdraw_vesting_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[withdraw_vesting_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

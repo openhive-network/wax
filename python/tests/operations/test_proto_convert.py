@@ -13,29 +13,29 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    asset_pb2,
-    convert_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    convert,
+    operation,
 )
+from wax.proto.transaction import transaction
+from wax.proto.asset import asset
 
 def test_convert():
-    amount: asset_pb2.asset = asset_pb2.asset(
+    amount: asset = asset(
         nai="@@000000013", precision=3, amount="5000"
     )
 
-    conver: convert_pb2.convert = convert_pb2.convert(
+    convert_proto: convert = convert(
         owner="summon", requestid=1467592156, amount=amount
     )
 
-    conver_operation: operation_pb2.operation = operation_pb2.operation(
-        convert=conver
+    convert_operation: operation = operation(
+        convert=convert_proto
     )
-    check_operations(conver_operation)
+    check_operations(convert_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
-        operations=[conver_operation]
+    transaction_proto: transaction = transaction(
+        operations=[convert_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

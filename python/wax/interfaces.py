@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, TypeAlias
 
 from typing_extensions import Self
 
-from wax.proto.transaction_pb2 import transaction as proto_transaction
+from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
     from decimal import Decimal

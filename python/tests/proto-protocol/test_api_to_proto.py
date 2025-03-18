@@ -17,19 +17,19 @@ from tests.utils.refs import (
 
 from wax import api_to_proto
 
-from wax.proto import transaction_pb2
+from wax.proto.transaction import transaction
 
 @pytest.mark.skip(reason="block.proto definition is ignored")
 def test_api_to_proto():
     # moved here since code generation for block.proto is skipped
-    from wax.proto import block_pb2
+    from wax._private.proto import block_pb2
 
     api_str = json.dumps(API_REF_TRANSACTION)
     proto = api_to_proto(api_str.encode())
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
     assert proto.result.decode() == json.dumps(PROTO_REF_TRANSACTION, separators=(',', ':'))
-    transaction: transaction_pb2.transaction = ParseDict(json.loads(proto.result.decode()), transaction_pb2.transaction())
+    transaction_proto: transaction = ParseDict(json.loads(proto.result.decode()), transaction())
 
     # Negative test
     api_str = json.dumps(PROTO_REF_TRANSACTION)

@@ -1,10 +1,10 @@
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    custom_json_pb2,
-    operation_pb2,
-    transaction_pb2
+from wax.proto.operations import (
+    custom_json,
+    operation,
 )
+from wax.proto.transaction import transaction
 
 '''
         required_auths: collections.abc.Iterable[builtins.str] | None = ...,
@@ -14,20 +14,20 @@ from wax.proto import (
 '''
 
 def test_custom_json():
-    custom_json: custom_json_pb2.custom_json = custom_json_pb2.custom_json(
+    custom_json_proto: custom_json = custom_json(
         required_auths=["bytemaster"],
         required_posting_auths=["other"],
         id="666",
         json="{}"
     )
 
-    custom_json_operation: operation_pb2.operation = operation_pb2.operation(
-        custom_json=custom_json
+    custom_json_operation: operation = operation(
+        custom_json=custom_json_proto
     )
     check_operations(custom_json_operation)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    transaction_proto: transaction = transaction(
         operations=[custom_json_operation]
     )
 
-    check_transaction(transaction)
+    check_transaction(transaction_proto)

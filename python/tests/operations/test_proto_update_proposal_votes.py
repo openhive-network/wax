@@ -12,26 +12,23 @@
 
 from tests.utils.checkers import check_operations, check_transaction
 
-from wax.proto import (
-    operation_pb2,
-    transaction_pb2,
-    update_proposal_votes_pb2
-)
+from wax.proto.operations import operation, update_proposal_votes
+from wax.proto.transaction import transaction
 
 def test_update_proposal_votes():
-    update_proposal_votes: update_proposal_votes_pb2.update_proposal_votes = (
-        update_proposal_votes_pb2.update_proposal_votes(
+    update_proposal_votes_proto: update_proposal_votes = (
+        update_proposal_votes(
             voter="ballenaprepago", proposal_ids=[0], approve=True, extensions=[]
         )
     )
-    update_proposal_votes_operations: operation_pb2.operation = (
-        operation_pb2.operation(update_proposal_votes=update_proposal_votes)
+    update_proposal_votes_operations: operation = (
+        operation(update_proposal_votes=update_proposal_votes_proto)
     )
 
     check_operations(update_proposal_votes_operations)
 
-    transaction: transaction_pb2.transaction = transaction_pb2.transaction(
+    proto_transaction: transaction = transaction(
         operations=[update_proposal_votes_operations]
     )
 
-    check_transaction(transaction)
+    check_transaction(proto_transaction)

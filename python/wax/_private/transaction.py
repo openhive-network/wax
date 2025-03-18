@@ -30,7 +30,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_proto_transaction,
 )
 from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
-from wax.proto.transaction_pb2 import transaction as proto_transaction
+from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
     from datetime import timedelta

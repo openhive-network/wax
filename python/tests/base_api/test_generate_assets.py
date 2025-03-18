@@ -6,7 +6,7 @@ import pytest
 
 from wax._private.models.asset import Asset
 from wax.models.asset import AssetName
-from wax.proto.asset_pb2 import asset
+from wax.proto.asset import asset
 
 if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
