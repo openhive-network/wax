@@ -8,7 +8,6 @@ files: |
 exclude: |
     (?x)(
             ^python/wax/cpp_python_bridge.pyi|
-            ^python/wax/wax_visitor.py|
             ^python/wax/proto/.*$
     )
 repos:
