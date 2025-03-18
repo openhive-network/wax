@@ -90,7 +90,7 @@ build_wheel:
       - "${PYPROJECT_DIR}/.build/logs/"
       - "${PYPROJECT_DIR}/wax/*.so"
       - "build_wheel.env"
-      - "${PYPROJECT_DIR}/wax/proto"
+      - "${PYPROJECT_DIR}/wax/_private/proto"
     reports:
       dotenv: "build_wheel.env"
 
@@ -257,10 +257,10 @@ test_wax_protobuf_python_pattern:
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/python/protobuf_patterns/ $CI_PROJECT_DIR/python/wax/proto/
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/python/protobuf_patterns/ $CI_PROJECT_DIR/python/wax/_private/proto/
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/python/wax/proto/
+      - $CI_PROJECT_DIR/python/wax/_private/proto/
 
     when: always
     expire_in: 1 week
