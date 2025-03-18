@@ -213,7 +213,7 @@ built_package_info.json
 ts/wasm/lib/proto
 dist
 node_modules
-python/wax/proto
+python/wax/_private/proto
 python/cpp_python_bridge.cpp
 .parcel-cache
 .pnpm-store
