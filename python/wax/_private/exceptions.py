@@ -7,6 +7,17 @@ class WaxError(Exception):
     """Base exception for all wax operations."""
 
 
+class WaxImportProtoBeforeCompileError(WaxError):
+    """Raised when trying to import a proto file before compiling it."""
+
+    def __init__(self) -> None:
+        self.message = (
+            "You must compile the proto file before importing it."
+            "Please use `compile_proto.sh` or `build_wax.sh` script."
+        )
+        super().__init__(self.message)
+
+
 class WaxValidationFailedError(WaxError):
     """Raises when validation using wax failed."""
 
