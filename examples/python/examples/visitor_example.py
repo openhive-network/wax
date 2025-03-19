@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from google.protobuf.json_format import ParseDict
 
 from wax.proto.operations import comment, limit_order_cancel, recurrent_transfer, vote
