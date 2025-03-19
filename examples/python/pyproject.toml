@@ -1,0 +1,23 @@
+[build-system]
+requires = ["poetry-core==1.1.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "python_exaples"
+version = "0.0.0"
+description = "A simple way to run wax examples."
+authors = ["Jakub Ziębiński <ziebinskijakub@gmail.com>"]
+packages = [
+    { include = "examples" },
+]
+
+source = [
+    { name = "PyPI", priority = "primary" },
+    { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+wax = "0.3.10.dev579+e53b1fe"
