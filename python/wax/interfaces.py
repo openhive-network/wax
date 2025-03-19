@@ -634,7 +634,7 @@ class IHiveChainInterface(IWaxBaseInterface):
             value: Endpoint url.
 
         Raises:
-            TypeError: When the url is incorrect.
+            InvalidEndpointUrlFormatError: When the url is incorrect.
         """
 
     @abstractmethod

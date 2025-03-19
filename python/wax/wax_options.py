@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from beekeepy.interfaces import HttpUrl
+from wax._private.converters.url_converter import convert_to_http_url
 from wax._private.core.constants import DEFAULT_CHAIN_ID, DEFAULT_ENDPOINT_URL
 
 if TYPE_CHECKING:
+    from beekeepy.interfaces import HttpUrl
     from wax.models.basic import ChainId
 
 
@@ -34,9 +35,12 @@ class WaxChainOptions(WaxOptions):
         Args:
             chain_id: chain id used for signing. Defaults to mainnet chain id.
             endpoint_url: url of the node to connect to. Defaults to mainnet (hive.blog) node.
+
+        Raises:
+            InvalidEndpointUrlFormatError: if endpoint_url is not valid.
         """
         super().__init__(chain_id)
-        self._endpoint_url = HttpUrl(endpoint_url)
+        self._endpoint_url = convert_to_http_url(endpoint_url)
 
     @property
     def endpoint_url(self) -> HttpUrl:
@@ -44,4 +48,13 @@ class WaxChainOptions(WaxOptions):
 
     @endpoint_url.setter
     def endpoint_url(self, value: HttpUrl | str) -> None:
-        self._endpoint_url = HttpUrl(value)
+        """
+        Set endpoint url.
+
+        Args:
+            value: new endpoint url.
+
+        Raises:
+            InvalidEndpointUrlFormatError: if endpoint url is not valid.
+        """
+        self._endpoint_url = convert_to_http_url(value)

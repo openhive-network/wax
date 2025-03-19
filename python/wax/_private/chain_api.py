@@ -3,9 +3,9 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Final, cast
 
-from beekeepy.interfaces import HttpUrl
 from wax._private.api.api_caller import WaxApiCaller
 from wax._private.base_api import WaxBaseApi
+from wax._private.converters.url_converter import convert_to_http_url
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.schemas import ApiTransaction
 from wax._private.online_transaction import OnlineTransaction
@@ -18,6 +18,7 @@ from wax.models.basic import ChainReferenceData
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
+    from beekeepy.interfaces import HttpUrl
     from wax._private.api.api_collection import ApiCollection
     from wax._private.models.schemas import ApiAuthority, FindAccountsApiResponse
     from wax.interfaces import ITransaction
@@ -54,7 +55,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi):
 
     @endpoint_url.setter
     def endpoint_url(self, value: HttpUrl | str) -> None:
-        parsed_endpoint_url = HttpUrl(value)
+        parsed_endpoint_url = convert_to_http_url(value)
 
         self._endpoint_url = parsed_endpoint_url
         self._api_caller.set_endpoint_url(parsed_endpoint_url, _private=True)

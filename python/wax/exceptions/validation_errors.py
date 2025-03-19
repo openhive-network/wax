@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from wax.exceptions.wax_error import WaxError
 
 if TYPE_CHECKING:
+    from beekeepy.interfaces import HttpUrl
     from wax.models.basic import AccountName
 
 
@@ -33,3 +34,12 @@ class InvalidAccountNameError(WaxError):
 
 class InvalidOperationFormatError(WaxError):
     """Raised when operation is in invalid format."""
+
+
+class InvalidEndpointUrlFormatError(WaxError):
+    """Raised when endpoint url is in invalid format."""
+
+    def __init__(self, url: HttpUrl | str) -> None:
+        self.url = url
+        self.message = f"Endpoint url '{url}' is in invalid format."
+        super().__init__(self.message)
