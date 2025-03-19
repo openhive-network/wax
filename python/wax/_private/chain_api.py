@@ -19,8 +19,8 @@ if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
     from beekeepy.interfaces import HttpUrl
-    from wax._private.api.api_collection import ApiCollection
     from wax._private.models.schemas import ApiAuthority, FindAccountsApiResponse
+    from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection as ApiCollection
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
 
