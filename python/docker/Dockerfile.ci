@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-13
+ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1
 FROM $BASE_IMAGE AS base_builder
 
 USER hived_admin
@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-c"]
 
 FROM base_builder AS boost_lib_source
 
-ARG BOOST_VERSION_TAG=boost-1.74.0
+ARG BOOST_VERSION_TAG=boost-1.83.0
 ENV BOOST_VERSION_TAG=${BOOST_VERSION_TAG}
 
 ENV TMP_SRC=/home/hived_admin/tmp_src
