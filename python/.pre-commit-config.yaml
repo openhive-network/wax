@@ -29,7 +29,7 @@ repos:
       - id: poetry-lock
         name: checking if poetry.lock is consistent with pyproject.toml
         args: [ "--no-update", "-C", "./python"]
-        language_version: python3.10
+        language_version: python3.12
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.6.5'
     hooks:
