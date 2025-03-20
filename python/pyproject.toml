@@ -1,7 +1,7 @@
 [build-system]
 requires = [
     "poetry-core>=1.1.0",
-    "cython==3.0.10",
+    "cython==3.0.12",
     "setuptools>=67.8.0",
     "poetry-dynamic-versioning>=0.22.0"
 ]
@@ -26,14 +26,14 @@ script = "build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 protobuf = "4.24.4"
-beekeepy = "0.0.1.dev340+6ae1979"
-aiohttp = "3.9.1"
+beekeepy = "0.0.1.dev351+7c750ab"
+aiohttp = "3.11.14"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
-requests = "2.27.1"
+requests = "2.32.3"
 
 [tool.poetry.dev-dependencies]
 mypy = "1.11.2"
