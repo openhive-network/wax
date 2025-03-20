@@ -771,6 +771,14 @@ export interface IWaxBaseInterface {
   vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset
 
   /**
+   * Converts HP to VESTS in nai form
+   * @param {NaiAsset} hive HIVE asset
+   * @param {NaiAsset} totalVestingFundHive HIVE assest total vesting fund
+   * @param {NaiAsset} totalVestingShares VESTS asset total shares
+   */
+  hpToVests(hive: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
+
+  /**
    * Converts HBD to HIVE in nai form
    * @param {NaiAsset} hbd HBD asset
    * @param {NaiAsset} base HBD asset price base

@@ -145,6 +145,11 @@ json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vest
   return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
 }
 
+json_asset cpp_hp_to_vests(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
+{
+  return foundation::cpp_hp_to_vests(vests, total_vesting_fund_hive, total_vesting_shares);
+}
+
 result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
 {
     return foundation::cpp_calculate_inflation_rate_for_block( block_num );
@@ -347,6 +352,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_hp_apr", &foundation_wasm::cpp_calculate_hp_apr)
     .function("cpp_calculate_inflation_rate_for_block", &foundation_wasm::cpp_calculate_inflation_rate_for_block)
     .function("cpp_vests_to_hp", &foundation_wasm::cpp_vests_to_hp)
+    .function("cpp_hp_to_vests", &foundation_wasm::cpp_hp_to_vests)
     .function("cpp_hbd_to_hive", &foundation_wasm::cpp_hbd_to_hive)
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)

@@ -252,6 +252,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return safeWasmCall(() => this.proto.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
   }
 
+  public hpToVests(hive: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const hiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, hive);
+    const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
+    const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
+
+    return safeWasmCall(() => this.proto.cpp_hp_to_vests(hiveAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
+  }
+
   public hbdToHive(hbd: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset {
     const hbdAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbd as NaiAsset);
     const baseAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, base as NaiAsset);
