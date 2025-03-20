@@ -23,8 +23,8 @@ variables:
   GIT_STRATEGY: clone
   # only build steps needs to have access to the hive submodule
   GIT_SUBMODULE_STRATEGY: normal
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-3
-  CI_BASE_IMAGE_TAG: "@sha256:f263bfa8a0ea40a29d99d147601171fb6320c447abc8f3ab1e9082cd51a2254a"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-1
+  CI_BASE_IMAGE_TAG: "@sha256:f535d01dd63e139d6d0dcdef89771b0ea2cc87699ae39c18ad692e307ba601c3"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
 
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-3
