@@ -225,7 +225,6 @@ push_to_wiki:
     - !reference [.configuration_template, before_script]
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${PYPROJECT_DIR}/dist/*.whl
     - pip list
-    - ls -al $(poetry -C "${PYPROJECT_DIR}" env info --path)/lib/python3.10/site-packages/
 
 .test_python_env:
   extends: .runtime_like_python_env
