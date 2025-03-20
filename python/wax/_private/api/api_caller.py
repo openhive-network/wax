@@ -5,17 +5,16 @@ from functools import partial
 from typing import TYPE_CHECKING, ClassVar
 
 from beekeepy import Settings
-from beekeepy._remote_handle.abc.handle import AbstractAsyncHandle
-from beekeepy._remote_handle.batch_handle import AsyncBatchHandle
+from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
 from wax.helpy._handles.hived.common_helpers import HiveHandleCommonHelpers
 from wax.interfaces import ApiCollectionT
 
 if TYPE_CHECKING:
-    from beekeepy._remote_handle.abc.api import AsyncHandleT
+    from beekeepy.handle.remote import AsyncSendable
     from beekeepy.interfaces import HttpUrl
 
 
-def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncHandleT) -> ApiCollectionT:
+def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable) -> ApiCollectionT:
     """Initializes the API collection with the owner."""
     for api_name, api_definition in api_collection.__dict__.items():
         if callable(api_definition) and not api_name.startswith("_"):  # Check for magic methods
@@ -24,7 +23,7 @@ def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncHandleT) 
     return api_collection
 
 
-class WaxApiCaller(AbstractAsyncHandle[ApiCollectionT], HiveHandleCommonHelpers):
+class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT], HiveHandleCommonHelpers):  # type: ignore[type-var]
     _INSTANCES: ClassVar[set[WaxApiCaller]] = set()  # type: ignore[type-arg]
 
     def __init__(self, api_collection: ApiCollectionT, endpoint_url: HttpUrl) -> None:
