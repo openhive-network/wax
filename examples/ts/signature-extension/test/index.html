@@ -25,6 +25,7 @@
     import KeychainProvider from "@hiveio/wax-signers-keychain";
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
     import MetaMaskProvider from "@hiveio/wax-signers-metamask";
+    import BeekeeperProvider from "@hiveio/wax-signers-beekeeper";
 
     const txResult = document.getElementById('tx-result');
     const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
@@ -34,6 +35,12 @@
       const testEnv = await prepareTestingEnvironemnt();
       const accountName = testEnv.accountName;
       const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
+      let beekeeperProvider;
+      try {
+        beekeeperProvider = await BeekeeperProvider.for(testEnv.preparedBeekeeperWallet, testEnv.publicKey);
+      } catch (error) {
+        console.error('Beekeeper provider not available', error);
+      }
       const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
       let metaMaskProvider;
       try {
@@ -42,7 +49,6 @@
       } catch (error) {
         console.error('Metamask provider not available', error);
       }
-      const beekeeperProvider = testEnv.preparedBeekeeperWallet;
 
       operatingPrivateKeyPlaceholder.textContent = `${accountName}@${testEnv.role} private key to be imported to wallets: ${testEnv.privateKey}`;
 
@@ -96,22 +102,10 @@
         }
       };
 
-      const beekeeperSign = async (provider) => {
-        try {
-          const tx = await createTransaction();
-          await tx.sign(provider, testEnv.publicKey);
-          await verifySignature(tx);
-        } catch (error) {
-          console.error(error);
-          txResult.textContent = `Error: ${error.message}`;
-        }
-      };
-
-
       window.useKeychain = () => void sign(keychainProvider);
       window.usePeakVault = () => void sign(peakVaultProvider);
       window.useMetaMask = () => void sign(metaMaskProvider);
-      window.useBeekeeper = () => void beekeeperSign(beekeeperProvider);
+      window.useBeekeeper = () => void sign(beekeeperProvider);
     })();
   </script>
 </body>

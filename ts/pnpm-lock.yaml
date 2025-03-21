@@ -188,6 +188,19 @@ importers:
         specifier: catalog:typescript-toolset
         version: 5.7.3
 
+  packages/signers-beekeeper:
+    dependencies:
+      '@hiveio/beekeeper':
+        specifier: 1.27.10-stable.250305202831
+        version: 1.27.10-stable.250305202831
+      '@hiveio/wax':
+        specifier: workspace:../..
+        version: link:../..
+    devDependencies:
+      typescript:
+        specifier: catalog:typescript-toolset
+        version: 5.7.3
+
   packages/signers-keychain:
     dependencies:
       '@hiveio/wax':
