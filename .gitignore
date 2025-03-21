@@ -228,8 +228,6 @@ storage_root-node
 /examples/ts/yarn.lock
 /examples/ts/**/test-results
 
-# Ignore lock files in examples
-/examples/ts/**/pnpm-lock.yaml
 # Ignore directory holding browser extention binaries to verify external signers (like Hive Keychain)
 /examples/ts/signature-extension/__tests__/extensions
 
