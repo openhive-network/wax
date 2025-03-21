@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "test": "../../../ts/npm-common-config/scripts/bash/npm-helpers/npm_download_browser_extensions.sh \"${HOME}/preinstalled_browser_extensions\" && ln -sf \"${HOME}/preinstalled_browser_extensions\" ./__tests__/extensions && playwright install chromium && playwright test --max-failures 1",
-    "test:manual": "parcel test/index.html"
+    "test:manual": "rm -rf ./.parcel-cache && parcel test/index.html"
   },
   "dependencies": {
     "@hiveio/wax": "file:../../../ts",
