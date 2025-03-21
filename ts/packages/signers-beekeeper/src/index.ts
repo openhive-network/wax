@@ -1,4 +1,4 @@
-import { createHiveChain, type IOnlineSignatureProvider, type ITransaction, type TAccountName, type TRole } from "@hiveio/wax";
+import type { IHiveChainInterface, IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
@@ -10,7 +10,7 @@ export class WaxBeekeeperProviderError extends Error {}
  *
  * @example
  * ```
- * const provider = BeekeeperProvider.for(myWallet, "myaccount", "active");
+ * const provider = BeekeeperProvider.for(myWallet, "myaccount", "active", chain);
  *
  * // Create a transaction using the Wax Hive chain instance
  * const tx = await chain.createTransaction();
@@ -30,19 +30,17 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
     private readonly publicKey: TPublicKey
   ) {}
 
-  public static for(wallet: IBeekeeperUnlockedWallet, publicKeyOrAccount: TPublicKey | TAccountName, role?: TRole): BeekeeperProvider | Promise<BeekeeperProvider> {
+  public static for(wallet: IBeekeeperUnlockedWallet, publicKeyOrAccount: TPublicKey | TAccountName, role?: TRole, chain?: IHiveChainInterface): BeekeeperProvider | Promise<BeekeeperProvider> {
     if (role === undefined)
       return new BeekeeperProvider(wallet, publicKeyOrAccount);
 
-    return createHiveChain().then(chain => {
-      return chain.api.database_api.find_accounts({ accounts: [publicKeyOrAccount], delayed_votes_active: false }).then(({ accounts: [ account ] }) => {
-        if (account === undefined)
-          return Promise.reject(new WaxBeekeeperProviderError(`Account ${publicKeyOrAccount} not found`));
+    return chain!.api.database_api.find_accounts({ accounts: [publicKeyOrAccount], delayed_votes_active: false }).then(({ accounts: [ account ] }) => {
+      if (account === undefined)
+        return Promise.reject(new WaxBeekeeperProviderError(`Account ${publicKeyOrAccount} not found`));
 
-        const actualRole = role === "memo" ? "memo_key" : role;
+      const actualRole = role === "memo" ? "memo_key" : role;
 
-        return account[actualRole] ? new BeekeeperProvider(wallet, role === "memo" ? account.memo_key : account[role].key_auths[0][0]) : Promise.reject(new WaxBeekeeperProviderError(`Account ${publicKeyOrAccount} does not have ${role} key`));
-      });
+      return account[actualRole] ? new BeekeeperProvider(wallet, role === "memo" ? account.memo_key : account[role].key_auths[0][0]) : Promise.reject(new WaxBeekeeperProviderError(`Account ${publicKeyOrAccount} does not have ${role} key`));
     });
   }
 
@@ -53,7 +51,7 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
 
 export interface WaxBeekeeperProviderCreator {
   for(wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): BeekeeperProvider;
-  for(wallet: IBeekeeperUnlockedWallet, account: TAccountName, role: TRole): Promise<BeekeeperProvider>;
+  for(wallet: IBeekeeperUnlockedWallet, account: TAccountName, role: TRole, chain: IHiveChainInterface): Promise<BeekeeperProvider>;
 }
 
 export default BeekeeperProvider as WaxBeekeeperProviderCreator;

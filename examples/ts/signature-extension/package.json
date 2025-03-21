@@ -7,9 +7,6 @@
     "test": "../../../ts/npm-common-config/scripts/bash/npm-helpers/npm_download_browser_extensions.sh \"${HOME}/preinstalled_browser_extensions\" && ln -sf \"${HOME}/preinstalled_browser_extensions\" ./__tests__/extensions && playwright install chromium && playwright test --max-failures 1",
     "test:manual": "rm -rf ./.parcel-cache && parcel test/index.html"
   },
-  "alias": {
-    "@hiveio/wax": "@hiveio/wax"
-  },
   "dependencies": {
     "@hiveio/beekeeper": "1.27.10-stable.250305202831",
     "@hiveio/wax": "file:../../../ts",

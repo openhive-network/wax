@@ -10,7 +10,7 @@ import BeekeeperProvider from "@hiveio/wax-signers-beekeeper";
 
 const chain = await createHiveChain();
 
-const provider = BeekeeperProvider.for(myWallet, "myaccount", "active");
+const provider = BeekeeperProvider.for(myWallet, "myaccount", "active", chain);
 
 // Create a transaction using the Wax Hive chain instance
 const tx = await chain.createTransaction();
