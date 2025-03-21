@@ -777,6 +777,451 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     });
   });
 
+  test('Should be able to get authority trace root entires for multi signature transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 808,
+        "ref_block_prefix": 1359279161,
+        "extensions": [],
+        "expiration": "2024-08-02T12:09:03",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency.stats",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteem.app",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "good-karma",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteemapp",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          }
+        ],
+        "signatures": [
+          "1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+          "20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+          "20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+          "2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a",
+          "205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365bce5"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace));
+
+      return trace.rootEntries;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "processedEntry": "ecency",
+        "processedRole": "posting",
+        "processingStatus": {
+          "entryAccepted": true,
+          "isOpenAuthority": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "ecency.stats",
+        "processedRole": "posting",
+        "processingStatus": {
+          "entryAccepted": true,
+          "isOpenAuthority": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "esteem.app",
+        "processedRole": "posting",
+        "processingStatus": {
+          "entryAccepted": true,
+          "isOpenAuthority": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "esteemapp",
+        "processedRole": "posting",
+        "processingStatus": {
+          "entryAccepted": true,
+          "isOpenAuthority": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "good-karma",
+        "processedRole": "posting",
+        "processingStatus": {
+          "entryAccepted": true,
+          "isOpenAuthority": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR",
+            "processedRole": "posting",
+            "processingStatus": {
+              "entryAccepted": true,
+              "isOpenAuthority": false
+            },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      }
+    ]);
+  });
+
+  test('Should be able to get authority trace root entires for multisig transaction with one broken signature ', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax }) => {
+      const chain = await wax.createHiveChain();
+
+      const sourceTx = chain.createTransactionFromJson({
+        "ref_block_num": 808,
+        "ref_block_prefix": 1359279161,
+        "extensions": [],
+        "expiration": "2024-08-02T12:09:03",
+        "operations": [
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "ecency.stats",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteem.app",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "good-karma",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          },
+          {
+            "type": "vote_operation",
+            "value": {
+              "voter": "esteemapp",
+              "author": "el-panal",
+              "weight": 100,
+              "permlink": "el-panal-presentacion-de-autores-destacados-dia31072024"
+            }
+          }
+        ],
+        "signatures": [
+          "1f4141e7645dd2bdcdb2001baea165e668a6f9c2a366f6fd2f3e9d878f071f5eb052509eb666b80c1e0daaa7fdec36e3de827087dcd3015c8672b536ddddbc5726",
+          "20223edff229382e67031d993c13d26062ab4d33c45ede7aced7f1e432d6b6d57a4fd68eae708f562a9644ee08ea447fa354febe34aa8ba14a434c66adc753774f",
+          "20286bd3b0ad2ecb01488ce866361b4fcd53b1f3dac41962496986fdf89c89c20a0e86f8dd2669ed14b6dafc3e0bb0d24ec54a794ee6c0b563275a22a122992ac1",
+          "2043b5ea9cbf76f1cd0fbb5f589350d9b8273d241c8bb704189bc9fd4444493c384594536e0387ff121bcdbfa4fa401917e30609ac86ea82f13132d26280e74f9a",
+          "205f0e25631bdbcd37669b2f6c36594d0153e468be8b2b6a57f8eae49538132efd0dde1ad6a707788d6a2024efd03a55dd0bb478a40eedce48f6e5db19d365"
+        ]
+      });
+
+      const tx = await chain.createTransaction();
+
+      const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
+
+      console.log(JSON.stringify(trace));
+
+      return trace.rootEntries;
+    });
+
+    expect(retVal).toStrictEqual([
+      {
+        "processedEntry": "ecency",
+        "processedRole": "posting",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "ecency.app",
+            "processedRole": "posting",
+            "processingStatus": {
+              "accountAuthorityCountExceeded": false,
+              "accountAuthorityPointsMissingAccount": false,
+              "accountAuthorityProcessingDepthExceeded": false,
+              "entryAccepted": false,
+              "hasAccountAuthorityCycle": false,
+              "hasInsufficientWeight": true,
+              "hasMatchingPublicKey": false
+            },
+            "recursionDepth": 1,
+            "threshold": 1,
+            "visitedEntries": [
+              {
+                "processedEntry": "hivesigner",
+                "processedRole": "posting",
+                "processingStatus": {
+                  "accountAuthorityCountExceeded": false,
+                  "accountAuthorityPointsMissingAccount": false,
+                  "accountAuthorityProcessingDepthExceeded": false,
+                  "entryAccepted": false,
+                  "hasAccountAuthorityCycle": false,
+                  "hasInsufficientWeight": true,
+                  "hasMatchingPublicKey": false
+                },
+                "recursionDepth": 2,
+                "threshold": 1,
+                "visitedEntries": [],
+                "weight": 0
+              }
+            ],
+            "weight": 0
+          }
+        ],
+        "weight": 0
+      },
+      {
+        "processedEntry": "ecency",
+        "processedRole": "active",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [],
+        "weight": 0
+      },
+      {
+        "processedEntry": "ecency",
+        "processedRole": "owner",
+        "processingStatus": {
+          "accountAuthorityCountExceeded": false,
+          "accountAuthorityPointsMissingAccount": false,
+          "accountAuthorityProcessingDepthExceeded": false,
+          "entryAccepted": false,
+          "hasAccountAuthorityCycle": false,
+          "hasInsufficientWeight": true,
+          "hasMatchingPublicKey": false
+        },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [],
+        "weight": 0
+      },
+      {
+        "processedEntry": "ecency.stats",
+        "processedRole": "posting",
+        "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
+            "processedRole": "posting",
+            "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "esteem.app",
+        "processedRole": "posting",
+        "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+            "processedRole": "posting",
+            "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "esteemapp",
+        "processedRole": "posting",
+        "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+            "processedRole": "posting",
+            "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      },
+      {
+        "processedEntry": "good-karma",
+        "processedRole": "posting",
+        "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+        "recursionDepth": 0,
+        "threshold": 1,
+        "visitedEntries": [
+          {
+            "processedEntry": "STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR",
+            "processedRole": "posting",
+            "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+            "recursionDepth": 0,
+            "threshold": 1,
+            "visitedEntries": [],
+            "weight": 1
+          }
+        ],
+        "weight": 1
+      }
+    ]
+    );
+  });
+
   test('Should catch private key leak using online transaction interface during explicit online validation', async ({ waxTest, config }) => {
       const retVal = await waxTest(txSecurityLeakBody, mirrornetSkeletonKey, config!, false);
     expect(retVal.detectedLeakError).toStrictEqual({
