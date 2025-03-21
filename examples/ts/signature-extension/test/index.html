@@ -12,6 +12,7 @@
 
   <button onclick="useKeychain()">Use Keychain</button>
   <button onclick="usePeakVault()">Use Peak Vault</button>
+  <button onclick="useMetaMask()">Use MetaMask</button>
   <button onclick="useBeekeeper()">Use Beekeeper</button>
 
   <pre><code id="operating-private-key"></code></pre>
@@ -23,6 +24,7 @@
     import { prepareTestingEnvironemnt, voteData } from "../common-data";
     import KeychainProvider from "@hiveio/wax-signers-keychain";
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
+    import MetaMaskProvider from "@hiveio/wax-signers-metamask";
 
     const txResult = document.getElementById('tx-result');
     const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
@@ -33,6 +35,13 @@
       const accountName = testEnv.accountName;
       const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
       const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
+      let metaMaskProvider;
+      try {
+        metaMaskProvider = await MetaMaskProvider.for(0);
+        await metaMaskProvider.installSnap();
+      } catch (error) {
+        console.error('Metamask provider not available', error);
+      }
       const beekeeperProvider = testEnv.preparedBeekeeperWallet;
 
       operatingPrivateKeyPlaceholder.textContent = `${accountName}@${testEnv.role} private key to be imported to wallets: ${testEnv.privateKey}`;
@@ -101,6 +110,7 @@
 
       window.useKeychain = () => void sign(keychainProvider);
       window.usePeakVault = () => void sign(peakVaultProvider);
+      window.useMetaMask = () => void sign(metaMaskProvider);
       window.useBeekeeper = () => void beekeeperSign(beekeeperProvider);
     })();
   </script>

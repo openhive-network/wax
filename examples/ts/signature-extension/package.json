@@ -11,6 +11,7 @@
     "@hiveio/beekeeper": "1.27.10-stable.250305202831",
     "@hiveio/wax": "file:../../../ts",
     "@hiveio/wax-signers-keychain": "file:../../../ts/packages/signers-keychain",
+    "@hiveio/wax-signers-metamask": "file:../../../ts/packages/signers-metamask",
     "@hiveio/wax-signers-peakvault": "file:../../../ts/packages/signers-peakvault"
   },
   "devDependencies": {
@@ -19,6 +20,7 @@
     "@playwright/test": "1.50.1",
     "@types/node": "^22.13.9",
     "buffer": "^5.5.0||^6.0.0",
+    "events": "^3.1.0",
     "parcel": "^2.14.2",
     "process": "^0.11.10",
     "stream-browserify": "^3.0.0",
