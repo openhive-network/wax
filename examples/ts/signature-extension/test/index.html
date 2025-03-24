@@ -14,6 +14,7 @@
   <button onclick="usePeakVault()">Use Peak Vault</button>
   <button onclick="useMetaMask()">Use MetaMask</button>
   <button onclick="useBeekeeper()">Use Beekeeper</button>
+  <button onclick="useHbAuth()">Use HBAuth</button>
 
   <pre><code id="operating-private-key"></code></pre>
   <pre><code id="tx-result"></code></pre>
@@ -26,6 +27,8 @@
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
     import MetaMaskProvider from "@hiveio/wax-signers-metamask";
     import BeekeeperProvider from "@hiveio/wax-signers-beekeeper";
+    import HBAuthProvider from "@hiveio/wax-signers-hb-auth";
+    import { OfflineClient } from "@hiveio/hb-auth";
 
     const txResult = document.getElementById('tx-result');
     const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
@@ -34,21 +37,6 @@
     (async()=> {
       const testEnv = await prepareTestingEnvironemnt();
       const accountName = testEnv.accountName;
-      const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
-      let beekeeperProvider;
-      try {
-        beekeeperProvider = await BeekeeperProvider.for(testEnv.preparedBeekeeperWallet, testEnv.publicKey);
-      } catch (error) {
-        console.error('Beekeeper provider not available', error);
-      }
-      const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
-      let metaMaskProvider;
-      try {
-        metaMaskProvider = await MetaMaskProvider.for(0);
-        await metaMaskProvider.installSnap();
-      } catch (error) {
-        console.error('Metamask provider not available', error);
-      }
 
       operatingPrivateKeyPlaceholder.textContent = `${accountName}@${testEnv.role} private key to be imported to wallets: ${testEnv.privateKey}`;
 
@@ -97,15 +85,51 @@
           await tx.sign(provider);
           await verifySignature(tx);
         } catch (error) {
-          console.error(error);
+          console.error('Error signing transaction:', error);
           txResult.textContent = `Error: ${error.message}`;
         }
       };
 
+      const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
+
       window.useKeychain = () => void sign(keychainProvider);
+
+      let beekeeperProvider;
+      try {
+        beekeeperProvider = await BeekeeperProvider.for(testEnv.preparedBeekeeperWallet, testEnv.publicKey);
+      } catch (error) {
+        console.error('Beekeeper provider not available', error);
+      }
+      const hbAuthClient = new OfflineClient({
+        chainId: testEnv.configuredChain.chainId,
+        node: testEnv.configuredChain.endpointUrl,
+        workerUrl: new URL('./hb-auth-worker.js', import.meta.url),
+        sessionTimeout: 900
+      });
+      const hbAuthProvider = await HBAuthProvider.for(hbAuthClient);
+      try {
+        await hbAuthClient.initialize();
+        const registeredUser = await hbAuthClient.getRegisteredUserByUsername(accountName);
+        if (registeredUser)
+          await hbAuthClient.authenticate(accountName, "password", testEnv.role);
+        else
+          await hbAuthClient.register(accountName, "password", testEnv.privateKey, testEnv.role);
+      } catch (error) {
+        console.error('Could not initialize hb-auth', error);
+      }
+      const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
+      let metaMaskProvider;
+      try {
+        metaMaskProvider = await MetaMaskProvider.for(0);
+        await metaMaskProvider.installSnap();
+      } catch (error) {
+        console.error('Metamask provider not available', error);
+      }
+
       window.usePeakVault = () => void sign(peakVaultProvider);
       window.useMetaMask = () => void sign(metaMaskProvider);
       window.useBeekeeper = () => void sign(beekeeperProvider);
+      window.useHbAuth = () => void sign(hbAuthProvider);
     })();
   </script>
 </body>

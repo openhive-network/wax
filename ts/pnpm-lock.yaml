@@ -201,6 +201,19 @@ importers:
         specifier: catalog:typescript-toolset
         version: 5.7.3
 
+  packages/signers-hb-auth:
+    dependencies:
+      '@hiveio/hb-auth':
+        specifier: 0.0.1-stable.250131124251
+        version: 0.0.1-stable.250131124251
+      '@hiveio/wax':
+        specifier: workspace:../..
+        version: link:../..
+    devDependencies:
+      typescript:
+        specifier: catalog:typescript-toolset
+        version: 5.7.3
+
   packages/signers-keychain:
     dependencies:
       '@hiveio/wax':
@@ -428,8 +441,19 @@ packages:
     resolution: {integrity: sha1-mPx0QrDh3NSPSOYGyR1SUyi3lyA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.10-stable.250305202831.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
+  '@hiveio/beekeeper@1.27.8-stable.250131103618':
+    resolution: {integrity: sha1-0IYuFBbxIIKfRTrI6ZZc7Jf+qLA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.8-stable.250131103618.tgz}
+    engines: {node: ^20.11 || >= 21.2}
+
   '@hiveio/dhive@1.3.2':
     resolution: {integrity: sha512-kJjp3TbpIlODxjJX4BWwvOf+cMxT8CFH/mNQ40RRjR2LP0a4baSWae1G+U/q/NtgjsIQz6Ja40tvnw6KF12I+g==, tarball: https://registry.npmjs.org/@hiveio/dhive/-/dhive-1.3.2.tgz}
+
+  '@hiveio/hb-auth@0.0.1-stable.250131124251':
+    resolution: {integrity: sha1-HX9GbxRjpo+ezDR5SAvuEIVr6II=, tarball: https://gitlab.syncad.com/api/v4/projects/429/packages/npm/@hiveio/hb-auth/-/@hiveio/hb-auth-0.0.1-stable.250131124251.tgz}
+
+  '@hiveio/wax@1.27.6-rc7-stable.250131113706':
+    resolution: {integrity: sha1-Xi2VV8y9T6MdBHOBSzxZNpmGnF8=, tarball: https://gitlab.syncad.com/api/v4/projects/419/packages/npm/@hiveio/wax/-/@hiveio/wax-1.27.6-rc7-stable.250131113706.tgz}
+    engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -977,6 +1001,9 @@ packages:
   combined-stream@1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}
     engines: {node: '>= 0.8'}
+
+  comlink@4.4.2:
+    resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -2589,6 +2616,8 @@ snapshots:
 
   '@hiveio/beekeeper@1.27.10-stable.250305202831': {}
 
+  '@hiveio/beekeeper@1.27.8-stable.250131103618': {}
+
   '@hiveio/dhive@1.3.2':
     dependencies:
       '@ecency/bytebuffer': 6.0.0
@@ -2606,6 +2635,17 @@ snapshots:
       whatwg-fetch: 3.6.20
     transitivePeerDependencies:
       - encoding
+
+  '@hiveio/hb-auth@0.0.1-stable.250131124251':
+    dependencies:
+      '@hiveio/wax': 1.27.6-rc7-stable.250131113706
+      comlink: 4.4.2
+
+  '@hiveio/wax@1.27.6-rc7-stable.250131113706':
+    dependencies:
+      '@hiveio/beekeeper': 1.27.8-stable.250131103618
+      events: 3.3.0
+      long: 5.2.3
 
   '@isaacs/cliui@8.0.2':
     dependencies:
@@ -3188,6 +3228,8 @@ snapshots:
   combined-stream@1.0.8:
     dependencies:
       delayed-stream: 1.0.0
+
+  comlink@4.4.2: {}
 
   commander@2.20.3: {}
 

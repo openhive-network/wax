@@ -12,7 +12,7 @@ export const test = base.extend<{
 }>({
   context: async ({}, use) => {
     console.log('Launched browser');
-    const browserContext = await chromium.launchPersistentContext('');
+    const browserContext = await chromium.launchPersistentContext('', { headless: typeof process.env.PLAYWRIGHT_HEADLESS === "undefined" });
 
     console.log('Before use browserContext');
     await use(browserContext);

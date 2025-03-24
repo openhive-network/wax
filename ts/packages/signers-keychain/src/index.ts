@@ -54,6 +54,9 @@ class KeychainProvider implements IOnlineSignatureProvider {
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
+    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
+      throw new WaxKeychainProviderError(`Keychain is not installed`);
+
     const data = await KeychainProvider.keychain.signTx({
       method: this.role,
       username: this.accountName,

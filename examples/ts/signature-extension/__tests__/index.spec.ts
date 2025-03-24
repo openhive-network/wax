@@ -3,6 +3,10 @@ import { expect, Page } from "@playwright/test";
 
 test.describe('Signature extension tests', () => {
   test('Should be able to sign transction using key chain extension.', async ({ page, extensionId, context, baseDirectoryPath, testedAccountAuthorityData}) => {
+    page.on("console", (msg) => {
+      console.log(`[${msg.type()}]>> Page console: ${msg.text()}`);
+    });
+
     page.setViewportSize({ width: 500, height: 700 });
 
     //////////////// Import settings begin (containing mirrornet endpoint configuration)
