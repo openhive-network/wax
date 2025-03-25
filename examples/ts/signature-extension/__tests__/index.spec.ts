@@ -94,6 +94,7 @@ test.describe('Signature extension tests', () => {
     const result = await testPage.waitForSelector('#tx-result');
     const tx = JSON.parse(await result.textContent() as string);
 
+    console.log(`Received keyMatchText: ${keyMatchText}`);
     //await page.pause();
 
     expect(tx.signatures).toHaveLength(1);
