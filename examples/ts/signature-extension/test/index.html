@@ -103,7 +103,7 @@
       const hbAuthClient = new OfflineClient({
         chainId: testEnv.configuredChain.chainId,
         node: testEnv.configuredChain.endpointUrl,
-        workerUrl: new URL('./hb-auth-worker.js', import.meta.url),
+        workerUrl: './worker.js',
         sessionTimeout: 900
       });
       const hbAuthProvider = await HBAuthProvider.for(hbAuthClient);

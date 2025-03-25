@@ -1,1 +1,0 @@
-../node_modules/@hiveio/hb-auth/dist/worker.js
