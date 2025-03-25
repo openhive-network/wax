@@ -19,5 +19,5 @@ source = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-wax = "0.3.10.dev581+d566936"
+python = "^3.12"
+wax = "0.3.10.dev602+ae2e51c"
