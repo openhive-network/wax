@@ -5,6 +5,9 @@ export const iterate = <T extends Record<string, any>>(source: DeepPartial<T>, t
     return source;
 
   for(const itKey in (target as DeepPartial<T>)) {
+    // Prevent prototype pollution
+    if (itKey === "__proto__" || itKey === "constructor") continue;
+
     if(typeof target[itKey] !== "object") {
       source[itKey] = target[itKey] as any;
 
