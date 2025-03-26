@@ -50,7 +50,12 @@ export class JsonRpcMock extends AProxyMockResolver {
     // here we assume that the request is valid
     const { method, params } = req.body;
 
-    const response = this.mockData[method](params);
+    const mockFn = this.mockData[method];
+
+    if (typeof mockFn !== "function")
+      throw new Error(`Method ${method} is not implemented`);
+
+    const response = mockFn(params);
 
     res.json(response);
   }
