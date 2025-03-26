@@ -18,7 +18,7 @@ import { WaxFormatter } from "./formatters/waxify.js";
 import { isNaiAsset } from "./util/asset_util.js";
 
 import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
-import { ISignatureProvider } from "./extensions/signatures";
+import { IEncryptionProvider, ILegacyEncryptionProvider, IOnlineEncryptionProvider } from "./extensions/signatures";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
@@ -353,8 +353,18 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.extract(publicKey);
   }
 
-  public encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
-    const encrypted = wallet.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
+  public encrypt(provider: ILegacyEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+  public encrypt(provider: IEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+  public encrypt(provider: IOnlineEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): Promise<string>;
+  public encrypt(provider: IEncryptionProvider | ILegacyEncryptionProvider | IOnlineEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string | Promise<string> {
+    const encrypted = provider.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
+
+    if (encrypted instanceof Promise)
+      return encrypted.then(content => safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
+        content,
+        from: mainEncryptionKey,
+        to: otherEncryptionKey ?? mainEncryptionKey
+      })));
 
     return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
       content: encrypted,
@@ -383,10 +393,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.cachedConfig;
   }
 
-  public decrypt(wallet: ISignatureProvider, encrypted: string): string {
+
+  public decrypt(provider: IEncryptionProvider, encrypted: string): string;
+  public decrypt(provider: ILegacyEncryptionProvider, encrypted: string): string;
+  public decrypt(provider: IOnlineEncryptionProvider, encrypted: string): Promise<string>;
+  public decrypt(provider: IOnlineEncryptionProvider | ILegacyEncryptionProvider | IEncryptionProvider, encrypted: string): string | Promise<string> {
     const data = safeWasmCall(() => this.proto.cpp_crypto_memo_from_string(encrypted));
 
-    return wallet.decryptData(data.content as string, data.from as string, data.to as string);
+    return provider.decryptData(data.content as string, data.from as string, data.to as string);
   }
 
 /**

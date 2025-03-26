@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProviderSignTransaction, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
 import type { MetaMaskInpageProvider } from "@metamask/providers";
 import { getSnapsProvider } from "./provider.js";
 
@@ -49,7 +49,7 @@ export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
  * await chain.broadcast(tx);
  * ```
  */
-export class MetaMaskProvider implements IOnlineSignatureProvider {
+export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction {
   /**
    * Indicates either the snap is installed or not.
    * If you want to install or reinstall the snap, use {@link installSnap}
@@ -69,6 +69,8 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     private currentSnap: MetamaskSnapData | null = null,
     private readonly accountIndex: number = 0
   ) {}
+
+  public isOnline = true as const;
 
   private request(method: string, params?: any) {
     return this.provider.request(params ? { method, params } : { method });

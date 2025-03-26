@@ -9,7 +9,7 @@ import { WaxError } from "./errors.js";
 import type { ApiTransaction } from "./api";
 import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
-import { ISignatureProvider } from "./extensions/signatures";
+import { IEncryptionProvider, ILegacyEncryptionProvider, ILegacySignatureProvider, IOnlineEncryptionProvider, IOnlineSignatureProviderSignDigest, IOnlineSignatureProviderSignTransaction, ISignatureProviderSignDigest, ISignatureProviderSignTransaction } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
 
 type TIndexBeginEncryption = {
@@ -33,13 +33,13 @@ export type TTransactionRequiredAuthorities = {
 }
 
 export class Transaction implements ITransaction, IEncryptingTransaction<ITransaction> {
-  private target: transaction;
+  protected target: transaction;
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return safeWasmCall(() => this.api.proto.cpp_get_tapos_data(hex));
   }
 
-  private indexKeeper: Array<TIndexKeeperNode> = [];
+  protected indexKeeper: Array<TIndexKeeperNode> = [];
 
   public constructor(
     public readonly api: WaxBaseApi,
@@ -290,10 +290,33 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.target.expiration = expiration.toISOString().slice(0, -5);
   }
 
-  public decrypt(wallet: ISignatureProvider): transaction {
+  public decrypt(provider: IEncryptionProvider): transaction;
+  public decrypt(provider: ILegacyEncryptionProvider): transaction;
+  public decrypt(provider: IOnlineEncryptionProvider): Promise<transaction>;
+  public decrypt(provider: IEncryptionProvider | ILegacyEncryptionProvider | IOnlineEncryptionProvider): transaction | Promise<transaction> {
+    if ("isOnline" in provider && provider.isOnline) {
+      return new Promise(async(resolve, reject) => {
+        try {
+          const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
+            if(data.startsWith('#'))
+              return this.api.decrypt(provider as IOnlineEncryptionProvider, data)
+
+            return data;
+          });
+
+          for(const op of this.target.operations)
+            await visitor.accept(op);
+
+          resolve(this.target);
+        } catch(error) {
+          reject(error);
+        }
+      });
+    }
+
     const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
       if(data.startsWith('#'))
-        return this.api.decrypt(wallet, data)
+        return this.api.decrypt(provider as ILegacyEncryptionProvider | IEncryptionProvider, data)
 
       return data;
     });
@@ -304,30 +327,86 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     return this.target;
   }
 
-  private encryptOperations(wallet: ISignatureProvider): void {
+  private encryptOperations(provider: IEncryptionProvider): void {
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
         const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
-          return this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey, this.target.ref_block_prefix);
+          return this.api.encrypt(provider as any, data, index.mainEncryptionKey, index.otherEncryptionKey, this.target.ref_block_prefix);
         });
 
         visitor.accept(this.target.operations[i]);
       }
   }
 
-  public sign(walletOrSignature: ISignatureProvider | THexString, publicKey?: TPublicKey): THexString {
+  private async encryptOperationsAsync(provider: IOnlineEncryptionProvider): Promise<void> {
+    for(const index of this.indexKeeper)
+      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
+        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
+          return this.api.encrypt(provider as any, data, index.mainEncryptionKey, index.otherEncryptionKey, this.target.ref_block_prefix);
+        });
+
+        await visitor.accept(this.target.operations[i]);
+      }
+  }
+
+  public sign(provider: ISignatureProviderSignTransaction): void;
+  public sign(provider: ISignatureProviderSignTransaction & IEncryptionProvider): void;
+  public sign(provider: ISignatureProviderSignDigest, publicKey: TPublicKey): THexString;
+  public sign(provider: ISignatureProviderSignDigest & IEncryptionProvider, publicKey: TPublicKey): THexString;
+  public sign(provider: ILegacySignatureProvider & ILegacyEncryptionProvider, publicKey: TPublicKey): THexString;
+  public sign(provider: IOnlineSignatureProviderSignTransaction): Promise<void>;
+  public sign(provider: IOnlineSignatureProviderSignTransaction & IOnlineEncryptionProvider): Promise<void>;
+  public sign(provider: IOnlineSignatureProviderSignDigest, publicKey: TPublicKey): Promise<THexString>;
+  public sign(provider: IOnlineSignatureProviderSignDigest & IOnlineEncryptionProvider, publicKey: TPublicKey): Promise<THexString>;
+  public sign(signature: THexString): THexString;
+  public sign(providerOrSignature: (
+    ISignatureProviderSignTransaction | (ISignatureProviderSignTransaction & IEncryptionProvider) | ISignatureProviderSignDigest | (ISignatureProviderSignDigest & IEncryptionProvider) | (ILegacySignatureProvider & ILegacyEncryptionProvider) | IOnlineSignatureProviderSignTransaction | (IOnlineSignatureProviderSignTransaction & IOnlineEncryptionProvider) | IOnlineSignatureProviderSignDigest | (IOnlineSignatureProviderSignDigest & IOnlineEncryptionProvider)
+    ) | THexString, publicKey?: TPublicKey): void | Promise<void> | Promise<THexString> | THexString {
     this.validate();
 
-    if (typeof walletOrSignature === 'string') {
-
-      this.target.signatures.push(walletOrSignature);
-      return walletOrSignature;
+    if (typeof providerOrSignature === 'string') {
+      this.target.signatures.push(providerOrSignature);
+      return providerOrSignature;
     }
 
     this.flushTransaction();
-    this.encryptOperations(walletOrSignature);
 
-    const sig = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
+    // Allow online signature providers even if transactions were created offline
+    if ("isOnline" in providerOrSignature && providerOrSignature.isOnline) {
+      return new Promise(async(resolve, reject) => {
+        try {
+          if (this.indexKeeper.length > 0) {
+            if ("encryptData" in providerOrSignature)
+              await this.encryptOperationsAsync(providerOrSignature as IOnlineEncryptionProvider);
+            else
+              throw new WaxError("Encryption provider is required for operations encryption");
+          }
+
+          if (publicKey === undefined)
+            return resolve(await (providerOrSignature as IOnlineSignatureProviderSignTransaction).signTransaction(this));
+
+          const sig = await (providerOrSignature as IOnlineSignatureProviderSignDigest).signDigest(publicKey, this.sigDigest);
+
+          this.target.signatures.push(sig);
+
+          resolve(sig);
+        } catch(error) {
+          reject(error);
+        }
+      }) as any;
+    }
+
+    if (this.indexKeeper.length > 0) {
+      if ("encryptData" in providerOrSignature)
+        this.encryptOperations(providerOrSignature as IEncryptionProvider);
+      else
+        throw new WaxError("Encryption provider is required for operations encryption");
+    }
+
+    if (publicKey === undefined)
+      return (providerOrSignature as ISignatureProviderSignTransaction).signTransaction(this as ITransaction);
+
+    const sig = (providerOrSignature as ISignatureProviderSignDigest).signDigest(publicKey, this.sigDigest);
 
     this.target.signatures.push(sig);
 

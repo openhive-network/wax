@@ -4,7 +4,7 @@ import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import type { IOnlineTransaction, ITransaction, THexString, TPublicKey, TSignature, TTimestamp } from "./interfaces";
+import type { IOnlineTransaction, ITransaction, TPublicKey, TSignature, TTimestamp } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
@@ -12,7 +12,6 @@ import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 import { AccountAuthorityCachingProvider } from "./util/account_authority_caching_provider";
 import { convertAuthorityTrace } from "./verify_authority_trace";
 import { authority_verification_trace, MapStringUInt16, required_authority_collection, wax_authority } from "../build_wasm/wax.common";
-import type { IOnlineSignatureProvider, ISignatureProvider } from "./extensions/signatures";
 
 type TAuthorityHolder = {
   owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
@@ -153,23 +152,12 @@ class OnChainOperationValidator extends OperationVisitor {
  * Extends standard Transaction implementation by ability to perform a verification step which requires a chain APIs access,
  */
 export class OnlineTransaction extends Transaction implements IOnlineTransaction {
-
   public constructor(private readonly chain: HiveChainApi, chainReferenceData: TChainReferenceData, expirationTime?: TTimestamp) {
     /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
      *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
     */
     const expirationRefTime = chain.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
     super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime);
-  }
-
-  public sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
-  public sign(wallet: IOnlineSignatureProvider): Promise<void>;
-  public sign(signature: THexString): THexString;
-  public sign(walletOrSignature: IOnlineSignatureProvider | ISignatureProvider | THexString, publicKey?: TPublicKey): Promise<void> | THexString {
-    if (typeof walletOrSignature === "object" && "signTransaction" in walletOrSignature)
-      return walletOrSignature.signTransaction(this as ITransaction);
-
-    return super.sign(walletOrSignature, publicKey);
   }
 
   public async generateAuthorityVerificationTrace(useLegacySerialization: boolean = false, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {

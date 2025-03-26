@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import { getWallet } from '@peakd/hive-wallet-sdk'
 
@@ -36,7 +36,7 @@ export class WaxPeakVaultProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class PeakVaultProvider implements IOnlineSignatureProvider {
+class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction {
   private readonly role: KeyRole;
 
   private static peakVaultWallet: Awaited<ReturnType<typeof getWallet>>;
@@ -50,6 +50,8 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
 
     this.role = mapRoles[role];
   }
+
+  public isOnline = true as const;
 
   public static for(accountName: TAccountName, role: TRole): PeakVaultProvider {
     return new PeakVaultProvider(accountName, role);

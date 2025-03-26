@@ -14,7 +14,8 @@ import Long from "long";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
 
 import { TAccountName } from "./hive_apps_operations";
-import { ISignatureProvider } from "./extensions/signatures";
+import { IEncryptionProvider, IOnlineEncryptionProvider } from "./extensions/signatures";
+import { ILegacyEncryptionProvider } from './extensions/signatures/index';
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -258,7 +259,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     return retVal;
   }
 
-  public async encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount: string): Promise<string> {
+  public async encryptForAccounts(provider: ILegacyEncryptionProvider | IEncryptionProvider | IOnlineEncryptionProvider, content: string, fromAccount: string, toAccount: string): Promise<string> {
     let from: string, to: string;
 
     ([ { memo_key: from }, { memo_key: to } ] = await this.findAccounts(...[... new Set([ fromAccount, toAccount ])]));
@@ -266,7 +267,14 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     if(to === undefined)
       to = from;
 
-    const encrypted = wallet.encryptData(content, from, to);
+    const encrypted = provider.encryptData(content, from, to);
+
+    if (encrypted instanceof Promise)
+      return encrypted.then(content => this.proto.cpp_crypto_memo_dump_string({
+        content,
+        from,
+        to
+      }));
 
     return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
       content: encrypted,

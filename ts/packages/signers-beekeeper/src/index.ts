@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IHiveChainInterface, ISignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
@@ -18,17 +18,19 @@ export class WaxBeekeeperProviderError extends Error {}
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * tx.sign(provider);
  *
  * // broadcast
  * await chain.broadcast(tx);
  * ```
  */
-class BeekeeperProvider implements IOnlineSignatureProvider {
+class BeekeeperProvider implements ISignatureProviderSignTransaction {
   private constructor(
     private readonly wallet: IBeekeeperUnlockedWallet,
     private readonly publicKey: TPublicKey
   ) {}
+
+  public isOnline = false as const;
 
   public static for(wallet: IBeekeeperUnlockedWallet, publicKeyOrAccount: TPublicKey | TAccountName, role?: TRole, chain?: IHiveChainInterface): BeekeeperProvider | Promise<BeekeeperProvider> {
     if (role === undefined)
@@ -44,7 +46,7 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
     });
   }
 
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  public signTransaction(transaction: ITransaction): void {
     transaction.sign(this.wallet, this.publicKey);
   }
 }

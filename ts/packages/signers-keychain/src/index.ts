@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import { KeychainKeyTypes, KeychainSDK } from "keychain-sdk";
 
@@ -31,7 +31,7 @@ export class WaxKeychainProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class KeychainProvider implements IOnlineSignatureProvider {
+class KeychainProvider implements IOnlineSignatureProviderSignTransaction {
   private readonly role: KeychainKeyTypes;
 
   private static keychain: KeychainSDK;
@@ -48,6 +48,8 @@ class KeychainProvider implements IOnlineSignatureProvider {
 
     this.role = mapRoles[role];
   }
+
+  public isOnline = true as const;
 
   public static for(accountName: TAccountName, role: TRole): KeychainProvider {
     return new KeychainProvider(accountName, role);

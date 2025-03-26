@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProviderSignTransaction, ITransaction, TRole } from "@hiveio/wax";
 
 import { type OfflineClient, type OnlineClient } from "@hiveio/hb-auth";
 
@@ -24,12 +24,14 @@ export class WaxHBAuthProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class HBAuthProvider implements IOnlineSignatureProvider {
+class HBAuthProvider implements IOnlineSignatureProviderSignTransaction {
   private constructor(
     public readonly client: OnlineClient | OfflineClient,
     public readonly username: string,
     public readonly role: TRole
   ) {}
+
+  public isOnline = true as const;
 
   public static for(client: OnlineClient | OfflineClient, username: string, role: TRole): HBAuthProvider {
     if (role !== 'active' && role !== 'owner' && role !== 'posting')
