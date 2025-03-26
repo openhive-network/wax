@@ -92,6 +92,6 @@ export default defineConfig<IWaxedTest>({
   ],
   // Run your local dev server before starting the tests
   webServer: {
-    command: 'npx http-server'
+    command: 'npm run testserver'
   }
 });
