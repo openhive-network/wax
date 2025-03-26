@@ -10,7 +10,7 @@ import HBAuthProvider from "@hiveio/wax-signers-hb-auth";
 
 const chain = await createHiveChain();
 
-const provider = HBAuthProvider.for(hbAuthClient);
+const provider = HBAuthProvider.for(hbAuthClient, "gtg", "posting");
 
 // Create a transaction using the Wax Hive chain instance
 const tx = await chain.createTransaction();

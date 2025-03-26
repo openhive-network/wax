@@ -106,7 +106,7 @@
         workerUrl: './worker.js',
         sessionTimeout: 900
       });
-      const hbAuthProvider = await HBAuthProvider.for(hbAuthClient);
+      const hbAuthProvider = await HBAuthProvider.for(hbAuthClient, accountName, testEnv.role);
       try {
         await hbAuthClient.initialize();
         const registeredUser = await hbAuthClient.getRegisteredUserByUsername(accountName);

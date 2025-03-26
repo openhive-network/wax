@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction } from "@hiveio/wax";
+import type { IOnlineSignatureProvider, ITransaction, TRole } from "@hiveio/wax";
 
 import { type OfflineClient, type OnlineClient } from "@hiveio/hb-auth";
 
@@ -10,7 +10,7 @@ export class WaxHBAuthProviderError extends Error {}
  *
  * @example
  * ```
- * const provider = HBAuthProvider.for(hbAuthClient);
+ * const provider = HBAuthProvider.for(hbAuthClient, "gtg", "posting");
  *
  * // Create a transaction using the Wax Hive chain instance
  * const tx = await chain.createTransaction();
@@ -27,31 +27,21 @@ export class WaxHBAuthProviderError extends Error {}
 class HBAuthProvider implements IOnlineSignatureProvider {
   private constructor(
     public readonly client: OnlineClient | OfflineClient,
-    public readonly username?: string
+    public readonly username: string,
+    public readonly role: TRole
   ) {}
 
-  public static for(client: OnlineClient | OfflineClient, username?: string): HBAuthProvider {
-    return new HBAuthProvider(client, username);
+  public static for(client: OnlineClient | OfflineClient, username: string, role: TRole): HBAuthProvider {
+    if (role !== 'active' && role !== 'owner' && role !== 'posting')
+      throw new WaxHBAuthProviderError(`Invalid role: ${role}`);
+
+    return new HBAuthProvider(client, username, role);
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    const requiredAuthorities = transaction.requiredAuthorities;
+    const signature = await this.client.sign(this.username, transaction.sigDigest, this.role as 'active' | 'owner' | 'posting');
 
-    const signatures: string[] = [];
-
-    const digest = transaction.sigDigest;
-
-    for(const auth in requiredAuthorities)
-      if (auth !== "other")
-        for(const actor of requiredAuthorities[auth])
-          if (this.username === undefined || actor === this.username)
-            signatures.push(await this.client.sign(actor, digest, auth as 'posting' | 'active' | 'owner'));
-
-    if (signatures.length === 0)
-      throw new WaxHBAuthProviderError(`Failed to sign the transaction`);
-
-    for(const signature of signatures)
-      transaction.sign(signature);
+    transaction.sign(signature);
   }
 }
 
@@ -60,9 +50,10 @@ export interface WaxHBAuthProviderCreator {
    * We assume you already called #initialize() on the client and client has imported the keys.
    *
    * @param client - The hb-auth client instance.
-   * @param username - The username to sign the transaction with. If not provided - every user imported to the hb-auth will be allowed to sign the transaction.
+   * @param username - The username to sign the transaction with
+   * @param role - The role to sign the transaction with
    */
-  for(client: OnlineClient | OfflineClient, username?: string): HBAuthProvider;
+  for(client: OnlineClient | OfflineClient, username: string, role: TRole): HBAuthProvider;
 }
 
 export default HBAuthProvider as WaxHBAuthProviderCreator;
