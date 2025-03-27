@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProviderSignTransaction, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
+import type { IOnlineEncryptionProvider, IOnlineSignatureProviderSignTransaction, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
 import type { MetaMaskInpageProvider } from "@metamask/providers";
 import { getSnapsProvider } from "./provider.js";
 
@@ -49,7 +49,7 @@ export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
  * await chain.broadcast(tx);
  * ```
  */
-export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction {
+export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction, IOnlineEncryptionProvider {
   /**
    * Indicates either the snap is installed or not.
    * If you want to install or reinstall the snap, use {@link installSnap}
@@ -113,13 +113,13 @@ export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction
     return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex);
   }
 
-  public async encrypt(buffer: string, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
     const response = await this.invokeSnap('hive_encrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex }, secondKey: recipient }) as any;
 
     return response.buffer;
   }
 
-  public async decrypt(buffer: string): Promise<string> {
+  public async decryptData(buffer: string): Promise<string> {
     const response = await this.invokeSnap('hive_decrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex } }) as any;
 
     return response.buffer;
