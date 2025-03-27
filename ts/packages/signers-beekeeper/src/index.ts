@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, ISignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IEncryptionProvider, IHiveChainInterface, ISignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
@@ -24,11 +24,19 @@ export class WaxBeekeeperProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class BeekeeperProvider implements ISignatureProviderSignTransaction {
+class BeekeeperProvider implements ISignatureProviderSignTransaction, IEncryptionProvider {
   private constructor(
     private readonly wallet: IBeekeeperUnlockedWallet,
     private readonly publicKey: TPublicKey
   ) {}
+
+  public encryptData(content: string, recipient: TPublicKey): string {
+    return this.wallet.encryptData(content, this.publicKey, recipient);
+  }
+
+  public decryptData(content: string): string {
+    return this.wallet.decryptData(content, this.publicKey);
+  }
 
   public isOnline = false as const;
 
