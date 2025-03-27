@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineEncryptionProvider, IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 import { KeychainKeyTypes, KeychainSDK } from "keychain-sdk";
 
@@ -31,7 +31,7 @@ export class WaxKeychainProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class KeychainProvider implements IOnlineSignatureProviderSignTransaction {
+class KeychainProvider implements IOnlineSignatureProviderSignTransaction, IOnlineEncryptionProvider {
   private readonly role: KeychainKeyTypes;
 
   private static keychain: KeychainSDK;
@@ -53,6 +53,33 @@ class KeychainProvider implements IOnlineSignatureProviderSignTransaction {
 
   public static for(accountName: TAccountName, role: TRole): KeychainProvider {
     return new KeychainProvider(accountName, role);
+  }
+
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
+      throw new WaxKeychainProviderError(`Keychain is not installed`);
+
+    const encryptionResult = await KeychainProvider.keychain.encodeWithKeys({
+      method: KeychainKeyTypes.memo,
+      username: this.accountName,
+      message: buffer,
+      publicKeys: [recipient]
+    });
+
+    return Object.values(encryptionResult.result as any)[0] as string;
+  }
+
+  public async decryptData(buffer: string): Promise<string> {
+    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
+      throw new WaxKeychainProviderError(`Keychain is not installed`);
+
+    const data = await KeychainProvider.keychain.decode({
+      message: buffer,
+      method: KeychainKeyTypes.memo,
+      username: this.accountName
+    });
+
+    return data.result as unknown as string;
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
