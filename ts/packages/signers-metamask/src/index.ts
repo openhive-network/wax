@@ -63,6 +63,8 @@ export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction
    */
   public readonly isLocalSnap = isLocalSnap(defaultSnapOrigin);
 
+  private readonly publicKeyCache = new Map<TRole, TPublicKey>();
+
   public constructor(
     private readonly provider: MetaMaskInpageProvider,
     public readonly isFlaskDetected: boolean,
@@ -111,6 +113,50 @@ export class MetaMaskProvider implements IOnlineSignatureProviderSignTransaction
 
     // Provide all of the data to our MetaMaskProvider wrapper exposing the public API
     return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex);
+  }
+
+  public async getPublicKeys(...roles: TRole[]): Promise<Record<TRole, TPublicKey | undefined>> {
+    const keysRecord = Object.fromEntries(([...(new Set(roles))]).map(role => [role, undefined])) as Record<TRole, TPublicKey | undefined>;
+
+    for(const role in keysRecord) {
+      const cachedKey = this.publicKeyCache.get(role as TRole);
+      if (cachedKey)
+        keysRecord[role as TRole] = cachedKey;
+    }
+
+    const missingRoles = Object.entries(keysRecord).filter(([, key]) => !key).map(([role]) => role as TRole);
+
+    // All keys are already cached so return the cached keys
+    if (missingRoles.length === 0)
+      return keysRecord;
+
+    // This will fail if any of the requested roles is not supported
+    const response = await this.invokeSnap('hive_getPublicKeys', { keys: missingRoles.map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
+
+    // Update the cache with the new keys
+    for(const key of response.publicKeys) {
+      keysRecord[key.role] = key.publicKey;
+      this.publicKeyCache.set(key.role, key.publicKey);
+    }
+
+    return keysRecord;
+  }
+
+  public async getPublicKey(role: TRole): Promise<TPublicKey> {
+    // Check if the key is already cached
+    const key = this.publicKeyCache.get(role);
+    if (key)
+      return key;
+
+    // This will fail if the requested role is not supported
+    const response = await this.invokeSnap('hive_getPublicKey', { keys: [{ role, accountIndex: this.accountIndex }] }) as any;
+
+    const publicKey = response.publicKeys[0].publicKey;
+
+    // Update the cache with the new key
+    this.publicKeyCache.set(role, publicKey);
+
+    return publicKey;
   }
 
   public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
