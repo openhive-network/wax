@@ -354,23 +354,17 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public encrypt(provider: ILegacyEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
-  public encrypt(provider: IEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
-  public encrypt(provider: IOnlineEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): Promise<string>;
+  public encrypt(provider: IEncryptionProvider, content: string, recipient: TPublicKey): string;
+  public encrypt(provider: IOnlineEncryptionProvider, content: string, recipient: TPublicKey): Promise<string>;
   public encrypt(provider: IEncryptionProvider | ILegacyEncryptionProvider | IOnlineEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string | Promise<string> {
-    const encrypted = provider.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
-
-    if (encrypted instanceof Promise)
-      return encrypted.then(content => safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
-        content,
+    if ("isOnline" in provider) {
+      return provider.encryptData(content, mainEncryptionKey);
+    } else
+      return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
+        content: provider.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce),
         from: mainEncryptionKey,
         to: otherEncryptionKey ?? mainEncryptionKey
-      })));
-
-    return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
-      content: encrypted,
-      from: mainEncryptionKey,
-      to: otherEncryptionKey ?? mainEncryptionKey
-    }));
+      }));
   }
 
   private cachedConfig: IChainConfig | undefined;

@@ -316,7 +316,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
     const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
       if(data.startsWith('#'))
-        return this.api.decrypt(provider as ILegacyEncryptionProvider | IEncryptionProvider, data)
+        return this.api.decrypt(provider as IEncryptionProvider, data)
 
       return data;
     });

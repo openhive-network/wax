@@ -966,7 +966,7 @@ export interface IWaxBaseInterface {
   /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
-   * @param {IEncryptionProvider | ILegacyEncryptionProvider} provider provider to be used for encryption
+   * @param {ILegacyEncryptionProvider} provider provider to be used for encryption
    * @param {string} content Content to be encoded
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
    * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
@@ -974,20 +974,29 @@ export interface IWaxBaseInterface {
    *
    * @returns {string} Encrypted content
    */
-  encrypt(provider: IEncryptionProvider | ILegacyEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+  encrypt(provider: ILegacyEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+
+  /**
+   * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
+   *
+   * @param {IEncryptionProvider | ILegacyEncryptionProvider} provider provider to be used for encryption
+   * @param {string} content Content to be encoded
+   * @param {TPublicKey} recipient Key to encrypt operations for
+   *
+   * @returns {string} Encrypted content
+   */
+  encrypt(provider: IEncryptionProvider, content: string, recipient: TPublicKey): string;
 
   /**
    * Encrypts given data using two keys and dumps result to the encrypted string in `#encrypted` format
    *
    * @param {IOnlineEncryptionProvider} provider provider to be used for encryption
    * @param {string} content Content to be encoded
-   * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
-   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
-   * @param {?number} nonce optional nonce to be explicitly specified for encryption
+   * @param {TPublicKey} recipient Key to encrypt operations for
    *
    * @returns {Promise<string>} Encrypted content
    */
-  encrypt(provider: IOnlineEncryptionProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): Promise<string>;
+  encrypt(provider: IOnlineEncryptionProvider, content: string, recipient: TPublicKey): Promise<string>;
 
   /**
    * Decrypts given data from the encrypted string in `#encrypted` format
@@ -1273,7 +1282,18 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * @returns {Promise<string>} Encrypted content
    */
-  encryptForAccounts(provider: ILegacyEncryptionProvider | IEncryptionProvider | IOnlineEncryptionProvider, content: string, fromAccount: string, toAccount?: string): Promise<string>;
+  encryptForAccounts(provider: ILegacyEncryptionProvider, content: string, fromAccount: string, toAccount?: string): Promise<string>;
+
+  /**
+   * Encrypts given data using memo public keys of two accounts and dumps result to the encrypted string in `#encrypted` format
+   *
+   * @param {ILegacyEncryptionProvider | IEncryptionProvider | IOnlineEncryptionProvider} provider provider to be used for encryption
+   * @param {string} content Content to be encoded
+   * @param {string} recipient account to retrieve the memo public key used for encryption
+   *
+   * @returns {Promise<string>} Encrypted content
+   */
+  encryptForAccounts(provider: IEncryptionProvider | IOnlineEncryptionProvider, content: string, recipient: string): Promise<string>;
 
   /**
    * Allows to override default endpoint URL used to call RPC APIs initially configured by {@link IWaxOptionsChain} passed to {@link createHiveChain} builder function.

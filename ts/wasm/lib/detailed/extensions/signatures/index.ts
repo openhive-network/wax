@@ -24,11 +24,31 @@ export interface ILegacyEncryptionProvider {
   decryptData(content: string, key: TPublicKey, anotherKey?: TPublicKey): string;
 }
 
-export interface IEncryptionProvider extends ILegacyEncryptionProvider {
+export interface IEncryptionProvider {
   /**
    * @internal
    */
   readonly isOnline: false;
+
+  /**
+   * Encrypts given data for a specific entity and returns the encrypted message
+   *
+   * @param {string} content Content to be encrypted
+   * @param {TPublicKey} recipient public key to find the private key in the underlying container and encrypt the data
+   *
+   * Return string only if you have ready to use encrypted data, otherwise return object with metadata
+   *
+   * @returns {string} base58 encrypted buffer with account metadata
+   */
+  encryptData(content: string, recipient: TPublicKey): string;
+  /**
+   * Decrypts given data from a specific entity and returns the decrypted message
+   *
+   * @param {string} content Base58 content to be decrypted
+   *
+   * @returns {string} decrypted buffer
+   */
+  decryptData(content: string): string;
 }
 
 export interface ILegacySignatureProvider {
@@ -76,23 +96,21 @@ export interface IOnlineEncryptionProvider {
    * Decrypts given data from a specific entity and returns the decrypted message
    *
    * @param {string} content Base58 content to be decrypted
-   * @param {TPublicKey} key public key to find the private key in the underlying container and decrypt the data
-   * @param {?TPublicKey} anotherKey other public key to find the private key in the underlying container and decrypt the data (optional - use if the message was encrypted for somebody else)
    *
    * @returns {Promise<string>} decrypted buffer
    */
-  decryptData(content: string, key: TPublicKey, anotherKey?: TPublicKey): Promise<string>;
+  decryptData(content: string): Promise<string>;
   /**
    * Encrypts given data for a specific entity and returns the encrypted message
    *
    * @param {string} content Content to be encrypted
-   * @param {TPublicKey} key public key to find the private key in the underlying container and encrypt the data
-   * @param {?TPublicKey} anotherKey other public key to find the private key in the underlying container and encrypt the data (optional - use if the message is to encrypt for somebody else)
-   * @param {?number} nonce optional nonce to be explicitly specified for encryption
+   * @param {TPublicKey} recipient public key to find the private key in the underlying container and encrypt the data
    *
-   * @returns {Promise<string>} base58 encrypted buffer
+   * Return string only if you have ready to use encrypted data, otherwise return object with metadata
+   *
+   * @returns {Promise<string>} base58 encrypted buffer with account metadata
    */
-  encryptData(content: string, key: TPublicKey, anotherKey?: TPublicKey, nonce?: number): Promise<string>;
+  encryptData(content: string, recipient: TPublicKey): Promise<string>;
 }
 
 export interface IOnlineSignatureProviderSignDigest {
