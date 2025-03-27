@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineEncryptionProvider, IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 import { getWallet } from '@peakd/hive-wallet-sdk'
 
@@ -36,7 +36,7 @@ export class WaxPeakVaultProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction {
+class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction, IOnlineEncryptionProvider {
   private readonly role: KeyRole;
 
   private static peakVaultWallet: Awaited<ReturnType<typeof getWallet>>;
@@ -55,6 +55,24 @@ class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction {
 
   public static for(accountName: TAccountName, role: TRole): PeakVaultProvider {
     return new PeakVaultProvider(accountName, role);
+  }
+
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+    if (!PeakVaultProvider.peakVaultWallet)
+      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+
+    const encryptionResult = await PeakVaultProvider.peakVaultWallet.encodeWithKeys(this.accountName, "memo", [recipient], buffer);
+
+    return encryptionResult.result[0];
+  }
+
+  public async decryptData(buffer: string): Promise<string> {
+    if (!PeakVaultProvider.peakVaultWallet)
+      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+
+    const data = await PeakVaultProvider.peakVaultWallet.decode(this.accountName, buffer, "memo");
+
+    return data.result as unknown as string;
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
