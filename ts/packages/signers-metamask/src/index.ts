@@ -19,7 +19,7 @@ export class WaxMetaMaskProviderError extends Error {}
  */
 export const defaultSnapOrigin = `npm:@hiveio/metamask-snap`; // local:http://localhost:8080
 
-export const defaultSnapVersion: string | undefined = '1.3.3';
+export const defaultSnapVersion: string | undefined = '1.4.0';
 
 /**
  * Check if a snap ID is a local snap ID.
