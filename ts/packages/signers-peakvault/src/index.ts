@@ -1,18 +1,11 @@
 import type { IOnlineEncryptionProvider, IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
-import { getWallet } from '@peakd/hive-wallet-sdk'
-
-// @peakd/hive-wallet-sdk fails to provide this type import
-type KeyRole = Parameters<typeof PeakVaultProvider['peakVaultWallet']['signTx']>[2];
-
-const mapRoles: Record<TRole, KeyRole | undefined> = {
+const mapRoles: Record<TRole, string | undefined> = {
   active: 'active',
   posting: 'posting',
   owner: undefined,
   memo: 'memo'
 };
-
-const PEAKVAULT_WALLET_ID: Parameters<typeof getWallet>[0] = 'peakvault';
 
 // We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
 export class WaxPeakVaultProviderError extends Error {}
@@ -37,9 +30,7 @@ export class WaxPeakVaultProviderError extends Error {}
  * ```
  */
 class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction, IOnlineEncryptionProvider {
-  private readonly role: KeyRole;
-
-  private static peakVaultWallet: Awaited<ReturnType<typeof getWallet>>;
+  private readonly role: string;
 
   private constructor(
     private readonly accountName: TAccountName,
@@ -57,32 +48,34 @@ class PeakVaultProvider implements IOnlineSignatureProviderSignTransaction, IOnl
     return new PeakVaultProvider(accountName, role);
   }
 
+  private ensurePeakVaultInstalled(): void {
+    if (typeof window !== "object" || typeof (window as any).peakvault !== "object")
+      throw new WaxPeakVaultProviderError(`PeakVault is not installed`);
+  }
+
   public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
-    if (!PeakVaultProvider.peakVaultWallet)
-      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+    this.ensurePeakVaultInstalled();
 
-    const encryptionResult = await PeakVaultProvider.peakVaultWallet.encodeWithKeys(this.accountName, "memo", [recipient], buffer);
+    const response = await (window as any).peakvault.requestEncodeWithKeys(this.accountName, "memo", [recipient], buffer.startsWith("#") ? buffer : `#${buffer}`);
 
-    return encryptionResult.result[0];
+    return response.result[0];
   }
 
   public async decryptData(buffer: string): Promise<string> {
-    if (!PeakVaultProvider.peakVaultWallet)
-      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+    this.ensurePeakVaultInstalled();
 
-    const data = await PeakVaultProvider.peakVaultWallet.decode(this.accountName, buffer, "memo");
+    const response = await (window as any).peakvault.requestDecode(this.accountName, buffer, "memo");
 
-    return data.result as unknown as string;
+    return response.result;
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!PeakVaultProvider.peakVaultWallet)
-      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+    this.ensurePeakVaultInstalled();
 
-    const data = await PeakVaultProvider.peakVaultWallet.signTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
+    const response = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 
-    for(const sig of data.result.signatures)
-      transaction.sign(sig);
+    for(const signature of response.result.signatures)
+      transaction.sign(signature);
   }
 }
 

@@ -15,8 +15,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/wax": "workspace:../..",
-    "@peakd/hive-wallet-sdk": "^0.2.3"
+    "@hiveio/wax": "workspace:../.."
   },
   "files": [
     "dist/index.d.ts",
