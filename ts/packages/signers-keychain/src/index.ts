@@ -1,12 +1,10 @@
 import type { IOnlineEncryptionProvider, IOnlineSignatureProviderSignTransaction, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
-import { KeychainKeyTypes, KeychainSDK } from "keychain-sdk";
-
-const mapRoles: Record<TRole, KeychainKeyTypes | undefined> = {
-  active: KeychainKeyTypes.active,
-  posting: KeychainKeyTypes.posting,
+const mapRoles: Record<TRole, string | undefined> = {
+  active: "active",
+  posting: "posting",
   owner: undefined,
-  memo: KeychainKeyTypes.memo
+  memo: "memo"
 };
 
 // We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
@@ -32,9 +30,7 @@ export class WaxKeychainProviderError extends Error {}
  * ```
  */
 class KeychainProvider implements IOnlineSignatureProviderSignTransaction, IOnlineEncryptionProvider {
-  private readonly role: KeychainKeyTypes;
-
-  private static keychain: KeychainSDK;
+  private readonly role: string;
 
   private constructor(
     private readonly accountName: TAccountName,
@@ -42,9 +38,6 @@ class KeychainProvider implements IOnlineSignatureProviderSignTransaction, IOnli
   ) {
     if (!mapRoles[role])
       throw new Error(`Role ${role} is not supported by the Wax signature provider: ${KeychainProvider.name}`);
-
-    if(!KeychainProvider.keychain)
-      KeychainProvider.keychain = new KeychainSDK(window);
 
     this.role = mapRoles[role];
   }
@@ -55,45 +48,65 @@ class KeychainProvider implements IOnlineSignatureProviderSignTransaction, IOnli
     return new KeychainProvider(accountName, role);
   }
 
-  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
-    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
+  private ensureKeychainInstalled(): void {
+    if (typeof window !== "object" || typeof (window as any).hive_keychain !== "object")
       throw new WaxKeychainProviderError(`Keychain is not installed`);
+  }
 
-    const encryptionResult = await KeychainProvider.keychain.encodeWithKeys({
-      method: KeychainKeyTypes.memo,
-      username: this.accountName,
-      message: buffer,
-      publicKeys: [recipient]
-    });
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+    this.ensureKeychainInstalled();
 
-    return Object.values(encryptionResult.result as any)[0] as string;
+    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestEncodeWithKeys(
+      this.accountName,
+      [recipient],
+      buffer.startsWith("#") ? buffer : `#${buffer}`,
+      "memo",
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
+
+    return Object.values(response.result)[0] as string;
   }
 
   public async decryptData(buffer: string): Promise<string> {
-    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
-      throw new WaxKeychainProviderError(`Keychain is not installed`);
+    this.ensureKeychainInstalled();
 
-    const data = await KeychainProvider.keychain.decode({
-      message: buffer,
-      method: KeychainKeyTypes.memo,
-      username: this.accountName
-    });
+    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestVerifyKey(
+      this.accountName,
+      buffer,
+      "memo",
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
 
-    return data.result as unknown as string;
+    return response.result;
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
-      throw new WaxKeychainProviderError(`Keychain is not installed`);
+    this.ensureKeychainInstalled();
 
-    const data = await KeychainProvider.keychain.signTx({
-      method: this.role,
-      username: this.accountName,
-      tx: JSON.parse(transaction.toLegacyApi())
-    });
+    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
+      this.accountName,
+      JSON.parse(transaction.toLegacyApi()),
+      this.role,
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
 
-    for(const sig of data.result.signatures)
-      transaction.sign(sig);
+    for(const signature of response.result.signatures)
+      transaction.sign(signature);
   }
 }
 
