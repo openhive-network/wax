@@ -1,17 +1,18 @@
 from __future__ import annotations
 
 import asyncio
+import os
 
 from wax import create_hive_chain
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 
 my_wax = create_hive_chain()
-NEW_MEMO_KEY = ""
-MY_ACCOUNT_NAME = ""
-NEW_POSTING_ACCOUNT = ""
-NEW_OWNER_ACCOUNT = ""
-NEW_ACTIVE_ACCOUNT = ""
-NEW_WEIGHT = 1
+NEW_MEMO_KEY = os.getenv("NEW_MEMO_KEY", "")
+MY_ACCOUNT_NAME = os.getenv("MY_ACCOUNT_NAME", "")
+NEW_POSTING_ACCOUNT = os.getenv("NEW_POSTING_ACCOUNT", "")
+NEW_OWNER_ACCOUNT = os.getenv("NEW_OWNER_ACCOUNT", "")
+NEW_ACTIVE_ACCOUNT = os.getenv("NEW_ACTIVE_ACCOUNT", "")
+NEW_WEIGHT = os.getenv("NEW_WEIGHT", "")
 
 # Please remember to use `create_for` method to create the complex operation instance.
 # The operation will automatically retrieve permission data for your account.
