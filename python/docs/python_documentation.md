@@ -1,11 +1,3 @@
-<<<<<<< HEAD
----
-title: Wax Python - Documentation
----
-
-||||||| 765d46d
-=======
->>>>>>> e18beaebcdee8490e04281016b8e472987a60b1b
 # Wax Python Library Documentation
 
 Wax is a Python library designed for interacting with the Hive blockchain. It provides a Python interface to core Hive protocol functionalities, implemented primarily in C++ for performance and accuracy, accessed via a Cython bridge. This library allows developers to create, manipulate, sign, and validate Hive transactions and operations, perform cryptographic tasks, manage assets, and interact with Hive nodes.
