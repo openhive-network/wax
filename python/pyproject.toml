@@ -52,6 +52,7 @@ grpcio-tools = "1.59.0"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.poetry-dynamic-versioning]
 enable = true
