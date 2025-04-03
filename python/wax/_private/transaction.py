@@ -10,6 +10,7 @@ from typing_extensions import Self
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
+from wax._private.operation_base import OperationBase
 from wax._private.result_tools import (
     decode_impacted_account_names,
     expose_result_as_cpp_string,
@@ -156,7 +157,11 @@ class Transaction(ITransaction):
         return self.to_api()
 
     def push_operation(self, operation: WaxMetaOperation) -> Self:
-        self._target.operations.add(**{operation.__class__.__name__: operation})
+        if isinstance(operation, OperationBase):
+            for op in operation.finalize(self._api):
+                self._target.operations.add(**{op.__class__.__name__: op})
+        else:
+            self._target.operations.add(**{operation.__class__.__name__: operation})
         return self
 
     def _flush_transaction(self) -> None:

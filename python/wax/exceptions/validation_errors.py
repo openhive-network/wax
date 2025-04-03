@@ -6,7 +6,7 @@ from wax.exceptions.wax_error import WaxError
 
 if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
-    from wax.models.basic import AccountName
+    from wax.models.basic import AccountName, PublicKey
 
 
 class WaxValidationFailedError(WaxError):
@@ -42,4 +42,30 @@ class InvalidEndpointUrlFormatError(WaxError):
     def __init__(self, url: HttpUrl | str) -> None:
         self.url = url
         self.message = f"Endpoint url '{url}' is in invalid format."
+        super().__init__(self.message)
+
+
+class InvalidAccountOrKeyError(WaxError):
+    """Raised when account or key is invalid."""
+
+    def __init__(self, account_or_key: str) -> None:
+        self.account_or_key = account_or_key
+        self.message = f"Account or key '{account_or_key}' is invalid."
+        super().__init__(self.message)
+
+
+class InvalidMemoKeyError(WaxError):
+    """Raised when an invalid memo key is provided."""
+
+    def __init__(self, memo_key: PublicKey) -> None:
+        self.memo_key = memo_key
+        self.message = f"Invalid memo key: {memo_key} provided."
+        super().__init__(self.message)
+
+
+class NoAuthorityOperationGeneratedError(WaxError):
+    """Raised when no operations are generated."""
+
+    def __init__(self) -> None:
+        self.message = "No operations updating account authority generated."
         super().__init__(self.message)

@@ -13,7 +13,13 @@ from .conversion_errors import (
     DecimalConversionNegativePrecisionError,
     DecimalConversionNotANumberError,
 )
-from .validation_errors import InvalidAccountNameError, InvalidOperationFormatError, WaxValidationFailedError
+from .validation_errors import (
+    InvalidAccountNameError,
+    InvalidAccountOrKeyError,
+    InvalidMemoKeyError,
+    InvalidOperationFormatError,
+    WaxValidationFailedError,
+)
 from .wax_error import WaxError, WaxImportProtoBeforeCompileError
 
 __all__ = [
@@ -33,7 +39,9 @@ __all__ = [
     # Validation-related errors.
     "WaxValidationFailedError",
     "InvalidAccountNameError",
+    "InvalidAccountOrKeyError",
     "InvalidOperationFormatError",
+    "InvalidMemoKeyError",
     # Chain-related errors.
     "AccountNotFoundError",
 ]
