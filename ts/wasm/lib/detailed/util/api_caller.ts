@@ -46,6 +46,7 @@ export class ApiCaller extends RequestHelper {
   public constructor(
     public readonly id: string,
     public defaultEndpointUrl: string,
+    public readonly apiTimeout: number,
     public readonly localTypes: Record<string, any> = {},
     public readonly defaultMethod: string = 'GET',
     private readonly changeEndpointUrlFn: (path: string[], newValue: string | undefined, found: boolean) => boolean = () => true,
@@ -131,6 +132,7 @@ export class ApiCaller extends RequestHelper {
         method,
         responseType: 'json',
         endpoint,
+        timeout: that.apiTimeout,
         url,
         data: body,
         paths: callFn.realPaths,

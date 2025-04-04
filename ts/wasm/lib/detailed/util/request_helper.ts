@@ -21,14 +21,13 @@ export interface IRequestOptions {
   endpoint: string;
   url: string;
   method: "GET" | "POST" | string;
+  timeout: number;
   data?: string | object;
   /**
    * @default `"text"`
    */
   responseType?: "text" | "json";
 }
-
-const API_CALL_TIMEOUT_MS = 2_000;
 
 export class RequestHelper {
   private async requestHandler<T extends (object | string)>(config: IRequestOptions): Promise<IDetailedResponseData<T>> {
@@ -50,7 +49,7 @@ export class RequestHelper {
       const response = await fetch(finalUrl, {
         headers: typeof config.data === "undefined" ? undefined : new Headers({'content-type': 'application/json'}),
         method: config.method,
-        signal: AbortSignal.timeout(API_CALL_TIMEOUT_MS),
+        signal: config.timeout === 0 ? undefined : AbortSignal.timeout(config.timeout),
         body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data
       });
 

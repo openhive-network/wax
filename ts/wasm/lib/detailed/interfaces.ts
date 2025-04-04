@@ -132,6 +132,15 @@ export interface IWaxOptionsChain extends IWaxOptions {
    * @type {string}
    */
   restApiEndpoint: string;
+
+  /**
+   * Timeout for all of the API requests in milliseconds.
+   * Set to 0 to disable timeout
+   *
+   * @default 2_000
+   * @type {number}
+   */
+  apiTimeout: number;
 }
 
 export interface ITransactionBase {

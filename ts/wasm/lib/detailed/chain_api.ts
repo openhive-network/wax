@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial } from "./interfaces";
+import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
@@ -49,15 +49,18 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private taposCache: TChainReferenceData = { head_block_id: '', head_block_time: new Date(Date.now()) };
   private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
 
+  private readonly apiTimeout: number;
+
   public constructor(
     public readonly wax: MainModule,
-    public readonly chainId: string,
-    apiEndpoint: string,
-    restApiEndpoint: string,
-    public readonly originator: HiveChainApi|null) {
-    super(wax, chainId);
+    config: IWaxOptionsChain,
+    public readonly originator: HiveChainApi|null
+  ) {
+    super(wax, config.chainId);
 
-    this.jsonRpcApiCaller = new ApiCaller(EChainApiType.JSON_RPC, apiEndpoint, iterate({}, HiveApiTypes), 'POST', (path, newValue, found) => {
+    this.apiTimeout = config.apiTimeout;
+
+    this.jsonRpcApiCaller = new ApiCaller(EChainApiType.JSON_RPC, config.apiEndpoint, this.apiTimeout, iterate({}, HiveApiTypes), 'POST', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.jsonRpcApiCaller.setEndpointUrlForPath(path, newValue, found);
 
@@ -80,7 +83,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       return data;
     });
-    this.restApiCaller = new ApiCaller(EChainApiType.REST, restApiEndpoint, iterate({}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
+    this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate({}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.restApiCaller.setEndpointUrlForPath(path, newValue, found);
 
@@ -122,7 +125,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi, this> {
-    const newApi = new HiveChainApi(this.wax, this.chainId, this.jsonRpcApiCaller.defaultEndpointUrl, this.restApiCaller.defaultEndpointUrl, this);
+    const newApi = new HiveChainApi(this.wax, {
+      chainId: this.chainId,
+      apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
+      restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
+      apiTimeout: this.apiTimeout,
+    }, this);
 
     if(typeof extendedHiveApiData === "object")
       iterate(newApi.jsonRpcApiCaller.localTypes, extendedHiveApiData as object)
@@ -131,7 +139,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxApiRequestPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
-    const newApi = new HiveChainApi(this.wax, this.chainId, this.jsonRpcApiCaller.defaultEndpointUrl, this.restApiCaller.defaultEndpointUrl, this);
+    const newApi = new HiveChainApi(this.wax, {
+      chainId: this.chainId,
+      apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
+      restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
+      apiTimeout: this.apiTimeout,
+    }, this);
 
     if(typeof extendedHiveRestApiData === "object")
       iterate(newApi.restApiCaller.localTypes, extendedHiveRestApiData as object);
