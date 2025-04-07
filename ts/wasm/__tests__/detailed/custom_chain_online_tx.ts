@@ -30,12 +30,12 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     tx.pushOperation(op);
 
     try {
-      if(directBroadcast)
+      if (directBroadcast)
         await myCustomChain.broadcast(tx);
       else
         await tx.performOnChainVerification();
     }
-    catch(e) {
+    catch (e) {
       const error: object = e as object;
 
       if (e instanceof wax.WaxPrivateKeyLeakDetectedException) {
@@ -60,6 +60,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
   const mirrornetSkeletonKey = '5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n';
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
+
 
   test('Should be able to get authority trace for direct multi-sig from already existing transaction', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax }) => {
@@ -597,7 +598,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   });
 
   test('Should be able to get authority trace for insufficient weight transaction', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ wax }) => {
+    const retVal = await waxTest(async ({ wax }) => {
       const chain = await wax.createHiveChain();
 
       const sourceTx = chain.createTransactionFromJson({
@@ -694,14 +695,20 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
             {
               "processedEntry": "guest4test1",
               "processedRole": "active",
-              "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+              "processingStatus": {
+                "entryAccepted": true,
+                "isOpenAuthority": false
+              },
               "recursionDepth": 1,
               "threshold": 1,
               "visitedEntries": [
                 {
                   "processedEntry": "STM8gQN2KodMgmVqTEY372XzZyEUpceKpLWU6igr39MF3D7Qv3Rqo",
                   "processedRole": "active",
-                  "processingStatus": { "entryAccepted": true, "isOpenAuthority": false },
+                  "processingStatus": {
+                    "entryAccepted": true,
+                    "isOpenAuthority": false
+                  },
                   "recursionDepth": 1,
                   "threshold": 1,
                   "visitedEntries": [],
@@ -724,7 +731,38 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
               },
               "recursionDepth": 1,
               "threshold": 1,
-              "visitedEntries": [],
+              "visitedEntries": [
+                {
+                  "processedEntry": "guest4test4",
+                  "processedRole": "active",
+                  "processingStatus": {
+                    "accountAuthorityCountExceeded": false,
+                    "accountAuthorityPointsMissingAccount": false,
+                    "accountAuthorityProcessingDepthExceeded": true,
+                    "entryAccepted": false,
+                    "hasAccountAuthorityCycle": true,
+                    "hasInsufficientWeight": true,
+                    "hasMatchingPublicKey": false
+                  },
+                  "recursionDepth": 2,
+                  "threshold": 2,
+                  "visitedEntries": [
+                    {
+                      "processedEntry": "guest4test1",
+                      "processedRole": "active",
+                      "processingStatus": {
+                        "entryAccepted": true,
+                        "isOpenAuthority": false
+                      },
+                      "recursionDepth": 3,
+                      "threshold": 2,
+                      "visitedEntries": [],
+                      "weight": 1
+                    }
+                  ],
+                  "weight": 1
+                }
+              ],
               "weight": 0
             }
           ],
