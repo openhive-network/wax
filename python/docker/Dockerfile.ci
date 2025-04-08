@@ -39,4 +39,9 @@ SHELL ["/bin/bash", "-c"]
 
 ENV WAX_BOOST_ROOT=/wax_boost_root/
 
+RUN sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
+    sudo apt-get install -y nodejs && \
+    sudo npm install -g npm@latest && \
+    sudo npm install -g pnpm typescript tsx
+
 COPY --chown=hived_admin --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
