@@ -242,6 +242,8 @@ test_wax_protobuf_python:
   artifacts:
     reports:
       junit: python/tests/report.xml
+    paths:
+      - $PYPROJECT_DIR/mock-server.log
 
 test_wax_protobuf_python_pattern:
   extends: .test_python_env
