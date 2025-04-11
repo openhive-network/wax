@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
 
 
-@pytest.mark.descrbe("Should be able to estimate hive collateral")
+@pytest.mark.describe("Should be able to estimate hive collateral")
 def test_estimate_hive_collateral(wax: IWaxBaseInterface) -> None:
     estimated_hive_collateral = wax.estimate_hive_collateral(
         current_median_history_base=wax.hbd.satoshis(201),

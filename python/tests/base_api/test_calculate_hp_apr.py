@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize("unit_amount", ["coins", "satoshis"])
-@pytest.mark.descrbe("Should be able to calculate HP APR")
+@pytest.mark.describe("Should be able to calculate HP APR")
 def test_calculate_hp_apr(wax: IWaxBaseInterface, unit_amount: str) -> None:
     hive_unit = getattr(wax.hive, unit_amount)
 
