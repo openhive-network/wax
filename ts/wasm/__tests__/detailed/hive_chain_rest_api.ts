@@ -13,9 +13,9 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(retVal.length).toBeGreaterThan(0);
     expect(typeof retVal[0].block_num).toBe("number");
     expect(typeof retVal[0].witness).toBe("string");
-    expect(retVal[0].ops_count.length).toBeGreaterThan(0);
-    expect(typeof retVal[0].ops_count[0].count).toBe("number");
-    expect(typeof retVal[0].ops_count[0].op_type_id).toBe("number");
+    expect(retVal[0].operations.length).toBeGreaterThan(0);
+    expect(typeof retVal[0].operations[0].op_count).toBe("number");
+    expect(typeof retVal[0].operations[0].op_type_id).toBe("number");
   });
 
   test('Should be able to extend and perform REST API calls', async ({ waxTest }) => {
