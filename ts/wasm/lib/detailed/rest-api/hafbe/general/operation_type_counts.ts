@@ -3,12 +3,12 @@ export interface OperationTypeCountsRequest {
 }
 
 export interface OpsCount {
-  count: number;
+  op_count: number;
   op_type_id: number;
 }
 
 export interface OperationTypeCountsResponse {
   block_num: number;
   witness: string;
-  ops_count: OpsCount[];
+  operations: OpsCount[];
 }
