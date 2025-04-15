@@ -10,7 +10,7 @@ from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class DebugNodeApi(AbstractSyncApi):
-    api = AbstractSyncApi._endpoint
+    api = AbstractSyncApi.endpoint
 
     @api
     def debug_push_blocks(

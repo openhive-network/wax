@@ -9,7 +9,7 @@ from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class MarketHistoryApi(AbstractAsyncApi):
-    api = AbstractAsyncApi._endpoint
+    api = AbstractAsyncApi.endpoint
 
     @api
     async def get_ticker(self) -> market_history_api.GetTicker[Hf26Asset.HiveT, Hf26Asset.HbdT]:

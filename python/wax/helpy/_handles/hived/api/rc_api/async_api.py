@@ -7,7 +7,7 @@ from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class RcApi(AbstractAsyncApi):
-    api = AbstractAsyncApi._endpoint
+    api = AbstractAsyncApi.endpoint
 
     @api
     async def find_rc_accounts(

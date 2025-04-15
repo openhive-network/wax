@@ -6,7 +6,7 @@ from beekeepy._remote_handle.abc.api import AbstractAsyncApi
 
 
 class BlockApi(AbstractAsyncApi):
-    api = AbstractAsyncApi._endpoint
+    api = AbstractAsyncApi.endpoint
 
     @api
     async def get_block_header(self, *, block_num: int) -> block_api.GetBlockHeader:
