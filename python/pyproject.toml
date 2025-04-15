@@ -32,7 +32,7 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.12"
 protobuf = "4.24.4"
-beekeepy = "0.0.1.dev388+171802c"
+beekeepy = "0.0.1.dev393+a9bd355"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
@@ -84,7 +84,6 @@ files = [
 mypy_path = "python"
 strict = true
 disallow_untyped_decorators = false
-plugins = "pydantic.mypy"
 
 [[tool.mypy.overrides]]
 module = "wax._private.proto.*"
