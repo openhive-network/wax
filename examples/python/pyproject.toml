@@ -20,4 +20,4 @@ source = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-wax = "0.3.10.dev602+ae2e51c"
+wax = "0.3.10.dev673+888d848b"
