@@ -11,7 +11,7 @@ from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
 if TYPE_CHECKING:
     from wax.complex_operations.role_classes.level_base import LevelBase
     from wax.complex_operations.role_classes.role_category_base import RoleCategoryBase
-    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
     from wax.models.basic import AccountName
 
 
@@ -55,7 +55,9 @@ class AccountAuthorityUpdateOperation(OperationBase):
         self._possible_roles: PossibleRoles = possible_roles
 
     @staticmethod
-    async def create_for(chain: IHiveChainInterface, account: AccountName) -> AccountAuthorityUpdateOperation:
+    async def create_for(
+        chain: IHiveChainInterface[ApiCollectionT], account: AccountName
+    ) -> AccountAuthorityUpdateOperation:
         """
         Factory method for creating AccountAuthorityUpdateOperation.
 

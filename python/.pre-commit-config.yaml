@@ -8,7 +8,8 @@ files: |
 exclude: |
     (?x)(
             ^python/wax/cpp_python_bridge.pyi|
-            ^python/wax/proto/.*$
+            ^python/wax/proto/.*$|
+            ^python/wax/api/.*$
     )
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

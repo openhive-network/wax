@@ -9,9 +9,10 @@ from wax._private.converters.url_converter import convert_to_http_url
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.schemas import ApiTransaction
 from wax._private.online_transaction import OnlineTransaction
+from wax.api.collection import WaxApiCollection
 from wax.exceptions.chain_errors import AccountNotFoundError
 from wax.exceptions.validation_errors import InvalidAccountNameError
-from wax.interfaces import IHiveChainInterface, IOnlineTransaction
+from wax.interfaces import ApiCollectionT, ExtendedApiCollectionT, IHiveChainInterface, IOnlineTransaction
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAuthority
 from wax.models.basic import ChainReferenceData
 
@@ -20,21 +21,28 @@ if TYPE_CHECKING:
 
     from beekeepy.interfaces import HttpUrl
     from wax._private.models.schemas import ApiAuthority, FindAccountsApiResponse
-    from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection as ApiCollection
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
 
 
-class HiveChainApi(IHiveChainInterface, WaxBaseApi):
+class HiveChainApi(IHiveChainInterface[ApiCollectionT], WaxBaseApi):
     TAPOS_LIVENESS: Final[int] = 3000  # 3 seconds / 3000 milliseconds
 
-    def __init__(self, chain_id: ChainId, endpoint_url: HttpUrl, *, _private: bool = False) -> None:
+    def __init__(
+        self,
+        chain_id: ChainId,
+        endpoint_url: HttpUrl,
+        api_collection: type[ApiCollectionT] = WaxApiCollection,
+        *,
+        _private: bool = False,
+    ) -> None:
         """
         Initializes HiveChainApi.
 
         Args:
             chain_id: chain id of the node passed by `node_address`.
             endpoint_url: address of the node to connect to.
+            api_collection: type of the api collection to use. Defaults to WaxApiCollection.
             _private: flag indicating that the constructor should not be called directly.
 
         Raises:
@@ -44,10 +52,26 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi):
         super().__init__(chain_id, _private=True)
         self._chain_id = chain_id
         self._endpoint_url = endpoint_url
-        self._api_caller = WaxApiCaller(endpoint_url)
+
+        self._api_collection: type[ApiCollectionT] = api_collection
+        self._api_caller = WaxApiCaller(api_collection(), endpoint_url)
 
         self._last_tapos_cache_update = 0
         self._tapos_cache = ChainReferenceData(time=HiveDateTime.now())
+
+    @property
+    def api(self) -> ApiCollectionT:
+        return self._api_caller.api
+
+    def extends(
+        self, new_api: type[ExtendedApiCollectionT]
+    ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
+        current_api: type[ApiCollectionT] = self._api_collection
+
+        class NewApi(new_api, current_api):  # type: ignore[valid-type, misc]
+            ...
+
+        return HiveChainApi(self.chain_id, self.endpoint_url, NewApi, _private=True)
 
     @property
     def endpoint_url(self) -> HttpUrl:
@@ -60,30 +84,26 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi):
         self._endpoint_url = parsed_endpoint_url
         self._api_caller.set_endpoint_url(parsed_endpoint_url, _private=True)
 
-    @property
-    def api(self) -> ApiCollection:
-        return self._api_caller.api
-
     async def create_transaction(self, expiration: datetime | timedelta | None = None) -> IOnlineTransaction:
         chain_reference_data = await self._acquire_chain_reference_data()
         expiration = self._resolve_expiration(expiration)
         return OnlineTransaction(self, chain_reference_data, expiration)
 
     async def broadcast(self, transaction: ITransaction) -> None:
-        await self.api.network_broadcast.broadcast_transaction(trx=ApiTransaction(**transaction.to_dict()))
+        await self.api.network_broadcast_api.broadcast_transaction(trx=ApiTransaction(**transaction.to_dict()))  # type: ignore[attr-defined]
 
     async def collect_account_authorities(self, account: AccountName) -> WaxAccountAuthorityInfo:
         if not self.is_valid_account_name(account):
             raise InvalidAccountNameError(account)
 
-        account_response = await self.api.database_api.find_accounts(accounts=[account])
+        account_response = await self.api.database_api.find_accounts(accounts=[account])  # type: ignore[attr-defined]
         return self._extract_authority_from_find_accounts_response(account_response, account)
 
     async def _acquire_chain_reference_data(self) -> ChainReferenceData:
         now = self._current_milli_time()
 
         if now - self._last_tapos_cache_update > self.TAPOS_LIVENESS:
-            dgpo = await self.api.database_api.get_dynamic_global_properties()
+            dgpo = await self.api.database_api.get_dynamic_global_properties()  # type: ignore[attr-defined]
             self._tapos_cache = ChainReferenceData(
                 head_block_id=dgpo.head_block_id,
                 time=cast(HiveDateTime, dgpo.time),

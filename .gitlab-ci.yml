@@ -59,6 +59,7 @@ build_wheel:
       - "${PYPROJECT_DIR}/.build/logs/"
       - "${PYPROJECT_DIR}/wax/*.so"
       - "build_wheel.env"
+      - "${PYPROJECT_DIR}/wax/api/collection.py"
       - "${PYPROJECT_DIR}/wax/_private/proto"
     reports:
       dotenv: "build_wheel.env"

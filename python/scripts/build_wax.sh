@@ -50,6 +50,9 @@ else
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto.sh
 
+  echo "Create api files."
+  poetry -C ${PROJECT_DIR} run python3 "${PROJECT_DIR}/scripts/generate_base_client.py"
+
   echo "Build wax wheel package."
   poetry -C ${PROJECT_DIR} build --format wheel
 
