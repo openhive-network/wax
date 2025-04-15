@@ -29,8 +29,8 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.12"
 protobuf = "4.24.4"
-beekeepy = "0.0.1.dev352+ef6b8c6"
-aiohttp = "3.11.14"
+beekeepy = "0.0.1.dev354+62e735c"
+aiohttp = "3.11.15"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
