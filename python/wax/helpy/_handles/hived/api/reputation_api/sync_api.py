@@ -6,7 +6,7 @@ from beekeepy._remote_handle.abc.api import AbstractSyncApi
 
 
 class ReputationApi(AbstractSyncApi):
-    @AbstractSyncApi._endpoint
+    @AbstractSyncApi.endpoint
     def get_account_reputations(
         self, *, account_lower_bound: str, limit: int = 1_000
     ) -> reputation_api.GetAccountReputations:

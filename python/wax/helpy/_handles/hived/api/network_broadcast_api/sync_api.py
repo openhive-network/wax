@@ -7,6 +7,6 @@ from beekeepy._remote_handle.abc.api import AbstractSyncApi
 
 
 class NetworkBroadcastApi(AbstractSyncApi):
-    @AbstractSyncApi._endpoint
+    @AbstractSyncApi.endpoint
     def broadcast_transaction(self, *, trx: Transaction) -> network_broadcast_api.BroadcastTransaction:
         raise NotImplementedError

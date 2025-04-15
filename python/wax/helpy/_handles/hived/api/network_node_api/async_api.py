@@ -6,7 +6,7 @@ from beekeepy._remote_handle.abc.api import AbstractAsyncApi
 
 
 class NetworkNodeApi(AbstractAsyncApi):
-    api = AbstractAsyncApi._endpoint
+    api = AbstractAsyncApi.endpoint
 
     @api
     async def get_info(self) -> network_node_api.GetInfo:

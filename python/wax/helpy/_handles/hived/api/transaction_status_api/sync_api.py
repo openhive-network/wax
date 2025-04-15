@@ -8,7 +8,7 @@ from beekeepy._remote_handle.abc.api import AbstractSyncApi
 
 
 class TransactionStatusApi(AbstractSyncApi):
-    @AbstractSyncApi._endpoint
+    @AbstractSyncApi.endpoint
     def find_transaction(
         self, *, transaction_id: str, expiration: datetime | None = None
     ) -> transaction_status_api.FindTransaction:

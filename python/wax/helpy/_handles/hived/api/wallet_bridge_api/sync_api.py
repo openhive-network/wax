@@ -11,7 +11,7 @@ from wax.helpy._interfaces.asset.asset import Hf26Asset
 
 
 class WalletBridgeApi(AbstractSyncApi, WalletBridgeApiCommons):
-    api = AbstractSyncApi._endpoint
+    api = AbstractSyncApi.endpoint
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.DOUBLE_ARRAY

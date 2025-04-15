@@ -6,6 +6,6 @@ from beekeepy._remote_handle.abc.api import AbstractSyncApi
 
 
 class AccountByKeyApi(AbstractSyncApi):
-    @AbstractSyncApi._endpoint
+    @AbstractSyncApi.endpoint
     def get_key_references(self, *, keys: list[str]) -> account_by_key_api.GetKeyReferences:
         raise NotImplementedError
