@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, Generic, TypeAlias
 
-from typing_extensions import Self
+from typing_extensions import Self, TypeVar
 
 from wax.proto.transaction import transaction as proto_transaction
 
@@ -33,6 +33,9 @@ JsonTransaction: TypeAlias = str
 TTimestamp: TypeAlias = datetime | timedelta
 
 ChainConfig: TypeAlias = dict[str, str]
+
+ApiCollectionT = TypeVar("ApiCollectionT")
+ExtendedApiCollectionT = TypeVar("ExtendedApiCollectionT")
 
 
 class ITransactionBase(ABC):
@@ -618,7 +621,12 @@ class IWaxBaseInterface(ABC):
         """
 
 
-class IHiveChainInterface(IWaxBaseInterface):
+class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
+    @property
+    @abstractmethod
+    def api(self) -> ApiCollectionT:
+        """Returns the API collection object."""
+
     @property
     @abstractmethod
     def endpoint_url(self) -> HttpUrl:
@@ -635,6 +643,20 @@ class IHiveChainInterface(IWaxBaseInterface):
 
         Raises:
             InvalidEndpointUrlFormatError: When the url is incorrect.
+        """
+
+    @abstractmethod
+    def extends(
+        self, new_api: type[ExtendedApiCollectionT]
+    ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
+        """
+        Extends the current API collection with a new one.
+
+        Args:
+            new_api: New API collection class to be added.
+
+        Returns:
+            IHiveChainInterface: New chain instance with the extended API collection.
         """
 
     @abstractmethod

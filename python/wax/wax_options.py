@@ -27,7 +27,9 @@ class WaxChainOptions(WaxOptions):
     """Allows configuration of wax itself, including chain part."""
 
     def __init__(
-        self, chain_id: ChainId | str = DEFAULT_CHAIN_ID, endpoint_url: HttpUrl | str = DEFAULT_ENDPOINT_URL
+        self,
+        chain_id: ChainId | str = DEFAULT_CHAIN_ID,
+        endpoint_url: HttpUrl | str = DEFAULT_ENDPOINT_URL,
     ) -> None:
         """
         Constructs WaxChainOptions.

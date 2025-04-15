@@ -21,7 +21,7 @@ from wax.proto.operations import account_update2
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
     from wax.models.authority import WaxAuthority
     from wax.models.basic import AccountName, PublicKey
 
@@ -118,7 +118,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
     ]:
         return iter(self.authorities.__dict__.values())
 
-    async def init(self, chain: IHiveChainInterface, account: AccountName) -> None:
+    async def init(self, chain: IHiveChainInterface[ApiCollectionT], account: AccountName) -> None:
         """
         Initializes the hive account category.
 
@@ -151,6 +151,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
         )
 
         api_accounts = await chain.api.database_api.find_accounts(accounts=[account])  # type: ignore[attr-defined]
+
         searched_account = None
 
         for api_account in api_accounts.accounts:
