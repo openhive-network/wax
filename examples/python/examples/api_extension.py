@@ -40,7 +40,7 @@ wax_extended = my_wax.extends(MyFirstApiCollection)
 
 
 async def main() -> None:
-    response = await wax_extended.api.block_api.get_block_header(block_num=123)
+    response =await wax_extended.api.block_api.get_block_header(block_num=123)
     print(f"Block header: {response}")
 
 asyncio.run(main())
