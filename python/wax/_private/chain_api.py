@@ -84,6 +84,10 @@ class HiveChainApi(IHiveChainInterface[ApiCollectionT], WaxBaseApi):
         self._endpoint_url = parsed_endpoint_url
         self._api_caller.set_endpoint_url(parsed_endpoint_url, _private=True)
 
+    def teardown(self) -> None:
+        """Call when work with communicator is over."""
+        self._api_caller.teardown()
+
     async def create_transaction(self, expiration: datetime | timedelta | None = None) -> IOnlineTransaction:
         chain_reference_data = await self._acquire_chain_reference_data()
         expiration = self._resolve_expiration(expiration)

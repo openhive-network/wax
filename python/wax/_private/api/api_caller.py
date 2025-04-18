@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import atexit
 from functools import partial
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from beekeepy import Settings
 from beekeepy._remote_handle.abc.handle import AbstractAsyncHandle
@@ -24,12 +25,15 @@ def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncHandleT) 
 
 
 class WaxApiCaller(AbstractAsyncHandle[ApiCollectionT], HiveHandleCommonHelpers):
+    _INSTANCES: ClassVar[set[WaxApiCaller]] = set()  # type: ignore[type-arg]
+
     def __init__(self, api_collection: ApiCollectionT, endpoint_url: HttpUrl) -> None:
         self._api_collection = api_collection  # assigned here because `_constuct_api` method
         # is called in the constructor of the parent class
         settings = Settings()
         settings.http_endpoint = endpoint_url
         super().__init__(settings=settings)
+        self._INSTANCES.add(self)
 
     def set_endpoint_url(self, endpoint_url: HttpUrl, *, _private: bool = False) -> None:
         assert _private, (
@@ -55,3 +59,14 @@ class WaxApiCaller(AbstractAsyncHandle[ApiCollectionT], HiveHandleCommonHelpers)
 
     def _target_service(self) -> str:
         return self._hived_target_service_name()
+
+
+def _cleanup_instances() -> None:
+    """Cleanup all WaxApiCaller instances before interpreter shutdown."""
+    for instance in WaxApiCaller._INSTANCES:
+        instance.teardown()
+
+    WaxApiCaller._INSTANCES.clear()
+
+
+atexit.register(_cleanup_instances)
