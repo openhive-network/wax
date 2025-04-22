@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 class TestApi(AbstractAsyncApi):
     @AbstractAsyncApi.endpoint
-    async def endpoint_test(self) -> str:
+    async def endpoint_test(self) -> str:  # type: ignore[empty-body]
         """Do nothing."""
 
 
@@ -27,12 +27,12 @@ class SecondTestApiCollection:
         self.second_test_api = TestApi
 
 
-def assert_have_base_apis_available(extended_chain: IHiveChainInterface) -> None:
+def assert_have_base_apis_available(extended_chain: IHiveChainInterface[ApiCollectionT]) -> None:
     assert hasattr(extended_chain.api, "database_api"), "Extended API should have database_api."
     assert hasattr(extended_chain.api, "network_broadcast_api"), "Extended API should have network_broadcast_api."
 
 
-def test_extended_and_base_api_available(remote_chain: IHiveChainInterface) -> None:
+def test_extended_and_base_api_available(remote_chain: IHiveChainInterface[ApiCollectionT]) -> None:
     # ACT
     extended_chain = remote_chain.extends(TestApiCollection)
 
