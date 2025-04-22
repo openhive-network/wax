@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 from google.protobuf.json_format import MessageToJson, Parse
 from typing_extensions import Self
@@ -150,7 +150,7 @@ class Transaction(ITransaction):
 
         return json.dumps(as_dict)
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
         return json.loads(self.to_api())  # type: ignore[no-any-return]
 
     def to_api_json(self) -> JsonTransaction:
