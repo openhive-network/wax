@@ -1,21 +1,20 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from tests.utils.refs import MAINNET_CHAIN_ID
-from wax import IHiveChainInterface, create_hive_chain, WaxChainOptions
+from wax import IHiveChainInterface, WaxChainOptions, create_hive_chain
+
+if TYPE_CHECKING:
+    from wax.interfaces import ApiCollectionT
 
 
 @pytest.fixture(scope="session")
 def proxy_mock_server_endpoint(request: pytest.FixtureRequest) -> str:
-    return request.config.getoption("--proxy-mock-server-endpoint")
+    return request.config.getoption("--proxy-mock-server-endpoint")  # type: ignore[no-any-return]
 
 
-@pytest.fixture()
-def remote_chain(proxy_mock_server_endpoint) -> IHiveChainInterface:
-    return create_hive_chain(
-        WaxChainOptions(
-            chain_id=MAINNET_CHAIN_ID,
-            endpoint_url=proxy_mock_server_endpoint,
-        )
-    )
+@pytest.fixture
+def remote_chain(proxy_mock_server_endpoint: str) -> IHiveChainInterface[ApiCollectionT]:
+    return create_hive_chain(WaxChainOptions(endpoint_url=proxy_mock_server_endpoint))
