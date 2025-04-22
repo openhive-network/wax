@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Generic, TypeAlias
+from typing import TYPE_CHECKING, Any, Generic, TypeAlias
 
 from typing_extensions import Self, TypeVar
 
@@ -195,7 +195,7 @@ class ITransactionBase(ABC):
         """
 
     @abstractmethod
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Converts the created transaction into the Hive API-form dict.
 
