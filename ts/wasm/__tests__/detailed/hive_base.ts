@@ -2,12 +2,65 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import { protoVoteOp } from "../assets/data.proto-protocol";
+import { protoVoteOp, bigBlock } from "../assets/data.proto-protocol";
 import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
 test.describe('Wax object interface foundation tests', () => {
+
+  test('Bench createTransactionFromJson', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, bigBlock, blockCount) => {
+      const start = Date.now();
+
+      let totalOpCount = 0;
+
+      for(let blockNo = 0; blockNo < blockCount; ++blockNo) {
+        for(let t of bigBlock.transactions) {
+          const tx = base.createTransactionFromJson(t);
+
+          totalOpCount += tx.transaction.operations.length;
+        }
+      }
+
+      const end = Date.now();
+
+      const tookMs = end - start;
+
+      console.log(`Execution time took: ${tookMs} ms, total operations count ${totalOpCount}`);
+
+      return totalOpCount !== 0;
+    }, bigBlock, 1000);
+
+    expect(retVal).toBeTruthy();
+  });
+
+  test('Bench createTransactionFromJsonRef', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, bigBlock, blockCount) => {
+      const start = Date.now();
+
+      let totalOpCount = 0;
+
+      for(let blockNo = 0; blockNo < blockCount; ++blockNo) {
+        for(let t of bigBlock.transactions) {
+          const tx = base.createTransactionFromJsonRef(t);
+
+          totalOpCount += tx.transaction.operations.length;
+        }
+      }
+
+      const end = Date.now();
+
+      const tookMs = end - start;
+
+      console.log(`REF Execution time took: ${tookMs} ms, total operations count ${totalOpCount}`);
+
+      return totalOpCount !== 0;
+    }, bigBlock, 1000);
+
+    expect(retVal).toBeFalsy();
+  });
+
   test('Should be able to create TAPOS transaction using implicit expiration time', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax, beekeeper, base }, protoVoteOp) => {
       // Create wallet:
@@ -294,6 +347,7 @@ test.describe('Wax object interface foundation tests', () => {
       symbol: "@@002137000"
     });
   });
+
 
   test('Should be able to bidirectional convert api to proto using object interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ base }, transaction) => {
