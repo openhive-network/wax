@@ -183,6 +183,52 @@ public:
   }
 };
 
+class ProtoTransactionTransformer final : public emscripten::wrapper<IProtoTransactionTransformer>
+{
+public:
+  EMSCRIPTEN_WRAPPER(ProtoTransactionTransformer);
+
+  virtual void start_transaction(unsigned int ref_block_num, unsigned int ref_block_prefix, const std::string& expirationTime) override
+  {
+    call<void>("startTransaction", ref_block_num, ref_block_prefix, expirationTime);
+  }
+
+  virtual void add_vote_operation(const std::string& voter, const std::string& author, const std::string& permlink, int weight) override
+  {
+    call<void>("addVoteOperation", voter, author, permlink, weight);
+  }
+  virtual void add_comment_operation(const std::string& author, const std::string& permlink,
+    const std::string& parent_author, const std::string& parent_permlink,
+    const std::string& title, const std::string& json_metadata, const std::string& body) override
+  {
+    call<void>("addCommentOperation", author, permlink, parent_author, parent_permlink, title, json_metadata, body);
+  }
+
+  /** Allows to push comment_options_operation with optional beneficiaries extension (if extension was present in original operation, passed vector will be not empty)
+  */
+  virtual void add_comment_options_operation(const std::string& author, const std::string& permlink,
+      const json_asset& max_accepted_payout, unsigned int percent_hbd, bool allow_votes, bool allow_curation_rewards,
+      const std::vector<wax_beneficiary_route_type>& beneficiariesExtension) override
+  {
+    call<void>("addCommentOptionsOperation", author, permlink, max_accepted_payout, percent_hbd, allow_votes, allow_curation_rewards, beneficiariesExtension);
+  }
+  virtual void add_custom_json_operation(const std::vector<std::string>& required_auths, const std::vector<std::string>& required_posting_auths, const std::string& id, const std::string& json) override
+  {
+    call<void>("addCustomJsonOperation", required_auths, required_posting_auths, id, json);
+  }
+  
+  virtual void add_transfer_operation(const std::string& from, const std::string& to, const json_asset& amount, const std::string& memo) override
+  {
+    call<void>("addTransferOperation", from, to, amount, memo);
+  } 
+
+  virtual void add_signature(const std::string& hexString) override
+  {
+    call<void>("addSignature", hexString);
+  }
+};
+
+
 using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
 using proto_protocol_wasm = cpp::proto_protocol_impl<foundation_wasm>;
 
@@ -379,6 +425,24 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
   ;
 
+  value_object<wax_beneficiary_route_type>("wax_beneficiary_route_type")
+    .field("account", &wax_beneficiary_route_type::account)
+    .field("weight", &wax_beneficiary_route_type::weight)
+    ;
+
+  register_vector<wax_beneficiary_route_type>("BeneficiaryRoutesArray");
+
+  class_<IProtoTransactionTransformer>("IProtoTransactionTransformer")
+    .allow_subclass<ProtoTransactionTransformer>("ProtoTransactionTransformer")
+    .function("startTransaction", &IProtoTransactionTransformer::start_transaction, pure_virtual())
+    .function("addVoteOperation", &IProtoTransactionTransformer::add_vote_operation, pure_virtual())
+    .function("addCommentOperation", &IProtoTransactionTransformer::add_comment_operation, pure_virtual())
+    .function("addCommentOptionsOperation", &IProtoTransactionTransformer::add_comment_options_operation, pure_virtual())
+    .function("addCustomJsonOperation", &IProtoTransactionTransformer::add_custom_json_operation, pure_virtual())
+    .function("addTransferOperation", &IProtoTransactionTransformer::add_transfer_operation, pure_virtual())
+    .function("addSignature", &IProtoTransactionTransformer::add_signature, pure_virtual())
+    ;
+
   // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
   class_<proto_protocol_wasm, base<foundation_wasm>>("proto_protocol")
     .constructor<>()
@@ -395,6 +459,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
     .function("cpp_deserialize_transaction", &proto_protocol_wasm::cpp_deserialize_transaction)
     .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
+    .function("cpp_transform_api_transaction", &proto_protocol_wasm::cpp_transform_api_transaction)
     .function("cpp_proto_to_legacy_api", &proto_protocol_wasm::cpp_proto_to_legacy_api)
     .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)
     .function("cpp_collect_transaction_required_authorities", &proto_protocol_wasm::cpp_collect_transaction_required_authorities)

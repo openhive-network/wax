@@ -308,6 +308,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return Transaction.fromApi(this, transactionObject);
   }
 
+  public createTransactionFromJsonRef(transactionObject: string | object | ApiTransaction): ITransaction {
+    return Transaction.fromApiRef(this, transactionObject);
+  }
+
   public createTransactionWithChainReferenceData(taposBlockId: TBlockHash, chainHeadBlockTime?: Date, expirationTime?: TTimestamp): ITransaction {
     return new Transaction(this, taposBlockId, chainHeadBlockTime, expirationTime);
   }

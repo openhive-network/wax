@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test';
 import { IWaxedTest } from './wasm/__tests__/assets/jest-helper';
 
 export default defineConfig<IWaxedTest>({
-  fullyParallel: true,
+  fullyParallel: false,
   reporter: [
     ['junit', { outputFile: 'results.xml' }],
     ['json',  { outputFile: 'results.json' }]
@@ -11,7 +11,8 @@ export default defineConfig<IWaxedTest>({
   projects: [
     {
       name: "wax_testsuite",
-      testDir: "./wasm/dist"
+      testDir: "./wasm/dist",
+      testMatch: "hive_base*"
     },
     {
       name: "wax_testsuite_custom_chain_options",

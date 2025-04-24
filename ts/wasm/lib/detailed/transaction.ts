@@ -11,6 +11,7 @@ import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
 import { ISignatureProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
+import { ApiTransaction2ProtoTransactionTransformer } from "./util/transaction_transformer.js";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -102,6 +103,37 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
+    const transactionStringified = typeof transactionObject === 'string' ? transactionObject : JSON.stringify(transactionObject);
+
+    const transactionTransformer = new ApiTransaction2ProtoTransactionTransformer();
+
+    const impl = api.wax.IProtoTransactionTransformer.implement(transactionTransformer);
+
+    safeWasmCall(() => api.proto.cpp_transform_api_transaction(impl, transactionStringified));
+
+    const tx = transactionTransformer.getOutputTransaction();
+
+      /*const tx = {
+        ref_block_num: 10,
+        ref_block_prefix: 10,
+        expiration: "2023-10-10T00:00:00",
+        extensions: [],
+        operations: [],
+        signatures: []
+      };
+
+      const op: operation = {
+        comment: {author:'publisher1', permlink: 'permlink', parent_author:'', parent_permlink:'parent_permlink', title:'title', json_metadata:'', body:'body'}
+      };
+
+      this.outputTransaction.operations.push(op);
+      */
+
+
+    return new Transaction(api, tx);
+  }
+
+  public static fromApiRef(api: WaxBaseApi, transactionObject: string | object): Transaction {
     const transactionStringified = typeof transactionObject === 'string' ? transactionObject : JSON.stringify(transactionObject);
 
     const protoData = safeWasmCall(() => api.proto.cpp_api_to_proto(transactionStringified));

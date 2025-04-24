@@ -961,6 +961,8 @@ export interface IWaxBaseInterface {
    */
   createTransactionFromJson(transactionObject: string | object | ApiTransaction): ITransaction;
 
+  createTransactionFromJsonRef(transactionObject: string | object | ApiTransaction): ITransaction;
+
   /**
    * Constructs a new Transaction object with given data
    *

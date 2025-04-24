@@ -655,4 +655,74 @@ result proto_protocol_impl<FoundationProvider>::cpp_api_to_proto(const std::stri
     });
 }
 
+json_asset to_json_asset(const hive::protocol::asset& asset);
+
+struct api_transaction_transformer
+{
+  explicit api_transaction_transformer(IProtoTransactionTransformer& transformer) : _transformer(transformer) {}
+
+  typedef void result_type;
+
+  template<typename T>
+  void operator()(T&& v) const { FC_ASSERT(false, "Not implemented operation"); }
+
+  void operator()(const hive::protocol::vote_operation& o)const
+  {
+    _transformer.add_vote_operation(o.voter, o.author, o.permlink, o.weight);
+  }
+
+  void operator()(const hive::protocol::comment_operation& o)const
+  {
+    _transformer.add_comment_operation(o.author, o.permlink, o.parent_author, o.parent_permlink, o.title, o.json_metadata, o.body);
+  }
+
+  void operator()(const hive::protocol::comment_options_operation& o)const
+  {
+    std::vector<wax_beneficiary_route_type> beneficiariesExtension; /// FIXME fill extension
+    _transformer.add_comment_options_operation(o.author, o.permlink, to_json_asset(o.max_accepted_payout), o.percent_hbd, o.allow_votes, o.allow_curation_rewards, beneficiariesExtension);
+  }
+
+  void operator()(const hive::protocol::transfer_operation& o)const
+  {
+    _transformer.add_transfer_operation(o.from, o.to, to_json_asset(o.amount), o.memo);
+  }
+
+  void operator()(const hive::protocol::custom_json_operation& o)const
+  {
+    std::vector<std::string> required_auths(o.required_auths.begin(), o.required_auths.end());
+    std::vector<std::string> required_posting_auths(o.required_posting_auths.begin(), o.required_posting_auths.end());
+    _transformer.add_custom_json_operation(required_auths, required_posting_auths, o.id, o.json);
+  }
+
+private:
+  IProtoTransactionTransformer& _transformer;
+};
+
+template <class FoundationProvider>
+void proto_protocol_impl<FoundationProvider>::cpp_transform_api_transaction(IProtoTransactionTransformer& transformer, const std::string& api_transaction) const
+{
+  fc::variant var = fc::json::from_string(api_transaction, fc::json::format_validation_mode::full);
+  FC_ASSERT(var.is_object(), "cpp_transform_api_transaction requires JSON object as an argument");
+
+  FC_ASSERT(var.get_object().contains("operations"), "Every transaction must contain operations collection");
+  
+  const hive::protocol::signed_transaction tx = var.as<hive::protocol::signed_transaction>();
+
+  transformer.start_transaction(tx.ref_block_num, tx.ref_block_prefix, tx.expiration.to_iso_string());
+
+  api_transaction_transformer helper(transformer);
+
+  for (const hive::protocol::operation& o : tx.operations)
+  {
+    o.visit(helper);
+  }
+
+  for (const auto& signature : tx.signatures)
+  {
+    const std::string hexString = fc::to_hex(reinterpret_cast<const char*>(signature.begin()), signature.size());
+    transformer.add_signature(hexString);
+  }
+
+}
+
 } /// namespace cpp 

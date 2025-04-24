@@ -7,6 +7,33 @@
 
 namespace cpp {
 
+class wax_beneficiary_route_type {
+  public:
+    std::string account;
+    unsigned int weight = 0;
+};
+
+class IProtoTransactionTransformer {
+public:
+  virtual void start_transaction(unsigned int ref_block_num, unsigned int ref_block_prefix, const std::string& expirationTime) = 0;
+  virtual void add_vote_operation(const std::string& voter, const std::string& author, const std::string& permlink, int weight) = 0;
+  virtual void add_comment_operation(const std::string& author, const std::string& permlink,
+    const std::string& parent_author, const std::string& parent_permlink,
+    const std::string& title, const std::string& json_metadata, const std::string& body) = 0;
+  /** Allows to push comment_options_operation with optional beneficiaries extension (if extension was present in original operation, passed vector will be not empty)
+  */
+  virtual void add_comment_options_operation(const std::string& author, const std::string& permlink,
+      const json_asset& max_accepted_payout, unsigned int percent_hbd, bool allow_votes, bool allow_curation_rewards,
+      const std::vector<wax_beneficiary_route_type>& beneficiariesExtension) = 0;
+  virtual void add_custom_json_operation(const std::vector<std::string>& required_auths, const std::vector<std::string>& required_posting_auths, const std::string& id, const std::string& json) = 0;
+  
+  virtual void add_transfer_operation(const std::string& from, const std::string& to, const json_asset& amount, const std::string& memo) = 0;
+
+  virtual void add_signature(const std::string& hexString) = 0;
+
+  virtual ~IProtoTransactionTransformer() = default;  
+};
+
 /** Common implementation of protobuf_protocol interface, next exposed to other languages 
 *   It provides Hive protocol functionality operating on Protobuf specific JSON format.
 */
@@ -34,6 +61,9 @@ public:
 
   // TODO: Implement block bi-directional protobuf JSON conversion
   result cpp_proto_to_api(const std::string& operation_or_tx);
+
+  void cpp_transform_api_transaction(IProtoTransactionTransformer& transformer, const std::string& api_transaction) const;
+
   result cpp_proto_to_legacy_api(const std::string& transaction);
   result cpp_api_to_proto(const std::string& operation_or_tx_or_block);
 };
