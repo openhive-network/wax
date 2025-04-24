@@ -5,12 +5,13 @@ stages:
   - deploy
 
 include:
-  - project: 'hive/hive'
-    # This has to be the same as the commit checked out in the submodule
-    ref: 1a8bfcdf46a4a6430b8ea4b788fc1cbe71aecb99
-    file: '/scripts/ci-helpers/prepare_data_image_job.yml'
-  # DO NOT include ccc here. It will be indirectly included by above yaml file.
-  #- project: 'hive/common-ci-configuration'
+  - project: 'hive/common-ci-configuration'
+    ref: b87d23ff08491d5006db9eddbec1520190266c0d
+    file:
+      - '/templates/npm_projects.gitlab-ci.yml'
+      - '/templates/wasm_build.gitlab-ci.yml'
+      - '/templates/python_projects.gitlab-ci.yml'
+
 
 variables:
   GIT_DEPTH: 0
