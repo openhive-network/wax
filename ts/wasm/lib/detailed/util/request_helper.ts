@@ -75,7 +75,7 @@ export class RequestHelper {
       else if (error.name === "AbortError")
         throw new WaxRequestAbortedByUser<T>(config, runningData);
 
-      throw new WaxUnknownRequestError<T>(config, runningData);
+      throw new WaxUnknownRequestError<T>(config, runningData, error);
     }
   }
 

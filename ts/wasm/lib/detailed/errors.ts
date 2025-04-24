@@ -1,6 +1,12 @@
 import type { TAccountName } from "./hive_apps_operations/index.js";
 
-export class WaxError extends Error {}
+export class WaxError extends Error
+ {
+  constructor(message?: string, source?: Error) {
+    super(message, { cause: source });
+    this.name = "WaxError";
+  }
+ }
 
 export class WaxChainApiError extends WaxError {
   apiError: object;

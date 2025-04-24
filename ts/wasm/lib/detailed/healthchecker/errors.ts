@@ -31,7 +31,12 @@ export class WaxHealthCheckerValidatorFailedError<T extends (object | string) = 
   }
 }
 
-export class WaxRequestError extends WaxError {}
+export class WaxRequestError extends WaxError
+ {
+  public constructor(message?: string, source?: Error) {
+    super(message, source);
+  }
+ }
 
 export class WaxNon_2XX_3XX_ResponseCodeError<T extends (object | string) = string> extends WaxRequestError {
   public constructor(public readonly request: IRequestOptions, public readonly response: Partial<IDetailedResponseData<T>>) {
@@ -40,8 +45,8 @@ export class WaxNon_2XX_3XX_ResponseCodeError<T extends (object | string) = stri
 }
 
 export class WaxUnknownRequestError<T extends (object | string) = string> extends WaxRequestError {
-  public constructor(public readonly request: IRequestOptions, public readonly response: Partial<IDetailedResponseData<T>>) {
-    super(`Unknown request error caught (possible network or CORS error): "${request.method} ${request.endpoint + request.url}"`);
+  public constructor(public readonly request: IRequestOptions, public readonly response: Partial<IDetailedResponseData<T>>, cause?: Error) {
+    super(`Unknown request error caught (possible network or CORS error): "${request.method} ${request.endpoint + request.url}"`, cause);
   }
 }
 
