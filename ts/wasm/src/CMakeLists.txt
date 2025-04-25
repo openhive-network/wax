@@ -15,13 +15,16 @@ SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
 include( ${HIVE_ROOT_PATH}/programs/beekeeper/beekeeper_wasm/cmake/wasm_project.cmake )
 
+set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/protocol )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
 file(GLOB HEADERS "core/*.hpp")
 
 set( SOURCES
+      ${WAX_ROOT_PATH}/core/exception.cpp
       ${WAX_ROOT_PATH}/core/foundation.cpp
+      ${WAX_ROOT_PATH}/core/utils.cpp
       ${WAX_ROOT_PATH}/core/binary_view_helper.cpp
       wasm_interface.cpp
 )
@@ -29,6 +32,7 @@ set( SOURCES
 set( INCLUDES "${WAX_ROOT_PATH}"
               "${WAX_ROOT_PATH}/core"
               "${HIVE_ROOT_PATH}/libraries/chain/include"
+              "${GENERATED_ASSERT_ID_DIR}"
 )
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../hive/libraries/protocol/get_config.d/generate_get_config.cmake")
@@ -53,3 +57,15 @@ DEFINE_WASM_TARGET_FOR( wax
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
 )
+
+target_link_libraries( protocol_assertion_id_generator PUBLIC nodefs.js )
+target_link_options( protocol_assertion_id_generator PUBLIC 
+    -sENVIRONMENT="node" -sNODERAWFS=1
+ )
+
+set_target_properties( protocol_assertion_id_generator PROPERTIES
+  OUTPUT_NAME "protocol_assertion_id_generator.cjs"
+  )
+
+add_dependencies( wax.web protocol_assertion_id_verifier )
+add_dependencies( wax.node protocol_assertion_id_verifier )

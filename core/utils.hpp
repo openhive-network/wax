@@ -1,10 +1,13 @@
 #pragma once
 
+#include "core/exception.hpp"
+#include "core/types.hpp"
+
+#include "fc/exception/exception.hpp"
+
 #include <exception>
 #include <functional>
 #include <stdexcept>
-
-#include <fc/exception/exception.hpp>
 
 namespace cpp
 {
@@ -38,6 +41,8 @@ static result method_wrapper(callback&& method)
   return _result;
 }
 
+void throw_appropriate_wax_assertion( fc::assert_exception& e );
+
 /** Allows to wrap given function call into exception handler which at most throw std::exception (safely handled by Python/WASM runtimes)
 */
 template <typename ProcessorFn, typename... Args>
@@ -46,6 +51,11 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
   try
   {
     return fn(std::forward<Args>(args)...);
+  }
+  catch (fc::assert_exception& e)
+  {
+    wlog("Caught fc::assert_exception: ${details}", ("details", e.to_detail_string()));
+    throw_appropriate_wax_assertion( e );
   }
   catch (fc::exception& e)
   {

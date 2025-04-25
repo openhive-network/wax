@@ -42,6 +42,7 @@ LIST( APPEND  BOOST_COMPONENTS
       # program_options
       unit_test_framework )
 
+set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated_assert_id )
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_DIR}/protocol)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)
@@ -49,7 +50,10 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
 add_python_library("cpp_python_bridge" MODULE SOURCES
-  ${WAX_CPP_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
+  ${WAX_CPP_PATH} 
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/exception.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/utils.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/binary_view_helper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/minimize_required_signatures_helper.cpp
@@ -62,6 +66,7 @@ target_include_directories("cpp_python_bridge" PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}/../"
   "${CMAKE_CURRENT_SOURCE_DIR}/../core"
   "${HIVE_ROOT_PATH}/libraries/chain/include"
+  "${GENERATED_ASSERT_ID_DIR}"
 )
 
 python_extension_module("cpp_python_bridge")
