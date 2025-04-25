@@ -7,7 +7,10 @@
 
 #include <iostream>
 
+#include "val_protocol.hpp"
+
 #include <emscripten/bind.h>
+#include <emscripten/val.h>
 
 using namespace cpp;
 using namespace emscripten;
@@ -73,6 +76,14 @@ std::string cpp_asset_symbol(const json_asset& value) const
 
 void cpp_throws(int value) const
 { foundation::cpp_throws(value); }
+
+bool cpp_get_js_object(val obj) const
+{
+  std::string author = obj["author"].as<std::string>();
+  dlog((author));
+
+  return author == "user";
+}
 
 crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
 { return foundation::cpp_crypto_memo_from_string(value); }
@@ -165,6 +176,36 @@ bool cpp_is_valid_account_name( const std::string& name ) const
   return foundation::cpp_is_valid_account_name( name );
 }
 
+};
+
+class wasm_transaction
+{
+public:
+  wasm_transaction(val obj)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      fc::reflector< hive::protocol::signed_transaction >::visit(
+        val_protocol_visitor< hive::protocol::signed_transaction >{ obj, this->_transaction }
+      );
+    });
+  }
+
+  std::string to_json()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return fc::json::to_string(this->_transaction);
+    });
+  }
+
+  std::string id()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return this->_transaction.id(hive::protocol::pack_type::hf26).str();
+    });
+  }
+
+private:
+  hive::protocol::signed_transaction _transaction;
 };
 
 class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
@@ -339,6 +380,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_throws", &foundation_wasm::cpp_throws)
 
+    .function("cpp_get_js_object", &foundation_wasm::cpp_get_js_object)
+
     .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
     .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)
 
@@ -358,6 +401,14 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
     ;
+
+
+  class_<wasm_transaction>("WasmTransaction")
+    .constructor<val>()
+
+    .function("id", &wasm_transaction::id)
+    .function("toString", &wasm_transaction::to_json)
+  ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
     .constructor<>()

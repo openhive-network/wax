@@ -17,6 +17,7 @@ import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAc
 import type { IChainConfig } from "../build_wasm/config";
 import { ISignatureProvider, IOnlineSignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
+import type { WasmTransaction } from '../build_wasm/wax.common';
 
 export type { IChainConfig };
 
@@ -577,6 +578,8 @@ export interface IWaxBaseInterface {
 
   readonly formatter: IWaxExtendableFormatter;
   readonly waxify: IWaxExtendableFormatter['waxify'];
+
+  get WasmTransaction(): new (_0: object) => WasmTransaction;
 
   /**
    * Retrieves the public key address prefix

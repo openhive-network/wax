@@ -26,6 +26,53 @@ const parseBinaryChildren = (data: VectorBinaryDataNode) => {
 };
 
 test.describe('WASM Protocol', () => {
+  test('Should be able to print author in C++ JS val handle', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_get_js_object({
+        author: "user"
+      });
+    });
+
+    expect(retVal).toBeTruthy();
+  });
+
+  test('Should be able to create WasmTransaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ provider }) => {
+      try {
+        const tx = new provider.WasmTransaction({
+          "expiration": "2024-05-15T13:04:16",
+          "extensions": [],
+          "operations": [
+            {
+              "type": "vote_operation",
+              "value": {
+                "author": "macchiata",
+                "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+                "voter": "esecholo",
+                "weight": 10000
+              }
+            }
+          ],
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "signatures": [
+            "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+          ]
+        });
+
+        console.log(tx.toString(), tx.id());
+
+        return tx.id();
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toBe("430e93622775d13cf39877239e4675123ff9fbd5"); // Mainnet block 85'418'673
+  });
+
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }) => {
       return protocol.cpp_generate_private_key();
