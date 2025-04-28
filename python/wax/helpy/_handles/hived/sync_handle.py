@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic
 
-from beekeepy._remote_handle.abc.handle import AbstractSyncHandle
-from beekeepy._remote_handle.batch_handle import SyncBatchHandle
+from beekeepy.handle.remote import AbstractSyncHandle, RemoteHandleSettings, RemoteSettingsT, SyncBatchHandle
 from wax.helpy._handles.hived.api.api_collection import HivedSyncApiCollection
 from wax.helpy._handles.hived.common_helpers import HiveHandleCommonHelpers
 from wax.helpy._interfaces.time import Time
@@ -16,7 +15,9 @@ if TYPE_CHECKING:
     from schemas.fields.basic import AccountName
 
 
-class Hived(AbstractSyncHandle[HivedSyncApiCollection], HiveHandleCommonHelpers):
+class HivedTemplate(
+    AbstractSyncHandle[RemoteSettingsT, HivedSyncApiCollection], HiveHandleCommonHelpers, Generic[RemoteSettingsT]
+):
     def _construct_api(self) -> HivedSyncApiCollection:
         return HivedSyncApiCollection(owner=self)
 
@@ -101,3 +102,6 @@ class Hived(AbstractSyncHandle[HivedSyncApiCollection], HiveHandleCommonHelpers)
     @property
     def network_type(self) -> str:
         return self._extract_network_type(self.api.database.get_version())
+
+
+Hived = HivedTemplate[RemoteHandleSettings]
