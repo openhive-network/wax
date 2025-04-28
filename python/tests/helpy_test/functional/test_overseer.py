@@ -19,7 +19,7 @@ from beekeepy.exceptions import (
     OverseerError,
     UnparsableResponseError,
 )
-from tests.helpy_test.helpy.testing_server import run_simple_server
+from tests.utils.testing_server import run_simple_server
 
 if TYPE_CHECKING:
     from beekeepy.communication import AbstractCommunicator, AbstractOverseer

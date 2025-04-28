@@ -5,7 +5,7 @@ from datetime import datetime  # noqa: TCH003
 from schemas.apis import debug_node_api
 from schemas.fields.compound import Price
 
-from beekeepy._remote_handle.abc.api import AbstractAsyncApi
+from beekeepy.handle.remote import AbstractAsyncApi
 from wax.helpy._interfaces.asset import Hf26Asset
 
 

@@ -7,8 +7,7 @@ from typing import AsyncIterator, Iterator
 
 import pytest
 
-from beekeepy._remote_handle.abc.api import AbstractApi, RegisteredApisT
-from beekeepy.handle.remote import RemoteSettings
+from beekeepy.handle.remote import AbstractSyncApi, RegisteredApisT, RemoteHandleSettings
 from beekeepy.interfaces import HttpUrl
 from wax.helpy import AsyncHived, Hived
 
@@ -50,7 +49,7 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 @pytest.fixture
 def registered_apis() -> RegisteredApisT:
     """Return registered methods."""
-    return AbstractApi._get_registered_methods()
+    return AbstractSyncApi._get_registered_methods()
 
 
 @pytest.fixture
@@ -63,11 +62,11 @@ def hived_http_endpoint(request: pytest.FixtureRequest) -> HttpUrl:
 
 @pytest.fixture
 def sync_node(hived_http_endpoint: HttpUrl) -> Iterator[Hived]:
-    with Hived(settings=RemoteSettings(http_endpoint=hived_http_endpoint)) as hived:
+    with Hived(settings=RemoteHandleSettings(http_endpoint=hived_http_endpoint)) as hived:
         yield hived
 
 
 @pytest.fixture
 async def async_node(hived_http_endpoint: HttpUrl) -> AsyncIterator[AsyncHived]:
-    async with AsyncHived(settings=RemoteSettings(http_endpoint=hived_http_endpoint)) as hived:
+    async with AsyncHived(settings=RemoteHandleSettings(http_endpoint=hived_http_endpoint)) as hived:
         yield hived

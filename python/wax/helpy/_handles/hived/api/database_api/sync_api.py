@@ -6,7 +6,7 @@ from typing import Literal
 from schemas.apis import database_api
 from schemas.transaction import Transaction
 
-from beekeepy._remote_handle.abc.api import AbstractSyncApi
+from beekeepy.handle.remote import AbstractSyncApi
 from wax.helpy._handles.hived.api.database_api.common import DatabaseApiCommons
 from wax.helpy._interfaces.asset import Hf26Asset
 

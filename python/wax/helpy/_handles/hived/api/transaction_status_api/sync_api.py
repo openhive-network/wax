@@ -4,7 +4,7 @@ from datetime import datetime  # noqa: TCH003
 
 from schemas.apis import transaction_status_api
 
-from beekeepy._remote_handle.abc.api import AbstractSyncApi
+from beekeepy.handle.remote import AbstractSyncApi
 
 
 class TransactionStatusApi(AbstractSyncApi):

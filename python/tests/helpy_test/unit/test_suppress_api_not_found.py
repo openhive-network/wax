@@ -5,7 +5,7 @@ from typing import cast
 
 import pytest
 
-from beekeepy._communication.rules import ApiNotFound
+from beekeepy.communication import rules
 from beekeepy.exceptions import ApiNotFoundError, GroupedErrorsError
 from beekeepy.interfaces import HttpUrl, SuppressApiNotFound
 
@@ -20,7 +20,7 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
         "id": 1,
     }
 
-    result = ApiNotFound(
+    result = rules.ApiNotFound(
         url=HttpUrl("0.0.0.0:0"),
         request={"jsonrpc": "2.0", "id": 1, "method": f"{api}.some_method"},
     ).check(response=response, response_raw=json.dumps(response))

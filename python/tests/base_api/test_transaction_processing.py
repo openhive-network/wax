@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 if TYPE_CHECKING:
-    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet
+    from beekeepy import AsyncUnlockedWallet
     from wax.interfaces import IWaxBaseInterface
 
 from wax._private.models.hive_date_time import HiveDateTime
@@ -23,7 +23,7 @@ from .templates import (
 
 
 @pytest.mark.describe("Should be able to create TAPOS transaction using implicit expiration time")
-async def test_transaction_processing_0(wallet: UnlockedWallet, wax: IWaxBaseInterface) -> None:
+async def test_transaction_processing_0(wallet: AsyncUnlockedWallet, wax: IWaxBaseInterface) -> None:
     await wallet.import_keys(private_keys=["5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT"])
 
     tx = wax.create_transaction_with_tapos("04c1c7a566fc0da66aee465714acee7346b48ac2")
@@ -75,7 +75,7 @@ def test_transaction_processing_1(wax: IWaxBaseInterface) -> None:
 
 
 @pytest.mark.describe("Should be able to create and sign transaction using object interface")
-async def test_transaction_processing_2(wallet: UnlockedWallet, wax: IWaxBaseInterface) -> None:
+async def test_transaction_processing_2(wallet: AsyncUnlockedWallet, wax: IWaxBaseInterface) -> None:
     await wallet.import_key(private_key="5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT")
 
     tx = wax.create_transaction_with_tapos(
@@ -103,7 +103,7 @@ async def test_transaction_processing_2(wallet: UnlockedWallet, wax: IWaxBaseInt
 
 
 @pytest.mark.describe("Should be able to binary serialize signed transaction using object interface")
-async def test_transaction_processing_3(wallet: UnlockedWallet, wax: IWaxBaseInterface) -> None:
+async def test_transaction_processing_3(wallet: AsyncUnlockedWallet, wax: IWaxBaseInterface) -> None:
     await wallet.import_key(private_key="5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT")
 
     tx = wax.create_transaction_with_tapos(
@@ -171,7 +171,7 @@ def test_transaction_processing_4(wax: IWaxBaseInterface) -> None:
 
 
 @pytest.mark.describe("Should be able to sign the transaction twice")
-async def test_transaction_processing_5(wallet: UnlockedWallet, wax: IWaxBaseInterface) -> None:
+async def test_transaction_processing_5(wallet: AsyncUnlockedWallet, wax: IWaxBaseInterface) -> None:
     key = (await wallet.import_keys(private_keys=["5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT"]))[0]
     other_key = (await wallet.import_keys(private_keys=["5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG"]))[0]
 
@@ -200,7 +200,7 @@ async def test_transaction_processing_5(wallet: UnlockedWallet, wax: IWaxBaseInt
 
 
 @pytest.mark.describe("Should be able to sign the transaction twice on different transaction instances")
-async def test_transaction_processing_6(wallet: UnlockedWallet, wax: IWaxBaseInterface) -> None:
+async def test_transaction_processing_6(wallet: AsyncUnlockedWallet, wax: IWaxBaseInterface) -> None:
     key = (await wallet.import_keys(private_keys=["5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT"]))[0]
     other_key = (await wallet.import_keys(private_keys=["5KXNQP5feaaXpp28yRrGaFeNYZT7Vrb1PqLEyo7E3pJiG1veLKG"]))[0]
 

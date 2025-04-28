@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
 
-from beekeepy._interface._suppress_api_not_found import SuppressApiNotFound
 from beekeepy.exceptions import CommunicationError, NothingToSendError, ResponseNotReadyError
+from beekeepy.interfaces import SuppressApiNotFound
 
 if TYPE_CHECKING:
     from wax.helpy._handles.hived.async_handle import AsyncHived

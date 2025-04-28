@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from schemas.apis import jsonrpc
 
-from beekeepy._remote_handle.abc.api import AbstractAsyncApi
+from beekeepy.handle.remote import AbstractAsyncApi
 
 
 class Jsonrpc(AbstractAsyncApi):

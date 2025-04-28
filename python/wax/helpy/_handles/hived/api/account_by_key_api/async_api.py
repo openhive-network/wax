@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from schemas.apis import account_by_key_api
 
-from beekeepy._remote_handle.abc.api import AbstractAsyncApi
+from beekeepy.handle.remote import AbstractAsyncApi
 
 
 class AccountByKeyApi(AbstractAsyncApi):

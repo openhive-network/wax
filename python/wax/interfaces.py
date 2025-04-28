@@ -12,7 +12,7 @@ from wax.proto.transaction import transaction as proto_transaction
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
+    from beekeepy import AsyncUnlockedWallet
     from beekeepy.interfaces import HttpUrl
     from wax.models.asset import (
         AssetFactory,

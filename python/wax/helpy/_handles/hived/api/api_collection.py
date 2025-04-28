@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from beekeepy._remote_handle.abc.api_collection import (
-    AbstractAsyncApiCollection,
-    AbstractSyncApiCollection,
-)
+from beekeepy.handle.remote import AppStatusProbeAsyncApiCollection, AppStatusProbeSyncApiCollection
 from wax.helpy._handles.hived.api.account_by_key_api import (
     AsyncAccountByKeyApi,
     SyncAccountByKeyApi,
@@ -46,11 +43,11 @@ from wax.helpy._handles.hived.api.wallet_bridge_api import (
 )
 
 if TYPE_CHECKING:
-    from beekeepy._remote_handle.abc.api import AsyncHandleT, SyncHandleT
+    from beekeepy.handle.remote import AsyncSendable, SyncSendable
 
 
-class HivedAsyncApiCollection(AbstractAsyncApiCollection):
-    def __init__(self, owner: AsyncHandleT) -> None:
+class HivedAsyncApiCollection(AppStatusProbeAsyncApiCollection):
+    def __init__(self, owner: AsyncSendable) -> None:
         super().__init__(owner)
         self.account_by_key = AsyncAccountByKeyApi(owner=self._owner)
         self.account_history = AsyncAccountHistoryApi(owner=self._owner)
@@ -83,8 +80,8 @@ class HivedAsyncApiCollection(AbstractAsyncApiCollection):
         self.wallet_bridge_api = self.wallet_bridge
 
 
-class HivedSyncApiCollection(AbstractSyncApiCollection):
-    def __init__(self, owner: SyncHandleT) -> None:
+class HivedSyncApiCollection(AppStatusProbeSyncApiCollection):
+    def __init__(self, owner: SyncSendable) -> None:
         super().__init__(owner)
         self.account_by_key = SyncAccountByKeyApi(owner=self._owner)
         self.account_history = SyncAccountHistoryApi(owner=self._owner)

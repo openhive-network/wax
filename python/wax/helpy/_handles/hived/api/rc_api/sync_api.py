@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from schemas.apis import rc_api
 
-from beekeepy._remote_handle.abc.api import AbstractSyncApi
+from beekeepy.handle.remote import AbstractSyncApi
 from wax.helpy._interfaces.asset import Hf26Asset
 
 

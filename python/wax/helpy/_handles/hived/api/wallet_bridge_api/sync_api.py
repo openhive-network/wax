@@ -5,7 +5,7 @@ from datetime import datetime  # noqa: TCH003
 from schemas.apis import wallet_bridge_api
 from schemas.transaction import Transaction
 
-from beekeepy._remote_handle.abc.api import AbstractSyncApi, ApiArgumentSerialization
+from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
 from wax.helpy._handles.hived.api.wallet_bridge_api.common import WalletBridgeApiCommons
 from wax.helpy._interfaces.asset.asset import Hf26Asset
 

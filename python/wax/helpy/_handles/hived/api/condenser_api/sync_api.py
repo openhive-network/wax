@@ -5,7 +5,7 @@ from datetime import datetime  # noqa: TCH003
 from schemas.apis import condenser_api
 from schemas.transaction import TransactionLegacy
 
-from beekeepy._remote_handle.abc.api import AbstractSyncApi, ApiArgumentSerialization
+from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
 from wax.helpy._handles.hived.api.condenser_api.common import CondenserApiCommons
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from schemas.apis import network_broadcast_api
 from schemas.transaction import Transaction
 
-from beekeepy._remote_handle.abc.api import AbstractAsyncApi
+from beekeepy.handle.remote import AbstractAsyncApi
 
 
 class NetworkBroadcastApi(AbstractAsyncApi):
