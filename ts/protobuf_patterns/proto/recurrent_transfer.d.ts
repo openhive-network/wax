@@ -27,9 +27,9 @@ export interface recurrent_transfer_extension {
  */
 export interface recurrent_transfer {
     /** @param {string} from_account */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - Account to transfer asset to. Cannot set a transfer to yourself. */
-    to_account: string;
+    to: string;
     /**
      * @param {asset} amount - The amount of asset to transfer from @ref from to @ref to.
      *                         If the recurrent transfer failed 10 (HIVE_MAX_CONSECUTIVE_RECURRENT_TRANSFER_FAILURES)

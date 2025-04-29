@@ -2,23 +2,23 @@
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasetransfer_to_vesting() {
-    return { from_account: "", to_account: "", amount: undefined };
+    return { from: "", to: "", amount: undefined };
 }
 export const transfer_to_vesting = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
         };
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
@@ -30,8 +30,8 @@ export const transfer_to_vesting = {
     },
     fromPartial(object) {
         const message = createBasetransfer_to_vesting();
-        message.from_account = object.from_account ?? "";
-        message.to_account = object.to_account ?? "";
+        message.from = object.from ?? "";
+        message.to = object.to ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;

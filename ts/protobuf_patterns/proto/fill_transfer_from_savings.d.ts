@@ -7,9 +7,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface fill_transfer_from_savings {
     /** @param {string} from_account - user that initiated transfer from savings */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - user that was specified to receive funds (receiver of amount) */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - (HIVE or HBD) funds transfered from savings */
     amount: asset | undefined;
     /** @param {number} request_id - id of transfer request */
