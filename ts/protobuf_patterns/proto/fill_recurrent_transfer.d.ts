@@ -11,9 +11,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface fill_recurrent_transfer {
     /** @param {string} from_account - user that initiated the transfer (source of amount) */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - user that is target of transfer (receiver of amount) */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - (HIVE of HBD) amount transferred in current iteration */
     amount: asset | undefined;
     /** @param {string} memo - memo attached to the transfer */

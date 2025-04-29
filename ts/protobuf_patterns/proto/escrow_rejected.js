@@ -2,21 +2,13 @@
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_rejected() {
-    return {
-        from_account: "",
-        to_account: "",
-        agent: "",
-        escrow_id: 0,
-        hbd_amount: undefined,
-        hive_amount: undefined,
-        fee: undefined,
-    };
+    return { from: "", to: "", agent: "", escrow_id: 0, hbd_amount: undefined, hive_amount: undefined, fee: undefined };
 }
 export const escrow_rejected = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
             escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
             hbd_amount: isSet(object.hbd_amount) ? asset.fromJSON(object.hbd_amount) : undefined,
@@ -26,11 +18,11 @@ export const escrow_rejected = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.agent !== undefined) {
             obj.agent = message.agent;
@@ -54,8 +46,8 @@ export const escrow_rejected = {
     },
     fromPartial(object) {
         const message = createBaseescrow_rejected();
-        message.from_account = object.from_account ?? "";
-        message.to_account = object.to_account ?? "";
+        message.from = object.from ?? "";
+        message.to = object.to ?? "";
         message.agent = object.agent ?? "";
         message.escrow_id = object.escrow_id ?? 0;
         message.hbd_amount = (object.hbd_amount !== undefined && object.hbd_amount !== null)

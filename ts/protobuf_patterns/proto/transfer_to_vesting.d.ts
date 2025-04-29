@@ -13,9 +13,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface transfer_to_vesting {
     /** @param {string} from_account - The account the funds are coming from. */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - The account the funds are going to. If null, then the same as 'from_account'. */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - Must be HIVE, amount > 0. */
     amount: asset | undefined;
 }

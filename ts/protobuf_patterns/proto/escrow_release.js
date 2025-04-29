@@ -3,8 +3,8 @@ import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_release() {
     return {
-        from_account: "",
-        to_account: "",
+        from: "",
+        to: "",
         agent: "",
         who: "",
         receiver: "",
@@ -16,8 +16,8 @@ function createBaseescrow_release() {
 export const escrow_release = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
             who: isSet(object.who) ? globalThis.String(object.who) : "",
             receiver: isSet(object.receiver) ? globalThis.String(object.receiver) : "",
@@ -28,11 +28,11 @@ export const escrow_release = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.agent !== undefined) {
             obj.agent = message.agent;
@@ -59,8 +59,8 @@ export const escrow_release = {
     },
     fromPartial(object) {
         const message = createBaseescrow_release();
-        message.from_account = object.from_account ?? "";
-        message.to_account = object.to_account ?? "";
+        message.from = object.from ?? "";
+        message.to = object.to ?? "";
         message.agent = object.agent ?? "";
         message.who = object.who ?? "";
         message.receiver = object.receiver ?? "";

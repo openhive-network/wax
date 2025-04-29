@@ -2,28 +2,28 @@
 import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasetransfer_from_savings() {
-    return { from_account: "", request_id: 0, to_account: "", amount: undefined, memo: "" };
+    return { from: "", request_id: 0, to: "", amount: undefined, memo: "" };
 }
 export const transfer_from_savings = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
             request_id: isSet(object.request_id) ? globalThis.Number(object.request_id) : 0,
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
             memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
         };
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
         if (message.request_id !== undefined) {
             obj.request_id = Math.round(message.request_id);
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.amount !== undefined) {
             obj.amount = asset.toJSON(message.amount);
@@ -38,9 +38,9 @@ export const transfer_from_savings = {
     },
     fromPartial(object) {
         const message = createBasetransfer_from_savings();
-        message.from_account = object.from_account ?? "";
+        message.from = object.from ?? "";
         message.request_id = object.request_id ?? 0;
-        message.to_account = object.to_account ?? "";
+        message.to = object.to ?? "";
         message.amount = (object.amount !== undefined && object.amount !== null)
             ? asset.fromPartial(object.amount)
             : undefined;

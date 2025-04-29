@@ -6,7 +6,7 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface cancel_transfer_from_savings {
     /** @param {string} from_account */
-    from_account: string;
+    from: string;
     /** @param {number} request_id */
     request_id: number;
 }

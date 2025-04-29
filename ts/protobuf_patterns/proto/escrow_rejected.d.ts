@@ -9,9 +9,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface escrow_rejected {
     /** @param {string} from_account - user that initiated escrow transfer (receiver of all the funds) */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - user that was target of cancelled escrow transfer */
-    to_account: string;
+    to: string;
     /** @param {string} agent - user that was designated as agent of cancelled escrow transfer */
     agent: string;
     /** @param {number} escrow_id - id of cancelled escrow transfer */
