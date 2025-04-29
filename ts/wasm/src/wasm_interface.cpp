@@ -44,6 +44,26 @@ public:
     });
   }
 
+  void add_operation(val obj, bool is_protobuf)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      hive::protocol::operation op;
+      cpp::from_jsval(obj, op, is_protobuf);
+
+      this->_transaction.operations.emplace_back(op);
+    });
+  }
+
+  void add_signature(const std::string& signature)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      hive::protocol::signature_type sig;
+      fc::from_hex(signature, reinterpret_cast<char *>(&sig.data[0]), sig.size());
+
+      this->_transaction.signatures.emplace_back(sig);
+    });
+  }
+
   std::string to_json()const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
@@ -451,6 +471,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("sigDigest", &wasm_transaction::sig_digest)
     .function("signatureKeys", &wasm_transaction::signature_keys)
     .function("validate", &wasm_transaction::validate)
+    .function("push", &wasm_transaction::add_operation)
+    .function("sign", &wasm_transaction::add_signature)
     .function("toString", &wasm_transaction::to_json)
   ;
 
