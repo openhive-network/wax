@@ -312,7 +312,7 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: {
+      custom_json_operation: {
         delegatees: [ "gtg", "null" ],
         from: "initminer",
         rc: {
@@ -322,7 +322,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         delegatees: [ "null" ],
         from: "initminer",
         rc: {
@@ -361,7 +361,7 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -374,7 +374,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -387,7 +387,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -400,7 +400,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -413,7 +413,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -426,7 +426,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -439,7 +439,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -452,7 +452,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -465,7 +465,7 @@ test.describe('Wax object interface formatters tests', () => {
         }
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         accounts: [ "gtg" ],
         community: "mycomm",
         data: {
@@ -516,7 +516,7 @@ test.describe('Wax object interface formatters tests', () => {
     expect(
       retVal
     ).toEqual([{
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.FOLLOW_BLACKLIST,
         follower: "initminer",
         following: [
@@ -525,7 +525,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.FOLLOW_MUTED,
         follower: "initminer",
         following: [
@@ -533,7 +533,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.RESET_ALL_LISTS,
         follower: "initminer",
         following: [
@@ -542,7 +542,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.RESET_BLACKLIST,
         follower: "initminer",
         following: [
@@ -550,7 +550,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.RESET_FOLLOW_BLACKLIST,
         follower: "initminer",
         following: [
@@ -559,7 +559,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.RESET_FOLLOW_MUTED_LIST,
         follower: "initminer",
         following: [
@@ -567,7 +567,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.UNBLACKLIST,
         follower: "initminer",
         following: [
@@ -576,7 +576,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.UNFOLLOW_BLACKLIST,
         follower: "initminer",
         following: [
@@ -584,7 +584,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.UNFOLLOW,
         follower: "initminer",
         following: [
@@ -593,7 +593,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         action: EFollowActions.UNFOLLOW_MUTED,
         follower: "initminer",
         following: [
@@ -601,7 +601,7 @@ test.describe('Wax object interface formatters tests', () => {
         ]
       }
     }, {
-      custom_json: {
+      custom_json_operation: {
         account: "initminer",
         author: "gtg",
         permlink: "first-post"
@@ -689,8 +689,8 @@ test.describe('Wax object interface formatters tests', () => {
 
     class HiveAppsOperationsFormatter {
       @wax.WaxFormattable({ matchInstanceOf: wax.ResourceCreditsOperationData })
-      public rcOperationFormatter({ target }: IFormatFunctionArguments<operation, { custom_json: ResourceCreditsOperationData }>) {
-        return `${target.custom_json.from} delegated ${target.custom_json.rc.amount} to ${target.custom_json.delegatees.join(",")}`;
+      public rcOperationFormatter({ target }: IFormatFunctionArguments<operation, { custom_json_operation: ResourceCreditsOperationData }>) {
+        return `${target.custom_json_operation.from} delegated ${target.custom_json_operation.rc.amount} to ${target.custom_json_operation.delegatees.join(",")}`;
       }
     }
 

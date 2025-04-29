@@ -366,12 +366,7 @@ export const serialization_sensitive_transaction_proto: transactionT = {
   expiration: "2023-11-09T22:01:24",
   operations: [
     {
-      transfer: {
-        from_account: transfer_operation.value.from,
-        to_account: transfer_operation.value.to,
-        amount: transfer_operation.value.amount,
-        memo: transfer_operation.value.memo
-      }
+      transfer_operation: transfer_operation.value
     }
   ],
   extensions: [],
@@ -748,19 +743,19 @@ export const customCommunityJsonsTransaction = {
 };
 
 export const specificBenchmarkTransaction = {
-  transfer: {
-    from_account: "oneplus7",
-    to_account: "kryptogames",
+  transfer_operation: {
+    from: "oneplus7",
+    to: "kryptogames",
     amount: naiAsset,
     memo: "Roll under 50 4d434bd943616"
   },
-  vote: {
+  vote_operation: {
     voter: "otom",
     author: "c0ff33a",
     permlink: "ewxhnjbj",
     weight: 2200
   },
-  custom_json: {
+  custom_json_operation: {
     required_auths: [],
     required_posting_auths: [
       "initminer"
@@ -768,30 +763,30 @@ export const specificBenchmarkTransaction = {
     id: "follow",
     json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
   },
-  account_witness_vote: {
+  account_witness_vote_operation: {
     account: "initminer",
     witness: "initminer",
     approve: true
   },
-  feed_publish: {
+  feed_publish_operation: {
     publisher: "gtg",
     exchange_rate: {
       base: { nai: "@@000000013", amount: "337", precision: 3 },
       quote: { nai: "@@000000013", amount: "1", precision: 3 }
     }
   },
-  claim_account: {
+  claim_account_operation: {
     fee: { nai: "@@000000021", amount: "0", precision: 3 },
     creator: "gtg",
     extensions: []
   },
-  claim_reward_balance: {
+  claim_reward_balance_operation: {
     account: "gtg",
     reward_hbd: { nai: "@@000000013", amount: "0", precision: 3 },
     reward_hive: { nai: "@@000000021", amount: "0", precision: 3 },
     reward_vests: { nai: "@@000000037", amount: "524461404202", precision: 6 }
   },
-  comment: {
+  comment_operation: {
     body: "`aria2c` looks interesting. `lftp` is great about not redownloading files that haven't been modified so once that fat 1.8TB download is done, no need to send that through the pipes anymore, just the incremental stuff.",
     title: "",
     author: "rishi556",

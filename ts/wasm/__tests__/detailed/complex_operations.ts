@@ -1115,10 +1115,10 @@ test.describe('Wax complex operation tests', () => {
     });
 
     expect(retVal).toBeDefined();
-    expect("account_update2" in retVal).toBeTruthy();
-    expect(retVal.account_update2?.account).toBe("gtg");
-    expect(retVal.account_update2?.active?.account_auths).toBeDefined();
-    expect(retVal.account_update2!.active!.account_auths["gtg"]).toBe(0);
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("gtg");
+    expect(retVal.account_update2_operation?.active?.account_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.active!.account_auths["gtg"]).toBe(0);
   });
 
   test('Should be able to remove owner key for initminer', async ({ waxTest }) => {
@@ -1139,10 +1139,10 @@ test.describe('Wax complex operation tests', () => {
     });
 
     expect(retVal).toBeDefined();
-    expect("account_update2" in retVal).toBeTruthy();
-    expect(retVal.account_update2?.account).toBe("initminer");
-    expect(retVal.account_update2?.owner?.key_auths).toBeDefined();
-    expect(retVal.account_update2!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBeUndefined();
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("initminer");
+    expect(retVal.account_update2_operation?.owner?.key_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBeUndefined();
   });
 
   test('Should be able to replace initminer owner key with gtg account', async ({ waxTest }) => {
@@ -1161,12 +1161,12 @@ test.describe('Wax complex operation tests', () => {
     });
 
     expect(retVal).toBeDefined();
-    expect("account_update2" in retVal).toBeTruthy();
-    expect(retVal.account_update2?.account).toBe("initminer");
-    expect(retVal.account_update2?.owner?.key_auths).toBeDefined();
-    expect(retVal.account_update2!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBeUndefined();
-    expect(retVal.account_update2?.owner?.account_auths).toBeDefined();
-    expect(retVal.account_update2!.owner!.account_auths["gtg"]).toBe(1);
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("initminer");
+    expect(retVal.account_update2_operation?.owner?.key_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBeUndefined();
+    expect(retVal.account_update2_operation?.owner?.account_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.owner!.account_auths["gtg"]).toBe(1);
   });
 
   test('Should be able to replace initminer owner key weight', async ({ waxTest }) => {
@@ -1185,10 +1185,10 @@ test.describe('Wax complex operation tests', () => {
     });
 
     expect(retVal).toBeDefined();
-    expect("account_update2" in retVal).toBeTruthy();
-    expect(retVal.account_update2?.account).toBe("initminer");
-    expect(retVal.account_update2?.owner?.key_auths).toBeDefined();
-    expect(retVal.account_update2!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBe(2);
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("initminer");
+    expect(retVal.account_update2_operation?.owner?.key_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.owner!.key_auths["STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX"]).toBe(2);
   });
 });
 
