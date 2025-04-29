@@ -64,6 +64,13 @@ public:
     });
   }
 
+  void set_expiration(const std::string& expiration)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      this->_transaction.expiration = fc::time_point_sec::from_iso_string( expiration );
+    });
+  }
+
   std::string to_json()const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
@@ -473,6 +480,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("validate", &wasm_transaction::validate)
     .function("push", &wasm_transaction::add_operation)
     .function("sign", &wasm_transaction::add_signature)
+    .function("set_expiration", &wasm_transaction::set_expiration)
     .function("toString", &wasm_transaction::to_json)
   ;
 
