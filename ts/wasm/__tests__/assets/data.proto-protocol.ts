@@ -5,7 +5,7 @@
 export * from "./data.protocol";
 
 export const protoVoteOp = {
-  vote: {
+  vote_operation: {
     voter: "otom",
     author: "c0ff33a",
     permlink: "ewxhnjbj",
@@ -19,11 +19,13 @@ export const protoTx = JSON.stringify({
   expiration: "2021-12-13T11:31:33",
   operations: [
     protoVoteOp
-  ]
+  ],
+  extensions: [],
+  signatures: []
 });
 
 export const protoRecurrentTransferOperation = JSON.stringify({
-  recurrent_transfer: {
+  recurrent_transfer_operation: {
     // Note: Those values are named from and to in proto definitions, but are later transformed. We do not have access to the proto transformers here, so we have to hardcode it.
     // If you want to test how the transformers work, please see our examples
     from: "alice",

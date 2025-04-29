@@ -557,6 +557,7 @@ test.describe('Wax base mock tests', () => {
             }
           }
         ],
+        "extensions": [],
         "signatures": [
           "1f32e76fbebe2a92a2b83953e62460ef150bac1ab0989bc5338bbc3a3978c077573403787d509b669f548ccdc06ec6c1995dadd51b5221172635df0f1a443a4d8f",
           "209b7e96212bf1d776187d9321e083eddfed55f9b4b2bf58034302255eb7b8402e436519b4d391bc54462920a9fb1e36b5f60c951e51895f0e19ac3b22f1a97af1"
@@ -871,6 +872,7 @@ test.describe('Wax base mock tests', () => {
             }
           }
         ],
+        "extensions": [],
         "signatures": [
           "20a5932916064c776785df77821b0aaaa442af49faab4304083764de0a25de4ab660aec343efdb443ffa479446dfd1f433f3b968ad8f821c9497e4671f762e0d3a",
           "2068fd39a6a9751877b707e56adf1b8a814b02a7168e0be906e295daf4e35fbe072bf5dba4bfe5567239ed88aab84449bec09237b504ee5a0afaa1fb1e51770947"
