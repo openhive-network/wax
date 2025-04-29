@@ -569,7 +569,7 @@ export interface IWaxBaseInterface {
   readonly formatter: IWaxExtendableFormatter;
   readonly waxify: IWaxExtendableFormatter['waxify'];
 
-  get WasmTransaction(): new (_0: object) => WasmTransaction;
+  createWasmTransaction(transaction: transaction | ApiTransaction | object | string): WasmTransaction;
 
   /**
    * Retrieves the public key address prefix

@@ -32,6 +32,43 @@ struct required_authority_collectionV
 
 using authority_verification_trace = hive::protocol::authority_verification_trace;
 
+class wasm_transaction
+{
+public:
+  wasm_transaction(val obj, bool is_protobuf)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      fc::reflector< hive::protocol::signed_transaction >::visit(
+        val_protocol_visitor< hive::protocol::signed_transaction >{ obj, this->_transaction, is_protobuf }
+      );
+    });
+  }
+
+  std::string to_json()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return fc::json::to_string(this->_transaction);
+    });
+  }
+
+  std::string id()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return this->_transaction.id(hive::protocol::pack_type::hf26).str();
+    });
+  }
+
+  std::string legacy_id()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return this->_transaction.id(hive::protocol::pack_type::legacy).str();
+    });
+  }
+
+private:
+  hive::protocol::signed_transaction _transaction;
+};
+
 class foundation_wasm : public foundation
 {
 private:
@@ -58,6 +95,9 @@ json_asset cpp_hive(const int32_t amount_low, const int32_t amount_high)const
 
 json_asset cpp_hbd(const int32_t amount_low, const int32_t amount_high)const 
 { return foundation::cpp_hbd(join_lh(amount_low, amount_high)); }
+
+wasm_transaction cpp_create_wasm_transaction(val obj, bool is_protobuf)const
+{ return wasm_transaction{ obj, is_protobuf }; }
 
 json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const 
 { return foundation::cpp_vests(join_lh(amount_low, amount_high)); }
@@ -176,36 +216,6 @@ bool cpp_is_valid_account_name( const std::string& name ) const
   return foundation::cpp_is_valid_account_name( name );
 }
 
-};
-
-class wasm_transaction
-{
-public:
-  wasm_transaction(val obj)
-  {
-    cpp::safe_exception_wrapper([&]() -> void {
-      fc::reflector< hive::protocol::signed_transaction >::visit(
-        val_protocol_visitor< hive::protocol::signed_transaction >{ obj, this->_transaction }
-      );
-    });
-  }
-
-  std::string to_json()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return fc::json::to_string(this->_transaction);
-    });
-  }
-
-  std::string id()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return this->_transaction.id(hive::protocol::pack_type::hf26).str();
-    });
-  }
-
-private:
-  hive::protocol::signed_transaction _transaction;
 };
 
 class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
@@ -353,12 +363,20 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
+  class_<wasm_transaction>("WasmTransaction")
+    .function("id", &wasm_transaction::id)
+    .function("legacyId", &wasm_transaction::legacy_id)
+    .function("toString", &wasm_transaction::to_json)
+  ;
+
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
     .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+
+    .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
 
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
     .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
@@ -402,13 +420,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
     ;
 
-
-  class_<wasm_transaction>("WasmTransaction")
-    .constructor<val>()
-
-    .function("id", &wasm_transaction::id)
-    .function("toString", &wasm_transaction::to_json)
-  ;
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
     .constructor<>()
