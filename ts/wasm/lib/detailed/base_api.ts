@@ -232,8 +232,15 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return safeWasmCall(() => this.proto.cpp_hive(long.low, long.high) as NaiAsset);
   }
 
-  public get WasmTransaction(): new (_0: object) => WasmTransaction {
-    return this.wax.WasmTransaction;
+  public createWasmTransaction(transaction: transaction | ApiTransaction | object | string): WasmTransaction {
+    if (typeof transaction === "string")
+      transaction = JSON.parse(transaction);
+    else if (transaction === null || typeof (transaction as any)?.operations[0] !== "object")
+      throw new WaxError(`Invalid transaction provided: "${JSON.stringify(transaction)}". Expected a string or an object with operations.`);
+    else if ((transaction as any).operations[0].type === undefined)
+      return this.proto.cpp_create_wasm_transaction(transaction, true);
+
+    return this.protocol.cpp_create_wasm_transaction(transaction, false);
   }
 
   public hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset {

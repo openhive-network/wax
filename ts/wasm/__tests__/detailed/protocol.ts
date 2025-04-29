@@ -37,9 +37,9 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to create WasmTransaction', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ provider }) => {
+    const retVal = await wasmTest(({ protocol }) => {
       try {
-        const tx = new provider.WasmTransaction({
+        const tx = protocol.cpp_create_wasm_transaction({
           "expiration": "2024-05-15T13:04:16",
           "extensions": [],
           "operations": [
@@ -58,9 +58,9 @@ test.describe('WASM Protocol', () => {
           "signatures": [
             "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
           ]
-        });
+        }, false);
 
-        console.log(tx.toString(), tx.id());
+        console.log(tx.toString(), tx.id(), tx.legacyId());
 
         return tx.id();
       } catch(error) {
