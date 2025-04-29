@@ -15,17 +15,17 @@ export class EncryptionVisitor extends OperationVisitor {
     super()
   }
 
-  public comment(op: comment): void {
+  public comment_operation(op: comment): void {
     op.body = this.cryptographicFunction(op.body);
   }
 
-  public transfer(op: transfer): void {
+  public transfer_operation(op: transfer): void {
     op.memo = this.cryptographicFunction(op.memo);
   }
 
   private static readonly CustomJsonEncryptionKey = "encrypted";
 
-  public custom_json(op: custom_json): void {
+  public custom_json_operation(op: custom_json): void {
     if(this.encryptionType === EEncryptionType.ENCRYPT)
       op.json = JSON.stringify({ [EncryptionVisitor.CustomJsonEncryptionKey]: this.cryptographicFunction(op.json) });
     else {
@@ -36,15 +36,15 @@ export class EncryptionVisitor extends OperationVisitor {
     }
   }
 
-  public transfer_to_savings(op: transfer_to_savings): void {
+  public transfer_to_savings_operation(op: transfer_to_savings): void {
     op.memo = this.cryptographicFunction(op.memo);
   }
 
-  public transfer_from_savings(op: transfer_from_savings): void {
+  public transfer_from_savings_operation(op: transfer_from_savings): void {
     op.memo = this.cryptographicFunction(op.memo);
   }
 
-  public recurrent_transfer(op: recurrent_transfer): void {
+  public recurrent_transfer_operation(op: recurrent_transfer): void {
     op.memo = this.cryptographicFunction(op.memo);
   }
 
