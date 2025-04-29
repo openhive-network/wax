@@ -16,9 +16,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface escrow_transfer {
     /** @param {string} from_account - Account name. */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - Account name. */
-    to_account: string;
+    to: string;
     /** @param {string} agent - Account name. */
     agent: string;
     /** @param {number} escrow_id - It is defined by the sender. It should be unique for { from }. */

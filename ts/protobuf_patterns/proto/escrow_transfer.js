@@ -3,8 +3,8 @@ import { asset } from "./asset.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_transfer() {
     return {
-        from_account: "",
-        to_account: "",
+        from: "",
+        to: "",
         agent: "",
         escrow_id: 0,
         hbd_amount: undefined,
@@ -18,8 +18,8 @@ function createBaseescrow_transfer() {
 export const escrow_transfer = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
             escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
             hbd_amount: isSet(object.hbd_amount) ? asset.fromJSON(object.hbd_amount) : undefined,
@@ -32,11 +32,11 @@ export const escrow_transfer = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.agent !== undefined) {
             obj.agent = message.agent;
@@ -69,8 +69,8 @@ export const escrow_transfer = {
     },
     fromPartial(object) {
         const message = createBaseescrow_transfer();
-        message.from_account = object.from_account ?? "";
-        message.to_account = object.to_account ?? "";
+        message.from = object.from ?? "";
+        message.to = object.to ?? "";
         message.agent = object.agent ?? "";
         message.escrow_id = object.escrow_id ?? 0;
         message.hbd_amount = (object.hbd_amount !== undefined && object.hbd_amount !== null)

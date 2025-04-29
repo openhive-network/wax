@@ -12,12 +12,12 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface transfer_to_savings {
     /** @param {string} from_account - The account the funds are coming from. */
-    from_account: string;
+    from: string;
     /**
      * @param {string} to_account - The account the funds are going to.
      *                              The funds may be transferred to someone else savings balance.
      */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - The allowed currency: HIVE and HBD, amount > 0. */
     amount: asset | undefined;
     /** @param {string} memo - Have to be UTF8, must be shorter than 2048. */

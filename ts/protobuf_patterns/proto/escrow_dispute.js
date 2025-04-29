@@ -1,13 +1,13 @@
 /* eslint-disable */
 export const protobufPackage = "hive.protocol.buffers";
 function createBaseescrow_dispute() {
-    return { from_account: "", to_account: "", agent: "", who: "", escrow_id: 0 };
+    return { from: "", to: "", agent: "", who: "", escrow_id: 0 };
 }
 export const escrow_dispute = {
     fromJSON(object) {
         return {
-            from_account: isSet(object.from) ? globalThis.String(object.from) : "",
-            to_account: isSet(object.to) ? globalThis.String(object.to) : "",
+            from: isSet(object.from) ? globalThis.String(object.from) : "",
+            to: isSet(object.to) ? globalThis.String(object.to) : "",
             agent: isSet(object.agent) ? globalThis.String(object.agent) : "",
             who: isSet(object.who) ? globalThis.String(object.who) : "",
             escrow_id: isSet(object.escrow_id) ? globalThis.Number(object.escrow_id) : 0,
@@ -15,11 +15,11 @@ export const escrow_dispute = {
     },
     toJSON(message) {
         const obj = {};
-        if (message.from_account !== undefined) {
-            obj.from = message.from_account;
+        if (message.from !== undefined) {
+            obj.from = message.from;
         }
-        if (message.to_account !== undefined) {
-            obj.to = message.to_account;
+        if (message.to !== undefined) {
+            obj.to = message.to;
         }
         if (message.agent !== undefined) {
             obj.agent = message.agent;
@@ -37,8 +37,8 @@ export const escrow_dispute = {
     },
     fromPartial(object) {
         const message = createBaseescrow_dispute();
-        message.from_account = object.from_account ?? "";
-        message.to_account = object.to_account ?? "";
+        message.from = object.from ?? "";
+        message.to = object.to ?? "";
         message.agent = object.agent ?? "";
         message.who = object.who ?? "";
         message.escrow_id = object.escrow_id ?? 0;
