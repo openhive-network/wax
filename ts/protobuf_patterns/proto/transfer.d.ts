@@ -11,9 +11,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface transfer {
     /** @param {string} from_account - The account the funds are coming from. */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - The account the funds are going to. */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - The amount of asset to transfer from @ref from_account to @ref to_account, the allowed currency: HIVE and HBD. */
     amount: asset | undefined;
     /** @param {string} memo - The memo is plain-text, any encryption on the memo is up to a higher level protocol, must be shorter than 2048. */
