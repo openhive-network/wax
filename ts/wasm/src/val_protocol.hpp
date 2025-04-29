@@ -216,7 +216,11 @@ public:
 
   void add( const char* name, fc::time_point_sec& v ) const
   {
-    v = fc::time_point_sec::from_iso_string( jsval[name].as<std::string>() );
+    std::string time = jsval[name].as<std::string>();
+    if (time.empty())
+      v = fc::time_point_sec::min();
+    else
+      v = fc::time_point_sec::from_iso_string( time );
   }
 
   template<uint32_t _SYMBOL>
