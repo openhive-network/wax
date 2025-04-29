@@ -345,12 +345,14 @@ test.describe('Wax object interface chain tests', () => {
       const retVal = await waxTest.dynamic(async({ chain }, requiredOwnerAuthorityTransaction) => {
         const tx = chain.createTransactionFromJson(requiredOwnerAuthorityTransaction);
 
+        const auths = tx.requiredAuthorities;
+
         return {
-          authsArr: [...tx.requiredAuthorities.owner.values()],
-          postingSize: tx.requiredAuthorities.posting.size,
-          activeSize: tx.requiredAuthorities.active.size,
-          ownerSize: tx.requiredAuthorities.owner.size,
-          otherSize: tx.requiredAuthorities.other.length
+          authsArr: [...auths.owner.values()],
+          postingSize: auths.posting.size,
+          activeSize: auths.active.size,
+          ownerSize: auths.owner.size,
+          otherSize: auths.other.length
         };
       }, requiredOwnerAuthorityTransaction);
 

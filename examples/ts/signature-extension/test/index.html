@@ -47,7 +47,7 @@
 
         const tx = await chain.createTransaction();
         tx.pushOperation({
-          vote: voteData
+          vote_operation: voteData
         });
 
         console.log(tx.toApi());
