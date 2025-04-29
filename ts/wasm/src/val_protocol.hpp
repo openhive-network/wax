@@ -14,8 +14,8 @@ class val_to_static_variant
 public:
   using result_type = void;
 
-  val_to_static_variant(emscripten::val jsval)
-    : jsval(jsval)
+  val_to_static_variant(emscripten::val jsval, bool is_protobuf)
+    : jsval(jsval), is_protobuf(is_protobuf)
   {}
 
   template<typename T>
@@ -23,14 +23,15 @@ public:
 
 private:
   emscripten::val jsval;
+  bool is_protobuf;
 };
 }
 
 template< typename T >
 class val_protocol_visitor {
 public:
-  val_protocol_visitor( emscripten::val jsval, T& val )
-    : jsval( jsval ), val( val )
+  val_protocol_visitor( emscripten::val jsval, T& val, bool is_protobuf )
+    : jsval( jsval ), is_protobuf( is_protobuf ), val( val )
   {}
 
   template< typename Member, class Class, Member( Class::*member ) >
@@ -84,7 +85,7 @@ public:
 
   void add( const char* name, hive::protocol::authority& v ) const
   {
-    val_protocol_visitor< hive::protocol::authority > visitor{ jsval[name], v };
+    val_protocol_visitor< hive::protocol::authority > visitor{ jsval[name], v, is_protobuf };
 
     visitor.add( "weight_threshold", v.weight_threshold );
     visitor.add( "account_auths", v.account_auths );
@@ -134,7 +135,7 @@ public:
 
   void add( const char* name, hive::protocol::pow& v ) const
   {
-    val_protocol_visitor< hive::protocol::pow > visitor{ jsval[name], v };
+    val_protocol_visitor< hive::protocol::pow > visitor{ jsval[name], v, is_protobuf };
 
     visitor.add( "worker", v.worker );
     visitor.add( "input", v.input );
@@ -144,7 +145,7 @@ public:
 
   void add( const char* name, hive::protocol::pow2_input& v ) const
   {
-    val_protocol_visitor< hive::protocol::pow2_input > visitor{ jsval[name], v };
+    val_protocol_visitor< hive::protocol::pow2_input > visitor{ jsval[name], v, is_protobuf };
 
     visitor.add( "worker_account", v.worker_account );
     visitor.add( "prev_block", v.prev_block );
@@ -180,13 +181,47 @@ public:
 
     int64_t which = -1;
 
-    std::string type = jsval[name]["type"].as<std::string>();
+    emscripten::val nextval;
 
-    auto itr = to_tag.find( type );
-    FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
-    which = itr->second;
+    if (is_protobuf)
+    {
+      emscripten::val obj_val = jsval[name];
 
-    val_to_static_variant visitor{jsval[name]["value"]};
+      emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", obj_val);
+      uint32_t count = keys["length"].as<uint32_t>();
+
+      for (uint32_t i = 0; i < count; ++i)
+      {
+        std::string key = keys[i].as<std::string>();
+
+        emscripten::val el = obj_val[key];
+
+        if (el.isUndefined())
+          continue;
+
+        const auto it = to_tag.find(key);
+        if (it == to_tag.end())
+          continue;
+
+        which = it->second;
+        nextval = el;
+        break;
+      }
+
+      FC_ASSERT( which != -1, "Invalid object name: ${n}", ("n", name) );
+    }
+    else
+    {
+      std::string type = jsval[name]["type"].as<std::string>();
+
+      auto itr = to_tag.find( type );
+      FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
+      which = itr->second;
+
+      nextval = jsval[name]["value"];
+    }
+
+    val_to_static_variant visitor{nextval, is_protobuf};
     fc::static_variant<Ts...> tmp{which, visitor};
     v = tmp;
   }
@@ -210,9 +245,9 @@ public:
       M item;
 
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
-        fc::reflector< M >::visit( val_protocol_visitor{ arr_val[i], item } );
+        fc::reflector< M >::visit( val_protocol_visitor{ arr_val[i], item, is_protobuf } );
       else
-        val_protocol_visitor< M >{ arr_val, item }.add( std::to_string( i ).c_str(), item );
+        val_protocol_visitor< M >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
 
       v.insert(item);
     }
@@ -231,9 +266,9 @@ public:
       M item;
 
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
-        fc::reflector< M >::visit( val_protocol_visitor{ arr_val[i], item } );
+        fc::reflector< M >::visit( val_protocol_visitor{ arr_val[i], item, is_protobuf } );
       else
-        val_protocol_visitor< M >{ arr_val, item }.add( std::to_string( i ).c_str(), item );
+        val_protocol_visitor< M >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
 
       v.insert(item);
     }
@@ -253,9 +288,9 @@ public:
       TVal item;
 
       if constexpr( std::is_same< typename fc::reflector< TVal >::is_defined, fc::true_type >::value )
-        fc::reflector< TVal >::visit( val_protocol_visitor< TVal >{ arr_val[i], item } );
+        fc::reflector< TVal >::visit( val_protocol_visitor< TVal >{ arr_val[i], item, is_protobuf } );
       else
-        val_protocol_visitor< TVal >{ arr_val, item }.add( std::to_string( i ).c_str(), item );
+        val_protocol_visitor< TVal >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
 
       v.emplace_back(item);
     }
@@ -265,10 +300,30 @@ public:
   void add_object( const char* name, boost::container::flat_map<M, hive::protocol::weight_type>& v ) const
   {
     emscripten::val arr_val = jsval[name];
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
-      v[M{arr_val[i][0].as<std::string>()}] = arr_val[i][1].as<hive::protocol::weight_type>();
+    if (is_protobuf)
+    {
+      emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", arr_val);
+      uint32_t count = keys["length"].as<uint32_t>();
+
+      for (uint32_t i = 0; i < count; ++i)
+      {
+        std::string key = keys[i].as<std::string>();
+
+        v[M{key}] = arr_val[key].as<hive::protocol::weight_type>();
+      }
+    }
+    else
+    {
+      uint32_t arr_size = arr_val["length"].as<uint32_t>();
+
+      for (uint32_t i = 0; i < arr_size; ++i)
+      {
+        auto el = arr_val[i];
+
+        v[M{el[0].as<std::string>()}] = el[1].as<hive::protocol::weight_type>();
+      }
+    }
   }
 
   void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>> ) const
@@ -312,6 +367,7 @@ public:
 
 private:
   emscripten::val jsval;
+  bool is_protobuf;
   T& val;
 };
 
@@ -321,7 +377,7 @@ val_to_static_variant::result_type val_to_static_variant::operator()( T& v )cons
   static_assert( !binary_view::is_hive_array< T >::value, "We currently do not support arrays in static_variants when converting from emscripten::val" );
   static_assert( !std::is_scalar< T >::value, "We only support objects in static_variants when converting from emscripten::val" );
 
-  fc::reflector< T >::visit( val_protocol_visitor< T >{ jsval, v } );
+  fc::reflector< T >::visit( val_protocol_visitor< T >{ jsval, v, is_protobuf } );
 }
 
 } // namespac cpp
