@@ -10,9 +10,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface failed_recurrent_transfer {
     /** @param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it) */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - user that is target of transfer (would be receiver of amount, but no transfer actually happened) */
-    to_account: string;
+    to: string;
     /** @param {asset} amount - (HIVE of HBD) amount that was scheduled for transferred in current iteration but failed */
     amount: asset | undefined;
     /** @param {string} memo - memo attached to the transfer */

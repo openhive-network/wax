@@ -12,9 +12,9 @@ export declare const protobufPackage = "hive.protocol.buffers";
  */
 export interface escrow_release {
     /** @param {string} from_account - Account name. */
-    from_account: string;
+    from: string;
     /** @param {string} to_account - Account name. */
-    to_account: string;
+    to: string;
     /** @param {string} agent - Account name. */
     agent: string;
     /** @param {string} who - The account that is attempting to release the funds. */
