@@ -27,6 +27,68 @@ private:
 };
 }
 
+
+template< typename... Ts >
+void from_jsval( emscripten::val jsval, fc::static_variant< Ts... >& v, bool is_protobuf )
+{
+  static std::map< std::string, int64_t > to_tag = []()
+  {
+     std::map< std::string, int64_t > name_map;
+     for( int i = 0; i < fc::static_variant<Ts...>::count(); ++i )
+     {
+        std::string n;
+        fc::get_static_variant_name visitor{n};
+        fc::static_variant<Ts...> tmp{static_cast<int64_t>(i), visitor};
+        name_map[n] = i;
+     }
+     return name_map;
+  }();
+
+  int64_t which = -1;
+
+  emscripten::val nextval;
+
+  if (is_protobuf)
+  {
+    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", jsval);
+    uint32_t count = keys["length"].as<uint32_t>();
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+      std::string key = keys[i].as<std::string>();
+
+      emscripten::val el = jsval[key];
+
+      if (el.isUndefined())
+        continue;
+
+      const auto it = to_tag.find(key);
+      if (it == to_tag.end())
+        continue; // Allow to pass invalid values as JS may add custom properties
+
+      which = it->second;
+      nextval = el;
+      break;
+    }
+
+    FC_ASSERT( which != -1, "Could not find the supported property in static variant" );
+  }
+  else
+  {
+    std::string type = jsval["type"].as<std::string>();
+
+    auto itr = to_tag.find( type );
+    FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
+    which = itr->second;
+
+    nextval = jsval["value"];
+  }
+
+  val_to_static_variant visitor{nextval, is_protobuf};
+  fc::static_variant<Ts...> tmp{which, visitor};
+  v = tmp;
+}
+
 template< typename T >
 class val_protocol_visitor {
 public:
@@ -166,64 +228,7 @@ public:
   template< typename... Ts >
   void add( const char* name, fc::static_variant< Ts... >& v ) const
   {
-    static std::map< std::string, int64_t > to_tag = []()
-    {
-       std::map< std::string, int64_t > name_map;
-       for( int i = 0; i < fc::static_variant<Ts...>::count(); ++i )
-       {
-          std::string n;
-          fc::get_static_variant_name visitor{n};
-          fc::static_variant<Ts...> tmp{static_cast<int64_t>(i), visitor};
-          name_map[n] = i;
-       }
-       return name_map;
-    }();
-
-    int64_t which = -1;
-
-    emscripten::val nextval;
-
-    if (is_protobuf)
-    {
-      emscripten::val obj_val = jsval[name];
-
-      emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", obj_val);
-      uint32_t count = keys["length"].as<uint32_t>();
-
-      for (uint32_t i = 0; i < count; ++i)
-      {
-        std::string key = keys[i].as<std::string>();
-
-        emscripten::val el = obj_val[key];
-
-        if (el.isUndefined())
-          continue;
-
-        const auto it = to_tag.find(key);
-        if (it == to_tag.end())
-          continue;
-
-        which = it->second;
-        nextval = el;
-        break;
-      }
-
-      FC_ASSERT( which != -1, "Invalid object name: ${n}", ("n", name) );
-    }
-    else
-    {
-      std::string type = jsval[name]["type"].as<std::string>();
-
-      auto itr = to_tag.find( type );
-      FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
-      which = itr->second;
-
-      nextval = jsval[name]["value"];
-    }
-
-    val_to_static_variant visitor{nextval, is_protobuf};
-    fc::static_variant<Ts...> tmp{which, visitor};
-    v = tmp;
+    from_jsval( jsval[name], v, is_protobuf );
   }
 
   template< typename M >
