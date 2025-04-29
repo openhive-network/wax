@@ -60,9 +60,9 @@ test.describe('WASM Protocol', () => {
           ]
         }, false);
 
-        console.log(tx.toString(), tx.id(), tx.legacyId());
+        console.log(tx.toString(), tx.id(true), tx.id(false));
 
-        return tx.id();
+        return tx.id(true);
       } catch(error) {
         console.error(error, (error as any).message);
 
@@ -132,9 +132,9 @@ test.describe('WASM Protocol', () => {
           ]
         }, false);
 
-        console.log(tx.toString(), tx.id(), tx.legacyId());
+        console.log(tx.toString(), tx.id(true), tx.id(false));
 
-        return tx.legacyId();
+        return tx.id(false);
       } catch(error) {
         console.error(error, (error as any).message);
 
