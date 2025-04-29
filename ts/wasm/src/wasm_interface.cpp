@@ -51,17 +51,96 @@ public:
     });
   }
 
-  std::string id()const
+  std::string id(hive::protocol::pack_type type = hive::protocol::pack_type::hf26)const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
-      return this->_transaction.id(hive::protocol::pack_type::hf26).str();
+      return this->_transaction.id(type).str();
     });
   }
 
-  std::string legacy_id()const
+  binary_data binary(hive::protocol::pack_type type = hive::protocol::pack_type::hf26, bool strip_to_unsigned_transaction = false)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> binary_data {
+      return cpp::generate_binary_transaction_metadata(_transaction, type == hive::protocol::pack_type::hf26, strip_to_unsigned_transaction);
+    });
+  }
+
+  required_authority_collectionV required_authorities()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+      typedef flat_set<hive::protocol::account_name_type> raw_account_set;
+
+      raw_account_set active;
+      raw_account_set owner;
+      raw_account_set posting;
+      raw_account_set witness;
+      std::vector<hive::protocol::authority> other_authorities;
+      _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
+
+      required_authority_collectionV ret_val;
+      using account_collection_t = typename required_authority_collectionV::account_collection_t;
+      ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
+      ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
+      ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
+
+      for(const auto& auth : other_authorities)
+      {
+        wax_authority wa;
+        wa.weight_threshold = auth.weight_threshold;
+
+        for(const auto& [account, weight] : auth.account_auths)
+          wa.account_auths.emplace(account.operator std::string(), weight);
+
+        for(const auto& [key, weight] : auth.key_auths)
+          wa.key_auths.emplace(key.operator std::string(), weight);
+
+        ret_val.other_authorities.emplace_back(wa);
+      }
+
+      return ret_val;
+    });
+  }
+
+  std::vector<std::string> impacted_accounts()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+      std::vector<std::string> result;
+      for (const auto& op : this->_transaction.operations)
+      {
+        fc::flat_set<hive::protocol::account_name_type> impacted;
+        hive::app::operation_get_impacted_accounts(op, impacted);
+        result.insert( result.end(), impacted.begin(), impacted.end() );
+      }
+      return result;
+    });
+  }
+
+  std::vector<std::string> signature_keys(hive::protocol::pack_type type = hive::protocol::pack_type::hf26)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+      std::vector<std::string> result;
+      for (const auto& sig : this->_transaction.signatures)
+      {
+        result.emplace_back(fc::ecc::public_key::to_base58_with_prefix(
+          fc::ecc::public_key{ sig, _transaction.digest(type) },
+          HIVE_ADDRESS_PREFIX
+        ));
+      }
+      return result;
+    });
+  }
+
+  std::string sig_digest(hive::protocol::pack_type type = hive::protocol::pack_type::hf26)const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
-      return this->_transaction.id(hive::protocol::pack_type::legacy).str();
+      return _transaction.digest(type).str();
+    });
+  }
+
+  void validate()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> void {
+      _transaction.validate();
     });
   }
 
@@ -320,6 +399,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<uint32_t>();
   register_optional<uint16_t>();
   register_optional<int32_t>();
+  register_optional<bool>();
+  register_optional<hive::protocol::pack_type>();
   register_optional<json_asset>();
   register_optional<json_price>();
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
@@ -363,9 +444,19 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
+  enum_<hive::protocol::pack_type>("EPackType")
+    .value("LEGACY", hive::protocol::pack_type::legacy)
+    .value("HF26", hive::protocol::pack_type::hf26)
+  ;
+
   class_<wasm_transaction>("WasmTransaction")
     .function("id", &wasm_transaction::id)
-    .function("legacyId", &wasm_transaction::legacy_id)
+    .function("binary", &wasm_transaction::binary)
+    .function("impactedAccounts", &wasm_transaction::impacted_accounts)
+    .function("requiredAuthorities", &wasm_transaction::required_authorities)
+    .function("sigDigest", &wasm_transaction::sig_digest)
+    .function("signatureKeys", &wasm_transaction::signature_keys)
+    .function("validate", &wasm_transaction::validate)
     .function("toString", &wasm_transaction::to_json)
   ;
 
