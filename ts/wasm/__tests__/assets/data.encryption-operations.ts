@@ -59,7 +59,7 @@ export const utilFunctionTest = async (
 };
 
 export const commentOp = {
-  comment: {
+  comment_operation: {
     parent_author: 'gtg',
     parent_permlink: 'test-comment',
     author: 'gtg',
@@ -71,16 +71,16 @@ export const commentOp = {
 };
 
 export const transferOp = {
-  transfer: {
-    from_account: 'gtg',
-    to_account: 'initminer',
+  transfer_operation: {
+    from: 'gtg',
+    to: 'initminer',
     amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
 
 export const customJsonOp = {
-  custom_json: {
+  custom_json_operation: {
     required_auths: ['gtg'],
     required_posting_auths: ['gtg'],
     id: 'custom_json',
@@ -89,28 +89,28 @@ export const customJsonOp = {
 };
 
 export const transferToSavingsOp = {
-  transfer_to_savings: {
-    from_account: 'gtg',
-    to_account: 'savings',
+  transfer_to_savings_operation: {
+    from: 'gtg',
+    to: 'savings',
     amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
 
 export const transferFromSavingsOp = {
-  transfer_from_savings: {
-    from_account: 'savings',
+  transfer_from_savings_operation: {
+    from: 'savings',
     request_id: 1,
-    to_account: 'gtg',
+    to: 'gtg',
     amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
   },
 };
 
 export const recurrentTransferOp = {
-  recurrent_transfer: {
-    from_account: 'gtg',
-    to_account: 'initminer',
+  recurrent_transfer_operation: {
+    from: 'gtg',
+    to: 'initminer',
     amount: chain.hiveSatoshis(100),
     memo: 'This should be encrypted',
     recurrence: 24,
@@ -120,7 +120,7 @@ export const recurrentTransferOp = {
 };
 
 export const voteOp = {
-  vote: {
+  vote_operation: {
     voter: 'gtg',
     author: 'initminer',
     permlink: 'test-permlink',
@@ -129,7 +129,7 @@ export const voteOp = {
 };
 
 export const convertOp = {
-  convert: {
+  convert_operation: {
     owner: 'gtg',
     requestid: 1,
     amount: chain.hbdSatoshis(100),
@@ -137,22 +137,22 @@ export const convertOp = {
 };
 
 export const transferToVestingOp = {
-  transfer_to_vesting: {
-    from_account: 'gtg',
-    to_account: 'initminer',
+  transfer_to_vesting_operation: {
+    from: 'gtg',
+    to: 'initminer',
     amount: chain.hiveSatoshis(100),
   },
 };
 
 export const withdrawVestingOp = {
-  withdraw_vesting: {
+  withdraw_vesting_operation: {
     account: 'gtg',
     vesting_shares: chain.vestsSatoshis(100),
   },
 };
 
 export const limitOrderCreateOp = {
-  limit_order_create: {
+  limit_order_create_operation: {
     owner: 'gtg',
     orderid: 1,
     amount_to_sell: chain.hiveSatoshis(100),
@@ -163,14 +163,14 @@ export const limitOrderCreateOp = {
 };
 
 export const limitOrderCancelOp = {
-  limit_order_cancel: {
+  limit_order_cancel_operation: {
     owner: 'gtg',
     orderid: 1,
   },
 };
 
 export const feedPublishOp = {
-  feed_publish: {
+  feed_publish_operation: {
     publisher: 'gtg',
     exchange_rate: {
       base: chain.hiveSatoshis(100),
@@ -180,7 +180,7 @@ export const feedPublishOp = {
 };
 
 export const accountCreateOp = {
-  account_create: {
+  account_create_operation: {
     fee: chain.hiveSatoshis(100),
     creator: 'gtg',
     new_account_name: 'initminer',
@@ -205,7 +205,7 @@ export const accountCreateOp = {
 };
 
 export const accountUpdateOp = {
-  account_update: {
+  account_update_operation: {
     account: 'gtg',
     owner: {
       weight_threshold: 1,
@@ -228,7 +228,7 @@ export const accountUpdateOp = {
 };
 
 export const witnessUpdateOp = {
-  witness_update: {
+  witness_update_operation: {
     owner: 'gtg',
     url: 'http://example.com',
     block_signing_key: '5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78',
@@ -242,7 +242,7 @@ export const witnessUpdateOp = {
 };
 
 export const accountWitnessVoteOp = {
-  account_witness_vote: {
+  account_witness_vote_operation: {
     account: 'gtg',
     witness: 'initminer',
     approve: true,
@@ -250,14 +250,14 @@ export const accountWitnessVoteOp = {
 };
 
 export const accountWitnessProxyOp = {
-  account_witness_proxy: {
+  account_witness_proxy_operation: {
     account: 'gtg',
     proxy: 'initminer',
   },
 };
 
 export const powOp = {
-  pow: {
+  pow_operation: {
     worker_account: 'initminer',
     block_id: '1',
     nonce: 'test nonce',
@@ -276,7 +276,7 @@ export const powOp = {
 };
 
 export const customOp = {
-  custom: {
+  custom_operation: {
     required_auths: ['gtg'],
     id: 1,
     data: 'test data',
@@ -284,21 +284,21 @@ export const customOp = {
 };
 
 export const witnessBlockApproveOp = {
-  witness_block_approve: {
+  witness_block_approve_operation: {
     witness: 'initminer',
     block_id: '1',
   },
 };
 
 export const deleteCommentOp = {
-  delete_comment: {
+  delete_comment_operation: {
     author: 'gtg',
     permlink: 'test-permlink',
   },
 };
 
 export const commentOptionsOp = {
-  comment_options: {
+  comment_options_operation: {
     author: 'gtg',
     permlink: 'test-permlink',
     max_accepted_payout: chain.hbdSatoshis(100),
@@ -310,7 +310,7 @@ export const commentOptionsOp = {
 };
 
 export const setWithdrawVestingRouteOp = {
-  set_withdraw_vesting_route: {
+  set_withdraw_vesting_route_operation: {
     from_account: 'gtg',
     to_account: 'initminer',
     percent: 10,
@@ -319,7 +319,7 @@ export const setWithdrawVestingRouteOp = {
 };
 
 export const limitOrderCreate2Op = {
-  limit_order_create2: {
+  limit_order_create2_operation: {
     owner: 'gtg',
     orderid: 1,
     amount_to_sell: chain.hiveSatoshis(100),
@@ -333,7 +333,7 @@ export const limitOrderCreate2Op = {
 };
 
 export const claimAccountOp = {
-  claim_account: {
+  claim_account_operation: {
     creator: 'gtg',
     fee: chain.hiveSatoshis(100),
     extensions: [],
@@ -341,7 +341,7 @@ export const claimAccountOp = {
 };
 
 export const createClaimedAccountOp = {
-  create_claimed_account: {
+  create_claimed_account_operation: {
     creator: 'gtg',
     new_account_name: 'initminer',
     owner: {
@@ -366,7 +366,7 @@ export const createClaimedAccountOp = {
 };
 
 export const requestAccountRecoveryOp = {
-  request_account_recovery: {
+  request_account_recovery_operation: {
     recovery_account: 'gtg',
     account_to_recover: 'initminer',
     new_owner_authority: {
@@ -379,7 +379,7 @@ export const requestAccountRecoveryOp = {
 };
 
 export const changeRecoveryAccountOp = {
-  change_recovery_account: {
+  change_recovery_account_operation: {
     account_to_recover: 'gtg',
     new_recovery_account: 'initminer',
     extensions: [],
@@ -387,9 +387,9 @@ export const changeRecoveryAccountOp = {
 };
 
 export const escrowTransferOp = {
-  escrow_transfer: {
-    from_account: 'initminer',
-    to_account: 'gtg',
+  escrow_transfer_operation: {
+    from: 'initminer',
+    to: 'gtg',
     agent: 'blocktrades',
     escrow_id: 100,
     hbd_amount: chain.hbdSatoshis(100),
@@ -402,9 +402,9 @@ export const escrowTransferOp = {
 };
 
 export const escrowDisputeOp = {
-  escrow_dispute: {
-    from_account: 'initminer',
-    to_account: 'gtg',
+  escrow_dispute_operation: {
+    from: 'initminer',
+    to: 'gtg',
     agent: 'blocktrades',
     who: 'gtg',
     escrow_id: 100,
@@ -412,9 +412,9 @@ export const escrowDisputeOp = {
 };
 
 export const escrowReleaseOp = {
-  escrow_release: {
-    from_account: 'initminer',
-    to_account: 'gtg',
+  escrow_release_operation: {
+    from: 'initminer',
+    to: 'gtg',
     agent: 'gtg',
     who: 'gtg',
     receiver: 'gtg',
@@ -425,9 +425,9 @@ export const escrowReleaseOp = {
 };
 
 export const escrowApproveOp = {
-  escrow_approve: {
-    from_account: 'initminer',
-    to_account: 'gtg',
+  escrow_approve_operation: {
+    from: 'initminer',
+    to: 'gtg',
     agent: 'gtg',
     who: 'gtg',
     escrow_id: 100,
@@ -436,21 +436,21 @@ export const escrowApproveOp = {
 };
 
 export const cancelTransferFromSavingsOp = {
-  cancel_transfer_from_savings: {
-    from_account: 'gtg',
+  cancel_transfer_from_savings_operation: {
+    from: 'gtg',
     request_id: 1,
   },
 };
 
 export const declineVotingRightsOp = {
-  decline_voting_rights: {
+  decline_voting_rights_operation: {
     account: 'gtg',
     decline: true,
   },
 };
 
 export const claimRewardBalanceOp = {
-  claim_reward_balance: {
+  claim_reward_balance_operation: {
     account: 'gtg',
     reward_hive: chain.hiveSatoshis(100),
     reward_hbd: chain.hbdSatoshis(100),
@@ -459,7 +459,7 @@ export const claimRewardBalanceOp = {
 };
 
 export const delegateVestingSharesOp = {
-  delegate_vesting_shares: {
+  delegate_vesting_shares_operation: {
     delegator: 'gtg',
     delegatee: 'initminer',
     vesting_shares: chain.vestsSatoshis(100),
@@ -467,7 +467,7 @@ export const delegateVestingSharesOp = {
 };
 
 export const accountCreateWithDelegationOp = {
-  account_create_with_delegation: {
+  account_create_with_delegation_operation: {
     fee: chain.hiveSatoshis(100),
     delegation: chain.vestsSatoshis(50),
     creator: 'gtg',
@@ -494,7 +494,7 @@ export const accountCreateWithDelegationOp = {
 };
 
 export const witnessSetPropertiesOp = {
-  witness_set_properties: {
+  witness_set_properties_operation: {
     owner: 'gtg',
     props: { key: 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX' },
     extensions: [],
@@ -502,7 +502,7 @@ export const witnessSetPropertiesOp = {
 };
 
 export const accountUpdate2Op = {
-  account_update2: {
+  account_update2_operation: {
     account: 'gtg',
     owner: {
       weight_threshold: 1,
@@ -527,7 +527,7 @@ export const accountUpdate2Op = {
 };
 
 export const createProposalOp = {
-  create_proposal: {
+  create_proposal_operation: {
     creator: 'initminer',
     receiver: 'gtg',
     start_date: '2023-11-09T21:51:27',
@@ -540,7 +540,7 @@ export const createProposalOp = {
 };
 
 export const updateProposalVotesOp = {
-  update_proposal_votes: {
+  update_proposal_votes_operation: {
     voter: 'gtg',
     proposal_ids: ['1'],
     approve: true,
@@ -549,7 +549,7 @@ export const updateProposalVotesOp = {
 };
 
 export const removeProposalOp = {
-  remove_proposal: {
+  remove_proposal_operation: {
     proposal_owner: 'initminer',
     proposal_ids: ['1'],
     extensions: [],
@@ -557,7 +557,7 @@ export const removeProposalOp = {
 };
 
 export const updateProposalOp = {
-  update_proposal: {
+  update_proposal_operation: {
     proposal_id: '1',
     creator: 'initminer',
     daily_pay: chain.hbdSatoshis(100),
@@ -568,7 +568,7 @@ export const updateProposalOp = {
 };
 
 export const collateralizedConvertOp = {
-  collateralized_convert: {
+  collateralized_convert_operation: {
     owner: 'gtg',
     requestid: 1,
     amount: chain.hiveSatoshis(100),

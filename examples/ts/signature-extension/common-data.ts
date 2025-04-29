@@ -85,7 +85,7 @@ export const prepareTestingEnvironemnt = async (): Promise<TTestEnvData> => {
       json_metadata: '{"description": "Account created for Wax keychain signer extension testing purposes"}'
     };
 
-    tx.pushOperation({account_create: operationBody});
+    tx.pushOperation({account_create_operation: operationBody});
     tx.sign(wallet, mirrornetSkeletonPublicKey);
 
     await chain.broadcast(tx);

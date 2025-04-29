@@ -20,13 +20,13 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
     // Fill it with some operation
     const transferOp: transfer = {
-      from_account: "otom",
-      to_account: "otom",
+      from: "otom",
+      to: "otom",
       amount: myCustomChain.hiveCoins(1),
       memo: `${mirrornetSkeletonKey}`
     };
 
-    const op: operation = { transfer: transferOp };
+    const op: operation = { transfer_operation: transferOp };
     tx.pushOperation(op);
 
     try {
@@ -256,13 +256,13 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       // Fill it with some operation
       const transferOp: transfer = {
-        from_account: "splinterboost",
-        to_account: "bluehy20",
+        from: "splinterboost",
+        to: "bluehy20",
         amount: myCustomChain.hiveSatoshis(14),
         memo: 'Thank you for delegating to Splinterboost here is your daily HIVE payout!'
       };
 
-      const op: operation = { transfer: transferOp };
+      const op: operation = { transfer_operation: transferOp };
       tx.pushOperation(op);
       tx.sign(wallet, matchingPublicKey);
 
