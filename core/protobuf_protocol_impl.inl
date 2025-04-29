@@ -148,24 +148,24 @@ void parse_proto_pow2(fc::mutable_variant_object& body)
 
 const TParseMethodMap parse_proto_methods =
 {
-  { "comment_options", try_parse_proto_extensions },
-  { "claim_account", try_parse_proto_extensions },
-  { "change_recovery_account", try_parse_proto_extensions },
-  { "recurrent_transfer", try_parse_proto_extensions },
-  { "create_proposal", try_parse_proto_extensions },
-  { "update_proposal", try_parse_proto_extensions },
-  { "update_proposal_votes", try_parse_proto_extensions },
-  { "remove_proposal", try_parse_proto_extensions },
-  { "account_create", parse_proto_authority3 },
-  { "account_create_with_delegation", parse_proto_account_create_with_delegation },
-  { "account_update", try_parse_proto_authority3 },
-  { "account_update2", parse_proto_account_update2 },
-  { "create_claimed_account", parse_proto_create_claimed_account },
-  { "witness_set_properties", parse_proto_witness_set_properties },
-  { "request_account_recovery", parse_proto_request_account_recovery },
-  { "recover_account", parse_proto_recover_account },
-  { "reset_account", parse_proto_reset_account },
-  { "pow2", parse_proto_pow2 }
+  { "comment_options_operation", try_parse_proto_extensions },
+  { "claim_account_operation", try_parse_proto_extensions },
+  { "change_recovery_account_operation", try_parse_proto_extensions },
+  { "recurrent_transfer_operation", try_parse_proto_extensions },
+  { "create_proposal_operation", try_parse_proto_extensions },
+  { "update_proposal_operation", try_parse_proto_extensions },
+  { "update_proposal_votes_operation", try_parse_proto_extensions },
+  { "remove_proposal_operation", try_parse_proto_extensions },
+  { "account_create_operation", parse_proto_authority3 },
+  { "account_create_with_delegation_operation", parse_proto_account_create_with_delegation },
+  { "account_update_operation", try_parse_proto_authority3 },
+  { "account_update2_operation", parse_proto_account_update2 },
+  { "create_claimed_account_operation", parse_proto_create_claimed_account },
+  { "witness_set_properties_operation", parse_proto_witness_set_properties },
+  { "request_account_recovery_operation", parse_proto_request_account_recovery },
+  { "recover_account_operation", parse_proto_recover_account },
+  { "reset_account_operation", parse_proto_reset_account },
+  { "pow2_operation", parse_proto_pow2 }
 };
 
 fc::mutable_variant_object parse_proto_operation(const fc::variant& op)
@@ -185,7 +185,7 @@ fc::mutable_variant_object parse_proto_operation(const fc::variant& op)
   if (parse_method != parse_proto_methods.end())
     parse_method->second(op_body);
 
-  return fc::mutable_variant_object{ "type", key + "_operation" }("value", std::move(op_body));
+  return fc::mutable_variant_object{ "type", key }("value", std::move(op_body));
 }
 
 fc::mutable_variant_object parse_proto_transaction(const fc::variant& trx)
@@ -354,24 +354,24 @@ void parse_api_pow2(fc::mutable_variant_object& body)
 
 const TParseMethodMap parse_api_methods =
 {
-  { "comment_options", try_parse_api_extensions },
-  { "claim_account", try_parse_api_extensions },
-  { "change_recovery_account", try_parse_api_extensions },
-  { "recurrent_transfer", try_parse_api_extensions },
-  { "create_proposal", try_parse_api_extensions },
-  { "update_proposal", try_parse_api_extensions },
-  { "update_proposal_votes", try_parse_api_extensions },
-  { "remove_proposal", try_parse_api_extensions },
-  { "account_create", parse_api_authority3 },
-  { "account_create_with_delegation", parse_api_account_create_with_delegation },
-  { "account_update", try_parse_api_authority3 },
-  { "account_update2", parse_api_account_update2 },
-  { "create_claimed_account", parse_api_create_claimed_account },
-  { "witness_set_properties", parse_api_witness_set_properties },
-  { "request_account_recovery", parse_api_request_account_recovery },
-  { "recover_account", parse_api_recover_account },
-  { "reset_account", parse_api_reset_account },
-  { "pow2", parse_api_pow2 }
+  { "comment_options_operation", try_parse_api_extensions },
+  { "claim_account_operation", try_parse_api_extensions },
+  { "change_recovery_account_operation", try_parse_api_extensions },
+  { "recurrent_transfer_operation", try_parse_api_extensions },
+  { "create_proposal_operation", try_parse_api_extensions },
+  { "update_proposal_operation", try_parse_api_extensions },
+  { "update_proposal_votes_operation", try_parse_api_extensions },
+  { "remove_proposal_operation", try_parse_api_extensions },
+  { "account_create_operation", parse_api_authority3 },
+  { "account_create_with_delegation_operation", parse_api_account_create_with_delegation },
+  { "account_update_operation", try_parse_api_authority3 },
+  { "account_update2_operation", parse_api_account_update2 },
+  { "create_claimed_account_operation", parse_api_create_claimed_account },
+  { "witness_set_properties_operation", parse_api_witness_set_properties },
+  { "request_account_recovery_operation", parse_api_request_account_recovery },
+  { "recover_account_operation", parse_api_recover_account },
+  { "reset_account_operation", parse_api_reset_account },
+  { "pow2_operation", parse_api_pow2 }
 };
 
 fc::mutable_variant_object parse_api_operation(const fc::variant& op)
@@ -384,7 +384,7 @@ fc::mutable_variant_object parse_api_operation(const fc::variant& op)
     op.get_object()["value"].is_object(), "Not a valid api operation", (op));
 
   std::string key = op.get_object()["type"].get_string();
-  key.resize(key.size() - 10 /*strlen("_operation")*/);
+  // key.resize(key.size() - 10 /*strlen("_operation")*/);
 
   fc::mutable_variant_object op_body = op.get_object()["value"].get_object();
 

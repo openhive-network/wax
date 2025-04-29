@@ -151,13 +151,13 @@ class CommentOperation extends OperationBase {
 
     const operations: operation[] = [];
 
-    operations.push({ comment: this.comment });
+    operations.push({ comment_operation: this.comment });
 
     if(typeof this.commentOptions === "object") {
       if (this.maxAcceptedPayoutToSet !== undefined)
         this.commentOptions.max_accepted_payout = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet);
 
-      operations.push({ comment_options: this.commentOptions });
+      operations.push({ comment_options_operation: this.commentOptions });
     }
 
     return operations;

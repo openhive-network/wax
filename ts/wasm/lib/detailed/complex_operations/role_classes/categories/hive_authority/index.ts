@@ -118,7 +118,7 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
       throw new WaxError("Posting authority cannot be ever satisfied due to insufficient weight");
 
     return [{
-      account_update2: account_update2.fromPartial({
+      account_update2_operation: account_update2.fromPartial({
         account: this.account,
         active,
         owner,

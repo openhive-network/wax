@@ -45,43 +45,43 @@ class OnChainOperationValidator extends OperationVisitor {
     await this.ensureAccountsExist();
   }
 
-  public override comment(op: comment): void {
+  public override comment_operation(op: comment): void {
     this.collectKeyLeakScannerData(op.body, op.permlink);
   }
 
-  public override transfer(op: transfer): void {
+  public override transfer_operation(op: transfer): void {
     this.collectKeyLeakScannerData(op.memo);
   }
 
-  public override transfer_to_savings(op: transfer_to_savings): void {
+  public override transfer_to_savings_operation(op: transfer_to_savings): void {
     this.collectKeyLeakScannerData(op.memo);
   }
 
-  public override transfer_from_savings(op: transfer_from_savings): void {
+  public override transfer_from_savings_operation(op: transfer_from_savings): void {
     this.collectKeyLeakScannerData(op.memo);
   }
 
-  public override recurrent_transfer(op: recurrent_transfer): void {
+  public override recurrent_transfer_operation(op: recurrent_transfer): void {
     this.collectKeyLeakScannerData(op.memo);
   }
 
-  public override account_create(op: account_create): void {
+  public override account_create_operation(op: account_create): void {
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
-  public override account_create_with_delegation(op: account_create_with_delegation): void {
+  public override account_create_with_delegation_operation(op: account_create_with_delegation): void {
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
-  public override create_claimed_account(op: create_claimed_account): void {
+  public override create_claimed_account_operation(op: create_claimed_account): void {
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
-  public override account_update(op: account_update): void {
+  public override account_update_operation(op: account_update): void {
     this.collectModifiedAuthorityData(op.account, op);
   }
 
-  public async account_update2(op: account_update2): Promise<void> {
+  public async account_update2_operation(op: account_update2): Promise<void> {
     this.collectModifiedAuthorityData(op.account, op);
 
     this.collectOnlineAccounts(op.account, op);
