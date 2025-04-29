@@ -10,21 +10,21 @@
     import { OperationVisitor, comment, vote, transaction, recurrent_transfer } from '@hiveio/wax';
 
     class MyVisitor extends OperationVisitor {
-      comment(op) {
+      comment_operation(op) {
         return op.author === "alice";
       }
       // This should be never visited in our example
-      limit_order_cancel(op) {
+      limit_order_cancel_operation(op) {
         return op.orderid === Number.POSITIVE_INFINITY;
       }
-      vote(op) {
+      vote_operation(op) {
         return op.voter === "bob";
       }
-      recurrent_transfer(op) {
+      recurrent_transfer_operation(op) {
         // Example json API transforming
         const jsonData = recurrent_transfer.toJSON(op);
 
-        return jsonData.to === op.to_account && jsonData.from === op.from_account;
+        return jsonData.to === op.to && jsonData.from === op.from;
       }
     }
 
@@ -35,7 +35,7 @@
       extensions: [],
       operations: [
         {
-          vote: vote.create({
+          vote_operation: vote.create({
             author: "alice",
             voter: "bob",
             permlink: "/",
@@ -43,7 +43,7 @@
           }),
         },
         {
-          comment: comment.create({
+          comment_operation: comment.create({
             parent_permlink: "/",
             parent_author: "",
             author: "alice",
@@ -54,7 +54,7 @@
           })
         },
         {
-          vote: vote.create({
+          vote_operation: vote.create({
             voter: "bob",
             author: "alice",
             permlink: "/",
@@ -62,12 +62,12 @@
           })
         },
         {
-          limit_order_cancel: undefined
+          limit_order_cancel_operation: undefined
         },
         {
-          recurrent_transfer: recurrent_transfer.create({
-            from_account: "alice",
-            to_account: "harry",
+          recurrent_transfer_operation: recurrent_transfer.create({
+            from: "alice",
+            to: "harry",
             amount: { nai: "@@000000021", precision: 3, amount: "10" },
             memo: "it is only memo",
             recurrence: 1,

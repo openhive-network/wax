@@ -151,14 +151,18 @@ export const transfer_operation = {
   }
 };
 
-export const transaction = JSON.stringify({
+export const transactionObj = {
   ref_block_num: 34559,
   ref_block_prefix: 1271006404,
   expiration: "2021-12-13T11:31:33",
   operations: [
     vote_operation
-  ]
-});
+  ],
+  extensions: [],
+  signatures: []
+};
+
+export const transaction = JSON.stringify(transactionObj);
 
 export const legacyApiTransaction = JSON.stringify({
   ref_block_num: 1959,
@@ -357,7 +361,8 @@ export const serialization_sensitive_transaction = JSON.stringify({
   operations: [
     transfer_operation
   ],
-  extensions: []
+  extensions: [],
+  signatures: []
 });
 
 export const serialization_sensitive_transaction_proto: transactionT = {
@@ -366,12 +371,7 @@ export const serialization_sensitive_transaction_proto: transactionT = {
   expiration: "2023-11-09T22:01:24",
   operations: [
     {
-      transfer: {
-        from_account: transfer_operation.value.from,
-        to_account: transfer_operation.value.to,
-        amount: transfer_operation.value.amount,
-        memo: transfer_operation.value.memo
-      }
+      transfer_operation: transfer_operation.value
     }
   ],
   extensions: [],
@@ -485,6 +485,8 @@ export const customJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     vote_operation,
     {
@@ -493,6 +495,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
       }
@@ -503,6 +506,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"ignore\"]}]"
       }
@@ -513,6 +517,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_following_list\"]}]"
       }
@@ -523,6 +528,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_muted_list\"]}]"
       }
@@ -534,12 +540,15 @@ export const customMultipleJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     {
       type: 'custom_json_operation',
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["follow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -550,6 +559,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["follow_muted"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -560,6 +570,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_all_lists"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -570,6 +581,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -580,6 +592,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_follow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -590,6 +603,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_follow_muted_list"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -600,6 +614,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unblacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -610,6 +625,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unfollow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -620,6 +636,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":[""]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -630,6 +647,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unfollow_muted"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -643,12 +661,15 @@ export const customCommunityJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     {
       type: 'custom_json_operation',
       value: {
         id: 'community',
         json: '["flagPost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -659,6 +680,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["mutePost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -669,6 +691,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["pinPost",{"community":"mycomm","account":"gtg","permlink":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -679,6 +702,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["subscribe",{"community":"mycomm"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -689,6 +713,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unmutePost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -699,6 +724,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unpinPost",{"community":"mycomm","account":"gtg","permlink":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -709,6 +735,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unsubscribe",{"community":"mycomm"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -719,6 +746,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["setUserTitle",{"community":"mycomm","account":"gtg","title":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -728,6 +756,7 @@ export const customCommunityJsonsTransaction = {
       type: 'custom_json_operation',
       value: {
         id: 'community',
+        required_auths: [],
         json: '["updateProps",{"community":"mycomm","props":{"title":"Custom title","about":"This community is the best!","description":"Accepting all kind of users","flag_text":"1. Smoking here is not allowed","is_nsfw":false,"lang":"en"}}]',
         required_posting_auths: [
           "gtg"
@@ -739,6 +768,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["setRole",{"community":"mycomm","account":"gtg","role":"owner"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -748,19 +778,19 @@ export const customCommunityJsonsTransaction = {
 };
 
 export const specificBenchmarkTransaction = {
-  transfer: {
-    from_account: "oneplus7",
-    to_account: "kryptogames",
+  transfer_operation: {
+    from: "oneplus7",
+    to: "kryptogames",
     amount: naiAsset,
     memo: "Roll under 50 4d434bd943616"
   },
-  vote: {
+  vote_operation: {
     voter: "otom",
     author: "c0ff33a",
     permlink: "ewxhnjbj",
     weight: 2200
   },
-  custom_json: {
+  custom_json_operation: {
     required_auths: [],
     required_posting_auths: [
       "initminer"
@@ -768,30 +798,30 @@ export const specificBenchmarkTransaction = {
     id: "follow",
     json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
   },
-  account_witness_vote: {
+  account_witness_vote_operation: {
     account: "initminer",
     witness: "initminer",
     approve: true
   },
-  feed_publish: {
+  feed_publish_operation: {
     publisher: "gtg",
     exchange_rate: {
       base: { nai: "@@000000013", amount: "337", precision: 3 },
       quote: { nai: "@@000000013", amount: "1", precision: 3 }
     }
   },
-  claim_account: {
+  claim_account_operation: {
     fee: { nai: "@@000000021", amount: "0", precision: 3 },
     creator: "gtg",
     extensions: []
   },
-  claim_reward_balance: {
+  claim_reward_balance_operation: {
     account: "gtg",
     reward_hbd: { nai: "@@000000013", amount: "0", precision: 3 },
     reward_hive: { nai: "@@000000021", amount: "0", precision: 3 },
     reward_vests: { nai: "@@000000037", amount: "524461404202", precision: 6 }
   },
-  comment: {
+  comment_operation: {
     body: "`aria2c` looks interesting. `lftp` is great about not redownloading files that haven't been modified so once that fat 1.8TB download is done, no need to send that through the pipes anymore, just the incremental stuff.",
     title: "",
     author: "rishi556",

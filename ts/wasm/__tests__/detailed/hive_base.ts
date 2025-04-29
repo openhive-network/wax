@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
+import { naiAsset, transaction, transactionObj, vote_operation } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
@@ -302,7 +302,11 @@ test.describe('Wax object interface foundation tests', () => {
       return tx.toApi();
     }, transaction);
 
-    expect(retVal).toBe(transaction);
+    expect(retVal).toBe(JSON.stringify({
+      ...transactionObj,
+      extensions: [],
+      signatures: []
+    }));
   });
 
   test('Should be able to get impacted accounts from example api operation', async ({ waxTest }) => {
@@ -466,9 +470,9 @@ test.describe('Wax object interface foundation tests', () => {
 
     expect(retVal).toStrictEqual([
       {
-        recurrent_transfer: {
-          from_account: "initminer",
-          to_account: "gtg",
+        recurrent_transfer_operation: {
+          from: "initminer",
+          to: "gtg",
           amount: {
             amount: "0",
             nai: "@@000000021",
@@ -483,9 +487,9 @@ test.describe('Wax object interface foundation tests', () => {
         }
       },
       {
-        recurrent_transfer: {
-          from_account: "initminer",
-          to_account: "gtg",
+        recurrent_transfer_operation: {
+          from: "initminer",
+          to: "gtg",
           amount: {
             amount: "100",
             nai: "@@000000021",
@@ -510,9 +514,9 @@ test.describe('Wax object interface foundation tests', () => {
 
     expect(retVal).toStrictEqual([
       {
-        recurrent_transfer: {
-          from_account: "initminer",
-          to_account: "gtg",
+        recurrent_transfer_operation: {
+          from: "initminer",
+          to: "gtg",
           amount: {
             amount: "100",
             nai: "@@000000021",
@@ -550,7 +554,7 @@ test.describe('Wax object interface foundation tests', () => {
 
     expect(retVal).toStrictEqual([
       {
-        update_proposal: {
+        update_proposal_operation: {
           creator: "initminer",
           daily_pay: {
             amount: "0",
@@ -566,7 +570,7 @@ test.describe('Wax object interface foundation tests', () => {
         }
       },
       {
-        update_proposal: {
+        update_proposal_operation: {
           creator: "initminer",
           daily_pay: {
             amount: "0",
@@ -592,17 +596,17 @@ test.describe('Wax object interface foundation tests', () => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
-        transfer: {
+        transfer_operation: {
           amount: base.hiveSatoshis(100),
-          from_account: "gtg",
-          to_account: "initminer",
+          from: "gtg",
+          to: "initminer",
           memo: "This should be encrypted"
         }
       }).stopEncrypt().startEncrypt(publicKey).pushOperation({
-        transfer: {
+        transfer_operation: {
           amount: base.hiveSatoshis(120),
-          from_account: "initminer",
-          to_account: "gtg",
+          from: "initminer",
+          to: "gtg",
           memo: "This also should be encrypted"
         }
       });
@@ -610,8 +614,8 @@ test.describe('Wax object interface foundation tests', () => {
       tx.sign(wallet, publicKey)
       const operations = tx.transaction.operations;
 
-      const encrypted1 = operations[0].transfer!.memo;
-      const encrypted2 = operations[1].transfer!.memo;
+      const encrypted1 = operations[0].transfer_operation!.memo;
+      const encrypted2 = operations[1].transfer_operation!.memo;
 
       return {
         encrypted: [ encrypted1, encrypted2 ],
@@ -635,10 +639,10 @@ test.describe('Wax object interface foundation tests', () => {
       const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
 
       tx.startEncrypt(publicKey).pushOperation({
-        transfer: {
+        transfer_operation: {
           amount: base.hiveSatoshis(100),
-          from_account: "gtg",
-          to_account: "initminer",
+          from: "gtg",
+          to: "initminer",
           memo: "This should be encrypted"
         }
       });
@@ -646,13 +650,13 @@ test.describe('Wax object interface foundation tests', () => {
       tx.sign(wallet, publicKey)
       const operations = tx.transaction.operations;
 
-      const encrypted = operations[0].transfer!.memo;
+      const encrypted = operations[0].transfer_operation!.memo;
 
       const decrypted = tx.decrypt(wallet);
 
       return {
         encrypted,
-        decrypted: decrypted.operations[0].transfer!.memo
+        decrypted: decrypted.operations[0].transfer_operation!.memo
       };
     });
 
