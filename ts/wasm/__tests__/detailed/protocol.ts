@@ -338,7 +338,7 @@ test.describe('WASM Protocol', () => {
           }
         }, false);
 
-        tx.set_expiration("2024-05-15T13:04:16");
+        tx.setExpiration("2024-05-15T13:04:16");
 
         tx.sign("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf");
 
