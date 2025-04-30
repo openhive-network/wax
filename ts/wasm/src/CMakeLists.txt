@@ -46,10 +46,12 @@ DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "web"
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
 )
 
 DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "node"
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
 )
