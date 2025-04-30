@@ -335,18 +335,40 @@ public:
     }
   }
 
-  void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>> ) const
+  void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>> v ) const
   {
     emscripten::val arr_val = jsval[name];
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    if (is_protobuf)
     {
-      std::string key = arr_val[i][0].as<std::string>();
-      std::vector<char> value;
-      const std::string hex_value = arr_val[i][1].as<std::string>();
-      value.resize(hex_value.size() / 2);
-      fc::from_hex(hex_value, value.data(), hex_value.size() / 2);
+      emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", arr_val);
+      uint32_t count = keys["length"].as<uint32_t>();
+
+      for (uint32_t i = 0; i < count; ++i)
+      {
+        std::string key = keys[i].as<std::string>();
+        std::vector<char> value;
+        const std::string hex_value = arr_val[key].as<std::string>();
+        value.resize(hex_value.size() / 2);
+        fc::from_hex(hex_value, value.data(), hex_value.size() / 2);
+
+        v[key] = value;
+      }
+    }
+    else
+    {
+      uint32_t arr_size = arr_val["length"].as<uint32_t>();
+
+      for (uint32_t i = 0; i < arr_size; ++i)
+      {
+        std::string key = arr_val[i][0].as<std::string>();
+        std::vector<char> value;
+        const std::string hex_value = arr_val[i][1].as<std::string>();
+        value.resize(hex_value.size() / 2);
+        fc::from_hex(hex_value, value.data(), hex_value.size() / 2);
+
+        v[key] = value;
+      }
     }
   }
 

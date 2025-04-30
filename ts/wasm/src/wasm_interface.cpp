@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include "val_protocol.hpp"
+#include "proto_converter.hpp"
+#include "api_converter.hpp"
 
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
@@ -229,6 +231,24 @@ bool cpp_get_js_object(val obj) const
   dlog((author));
 
   return author == "user";
+}
+
+void tx_proto_to_api(val obj) const
+{
+  cpp::safe_exception_wrapper([&]() -> void {
+    fc::reflector< hive::protocol::signed_transaction >::visit(
+      to_api_visitor< hive::protocol::signed_transaction >{ obj }
+    );
+  });
+}
+
+void tx_api_to_proto(val obj) const
+{
+  cpp::safe_exception_wrapper([&]() -> void {
+    fc::reflector< hive::protocol::signed_transaction >::visit(
+      to_proto_visitor< hive::protocol::signed_transaction >{ obj }
+    );
+  });
 }
 
 crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
@@ -490,6 +510,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+
+    .function("cpp_tx_api_to_proto", &foundation_wasm::tx_api_to_proto)
+    .function("cpp_tx_proto_to_api", &foundation_wasm::tx_proto_to_api)
 
     .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
 
