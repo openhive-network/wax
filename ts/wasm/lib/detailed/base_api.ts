@@ -1,5 +1,5 @@
 import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
-import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities, WasmTransaction } from "../build_wasm/wax.common";
+import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
 import type { ApiOperation, NaiAsset } from "./api";
 
@@ -9,7 +9,7 @@ import { operation, transaction } from "./protocol";
 
 import { WaxError, WaxPrivateKeyLeakDetectedException } from './errors.js';
 import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
-import { JSON_stringify_operation, JSON_stringify_transaction, matchesHiveProtocolType } from "./util/proto_type_utils";
+import { JSON_stringify_operation, matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";
 import Long from "long";
 
@@ -95,26 +95,6 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return resultingSet;
   }
 
-  public transactionGetImpactedAccounts(transaction: transaction | ApiTransaction): Set<TAccountName> {
-    let vector: VectorString;
-
-    const resultingSet = new Set<TAccountName>();
-
-    if(transaction.operations.length === 0)
-      return resultingSet;
-
-    const stringifiedTransaction = JSON_stringify_transaction(transaction);
-    if (matchesHiveProtocolType(transaction))
-      vector = safeWasmCall(() => this.protocol.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
-    else
-      vector = safeWasmCall(() => this.proto.cpp_transaction_get_impacted_accounts(stringifiedTransaction));
-
-    for(let i = 0; i < vector.size(); ++i)
-      resultingSet.add(vector.get(i) as TAccountName);
-
-    return resultingSet;
-  }
-
   private assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
     const stringifyAsset = (assetType: EAssetName) => `"${this.ASSETS[assetType].nai}" (${assetType}) with precision: ${this.ASSETS[assetType].precision}`;
 
@@ -181,9 +161,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public convertTransactionToBinaryForm(transaction: ApiTransaction, stripToUnsignedTransaction: boolean = false): THexString {
     const tx = this.createTransactionFromJson(transaction);
 
-    const conversionResult = safeWasmCall(() => this.proto.cpp_serialize_transaction(tx.toString(), stripToUnsignedTransaction));
-
-    return this.extract(conversionResult);
+    return tx.toBinaryForm(stripToUnsignedTransaction);
   }
 
   public convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction {
@@ -230,17 +208,6 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const long = Long.fromString(amount.toString());
 
     return safeWasmCall(() => this.proto.cpp_hive(long.low, long.high) as NaiAsset);
-  }
-
-  public createWasmTransaction(transaction: transaction | ApiTransaction | object | string): WasmTransaction {
-    if (typeof transaction === "string")
-      transaction = JSON.parse(transaction);
-    else if (transaction === null || typeof (transaction as any)?.operations[0] !== "object")
-      throw new WaxError(`Invalid transaction provided: "${JSON.stringify(transaction)}". Expected a string or an object with operations.`);
-    else if ((transaction as any).operations[0].type === undefined)
-      return this.proto.cpp_create_wasm_transaction(transaction, true);
-
-    return this.protocol.cpp_create_wasm_transaction(transaction, false);
   }
 
   public hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset {

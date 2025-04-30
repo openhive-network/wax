@@ -11,6 +11,7 @@ import { safeWasmCall } from "./util/wasm_errors";
 import type { TAccountName } from "./hive_apps_operations";
 import { ISignatureProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
+import { WasmTransaction } from '../build_wasm/wax.common';
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -34,6 +35,7 @@ export type TTransactionRequiredAuthorities = {
 
 export class Transaction implements ITransaction, IEncryptingTransaction<ITransaction> {
   private target: transaction;
+  private wasmTransaction: WasmTransaction;
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return safeWasmCall(() => this.api.proto.cpp_get_tapos_data(hex));
@@ -48,6 +50,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     private readonly expirationTime: TTimestamp = "+1m") {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
+      this.wasmTransaction = safeWasmCall(() => api.proto.cpp_create_wasm_transaction(this.target, true));
 
       return;
     }
@@ -62,22 +65,29 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
       operations: [],
       signatures: []
     };
+    this.wasmTransaction = safeWasmCall(() => api.proto.cpp_create_wasm_transaction(this.target, true));
   }
 
   public get impactedAccounts(): Set<TAccountName> {
-    return this.api.transactionGetImpactedAccounts(this.target);
+    const vector = safeWasmCall(() => this.wasmTransaction.impactedAccounts());
+    const resultingSet = new Set<TAccountName>();
+    for(let i = 0; i < vector.size(); ++i)
+      resultingSet.add(vector.get(i) as TAccountName);
+
+    return resultingSet;
   }
 
-  private calculateSignerPublicKeys(calculatedSigDigest: string): Array<THexString> {
-    const keys: Array<THexString> = [];
-    for(const sig of this.target.signatures)
-      keys.push(this.api.getPublicKeyFromSignature(calculatedSigDigest, sig));
+  private calculateSignerPublicKeys(isHf26: boolean): Array<THexString> {
+    const vector = safeWasmCall(() => this.wasmTransaction.signatureKeys(this.api.chainId, isHf26));
+    const result: Array<THexString> = [];
+    for(let i = 0; i < vector.size(); ++i)
+      result.push(vector.get(i) as TAccountName);
 
-    return keys;
+    return result;
   }
 
   private getBinaryViewMetadataImpl(isHf26Serialization: boolean, stripSignatureContainer: boolean = false): IBinaryViewOutputData {
-    const binaryData = safeWasmCall(() => this.api.proto.cpp_generate_binary_transaction_metadata(this.toString(), isHf26Serialization, stripSignatureContainer));
+    const binaryData = safeWasmCall(() => this.wasmTransaction.binary(isHf26Serialization, stripSignatureContainer));
 
     return {
       binary: binaryData.binary as string,
@@ -94,51 +104,38 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public get signatureKeys(): Array<THexString> {
-    return this.calculateSignerPublicKeys(this.sigDigest);
+    return this.calculateSignerPublicKeys(true);
   }
 
   public get legacy_signatureKeys(): Array<THexString> {
-    return this.calculateSignerPublicKeys(this.legacy_sigDigest);
+    return this.calculateSignerPublicKeys(false);
   }
 
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
-    const transactionStringified = typeof transactionObject === 'string' ? transactionObject : JSON.stringify(transactionObject);
+    const transactionStringified = typeof transactionObject === 'string' ? JSON.parse(transactionObject) : transactionObject;
 
-    const protoData = safeWasmCall(() => api.proto.cpp_api_to_proto(transactionStringified));
+    safeWasmCall(() => api.proto.cpp_tx_api_to_proto(transactionStringified));
 
-    const serialized = api.extract(protoData);
-
-    const tx = transaction.fromJSON(JSON.parse(serialized));
-
-    return new Transaction(api, tx);
+    return new Transaction(api, transactionStringified);
   }
 
   public toApi(): string {
-    const apiData = safeWasmCall(() => this.api.proto.cpp_proto_to_api(this.toString()));
-
-    const serialized = this.api.extract(apiData);
-
-    return serialized;
+    return this.toString();
   }
 
   public toApiJson(): ApiTransaction {
-    return JSON.parse(this.toApi());
+    this.flushTransaction();
+    const tx = structuredClone(this.target);
+    safeWasmCall(() => this.api.proto.cpp_tx_proto_to_api(tx));
+    return tx;
   }
 
   public toBinaryForm(stripSignatureContainer: boolean = false): THexString {
-    const conversionResult = safeWasmCall(() => this.api.proto.cpp_serialize_transaction(this.toString(), stripSignatureContainer));
-
-    const serialized = this.api.extract(conversionResult);
-
-    return serialized;
+    return this.wasmTransaction.toBinary(true, stripSignatureContainer);
   }
 
   public toLegacyApi(): string {
-    const apiData = safeWasmCall(() => this.api.proto.cpp_proto_to_legacy_api(this.toString()));
-
-    const serialized = this.api.extract(apiData);
-
-    return serialized;
+    return this.wasmTransaction.toLegacyString();
   }
 
   private flushTransaction(): void {
@@ -150,7 +147,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   public toString(): string {
     this.flushTransaction();
 
-    return JSON.stringify(transaction.toJSON(this.target));
+    return this.wasmTransaction.toString();
   }
 
   public startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): this & IEncryptingTransaction<this> {
@@ -175,7 +172,10 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   private produceOperations(complexOperation: OperationBase): Transaction {
     const builtOps = complexOperation.finalize(this);
 
-    this.target.operations.push(...builtOps);
+    for(const op of builtOps) {
+      this.target.operations.push(op);
+      this.wasmTransaction.push(op, true)
+    }
 
     return this;
   }
@@ -183,53 +183,37 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   public pushOperation(op: operation | OperationBase): this {
     if ("finalize" in op) // Complex operation (to be built)
       this.produceOperations(op);
-    else // Standard raw-object operation
+    else { // Standard raw-object operation
       this.target.operations.push(op);
+      this.wasmTransaction.push(op, true);
+    }
 
     return this;
   }
 
   public get sigDigest(): string {
-    const tx = this.toString();
-
-    const sigDigest = safeWasmCall(() => this.api.proto.cpp_calculate_sig_digest(tx, this.api.chainId));
-
-    return this.api.extract(sigDigest);
+    return this.wasmTransaction.sigDigest(this.api.chainId, true);
   }
 
   public get legacy_sigDigest(): string {
-    const tx = this.toString();
-
-    const legacySigDigest = safeWasmCall(() => this.api.proto.cpp_calculate_legacy_sig_digest(tx, this.api.chainId));
-
-    return this.api.extract(legacySigDigest);
+    return this.wasmTransaction.sigDigest(this.api.chainId, false);
   }
 
   public get id(): TTransactionId {
-    const tx = this.toString();
-
-    const transactionId = safeWasmCall(() => this.api.proto.cpp_calculate_transaction_id(tx));
-
-    return this.api.extract(transactionId);
+    return this.wasmTransaction.id(true);
   }
 
   public get legacy_id(): TTransactionId {
-    const tx = this.toString();
-
-    const legacyTransactionId = safeWasmCall(() => this.api.proto.cpp_calculate_legacy_transaction_id(tx));
-
-    return this.api.extract(legacyTransactionId);
+    return this.wasmTransaction.id(false);
   }
 
   public get requiredAuthorities(): TTransactionRequiredAuthorities {
-    const tx = this.toString();
-
     const posting: Set<string> = new Set();
     const active: Set<string> = new Set();
     const owner: Set<string> = new Set();
     const other: Array<authority> = [];
 
-    const res = safeWasmCall(() => this.api.proto.cpp_collect_transaction_required_authorities(tx));
+    const res = safeWasmCall(() => this.wasmTransaction.requiredAuthorities());
 
     for(let i = 0; i < res.posting_accounts.size(); i++)
       posting.add(res.posting_accounts.get(i) as string);
@@ -277,17 +261,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public validate(): void {
-    const tx = this.toString();
-
-    const validationResult = safeWasmCall(() => this.api.proto.cpp_validate_transaction(tx));
-
-    this.api.extract(validationResult);
+    safeWasmCall(() => this.wasmTransaction.validate());
   }
 
   private applyExpiration(): void {
     const expiration = calculateExpiration(this.expirationTime, this.chainHeadBlockTime);
 
     this.target.expiration = expiration.toISOString().slice(0, -5);
+    this.wasmTransaction.setExpiration(this.target.expiration);
   }
 
   public decrypt(wallet: ISignatureProvider): transaction {
@@ -301,6 +282,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     for(const op of this.target.operations)
       visitor.accept(op);
 
+    // XXX: Optimize this maybe
+    this.wasmTransaction = safeWasmCall(() => this.api.proto.cpp_create_wasm_transaction(this.target, true));
+
     return this.target;
   }
 
@@ -313,6 +297,9 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
         visitor.accept(this.target.operations[i]);
       }
+
+    // XXX: Optimize this maybe
+    this.wasmTransaction = safeWasmCall(() => this.api.proto.cpp_create_wasm_transaction(this.target, true));
   }
 
   public sign(walletOrSignature: ISignatureProvider | THexString, publicKey?: TPublicKey): THexString {
@@ -321,6 +308,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     if (typeof walletOrSignature === 'string') {
 
       this.target.signatures.push(walletOrSignature);
+      this.wasmTransaction.sign(walletOrSignature);
       return walletOrSignature;
     }
 
@@ -330,6 +318,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     const sig = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
 
     this.target.signatures.push(sig);
+    this.wasmTransaction.sign(sig);
 
     return sig;
   }
