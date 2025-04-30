@@ -99,6 +99,9 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* name ) const
   {
+    if (jsval[name].isUndefined())
+      return;
+
     this->add( name, val.*member );
   }
 
@@ -106,8 +109,9 @@ public:
   template< typename M >
   void add( const char* name, fc::optional< M >& v ) const
   {
-    if( v.valid() )
-      this->add( name, *v );
+    M tmp;
+    this->add( name, tmp );
+    v = tmp;
   }
 
   void add( const char* name, hive::protocol::asset& v ) const
@@ -190,7 +194,12 @@ public:
 
   void add( const char* name, hive::protocol::legacy_chain_properties& v ) const
   {
-    v.account_creation_fee.amount = jsval[name]["account_creation_fee"]["amount"].as<uint64_t>();
+    emscripten::val amount = jsval[name]["account_creation_fee"]["amount"];
+
+    if (amount.isString())
+      v.account_creation_fee.amount = boost::lexical_cast<uint64_t>(amount.as<std::string>());
+    else
+      v.account_creation_fee.amount = amount.as<uint64_t>();
     v.maximum_block_size = jsval[name]["maximum_block_size"].as<uint32_t>();
     v.hbd_interest_rate = jsval[name]["hbd_interest_rate"].as<uint16_t>();
   }
@@ -239,6 +248,24 @@ public:
   void add_scalar( const char* name, M& v ) const
   {
     v = jsval[name].as<M>();
+  }
+
+  void add_scalar( const char* name, int64_t& v ) const
+  {
+    emscripten::val _val = jsval[name];
+    if (_val.isString())
+      v = boost::lexical_cast<int64_t>(_val.as<std::string>());
+    else
+      v = _val.as<int64_t>();
+  }
+
+  void add_scalar( const char* name, uint64_t& v ) const
+  {
+    emscripten::val _val = jsval[name];
+    if (_val.isString())
+      v = boost::lexical_cast<uint64_t>(_val.as<std::string>());
+    else
+      v = _val.as<uint64_t>();
   }
 
   template<typename M>

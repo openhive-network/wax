@@ -151,14 +151,16 @@ export const transfer_operation = {
   }
 };
 
-export const transaction = JSON.stringify({
+export const transactionObj = {
   ref_block_num: 34559,
   ref_block_prefix: 1271006404,
   expiration: "2021-12-13T11:31:33",
   operations: [
     vote_operation
   ]
-});
+};
+
+export const transaction = JSON.stringify(transactionObj);
 
 export const legacyApiTransaction = JSON.stringify({
   ref_block_num: 1959,
@@ -480,6 +482,8 @@ export const customJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     vote_operation,
     {
@@ -488,6 +492,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"gtg\",\"what\":[\"blog\"]}]"
       }
@@ -498,6 +503,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"ignore\"]}]"
       }
@@ -508,6 +514,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_following_list\"]}]"
       }
@@ -518,6 +525,7 @@ export const customJsonsTransaction = {
         required_posting_auths: [
           "initminer"
         ],
+        required_auths: [],
         id: "follow",
         json: "[\"follow\",{\"follower\":\"initminer\",\"following\":\"spammer\",\"what\":[\"reset_muted_list\"]}]"
       }
@@ -529,12 +537,15 @@ export const customMultipleJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     {
       type: 'custom_json_operation',
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["follow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -545,6 +556,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["follow_muted"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -555,6 +567,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_all_lists"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -565,6 +578,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -575,6 +589,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_follow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -585,6 +600,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["reset_follow_muted_list"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -595,6 +611,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unblacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -605,6 +622,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unfollow_blacklist"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -615,6 +633,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":[""]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -625,6 +644,7 @@ export const customMultipleJsonsTransaction = {
       value: {
         id: 'follow',
         json: '["follow",{"follower":"initminer","following":"gtg","what":["unfollow_muted"]}]',
+        required_auths: [],
         required_posting_auths: [
           "initminer"
         ]
@@ -638,12 +658,15 @@ export const customCommunityJsonsTransaction = {
   ref_block_num: 1960,
   ref_block_prefix: 3915120327,
   expiration: "2023-11-09T21:51:27",
+  extensions: [],
+  signatures: [],
   operations: [
     {
       type: 'custom_json_operation',
       value: {
         id: 'community',
         json: '["flagPost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -654,6 +677,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["mutePost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -664,6 +688,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["pinPost",{"community":"mycomm","account":"gtg","permlink":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -674,6 +699,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["subscribe",{"community":"mycomm"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -684,6 +710,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unmutePost",{"community":"mycomm","account":"gtg","permlink":"first-post","notes":"note"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -694,6 +721,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unpinPost",{"community":"mycomm","account":"gtg","permlink":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -704,6 +732,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["unsubscribe",{"community":"mycomm"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -714,6 +743,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["setUserTitle",{"community":"mycomm","account":"gtg","title":"first-post"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]
@@ -723,6 +753,7 @@ export const customCommunityJsonsTransaction = {
       type: 'custom_json_operation',
       value: {
         id: 'community',
+        required_auths: [],
         json: '["updateProps",{"community":"mycomm","props":{"title":"Custom title","about":"This community is the best!","description":"Accepting all kind of users","flag_text":"1. Smoking here is not allowed","is_nsfw":false,"lang":"en"}}]',
         required_posting_auths: [
           "gtg"
@@ -734,6 +765,7 @@ export const customCommunityJsonsTransaction = {
       value: {
         id: 'community',
         json: '["setRole",{"community":"mycomm","account":"gtg","role":"owner"}]',
+        required_auths: [],
         required_posting_auths: [
           "gtg"
         ]

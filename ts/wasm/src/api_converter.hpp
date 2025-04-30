@@ -28,6 +28,9 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* key ) const
   {
+    if (jsval[key].isUndefined())
+      return;
+
     add< Member >( key );
   }
 
@@ -49,6 +52,21 @@ void to_api_converter<T>::call(emscripten::val jsval, const char* key) {
     fc::reflector< T >::visit( to_api_visitor< T >{ jsval[key] } );
   }
 }
+
+template<typename T>
+struct to_api_converter<fc::optional<T>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
+    {
+      if (jsval[key].isUndefined())
+        return;
+
+      fc::reflector< T >::visit( to_api_visitor< T >{ jsval[key] } );
+    }
+  }
+};
 
 class sv_to_api
 {
@@ -87,6 +105,29 @@ struct to_api_converter<std::vector<T, A...>>
 
 template<typename M>
 struct to_api_converter<boost::container::flat_map<M, hive::protocol::weight_type>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    emscripten::val arr_val = jsval[key];
+
+    std::vector<emscripten::val> out;
+
+    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", arr_val);
+    uint32_t count = keys["length"].as<uint32_t>();
+
+    for (uint32_t i = 0; i < count; ++i)
+    {
+      emscripten::val _key = keys[i];
+      std::vector<emscripten::val> items{ _key, arr_val[_key] };
+      out.emplace_back(emscripten::val::array(items.begin(), items.end()));
+    }
+
+    jsval.set(key, emscripten::val::array(out.begin(), out.end()));
+  }
+};
+
+template<>
+struct to_api_converter<boost::container::flat_map<std::string, std::vector<char>>>
 {
   static void call(emscripten::val jsval, const char* key)
   {

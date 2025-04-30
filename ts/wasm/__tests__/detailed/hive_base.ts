@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { naiAsset, transaction, vote_operation } from "../assets/data.protocol";
+import { naiAsset, transaction, transactionObj, vote_operation } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
@@ -302,7 +302,11 @@ test.describe('Wax object interface foundation tests', () => {
       return tx.toApi();
     }, transaction);
 
-    expect(retVal).toBe(transaction);
+    expect(retVal).toBe(JSON.stringify({
+      ...transactionObj,
+      extensions: [],
+      signatures: []
+    }));
   });
 
   test('Should be able to get impacted accounts from example api operation', async ({ waxTest }) => {
