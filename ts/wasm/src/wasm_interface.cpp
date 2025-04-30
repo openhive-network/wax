@@ -73,6 +73,23 @@ public:
     });
   }
 
+  std::string to_legacy_json()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
+      return fc::json::to_string(this->_transaction);
+    });
+  }
+
+  std::string to_binary(bool use_hf26_serialization = true, bool strip_to_unsigned_transaction = false)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return cpp::serialize_transaction(this->_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
+    });
+  }
+
   std::string to_json()const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
@@ -144,14 +161,14 @@ public:
     });
   }
 
-  std::vector<std::string> signature_keys(bool use_hf26_serialization = true)const
+  std::vector<std::string> signature_keys(const std::string& chain_id, bool use_hf26_serialization = true)const
   {
     return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
       std::vector<std::string> result;
       for (const auto& sig : this->_transaction.signatures)
       {
         result.emplace_back(fc::ecc::public_key::to_base58_with_prefix(
-          fc::ecc::public_key{ sig, _transaction.digest(use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy) },
+          fc::ecc::public_key{ sig, _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy) },
           HIVE_ADDRESS_PREFIX
         ));
       }
@@ -159,10 +176,10 @@ public:
     });
   }
 
-  std::string sig_digest(bool use_hf26_serialization = true)const
+  std::string sig_digest(const std::string& chain_id, bool use_hf26_serialization = true)const
   {
     return cpp::safe_exception_wrapper([&]() -> std::string {
-      return _transaction.digest(use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
+      return _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
     });
   }
 
@@ -500,7 +517,9 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("validate", &wasm_transaction::validate)
     .function("push", &wasm_transaction::add_operation)
     .function("sign", &wasm_transaction::add_signature)
-    .function("set_expiration", &wasm_transaction::set_expiration)
+    .function("setExpiration", &wasm_transaction::set_expiration)
+    .function("toLegacyString", &wasm_transaction::to_legacy_json)
+    .function("toBinary", &wasm_transaction::to_binary)
     .function("toString", &wasm_transaction::to_json)
   ;
 
