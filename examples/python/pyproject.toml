@@ -3,7 +3,7 @@ requires = ["poetry-core==1.1.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "python_exaples"
+name = "python_examples"
 version = "0.0.0"
 description = "A simple way to run wax examples."
 authors = ["Jakub Ziębiński <ziebinskijakub@gmail.com>"]
