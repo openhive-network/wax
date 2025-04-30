@@ -92,11 +92,14 @@ test.describe('Wax hive apps operations tests', () => {
       ref_block_num: 1960,
       ref_block_prefix: 3915120327,
       expiration: "2023-11-09T21:51:27",
+      extensions: [],
+      signatures: [],
       operations: [
         {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test","role":"owner"}]',
             required_posting_auths: [
               "gtg"
@@ -107,6 +110,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test2","role":"admin"}]',
             required_posting_auths: [
               "gtg"
@@ -117,6 +121,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test3","role":"mod"}]',
             required_posting_auths: [
               "gtg"
@@ -127,6 +132,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test4","role":"member"}]',
             required_posting_auths: [
               "gtg"
@@ -137,6 +143,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test5","role":"guest"}]',
             required_posting_auths: [
               "gtg"
@@ -147,6 +154,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: 'custom_json_operation',
           value: {
             id: 'community',
+            required_auths: [],
             json: '["setRole",{"community":"test-community","account":"guest4test6","role":"muted"}]',
             required_posting_auths: [
               "gtg"
@@ -201,11 +209,14 @@ test.describe('Wax hive apps operations tests', () => {
 
     expect(retVal).toStrictEqual({
       expiration: "2023-11-09T21:51:27",
+      extensions: [],
+      signatures: [],
       operations: [
         {
           type: "custom_json_operation",
           value: {
             id: "follow",
+            required_auths: [],
             json: "[\"reblog\",{\"account\":\"initminer\",\"author\":\"gtg\",\"permlink\":\"first-post\"}]",
             required_posting_auths: [
               "initminer",
@@ -233,11 +244,14 @@ test.describe('Wax hive apps operations tests', () => {
 
     expect(retVal).toStrictEqual({
       expiration: "2023-11-09T21:51:27",
+      extensions: [],
+      signatures: [],
       operations: [
         {
           type: "custom_json_operation",
           value: {
             id: "rc",
+            required_auths: [],
             json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"3000\",\"extensions\":[]}]",
             required_posting_auths: [
               "initminer",
@@ -248,6 +262,7 @@ test.describe('Wax hive apps operations tests', () => {
           type: "custom_json_operation",
           value: {
             id: "rc",
+            required_auths: [],
             json: "[\"delegate_rc\",{\"from\":\"initminer\",\"delegatees\":[\"gtg\"],\"max_rc\":\"0\",\"extensions\":[]}]",
             required_posting_auths: [
               "initminer",

@@ -112,7 +112,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
-    const transactionStringified = typeof transactionObject === 'string' ? JSON.parse(transactionObject) : transactionObject;
+    const transactionStringified = typeof transactionObject === 'string' ? JSON.parse(transactionObject) : structuredClone(transactionObject);
 
     safeWasmCall(() => api.proto.cpp_tx_api_to_proto(transactionStringified));
 

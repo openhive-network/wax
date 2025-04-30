@@ -28,6 +28,9 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* key ) const
   {
+    if (jsval[key].isUndefined())
+      return;
+
     add< Member >( key );
   }
 
@@ -50,6 +53,21 @@ void to_proto_converter<T>::call(emscripten::val jsval, const char* key) {
   }
 }
 
+template<typename T>
+struct to_proto_converter<fc::optional<T>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
+    {
+      if (jsval[key].isUndefined())
+        return;
+
+      fc::reflector< T >::visit( to_proto_visitor< T >{ jsval[key] } );
+    }
+  }
+};
+
 class sv_to_proto
 {
 public:
@@ -71,6 +89,27 @@ private:
 
 template<typename M>
 struct to_proto_converter<boost::container::flat_map<M, hive::protocol::weight_type>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    emscripten::val arr_val = jsval[key];
+
+    emscripten::val obj_val = emscripten::val::object();
+
+    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+
+    for (uint32_t i = 0; i < arr_size; ++i)
+    {
+      emscripten::val in_val = arr_val[i];
+      obj_val.set(in_val[0], in_val[1]);
+    }
+
+    jsval.set(key, obj_val);
+  }
+};
+
+template<>
+struct to_proto_converter<boost::container::flat_map<std::string, std::vector<char>>>
 {
   static void call(emscripten::val jsval, const char* key)
   {
