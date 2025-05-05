@@ -87,6 +87,22 @@ private:
   emscripten::val jsval;
 };
 
+template< typename T >
+struct to_api_converter<boost::container::flat_set<T>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    emscripten::val arr_val = jsval[key];
+
+    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+
+    for (uint32_t i = 0; i < arr_size; ++i)
+    {
+      to_api_converter<T>::call( arr_val, std::to_string(i).c_str() );
+    }
+  }
+};
+
 template< typename T, typename... A >
 struct to_api_converter<std::vector<T, A...>>
 {
