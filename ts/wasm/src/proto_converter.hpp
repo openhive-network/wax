@@ -129,6 +129,22 @@ struct to_proto_converter<boost::container::flat_map<std::string, std::vector<ch
   }
 };
 
+template< typename T >
+struct to_proto_converter<boost::container::flat_set<T>>
+{
+  static void call(emscripten::val jsval, const char* key)
+  {
+    emscripten::val arr_val = jsval[key];
+
+    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+
+    for (uint32_t i = 0; i < arr_size; ++i)
+    {
+      to_proto_converter<T>::call( arr_val, std::to_string(i).c_str() );
+    }
+  }
+};
+
 template< typename T, typename... A >
 struct to_proto_converter<std::vector<T, A...>>
 {
