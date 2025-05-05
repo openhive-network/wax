@@ -116,17 +116,19 @@ public:
 
   void add( const char* name, hive::protocol::asset& v ) const
   {
-    v.amount = boost::lexical_cast< int64_t >( jsval[name][ "amount" ].template as< std::string >() );
+    emscripten::val amount = jsval[name];
+    v.amount = boost::lexical_cast< int64_t >( amount[ "amount" ].template as< std::string >() );
     v.symbol = hive::protocol::asset_symbol_type::from_nai_string(
-      jsval[name][ "nai" ].template as< std::string >().c_str(),
-      jsval[name][ "precision" ].template as< uint8_t >()
+      amount[ "nai" ].template as< std::string >().c_str(),
+      amount[ "precision" ].template as< uint8_t >()
     );
   }
 
   void add( const char* name, hive::protocol::price& v ) const
   {
-    this->add( "base", v.base );
-    this->add( "quote", v.quote );
+    val_protocol_visitor< hive::protocol::price > visitor{ jsval[name], v, is_protobuf };
+    visitor.add( "base", v.base );
+    visitor.add( "quote", v.quote );
   }
 
   void add( const char* name, hive::protocol::json_string& v ) const
@@ -362,7 +364,7 @@ public:
     }
   }
 
-  void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>> v ) const
+  void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>>& v ) const
   {
     emscripten::val arr_val = jsval[name];
 
