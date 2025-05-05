@@ -87,6 +87,8 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   private getBinaryViewMetadataImpl(isHf26Serialization: boolean, stripSignatureContainer: boolean = false): IBinaryViewOutputData {
+    this.flushTransaction();
+
     const binaryData = safeWasmCall(() => this.wasmTransaction.binary(isHf26Serialization, stripSignatureContainer));
 
     return {
@@ -131,10 +133,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public toBinaryForm(stripSignatureContainer: boolean = false): THexString {
+    this.flushTransaction();
+
     return this.wasmTransaction.toBinary(true, stripSignatureContainer);
   }
 
   public toLegacyApi(): string {
+    this.flushTransaction();
+
     return this.wasmTransaction.toLegacyString();
   }
 
@@ -192,18 +198,26 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public get sigDigest(): string {
+    this.flushTransaction();
+
     return this.wasmTransaction.sigDigest(this.api.chainId, true);
   }
 
   public get legacy_sigDigest(): string {
+    this.flushTransaction();
+
     return this.wasmTransaction.sigDigest(this.api.chainId, false);
   }
 
   public get id(): TTransactionId {
+    this.flushTransaction();
+
     return this.wasmTransaction.id(true);
   }
 
   public get legacy_id(): TTransactionId {
+    this.flushTransaction();
+
     return this.wasmTransaction.id(false);
   }
 

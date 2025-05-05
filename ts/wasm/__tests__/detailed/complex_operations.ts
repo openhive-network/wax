@@ -28,6 +28,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'gtg',
         props: [
           [
@@ -87,6 +88,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'therealwolf',
         props: [
           [
@@ -119,6 +121,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'therealwolf',
         props: [
           [
@@ -155,6 +158,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'emrebeyler',
         props: [
           [
@@ -190,6 +194,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'ctrpch',
         props: [
           [
@@ -228,6 +233,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'witness_set_properties_operation',
       value: {
+        extensions: [],
         owner: 'guiltyparties',
         props: [
           [
@@ -290,6 +296,7 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'recurrent_transfer_operation',
       value: {
+        extensions: [],
         amount: {
           amount: '100',
           nai: '@@000000013',
@@ -311,7 +318,7 @@ test.describe('Wax complex operation tests', () => {
       tx.pushOperation(new wax.DefineRecurrentTransferOperation({
         from: "alice",
         to: "bob",
-        pairId: 12345,
+        pairId: 123,
         amount: { amount: "100", precision: 3, nai: "@@000000021" },
         memo: "monthly subscription",
         recurrence: 24,
@@ -333,7 +340,7 @@ test.describe('Wax complex operation tests', () => {
         extensions: [{
           type: 'recurrent_transfer_pair_id',
           value: {
-            pair_id: 12345
+            pair_id: 123
           }
         }],
         from: 'alice',
@@ -351,7 +358,7 @@ test.describe('Wax complex operation tests', () => {
       tx.pushOperation(new wax.RecurrentTransferRemovalOperation({
         from: "grace",
         to: "henry",
-        pairId: 24680
+        pairId: 143
       }));
 
       return tx.toApi();
@@ -366,7 +373,7 @@ test.describe('Wax complex operation tests', () => {
         memo: '',
         recurrence: 24,
         executions: 2,
-        extensions: [ { type: 'recurrent_transfer_pair_id', value: { pair_id: 24680 } } ]
+        extensions: [ { type: 'recurrent_transfer_pair_id', value: { pair_id: 143 } } ]
       }
     });
   });
@@ -389,10 +396,11 @@ test.describe('Wax complex operation tests', () => {
     expect(JSON.parse(retVal).operations[0]).toEqual({
       type: 'update_proposal_operation',
       value: {
+        extensions: [],
         creator: 'alice',
         daily_pay: { amount: '1000', nai: '@@000000013', precision: 3 },
         permlink: 'improve-ui',
-        proposal_id: '123',
+        proposal_id: 123,
         subject: 'Improve UI Design'
       }
     });
@@ -426,7 +434,7 @@ test.describe('Wax complex operation tests', () => {
           }
         }],
         permlink: 'improve-ui',
-        proposal_id: '123',
+        proposal_id: 123,
         subject: 'Improve UI Design'
       }
     });
@@ -460,7 +468,7 @@ test.describe('Wax complex operation tests', () => {
           }
         }],
         permlink: 'improve-ui',
-        proposal_id: '123',
+        proposal_id: 123,
         subject: 'Improve UI Design'
       }
     });
@@ -626,6 +634,7 @@ test.describe('Wax complex operation tests', () => {
           allow_curation_rewards: true,
           allow_votes: true,
           author: 'gtg',
+          extensions: [],
           max_accepted_payout: { amount: '1000000000', nai: '@@000000013', precision: 3 },
           percent_hbd: 20,
           permlink:'set-percent',
@@ -817,6 +826,7 @@ test.describe('Wax complex operation tests', () => {
         value: {
           allow_curation_rewards: true,
           allow_votes: true,
+          extensions: [],
           author: 'gtg',
           max_accepted_payout: { amount: '100', nai: '@@000000013', precision: 3 },
           percent_hbd: 10000,
@@ -861,6 +871,7 @@ test.describe('Wax complex operation tests', () => {
           allow_curation_rewards: true,
           allow_votes: true,
           author: 'gtg',
+          extensions: [],
           max_accepted_payout: { amount: '100', nai: '@@000000013', precision: 3 },
           percent_hbd: 10000,
           permlink: 'set-max-accepted-payout',
@@ -904,6 +915,7 @@ test.describe('Wax complex operation tests', () => {
           allow_curation_rewards: false,
           allow_votes: true,
           author: 'gtg',
+          extensions: [],
           max_accepted_payout: { amount: '1000000000', nai: '@@000000013', precision: 3 },
           percent_hbd: 10000,
           permlink:'set-allow-curation-rewards',
@@ -947,6 +959,7 @@ test.describe('Wax complex operation tests', () => {
           allow_curation_rewards: true,
           allow_votes: false,
           author: 'gtg',
+          extensions: [],
           max_accepted_payout: { amount: '1000000000', nai: '@@000000013', precision: 3 },
           percent_hbd: 10000,
           permlink:'set-allow-votes',
