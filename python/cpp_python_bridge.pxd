@@ -188,6 +188,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_calculate_transaction_id( string transaction )
         result cpp_calculate_legacy_transaction_id( string transaction )
         result cpp_calculate_sig_digest( string transaction, string chain_id )
+        result cpp_pass_pure_transaction( object tx) except +
         result cpp_calculate_legacy_sig_digest( string transaction, string chain_id )
         result cpp_serialize_transaction( string transaction, bool strip_to_unsigned_transaction )
         result cpp_deserialize_transaction( string transaction )
