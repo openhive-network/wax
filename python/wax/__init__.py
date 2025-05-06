@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from .cpp_python_bridge import (
     api_to_proto,
+    cpp_pass_pure_transaction,
     calculate_account_hp,
     calculate_current_manabar_value,
     calculate_hbd_to_hive,
@@ -149,4 +150,5 @@ __all__ = [
     "transaction_get_impacted_accounts",
     "proto_operation_get_impacted_accounts",
     "proto_transaction_get_impacted_accounts",
+    "cpp_pass_pure_transaction"
 ]
