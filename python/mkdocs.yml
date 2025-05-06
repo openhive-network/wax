@@ -1,0 +1,16 @@
+site_name: Wax
+site_url: https://syncad.gitlab.io/wax
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - index.md
+  - interfaces.md
+  - factory_and_options.md
+  - complex_operations.md
+  - models.md
+  - exceptions.md
