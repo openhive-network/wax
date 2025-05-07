@@ -13,6 +13,30 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
 {
   result retval;
 
+  auto other = PyObject_GetAttrString(tx, "expiration");
+  if (other != nullptr) {
+    const char* str = nullptr;
+    PyObject* str_obj = nullptr;
+
+    if (PyUnicode_Check(other)) {
+      str = PyUnicode_AsUTF8(other);
+    } else {
+      str_obj = PyObject_Str(other);
+      if (str_obj != nullptr) {
+        str = PyUnicode_AsUTF8(str_obj);
+      }
+    }
+
+    dlog("expiration: ${exp}", ("exp", str ? str : "unknown"));
+
+    if (str_obj) {
+      Py_DECREF(str_obj);
+    }
+    Py_DECREF(other);
+  } else {
+    dlog("expiration attribute not found");
+  }
+
   PyObject* attributes = PyObject_Dir(tx); // Get a list of attribute names
   if (attributes == nullptr || !PyList_Check(attributes))
   {
