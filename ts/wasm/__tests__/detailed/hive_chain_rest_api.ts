@@ -221,8 +221,8 @@ test.describe('Wax object interface chain REST API tests', () => {
     });
 
     expect(retVal).toStrictEqual([
-      "https://api.syncad.com/hafah-api/headblock",
-      "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+      "https://api.dev.openhive.network/hafah-api/headblock",
+      "https://api.dev.openhive.network/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
     ]);
   });
 
@@ -249,6 +249,6 @@ test.describe('Wax object interface chain REST API tests', () => {
       return [chain.restApi.endpointUrl, chain.restApi['hafbe-api'].witnesses.endpointUrl, chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl];
     }, url1, url2);
 
-    expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);
+    expect(retVal).toStrictEqual(["https://api.dev.openhive.network", url1, url2]);
   });
 });

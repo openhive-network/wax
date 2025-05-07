@@ -11,7 +11,16 @@ export default defineConfig<IWaxedTest>({
   projects: [
     {
       name: "wax_testsuite",
-      testDir: "./wasm/dist"
+      testDir: "./wasm/dist",
+      use:
+      {
+        config: {
+          apiEndpoint: "https://api.hive.blog",
+          restApiEndpoint: "https://api.dev.openhive.network",
+          chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
+        }
+      }
+
     },
     {
       name: "wax_testsuite_custom_chain_options",
