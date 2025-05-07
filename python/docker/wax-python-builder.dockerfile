@@ -1,4 +1,4 @@
-FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-1
+FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
 
 # User hosts user ids...
 ARG USER_NAME=user
