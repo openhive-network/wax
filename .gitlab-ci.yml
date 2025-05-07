@@ -330,6 +330,19 @@ deploy_wheel_to_pypi:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   <<: *deploy_wheel_needs
 
+pages:
+  extends: .test_python_env
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+  stage: deploy
+  script:
+    - cd "${PYPROJECT_DIR}"
+    - mkdocs build --site-dir $CI_PROJECT_DIR/public
+    - cd ..
+  artifacts:
+    paths:
+      - public
+
 deploy_wax_wasm_dev_package:
   extends: .npm_deploy_package_template
   stage: deploy
