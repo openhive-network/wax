@@ -378,3 +378,82 @@ test_helpy:
     expire_in: 1 week
     reports:
       junit: $CI_PROJECT_DIR/report.xml
+
+.build_python_docs_env:
+  extends: .runtime_like_python_env
+  stage: build
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
+    - pip list
+
+.python_docs_variables:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      variables:
+        # subpath to branches content for preview
+        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+    - variables:
+        # default branch is exposed at GitLab Pages root
+        CURRENT_CONTENT_PATH: "."
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
+    PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
+    PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
+    DOCS_BUILD_TARGET_DIR: "${PYPROJECT_DIR}/site"
+
+build_python_docs:
+  extends:
+    - .build_python_docs_env
+    - .python_docs_variables
+  script:
+    - cd $PYPROJECT_DIR
+    - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
+  artifacts:
+    paths:
+      - $DOCS_BUILD_TARGET_DIR
+    when: always
+    expire_in: 1 week
+
+.python_docs_deployment_base:
+  extends: .python_docs_variables
+  stage: deploy
+  cache:
+    key: gitlab-pages
+    paths: [ public ]
+  artifacts:
+    paths: [ public ]
+
+deploy_python_docs:
+  pages: true
+  extends: .python_docs_deployment_base
+  needs:
+    - job: build_python_docs
+      artifacts: true
+  variables:
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_CONTENT_PATH}"
+  script:
+    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+    - mkdir -p $PAGES_CONTENT_PATH
+    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+    - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  environment:
+    name: $PAGES_ENV_NAME
+    action: start
+    url: $PAGES_URL
+    on_stop: clean_python_docs_preview
+
+clean_python_docs_preview:
+  extends: .python_docs_deployment_base
+  script:
+    - echo "Removing ${PAGES_CONTENT_PATH}"
+    - rm -rf $PAGES_CONTENT_PATH
+  environment:
+    name: $PAGES_ENV_NAME
+    action: stop
+  when: manual
+  allow_failure: true
