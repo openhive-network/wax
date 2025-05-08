@@ -44,6 +44,8 @@ else
       mkdir -v "$dir_path"
   done
 
+  rm -rf ${PROJECT_DIR}/setup.py
+
   cd ${PROJECT_DIR}/wax
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto.sh
