@@ -241,6 +241,11 @@ public:
     from_jsval( jsval[name], v, is_protobuf );
   }
 
+  void add_scalar( const char* name, hive::protocol::asset_symbol_type& v ) const
+  {
+    FC_ASSERT(false, "Not implemented"); // XXX: binary_view::node_type< hive::protocol::asset_symbol_type >::node returns scalar_node
+  }
+
   template< typename M >
   void add_scalar( const char* name, M& v ) const
   {
