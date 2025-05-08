@@ -164,11 +164,9 @@ class CommentOperation extends OperationBase {
   }
 
   private extendDefaultJsonMetadata(optionalJsonMeta: { app?: string }): void {
-    const apps = [ `${process.env.npm_package_name}/${process.env.npm_package_version}` ];
-    if(typeof optionalJsonMeta.app === "string")
-      apps.unshift(optionalJsonMeta.app);
-
-    Object.assign(this.jsonMetadata, optionalJsonMeta, { app: apps.join(", ") });
+    // Use wax version as the app only if no explicit one has been specified.
+    const actualApp = optionalJsonMeta.app ?? `${process.env.npm_package_name}/${process.env.npm_package_version}`;
+    Object.assign(this.jsonMetadata, optionalJsonMeta, { app: actualApp });
   }
 
   protected constructor(data: ICommentData) {
