@@ -5,30 +5,29 @@
 #include <boost/container/flat_map.hpp>
 #include <fc/static_variant.hpp>
 #include <fc/reflect/reflect.hpp>
-#include <emscripten/val.h>
 #include <type_traits>
 
 namespace cpp {
 
 namespace {
-  template< typename T >
+  template<typename ManagedObjectT, typename T>
   struct to_api_converter
   {
-    static void call(emscripten::val, const char*);
+    static void call(ManagedObjectT, const char*);
   };
 }
 
-template< typename T >
+template<typename ManagedObjectT, typename T>
 class to_api_visitor {
 public:
-  to_api_visitor( emscripten::val jsval )
+  to_api_visitor( ManagedObjectT jsval )
     : jsval( jsval )
   {}
 
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* key ) const
   {
-    if (jsval[key].isUndefined())
+    if (jsval[key].is_undefined())
       return;
 
     add< Member >( key );
@@ -37,138 +36,131 @@ public:
   template<typename M>
   void add( const char* key ) const
   {
-    to_api_converter<M>::call( jsval, key );
+    to_api_converter<ManagedObjectT, M>::call( jsval, key );
   }
 
 private:
-  emscripten::val jsval;
+  ManagedObjectT jsval;
 };
 
 namespace {
-template< typename T >
-void to_api_converter<T>::call(emscripten::val jsval, const char* key) {
+template<typename ManagedObjectT, typename T>
+void to_api_converter<ManagedObjectT, T>::call(ManagedObjectT jsval, const char* key) {
   if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
   {
-    fc::reflector< T >::visit( to_api_visitor< T >{ jsval[key] } );
+    fc::reflector< T >::visit( to_api_visitor< ManagedObjectT, T >{ jsval[key] } );
   }
 }
 
-template<typename T>
-struct to_api_converter<fc::optional<T>>
+template<typename ManagedObjectT, typename T>
+struct to_api_converter<ManagedObjectT, fc::optional<T>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
     if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
     {
-      if (jsval[key].isUndefined())
+      if (jsval[key].is_undefined())
         return;
 
-      fc::reflector< T >::visit( to_api_visitor< T >{ jsval[key] } );
+      fc::reflector< T >::visit( to_api_visitor< ManagedObjectT, T >{ jsval[key] } );
     }
   }
 };
 
+template<typename ManagedObjectT>
 class sv_to_api
 {
 public:
   using result_type = void;
 
-  sv_to_api(emscripten::val jsval)
+  sv_to_api(ManagedObjectT jsval)
     : jsval(jsval)
   {}
 
   template<typename T>
   result_type operator()( T& )const
   {
-    fc::reflector< T >::visit( to_api_visitor< T >{ jsval } );
+    fc::reflector< T >::visit( to_api_visitor< ManagedObjectT, T >{ jsval } );
   }
 
 private:
-  emscripten::val jsval;
+ManagedObjectT jsval;
 };
 
-template< typename T >
-struct to_api_converter<boost::container::flat_set<T>>
+template<typename ManagedObjectT, typename T>
+struct to_api_converter<ManagedObjectT, boost::container::flat_set<T>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      to_api_converter<T>::call( arr_val, std::to_string(i).c_str() );
+      to_api_converter<ManagedObjectT, T>::call( arr_val, std::to_string(i).c_str() );
     }
   }
 };
 
-template< typename T, typename... A >
-struct to_api_converter<std::vector<T, A...>>
+template<typename ManagedObjectT, typename T, typename... A>
+struct to_api_converter<ManagedObjectT, std::vector<T, A...>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      to_api_converter<T>::call( arr_val, std::to_string(i).c_str() );
+      to_api_converter<ManagedObjectT, T>::call( arr_val, std::to_string(i).c_str() );
     }
   }
 };
 
-template<typename M>
-struct to_api_converter<boost::container::flat_map<M, hive::protocol::weight_type>>
+template<typename ManagedObjectT, typename M>
+struct to_api_converter<ManagedObjectT, boost::container::flat_map<M, hive::protocol::weight_type>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    std::vector<emscripten::val> out;
+    std::vector<ManagedObjectT> out;
 
-    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", arr_val);
-    uint32_t count = keys["length"].as<uint32_t>();
-
-    for (uint32_t i = 0; i < count; ++i)
+    for (const auto& _key : arr_val.keys())
     {
-      emscripten::val _key = keys[i];
-      std::vector<emscripten::val> items{ _key, arr_val[_key] };
-      out.emplace_back(emscripten::val::array(items.begin(), items.end()));
+      std::vector<ManagedObjectT> items{ ManagedObjectT{ _key }, ManagedObjectT{ arr_val[_key] } };
+      out.emplace_back(ManagedObjectT::array(items));
     }
 
-    jsval.set(key, emscripten::val::array(out.begin(), out.end()));
+    jsval.set(key, ManagedObjectT::array(out));
   }
 };
 
-template<>
-struct to_api_converter<boost::container::flat_map<std::string, std::vector<char>>>
+template<typename ManagedObjectT>
+struct to_api_converter<ManagedObjectT, boost::container::flat_map<std::string, std::vector<char>>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    std::vector<emscripten::val> out;
+    std::vector<ManagedObjectT> out;
 
-    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", arr_val);
-    uint32_t count = keys["length"].as<uint32_t>();
-
-    for (uint32_t i = 0; i < count; ++i)
+    for (const auto& _key : arr_val.keys())
     {
-      emscripten::val _key = keys[i];
-      std::vector<emscripten::val> items{ _key, arr_val[_key] };
-      out.emplace_back(emscripten::val::array(items.begin(), items.end()));
+      std::vector<ManagedObjectT> items{ ManagedObjectT{ _key }, ManagedObjectT{ arr_val[_key] } };
+      out.emplace_back(ManagedObjectT::array(items));
     }
 
-    jsval.set(key, emscripten::val::array(out.begin(), out.end()));
+    jsval.set(key, ManagedObjectT::array(out));
   }
 };
 
-template< typename... Ts >
-struct to_api_converter<fc::static_variant< Ts... >>
+template<typename ManagedObjectT, typename... Ts>
+struct to_api_converter<ManagedObjectT, fc::static_variant< Ts... >>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
     static std::map< std::string, int64_t > to_tag = []()
     {
@@ -183,39 +175,34 @@ struct to_api_converter<fc::static_variant< Ts... >>
       return name_map;
     }();
 
-    emscripten::val obj_val = jsval[key];
+    ManagedObjectT obj_val = jsval[key];
 
     int64_t which = -1;
-    emscripten::val nextval;
-    emscripten::val _key;
+    ManagedObjectT nextval;
+    std::string nextkey;
 
-    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", obj_val);
-    uint32_t count = keys["length"].as<uint32_t>();
-
-    for (uint32_t i = 0; i < count; ++i)
+    for (const auto& _key : obj_val.keys())
     {
-      _key = keys[i];
-      std::string key = _key.as<std::string>();
+      ManagedObjectT el = obj_val[_key];
 
-      emscripten::val el = obj_val[key];
-
-      if (el.isUndefined())
+      if (el.is_undefined())
         continue;
 
-      const auto it = to_tag.find(key);
+      const auto it = to_tag.find(_key);
       if (it == to_tag.end())
         continue; // Allow to pass invalid values as JS may add custom properties
 
       which = it->second;
       nextval = el;
+      nextkey = _key;
       break;
     }
 
     FC_ASSERT( which != -1, "Could not find the supported property in static variant" );
 
-    obj_val.set("type", _key);
+    obj_val.set("type", nextkey);
     obj_val.set("value", nextval);
-    obj_val.delete_(_key);
+    obj_val.del(nextkey);
 
     sv_to_api visitor{nextval};
     fc::static_variant<Ts...>{which, visitor};
@@ -223,10 +210,10 @@ struct to_api_converter<fc::static_variant< Ts... >>
 };
 
 // Override some conflicting types
-template<>
-struct to_api_converter<hive::protocol::asset_symbol_type>
+template<typename ManagedObjectT>
+struct to_api_converter<ManagedObjectT, hive::protocol::asset_symbol_type>
 {
-  static void call(emscripten::val, const char*) {}
+  static void call(ManagedObjectT, const char*) {}
 };
 }
 

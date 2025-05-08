@@ -5,30 +5,29 @@
 #include <boost/container/flat_map.hpp>
 #include <fc/static_variant.hpp>
 #include <fc/reflect/reflect.hpp>
-#include <emscripten/val.h>
 #include <type_traits>
 
 namespace cpp {
 
 namespace {
-  template< typename T >
+  template<typename ManagedObjectT, typename T>
   struct to_proto_converter
   {
-    static void call(emscripten::val, const char*);
+    static void call(ManagedObjectT, const char*);
   };
 }
 
-template< typename T >
+template<typename ManagedObjectT, typename T>
 class to_proto_visitor {
 public:
-  to_proto_visitor( emscripten::val jsval )
+  to_proto_visitor( ManagedObjectT jsval )
     : jsval( jsval )
   {}
 
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* key ) const
   {
-    if (jsval[key].isUndefined())
+    if (jsval[key].is_undefined())
       return;
 
     add< Member >( key );
@@ -37,70 +36,71 @@ public:
   template<typename M>
   void add( const char* key ) const
   {
-    to_proto_converter<M>::call( jsval, key );
+    to_proto_converter<ManagedObjectT, M>::call( jsval, key );
   }
 
 private:
-  emscripten::val jsval;
+  ManagedObjectT jsval;
 };
 
 namespace {
-template< typename T >
-void to_proto_converter<T>::call(emscripten::val jsval, const char* key) {
+template<typename ManagedObjectT, typename T>
+void to_proto_converter<ManagedObjectT, T>::call(ManagedObjectT jsval, const char* key) {
   if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
   {
-    fc::reflector< T >::visit( to_proto_visitor< T >{ jsval[key] } );
+    fc::reflector< T >::visit( to_proto_visitor< ManagedObjectT, T >{ jsval[key] } );
   }
 }
 
-template<typename T>
-struct to_proto_converter<fc::optional<T>>
+template<typename ManagedObjectT, typename T>
+struct to_proto_converter<ManagedObjectT, fc::optional<T>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
     if constexpr( std::is_same< typename fc::reflector< T >::is_defined, fc::true_type >::value )
     {
-      if (jsval[key].isUndefined())
+      if (jsval[key].is_undefined())
         return;
 
-      fc::reflector< T >::visit( to_proto_visitor< T >{ jsval[key] } );
+      fc::reflector< T >::visit( to_proto_visitor< ManagedObjectT, T >{ jsval[key] } );
     }
   }
 };
 
+template<typename ManagedObjectT>
 class sv_to_proto
 {
 public:
   using result_type = void;
 
-  sv_to_proto(emscripten::val jsval)
+  sv_to_proto(ManagedObjectT jsval)
     : jsval(jsval)
   {}
 
   template<typename T>
   result_type operator()( T& )const
   {
-    fc::reflector< T >::visit( to_proto_visitor< T >{ jsval } );
+    fc::reflector< T >::visit( to_proto_visitor< ManagedObjectT, T >{ jsval } );
   }
 
 private:
-  emscripten::val jsval;
+  ManagedObjectT jsval;
 };
 
-template<typename M>
-struct to_proto_converter<boost::container::flat_map<M, hive::protocol::weight_type>>
+template<typename ManagedObjectT, typename M>
+struct to_proto_converter<ManagedObjectT, boost::container::flat_map<M, hive::protocol::weight_type>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    emscripten::val obj_val = emscripten::val::object();
+    ManagedObjectT obj_val = ManagedObjectT::object();
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      emscripten::val in_val = arr_val[i];
+      ManagedObjectT in_val = arr_val[i];
       obj_val.set(in_val[0], in_val[1]);
     }
 
@@ -108,20 +108,20 @@ struct to_proto_converter<boost::container::flat_map<M, hive::protocol::weight_t
   }
 };
 
-template<>
-struct to_proto_converter<boost::container::flat_map<std::string, std::vector<char>>>
+template<typename ManagedObjectT>
+struct to_proto_converter<ManagedObjectT, boost::container::flat_map<std::string, std::vector<char>>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    emscripten::val obj_val = emscripten::val::object();
+    ManagedObjectT obj_val = ManagedObjectT::object();
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      emscripten::val in_val = arr_val[i];
+      ManagedObjectT in_val = arr_val[i];
       obj_val.set(in_val[0], in_val[1]);
     }
 
@@ -129,42 +129,42 @@ struct to_proto_converter<boost::container::flat_map<std::string, std::vector<ch
   }
 };
 
-template< typename T >
-struct to_proto_converter<boost::container::flat_set<T>>
+template<typename ManagedObjectT, typename T>
+struct to_proto_converter<ManagedObjectT, boost::container::flat_set<T>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      to_proto_converter<T>::call( arr_val, std::to_string(i).c_str() );
+      to_proto_converter<ManagedObjectT, T>::call( arr_val, std::to_string(i).c_str() );
     }
   }
 };
 
-template< typename T, typename... A >
-struct to_proto_converter<std::vector<T, A...>>
+template<typename ManagedObjectT, typename T, typename... A>
+struct to_proto_converter<ManagedObjectT, std::vector<T, A...>>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
-    emscripten::val arr_val = jsval[key];
+    ManagedObjectT arr_val = jsval[key];
 
-    uint32_t arr_size = arr_val["length"].as<uint32_t>();
+    auto arr_size = arr_val.array_length();
 
-    for (uint32_t i = 0; i < arr_size; ++i)
+    for (size_t i = 0; i < arr_size; ++i)
     {
-      to_proto_converter<T>::call( arr_val, std::to_string(i).c_str() );
+      to_proto_converter<ManagedObjectT, T>::call( arr_val, std::to_string(i).c_str() );
     }
   }
 };
 
-template< typename... Ts >
-struct to_proto_converter<fc::static_variant< Ts... >>
+template<typename ManagedObjectT, typename... Ts>
+struct to_proto_converter<ManagedObjectT, fc::static_variant< Ts... >>
 {
-  static void call(emscripten::val jsval, const char* key)
+  static void call(ManagedObjectT jsval, const char* key)
   {
     static std::map< std::string, int64_t > to_tag = []()
     {
@@ -179,19 +179,19 @@ struct to_proto_converter<fc::static_variant< Ts... >>
       return name_map;
     }();
 
-    emscripten::val obj_val = jsval[key];
+    ManagedObjectT obj_val = jsval[key];
 
-    emscripten::val type_val = obj_val["type"];
-    emscripten::val nextval = obj_val["value"];
+    ManagedObjectT type_val = obj_val["type"];
+    ManagedObjectT nextval = obj_val["value"];
 
-    std::string type = type_val.as<std::string>();
+    std::string type = type_val.template as<std::string>();
     auto itr = to_tag.find( type );
     FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
     int64_t which = itr->second;
 
     obj_val.set(type_val, nextval);
-    obj_val.delete_("type");
-    obj_val.delete_("value");
+    obj_val.del("type");
+    obj_val.del("value");
 
     sv_to_proto visitor{nextval};
     fc::static_variant<Ts...>{which, visitor};
@@ -199,10 +199,10 @@ struct to_proto_converter<fc::static_variant< Ts... >>
 };
 
 // Override some conflicting types
-template<>
-struct to_proto_converter<hive::protocol::asset_symbol_type>
+template<typename ManagedObjectT>
+struct to_proto_converter<ManagedObjectT, hive::protocol::asset_symbol_type>
 {
-  static void call(emscripten::val, const char*) {}
+  static void call(ManagedObjectT, const char*) {}
 };
 }
 
