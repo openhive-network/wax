@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-#include "val_protocol.hpp"
-#include "proto_converter.hpp"
-#include "api_converter.hpp"
+#include "core/val_protocol.hpp"
+#include "core/proto_converter.hpp"
+#include "core/api_converter.hpp"
 
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
