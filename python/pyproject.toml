@@ -53,6 +53,11 @@ types-protobuf = "4.24.0.3"
 grpc-stubs = "1.53.0.2"
 grpcio-tools = "1.59.0"
 
+[tool.poetry.group.docs.dependencies]
+mkdocs = "1.6.1"
+mkdocstrings-python="1.16.10"
+mkdocs-material = "9.6.12"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
