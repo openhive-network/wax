@@ -987,6 +987,38 @@ test.describe('Wax complex operation tests', () => {
     ]);
   });
 
+  test('Should be able to set explicit app in BlogPostOperation', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set format",
+        body: "Set format",
+        permlink: "set-format",
+        jsonMetadata: { app: "thebest.blog@13.13" }
+      }));
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set format',
+          json_metadata: `{"format":"markdown+html","app":"thebest.blog@13.13"}`,
+          parent_author: "",
+          parent_permlink: "test-category",
+          permlink: 'set-format',
+          title: 'Set format'
+        }
+      }
+    ]);
+  });
+
   test('Should be able to push and set multiple properites', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
