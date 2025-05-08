@@ -2,8 +2,8 @@
 
 #include <hive/protocol/transaction.hpp>
 #include <fc/static_variant.hpp>
-#include "core/binary_view/node_types.hpp"
-#include "core/binary_view/traits.hpp"
+#include "binary_view/node_types.hpp"
+#include "binary_view/traits.hpp"
 
 namespace cpp {
 
