@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hiveio/wax": "workspace:../..",
-    "@hiveio/beekeeper": "1.27.10-stable.250305202831"
+    "@hiveio/beekeeper": "1.27.11-stable.250513143655"
   },
   "files": [
     "dist/index.d.ts",
