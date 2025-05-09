@@ -5,27 +5,40 @@ import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as c
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "./build_wasm/wax.common.js";
 
-const moduleArgs = (async () => {
+const moduleLocation = (async () => {
   // Resolve WASM url only for Nuxt client (first condition) or Vite client (second condition)
-  if ((import.meta as any).client || (!("client" in import.meta) && typeof (import.meta as any).env === "object" && "SSR" in (import.meta as any).env)) {
-      const resolvedUrl = (await import('./build_wasm/wax.common.wasm' + '?url')).default;
-
-      let wasmBinary: Buffer | undefined;
-      if (resolvedUrl.startsWith("data:application/wasm;base64,"))
-          wasmBinary = Buffer.from(resolvedUrl.slice(29), "base64");
-
-      return {
-          locateFile(path: string, scriptDirectory: string): string {
-              if (path === "wax.common.wasm")
-                  return resolvedUrl;
-              return scriptDirectory + path;
-          },
-          wasmBinary
-      };
-  } else {
-      return {};
-  }
+  if ((import.meta as any).client || (!("client" in import.meta) && typeof (import.meta as any).env === "object" && "SSR" in (import.meta as any).env))
+    return (await import('./build_wasm/wax.common.wasm' + '?url')).default;
 })();
+
+const getModuleExt = async(fileLocation?: string) => {
+  // Warning: important change is moving conditional ternary expression outside of URL constructor call, what confused parcel analyzer.
+  // Seems it must have simple variables & literals present to correctly translate code.
+  const wasmFilePath = fileLocation ?? await moduleLocation;
+  if (wasmFilePath === undefined)
+    return {};
+
+  // Fallback for client-bundled inlined WASM, e.g. when using webpack
+  let wasmBinary: Uint8Array | undefined;
+  if (wasmFilePath.startsWith("data:application/wasm;base64,")) {
+    const base64 = wasmFilePath.slice(29);
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; ++i)
+      bytes[i] = binaryString.charCodeAt(i);
+    wasmBinary = bytes;
+  }
+
+  return {
+      locateFile(path: string, scriptDirectory: string): string {
+          if (path === "wax.common.wasm")
+              return wasmFilePath;
+          return scriptDirectory + path;
+      },
+      wasmBinary
+  };
+};
 
 /**
  * Creates a Wax Hive chain instance
@@ -37,7 +50,9 @@ const moduleArgs = (async () => {
  * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, Object.assign({}, await moduleArgs), options);
+  const { wasmLocation, ...otherOptions } = options || {};
+
+  return constructHiveChainWithWasm(MainModuleFunction, await getModuleExt(wasmLocation), otherOptions);
 };
 
 /**
@@ -50,5 +65,7 @@ export const createHiveChain = async(options: Partial<IWaxOptionsChain> = {}): P
  * @throws {WaxError} on any Wax API-related error
  */
 export const createWaxFoundation = async(options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, Object.assign({}, await moduleArgs), options);
+  const { wasmLocation, ...otherOptions } = options || {};
+
+  return constructWaxFoundationWithWasm(MainModuleFunction, await getModuleExt(wasmLocation), otherOptions);
 };

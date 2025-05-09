@@ -105,6 +105,16 @@ export type TTransactionId = string;
 
 export interface IWaxOptions {
   chainId: string;
+
+  /**
+   * The path to the WASM file. It can be a relative path or an absolute URL
+   * If not specified, the default path is used: "./build/beekeeper_wasm.common.wasm" (may change if bundled)
+   *
+   * Note: You can also specify a base64 encoded string of the WASM file to be used directly when inlining
+   *
+   * @type {string}
+   */
+  wasmLocation?: string;
 }
 
 export interface IPrivateKeyData {

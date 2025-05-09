@@ -5,14 +5,21 @@ import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as c
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "./build_wasm/wax.common.js";
 
-const getModuleExt = () => {
+const getModuleExt = (fileLocation?: string) => {
   // Warning: important change is moving conditional ternary expression outside of URL constructor call, what confused parcel analyzer.
   // Seems it must have simple variables & literals present to correctly translate code.
-  const wasmFilePath = new URL("./build_wasm/wax.common.wasm", import.meta.url).href;
+  const wasmFilePath = fileLocation ?? new URL("./build_wasm/wax.common.wasm", import.meta.url).href;
   // Fallback for client-bundled inlined WASM, e.g. when using webpack
-  let wasmBinary: Buffer | undefined;
-  if (wasmFilePath.startsWith("data:application/wasm;base64,"))
-      wasmBinary = Buffer.from(wasmFilePath.slice(29), "base64");
+  let wasmBinary: Uint8Array | undefined;
+  if (wasmFilePath.startsWith("data:application/wasm;base64,")) {
+    const base64 = wasmFilePath.slice(29);
+    const binaryString = atob(base64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; ++i)
+      bytes[i] = binaryString.charCodeAt(i);
+    wasmBinary = bytes;
+  }
 
   return {
     locateFile(path: string, scriptDirectory: string): string {
@@ -35,7 +42,9 @@ const getModuleExt = () => {
  * @throws {WaxError} on any Wax API-related error
  */
 export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promise<IHiveChainInterface> => {
-  return constructHiveChainWithWasm(MainModuleFunction, getModuleExt(), options);
+  const { wasmLocation, ...otherOptions } = options || {};
+
+  return constructHiveChainWithWasm(MainModuleFunction, getModuleExt(wasmLocation), otherOptions);
 };
 
 /**
@@ -48,5 +57,7 @@ export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promis
  * @throws {WaxError} on any Wax API-related error
  */
 export const createWaxFoundation = (options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  return constructWaxFoundationWithWasm(MainModuleFunction, getModuleExt(), options);
+  const { wasmLocation, ...otherOptions } = options || {};
+
+  return constructWaxFoundationWithWasm(MainModuleFunction, getModuleExt(wasmLocation), otherOptions);
 };
