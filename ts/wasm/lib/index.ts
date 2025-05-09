@@ -5,16 +5,10 @@ import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as c
 // During bundle - this module will be replaced with the actual wasm module based on your environment
 import MainModuleFunction from "./build_wasm/wax.common.js";
 
-// Polyfill for web workers in WASM
-declare global {
-  var WorkerGlobalScope: /* object extends */ EventTarget | undefined;
-}
-const ENVIRONMENT_IS_WORKER = typeof WorkerGlobalScope != 'undefined';
-
 const getModuleExt = () => {
   // Warning: important change is moving conditional ternary expression outside of URL constructor call, what confused parcel analyzer.
   // Seems it must have simple variables & literals present to correctly translate code.
-  const wasmFilePath = (ENVIRONMENT_IS_WORKER ? new URL("./build_wasm/wax.common.wasm", self.location.href) : new URL("./build_wasm/wax.common.wasm", import.meta.url)).href;
+  const wasmFilePath = new URL("./build_wasm/wax.common.wasm", import.meta.url).href;
   // Fallback for client-bundled inlined WASM, e.g. when using webpack
   let wasmBinary: Buffer | undefined;
   if (wasmFilePath.startsWith("data:application/wasm;base64,"))
