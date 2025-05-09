@@ -15,16 +15,14 @@ assertion_id_data_container_t init_assertion_data()
   return container;
 }
 
-void throw_appropriate_wax_assertion( fc::assert_exception& e )
+uint64_t throw_appropriate_wax_assertion( fc::assert_exception& e )
 {
   static assertion_id_data_container_t assertion_data( init_assertion_data() );
   auto ae = e.get_extension( FC_ASSERT_EXPRESSION_KEY );
   uint64_t assertion_code = fc::exception::hash_expr( ae );
   
   const auto it = assertion_data.find( assertion_code );
-  if( it ==  assertion_data.end() )
-    throw wax_unknown_assertion( assertion_code, e );
-  else
+  if( it !=  assertion_data.end() )
   {
     if( it->second == "protocol" )
     {
@@ -38,9 +36,9 @@ void throw_appropriate_wax_assertion( fc::assert_exception& e )
     {
       throw wax_api_assertion( assertion_code, e );
     }
-    else
-      throw wax_unknown_assertion( assertion_code, e );
   }
+
+  return assertion_code;
 }
 
 } /// namespace cpp

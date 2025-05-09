@@ -41,7 +41,7 @@ static result method_wrapper(callback&& method)
   return _result;
 }
 
-void throw_appropriate_wax_assertion( fc::assert_exception& e );
+uint64_t throw_appropriate_wax_assertion( fc::assert_exception& e );
 
 /** Allows to wrap given function call into exception handler which at most throw std::exception (safely handled by Python/WASM runtimes)
 */
@@ -55,7 +55,8 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
   catch (fc::assert_exception& e)
   {
     wlog("Caught fc::assert_exception: ${details}", ("details", e.to_detail_string()));
-    throw_appropriate_wax_assertion( e );
+    uint64_t unrecognized_assertion_code = throw_appropriate_wax_assertion( e );
+    throw wax_unknown_assertion( unrecognized_assertion_code, e );
   }
   catch (fc::exception& e)
   {
