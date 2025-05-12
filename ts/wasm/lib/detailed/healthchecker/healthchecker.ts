@@ -129,6 +129,8 @@ export class HealthChecker extends EventEmitter {
    *
    * @param {?Readonly<Array<string>>} defaultEndpoints default endpoints for checkers.
    *  If `undefined` (default) uses {@link DefaultJsonRpcEndpoints} for json rpc or {@link DefaultRestApiEndpoints} for rest api
+   * @param {number} minimalCheckIntervalMs minimal interval between checks in milliseconds (default: 10 seconds)
+   * @param {TCalculateScoresFunction} calculateScoresFunction function to calculate scores (default: {@link defaultCalcScores})
    *
    * @example
    * ```ts
@@ -145,6 +147,7 @@ export class HealthChecker extends EventEmitter {
    */
   public constructor(
     public readonly defaultEndpoints: Readonly<Array<string>> | undefined = undefined,
+    public readonly minimalCheckIntervalMs: number = INITIAL_CHECKER_INTERVAL_MS,
     private readonly calculateScoresFunction: TCalculateScoresFunction = defaultCalcScores) {
     super();
 
@@ -436,6 +439,6 @@ export class HealthChecker extends EventEmitter {
 
     this.emit('data', this.cachedScoredList);
 
-    this.nextScheduledCheck = Date.now() + Math.max((Date.now() - start) * 2, INITIAL_CHECKER_INTERVAL_MS);
+    this.nextScheduledCheck = Date.now() + Math.max((Date.now() - start) * 2, this.minimalCheckIntervalMs);
   }
 }
