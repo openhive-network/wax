@@ -400,6 +400,9 @@ export class HealthChecker extends EventEmitter {
 
     const normalizedValues = this.calculateScoresFunction([...this.endpointStats.entries()]);
 
+    if (normalizedValues.length === 0)
+      return normalizedValues; // No endpoint data to process
+
     if(this.lastBest !== normalizedValues[0].endpointUrl) {
       this.emit("newbest", normalizedValues[0]);
       this.lastBest = normalizedValues[0].endpointUrl;
