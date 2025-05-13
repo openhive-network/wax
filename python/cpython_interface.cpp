@@ -4,6 +4,25 @@
 #include "core/protobuf_protocol_impl.inl"
 #include "core/val_protocol.hpp"
 
+std::string py_object_to_string(PyObject* obj)
+{
+  if (!obj)
+    return "<null PyObject>";
+
+  PyObject* str_obj = PyObject_Str(obj);
+  if (str_obj)
+  {
+    const char* cstr = PyUnicode_AsUTF8(str_obj);
+    std::string result = cstr ? cstr : "<unprintable PyObject>";
+    Py_DECREF(str_obj);
+    return result;
+  }
+  else
+  {
+    return "<unprintable PyObject>";
+  }
+}
+
 namespace cpp
 {
 class python_managed_object
@@ -71,15 +90,55 @@ public:
   // Get attribute by string key
   python_managed_object operator[](const char* key)const
   {
-    PyObject* item = PyObject_GetAttrString(pyobj, key);
-    if (!item)
+    wlog("Accesing '${key}' object on PyObject: ${pyobj}", ("key", key)("pyobj", py_object_to_string(pyobj)));
+
+    // Array check
+    if (PySequence_Check(pyobj))
     {
-      dlog("operator[]: ${key} not found", ("key", key));
-      PyErr_Clear();
-      Py_RETURN_NONE;
+      char* endptr = nullptr;
+      long idx = std::strtol(key, &endptr, 10);
+      if (endptr && *endptr == '\0')
+      { // key is a valid integer string
+        return this->operator[](static_cast<size_t>(idx));
+      }
     }
-    dlog("operator[]: ${key} found", ("key", key));
-    return python_managed_object{item};
+
+    // Protobuf object check: use HasField if available
+    if (PyObject_HasAttrString(pyobj, "HasField")) {
+      PyObject* has_field_method = PyObject_GetAttrString(pyobj, "HasField");
+      if (has_field_method && PyCallable_Check(has_field_method)) {
+        PyObject* py_key = PyUnicode_FromString(key);
+        PyObject* result = PyObject_CallFunctionObjArgs(has_field_method, py_key, NULL);
+        Py_DECREF(py_key);
+        Py_DECREF(has_field_method);
+        if (result) {
+          int has_field = PyObject_IsTrue(result);
+          Py_DECREF(result);
+          if (has_field) {
+            PyObject* item = PyObject_GetAttrString(pyobj, key);
+            if (item) {
+              dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+              return python_managed_object{item};
+            }
+          }
+          // If HasField returns false, fall through to return None
+        }
+      } else {
+        Py_XDECREF(has_field_method);
+      }
+      PyErr_Clear();
+    } else if (PyObject_HasAttrString(pyobj, key)) {
+      PyObject* item = PyObject_GetAttrString(pyobj, key);
+      if (item)
+      {
+        dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+        return python_managed_object{item};
+      }
+    }
+    PyErr_Clear();
+
+    dlog("operator[]: attribute ${key} not found on object", ("key", key));
+    return python_managed_object{}; // Return None object for non-existent attributes
   }
 
   python_managed_object operator[](const std::string& key)const
@@ -89,15 +148,26 @@ public:
 
   python_managed_object operator[](size_t key)const
   {
-    if (!PyList_Check(pyobj)) {
-      dlog("operator[]: pyobj is not a list for index access");
-      Py_RETURN_NONE;
-    }
-    PyObject* item = PyList_GetItem(pyobj, key);
-    if (!item)
+    if (!PyList_Check(pyobj))
     {
-      Py_RETURN_NONE;
+      FC_ASSERT(PySequence_Check(pyobj), "operator[]: pyobj is not a list nor a sequence for index access: ${key}", ("key", key));
+
+      // Try to get the item as a sequence
+      PyObject* item = PySequence_GetItem(pyobj, key);
+      if (!item)
+      {
+        PyErr_Clear();
+        FC_ASSERT(false, "operator[]: Failed to get item from sequence for index access: ${key}", ("key", key));
+      }
+      dlog("operator[]: ${key} found: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+
+      Py_INCREF(item);
+      return python_managed_object{item};
     }
+
+    PyObject* item = PyList_GetItem(pyobj, key);
+    FC_ASSERT(item, "operator[]: item is null for index access: ${key}", ("key", key));
+
     Py_INCREF(item);
     return python_managed_object{item};
   }
@@ -109,7 +179,6 @@ public:
 
   bool is_undefined()const
   {
-    dlog("is_undefined: ${obj}", ("obj", pyobj == Py_None));
     return pyobj == Py_None;
   }
 
@@ -172,32 +241,67 @@ public:
 
   size_t array_length()const
   {
-    if (!PyList_Check(pyobj)) {
-      dlog("array_length: pyobj is not a list");
-      return 0;
+    if (!PySequence_Check(pyobj))
+    {
+      if (PyList_Check(pyobj))
+      {
+        return PyList_Size(pyobj);
+      }
+
+      FC_ASSERT(false, "pyobj is not a list or sequence");
     }
-    return PyList_Size(pyobj);
+
+    return PySequence_Size(pyobj);
   }
 
-  std::vector<std::string> keys()const
+  std::string get_underlying_sv_type()const
+  {
+    PyObject* result = PyObject_CallMethod(pyobj, "WhichOneof", "s", "value");
+
+    if (!result)
+    {
+      PyErr_Print();
+      PyErr_Clear();
+      FC_ASSERT(false, "Failed to call WhichOneof on object");
+    }
+    else
+    {
+      std::string type = PyUnicode_AsUTF8(result);
+
+      Py_DECREF(result);
+
+      return type;
+    }
+  }
+
+  std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
-    // fallback: try to get __dict__ keys if available
-    PyObject* dict = PyObject_GetAttrString(pyobj, "__dict__");
-    if (dict && PyDict_Check(dict))
+    // Try to get 'props' attribute, which is likely a ScalarMap
+    PyObject* props = PyObject_GetAttrString(pyobj, "props");
+    if (props)
     {
-      PyObject* keys = PyDict_Keys(dict);
-      if (PyList_Check(keys)) {
-        size_t count = PyList_Size(keys);
-        for (size_t i = 0; i < count; ++i)
+      // ScalarMap supports the mapping protocol, so PyMapping_Check is true
+      if (PyMapping_Check(props))
+      {
+        PyObject* keys = PyMapping_Keys(props);
+        if (keys && PyList_Check(keys))
         {
-          PyObject* item = PyList_GetItem(keys, i);
-          out.push_back(PyUnicode_AsUTF8(item));
+          Py_ssize_t count = PyList_Size(keys);
+          out.reserve(count);
+          for (Py_ssize_t i = 0; i < count; ++i)
+          {
+            PyObject* item = PyList_GetItem(keys, i); // Borrowed reference
+            if (PyUnicode_Check(item))
+            {
+              out.emplace_back(PyUnicode_AsUTF8(item));
+            }
+          }
         }
+        Py_XDECREF(keys);
       }
-      Py_XDECREF(keys);
+      Py_XDECREF(props);
     }
-    Py_XDECREF(dict);
     return out;
   }
 
@@ -251,12 +355,21 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
 
     dlog("transaction serialized C++: ${tx}", ("tx", obj));
   }
+  catch (const fc::exception& e)
+  {
+    elog("Failed to serialize transaction: ${e}", ("e", e.to_detail_string()));
+    return retval;
+  }
+  catch (const std::exception& e)
+  {
+    elog("Failed to serialize transaction: ${e}", ("e", e.what()));
+    return retval;
+  }
   catch (...)
   {
     elog("Failed to serialize transaction");
-    if (PyErr_Occurred()) {
+    if (PyErr_Occurred())
       PyErr_Print();
-    }
     return retval;
   }
 

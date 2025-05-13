@@ -50,23 +50,14 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
 
   if (is_protobuf)
   {
-    for (const auto& key : jsval.keys())
-    {
-      ManagedObjectT el = jsval[key];
+    const std::string nextkey = jsval.get_underlying_sv_type();
 
-      if (el.is_undefined())
-        continue;
+    nextval = jsval[nextkey];
 
-      const auto it = to_tag.find(key);
-      if (it == to_tag.end())
-        continue; // Allow to pass invalid values as JS may add custom properties
+    const auto it = to_tag.find(nextkey);
+    FC_ASSERT( it != to_tag.end(), "Could not find the supported property in static variant: ${nextkey}", ("nextkey", nextkey) );
 
-      which = it->second;
-      nextval = el;
-      break;
-    }
-
-    FC_ASSERT( which != -1, "Could not find the supported property in static variant" );
+    which = it->second;
   }
   else
   {
@@ -341,7 +332,7 @@ public:
 
     if (is_protobuf)
     {
-      for (const auto& key : arr_val.keys())
+      for (const auto& key : arr_val.get_map_keys())
       {
         v[M{key}] = arr_val[key].template as<hive::protocol::weight_type>();
       }
@@ -365,7 +356,7 @@ public:
 
     if (is_protobuf)
     {
-      for (const auto& key : arr_val.keys())
+      for (const auto& key : arr_val.get_map_keys())
       {
         std::vector<char> value;
         const std::string hex_value = arr_val[key].template as<std::string>();

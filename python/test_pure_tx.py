@@ -75,8 +75,9 @@ cpp_pass_pure_transaction(tx)
 print(f"tx expiration: {txc.expiration}")
 
 op_type = tx.operations[0].WhichOneof("value")
-op = tx.operations[0].__getattribute__(op_type)
-print(f"op_type: {op_type}")
+op_data = tx.operations[0].__getattribute__(op_type)
+print(f"op_data: {op_data.__getattribute__("parent_author")}")
+print(f"op_type: {type(op_data)}")
 
 op_type = tx.operations[2].WhichOneof("value")
 op = tx.operations[2].__getattribute__(op_type)
