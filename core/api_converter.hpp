@@ -128,7 +128,7 @@ struct to_api_converter<ManagedObjectT, boost::container::flat_map<M, hive::prot
 
     std::vector<ManagedObjectT> out;
 
-    for (const auto& _key : arr_val.keys())
+    for (const auto& _key : arr_val.get_map_keys())
     {
       std::vector<ManagedObjectT> items{ ManagedObjectT{ _key }, ManagedObjectT{ arr_val[_key] } };
       out.emplace_back(ManagedObjectT::array(items));
@@ -147,7 +147,7 @@ struct to_api_converter<ManagedObjectT, boost::container::flat_map<std::string, 
 
     std::vector<ManagedObjectT> out;
 
-    for (const auto& _key : arr_val.keys())
+    for (const auto& _key : arr_val.get_map_keys())
     {
       std::vector<ManagedObjectT> items{ ManagedObjectT{ _key }, ManagedObjectT{ arr_val[_key] } };
       out.emplace_back(ManagedObjectT::array(items));
@@ -177,28 +177,14 @@ struct to_api_converter<ManagedObjectT, fc::static_variant< Ts... >>
 
     ManagedObjectT obj_val = jsval[key];
 
-    int64_t which = -1;
-    ManagedObjectT nextval;
-    std::string nextkey;
+    const std::string nextkey = obj_val.get_underlying_sv_type();
 
-    for (const auto& _key : obj_val.keys())
-    {
-      ManagedObjectT el = obj_val[_key];
+    ManagedObjectT nextval = obj_val[nextkey];
 
-      if (el.is_undefined())
-        continue;
+    const auto it = to_tag.find(nextkey);
+    FC_ASSERT( it != to_tag.end(), "Could not find the supported property in static variant: ${nextkey}", ("nextkey", nextkey) );
 
-      const auto it = to_tag.find(_key);
-      if (it == to_tag.end())
-        continue; // Allow to pass invalid values as JS may add custom properties
-
-      which = it->second;
-      nextval = el;
-      nextkey = _key;
-      break;
-    }
-
-    FC_ASSERT( which != -1, "Could not find the supported property in static variant" );
+    int64_t which = it->second;
 
     obj_val.set("type", nextkey);
     obj_val.set("value", nextval);
