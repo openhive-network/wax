@@ -35,7 +35,7 @@ public:
   }
 
   python_managed_object(PyObject* obj)
-    : pyobj(obj)
+    : pyobj(obj ? obj : Py_None)
   {
     Py_INCREF(pyobj);
   }
@@ -44,12 +44,48 @@ public:
     : pyobj(PyUnicode_FromString(str.c_str()))
   {}
 
+  python_managed_object(const python_managed_object& other)
+    : pyobj(other.pyobj)
+  {
+    Py_INCREF(pyobj);
+  }
+
+  python_managed_object& operator=(const python_managed_object& other)
+  {
+    if (this != &other)
+    {
+      Py_XINCREF(other.pyobj);
+      Py_XDECREF(pyobj);
+      pyobj = other.pyobj;
+    }
+    return *this;
+  }
+
+  python_managed_object(python_managed_object&& other) noexcept
+    : pyobj(other.pyobj)
+  {
+    other.pyobj = Py_None;
+    Py_INCREF(Py_None);
+  }
+
+  python_managed_object& operator=(python_managed_object&& other) noexcept
+  {
+    if (this != &other)
+    {
+      Py_XDECREF(pyobj);
+      pyobj = other.pyobj;
+      other.pyobj = Py_None;
+      Py_INCREF(Py_None);
+    }
+    return *this;
+  }
+
   static python_managed_object array(const std::vector<python_managed_object>& vec)
   {
     PyObject* list = PyList_New(vec.size());
     for (size_t i = 0; i < vec.size(); ++i)
     {
-      Py_INCREF(vec[i].pyobj);
+      Py_INCREF(vec[i].pyobj); // PyList_SET_ITEM steals a reference, so INCREF first
       PyList_SET_ITEM(list, i, vec[i].pyobj);
     }
     return python_managed_object{list};
@@ -102,11 +138,13 @@ public:
         return this->operator[](static_cast<size_t>(idx));
       }
     }
-    PyObject* item = PyObject_GetAttrString(pyobj, key);
+    PyObject* item = PyObject_GetAttrString(pyobj, key); // New reference or nullptr
     if (item)
     {
       dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
-      return python_managed_object{item};
+      python_managed_object ret{item};
+      Py_DECREF(item); // python_managed_object ctor INCREFs, so DECREF here to balance
+      return ret;
     }
 
     PyErr_Clear();
@@ -127,7 +165,7 @@ public:
       FC_ASSERT(PySequence_Check(pyobj), "operator[]: pyobj is not a list nor a sequence for index access: ${key}", ("key", key));
 
       // Try to get the item as a sequence
-      PyObject* item = PySequence_GetItem(pyobj, key);
+      PyObject* item = PySequence_GetItem(pyobj, key); // New reference
       if (!item)
       {
         PyErr_Clear();
@@ -135,14 +173,15 @@ public:
       }
       dlog("operator[]: ${key} found: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
 
-      Py_INCREF(item);
-      return python_managed_object{item};
+      python_managed_object ret{item};
+      Py_DECREF(item); // python_managed_object ctor INCREFs, so DECREF here to balance
+      return ret;
     }
 
-    PyObject* item = PyList_GetItem(pyobj, key);
+    PyObject* item = PyList_GetItem(pyobj, key); // Borrowed reference
     FC_ASSERT(item, "operator[]: item is null for index access: ${key}", ("key", key));
 
-    Py_INCREF(item);
+    Py_INCREF(item); // We need to own a reference for python_managed_object
     return python_managed_object{item};
   }
 
@@ -176,7 +215,8 @@ public:
   T as() const {
     if constexpr (std::is_same_v<T, std::string>)
     {
-      return PyUnicode_AsUTF8(pyobj);
+      const char* s = PyUnicode_AsUTF8(pyobj);
+      return s ? std::string(s) : std::string();
     }
     else if constexpr (std::is_same_v<T, bool>)
     {
@@ -260,13 +300,13 @@ public:
   {
     std::vector<std::string> out;
     // Try to get 'props' attribute, which is likely a ScalarMap
-    PyObject* props = PyObject_GetAttrString(pyobj, "props");
+    PyObject* props = PyObject_GetAttrString(pyobj, "props"); // New reference or nullptr
     if (props)
     {
       // ScalarMap supports the mapping protocol, so PyMapping_Check is true
       if (PyMapping_Check(props))
       {
-        PyObject* keys = PyMapping_Keys(props);
+        PyObject* keys = PyMapping_Keys(props); // New reference or nullptr
         if (keys && PyList_Check(keys))
         {
           Py_ssize_t count = PyList_Size(keys);
@@ -276,7 +316,9 @@ public:
             PyObject* item = PyList_GetItem(keys, i); // Borrowed reference
             if (PyUnicode_Check(item))
             {
-              out.emplace_back(PyUnicode_AsUTF8(item));
+              const char* s = PyUnicode_AsUTF8(item);
+              if (s)
+                out.emplace_back(s);
             }
           }
         }
@@ -290,7 +332,8 @@ public:
   // Destructor managing reference counting.
   ~python_managed_object()
   {
-    Py_XDECREF(pyobj);
+    if (pyobj)
+      Py_XDECREF(pyobj);
   }
 private:
   PyObject* pyobj;
