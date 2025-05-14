@@ -23,8 +23,6 @@ tx.operations.append(operation(comment_operation = comment_operation(
   json_metadata="{}"
 )))
 
-txc = proto_transaction(expiration = tx.expiration, ref_block_num=tx.ref_block_num, ref_block_prefix=tx.ref_block_prefix, operations=tx.operations, extensions=tx.extensions);
-
 posting: authority = authority(
         weight_threshold=1,
         account_auths={"account": 1, "account1": 2},
@@ -39,49 +37,75 @@ account_update_proto: account_update_operation = (
     )
 )
 
+# tx.operations.append(operation(account_update_operation=account_update_proto))
 
-tx.operations.append(operation(
-    vote_operation = vote_operation(
+tx.operations.append(operation(vote_operation = vote_operation(
     voter="voter",
     author="author",
     permlink="permlink",
     weight=10000
 )))
 
-tx.operations.append(operation(
-    account_update_operation = account_update_proto
-    ))
-
-print(str(tx))
-
-tx2 = MessageToDict(tx, True)
-
-for(key, value) in tx2.items():
-  print(f" key: {key}: {value}")
-
-op_type = tx.operations[1].WhichOneof("value")
-op = tx.operations[1].__getattribute__(op_type)
-print(f"op_type: {op_type}")
-print(f"op: {op}")
-
-#for key, value in txc.ListFields():
-#  print(f"-- key: {key.name}: {value}")
-
-#print(tx.ref_block_num);
-
+# print(f"{tx.operations[1].account_update_operation.DESCRIPTOR.fields_by_name}")
 
 cpp_pass_pure_transaction(tx)
 
-print(f"tx expiration: {txc.expiration}")
+# txc = proto_transaction(expiration = tx.expiration, ref_block_num=tx.ref_block_num, ref_block_prefix=tx.ref_block_prefix, operations=tx.operations, extensions=tx.extensions);
 
-op_type = tx.operations[0].WhichOneof("value")
-op_data = tx.operations[0].__getattribute__(op_type)
-print(f"op_data: {op_data.__getattribute__("parent_author")}")
-print(f"op_type: {type(op_data)}")
+# posting: authority = authority(
+#         weight_threshold=1,
+#         account_auths={"account": 1, "account1": 2},
+#         key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1},
+#     )
+# account_update_proto: account_update_operation = (
+#     account_update_operation(
+#         account="theoretical",
+#         posting=posting,
+#         memo_key="STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo",
+#         json_metadata="",
+#     )
+# )
 
-op_type = tx.operations[2].WhichOneof("value")
-op = tx.operations[2].__getattribute__(op_type)
-print(f"op_type: {op_type}")
-print(f"op: {op}")
 
-cpp_pass_pure_transaction(txc)
+
+# tx.operations.append(operation(
+#     account_update_operation = account_update_proto
+#     ))
+
+# print(f"account_update_operation.posting: {tx.operations[2].account_update_operation.posting}")
+
+# print(f"{tx.operations[2].account_update_operation.DESCRIPTOR.fields_by_name}")
+
+# print(str(tx))
+
+# tx2 = MessageToDict(tx, True)
+
+# for(key, value) in tx2.items():
+#   print(f" key: {key}: {value}")
+
+# op_type = tx.operations[1].WhichOneof("value")
+# op = tx.operations[1].__getattribute__(op_type)
+# print(f"op_type: {op_type}")
+# print(f"op: {op}")
+
+# #for key, value in txc.ListFields():
+# #  print(f"-- key: {key.name}: {value}")
+
+# #print(tx.ref_block_num);
+
+
+# cpp_pass_pure_transaction(tx)
+
+# print(f"tx expiration: {txc.expiration}")
+
+# op_type = tx.operations[0].WhichOneof("value")
+# op_data = tx.operations[0].__getattribute__(op_type)
+# print(f"op_data: {op_data.__getattribute__("parent_author")}")
+# print(f"op_type: {type(op_data)}")
+
+# op_type = tx.operations[2].WhichOneof("value")
+# op = tx.operations[2].__getattribute__(op_type)
+# print(f"op_type: {op_type}")
+# print(f"op: {op}")
+
+# cpp_pass_pure_transaction(txc)
