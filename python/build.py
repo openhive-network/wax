@@ -31,7 +31,13 @@ class CustomBuild(build_ext):
     build_info = package_dir / "info.json"
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
-        configure_args = ["-GNinja", "-DCMAKE_BUILD_TYPE=Release"]
+        configure_args = [
+            "-GNinja"
+        ]
+        if "WAX_DEBUG" in os.environ:
+            configure_args.append("-DCMAKE_BUILD_TYPE=RelWithDebugInfo")
+        else:
+            configure_args.append("-DCMAKE_BUILD_TYPE=Release")
         build_command = ninja_command
         if build_command is None:
             assert make_command is not None, "cannot find neither ninja nor make"
