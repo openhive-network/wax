@@ -102,39 +102,13 @@ public:
         return this->operator[](static_cast<size_t>(idx));
       }
     }
-
-    // Protobuf object check: use HasField if available
-    if (PyObject_HasAttrString(pyobj, "HasField")) {
-      PyObject* has_field_method = PyObject_GetAttrString(pyobj, "HasField");
-      if (has_field_method && PyCallable_Check(has_field_method)) {
-        PyObject* py_key = PyUnicode_FromString(key);
-        PyObject* result = PyObject_CallFunctionObjArgs(has_field_method, py_key, NULL);
-        Py_DECREF(py_key);
-        Py_DECREF(has_field_method);
-        if (result) {
-          int has_field = PyObject_IsTrue(result);
-          Py_DECREF(result);
-          if (has_field) {
-            PyObject* item = PyObject_GetAttrString(pyobj, key);
-            if (item) {
-              dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
-              return python_managed_object{item};
-            }
-          }
-          // If HasField returns false, fall through to return None
-        }
-      } else {
-        Py_XDECREF(has_field_method);
-      }
-      PyErr_Clear();
-    } else if (PyObject_HasAttrString(pyobj, key)) {
-      PyObject* item = PyObject_GetAttrString(pyobj, key);
-      if (item)
-      {
-        dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
-        return python_managed_object{item};
-      }
+    PyObject* item = PyObject_GetAttrString(pyobj, key);
+    if (item)
+    {
+      dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+      return python_managed_object{item};
     }
+
     PyErr_Clear();
 
     dlog("operator[]: attribute ${key} not found on object", ("key", key));
@@ -245,13 +219,21 @@ public:
     {
       if (PyList_Check(pyobj))
       {
-        return PyList_Size(pyobj);
+        size_t size = PyList_Size(pyobj);
+
+        dlog("pyobj is a list: ${size}", ("size", size));
+
+        return size;
       }
 
       FC_ASSERT(false, "pyobj is not a list or sequence");
     }
 
-    return PySequence_Size(pyobj);
+    size_t size = PySequence_Size(pyobj);
+
+    dlog("pyobj is a sequence: ${size}", ("size", size));
+
+    return size;
   }
 
   std::string get_underlying_sv_type()const
@@ -321,30 +303,6 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
 {
   result retval;
 
-  auto other = PyObject_GetAttrString(tx, "expiration");
-  if (other != nullptr) {
-    const char* str = nullptr;
-    PyObject* str_obj = nullptr;
-
-    if (PyUnicode_Check(other)) {
-      str = PyUnicode_AsUTF8(other);
-    } else {
-      str_obj = PyObject_Str(other);
-      if (str_obj != nullptr) {
-        str = PyUnicode_AsUTF8(str_obj);
-      }
-    }
-
-    dlog("expiration: ${exp}", ("exp", str ? str : "unknown"));
-
-    if (str_obj) {
-      Py_DECREF(str_obj);
-    }
-    Py_DECREF(other);
-  } else {
-    dlog("expiration attribute not found");
-  }
-
   try
   {
     hive::protocol::signed_transaction obj;
@@ -373,40 +331,6 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
     return retval;
   }
 
-  PyObject* attributes = PyObject_Dir(tx); // Get a list of attribute names
-  if (attributes == nullptr || !PyList_Check(attributes))
-  {
-    PyErr_SetString(PyExc_TypeError, "Failed to get attributes from transaction object");
-    elog("Failed to get attributes from transaction object");
-    Py_XDECREF(attributes);
-    return retval;
-  }
-
-  Py_ssize_t numAttributes = PyList_Size(attributes);
-  for (Py_ssize_t i = 0; i < numAttributes; ++i)
-  {
-    PyObject* attrName = PyList_GetItem(attributes, i); // Borrowed reference
-    if (attrName == nullptr || !PyUnicode_Check(attrName))
-    {
-      continue;
-    }
-
-    const char* attrNameStr = PyUnicode_AsUTF8(attrName);
-    if (attrNameStr == nullptr)
-    {
-      continue;
-    }
-
-    PyObject* attrValue = PyObject_GetAttrString(tx, attrNameStr);
-    if (attrValue != nullptr)
-    {
-      // Process the attribute value (e.g., log it or store it in retval)
-      ilog("Attribute: ${a}", ("a", attrNameStr));
-      Py_DECREF(attrValue);
-    }
-  }
-
-  Py_DECREF(attributes);
   return retval;
 }
 
