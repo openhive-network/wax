@@ -27,6 +27,7 @@ def test_validate_proto_operation():
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b"10 assert_exception: Assert Exception\nfalse\nAccount name '' is too short. "
-        b'Use at least 3 characters.\n    {"name":"","min":3}\n    validation.hpp:28 validate_account_name'
+        b'10 assert_exception: Assert Exception\nvalidity_check_result !='
+        b" account_name_validity::too_short\nAccount name '' is too short. "
+        b'Use at least 3 characters.\n    {"name":"","min":3}\n    validation.hpp:22 validate_account_name'
     )
