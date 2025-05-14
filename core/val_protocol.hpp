@@ -85,8 +85,8 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* name ) const
   {
-    if (jsval[name].is_undefined())
-      return;
+    //if (jsval[name].is_undefined())
+      //return;
 
     this->add( name, val.*member );
   }
@@ -95,9 +95,11 @@ public:
   template< typename M >
   void add( const char* name, fc::optional< M >& v ) const
   {
-    M tmp;
-    this->add( name, tmp );
-    v = tmp;
+    if(jsval.is_optional_field_present(name)) {
+      M tmp;
+      this->add( name, tmp );
+      v = tmp;
+    }
   }
 
   void add( const char* name, hive::protocol::asset& v ) const
