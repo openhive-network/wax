@@ -40,6 +40,8 @@ python3 -m venv venv
 source ./venv/bin/activate
 ```
 
+### Installation using pip
+
 Before installing the wax module to python, set env variables to the following value:
 
 ```bash
@@ -51,6 +53,19 @@ Now in order to install wax module to python, one need to type.
 ```bash
 python3 -m pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
 ```
+
+### Instalation using poetry
+
+First, you need to export the `WAX_SKIP_BUILD` variable to `true` in order to skip building the package. 
+```bash
+export WAX_SKIP_BUILD=true
+```
+
+Then, you can install the package using poetry. 
+```bash
+poetry install
+````
+
 
 You can always take prebuilt PyPI package also pushed to Gitlab package registry - here is for example some `develop` related version: `0.0.3a2.dev131+bb99c4e`:
 https://gitlab.syncad.com/hive/wax/-/packages/3474
