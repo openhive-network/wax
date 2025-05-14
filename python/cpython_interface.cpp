@@ -4,10 +4,21 @@
 #include "core/protobuf_protocol_impl.inl"
 #include "core/val_protocol.hpp"
 
+void check_for_error()
+{
+  if (PyErr_Occurred())
+  {
+    PyErr_Print();
+    PyErr_Clear();
+  }
+}
+
 std::string py_object_to_string(PyObject* obj)
 {
   if (!obj)
     return "<null PyObject>";
+
+  check_for_error();
 
   PyObject* str_obj = PyObject_Str(obj);
   if (str_obj)
@@ -121,6 +132,50 @@ public:
     PyObject* py_val = PyUnicode_FromString(obj.c_str());
     PyObject_SetAttrString(pyobj, key, py_val);
     Py_XDECREF(py_val);
+  }
+
+  bool is_optional_field_present(const char* name) const
+  {
+    dlog("Checking if field '${name}' is present in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+    PyObject* fieldDescriptor = get_field_descriptor(name);
+
+    if (!fieldDescriptor)
+      return false;
+
+    PyObject* label = PyObject_GetAttrString(fieldDescriptor, "label"); // New reference or nullptr
+    Py_XDECREF(fieldDescriptor);
+
+    if (!label)
+      return false;
+
+    // Check if the label corresponds to an optional field (value 1 in protobuf, 2 is required, 3 is repeated (which can be missing too))
+    bool isOptional = PyLong_Check(label) && PyLong_AsLong(label) != 2;
+    Py_XDECREF(label);
+
+    if (!isOptional)
+      return true; /// field is required
+
+    // Check if the field is set
+    PyObject* hasField = PyObject_CallMethod(pyobj, "HasField", "s", name);
+    if (!hasField)
+    {
+      PyErr_Clear();
+      return false;
+    }
+
+    bool isSet = PyObject_IsTrue(hasField);
+    Py_DECREF(hasField);
+
+    if (!isSet)
+    {
+      dlog("Field '${name}' is not set in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+    }
+    else
+    {
+      dlog("Field '${name}' is set in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+    }
+
+    return isSet;
   }
 
   // Get attribute by string key
@@ -335,7 +390,33 @@ public:
     if (pyobj)
       Py_XDECREF(pyobj);
   }
+
 private:
+  PyObject* get_field_descriptor(const char* name) const
+  {
+    if (!PyObject_HasAttrString(pyobj, "DESCRIPTOR"))
+      return nullptr;
+
+    PyObject* descriptorItem = PyObject_GetAttrString(pyobj, "DESCRIPTOR");
+    if (!descriptorItem)
+      return nullptr;
+
+    //dlog("descriptorItem found");
+
+    PyObject* fields_by_name = PyObject_GetAttrString(descriptorItem, "fields_by_name");
+
+    Py_XDECREF(descriptorItem);
+
+    if (!fields_by_name)
+      return nullptr;
+
+    PyObject* fieldDesc = PyMapping_GetItemString(fields_by_name, name);
+    Py_XDECREF(fields_by_name);
+
+    return fieldDesc;
+  }
+
+  private:
   PyObject* pyobj;
 };
 
