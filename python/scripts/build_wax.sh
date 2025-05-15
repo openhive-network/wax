@@ -30,19 +30,23 @@ docker build \
 docker run --rm -v ${PROJECT_DIR}/../:${WORKDIR}/wax ${IMAGE_NAME} bash -c "${WORKDIR}/wax/python/scripts/build_wax.sh 1"
 
 else
-  echo "Cleaning up."
-  DIRS=("dist" "build" ".build")
+#  echo "Cleaning up."
+#  DIRS=("dist" "build" ".build")
 
-  for directory in "${DIRS[@]}"; do
-      dir_path="${PROJECT_DIR}/${directory}"
-      
-      if [ -d "$dir_path" ]; then
-          echo "Removing '$dir_path'."
-          rm -rf "$dir_path"
-      fi
-      
-      mkdir -v "$dir_path"
-  done
+#  for directory in "${DIRS[@]}"; do
+#      dir_path="${PROJECT_DIR}/${directory}"
+#      
+#      if [ -d "$dir_path" ]; then
+#          echo "Removing '$dir_path'."
+#          rm -rf "$dir_path"
+#      fi
+#      
+#      mkdir -v "$dir_path"
+#  done
+
+  export WAX_DEBUG=1
+
+  export POETRY_VIRTUALENVS_PATH="${PROJECT_DIR}/poetry-venv-root"
 
   cd ${PROJECT_DIR}/wax
   echo "Create proto files."
