@@ -53,7 +53,7 @@ tx.operations.append(operation(vote_operation = vote_operation(
 
 # print(f"{tx.operations[1].account_update_operation.DESCRIPTOR.fields_by_name}")
 
-cpp_pass_pure_transaction(tx)
+print(cpp_pass_pure_transaction(tx))
 
 # txc = proto_transaction(expiration = tx.expiration, ref_block_num=tx.ref_block_num, ref_block_prefix=tx.ref_block_prefix, operations=tx.operations, extensions=tx.extensions);
 
