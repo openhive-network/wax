@@ -85,8 +85,9 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* name ) const
   {
-    if (jsval[name].is_undefined())
-      return;
+    // Ensure all non-optional fields are present
+    // if (jsval[name].is_undefined())
+    //   return;
 
     this->add( name, val.*member );
   }
@@ -95,7 +96,8 @@ public:
   template< typename M >
   void add( const char* name, fc::optional< M >& v ) const
   {
-    if(jsval.is_optional_field_present(name)) {
+    if(jsval.is_optional_field_present(name))
+    {
       M tmp;
       this->add( name, tmp );
       v = tmp;

@@ -4,13 +4,47 @@
 #include "core/protobuf_protocol_impl.inl"
 #include "core/val_protocol.hpp"
 
-void check_for_error()
+namespace {
+
+std::string get_pyerr_with_clear()
 {
-  if (PyErr_Occurred())
+  PyObject* err_type = nullptr, *err_value = nullptr, *err_traceback = nullptr;
+  PyErr_Fetch(&err_type, &err_value, &err_traceback);
+
+  if (err_value)
   {
-    PyErr_Print();
-    PyErr_Clear();
+    PyObject* str_obj = PyObject_Str(err_value);
+    if (str_obj)
+    {
+      const char* cstr = PyUnicode_AsUTF8(str_obj);
+      if (cstr)
+      {
+        std::string result{ cstr };
+        Py_DECREF(str_obj);
+        PyErr_Clear();
+        return result;
+      }
+      PyErr_Clear();
+    }
+    else
+    {
+      PyErr_Clear();
+    }
   }
+  else
+  {
+    return "<no error>";
+  }
+
+  // Restore the error state in case of any previous errors
+  if (err_type)
+    PyErr_Restore(err_type, err_value, err_traceback);
+
+  // Fallback to print if we could not convert the error to a string
+  PyErr_Print();
+  PyErr_Clear();
+
+  return "<unprintable PyObject>";
 }
 
 std::string py_object_to_string(PyObject* obj)
@@ -18,20 +52,28 @@ std::string py_object_to_string(PyObject* obj)
   if (!obj)
     return "<null PyObject>";
 
-  check_for_error();
+  // For some reason, if we do not call PyErr_Clear() here, it will fail at some point with WhichOneof
+  // if (PyErr_Occurred())
+  // {
+  //   PyErr_Print();
+  //   PyErr_Clear();
+  // }
 
   PyObject* str_obj = PyObject_Str(obj);
   if (str_obj)
   {
     const char* cstr = PyUnicode_AsUTF8(str_obj);
+    if (!cstr)
+      PyErr_Clear();
     std::string result = cstr ? cstr : "<unprintable PyObject>";
     Py_DECREF(str_obj);
     return result;
   }
-  else
-  {
-    return "<unprintable PyObject>";
-  }
+  PyErr_Clear();
+
+  return "<unprintable PyObject>";
+}
+
 }
 
 namespace cpp
@@ -42,23 +84,25 @@ public:
   python_managed_object()
     : pyobj(Py_None)
   {
-    Py_INCREF(pyobj);
+    Py_XINCREF(pyobj);
   }
 
   python_managed_object(PyObject* obj)
     : pyobj(obj ? obj : Py_None)
   {
-    Py_INCREF(pyobj);
+    Py_XINCREF(pyobj);
   }
 
   python_managed_object(const std::string& str)
     : pyobj(PyUnicode_FromString(str.c_str()))
-  {}
+  {
+    FC_ASSERT(pyobj, "Failed to convert string '${str}' to PyObject: ${pyerr}", (str)("pyerr", get_pyerr_with_clear()));
+  }
 
   python_managed_object(const python_managed_object& other)
     : pyobj(other.pyobj)
   {
-    Py_INCREF(pyobj);
+    Py_XINCREF(pyobj);
   }
 
   python_managed_object& operator=(const python_managed_object& other)
@@ -76,7 +120,7 @@ public:
     : pyobj(other.pyobj)
   {
     other.pyobj = Py_None;
-    Py_INCREF(Py_None);
+    Py_XINCREF(Py_None);
   }
 
   python_managed_object& operator=(python_managed_object&& other) noexcept
@@ -86,57 +130,14 @@ public:
       Py_XDECREF(pyobj);
       pyobj = other.pyobj;
       other.pyobj = Py_None;
-      Py_INCREF(Py_None);
+      Py_XINCREF(Py_None);
     }
     return *this;
   }
 
-  static python_managed_object array(const std::vector<python_managed_object>& vec)
-  {
-    PyObject* list = PyList_New(vec.size());
-    for (size_t i = 0; i < vec.size(); ++i)
-    {
-      Py_INCREF(vec[i].pyobj); // PyList_SET_ITEM steals a reference, so INCREF first
-      PyList_SET_ITEM(list, i, vec[i].pyobj);
-    }
-    return python_managed_object{list};
-  }
-
-  static python_managed_object object() {
-    return python_managed_object(PyDict_New());
-  }
-
-  // Set attribute by python_managed_object key (fallback to dict)
-  void set(const python_managed_object& key, const python_managed_object& obj)
-  {
-    if (PyUnicode_Check(key.pyobj)) {
-      const char* attr = PyUnicode_AsUTF8(key.pyobj);
-      if (attr)
-      {
-        PyObject_SetAttrString(pyobj, attr, obj.pyobj);
-        return;
-      }
-    }
-    // fallback: set as dict item
-    PyDict_SetItem(pyobj, key.pyobj, obj.pyobj);
-  }
-
-  // Set attribute by string key
-  void set(const char* key, const python_managed_object& obj)
-  {
-    PyObject_SetAttrString(pyobj, key, obj.pyobj);
-  }
-
-  void set(const char* key, const std::string& obj)
-  {
-    PyObject* py_val = PyUnicode_FromString(obj.c_str());
-    PyObject_SetAttrString(pyobj, key, py_val);
-    Py_XDECREF(py_val);
-  }
-
   bool is_optional_field_present(const char* name) const
   {
-    dlog("Checking if field '${name}' is present in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+    dlog("Checking if field '${name}' is present in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
     PyObject* fieldDescriptor = get_field_descriptor(name);
 
     if (!fieldDescriptor)
@@ -168,11 +169,11 @@ public:
 
     if (!isSet)
     {
-      dlog("Field '${name}' is not set in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+      dlog("Field '${name}' is not set in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
     }
     else
     {
-      dlog("Field '${name}' is set in object: ${pyobj}", ("name", name)("pyobj", py_object_to_string(pyobj)));
+      dlog("Field '${name}' is set in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
     }
 
     return isSet;
@@ -181,25 +182,7 @@ public:
   // Get attribute by string key
   python_managed_object operator[](const char* key)const
   {
-    wlog("Accesing '${key}' object on PyObject: ${pyobj}", ("key", key)("pyobj", py_object_to_string(pyobj)));
-
-    // MutableMapping check
-    PyObject* pykey = PyUnicode_FromString(key);
-    if (!pykey)
-    {
-      PyErr_Clear();
-      FC_ASSERT(false, "operator[]: Failed to convert key to unicode: ${key}", ("key", key));
-    }
-    PyObject* item3 = PyObject_GetItem(pyobj, pykey); // New reference or nullptr
-    Py_DECREF(pykey); // DECREF the key reference
-    dlog("operator[]: ${key} found as item: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item3)));
-    if (item3)
-    {
-      dlog("operator[]: ${key} found as item: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item3)));
-      python_managed_object ret{item3};
-      Py_DECREF(item3); // python_managed_object ctor INCREFs, so DECREF here to balance
-      return ret;
-    }
+    // wlog("Accesing '${key}' object on PyObject: ${pyobj}", ("key", key)("pyobj", py_object_to_string(pyobj)));
 
     // Array check
     if (PySequence_Check(pyobj))
@@ -212,20 +195,30 @@ public:
       }
     }
 
-    // Protobuf object check
-    PyObject* item = PyObject_GetAttrString(pyobj, key); // New reference or nullptr
-    if (item)
+    // MutableMapping check
+    if (PyMapping_Check(pyobj))
     {
-      dlog("operator[]: ${key} found as attribute: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+      PyObject* pykey = PyUnicode_FromString(key);
+      FC_ASSERT(pykey, "Failed to convert key '${key}' to PyObject: ${pyerr}", (key)("pyerr", get_pyerr_with_clear()));
+
+      PyObject* item = PyObject_GetItem(pyobj, pykey);
+      FC_ASSERT(item, "Failed to get item ${key} from mapping: ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+
+      Py_DECREF(pykey);
       python_managed_object ret{item};
-      Py_DECREF(item); // python_managed_object ctor INCREFs, so DECREF here to balance
+      Py_DECREF(item);
+
       return ret;
     }
 
-    PyErr_Clear();
+    // Protobuf object check
+    PyObject* item = PyObject_GetAttrString(pyobj, key);
+    FC_ASSERT(item, "Failed to retrieve key '${key}' to PyObject: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
-    dlog("operator[]: attribute ${key} not found on object", ("key", key));
-    return python_managed_object{}; // Return None object for non-existent attributes
+    python_managed_object ret{item};
+    Py_DECREF(item);
+
+    return ret;
   }
 
   python_managed_object operator[](const std::string& key)const
@@ -235,29 +228,14 @@ public:
 
   python_managed_object operator[](size_t key)const
   {
-    if (!PyList_Check(pyobj))
-    {
-      FC_ASSERT(PySequence_Check(pyobj), "operator[]: pyobj is not a list nor a sequence for index access: ${key}", ("key", key));
+    FC_ASSERT(PySequence_Check(pyobj), "PyObject at index '${key}' is expected to be a sequence but is an other type: ${pyobj}", (key)("pyobj", py_object_to_string(pyobj)));
 
-      // Try to get the item as a sequence
-      PyObject* item = PySequence_GetItem(pyobj, key); // New reference
-      if (!item)
-      {
-        PyErr_Clear();
-        FC_ASSERT(false, "operator[]: Failed to get item from sequence for index access: ${key}", ("key", key));
-      }
-      dlog("operator[]: ${key} found: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item)));
+    PyObject* item = PySequence_GetItem(pyobj, key);
+    FC_ASSERT(item, "Failed to get item from sequence for index access: ${key}, ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
-      python_managed_object ret{item};
-      Py_DECREF(item); // python_managed_object ctor INCREFs, so DECREF here to balance
-      return ret;
-    }
-
-    PyObject* item = PyList_GetItem(pyobj, key); // Borrowed reference
-    FC_ASSERT(item, "operator[]: item is null for index access: ${key}", ("key", key));
-
-    Py_INCREF(item); // We need to own a reference for python_managed_object
-    return python_managed_object{item};
+    python_managed_object ret{item};
+    Py_DECREF(item);
+    return ret;
   }
 
   python_managed_object operator[](int key)const
@@ -279,10 +257,7 @@ public:
   void del(const std::string& key)
   {
     int res = PyObject_SetAttrString(pyobj, key.c_str(), nullptr);
-    if (res != 0)
-    {
-      PyErr_Clear();
-    }
+    FC_ASSERT(res == 0, "Failed to delete attribute '${key}' from object: ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
   }
 
   template<typename T>
@@ -330,23 +305,8 @@ public:
 
   size_t array_length()const
   {
-    if (!PySequence_Check(pyobj))
-    {
-      if (PyList_Check(pyobj))
-      {
-        size_t size = PyList_Size(pyobj);
-
-        dlog("pyobj is a list: ${size}", ("size", size));
-
-        return size;
-      }
-
-      FC_ASSERT(false, "pyobj is not a list or sequence");
-    }
-
-    size_t size = PySequence_Size(pyobj);
-
-    dlog("pyobj is a sequence: ${size}", ("size", size));
+    Py_ssize_t size = PySequence_Size(pyobj);
+    FC_ASSERT(size != Py_ssize_t(-1), "Failed to get array length for object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
     return size;
   }
@@ -354,21 +314,14 @@ public:
   std::string get_underlying_sv_type()const
   {
     PyObject* result = PyObject_CallMethod(pyobj, "WhichOneof", "s", "value");
+    FC_ASSERT(result, "Failed to call WhichOneof on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
-    if (!result)
-    {
-      PyErr_Print();
-      PyErr_Clear();
-      FC_ASSERT(false, "Failed to call WhichOneof on object");
-    }
-    else
-    {
-      std::string type = PyUnicode_AsUTF8(result);
+    const char* type = PyUnicode_AsUTF8(result);
+    FC_ASSERT(type, "Failed to convert result of WhichOneof to string on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(result))("pyerr", get_pyerr_with_clear()));
 
-      Py_DECREF(result);
+    Py_DECREF(result);
 
-      return type;
-    }
+    return std::string{ type };
   }
 
   std::vector<std::string> get_map_keys()const
@@ -377,14 +330,16 @@ public:
     PyObject *iterator = PyObject_GetIter(pyobj);
     PyObject *item;
 
-    FC_ASSERT(iterator != NULL, "Failed to get iterator for map keys: ${pyobj}", ("pyobj", py_object_to_string(pyobj)));
+    FC_ASSERT(iterator != NULL, "Failed to get iterator for map keys ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
     while ((item = PyIter_Next(iterator)))
     {
-      FC_ASSERT(PyUnicode_Check(item), "Map key is not a string: ${item}", ("item", py_object_to_string(item)));
+      FC_ASSERT(item, "Failed to get next item from iterator: ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+
+      FC_ASSERT(PyUnicode_Check(item), "Map key '${item}' is not a string: ${pyerr}", ("item", py_object_to_string(item))("pyerr", get_pyerr_with_clear()));
 
       const char* key = PyUnicode_AsUTF8(item);
-      FC_ASSERT(key, "Failed to convert map key to string: ${item}", ("item", py_object_to_string(item)));
+      FC_ASSERT(key, "Failed to convert map key '${item}' to string: ${pyerr}", ("item", py_object_to_string(item))("pyerr", get_pyerr_with_clear()));
 
       out.emplace_back(key);
 
@@ -392,10 +347,6 @@ public:
     }
 
     Py_DECREF(iterator);
-
-    FC_ASSERT(!PyErr_Occurred(), "Failed to iterate over map keys: ${pyobj}, keys retrieved: ${out}", ("pyobj", py_object_to_string(pyobj))(out));
-
-    dlog("Map keys retrieved: ${out}", ("out", out));
 
     return out;
   }
@@ -451,24 +402,22 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
       val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ tx }, obj, true }
     );
 
-    dlog("transaction serialized C++: ${tx}", ("tx", obj));
+    retval.content = fc::json::to_string(obj);
   }
   catch (const fc::exception& e)
   {
-    elog("Failed to serialize transaction: ${e}", ("e", e.to_detail_string()));
-    return retval;
+    retval.value = error_code::fail;
+    retval.exception_message = e.to_detail_string();
   }
   catch (const std::exception& e)
   {
-    elog("Failed to serialize transaction: ${e}", ("e", e.what()));
-    return retval;
+    retval.value = error_code::fail;
+    retval.exception_message = e.what();
   }
   catch (...)
   {
-    elog("Failed to serialize transaction");
-    if (PyErr_Occurred())
-      PyErr_Print();
-    return retval;
+    retval.value = error_code::fail;
+    retval.exception_message = "Unknown error occurred";
   }
 
   return retval;
