@@ -183,6 +183,24 @@ public:
   {
     wlog("Accesing '${key}' object on PyObject: ${pyobj}", ("key", key)("pyobj", py_object_to_string(pyobj)));
 
+    // MutableMapping check
+    PyObject* pykey = PyUnicode_FromString(key);
+    if (!pykey)
+    {
+      PyErr_Clear();
+      FC_ASSERT(false, "operator[]: Failed to convert key to unicode: ${key}", ("key", key));
+    }
+    PyObject* item3 = PyObject_GetItem(pyobj, pykey); // New reference or nullptr
+    Py_DECREF(pykey); // DECREF the key reference
+    dlog("operator[]: ${key} found as item: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item3)));
+    if (item3)
+    {
+      dlog("operator[]: ${key} found as item: ${pyobj}", ("key", key)("pyobj", py_object_to_string(item3)));
+      python_managed_object ret{item3};
+      Py_DECREF(item3); // python_managed_object ctor INCREFs, so DECREF here to balance
+      return ret;
+    }
+
     // Array check
     if (PySequence_Check(pyobj))
     {
@@ -193,6 +211,8 @@ public:
         return this->operator[](static_cast<size_t>(idx));
       }
     }
+
+    // Protobuf object check
     PyObject* item = PyObject_GetAttrString(pyobj, key); // New reference or nullptr
     if (item)
     {
@@ -354,33 +374,29 @@ public:
   std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
-    // Try to get 'props' attribute, which is likely a ScalarMap
-    PyObject* props = PyObject_GetAttrString(pyobj, "props"); // New reference or nullptr
-    if (props)
+    PyObject *iterator = PyObject_GetIter(pyobj);
+    PyObject *item;
+
+    FC_ASSERT(iterator != NULL, "Failed to get iterator for map keys: ${pyobj}", ("pyobj", py_object_to_string(pyobj)));
+
+    while ((item = PyIter_Next(iterator)))
     {
-      // ScalarMap supports the mapping protocol, so PyMapping_Check is true
-      if (PyMapping_Check(props))
-      {
-        PyObject* keys = PyMapping_Keys(props); // New reference or nullptr
-        if (keys && PyList_Check(keys))
-        {
-          Py_ssize_t count = PyList_Size(keys);
-          out.reserve(count);
-          for (Py_ssize_t i = 0; i < count; ++i)
-          {
-            PyObject* item = PyList_GetItem(keys, i); // Borrowed reference
-            if (PyUnicode_Check(item))
-            {
-              const char* s = PyUnicode_AsUTF8(item);
-              if (s)
-                out.emplace_back(s);
-            }
-          }
-        }
-        Py_XDECREF(keys);
-      }
-      Py_XDECREF(props);
+      FC_ASSERT(PyUnicode_Check(item), "Map key is not a string: ${item}", ("item", py_object_to_string(item)));
+
+      const char* key = PyUnicode_AsUTF8(item);
+      FC_ASSERT(key, "Failed to convert map key to string: ${item}", ("item", py_object_to_string(item)));
+
+      out.emplace_back(key);
+
+      Py_DECREF(item);
     }
+
+    Py_DECREF(iterator);
+
+    FC_ASSERT(!PyErr_Occurred(), "Failed to iterate over map keys: ${pyobj}, keys retrieved: ${out}", ("pyobj", py_object_to_string(pyobj))(out));
+
+    dlog("Map keys retrieved: ${out}", ("out", out));
+
     return out;
   }
 

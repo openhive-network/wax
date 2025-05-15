@@ -85,8 +85,8 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* name ) const
   {
-    //if (jsval[name].is_undefined())
-      //return;
+    if (jsval[name].is_undefined())
+      return;
 
     this->add( name, val.*member );
   }

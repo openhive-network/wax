@@ -37,7 +37,12 @@ account_update_proto: account_update_operation = (
     )
 )
 
-# tx.operations.append(operation(account_update_operation=account_update_proto))
+# print(account_update_proto.posting.account_auths["account"])
+# print(account_update_proto.posting.account_auths.__getitem__("account"))
+
+# print(account_update_proto.posting.account_auths.__iter__().__next__())
+
+tx.operations.append(operation(account_update_operation=account_update_proto))
 
 tx.operations.append(operation(vote_operation = vote_operation(
     voter="voter",
