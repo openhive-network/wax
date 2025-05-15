@@ -5,6 +5,113 @@
 #include "core/val_protocol.hpp"
 
 namespace {
+/**
+ * Class responsible for holding a python object reference and managing its ref counter.
+ */
+class py_object_ptr
+{
+public:
+  /// @brief  Allows to take ownership of just built new Python object Reference.
+  /// @param obj result of functions described in doc as `Return value: New reference`. If null, it will be initialized to Py_None.
+  /// @return built object holding a python object reference.
+  static py_object_ptr take(PyObject* obj)
+  {
+    //dlog("Creating ptr");
+    return py_object_ptr(obj);
+  }
+
+  /// @brief Allows to share object being owned by someone else.
+  /// @param obj i.e. passed from python engine, without explicit reference incrementation.
+  /// @return built object holding a python object reference.
+  static py_object_ptr share(PyObject* obj)
+  {
+    //dlog("Creating ptr over SHARED pure python object");
+    /// Since this ptr class always releases object at destructor, we need to increment reference counter here.
+    Py_XINCREF(obj);
+    return py_object_ptr(obj);
+  }
+
+  py_object_ptr(const py_object_ptr& rhs)
+  : _obj(rhs._obj)
+  {
+    //dlog("Copy ctr ptr");
+    Py_XINCREF(_obj);
+  }
+
+  py_object_ptr& operator=(const py_object_ptr& other)
+  {
+    //dlog("Copy asgn ptr");
+    if(_obj != other._obj)
+    {
+      Py_XDECREF(_obj);
+      _obj = other._obj;
+      Py_XINCREF(_obj);
+    }
+
+    return *this;
+  }
+
+  py_object_ptr(py_object_ptr&& other) noexcept
+    : _obj(other._obj)
+  {
+    //dlog("Moving ctr ptr");
+    other._obj = Py_None;
+    Py_XINCREF(other._obj);
+  }
+
+  py_object_ptr& operator=(py_object_ptr&& other) noexcept
+  {
+    //dlog("Moving asgn ptr");
+    if(_obj != other._obj)
+    {
+      Py_XDECREF(_obj);
+      _obj = other._obj;
+      other._obj = Py_None;
+      Py_XINCREF(other._obj);
+    }
+
+    return *this;
+  }
+
+  ~py_object_ptr()
+  {
+    //dlog("Destr ptr");
+    Py_XDECREF(_obj);
+    _obj = nullptr;
+  }
+
+  operator bool() const
+  {
+    return _obj != nullptr && _obj != Py_None;
+  }
+
+  operator PyObject*() const
+  {
+    return _obj;
+  }
+
+  PyObject* operator ->() const
+  {
+    return _obj;
+  }
+
+  private:
+  /// @brief  Hidden constructor to always force creation from raw PyObject through `take` method or some new one, just sharing an object.
+  /// @param obj to take responsibility for.
+  /// @note   If obj is nullptr, it will be initialized to Py_None.
+  py_object_ptr(PyObject* obj)
+    : _obj(obj)
+  {
+    if (_obj == nullptr)
+    {
+      _obj = Py_None;
+      Py_XINCREF(_obj);
+    }
+  }
+
+  private:
+    PyObject* _obj;
+};
 
 std::string get_pyerr_with_clear()
 {
@@ -81,83 +188,47 @@ namespace cpp
 class python_managed_object
 {
 public:
-  python_managed_object()
-    : pyobj(Py_None)
+  python_managed_object() : python_managed_object(py_object_ptr::take(nullptr))
   {
-    Py_XINCREF(pyobj);
   }
 
-  python_managed_object(PyObject* obj)
-    : pyobj(obj ? obj : Py_None)
+  python_managed_object(const py_object_ptr& obj)
+    : pyobj(obj)
   {
-    Py_XINCREF(pyobj);
   }
 
   python_managed_object(const std::string& str)
-    : pyobj(PyUnicode_FromString(str.c_str()))
+    : python_managed_object(py_object_ptr::take(PyUnicode_FromString(str.c_str())))
   {
     FC_ASSERT(pyobj, "Failed to convert string '${str}' to PyObject: ${pyerr}", (str)("pyerr", get_pyerr_with_clear()));
   }
 
-  python_managed_object(const python_managed_object& other)
-    : pyobj(other.pyobj)
-  {
-    Py_XINCREF(pyobj);
-  }
-
-  python_managed_object& operator=(const python_managed_object& other)
-  {
-    if (this != &other)
-    {
-      Py_XINCREF(other.pyobj);
-      Py_XDECREF(pyobj);
-      pyobj = other.pyobj;
-    }
-    return *this;
-  }
-
-  python_managed_object(python_managed_object&& other) noexcept
-    : pyobj(other.pyobj)
-  {
-    other.pyobj = Py_None;
-    Py_XINCREF(Py_None);
-  }
-
-  python_managed_object& operator=(python_managed_object&& other) noexcept
-  {
-    if (this != &other)
-    {
-      Py_XDECREF(pyobj);
-      pyobj = other.pyobj;
-      other.pyobj = Py_None;
-      Py_XINCREF(Py_None);
-    }
-    return *this;
-  }
+  python_managed_object(const python_managed_object& other) = default;
+  python_managed_object& operator=(const python_managed_object& other) = default;
+  python_managed_object(python_managed_object&& other) noexcept = default;
+  python_managed_object& operator=(python_managed_object&& other) noexcept = default;
 
   bool is_optional_field_present(const char* name) const
   {
     dlog("Checking if field '${name}' is present in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
-    PyObject* fieldDescriptor = get_field_descriptor(name);
+    auto fieldDescriptor = get_field_descriptor(name);
 
     if (!fieldDescriptor)
       return false;
 
-    PyObject* label = PyObject_GetAttrString(fieldDescriptor, "label"); // New reference or nullptr
-    Py_XDECREF(fieldDescriptor);
+    auto label = py_object_ptr::take(PyObject_GetAttrString(fieldDescriptor, "label")); // New reference or nullptr
 
     if (!label)
       return false;
 
     // Check if the label corresponds to an optional field (value 1 in protobuf, 2 is required, 3 is repeated (which can be missing too))
     bool isOptional = PyLong_Check(label) && PyLong_AsLong(label) != 2;
-    Py_XDECREF(label);
 
     if (!isOptional)
       return true; /// field is required
 
     // Check if the field is set
-    PyObject* hasField = PyObject_CallMethod(pyobj, "HasField", "s", name);
+    auto hasField = py_object_ptr::take(PyObject_CallMethod(pyobj, "HasField", "s", name));
     if (!hasField)
     {
       PyErr_Clear();
@@ -165,7 +236,6 @@ public:
     }
 
     bool isSet = PyObject_IsTrue(hasField);
-    Py_DECREF(hasField);
 
     if (!isSet)
     {
@@ -198,26 +268,21 @@ public:
     // MutableMapping check
     if (PyMapping_Check(pyobj))
     {
-      PyObject* pykey = PyUnicode_FromString(key);
+      auto pykey = py_object_ptr::take(PyUnicode_FromString(key));
       FC_ASSERT(pykey, "Failed to convert key '${key}' to PyObject: ${pyerr}", (key)("pyerr", get_pyerr_with_clear()));
 
-      PyObject* item = PyObject_GetItem(pyobj, pykey);
+      auto item = py_object_ptr::take(PyObject_GetItem(pyobj, pykey));
       FC_ASSERT(item, "Failed to get item ${key} from mapping: ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
-      Py_DECREF(pykey);
       python_managed_object ret{item};
-      Py_DECREF(item);
-
       return ret;
     }
 
     // Protobuf object check
-    PyObject* item = PyObject_GetAttrString(pyobj, key);
+    auto item = py_object_ptr::take(PyObject_GetAttrString(pyobj, key));
     FC_ASSERT(item, "Failed to retrieve key '${key}' to PyObject: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
     python_managed_object ret{item};
-    Py_DECREF(item);
-
     return ret;
   }
 
@@ -230,11 +295,10 @@ public:
   {
     FC_ASSERT(PySequence_Check(pyobj), "PyObject at index '${key}' is expected to be a sequence but is an other type: ${pyobj}", (key)("pyobj", py_object_to_string(pyobj)));
 
-    PyObject* item = PySequence_GetItem(pyobj, key);
+    auto item = py_object_ptr::take(PySequence_GetItem(pyobj, key));
     FC_ASSERT(item, "Failed to get item from sequence for index access: ${key}, ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
     python_managed_object ret{item};
-    Py_DECREF(item);
     return ret;
   }
 
@@ -313,13 +377,11 @@ public:
 
   std::string get_underlying_sv_type()const
   {
-    PyObject* result = PyObject_CallMethod(pyobj, "WhichOneof", "s", "value");
+    auto result = py_object_ptr::take(PyObject_CallMethod(pyobj, "WhichOneof", "s", "value"));
     FC_ASSERT(result, "Failed to call WhichOneof on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
     const char* type = PyUnicode_AsUTF8(result);
     FC_ASSERT(type, "Failed to convert result of WhichOneof to string on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(result))("pyerr", get_pyerr_with_clear()));
-
-    Py_DECREF(result);
 
     return std::string{ type };
   }
@@ -327,12 +389,11 @@ public:
   std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
-    PyObject *iterator = PyObject_GetIter(pyobj);
-    PyObject *item;
+    auto iterator = py_object_ptr::take(PyObject_GetIter(pyobj));
 
-    FC_ASSERT(iterator != NULL, "Failed to get iterator for map keys ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+    FC_ASSERT(iterator, "Failed to get iterator for map keys ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
-    while ((item = PyIter_Next(iterator)))
+    while (auto item = py_object_ptr::take(PyIter_Next(iterator)))
     {
       FC_ASSERT(item, "Failed to get next item from iterator: ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
 
@@ -342,49 +403,36 @@ public:
       FC_ASSERT(key, "Failed to convert map key '${item}' to string: ${pyerr}", ("item", py_object_to_string(item))("pyerr", get_pyerr_with_clear()));
 
       out.emplace_back(key);
-
-      Py_DECREF(item);
     }
-
-    Py_DECREF(iterator);
 
     return out;
   }
 
-  // Destructor managing reference counting.
-  ~python_managed_object()
-  {
-    if (pyobj)
-      Py_XDECREF(pyobj);
-  }
+  ~python_managed_object() = default;
 
 private:
-  PyObject* get_field_descriptor(const char* name) const
+  py_object_ptr get_field_descriptor(const char* name) const
   {
     if (!PyObject_HasAttrString(pyobj, "DESCRIPTOR"))
-      return nullptr;
+      return py_object_ptr::take(nullptr);
 
-    PyObject* descriptorItem = PyObject_GetAttrString(pyobj, "DESCRIPTOR");
+    auto descriptorItem = py_object_ptr::take(PyObject_GetAttrString(pyobj, "DESCRIPTOR"));
     if (!descriptorItem)
-      return nullptr;
+      return py_object_ptr::take(nullptr);
 
     //dlog("descriptorItem found");
 
-    PyObject* fields_by_name = PyObject_GetAttrString(descriptorItem, "fields_by_name");
-
-    Py_XDECREF(descriptorItem);
+    auto fields_by_name = py_object_ptr::take(PyObject_GetAttrString(descriptorItem, "fields_by_name"));
 
     if (!fields_by_name)
-      return nullptr;
+      return py_object_ptr::take(nullptr);
 
-    PyObject* fieldDesc = PyMapping_GetItemString(fields_by_name, name);
-    Py_XDECREF(fields_by_name);
-
+    auto fieldDesc = py_object_ptr::take(PyMapping_GetItemString(fields_by_name, name));
     return fieldDesc;
   }
 
   private:
-  PyObject* pyobj;
+  py_object_ptr pyobj;
 };
 
 template class protocol_impl<foundation>;
@@ -399,7 +447,7 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
     hive::protocol::signed_transaction obj;
 
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ tx }, obj, true }
+      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(tx) }, obj, true }
     );
 
     retval.content = fc::json::to_string(obj);
