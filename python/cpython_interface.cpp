@@ -322,69 +322,94 @@ public:
     });
   }
 
-  template<typename T>
-  // General case for numeric types
-  T as() const {
-    if constexpr (std::is_same_v<T, std::string>)
-    {
-      const char* s = call_python_function([&] {
-        return PyUnicode_AsUTF8(pyobj);
-      });
-      return std::string{s};
-    }
-    else if constexpr (std::is_same_v<T, bool>)
-    {
-      return call_python_function([&] {
-        return PyObject_IsTrue(pyobj);
-      });
-    }
-    else
-    {
-      if (PyLong_Check(pyobj))
-      {
-        if constexpr (std::is_same_v<T, int64_t>)
-          return call_python_function([&] {
-            return PyLong_AsLongLong(pyobj);
-          });
-        else if constexpr (std::is_same_v<T, int32_t>)
-          return static_cast<int32_t>(call_python_function([&] {
-            return PyLong_AsLong(pyobj);
-          }));
-        else if constexpr (std::is_same_v<T, int16_t>)
-          return static_cast<int16_t>(call_python_function([&] {
-            return PyLong_AsLong(pyobj);
-          }));
-        else if constexpr (std::is_same_v<T, int8_t>)
-          return static_cast<int8_t>(call_python_function([&] {
-            return PyLong_AsLong(pyobj);
-          }));
-        else if constexpr (std::is_same_v<T, uint64_t>)
-          return call_python_function([&] {
-            return PyLong_AsUnsignedLongLong(pyobj);
-          });
-        else if constexpr (std::is_same_v<T, uint32_t>)
-          return static_cast<uint32_t>(call_python_function([&] {
-            return PyLong_AsUnsignedLong(pyobj);
-          }));
-        else if constexpr (std::is_same_v<T, uint16_t>)
-          return static_cast<uint16_t>(call_python_function([&] {
-            return PyLong_AsUnsignedLong(pyobj);
-          }));
-        else if constexpr (std::is_same_v<T, uint8_t>)
-          return static_cast<uint8_t>(call_python_function([&] {
-            return PyLong_AsUnsignedLong(pyobj);
-          }));
-      }
-      else if (PyFloat_Check(pyobj))
-      {
-        return static_cast<T>(call_python_function([&] {
-          return PyFloat_AsDouble(pyobj);
-        }));
-      }
+  void as(std::string& out)const
+  {
+    FC_ASSERT(is_string(), "Cannot convert object to string: ${pyobj}", (pyobj));
 
-      // Return default value for numeric type if conversion fails
-      return T{};
-    }
+    const char* s = call_python_function([&] {
+      return PyUnicode_AsUTF8(pyobj);
+    });
+
+    out = std::string{s};
+  }
+
+  void as(bool& out)const
+  {
+    out = call_python_function([&] {
+      return PyObject_IsTrue(pyobj);
+    });
+  }
+
+  void as(int64_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int64_t: ${pyobj}", (pyobj));
+
+    out = call_python_function([&] {
+      return PyLong_AsLongLong(pyobj);
+    });
+  }
+
+  void as(int32_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int32_t: ${pyobj}", (pyobj));
+
+    out = static_cast<int32_t>(call_python_function([&] {
+      return PyLong_AsLong(pyobj);
+    }));
+  }
+
+  void as(int16_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int16_t: ${pyobj}", (pyobj));
+
+    out = static_cast<int16_t>(call_python_function([&] {
+      return PyLong_AsLong(pyobj);
+    }));
+  }
+
+  void as(int8_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int8_t: ${pyobj}", (pyobj));
+
+    out = static_cast<int8_t>(call_python_function([&] {
+      return PyLong_AsLong(pyobj);
+    }));
+  }
+
+  void as(uint64_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint64_t: ${pyobj}", (pyobj));
+
+    out = call_python_function([&] {
+      return PyLong_AsUnsignedLongLong(pyobj);
+    });
+  }
+
+  void as(uint32_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint32_t: ${pyobj}", (pyobj));
+
+    out = static_cast<uint32_t>(call_python_function([&] {
+      return PyLong_AsUnsignedLong(pyobj);
+    }));
+  }
+
+  void as(uint16_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint16_t: ${pyobj}", (pyobj));
+
+    out = static_cast<uint16_t>(call_python_function([&] {
+      return PyLong_AsUnsignedLong(pyobj);
+    }));
+  }
+
+  void as(uint8_t& out)const
+  {
+    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint8_t: ${pyobj}", (pyobj));
+
+    out = static_cast<uint8_t>(call_python_function([&] {
+      return PyLong_AsUnsignedLong(pyobj);
+    }));
   }
 
   size_t array_length()const
