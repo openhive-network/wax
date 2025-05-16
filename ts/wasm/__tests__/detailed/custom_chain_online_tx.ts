@@ -620,6 +620,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
             }
           }
         ],
+        "extensions": [],
         "signatures": [
           "1fd37b180bb46ed8fa6139d5f18521800ab19b7725d7fe337673c1033047371c4019fbabc0798b60d1cb0354439e5d67af5b82d1b4f262303fec0aa4905ddc5835"
         ]

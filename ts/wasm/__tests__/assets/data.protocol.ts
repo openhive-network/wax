@@ -157,7 +157,9 @@ export const transactionObj = {
   expiration: "2021-12-13T11:31:33",
   operations: [
     vote_operation
-  ]
+  ],
+  extensions: [],
+  signatures: []
 };
 
 export const transaction = JSON.stringify(transactionObj);
@@ -359,7 +361,8 @@ export const serialization_sensitive_transaction = JSON.stringify({
   operations: [
     transfer_operation
   ],
-  extensions: []
+  extensions: [],
+  signatures: []
 });
 
 export const serialization_sensitive_transaction_proto: transactionT = {

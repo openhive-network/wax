@@ -277,7 +277,8 @@ test.describe('Wax object interface formatters tests', () => {
           }
         }
       ],
-      extensions: []
+      extensions: [],
+      signatures: []
     });
   });
 
