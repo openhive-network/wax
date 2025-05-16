@@ -2,6 +2,7 @@ from wax import create_wax_foundation, cpp_pass_pure_transaction
 from wax.proto.operations import comment as comment_operation, operation, vote as vote_operation, account_update as account_update_operation
 from wax.proto.transaction import transaction as proto_transaction
 from wax.proto.authority import authority
+import time
 
 from google.protobuf.json_format import MessageToDict
 
@@ -53,7 +54,22 @@ tx.operations.append(operation(vote_operation = vote_operation(
 
 # print(f"{tx.operations[1].account_update_operation.DESCRIPTOR.fields_by_name}")
 
-print(cpp_pass_pure_transaction(tx))
+start = round(time.time() * 1000)
+
+for i in range(10_000):
+    cpp_pass_pure_transaction(tx)
+
+end = round(time.time() * 1000)
+print(f"cpp_pass_pure_transaction took {end - start} ms")
+
+start = round(time.time() * 1000)
+
+for i in range(10_000):
+    waxF.create_transaction_from_proto(tx).id
+
+end = round(time.time() * 1000)
+print(f"create_transaction_from_proto + id took {end - start} ms")
+
 
 # txc = proto_transaction(expiration = tx.expiration, ref_block_num=tx.ref_block_num, ref_block_prefix=tx.ref_block_prefix, operations=tx.operations, extensions=tx.extensions);
 
