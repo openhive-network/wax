@@ -168,29 +168,20 @@ std::string get_pyerr_with_clear()
 }
 
 /// @brief Calls a Python function and handles the error if it occurs (clears and rethrows as a C++ exception).
-/// @param fn  Pointer to the Python function to call.
-/// @param args Arguments to pass to the Python function.
+/// @param func Lambda that calls the Python function and returns its result.
 /// @return The result of the Python function call as a PyObject* wrapper (py_object_ptr) or the specified return type.
 /// @throws fc::assert_exception if the Python function call fails.
-template<typename RetT, typename... Args1, typename... Args2>
-typename std::conditional<std::is_same_v<RetT, PyObject*>, py_object_ptr, RetT>::type
-call_python_function(RetT(*fn)(Args1...), Args2&&... args)
+template<typename Func>
+auto call_python_function(Func&& func)
+-> typename std::conditional<std::is_same_v<decltype(func()), PyObject*>, py_object_ptr, decltype(func())>::type
 {
-  RetT result = fn(std::forward<Args2>(args)...);
+  auto result = func();
   FC_ASSERT(!PyErr_Occurred(), "Python function call failed: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
 
-  if constexpr (std::is_same_v<RetT, PyObject*>)
+  if constexpr (std::is_same_v<decltype(result), PyObject*>)
     return py_object_ptr::take(result);
   else
     return result;
-}
-
-// Simplified version for common case with a single string argument - templates do not work with C variadic arguments (...)
-py_object_ptr call_python_function(decltype(PyObject_CallMethod) fn, PyObject* obj, const char* method_name, const char* arg)
-{
-  PyObject* result = fn(obj, method_name, "s", arg);
-  FC_ASSERT(!PyErr_Occurred(), "Python method call failed: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
-  return py_object_ptr::take(result);
 }
 
 }
@@ -234,17 +225,25 @@ public:
     if (!fieldDescriptor)
       return false;
 
-    auto label = call_python_function(PyObject_GetAttrString, fieldDescriptor, "label");
+    auto label = call_python_function([&] {
+      return PyObject_GetAttrString(fieldDescriptor, "label");
+    });
 
     // Check if the label corresponds to an optional field (value 1 in protobuf, 2 is required, 3 is repeated (which can be missing too))
-    bool is_optional = PyLong_Check(label) && call_python_function(PyLong_AsLong, label) != 2;
+    bool is_optional = PyLong_Check(label) && call_python_function([&] {
+      return PyLong_AsLong(label);
+    }) != 2;
 
     if (!is_optional)
       return true; /// field is required
 
     // Check if the field is set
-    auto has_field = call_python_function(PyObject_CallMethod, pyobj, "HasField", name);
-    bool is_set = call_python_function(PyObject_IsTrue, has_field);
+    auto has_field = call_python_function([&] {
+      return PyObject_CallMethod(pyobj, "HasField", "s", name);
+    });
+    bool is_set = call_python_function([&] {
+      return PyObject_IsTrue(has_field);
+    });
 
     return is_set;
   }
@@ -266,14 +265,20 @@ public:
     // MutableMapping check
     if (PyMapping_Check(pyobj))
     {
-      auto pykey = call_python_function(PyUnicode_FromString, key);
-      auto item = call_python_function(PyObject_GetItem, pyobj, pykey);
+      auto pykey = call_python_function([&] {
+        return PyUnicode_FromString(key);
+      });
+      auto item = call_python_function([&] {
+        return PyObject_GetItem(pyobj, pykey);
+      });
 
       return item;
     }
 
     // Protobuf object check
-    auto item = call_python_function(PyObject_GetAttrString, pyobj, key);
+    auto item = call_python_function([&] {
+      return PyObject_GetAttrString(pyobj, key);
+    });
 
     return item;
   }
@@ -287,7 +292,9 @@ public:
   {
     FC_ASSERT(PySequence_Check(pyobj), "PyObject at index '${key}' is expected to be a sequence but is an other type: ${pyobj}", (key)(pyobj));
 
-    auto item = call_python_function(PySequence_GetItem, pyobj, key);
+    auto item = call_python_function([&] {
+      return PySequence_GetItem(pyobj, key);
+    });
 
     return item;
   }
@@ -310,7 +317,9 @@ public:
   // Delete attribute by string key
   void del(const std::string& key)
   {
-    call_python_function(PyObject_SetAttrString, pyobj, key.c_str(), nullptr);
+    call_python_function([&] {
+      return PyObject_SetAttrString(pyobj, key.c_str(), nullptr);
+    });
   }
 
   template<typename T>
@@ -318,37 +327,59 @@ public:
   T as() const {
     if constexpr (std::is_same_v<T, std::string>)
     {
-      const char* s = call_python_function(PyUnicode_AsUTF8, pyobj);
+      const char* s = call_python_function([&] {
+        return PyUnicode_AsUTF8(pyobj);
+      });
       return std::string{s};
     }
     else if constexpr (std::is_same_v<T, bool>)
     {
-      return call_python_function(PyObject_IsTrue, pyobj);
+      return call_python_function([&] {
+        return PyObject_IsTrue(pyobj);
+      });
     }
     else
     {
       if (PyLong_Check(pyobj))
       {
         if constexpr (std::is_same_v<T, int64_t>)
-          return call_python_function(PyLong_AsLongLong, pyobj);
+          return call_python_function([&] {
+            return PyLong_AsLongLong(pyobj);
+          });
         else if constexpr (std::is_same_v<T, int32_t>)
-          return static_cast<int32_t>(call_python_function(PyLong_AsLong, pyobj));
+          return static_cast<int32_t>(call_python_function([&] {
+            return PyLong_AsLong(pyobj);
+          }));
         else if constexpr (std::is_same_v<T, int16_t>)
-          return static_cast<int16_t>(call_python_function(PyLong_AsLong, pyobj));
+          return static_cast<int16_t>(call_python_function([&] {
+            return PyLong_AsLong(pyobj);
+          }));
         else if constexpr (std::is_same_v<T, int8_t>)
-          return static_cast<int8_t>(call_python_function(PyLong_AsLong, pyobj));
+          return static_cast<int8_t>(call_python_function([&] {
+            return PyLong_AsLong(pyobj);
+          }));
         else if constexpr (std::is_same_v<T, uint64_t>)
-          return call_python_function(PyLong_AsUnsignedLongLong,pyobj);
+          return call_python_function([&] {
+            return PyLong_AsUnsignedLongLong(pyobj);
+          });
         else if constexpr (std::is_same_v<T, uint32_t>)
-          return static_cast<uint32_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
+          return static_cast<uint32_t>(call_python_function([&] {
+            return PyLong_AsUnsignedLong(pyobj);
+          }));
         else if constexpr (std::is_same_v<T, uint16_t>)
-          return static_cast<uint16_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
+          return static_cast<uint16_t>(call_python_function([&] {
+            return PyLong_AsUnsignedLong(pyobj);
+          }));
         else if constexpr (std::is_same_v<T, uint8_t>)
-          return static_cast<uint8_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
+          return static_cast<uint8_t>(call_python_function([&] {
+            return PyLong_AsUnsignedLong(pyobj);
+          }));
       }
       else if (PyFloat_Check(pyobj))
       {
-        return static_cast<T>(call_python_function(PyFloat_AsDouble, pyobj));
+        return static_cast<T>(call_python_function([&] {
+          return PyFloat_AsDouble(pyobj);
+        }));
       }
 
       // Return default value for numeric type if conversion fails
@@ -358,15 +389,21 @@ public:
 
   size_t array_length()const
   {
-    Py_ssize_t size = call_python_function(PySequence_Size, pyobj);
+    Py_ssize_t size = call_python_function([&] {
+      return PySequence_Size(pyobj);
+    });
 
     return size;
   }
 
   std::string get_underlying_sv_type()const
   {
-    py_object_ptr result = call_python_function(PyObject_CallMethod, pyobj, "WhichOneof", "value");
-    const char* type = call_python_function(PyUnicode_AsUTF8, result);
+    py_object_ptr result = call_python_function([&] {
+      return PyObject_CallMethod(pyobj, "WhichOneof", "s", "value");
+    });
+    const char* type = call_python_function([&] {
+      return PyUnicode_AsUTF8(result);
+    });
 
     return std::string{ type };
   }
@@ -374,13 +411,19 @@ public:
   std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
-    auto iterator = call_python_function(PyObject_GetIter, pyobj);
+    auto iterator = call_python_function([&] {
+      return PyObject_GetIter(pyobj);
+    });
 
-    while (auto item = call_python_function(PyIter_Next, iterator))
+    while (auto item = call_python_function([&] {
+      return PyIter_Next(iterator);
+    }))
     {
       FC_ASSERT(PyUnicode_Check(item), "Map key '${item}' is not a string", (item));
 
-      const char* key = call_python_function(PyUnicode_AsUTF8, item);
+      const char* key = call_python_function([&] {
+        return PyUnicode_AsUTF8(item);
+      });
       out.emplace_back(key);
     }
 
@@ -395,16 +438,22 @@ private:
     if (!PyObject_HasAttrString(pyobj, "DESCRIPTOR"))
       return py_object_ptr::take(nullptr);
 
-    auto descriptor_item = call_python_function(PyObject_GetAttrString, pyobj, "DESCRIPTOR");
+    auto descriptor_item = call_python_function([&] {
+      return PyObject_GetAttrString(pyobj, "DESCRIPTOR");
+    });
     if (!descriptor_item)
       return py_object_ptr::take(nullptr);
 
-    auto fields_by_name = call_python_function(PyObject_GetAttrString, descriptor_item, "fields_by_name");
+    auto fields_by_name = call_python_function([&] {
+      return PyObject_GetAttrString(descriptor_item, "fields_by_name");
+    });
 
     if (!fields_by_name)
       return py_object_ptr::take(nullptr);
 
-    auto field_desc = call_python_function(PyMapping_GetItemString, fields_by_name, name);
+    auto field_desc = call_python_function([&] {
+      return PyMapping_GetItemString(fields_by_name, name);
+    });
     return field_desc;
   }
 
