@@ -213,6 +213,11 @@ public:
     FC_ASSERT(pyobj, "Failed to convert string '${str}' to PyObject: ${pyerr}", (str)("pyerr", get_pyerr_with_clear()));
   }
 
+  operator std::string() const
+  {
+    return pyobj.operator std::string();
+  }
+
   python_managed_object(const python_managed_object& other) = default;
   python_managed_object& operator=(const python_managed_object& other) = default;
   python_managed_object(python_managed_object&& other) noexcept = default;

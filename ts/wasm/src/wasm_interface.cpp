@@ -139,6 +139,11 @@ public:
     return out;
   }
 
+  operator std::string() const
+  {
+    return emscripten::val::global("JSON").call<std::string>("stringify", jsval);
+  }
+
 private:
   emscripten::val jsval;
 };
