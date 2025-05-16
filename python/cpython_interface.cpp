@@ -16,7 +16,6 @@ public:
   /// @return built object holding a python object reference.
   static py_object_ptr take(PyObject* obj)
   {
-    //dlog("Creating ptr");
     return py_object_ptr(obj);
   }
 
@@ -25,7 +24,6 @@ public:
   /// @return built object holding a python object reference.
   static py_object_ptr share(PyObject* obj)
   {
-    //dlog("Creating ptr over SHARED pure python object");
     /// Since this ptr class always releases object at destructor, we need to increment reference counter here.
     Py_XINCREF(obj);
     return py_object_ptr(obj);
@@ -34,13 +32,11 @@ public:
   py_object_ptr(const py_object_ptr& rhs)
   : _obj(rhs._obj)
   {
-    //dlog("Copy ctr ptr");
     Py_XINCREF(_obj);
   }
 
   py_object_ptr& operator=(const py_object_ptr& other)
   {
-    //dlog("Copy asgn ptr");
     if(_obj != other._obj)
     {
       Py_XDECREF(_obj);
@@ -54,14 +50,12 @@ public:
   py_object_ptr(py_object_ptr&& other) noexcept
     : _obj(other._obj)
   {
-    //dlog("Moving ctr ptr");
     other._obj = Py_None;
     Py_XINCREF(other._obj);
   }
 
   py_object_ptr& operator=(py_object_ptr&& other) noexcept
   {
-    //dlog("Moving asgn ptr");
     if(_obj != other._obj)
     {
       Py_XDECREF(_obj);
@@ -75,7 +69,6 @@ public:
 
   ~py_object_ptr()
   {
-    //dlog("Destr ptr");
     Py_XDECREF(_obj);
     _obj = nullptr;
   }
@@ -93,6 +86,26 @@ public:
   PyObject* operator ->() const
   {
     return _obj;
+  }
+
+  operator std::string() const
+  {
+    if (!_obj)
+      return "<null PyObject>";
+
+    PyObject* str_obj = PyObject_Str(_obj);
+    if (str_obj)
+    {
+      const char* cstr = PyUnicode_AsUTF8(str_obj);
+      if (!cstr)
+        PyErr_Clear();
+      std::string result = cstr ? cstr : "<unprintable PyObject>";
+      Py_DECREF(str_obj);
+      return result;
+    }
+    PyErr_Clear();
+
+    return "<unprintable PyObject>";
   }
 
   private:
@@ -154,33 +167,39 @@ std::string get_pyerr_with_clear()
   return "<unprintable PyObject>";
 }
 
-std::string py_object_to_string(PyObject* obj)
+/// @brief Calls a Python function and handles the error if it occurs (clears and rethrows as a C++ exception).
+/// @param fn  Pointer to the Python function to call.
+/// @param args Arguments to pass to the Python function.
+/// @return The result of the Python function call as a PyObject* wrapper (py_object_ptr) or the specified return type.
+/// @throws fc::assert_exception if the Python function call fails.
+template<typename RetT, typename... Args1, typename... Args2>
+typename std::conditional<std::is_same_v<RetT, PyObject*>, py_object_ptr, RetT>::type
+call_python_function(RetT(*fn)(Args1...), Args2&&... args)
 {
-  if (!obj)
-    return "<null PyObject>";
+  RetT result = fn(std::forward<Args2>(args)...);
+  FC_ASSERT(!PyErr_Occurred(), "Python function call failed: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
 
-  // For some reason, if we do not call PyErr_Clear() here, it will fail at some point with WhichOneof
-  // if (PyErr_Occurred())
-  // {
-  //   PyErr_Print();
-  //   PyErr_Clear();
-  // }
-
-  PyObject* str_obj = PyObject_Str(obj);
-  if (str_obj)
-  {
-    const char* cstr = PyUnicode_AsUTF8(str_obj);
-    if (!cstr)
-      PyErr_Clear();
-    std::string result = cstr ? cstr : "<unprintable PyObject>";
-    Py_DECREF(str_obj);
+  if constexpr (std::is_same_v<RetT, PyObject*>)
+    return py_object_ptr::take(result);
+  else
     return result;
-  }
-  PyErr_Clear();
-
-  return "<unprintable PyObject>";
 }
 
+// Simplified version for common case with a single string argument - templates do not work with C variadic arguments (...)
+py_object_ptr call_python_function(decltype(PyObject_CallMethod) fn, PyObject* obj, const char* method_name, const char* arg)
+{
+  PyObject* result = fn(obj, method_name, "s", arg);
+  FC_ASSERT(!PyErr_Occurred(), "Python method call failed: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
+  return py_object_ptr::take(result);
+}
+
+}
+
+namespace fc {
+  void to_variant( const py_object_ptr& pyobj, variant& v )
+  { // for direct FC_ASSERT py_object_ptr string conversion
+    v = fc::variant{ pyobj.operator std::string() };
+  }
 }
 
 namespace cpp
@@ -210,50 +229,29 @@ public:
 
   bool is_optional_field_present(const char* name) const
   {
-    dlog("Checking if field '${name}' is present in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
     auto fieldDescriptor = get_field_descriptor(name);
 
     if (!fieldDescriptor)
       return false;
 
-    auto label = py_object_ptr::take(PyObject_GetAttrString(fieldDescriptor, "label")); // New reference or nullptr
-
-    if (!label)
-      return false;
+    auto label = call_python_function(PyObject_GetAttrString, fieldDescriptor, "label");
 
     // Check if the label corresponds to an optional field (value 1 in protobuf, 2 is required, 3 is repeated (which can be missing too))
-    bool isOptional = PyLong_Check(label) && PyLong_AsLong(label) != 2;
+    bool is_optional = PyLong_Check(label) && call_python_function(PyLong_AsLong, label) != 2;
 
-    if (!isOptional)
+    if (!is_optional)
       return true; /// field is required
 
     // Check if the field is set
-    auto hasField = py_object_ptr::take(PyObject_CallMethod(pyobj, "HasField", "s", name));
-    if (!hasField)
-    {
-      PyErr_Clear();
-      return false;
-    }
+    auto has_field = call_python_function(PyObject_CallMethod, pyobj, "HasField", name);
+    bool is_set = call_python_function(PyObject_IsTrue, has_field);
 
-    bool isSet = PyObject_IsTrue(hasField);
-
-    if (!isSet)
-    {
-      dlog("Field '${name}' is not set in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
-    }
-    else
-    {
-      dlog("Field '${name}' is set in object: ${pyobj}", (name)("pyobj", py_object_to_string(pyobj)));
-    }
-
-    return isSet;
+    return is_set;
   }
 
   // Get attribute by string key
   python_managed_object operator[](const char* key)const
   {
-    // wlog("Accesing '${key}' object on PyObject: ${pyobj}", ("key", key)("pyobj", py_object_to_string(pyobj)));
-
     // Array check
     if (PySequence_Check(pyobj))
     {
@@ -268,22 +266,16 @@ public:
     // MutableMapping check
     if (PyMapping_Check(pyobj))
     {
-      auto pykey = py_object_ptr::take(PyUnicode_FromString(key));
-      FC_ASSERT(pykey, "Failed to convert key '${key}' to PyObject: ${pyerr}", (key)("pyerr", get_pyerr_with_clear()));
+      auto pykey = call_python_function(PyUnicode_FromString, key);
+      auto item = call_python_function(PyObject_GetItem, pyobj, pykey);
 
-      auto item = py_object_ptr::take(PyObject_GetItem(pyobj, pykey));
-      FC_ASSERT(item, "Failed to get item ${key} from mapping: ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
-
-      python_managed_object ret{item};
-      return ret;
+      return item;
     }
 
     // Protobuf object check
-    auto item = py_object_ptr::take(PyObject_GetAttrString(pyobj, key));
-    FC_ASSERT(item, "Failed to retrieve key '${key}' to PyObject: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+    auto item = call_python_function(PyObject_GetAttrString, pyobj, key);
 
-    python_managed_object ret{item};
-    return ret;
+    return item;
   }
 
   python_managed_object operator[](const std::string& key)const
@@ -293,13 +285,11 @@ public:
 
   python_managed_object operator[](size_t key)const
   {
-    FC_ASSERT(PySequence_Check(pyobj), "PyObject at index '${key}' is expected to be a sequence but is an other type: ${pyobj}", (key)("pyobj", py_object_to_string(pyobj)));
+    FC_ASSERT(PySequence_Check(pyobj), "PyObject at index '${key}' is expected to be a sequence but is an other type: ${pyobj}", (key)(pyobj));
 
-    auto item = py_object_ptr::take(PySequence_GetItem(pyobj, key));
-    FC_ASSERT(item, "Failed to get item from sequence for index access: ${key}, ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+    auto item = call_python_function(PySequence_GetItem, pyobj, key);
 
-    python_managed_object ret{item};
-    return ret;
+    return item;
   }
 
   python_managed_object operator[](int key)const
@@ -320,8 +310,7 @@ public:
   // Delete attribute by string key
   void del(const std::string& key)
   {
-    int res = PyObject_SetAttrString(pyobj, key.c_str(), nullptr);
-    FC_ASSERT(res == 0, "Failed to delete attribute '${key}' from object: ${pyobj}: ${pyerr}", (key)("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+    call_python_function(PyObject_SetAttrString, pyobj, key.c_str(), nullptr);
   }
 
   template<typename T>
@@ -329,37 +318,37 @@ public:
   T as() const {
     if constexpr (std::is_same_v<T, std::string>)
     {
-      const char* s = PyUnicode_AsUTF8(pyobj);
-      return s ? std::string(s) : std::string();
+      const char* s = call_python_function(PyUnicode_AsUTF8, pyobj);
+      return std::string{s};
     }
     else if constexpr (std::is_same_v<T, bool>)
     {
-      return PyObject_IsTrue(pyobj);
+      return call_python_function(PyObject_IsTrue, pyobj);
     }
     else
     {
       if (PyLong_Check(pyobj))
       {
         if constexpr (std::is_same_v<T, int64_t>)
-          return PyLong_AsLongLong(pyobj);
+          return call_python_function(PyLong_AsLongLong, pyobj);
         else if constexpr (std::is_same_v<T, int32_t>)
-          return static_cast<int32_t>(PyLong_AsLong(pyobj));
+          return static_cast<int32_t>(call_python_function(PyLong_AsLong, pyobj));
         else if constexpr (std::is_same_v<T, int16_t>)
-          return static_cast<int16_t>(PyLong_AsLong(pyobj));
+          return static_cast<int16_t>(call_python_function(PyLong_AsLong, pyobj));
         else if constexpr (std::is_same_v<T, int8_t>)
-          return static_cast<int8_t>(PyLong_AsLong(pyobj));
+          return static_cast<int8_t>(call_python_function(PyLong_AsLong, pyobj));
         else if constexpr (std::is_same_v<T, uint64_t>)
-          return PyLong_AsUnsignedLongLong(pyobj);
+          return call_python_function(PyLong_AsUnsignedLongLong,pyobj);
         else if constexpr (std::is_same_v<T, uint32_t>)
-          return static_cast<uint32_t>(PyLong_AsUnsignedLong(pyobj));
+          return static_cast<uint32_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
         else if constexpr (std::is_same_v<T, uint16_t>)
-          return static_cast<uint16_t>(PyLong_AsUnsignedLong(pyobj));
+          return static_cast<uint16_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
         else if constexpr (std::is_same_v<T, uint8_t>)
-          return static_cast<uint8_t>(PyLong_AsUnsignedLong(pyobj));
+          return static_cast<uint8_t>(call_python_function(PyLong_AsUnsignedLong, pyobj));
       }
       else if (PyFloat_Check(pyobj))
       {
-        return static_cast<T>(PyFloat_AsDouble(pyobj));
+        return static_cast<T>(call_python_function(PyFloat_AsDouble, pyobj));
       }
 
       // Return default value for numeric type if conversion fails
@@ -369,19 +358,15 @@ public:
 
   size_t array_length()const
   {
-    Py_ssize_t size = PySequence_Size(pyobj);
-    FC_ASSERT(size != Py_ssize_t(-1), "Failed to get array length for object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+    Py_ssize_t size = call_python_function(PySequence_Size, pyobj);
 
     return size;
   }
 
   std::string get_underlying_sv_type()const
   {
-    auto result = py_object_ptr::take(PyObject_CallMethod(pyobj, "WhichOneof", "s", "value"));
-    FC_ASSERT(result, "Failed to call WhichOneof on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
-
-    const char* type = PyUnicode_AsUTF8(result);
-    FC_ASSERT(type, "Failed to convert result of WhichOneof to string on object ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(result))("pyerr", get_pyerr_with_clear()));
+    py_object_ptr result = call_python_function(PyObject_CallMethod, pyobj, "WhichOneof", "value");
+    const char* type = call_python_function(PyUnicode_AsUTF8, result);
 
     return std::string{ type };
   }
@@ -389,19 +374,13 @@ public:
   std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
-    auto iterator = py_object_ptr::take(PyObject_GetIter(pyobj));
+    auto iterator = call_python_function(PyObject_GetIter, pyobj);
 
-    FC_ASSERT(iterator, "Failed to get iterator for map keys ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
-
-    while (auto item = py_object_ptr::take(PyIter_Next(iterator)))
+    while (auto item = call_python_function(PyIter_Next, iterator))
     {
-      FC_ASSERT(item, "Failed to get next item from iterator: ${pyobj}: ${pyerr}", ("pyobj", py_object_to_string(pyobj))("pyerr", get_pyerr_with_clear()));
+      FC_ASSERT(PyUnicode_Check(item), "Map key '${item}' is not a string", (item));
 
-      FC_ASSERT(PyUnicode_Check(item), "Map key '${item}' is not a string: ${pyerr}", ("item", py_object_to_string(item))("pyerr", get_pyerr_with_clear()));
-
-      const char* key = PyUnicode_AsUTF8(item);
-      FC_ASSERT(key, "Failed to convert map key '${item}' to string: ${pyerr}", ("item", py_object_to_string(item))("pyerr", get_pyerr_with_clear()));
-
+      const char* key = call_python_function(PyUnicode_AsUTF8, item);
       out.emplace_back(key);
     }
 
@@ -416,19 +395,17 @@ private:
     if (!PyObject_HasAttrString(pyobj, "DESCRIPTOR"))
       return py_object_ptr::take(nullptr);
 
-    auto descriptorItem = py_object_ptr::take(PyObject_GetAttrString(pyobj, "DESCRIPTOR"));
-    if (!descriptorItem)
+    auto descriptor_item = call_python_function(PyObject_GetAttrString, pyobj, "DESCRIPTOR");
+    if (!descriptor_item)
       return py_object_ptr::take(nullptr);
 
-    //dlog("descriptorItem found");
-
-    auto fields_by_name = py_object_ptr::take(PyObject_GetAttrString(descriptorItem, "fields_by_name"));
+    auto fields_by_name = call_python_function(PyObject_GetAttrString, descriptor_item, "fields_by_name");
 
     if (!fields_by_name)
       return py_object_ptr::take(nullptr);
 
-    auto fieldDesc = py_object_ptr::take(PyMapping_GetItemString(fields_by_name, name));
-    return fieldDesc;
+    auto field_desc = call_python_function(PyMapping_GetItemString, fields_by_name, name);
+    return field_desc;
   }
 
   private:
@@ -450,7 +427,7 @@ result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
       val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(tx) }, obj, true }
     );
 
-    retval.content = fc::json::to_string(obj);
+    retval.content = obj.id(hive::protocol::pack_type::hf26).operator std::string();
   }
   catch (const fc::exception& e)
   {
