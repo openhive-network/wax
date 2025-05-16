@@ -65,6 +65,11 @@ public:
     jsval.set(key, obj);
   }
 
+  bool is_optional_field_present(const char* name) const
+  {
+    return !jsval[name].isUndefined();
+  }
+
   emscripten_managed_object operator[](const std::string& key)const
   {
     return emscripten_managed_object{ jsval.operator[](key) };
@@ -101,9 +106,9 @@ public:
   }
 
   template<typename T>
-  T as()const
+  void as(T& val)const
   {
-    return jsval.as<T>();
+    val = jsval.as<T>();
   }
 
   size_t array_length()const
@@ -111,7 +116,15 @@ public:
     return jsval["length"].as<size_t>();
   }
 
-  std::vector<std::string> keys()const
+  std::string get_underlying_sv_type()const
+  {
+    emscripten::val keys = emscripten::val::global("Object").call<emscripten::val>("keys", jsval);
+    size_t count = keys["length"].as<size_t>();
+    FC_ASSERT(count > 0, "Expected a key in static variant");
+    return keys[0].as<std::string>();
+  }
+
+  std::vector<std::string> get_map_keys()const
   {
     std::vector<std::string> out;
 
