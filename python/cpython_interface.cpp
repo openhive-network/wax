@@ -327,6 +327,14 @@ public:
     });
   }
 
+  template<typename T>
+  T as() const
+  {
+    T out;
+    as(out);
+    return out;
+  }
+  
   void as(std::string& out)const
   {
     FC_ASSERT(is_string(), "Cannot convert object to string: ${pyobj}", (pyobj));

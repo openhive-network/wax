@@ -111,6 +111,13 @@ public:
     val = jsval.as<T>();
   }
 
+  template<typename T>
+  T as()const
+  {
+    return jsval.as<T>();
+  }
+
+
   size_t array_length()const
   {
     return jsval["length"].as<size_t>();

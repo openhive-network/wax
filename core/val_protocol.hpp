@@ -61,8 +61,7 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
   }
   else
   {
-    std::string type;
-    jsval["type"].as(type);
+    std::string type = jsval["type"].template as<std::string>();
 
     auto itr = to_tag.find( type );
     FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
@@ -109,15 +108,12 @@ public:
   {
     ManagedObjectT amount = jsval[name];
 
-    std::string amount_str;
-    amount["amount"].as( amount_str );
+    std::string amount_str = amount["amount"].template as<std::string>();
 
     v.amount = boost::lexical_cast< int64_t >( amount_str );
 
-    uint8_t precision;
-    std::string nai;
-    amount["nai"].as( nai );
-    amount["precision"].as( precision );
+    std::string nai = amount["nai"].template as<std::string>();
+    uint8_t precision = amount["precision"].template as<uint8_t>();
 
     v.symbol = hive::protocol::asset_symbol_type::from_nai_string(
       nai.c_str(),
@@ -134,29 +130,25 @@ public:
 
   void add( const char* name, hive::protocol::json_string& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     v = hive::protocol::json_string{ str };
   }
 
   void add( const char* name, fc::ripemd160& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     v = fc::ripemd160{ str };
   }
 
   void add( const char* name, fc::sha256& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     v = fc::sha256{ str };
   }
 
   void add( const char* name, hive::protocol::public_key_type& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     v = hive::protocol::public_key_type{ str };
   }
 
@@ -172,8 +164,7 @@ public:
   template<typename StorageT>
   void add( const char* name, hive::protocol::fixed_string_impl<StorageT>& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     v = str;
   }
 
@@ -196,8 +187,7 @@ public:
   template<typename TArr, size_t NArr>
   void add( const char* name, fc::array<TArr, NArr>& v ) const
   {
-    std::string str;
-    jsval[name].as( str );
+    std::string str = jsval[name].template as<std::string>();
     fc::from_hex(str, reinterpret_cast<char *>(&v.data[0]), NArr);
   }
 
@@ -266,8 +256,7 @@ public:
   template<uint32_t _SYMBOL>
   void add( const char* name, hive::protocol::tiny_asset<_SYMBOL>& v ) const
   {
-    int64_t amount_value;
-    jsval[name]["amount"].as(amount_value);
+    int64_t amount_value = jsval[name]["amount"].template as<int64_t>();
     v.amount = amount_value;
   }
 
@@ -293,8 +282,7 @@ public:
     ManagedObjectT _val = jsval[name];
     if (_val.is_string())
     {
-      std::string str;
-      _val.as(str);
+      std::string str = _val.template as<std::string>();
       v = boost::lexical_cast<int64_t>(str);
     }
     else
@@ -308,8 +296,7 @@ public:
     ManagedObjectT _val = jsval[name];
     if (_val.is_string())
     {
-      std::string str;
-      _val.as(str);
+      std::string str = _val.template as<std::string>();
       v = boost::lexical_cast<uint64_t>(str);
     }
     else
@@ -391,8 +378,7 @@ public:
     {
       for (const auto& key : arr_val.get_map_keys())
       {
-        hive::protocol::weight_type weight;
-        arr_val[key].as(weight);
+        hive::protocol::weight_type weight = arr_val[key].template as<hive::protocol::weight_type>();
         v[M{key}] = weight;
       }
     }
@@ -403,10 +389,8 @@ public:
       for (size_t i = 0; i < arr_size; ++i)
       {
         auto el = arr_val[i];
-        std::string key;
-        hive::protocol::weight_type weight;
-        el[0].as(key);
-        el[1].as(weight);
+        std::string key = el[0].template as<std::string>();
+        hive::protocol::weight_type weight = el[1].template as<hive::protocol::weight_type>();
 
         v[M{key}] = weight;
       }
