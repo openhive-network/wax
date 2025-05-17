@@ -106,6 +106,12 @@ public:
   }
 
   template<typename T>
+  T as()const
+  {
+    return jsval.as<T>();
+  }
+
+  template<typename T>
   void as(T& val)const
   {
     val = jsval.as<T>();

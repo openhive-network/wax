@@ -184,8 +184,7 @@ struct to_proto_converter<ManagedObjectT, fc::static_variant< Ts... >>
     ManagedObjectT type_val = obj_val["type"];
     ManagedObjectT nextval = obj_val["value"];
 
-    std::string type;
-    type_val.as(type);
+    std::string type = type_val.template as<std::string>();
     auto itr = to_tag.find( type );
     FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
     int64_t which = itr->second;
