@@ -16,12 +16,14 @@ from setuptools.extension import Extension
 def log(*args: Any) -> None:
     print(*args)  # noqa: T201
 
+def useDebugBuild() -> bool:
+    return os.getenv("WAX_DEBUG") is not None and os.getenv("WAX_DEBUG") != "0"
 
 log("Build file loaded...")
 
 
 class CustomBuild(build_ext):
-    output_binary_name = "cpp_python_bridge.cpython-312-x86_64-linux-gnu.so"
+    output_binary_name = "cpp_python_bridge.cpython-312d-x86_64-linux-gnu.so" if useDebugBuild() else "cpp_python_bridge.cpython-312-x86_64-linux-gnu.so"
     root_dir = Path(__file__).parent.absolute()
     package_dir = root_dir / "wax"
     wax_package_shared_lib = package_dir / output_binary_name
@@ -34,8 +36,8 @@ class CustomBuild(build_ext):
         configure_args = [
             "-GNinja"
         ]
-        if "WAX_DEBUG" in os.environ:
-            configure_args.append("-DCMAKE_BUILD_TYPE=RelWithDebugInfo")
+        if useDebugBuild():
+            configure_args.append("-DCMAKE_BUILD_TYPE=Debug")
         else:
             configure_args.append("-DCMAKE_BUILD_TYPE=Release")
         build_command = ninja_command
@@ -147,6 +149,7 @@ class CustomBuild(build_ext):
 
 def build(setup_kwargs: dict[str, Any]) -> None:
     log("Build with Cython")
+
     setup_kwargs.update(
         {
             "ext_modules": cythonize(
@@ -157,7 +160,8 @@ def build(setup_kwargs: dict[str, Any]) -> None:
                         language="c++",
                     ),  # There has to be at least one extension, instead CustomBuild.run won't be called
                 ],
-                compiler_directives={'always_allow_keywords': True, 'language_level': "3str", 'c_string_type': "bytes", 'c_string_encoding':"utf-8", 'emit_code_comments': True}
+                compiler_directives={'always_allow_keywords': True, 'language_level': "3str", 'c_string_type': "bytes", 'c_string_encoding':"utf-8", 'emit_code_comments': True},
+                gdb_debug=useDebugBuild()
             ),
             "cmdclass": {"build_ext": CustomBuild},
         }
