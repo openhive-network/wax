@@ -159,9 +159,11 @@ class Transaction(ITransaction):
     def push_operation(self, operation: WaxMetaOperation) -> Self:
         if isinstance(operation, OperationBase):
             for op in operation.finalize(self._api):
-                self._target.operations.add(**{op.__class__.__name__: op})
+                self._target.operations.add(**{op.__class__.__name__ + "_operation": op})
         else:
-            self._target.operations.add(**{operation.__class__.__name__: operation})
+            # OneOf type specifier must have _operation suffix, e.g.: <class_name>_operation
+            # to match Hive Protocol type name.
+            self._target.operations.add(**{operation.__class__.__name__ + "_operation": operation})
         return self
 
     def _flush_transaction(self) -> None:
