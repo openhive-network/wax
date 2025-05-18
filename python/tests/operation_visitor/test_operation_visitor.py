@@ -6,8 +6,8 @@ from wax.wax_visitor import OperationVisitor
 
 tx_json = {
     "operations": [
-        {"vote": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
-        {"limit_order_cancel": {"owner": "orderabc", "orderid": 5}}
+        {"vote_operation": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
+        {"limit_order_cancel_operation": {"owner": "orderabc", "orderid": 5}}
     ]
 }
 
@@ -26,4 +26,4 @@ def test_operation_visitor():
     for op in tx.operations:
         visitor.accept(op)
 
-    assert visitor.vote_obj == ParseDict(tx_json["operations"][0]["vote"], vote())
+    assert visitor.vote_obj == ParseDict(tx_json["operations"][0]["vote_operation"], vote())
