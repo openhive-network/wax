@@ -5,16 +5,18 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")/../python"
 
+WAX_DIR="${PROJECT_DIR}/../"
+
 DIRECT_EXECUTION=${1:-0}
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
 COMMIT_HASH=$(git rev-parse --short HEAD)
-IMAGE_NAME="wax-python-builder:"${COMMIT_HASH}
+IMAGE_BASE_NAME="wax-python-builder"
+IMAGE_NAME="${IMAGE_BASE_NAME}:"${COMMIT_HASH}
 
 USER_NAME=user
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
-WORKDIR=/home/${USER_NAME}
 
 echo ${PROJECT_DIR}
 
@@ -25,9 +27,10 @@ docker build \
        --build-arg USER_ID=${USER_ID} \
        --build-arg GROUP_ID=${GROUP_ID} \
      -t ${IMAGE_NAME} \
+     -t ${IMAGE_BASE_NAME}:devcontainer \
      ${PROJECT_DIR}/../
 
-docker run --rm -v ${PROJECT_DIR}/../:${WORKDIR}/wax ${IMAGE_NAME} bash -c "${WORKDIR}/wax/python/scripts/build_wax.sh 1"
+docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
 
 else
 #  echo "Cleaning up."
