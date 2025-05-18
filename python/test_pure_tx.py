@@ -14,7 +14,7 @@ transaction = waxF.create_transaction_with_tapos(TAPOS)
 
 tx = transaction.transaction
 
-tx.operations.append(operation(comment_operation = comment_operation(
+comment = comment_operation(
   author="test",
   permlink="test",
   parent_author="test",
@@ -22,7 +22,9 @@ tx.operations.append(operation(comment_operation = comment_operation(
   title="test",
   body="test",
   json_metadata="{}"
-)))
+)
+
+transaction.push_operation(comment)
 
 posting: authority = authority(
         weight_threshold=1,
@@ -43,14 +45,14 @@ account_update_proto: account_update_operation = (
 
 # print(account_update_proto.posting.account_auths.__iter__().__next__())
 
-tx.operations.append(operation(account_update_operation=account_update_proto))
+transaction.push_operation(account_update_proto)
 
-tx.operations.append(operation(vote_operation = vote_operation(
+transaction.push_operation(vote_operation(
     voter="voter",
     author="author",
     permlink="permlink",
     weight=10000
-)))
+))
 
 # print(f"{tx.operations[1].account_update_operation.DESCRIPTOR.fields_by_name}")
 
