@@ -8,7 +8,7 @@ MAINNET_CHAIN_ID = b"beeab0de000000000000000000000000000000000000000000000000000
 TREASURY_NAME = b"hive.fund"
 
 PROTO_REF_VOTE_OP: dict[str, dict[str, str | int]] = {
-    "vote": {
+    "vote_operation": {
         "voter": "otom",
         "author": "c0ff33a",
         "permlink": "ewxhnjbj",
@@ -17,7 +17,7 @@ PROTO_REF_VOTE_OP: dict[str, dict[str, str | int]] = {
 }
 
 PROTO_REF_VOTE_OP_EMPTY: dict[str, dict[str, Any]] = {
-    "vote": {
+    "vote_operation": {
     }
 }
 
@@ -27,7 +27,7 @@ PROTO_REF_TRANSACTION = {
     "expiration": "2016-09-15T19:47:33",
     "operations": [
         {
-            "vote": {
+            "vote_operation": {
                 "voter": "taoteh1221",
                 "author": "ozchartart",
                 "permlink": "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
@@ -48,7 +48,7 @@ PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
     "expiration": "2023-11-09T22:01:24",
     "operations": [
         {
-            "transfer": {
+            "transfer_operation": {
                 "from": "oneplus7",
                 "to": "kryptogames",
                 "amount": {
@@ -69,7 +69,7 @@ PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
     "expiration": "2023-11-09T22:01:24",
     "operations": [
         {
-            "transfer": {
+            "transfer_operation": {
                 "from": "oneplus7",
                 "to": "kryptogames",
                 "amount": {
@@ -111,7 +111,7 @@ PROTO_REF_RELEASE_BLOCK = {
             "extensions": [],
             "operations": [
                 {
-                    "pow": {
+                    "pow_operation": {
                         "block_id": "000f424b4e3f3a6069ef7ff86e39ca43628208ad",
                         "nonce": "7402656884829255743",
                         "props": {
@@ -165,7 +165,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "fallenangel1789",
                         "author": "mrpro81",
                         "permlink": "kripto-ile-mikro-kazanc-elde-etmek",
@@ -182,7 +182,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "vafa" ],
                         "id": "follow",
@@ -199,7 +199,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:27",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "carolynseymour",
                         "author": "krasnec",
                         "permlink": "7g8xsa-new-strange-garden-painting",
@@ -216,7 +216,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:18",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "shila" ],
                         "id": "follow",
@@ -233,7 +233,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:27",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "zulfan88",
                         "author": "krasnec",
                         "permlink": "7g8xsa-new-strange-garden-painting",
@@ -250,7 +250,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "miqyk",
                         "author": "cryptoworldzug",
                         "permlink": "bigthingsgoingonwithcwz-89eamqxic4",
@@ -267,7 +267,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:21",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "sthitaprajna",
                         "author": "creadordelfuturo",
                         "permlink": "winners-of-lottery-for-the-jury-of-the-best-title-contest-something-unthinkable-happened",
@@ -284,7 +284,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "vodavic" ],
                         "id": "follow",
@@ -301,7 +301,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:27",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "eddee" ],
                         "id": "follow",
@@ -318,7 +318,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "madava" ],
                         "id": "follow",
@@ -352,7 +352,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:28",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "kendallron",
                         "author": "krasnec",
                         "permlink": "7g8xsa-new-strange-garden-painting",
@@ -369,7 +369,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:28",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "yoonwonlim",
                         "author": "kamo.munshi",
                         "permlink": "20180915t165140903z",
@@ -386,7 +386,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:27",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "guru2",
                         "author": "renzoarg",
                         "permlink": "scream-into-the-void-space-communications",
@@ -403,7 +403,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:27",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "livo" ],
                         "id": "follow",
@@ -420,7 +420,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:24",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "manudibango" ],
                         "id": "follow",
@@ -437,7 +437,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:28",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "futbolsport",
                         "author": "rayhankabirs",
                         "permlink": "apple-teased-by-xiaomi-for-over-the-top-pricing-of-iphones",
@@ -454,7 +454,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:28:27",
             "operations": [
                 {
-                    "custom_json": {
+                    "custom_json_operation": {
                         "required_auths": [],
                         "required_posting_auths": [ "masiha" ],
                         "id": "follow",
@@ -471,7 +471,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:28",
             "operations": [
                 {
-                    "transfer": {
+                    "transfer_operation": {
                         "from": "buildawhale",
                         "to": "just-smile",
                         "amount": {
@@ -492,7 +492,7 @@ PROTO_REF_HF_BLOCK = {
             "expiration": "2018-09-15T23:19:28",
             "operations": [
                 {
-                    "vote": {
+                    "vote_operation": {
                         "voter": "penghuren",
                         "author": "thetruth36",
                         "permlink": "re-infinity28-re-thetruth36-hawaii-oahu-paradise-cove-though-the-blockchain-pt-1-20180915t230606269z",

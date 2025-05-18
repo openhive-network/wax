@@ -133,7 +133,7 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(transaction: ITrans
     )
 
     expected_in_legacy_format: Final[list[str | dict[str, Any]]] = [
-        "update_proposal",
+        "update_proposal_operation",
         {
             "creator": "alice",
             "daily_pay": "1.000 HBD",
@@ -208,7 +208,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
 
     expected: Final[list[dict[str, Any]]] = [
         {
-            "update_proposal": {
+            "update_proposal_operation": {
                 "creator": "initminer",
                 "daily_pay": {"amount": "0", "nai": "@@000000013", "precision": 3},
                 "permlink": "permlink",
@@ -218,7 +218,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
             }
         },
         {
-            "update_proposal": {
+            "update_proposal_operation": {
                 "creator": "initminer",
                 "daily_pay": {"amount": "0", "nai": "@@000000013", "precision": 3},
                 "permlink": "permlink",

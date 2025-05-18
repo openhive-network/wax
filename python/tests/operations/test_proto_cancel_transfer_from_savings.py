@@ -13,7 +13,7 @@ def test_cancel_transfer_from_savings():
     )
 
     cancel_transfer_from_savings_operation: operation = (
-        operation(cancel_transfer_from_savings=cancel_transfer_from_savings_proto)
+        operation(cancel_transfer_from_savings_operation=cancel_transfer_from_savings_proto)
     )
 
     check_operations(cancel_transfer_from_savings_operation)

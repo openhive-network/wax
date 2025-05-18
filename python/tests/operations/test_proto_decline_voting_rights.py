@@ -13,7 +13,7 @@ def test_decline_voting_rights():
     )
 
     decline_voting_rights_operation: operation = (
-        operation(decline_voting_rights=decline_voting_rights_proto)
+        operation(decline_voting_rights_operation=decline_voting_rights_proto)
     )
 
     check_operations(decline_voting_rights_operation)

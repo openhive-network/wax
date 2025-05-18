@@ -31,7 +31,7 @@ def test_delegate_vesting_shares():
     )
 
     delegate_vesting_shares_operation: operation = (
-        operation(delegate_vesting_shares=delegate_vesting_shares_proto)
+        operation(delegate_vesting_shares_operation=delegate_vesting_shares_proto)
     )
 
     check_operations(delegate_vesting_shares_operation)

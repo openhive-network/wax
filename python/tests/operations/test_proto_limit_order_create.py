@@ -47,7 +47,7 @@ def test_limit_order_create():
     )
 
     limit_order_create_operation: operation = operation(
-        limit_order_create=limit_order_create_proto
+        limit_order_create_operation=limit_order_create_proto
     )
 
     check_operations(limit_order_create_operation)

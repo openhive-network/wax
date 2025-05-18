@@ -29,7 +29,7 @@ def test_transfer_to_vesting():
     )
 
     transfer_to_vesting_operation: operation = (
-        operation(transfer_to_vesting=transfer_to_vesting_proto)
+        operation(transfer_to_vesting_operation=transfer_to_vesting_proto)
     )
 
     check_operations(transfer_to_vesting_operation)

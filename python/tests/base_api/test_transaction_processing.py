@@ -56,7 +56,7 @@ def test_transaction_processing_1(wax: IWaxBaseInterface) -> None:
         expiration="2021-12-13T11:31:33",
         operations=[
             operation(
-                vote=vote(
+                vote_operation=vote(
                     author="c0ff33a",
                     permlink="ewxhnjbj",
                     voter="otom",
@@ -156,7 +156,7 @@ def test_transaction_processing_4(wax: IWaxBaseInterface) -> None:
             expiration="2021-12-13T11:31:33",
             operations=[
                 operation(
-                    vote=vote(
+                    vote_operation=vote(
                         author="c0ff33a",
                         permlink="ewxhnjbj",
                         voter="otom",

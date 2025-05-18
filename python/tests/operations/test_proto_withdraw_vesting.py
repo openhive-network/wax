@@ -28,7 +28,7 @@ def test_withdraw_vesting():
         )
     )
 
-    withdraw_vesting_operation: operation = operation(withdraw_vesting=withdraw_vesting_proto)
+    withdraw_vesting_operation: operation = operation(withdraw_vesting_operation=withdraw_vesting_proto)
     check_operations(withdraw_vesting_operation)
 
     proto_transaction: transaction = transaction(

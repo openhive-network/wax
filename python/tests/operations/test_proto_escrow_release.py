@@ -27,7 +27,7 @@ def test_escrow_release():
     )
 
     escrow_release_operation: operation = (
-        operation(escrow_release=escrow_release_proto)
+        operation(escrow_release_operation=escrow_release_proto)
     )
 
     check_operations(escrow_release_operation)

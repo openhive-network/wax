@@ -33,7 +33,7 @@ def test_pow():
     )
 
     pow_operation: operation = operation(
-        pow=pow_proto
+        pow_operation=pow_proto
     )
 
     check_operations(pow_operation)
