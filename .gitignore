@@ -205,6 +205,9 @@ pyrightconfig.json
 build_wasm
 tmp_doc
 built_package_info.json
+python/config.ini
+python/tests/report.xml
+python/tests/base_api/generated_*
 
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope
