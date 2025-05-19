@@ -8,6 +8,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")/../python"
 WAX_DIR="${PROJECT_DIR}/../"
 
 DIRECT_EXECUTION=${1:-0}
+WAX_DEBUG=${2:-${WAX_DEBUG:-0}}
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
 COMMIT_HASH=$(git rev-parse --short HEAD)
@@ -30,7 +31,7 @@ docker build \
      -t ${IMAGE_BASE_NAME}:devcontainer \
      ${PROJECT_DIR}/../
 
-docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
+docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -e WAX_DEBUG=${WAX_DEBUG:-0} -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
 
 else
 #  echo "Cleaning up."
@@ -46,8 +47,6 @@ else
 #      
 #      mkdir -v "$dir_path"
 #  done
-
-  export WAX_DEBUG=1
 
   export POETRY_VIRTUALENVS_PATH="${PROJECT_DIR}/poetry-venv-root"
 
