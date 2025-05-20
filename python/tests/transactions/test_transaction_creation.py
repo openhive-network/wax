@@ -186,7 +186,7 @@ def test_impacted_operation_accounts_the_same_as_impacted_transaction_accounts()
     )
     transaction.push_operation(transfer_operation)
 
-    operation_impacted_accounts = wax.get_operation_impacted_accounts(operation(transfer=transfer_operation))
+    operation_impacted_accounts = wax.get_operation_impacted_accounts(operation(transfer_operation=transfer_operation))
     transaction_impacted_accounts = transaction.impacted_accounts
 
     # ASSERT

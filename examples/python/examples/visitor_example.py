@@ -8,10 +8,10 @@ from wax.wax_visitor import OperationVisitor
 
 tx_json = {
     "operations": [
-        {"vote": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
-        {"limit_order_cancel": {"owner": "orderabc", "orderid": 5}},
+        {"vote_operation": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
+        {"limit_order_cancel_operation": {"owner": "orderabc", "orderid": 5}},
         {
-            "comment": {
+            "comment_operation": {
                 "parent_permlink": "/",
                 "parent_author": "",
                 "author": "alice",
@@ -22,7 +22,7 @@ tx_json = {
             }
         },
         {
-            "recurrent_transfer": {
+            "recurrent_transfer_operation": {
                 "from": "alice",
                 "to": "harry",
                 "amount": {"nai": "@@000000021", "precision": 3, "amount": "10"},

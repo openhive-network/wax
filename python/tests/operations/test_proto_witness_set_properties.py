@@ -42,7 +42,7 @@ def test_witness_set_properties():
     )
 
     witness_set_properties_operation: operation = (
-        operation(witness_set_properties=witness_set_properties_proto)
+        operation(witness_set_properties_operation=witness_set_properties_proto)
     )
 
     check_operations(witness_set_properties_operation)

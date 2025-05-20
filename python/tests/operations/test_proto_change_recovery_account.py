@@ -16,7 +16,7 @@ def test_change_recovery_account():
     )
 
     change_recovery_account_operation: operation = operation(
-        change_recovery_account=change_recovery_account_proto
+        change_recovery_account_operation=change_recovery_account_proto
     )
 
     check_operations(change_recovery_account_operation)

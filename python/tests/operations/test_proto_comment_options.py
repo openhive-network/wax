@@ -28,7 +28,7 @@ def test_comment_options():
     )
 
     comment_options_operation: operation = operation(
-        comment_options=comment_options_proto
+        comment_options_operation=comment_options_proto
     )
 
     check_operations(comment_options_operation)

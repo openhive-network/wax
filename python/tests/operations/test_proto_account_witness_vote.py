@@ -23,7 +23,7 @@ def test_account_witness_vote():
     )
 
     account_witness_vote_operation: operation = (
-        operation(account_witness_vote=account_witness_vote_proto)
+        operation(account_witness_vote_operation=account_witness_vote_proto)
     )
 
     check_operations(account_witness_vote_operation)

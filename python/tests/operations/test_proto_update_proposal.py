@@ -43,7 +43,7 @@ def test_update_proposal():
     )
 
     update_proposal_operation: operation = operation(
-        update_proposal=update_proposal_proto
+        update_proposal_operation=update_proposal_proto
     )
 
     check_operations(update_proposal_operation)

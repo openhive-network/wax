@@ -28,7 +28,7 @@ def test_account_update2():
     )
 
     account_update2_operation: operation = operation(
-        account_update2=account_update2_proto
+        account_update2_operation=account_update2_proto
     )
 
     check_operations(account_update2_operation)

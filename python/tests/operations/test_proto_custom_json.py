@@ -22,7 +22,7 @@ def test_custom_json():
     )
 
     custom_json_operation: operation = operation(
-        custom_json=custom_json_proto
+        custom_json_operation=custom_json_proto
     )
     check_operations(custom_json_operation)
 

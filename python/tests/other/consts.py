@@ -180,7 +180,7 @@ VALID_TRX_ID_WITH_TRANSACTIONS = {trx_id: trx for trx_id, _, trx in VALID_TRXID_
 
 VALID_PROTO_OPERATIONS: Final[list[dict[str, Any]]] = [
     {
-        "comment": {
+        "comment_operation": {
             "parent_permlink": "/",
             "author": "alice",
             "permlink": "/",
@@ -189,7 +189,7 @@ VALID_PROTO_OPERATIONS: Final[list[dict[str, Any]]] = [
             "json_metadata": "{}",
         }
     },
-    {"vote": {"voter": "bob", "author": "alice", "permlink": "/", "weight": 1}},
+    {"vote_operation": {"voter": "bob", "author": "alice", "permlink": "/", "weight": 1}},
 ]
 
 VALID_PROTO_TRANSACTION: Final[dict[str, Any]] = {

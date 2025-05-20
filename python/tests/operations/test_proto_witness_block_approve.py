@@ -15,7 +15,7 @@ def test_witness_block_approve():
     )
 
     witness_block_approve_operation: operation = (
-        operation(witness_block_approve=witness_block_approve_proto)
+        operation(witness_block_approve_operation=witness_block_approve_proto)
     )
 
     check_operations(witness_block_approve_operation)

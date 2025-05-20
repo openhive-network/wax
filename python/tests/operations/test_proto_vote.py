@@ -7,7 +7,7 @@ def test_vote():
     proto_vote: vote = vote(
         voter="alice", author="author", permlink="/", weight=11
     )
-    vote_operation: operation = operation(vote=proto_vote)
+    vote_operation: operation = operation(vote_operation=proto_vote)
 
     check_operations(vote_operation)
 

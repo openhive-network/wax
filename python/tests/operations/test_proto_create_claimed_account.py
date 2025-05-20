@@ -31,7 +31,7 @@ def test_create_claimed_account():
     )
 
     create_claimed_account_operation: operation = operation(
-        create_claimed_account=create_claimed_account_proto
+        create_claimed_account_operation=create_claimed_account_proto
     )
 
     check_operations(create_claimed_account_operation)

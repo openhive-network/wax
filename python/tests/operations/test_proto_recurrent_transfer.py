@@ -32,7 +32,7 @@ def test_recurrent_transfer():
         )
     )
     recurrent_transfer_operation: operation = operation(
-        recurrent_transfer=recurrent_transfer_proto
+        recurrent_transfer_operation=recurrent_transfer_proto
     )
 
     check_operations(recurrent_transfer_operation)
