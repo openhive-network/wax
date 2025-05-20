@@ -152,7 +152,7 @@ class CommentOperation extends OperationBase {
 
     const operations: operation[] = [];
 
-    operations.push({ comment: this.comment });
+    operations.push({ comment_operation: this.comment });
 
     if(typeof this.commentOptions === "object") {
       const waxBase = sink.api as WaxBaseApi;
@@ -162,7 +162,7 @@ class CommentOperation extends OperationBase {
 
       const defaultCommentOptions = waxBase.getDefaultCommentOptionsOperation(this.comment.author, this.comment.permlink);
       if (deepEqual(defaultCommentOptions, this.commentOptions) === false)
-        operations.push({ comment_options: this.commentOptions });
+        operations.push({ comment_options_operation: this.commentOptions });
     }
 
     return operations;

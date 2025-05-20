@@ -39,7 +39,7 @@ export abstract class HiveAppsOperation<ChildT extends HiveAppsOperation<any, Bo
 
     for(const body of this.body)
       this.ops.push({
-        custom_json: {
+        custom_json_operation: {
           id: this.id,
           // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
           // This may be a temporary solution that can be replaced by writing our custom JSON stringifier with nested object iteration:
