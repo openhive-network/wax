@@ -324,6 +324,12 @@ def calculate_proto_sig_digest(transaction: bytes, chain_id: bytes) -> python_re
   return response.value, response.content, response.exception_message
 
 @return_python_result
+def pass_pure_transaction(tx: object) -> python_result:
+    cdef proto_protocol obj
+    response = obj.cpp_pass_pure_transaction(tx)
+    return response.value, response.content, response.exception_message
+
+@return_python_result
 def calculate_proto_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_calculate_legacy_sig_digest( transaction, chain_id )
@@ -346,6 +352,13 @@ def proto_to_api(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_proto_to_api( operation_or_tx )
   return response.value, response.content, response.exception_message
+
+@return_python_result
+def cpp_pass_pure_transaction(tx: object) -> python_result:
+  cdef proto_protocol obj
+  response = obj.cpp_pass_pure_transaction( tx )
+  return response.value, response.content, response.exception_message
+
 
 @return_python_result
 def proto_to_legacy_api(operation_or_tx: bytes) -> python_result:

@@ -15,7 +15,11 @@ namespace cpp
   class protocol : public protocol_impl<foundation> {};
 
   ///  Interface providing Hive protocol functionality operating on Protobuf specific JSON format.
-  class proto_protocol : public proto_protocol_impl<foundation> {};
+  class proto_protocol : public proto_protocol_impl<foundation>
+  {
+  public:
+    result cpp_pass_pure_transaction(PyObject* tx);
+  };
 
   extern template class protocol_impl<foundation>;
   extern template class proto_protocol_impl<foundation>;

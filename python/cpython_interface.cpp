@@ -502,4 +502,37 @@ private:
 template class protocol_impl<foundation>;
 template class proto_protocol_impl<foundation>;
 
+result proto_protocol::cpp_pass_pure_transaction(PyObject* tx)
+{
+  result retval;
+
+  try
+  {
+    hive::protocol::signed_transaction obj;
+
+    fc::reflector< hive::protocol::signed_transaction >::visit(
+      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(tx) }, obj, true }
+    );
+
+    retval.content = obj.id(hive::protocol::pack_type::hf26).operator std::string();
+  }
+  catch (const fc::exception& e)
+  {
+    retval.value = error_code::fail;
+    retval.exception_message = e.to_detail_string();
+  }
+  catch (const std::exception& e)
+  {
+    retval.value = error_code::fail;
+    retval.exception_message = e.what();
+  }
+  catch (...)
+  {
+    retval.value = error_code::fail;
+    retval.exception_message = "Unknown error occurred";
+  }
+
+  return retval;
+}
+
 } // namespace cpp
