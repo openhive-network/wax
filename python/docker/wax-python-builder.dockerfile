@@ -5,10 +5,12 @@ ARG USER_NAME=user
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
+USER root
 # so that it will be able to mount local directory with valid privilages
-RUN sudo groupadd -g $GROUP_ID usergroup && \
-    sudo useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
-    sudo usermod -a -G $(id -g hived_admin) ${USER_NAME}
+RUN groupadd -g $GROUP_ID usergroup && \
+    useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
+    usermod -a -G $(id -g hived_admin) ${USER_NAME} && \
+    DEBIAN_FRONTEND=noninteractive apt update && DEBIAN_FRONTEND=noninteractive apt install -y gdb python3.12-dbg
 
 # Switch to created user
 USER ${USER_NAME}
