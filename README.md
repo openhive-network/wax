@@ -72,6 +72,33 @@ https://gitlab.syncad.com/hive/wax/-/packages/3474
 
 Packages produced for Git protected tags will be versioned according to tag names.
 
+#### Debugging
+
+https://cython.readthedocs.io/en/latest/src/userguide/debugging.html#configuring-the-debugger
+
+create venv (choose debug version of Python interpreter) e.g (assuming pwd is wax/python subdirectory containing pyproject/toml file):
+
+```bash
+poetry -C . env use python3.12d
+```
+
+then install project dependencies:
+
+```bash
+poetry -C . install --no-root
+```
+
+Build package in place:
+```
+WAX_DEBUG=1 python3.12d setup.py build_ext --inplace
+```
+
+Run test under debugger:
+```
+cygdb . -- --args python3.12d ./test_pure_tx.py
+```
+
+
 ### TypeScript Building
 
 All of the required TypeScript-related information is available in the [npm.ts.md](npm.ts.md) file
