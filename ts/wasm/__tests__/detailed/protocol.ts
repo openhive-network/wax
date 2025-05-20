@@ -26,6 +26,15 @@ const parseBinaryChildren = (data: VectorBinaryDataNode) => {
 };
 
 test.describe('WASM Protocol', () => {
+  test('Should be able to print author in C++ JS val handle', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_get_js_object({
+        author: "user"
+      });
+    });
+
+    expect(retVal).toBeTruthy();
+  });
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }) => {
       return protocol.cpp_generate_private_key();
