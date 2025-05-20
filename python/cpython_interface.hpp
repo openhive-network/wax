@@ -6,6 +6,8 @@
 #include "core/protocol_impl.hpp"
 #include "core/protobuf_protocol_impl.hpp"
 
+#include <Python.h>
+
 namespace cpp
 {
  
