@@ -64,15 +64,15 @@ class RecurrentTransferOperationBase extends OperationBase {
   public finalize(sink: IOperationSink): Iterable<operation> {
     this.recurrentTransfer.amount = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol([EAssetName.HBD, EAssetName.HIVE], this.recurrentTransfer.amount as asset);
 
-    return [{ recurrent_transfer: this.recurrentTransfer }];
+    return [{ recurrent_transfer_operation: this.recurrentTransfer }];
   }
 
   public constructor(data: Partial<IRecurrentTransferData>) {
     super();
 
     this.recurrentTransfer = recurrent_transfer.fromPartial({
-      from_account: data.from,
-      to_account: data.to,
+      from: data.from,
+      to: data.to,
       amount: data.amount,
       executions: data.executions ?? 2,
       recurrence: data.recurrence ?? 24,
