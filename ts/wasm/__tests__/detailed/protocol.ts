@@ -36,6 +36,177 @@ test.describe('WASM Protocol', () => {
     expect(retVal).toBeTruthy();
   });
 
+  test('Should be able to convert to protobuf', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      try {
+        const tx = {
+          "expiration": "2024-05-15T13:04:16",
+          "extensions": [],
+          "operations": [
+            {
+              "type": "vote_operation",
+              "value": {
+                "author": "macchiata",
+                "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+                "voter": "esecholo",
+                "weight": 10000
+              }
+            }
+          ],
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "signatures": [
+            "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+          ]
+        }; // Mainnet block 85'418'673
+
+        protocol.cpp_tx_api_to_proto(tx);
+
+        return tx;
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toStrictEqual({
+      "expiration": "2024-05-15T13:04:16",
+      "extensions": [],
+      "operations": [
+        {
+          "vote_operation": {
+            "author": "macchiata",
+            "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+            "voter": "esecholo",
+            "weight": 10000
+          }
+        }
+      ],
+      "ref_block_num": 25263,
+      "ref_block_prefix": 1797793300,
+      "signatures": [
+        "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+      ]
+    });
+  });
+
+  test('Should be able to convert to protobuf - proper authority object serialization', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ proto_protocol }) => {
+      try {
+        const tx = {
+          "ref_block_num": 27909,
+          "ref_block_prefix": 3930921467,
+          "extensions": [],
+          "expiration": "2025-04-29T10:17:31",
+          "operations": [
+            {
+              "type": "account_create_operation",
+              "value": {
+                "fee": {
+                  "nai": "@@000000021",
+                  "amount": "3000",
+                  "precision": 3
+                },
+                "owner": {
+                  "key_auths": [
+                    [
+                      "STM6DPSYYtmKJ1uq5KVdobMSbqSLAN3x8AWKACjoJ18kt1Zm1mxnp",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "active": {
+                  "key_auths": [
+                    [
+                      "STM6m6dt3qPDf4H3jQc3BLy91msyV4udzb5Qxjd48jUSDDAWAo682",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "creator": "creatorofhivewal",
+                "posting": {
+                  "key_auths": [
+                    [
+                      "STM5JicVMtvU8aYHDTU986DBNqvFL2Cy1TPFUHgrV8iHyZaoub7Qh",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "memo_key": "STM849LXW2sJxVPvuNdLvDkKXLBY1gnCxz7hGj2bix358MdPNQkbF",
+                "json_metadata": "{}",
+                "new_account_name": "uid39111864"
+              }
+            }
+          ],
+          "signatures": [
+            "2009d17b3abb7197652a43e70e767f10032721fc250671eec02b14873be74c9b812b9b246f24ee6623ecbf9ba115b2cc8c8c45a4ea3574de94c5006870d6d550bf"
+          ]
+        }; // Mainnet block 95'448'326
+
+        proto_protocol.cpp_tx_api_to_proto(tx);
+
+        return tx;
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toStrictEqual({
+      "ref_block_num": 27909,
+      "ref_block_prefix": 3930921467,
+      "extensions": [],
+      "expiration": "2025-04-29T10:17:31",
+      "operations": [
+        {
+          "account_create_operation": {
+            "fee": {
+              "nai": "@@000000021",
+              "amount": "3000",
+              "precision": 3
+            },
+            "owner": {
+              "key_auths": {
+                "STM6DPSYYtmKJ1uq5KVdobMSbqSLAN3x8AWKACjoJ18kt1Zm1mxnp": 1
+              },
+              "account_auths": {},
+              "weight_threshold": 1
+            },
+            "active": {
+              "key_auths": {
+                "STM6m6dt3qPDf4H3jQc3BLy91msyV4udzb5Qxjd48jUSDDAWAo682": 1
+              },
+              "account_auths": {},
+              "weight_threshold": 1
+            },
+            "creator": "creatorofhivewal",
+            "posting": {
+              "key_auths": {
+                "STM5JicVMtvU8aYHDTU986DBNqvFL2Cy1TPFUHgrV8iHyZaoub7Qh": 1
+              },
+              "account_auths": {},
+              "weight_threshold": 1
+            },
+            "memo_key": "STM849LXW2sJxVPvuNdLvDkKXLBY1gnCxz7hGj2bix358MdPNQkbF",
+            "json_metadata": "{}",
+            "new_account_name": "uid39111864"
+          }
+        }
+      ],
+      "signatures": [
+        "2009d17b3abb7197652a43e70e767f10032721fc250671eec02b14873be74c9b812b9b246f24ee6623ecbf9ba115b2cc8c8c45a4ea3574de94c5006870d6d550bf"
+      ]
+    });
+  });
+
   test('Should be able to create WasmTransaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }) => {
       try {

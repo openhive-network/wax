@@ -385,6 +385,23 @@ bool cpp_get_js_object(val obj) const
   return author == "user";
 }
 
+void tx_proto_to_api(val obj) const
+{
+  cpp::safe_exception_wrapper([&]() -> void {
+    fc::reflector< hive::protocol::signed_transaction >::visit(
+      to_api_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj } }
+    );
+  });
+}
+
+void tx_api_to_proto(val obj) const
+{
+  cpp::safe_exception_wrapper([&]() -> void {
+    fc::reflector< hive::protocol::signed_transaction >::visit(
+      to_proto_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj } }
+    );
+  });
+}
 
 crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
 { return foundation::cpp_crypto_memo_from_string(value); }
@@ -581,6 +598,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_optional<uint32_t>();
   register_optional<uint16_t>();
   register_optional<int32_t>();
+  register_optional<bool>();
   register_optional<json_asset>();
   register_optional<json_price>();
   register_vector<std::string>("VectorString"); // Required for map binding -> keys() method
@@ -624,12 +642,31 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
+  class_<wasm_transaction>("WasmTransaction")
+    .function("id", &wasm_transaction::id)
+    .function("binary", &wasm_transaction::binary)
+    .function("impactedAccounts", &wasm_transaction::impacted_accounts)
+    .function("requiredAuthorities", &wasm_transaction::required_authorities)
+    .function("sigDigest", &wasm_transaction::sig_digest)
+    .function("signatureKeys", &wasm_transaction::signature_keys)
+    .function("validate", &wasm_transaction::validate)
+    .function("push", &wasm_transaction::add_operation)
+    .function("sign", &wasm_transaction::add_signature)
+    .function("setExpiration", &wasm_transaction::set_expiration)
+    .function("toLegacyString", &wasm_transaction::to_legacy_json)
+    .function("toBinary", &wasm_transaction::to_binary)
+    .function("toString", &wasm_transaction::to_json)
+  ;
+
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
     .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+
+    .function("cpp_tx_api_to_proto", &foundation_wasm::tx_api_to_proto)
+    .function("cpp_tx_proto_to_api", &foundation_wasm::tx_proto_to_api)
 
     .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
 
@@ -674,6 +711,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
     ;
+
 
   class_<protocol_wasm, base<foundation_wasm>>("protocol")
     .constructor<>()
