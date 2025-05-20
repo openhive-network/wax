@@ -155,19 +155,167 @@ private:
   emscripten::val jsval;
 };
 
-/// unfortunetely emscripten can't handle correctly C++ set -> JS Set transformation, so we have to use a vector instead.
-struct required_authority_collectionV
-{
-  typedef std::vector<std::string> account_vector;
-  typedef account_vector account_collection_t;
-
-  account_vector posting_accounts;
-  account_vector active_accounts;
-  account_vector owner_accounts;
-  std::vector<wax_authority> other_authorities;
-};
-
 using authority_verification_trace = hive::protocol::authority_verification_trace;
+
+class wasm_transaction
+{
+public:
+  wasm_transaction(val obj, bool is_protobuf)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      fc::reflector< hive::protocol::signed_transaction >::visit(
+        val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj }, this->_transaction, is_protobuf }
+      );
+    });
+  }
+
+  void add_operation(val obj, bool is_protobuf)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      hive::protocol::operation op;
+      cpp::from_jsval(emscripten_managed_object{obj}, op, is_protobuf);
+
+      this->_transaction.operations.emplace_back(op);
+    });
+  }
+
+  void add_signature(const std::string& signature)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      hive::protocol::signature_type sig;
+      fc::from_hex(signature, reinterpret_cast<char *>(&sig.data[0]), sig.size());
+
+      this->_transaction.signatures.emplace_back(sig);
+    });
+  }
+
+  void set_expiration(const std::string& expiration)
+  {
+    cpp::safe_exception_wrapper([&]() -> void {
+      this->_transaction.expiration = fc::time_point_sec::from_iso_string( expiration );
+    });
+  }
+
+  std::string to_legacy_json()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
+      return fc::json::to_string(this->_transaction);
+    });
+  }
+
+  std::string to_binary(bool use_hf26_serialization = true, bool strip_to_unsigned_transaction = false)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return cpp::serialize_transaction(this->_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
+    });
+  }
+
+  std::string to_json()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return fc::json::to_string(this->_transaction);
+    });
+  }
+
+  std::string id(bool use_hf26_serialization = true)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return this->_transaction.id(use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
+    });
+  }
+
+  binary_data binary(bool use_hf26_serialization = true, bool strip_to_unsigned_transaction = false)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> binary_data {
+      return cpp::generate_binary_transaction_metadata(_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
+    });
+  }
+
+  required_authority_collectionV required_authorities()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+      typedef flat_set<hive::protocol::account_name_type> raw_account_set;
+
+      raw_account_set active;
+      raw_account_set owner;
+      raw_account_set posting;
+      raw_account_set witness;
+      std::vector<hive::protocol::authority> other_authorities;
+      _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
+
+      required_authority_collectionV ret_val;
+      using account_collection_t = typename required_authority_collectionV::account_collection_t;
+      ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
+      ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
+      ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
+
+      for(const auto& auth : other_authorities)
+      {
+        wax_authority wa;
+        wa.weight_threshold = auth.weight_threshold;
+
+        for(const auto& [account, weight] : auth.account_auths)
+          wa.account_auths.emplace(account.operator std::string(), weight);
+
+        for(const auto& [key, weight] : auth.key_auths)
+          wa.key_auths.emplace(key.operator std::string(), weight);
+
+        ret_val.other_authorities.emplace_back(wa);
+      }
+
+      return ret_val;
+    });
+  }
+
+  std::vector<std::string> impacted_accounts()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+      std::vector<std::string> result;
+      fc::flat_set<hive::protocol::account_name_type> impacted;
+      for (const auto& op : this->_transaction.operations)
+      {
+        hive::app::operation_get_impacted_accounts(op, impacted);
+      }
+      result.insert(result.end(), impacted.begin(), impacted.end());
+      return result;
+    });
+  }
+
+  std::vector<std::string> signature_keys(const std::string& chain_id, bool use_hf26_serialization = true)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+      std::vector<std::string> result;
+      for (const auto& sig : this->_transaction.signatures)
+      {
+        result.emplace_back(fc::ecc::public_key::to_base58_with_prefix(
+          fc::ecc::public_key{ sig, _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy) },
+          HIVE_ADDRESS_PREFIX
+        ));
+      }
+      return result;
+    });
+  }
+
+  std::string sig_digest(const std::string& chain_id, bool use_hf26_serialization = true)const
+  {
+    return cpp::safe_exception_wrapper([&]() -> std::string {
+      return _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
+    });
+  }
+
+  void validate()const
+  {
+    return cpp::safe_exception_wrapper([&]() -> void {
+      _transaction.validate();
+    });
+  }
+
+private:
+  hive::protocol::signed_transaction _transaction;
+};
 
 class foundation_wasm : public foundation
 {
@@ -195,6 +343,9 @@ json_asset cpp_hive(const int32_t amount_low, const int32_t amount_high)const
 
 json_asset cpp_hbd(const int32_t amount_low, const int32_t amount_high)const 
 { return foundation::cpp_hbd(join_lh(amount_low, amount_high)); }
+
+wasm_transaction cpp_create_wasm_transaction(val obj, bool is_protobuf)const
+{ return wasm_transaction{ obj, is_protobuf }; }
 
 json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const 
 { return foundation::cpp_vests(join_lh(amount_low, amount_high)); }
@@ -467,6 +618,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+
+    .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
 
     .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
     .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)

@@ -35,6 +35,155 @@ test.describe('WASM Protocol', () => {
 
     expect(retVal).toBeTruthy();
   });
+
+  test('Should be able to create WasmTransaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      try {
+        const tx = protocol.cpp_create_wasm_transaction({
+          "expiration": "2024-05-15T13:04:16",
+          "extensions": [],
+          "operations": [
+            {
+              "type": "vote_operation",
+              "value": {
+                "author": "macchiata",
+                "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+                "voter": "esecholo",
+                "weight": 10000
+              }
+            }
+          ],
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "signatures": [
+            "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+          ]
+        }, false);
+
+        console.log(tx.toString(), tx.id(true), tx.id(false));
+
+        return tx.id(true);
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toBe("430e93622775d13cf39877239e4675123ff9fbd5"); // Mainnet block 85'418'673
+  });
+
+  test('Should be able to create WasmTransaction - proper authority object serialization', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ proto_protocol }) => {
+      try {
+        const tx = proto_protocol.cpp_create_wasm_transaction({
+          "ref_block_num": 27909,
+          "ref_block_prefix": 3930921467,
+          "extensions": [],
+          "expiration": "2025-04-29T10:17:31",
+          "operations": [
+            {
+              "type": "account_create_operation",
+              "value": {
+                "fee": {
+                  "nai": "@@000000021",
+                  "amount": "3000",
+                  "precision": 3
+                },
+                "owner": {
+                  "key_auths": [
+                    [
+                      "STM6DPSYYtmKJ1uq5KVdobMSbqSLAN3x8AWKACjoJ18kt1Zm1mxnp",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "active": {
+                  "key_auths": [
+                    [
+                      "STM6m6dt3qPDf4H3jQc3BLy91msyV4udzb5Qxjd48jUSDDAWAo682",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "creator": "creatorofhivewal",
+                "posting": {
+                  "key_auths": [
+                    [
+                      "STM5JicVMtvU8aYHDTU986DBNqvFL2Cy1TPFUHgrV8iHyZaoub7Qh",
+                      1
+                    ]
+                  ],
+                  "account_auths": [],
+                  "weight_threshold": 1
+                },
+                "memo_key": "STM849LXW2sJxVPvuNdLvDkKXLBY1gnCxz7hGj2bix358MdPNQkbF",
+                "json_metadata": "{}",
+                "new_account_name": "uid39111864"
+              }
+            }
+          ],
+          "signatures": [
+            "2009d17b3abb7197652a43e70e767f10032721fc250671eec02b14873be74c9b812b9b246f24ee6623ecbf9ba115b2cc8c8c45a4ea3574de94c5006870d6d550bf"
+          ]
+        }, false);
+
+        console.log(tx.toString(), tx.id(true), tx.id(false));
+
+        return tx.id(false);
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toBe("a27dc780a12d9a3e3a0e290208f04bc2c618f11e"); // Mainnet block 95'448'326
+  });
+
+  test('Should be able to create WasmTransaction from scratch', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      try {
+        const tx = protocol.cpp_create_wasm_transaction({
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "extensions": [],
+          "expiration": "",
+          "operations": [],
+          "signatures": []
+        }, false);
+
+        tx.push({
+          "type": "vote_operation",
+          "value": {
+            "author": "macchiata",
+            "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+            "voter": "esecholo",
+            "weight": 10000
+          }
+        }, false);
+
+        tx.setExpiration("2024-05-15T13:04:16");
+
+        tx.sign("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf");
+
+        console.log(tx.toString(), tx.id(true), tx.id(false));
+
+        return tx.id(true);
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toBe("430e93622775d13cf39877239e4675123ff9fbd5"); // Mainnet block 85'418'673
+  });
+
   test('Should be able to generate random private key', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }) => {
       return protocol.cpp_generate_private_key();
