@@ -100,6 +100,6 @@ export class WitnessSetPropertiesOperation extends OperationBase {
 
     this.witnessProps.props = (sink.api as WaxBaseApi).serializeWitnessProps(this.props);
 
-    return [{ witness_set_properties: this.witnessProps }];
+    return [{ witness_set_properties_operation: this.witnessProps }];
   }
 }
