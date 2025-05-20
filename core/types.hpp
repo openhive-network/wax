@@ -126,6 +126,18 @@ struct required_authority_collection
   std::vector<wax_authority> other_authorities;
 };
 
+/// unfortunetely emscripten can't handle correctly C++ set -> JS Set transformation, so we have to use a vector instead.
+struct required_authority_collectionV
+{
+  typedef std::vector<std::string> account_vector;
+  typedef account_vector account_collection_t;
+
+  account_vector posting_accounts;
+  account_vector active_accounts;
+  account_vector owner_accounts;
+  std::vector<wax_authority> other_authorities;
+};
+
 struct wax_authorities
 {
   wax_authority active;
