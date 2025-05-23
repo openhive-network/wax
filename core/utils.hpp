@@ -14,6 +14,7 @@ namespace cpp
 
 using callback = std::function<void(result&)>;
 
+__attribute__((noinline))
 static result method_wrapper(callback&& method)
 {
   result _result;
@@ -46,6 +47,7 @@ uint64_t throw_appropriate_wax_assertion( fc::assert_exception& e );
 /** Allows to wrap given function call into exception handler which at most throw std::exception (safely handled by Python/WASM runtimes)
 */
 template <typename ProcessorFn, typename... Args>
+__attribute__((always_inline))
 static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
 {
   try
@@ -86,7 +88,7 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
       catch (...)
       {
         wlog("Caught nonstandard exception");
-        throw std::runtime_error("Nonstanard exception");
+        throw std::runtime_error("Nonstandard exception");
       }
     }
     else
