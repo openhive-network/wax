@@ -56,7 +56,7 @@ grpcio-tools = "1.59.0"
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"
 mkdocstrings-python="1.16.10"
-mkdocs-material = "9.6.12"
+mkdocs-material = "9.6.14"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
