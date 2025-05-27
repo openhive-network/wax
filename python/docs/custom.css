@@ -1,9 +1,3 @@
 .doc-label code {
     float: right;
 }
-
-
-/* Workaround fix for: https://github.com/mkdocstrings/python/issues/276 */
-h5 .doc-object-name {
-    text-transform: none;
-}
