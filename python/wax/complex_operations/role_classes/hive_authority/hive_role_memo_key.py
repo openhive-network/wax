@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 MemoKeyRoleName = Literal["memo"]
+"""Memo key role name."""
 
 
 class HiveRoleMemoKeyDefinition(LevelBase[MemoKeyRoleName]):

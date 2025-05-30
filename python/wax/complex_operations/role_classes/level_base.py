@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Generic, Literal, TypeVar
 
 TRole = TypeVar("TRole", bound=Literal["memo", "active", "owner", "posting"])
+"""Type variable for role names."""
 
 
 class LevelBase(ABC, Generic[TRole]):

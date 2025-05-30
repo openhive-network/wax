@@ -10,8 +10,11 @@ if TYPE_CHECKING:
     from wax.complex_operations.role_classes.hive_authority.hive_role_memo_key import HiveRoleMemoKeyDefinition
 
 ActiveRoleName = Literal["active"]
+"""Active role name."""
 OwnerRoleName = Literal["owner"]
+"""Owner role name."""
 PostingRoleName = Literal["posting"]
+"""Posting role name."""
 
 
 @dataclass

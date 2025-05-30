@@ -28,14 +28,19 @@ if TYPE_CHECKING:
 
 
 ProtoTransaction: TypeAlias = proto_transaction
+"""Type alias for a transaction in proto format."""
 JsonTransaction: TypeAlias = str
-
+"""Type alias for a transaction in JSON format, which is used in Hive API calls."""
 TTimestamp: TypeAlias = datetime | timedelta
+"""TTimestamp is a type alias for a timestamp that can be either a datetime object or a timedelta object."""
 
 ChainConfig: TypeAlias = dict[str, str]
+"""ChainConfig is a type alias for a dictionary containing chain configuration parameters."""
 
 ApiCollectionT = TypeVar("ApiCollectionT")
+"""TypeVar for API collection, available by default in the IHiveChainInterface."""
 ExtendedApiCollectionT = TypeVar("ExtendedApiCollectionT")
+"""TypeVar for API collection that will be added to the IHiveChainInterface by the user."""
 
 
 class ITransactionBase(ABC):

@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 
 
 class IPrivateKeyData(ABC):
+    """Interface for private key data."""
+
     @property
     @abstractmethod
     def wif_private_key(self) -> str:
@@ -16,6 +18,8 @@ class IPrivateKeyData(ABC):
 
 
 class IBrainKeyData(IPrivateKeyData, ABC):
+    """Interface for brain key data."""
+
     @property
     @abstractmethod
     def brain_key(self) -> str:

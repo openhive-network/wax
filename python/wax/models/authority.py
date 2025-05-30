@@ -8,12 +8,17 @@ from wax.models.basic import AccountName, PublicKey
 from wax.proto.authority import authority as proto_authority
 
 WaxAuthority: TypeAlias = proto_authority
+"""Type alias for one of the authorities used in wax."""
 KeyAuths: TypeAlias = dict[PublicKey, int]
+"""KeyAuths is a type alias for a dictionary mapping public keys to their weight in the authority structure."""
 AccountAuths: TypeAlias = dict[AccountName, int]
+"""AccountAuths is a type alias for a dictionary mapping account names to their weight in the authority structure."""
 
 
 @dataclass
 class WaxAuthorities:
+    """Represents the authorities available when using wax."""
+
     owner: WaxAuthority | None = None
     active: WaxAuthority | None = None
     posting: WaxAuthority | None = None
@@ -21,12 +26,16 @@ class WaxAuthorities:
 
 @dataclass
 class WaxAccountAuthorityInfo:
+    """Represents the authority information for an account."""
+
     account: AccountName
     authorities: WaxAuthorities
     memo_key: PublicKey
 
 
 class ITransactionRequiredAuthorities(ABC):
+    """Interface for transaction required authorities."""
+
     @property
     @abstractmethod
     def posting_accounts(self) -> set[AccountName]:

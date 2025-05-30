@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 
 AuthType = TypeVar("AuthType")
+"""Type variable for the authority type."""
 
 
 class RoleCategoryBase(ABC, Generic[AuthType]):

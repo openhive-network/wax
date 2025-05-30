@@ -8,15 +8,23 @@ from typing import Protocol, TypeAlias
 from wax.proto.asset import asset as proto_asset
 
 AssetAmount = int | float | Decimal
+"""Type alias for an number that can be used as an amount of an asset."""
 NaiAsset: TypeAlias = proto_asset
+"""Type alias for an asset in nai format (hf26)."""
 
 HiveNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Hive nai format."""
 HbdNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Hbd nai format."""
 VestsNaiAssetConvertible = NaiAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Vests nai format."""
 AnyNaiAssetConvertible = HiveNaiAssetConvertible | HbdNaiAssetConvertible | VestsNaiAssetConvertible
+"""Type alias for types convertible to any of the HIVE, HBD, or VESTS nai formats."""
 
 
 class AssetName(Enum):
+    """Enum representing the names of assets in the Hive blockchain."""
+
     Hive: str = "HIVE"
     Hbd: str = "HBD"
     Vests: str = "VESTS"
@@ -24,6 +32,8 @@ class AssetName(Enum):
 
 @dataclass
 class AssetInfo:
+    """Represents information about an asset."""
+
     nai: str
     precision: int
 
