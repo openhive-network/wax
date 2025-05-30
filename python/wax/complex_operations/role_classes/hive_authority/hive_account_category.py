@@ -16,6 +16,11 @@ from wax.complex_operations.role_classes.hive_authority.hive_roles import (
 )
 from wax.complex_operations.role_classes.role_category_base import RoleCategoryBase
 from wax.exceptions import AccountNotFoundError, WaxError
+from wax.exceptions.chain_errors import (
+    AuthorityCannotBeSatisfiedError,
+    HiveMaxAuthorityMembershipExceededError,
+    HiveTempAccountUsedError,
+)
 from wax.proto.authority import authority as proto_authority
 from wax.proto.operations import account_update2
 
@@ -28,37 +33,6 @@ if TYPE_CHECKING:
 
 NULL_AUTH_SIZE: Final[int] = 0
 HiveAccountCategoryName = Literal["hive"]
-
-
-class HiveAccountCategoryError(WaxError):
-    """Base class for HiveAccountCategory errors."""
-
-
-class HiveTempAccountUsedError(HiveAccountCategoryError):
-    """Raised when trying to edit a temporary account in the hive category."""
-
-    def __init__(self) -> None:
-        self.message = "Cannot edit temporary account in hive category"
-        super().__init__(self.message)
-
-
-class HiveMaxAuthorityMembershipExceededError(HiveAccountCategoryError):
-    """Raised when the authority membership exceeds the maximum."""
-
-    def __init__(self, max_membership: int, current_membership: int) -> None:
-        self.message = f"Authority membership exceeds. Max: {max_membership}, current: {current_membership}"
-        self.max_membership = max_membership
-        self.current_membership = current_membership
-        super().__init__(self.message)
-
-
-class AuthorityCannotBeSatisfiedError(HiveAccountCategoryError):
-    """Raised when the authority cannot be satisfied."""
-
-    def __init__(self, authority_level: str) -> None:
-        self.message = f"{authority_level} authority cannot be satisfied due to insufficient weight"
-        self.authority_level = authority_level
-        super().__init__(self.message)
 
 
 class HiveAccountCategory(RoleCategoryBase[HiveRoles]):

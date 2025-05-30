@@ -7,13 +7,10 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
-from wax.complex_operations.role_classes.hive_authority.hive_account_category import (
-    AuthorityCannotBeSatisfiedError,
-    HiveMaxAuthorityMembershipExceededError,
-)
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     DEFAULT_ACCOUNT_OR_KEY_WEIGHT,
 )
+from wax.exceptions import AuthorityCannotBeSatisfiedError, HiveMaxAuthorityMembershipExceededError
 from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
 from wax.models.authority import WaxAuthority
 

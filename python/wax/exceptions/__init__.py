@@ -7,7 +7,13 @@ from .asset_errors import (
     UnknownAssetNaiError,
     UnknownAssetTypeError,
 )
-from .chain_errors import AccountNotFoundError
+from .chain_errors import (
+    AccountNotFoundError,
+    AuthorityCannotBeSatisfiedError,
+    HiveAccountCategoryError,
+    HiveMaxAuthorityMembershipExceededError,
+    HiveTempAccountUsedError,
+)
 from .conversion_errors import (
     DecimalConversionError,
     DecimalConversionNegativePrecisionError,
@@ -44,4 +50,8 @@ __all__ = [
     "InvalidMemoKeyError",
     # Chain-related errors.
     "AccountNotFoundError",
+    "HiveAccountCategoryError",
+    "HiveTempAccountUsedError",
+    "HiveMaxAuthorityMembershipExceededError",
+    "AuthorityCannotBeSatisfiedError",
 ]
