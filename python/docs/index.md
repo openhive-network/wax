@@ -9,6 +9,10 @@ protocol functionalities, implemented primarily in C++ for performance and accur
 library allows developers to create, manipulate, sign, and validate Hive transactions and operations, perform
 cryptographic tasks, manage assets, and interact with Hive nodes.
 
+One of the biggest advantages of wax is full code completion support (like IntelliSense). The library is very
+well-documented and allows for easy configuration with exposed option classes. These classes are passed to factory
+functions, and wax is configured to interact with the node of the user's choice.
+
 Key features include:
 
 - Transaction creation, validation, serialization, and signing.
