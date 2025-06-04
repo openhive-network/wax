@@ -60,7 +60,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     this.apiTimeout = config.apiTimeout;
 
-    this.jsonRpcApiCaller = new ApiCaller(EChainApiType.JSON_RPC, config.apiEndpoint, this.apiTimeout, iterate({}, HiveApiTypes), 'POST', (path, newValue, found) => {
+    this.jsonRpcApiCaller = new ApiCaller(EChainApiType.JSON_RPC, config.apiEndpoint, this.apiTimeout, iterate(originator ? structuredClone(originator.jsonRpcApiCaller.localTypes) : {}, HiveApiTypes), 'POST', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.jsonRpcApiCaller.setEndpointUrlForPath(path, newValue, found);
 
@@ -83,7 +83,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       return data;
     });
-    this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate({}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
+    this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate(originator ? structuredClone(originator.restApiCaller.localTypes) : {}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.restApiCaller.setEndpointUrlForPath(path, newValue, found);
 

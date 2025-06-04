@@ -249,6 +249,26 @@ test.describe('Wax object interface chain tests', () => {
       expect(retVal).toStrictEqual(["https://best.honey.provider", "https://api.hive.blog"]);
     });
 
+    test('Should be able to propagate endpointUrl to derived chains', async ({ waxTest }) => {
+      const retVal = await waxTest(async({ chain }) => {
+        const customExtendedTypes = {
+          my_database_api: {
+            nested: {
+              params: {},
+              result: {}
+            }
+          }
+        };
+        const extendedHiveChain = chain.extend(customExtendedTypes);
+        extendedHiveChain.api.my_database_api.nested.endpointUrl = "http://custom-api.local";
+        const otherChain = extendedHiveChain.extend({});
+
+        return [extendedHiveChain.api.my_database_api.nested.endpointUrl, otherChain.api.my_database_api.nested.endpointUrl];
+      });
+
+      expect(retVal).toStrictEqual(["http://custom-api.local", "http://custom-api.local"]);
+    });
+
     test('Should be able to sign the transaction twice', async ({ waxTest }) => {
       const retVal = await waxTest(async({ chain, beekeeper }, protoVoteOp) => {
         const session = beekeeper.createSession("salt");
