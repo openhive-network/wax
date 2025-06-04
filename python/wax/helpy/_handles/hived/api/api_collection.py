@@ -41,6 +41,10 @@ from wax.helpy._handles.hived.api.wallet_bridge_api import (
     AsyncWalletBridgeApi,
     SyncWalletBridgeApi,
 )
+from wax.helpy._handles.hived.api.witness_api import (
+    AsyncWitnessApi,
+    SyncWitnessApi,
+)
 
 if TYPE_CHECKING:
     from beekeepy.handle.remote import AsyncSendable, SyncSendable
@@ -63,6 +67,7 @@ class HivedAsyncApiCollection(AppStatusProbeAsyncApiCollection):
         self.reputation = AsyncReputationApi(owner=self._owner)
         self.transaction_status = AsyncTransactionStatusApi(owner=self._owner)
         self.wallet_bridge = AsyncWalletBridgeApi(owner=self._owner)
+        self.witness = AsyncWitnessApi(owner=self._owner)
 
         self.account_by_key_api = self.account_by_key
         self.account_history_api = self.account_history
@@ -78,6 +83,7 @@ class HivedAsyncApiCollection(AppStatusProbeAsyncApiCollection):
         self.reputation_api = self.reputation
         self.transaction_status_api = self.transaction_status
         self.wallet_bridge_api = self.wallet_bridge
+        self.witness_api = self.witness
 
 
 class HivedSyncApiCollection(AppStatusProbeSyncApiCollection):
@@ -97,6 +103,7 @@ class HivedSyncApiCollection(AppStatusProbeSyncApiCollection):
         self.reputation = SyncReputationApi(owner=self._owner)
         self.transaction_status = SyncTransactionStatusApi(owner=self._owner)
         self.wallet_bridge = SyncWalletBridgeApi(owner=self._owner)
+        self.witness = SyncWitnessApi(owner=self._owner)
 
         self.account_by_key_api = self.account_by_key
         self.account_history_api = self.account_history
@@ -112,3 +119,4 @@ class HivedSyncApiCollection(AppStatusProbeSyncApiCollection):
         self.reputation_api = self.reputation
         self.transaction_status_api = self.transaction_status
         self.wallet_bridge_api = self.wallet_bridge
+        self.witness_api = self.witness
