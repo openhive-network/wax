@@ -18,6 +18,9 @@ include( ${HIVE_ROOT_PATH}/programs/beekeeper/beekeeper_wasm/cmake/wasm_project.
 set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/protocol )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
+set( SKIP_COMPRESSION_DICTIONARIES "TRUE" )
+add_subdirectory( ${HIVE_ROOT_PATH}/libraries/chain build_no_chain EXCLUDE_FROM_ALL)
+add_subdirectory( ${HIVE_ROOT_PATH}/assertion_id_verifier build_assertion_id_verifier_minimal )
 
 file(GLOB HEADERS "core/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
@@ -70,5 +73,14 @@ set_target_properties( protocol_assertion_id_generator PROPERTIES
   OUTPUT_NAME "protocol_assertion_id_generator.cjs"
   )
 
-add_dependencies( wax.web protocol_assertion_id_verifier )
-add_dependencies( wax.node protocol_assertion_id_verifier )
+target_link_libraries( chain_assertion_id_generator PUBLIC nodefs.js )
+target_link_options( chain_assertion_id_generator PUBLIC 
+    -sENVIRONMENT="node" -sNODERAWFS=1
+ )
+
+set_target_properties( chain_assertion_id_generator PROPERTIES
+  OUTPUT_NAME "chain_assertion_id_generator.cjs"
+  )
+
+add_dependencies( wax.web protocol_assertion_id_verifier chain_assertion_id_verifier )
+add_dependencies( wax.node protocol_assertion_id_verifier chain_assertion_id_verifier )

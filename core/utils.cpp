@@ -11,6 +11,7 @@ assertion_id_data_container_t init_assertion_data()
 
   // TODO: Add remaining generated inlines or replace the code with general solution.
 #include "protocol_assertion_hashes_wax.inl"
+#include "chain_assertion_hashes_wax.inl"
 
   return container;
 }

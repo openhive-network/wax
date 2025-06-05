@@ -46,6 +46,8 @@ set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated_assert_id )
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_DIR}/protocol)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)
+add_subdirectory("${HIVE_ROOT_PATH}/libraries/chain" ${CMAKE_CURRENT_BINARY_DIR}/chain EXCLUDE_FROM_ALL)
+add_subdirectory("${HIVE_ROOT_PATH}/assertion_id_verifier" ${CMAKE_CURRENT_BINARY_DIR}/assertion_id_verifier)
 
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
