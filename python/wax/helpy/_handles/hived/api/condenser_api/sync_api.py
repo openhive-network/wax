@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime  # noqa: TCH003
+from typing import Literal
 
 from schemas.apis import condenser_api
 from schemas.transaction import TransactionLegacy
@@ -11,6 +12,9 @@ from wax.helpy._handles.hived.api.condenser_api.common import CondenserApiCommon
 
 class CondenserApi(AbstractSyncApi, CondenserApiCommons):
     api = AbstractSyncApi.endpoint
+
+    def _serialize_type(self) -> Literal["legacy"]:
+        return "legacy"
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.ARRAY

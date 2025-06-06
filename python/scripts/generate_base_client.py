@@ -13,7 +13,7 @@ from beekeepy.handle.remote import AbstractAsyncApi
 from schemas.transaction import Transaction
 from schemas.apis.api_client_generator.generate_api_collection import generate_api_collection
 from schemas.apis.database_api.response_schemas import FindAccounts as FindAccountsResult
-from schemas.apis.database_api.response_schemas import GetDynamicGlobalPropertiesOrig
+from schemas.apis.database_api.response_schemas import GetDynamicGlobalProperties
 from schemas.apis.network_broadcast_api.response_schemas import BroadcastTransaction as BroadcastTransactionResult
 
 
@@ -36,7 +36,7 @@ WaxApiDefinition = {
         },
         "get_dynamic_global_properties": {
             "params": None,
-            "result": GetDynamicGlobalPropertiesOrig,
+            "result": GetDynamicGlobalProperties,
         }
     },
     "network_broadcast_api": {

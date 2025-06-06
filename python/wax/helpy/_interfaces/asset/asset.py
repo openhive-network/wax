@@ -3,18 +3,15 @@ from __future__ import annotations
 import contextlib
 from typing import Any, TypeAlias, TypeVar
 
-import pydantic
-from pydantic import StrRegexError
 from schemas.fields.assets import (
-    AssetHbdHF26,
-    AssetHbdLegacy,
-    AssetHiveHF26,
-    AssetHiveLegacy,
-    AssetVestsHF26,
-    AssetVestsLegacy,
+    AssetHbd,
+    AssetHive,
+    AssetTbd,
+    AssetTests,
+    AssetVests,
 )
-from schemas.fields.assets.hbd import AssetTbdHF26
-from schemas.fields.assets.hive import AssetTestHF26
+from schemas.fields.assets._base import AssetNaiAmount
+from schemas.fields.resolvables import AnyAsset
 
 from wax.helpy._interfaces.asset.decimal_converter import (
     DecimalConversionNotANumberError,
@@ -41,13 +38,13 @@ class AssetAmountInvalidFormatError(HelpyError):
 
 
 class Asset:
-    HiveT: TypeAlias = AssetHiveHF26
-    TestT: TypeAlias = AssetTestHF26
-    HbdT: TypeAlias = AssetHbdHF26
-    TbdT: TypeAlias = AssetTbdHF26
-    VestsT: TypeAlias = AssetVestsHF26
+    HiveT: TypeAlias = AssetHive
+    TestT: TypeAlias = AssetTests
+    HbdT: TypeAlias = AssetHbd
+    TbdT: TypeAlias = AssetTbd
+    VestsT: TypeAlias = AssetVests
     VestT: TypeAlias = VestsT
-    AnyT: TypeAlias = HiveT | HbdT | VestsT
+    AnyT: TypeAlias = AssetHive | AssetHbd | AssetVests
     AssetPredicateT = TypeVar("AssetPredicateT", bound=HiveT | HbdT | VestsT)
 
     @classmethod
@@ -129,7 +126,7 @@ class Asset:
         """
         try:
             amount = cls.__convert_amount_to_internal_representation(amount, asset)  # type: ignore[arg-type]
-            return asset(amount=amount)  # type: ignore[return-value]
+            return asset(amount=AssetNaiAmount(amount))  # type: ignore[return-value]
         except DecimalConversionNotANumberError as error:
             raise AssetAmountInvalidFormatError(str(amount)) from error
 
@@ -162,31 +159,31 @@ class Asset:
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
-        with contextlib.suppress(TypeError, StrRegexError):
+        with contextlib.suppress(ValueError):
             return cls.HiveT.from_legacy(value)
-        with contextlib.suppress(TypeError, StrRegexError):
+        with contextlib.suppress(ValueError):
             return cls.TestT.from_legacy(value)
-        with contextlib.suppress(TypeError, StrRegexError):
+        with contextlib.suppress(ValueError):
             return cls.HbdT.from_legacy(value)
-        with contextlib.suppress(TypeError, StrRegexError):
+        with contextlib.suppress(ValueError):
             return cls.TbdT.from_legacy(value)
-        with contextlib.suppress(TypeError, StrRegexError):
+        with contextlib.suppress(ValueError):
             return cls.VestsT.from_legacy(value)
         raise AssetLegacyInvalidFormatError(value)
 
     @classmethod
     def from_nai(cls, value: dict[str, str | int], *, testnet: bool = True) -> Asset.AnyT:
         if testnet:
-            with contextlib.suppress(pydantic.ValidationError):
+            with contextlib.suppress(ValueError):
                 return cls.TestT.from_nai(value)
-            with contextlib.suppress(pydantic.ValidationError):
+            with contextlib.suppress(ValueError):
                 return cls.TbdT.from_nai(value)
         else:
-            with contextlib.suppress(pydantic.ValidationError):
+            with contextlib.suppress(ValueError):
                 return cls.HiveT.from_nai(value)
-            with contextlib.suppress(pydantic.ValidationError):
+            with contextlib.suppress(ValueError):
                 return cls.HbdT.from_nai(value)
-        with contextlib.suppress(pydantic.ValidationError):
+        with contextlib.suppress(ValueError):
             return cls.VestsT.from_nai(value)
         raise AssetError("given value is not proper nai dictionary", value)
 
@@ -280,17 +277,17 @@ class Hf26Asset(Asset):
 
 
 class LegacyAsset(Asset):
-    Hive: TypeAlias = AssetHiveLegacy
-    Test: TypeAlias = Hive
-    Hbd: TypeAlias = AssetHbdLegacy
-    Tbd: TypeAlias = Hbd
-    Vests: TypeAlias = AssetVestsLegacy
-    AnyT: TypeAlias = Hive | Hbd | Vests
+    Hive: TypeAlias = AssetHive
+    Test: TypeAlias = AssetTests
+    Hbd: TypeAlias = AssetHbd
+    Tbd: TypeAlias = AssetTbd
+    Vests: TypeAlias = AssetVests
+    AnyT: TypeAlias = AnyAsset
 
 
 def convert_hf26_to_legacy(asset: Hf26Asset.AssetPredicateT) -> Hf26Asset.AssetPredicateT:
     return Hf26Asset.to_legacy(asset)  # type: ignore[return-value]
 
 
-def convert_legacy_to_hf26(asset: LegacyAsset.AnyT) -> Hf26Asset.AnyT:
+def convert_legacy_to_hf26(asset: str) -> Hf26Asset.AnyT:
     return LegacyAsset.from_legacy(asset)

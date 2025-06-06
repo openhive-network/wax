@@ -3,16 +3,13 @@ from __future__ import annotations
 from schemas.apis import rc_api
 
 from beekeepy.handle.remote import AbstractAsyncApi
-from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class RcApi(AbstractAsyncApi):
     api = AbstractAsyncApi.endpoint
 
     @api
-    async def find_rc_accounts(
-        self, *, accounts: list[str], refresh_mana: bool = False
-    ) -> rc_api.FindRcAccounts[Hf26Asset.VestsT]:
+    async def find_rc_accounts(self, *, accounts: list[str], refresh_mana: bool = False) -> rc_api.FindRcAccounts:
         raise NotImplementedError
 
     @api
@@ -24,9 +21,7 @@ class RcApi(AbstractAsyncApi):
         raise NotImplementedError
 
     @api
-    async def list_rc_accounts(
-        self, *, accounts: list[str], refresh_mana: bool = False
-    ) -> rc_api.ListRcAccounts[Hf26Asset.VestsT]:
+    async def list_rc_accounts(self, *, accounts: list[str], refresh_mana: bool = False) -> rc_api.ListRcAccounts:
         raise NotImplementedError
 
     @api

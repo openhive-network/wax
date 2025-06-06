@@ -6,7 +6,6 @@ from schemas.apis import debug_node_api
 from schemas.fields.compound import Price
 
 from beekeepy.handle.remote import AbstractAsyncApi
-from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class DebugNodeApi(AbstractAsyncApi):
@@ -55,9 +54,7 @@ class DebugNodeApi(AbstractAsyncApi):
         raise NotImplementedError
 
     @api
-    async def debug_set_vest_price(
-        self, *, vest_price: Price[Hf26Asset.HiveT, Hf26Asset.HbdT, Hf26Asset.VestsT]
-    ) -> debug_node_api.DebugSetVestPrice:
+    async def debug_set_vest_price(self, *, vest_price: Price) -> debug_node_api.DebugSetVestPrice:
         raise NotImplementedError
 
     @api

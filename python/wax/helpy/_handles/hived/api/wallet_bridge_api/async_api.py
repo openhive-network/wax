@@ -7,7 +7,6 @@ from schemas.transaction import Transaction
 
 from beekeepy.handle.remote import AbstractAsyncApi, ApiArgumentSerialization
 from wax.helpy._handles.hived.api.wallet_bridge_api.common import WalletBridgeApiCommons
-from wax.helpy._interfaces.asset.asset import Hf26Asset
 
 
 class WalletBridgeApi(AbstractAsyncApi, WalletBridgeApiCommons):
@@ -25,7 +24,7 @@ class WalletBridgeApi(AbstractAsyncApi, WalletBridgeApiCommons):
         raise NotImplementedError
 
     @api
-    async def get_chain_properties(self) -> wallet_bridge_api.GetChainProperties[Hf26Asset.HiveT]:
+    async def get_chain_properties(self) -> wallet_bridge_api.GetChainProperties:
         raise NotImplementedError
 
     @api
