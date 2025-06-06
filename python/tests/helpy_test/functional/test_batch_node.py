@@ -17,8 +17,8 @@ def test_batch_node(sync_node: Hived) -> None:
         dynamic_properties = node.api.database.get_dynamic_global_properties()
         config = node.api.database.get_config()
 
-    assert len(dynamic_properties.dict(by_alias=True)) != 0
-    assert len(config.dict(by_alias=True)) != 0
+    assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
+    assert len(config.dict()) != 0, "Config should not be empty"
 
 
 async def test_async_batch_node(async_node: AsyncHived) -> None:
@@ -26,8 +26,8 @@ async def test_async_batch_node(async_node: AsyncHived) -> None:
         dynamic_properties = await node.api.database.get_dynamic_global_properties()
         config = await node.api.database.get_config()
 
-    assert len(dynamic_properties.dict(by_alias=True)) != 0
-    assert len(config.dict(by_alias=True)) != 0
+    assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
+    assert len(config.dict()) != 0, "Config should not be empty"
 
 
 def test_batch_node_response_not_ready(sync_node: Hived) -> None:
