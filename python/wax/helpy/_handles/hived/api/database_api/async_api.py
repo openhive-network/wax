@@ -95,7 +95,7 @@ class DatabaseApi(AbstractAsyncApi, DatabaseApiCommons):
         raise NotImplementedError
 
     @api
-    async def get_active_witnesses(self) -> database_api.GetActiveWitnesses:
+    async def get_active_witnesses(self, *, include_future: bool = False) -> database_api.GetActiveWitnesses:
         raise NotImplementedError
 
     @api
