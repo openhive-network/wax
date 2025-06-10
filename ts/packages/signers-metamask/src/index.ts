@@ -75,6 +75,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
 
   /**
    * @param provider The MetaMask provider instance. This is usually obtained from `window.ethereum` in the browser.
+   * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
    * @param isFlaskDetected Indicates if the MetaMask Flask development version is detected.
    * @param currentSnap The current snap data if it is installed, or null if not.
    * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
@@ -82,6 +83,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    */
   private constructor(
     private readonly provider: MetaMaskInpageProvider,
+    private readonly role: TRole | undefined,
     isFlaskDetected: boolean,
     private currentSnap: MetamaskSnapData | null = null,
     private readonly accountIndex: number = 0,
@@ -108,11 +110,16 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    * @throws on any error from the Hive Wallet invocation.
    */
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    const requiredAuthorities = transaction.requiredAuthorities;
     const authorities = new Set<TRole>();
-    for(const auth in requiredAuthorities)
-      if (!!requiredAuthorities[auth].length || !!requiredAuthorities[auth].size)
-        authorities.add(auth as TRole);
+
+    if (this.role) {
+      authorities.add(this.role);
+    } else {
+      const requiredAuthorities = transaction.requiredAuthorities;
+      for(const auth in requiredAuthorities)
+        if (!!requiredAuthorities[auth].length || !!requiredAuthorities[auth].size)
+          authorities.add(auth as TRole);
+    }
 
     if (authorities.size === 0)
       throw new WaxMetaMaskProviderError('No authorities to sign the transaction');
@@ -128,11 +135,12 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    *
    * Knowledge Base: https://github.com/openhive-network/metamask-snap/wiki/KB#on-chain-usage
    *
-   * @param accountIndex - The index of the account to use for signing transactions. Defaults to 0.
-   * @param snapOrigin - The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
+   * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
+   * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
+   * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public static async for(accountIndex: number = 0, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
+  public static async for(accountIndex: number = 0, role?: TRole | undefined, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
     // Get the provider - this will be the MetaMask provider if it is installed
     const provider = await getSnapsProvider();
     if (!provider)
@@ -147,7 +155,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     const installedSnap = snaps[snapOrigin] ?? null;
 
     // Provide all of the data to our MetaMaskProvider wrapper exposing the public API
-    return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex, snapOrigin);
+    return new MetaMaskProvider(provider, role, isFlaskDetected, installedSnap, accountIndex, snapOrigin);
   }
 
   /**
