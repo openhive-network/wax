@@ -7,8 +7,7 @@ from wax._private.chain_api import HiveChainApi
 from wax.wax_options import WaxChainOptions, WaxOptions
 
 if TYPE_CHECKING:
-    from wax.api.collection import WaxApiCollection
-    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
 
 
 def create_wax_foundation(options: WaxOptions | None = None) -> IWaxBaseInterface:
@@ -18,7 +17,7 @@ def create_wax_foundation(options: WaxOptions | None = None) -> IWaxBaseInterfac
     return WaxBaseApi(chain_id, _private=True)
 
 
-def create_hive_chain(options: WaxChainOptions | None = None) -> IHiveChainInterface[ApiCollectionT | WaxApiCollection]:
+def create_hive_chain(options: WaxChainOptions | None = None) -> IHiveChainInterface:
     """Factory function to provide hive chain interface functionality."""
     options = options if options is not None else WaxChainOptions()
     chain_id = options.chain_id
