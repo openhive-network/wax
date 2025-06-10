@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
 
@@ -44,6 +44,13 @@ class KeychainProvider implements IOnlineSignatureProvider {
     this.role = mapRoles[role];
   }
 
+  /**
+   * Creates a new instance of the KeychainProvider for signing transactions.
+   *
+   * @param accountName The account name to use for signing transactions. This should be a valid Wax account name.
+   * @param role The role to use for signing transactions. Should be one of the valid roles: "active", "posting", or "memo".
+   * @returns An instance of the KeychainProvider that can be used to sign transactions.
+   */
   public static for(accountName: TAccountName, role: TRole): KeychainProvider {
     return new KeychainProvider(accountName, role);
   }
@@ -55,9 +62,72 @@ class KeychainProvider implements IOnlineSignatureProvider {
     return typeof window === "object" || typeof (window as any).hive_keychain === "object";
   }
 
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  private static ensureKeychainInstalled(): void {
     if (!(KeychainProvider.isExtensionInstalled()))
       throw new WaxKeychainProviderError(`Keychain is not installed`);
+  }
+
+  /**
+   * Encrypts data using the Keychain extrension.
+   *
+   * @param buffer The string to encrypt.
+   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @returns A string containing the encrypted data. The string starts with the `#` prefix.
+   *
+   * @throws on any error from the Keychain invocation.
+   */
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+    KeychainProvider.ensureKeychainInstalled();
+
+    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestEncodeWithKeys(
+      this.accountName,
+      [recipient],
+      buffer.startsWith("#") ? buffer : `#${buffer}`,
+      "memo",
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
+
+    return Object.values(response.result)[0] as string;
+  }
+
+  /**
+   * Decrypts data using the Keychain extension.
+   *
+   * @param buffer The string to decrypt. The string should start with the `#` prefix.
+   * @returns The decrypted data as a string.
+   * @throws on any error from the Keychain invocation.
+   */
+  public async decryptData(buffer: string): Promise<string> {
+    KeychainProvider.ensureKeychainInstalled();
+
+    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestVerifyKey(
+      this.accountName,
+      buffer,
+      "memo",
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
+
+    return response.result;
+  }
+
+  /**
+   * Signs a transaction using the Keychain extension.
+   *
+   * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
+   * @throws on any error from the Keychain invocation.
+   */
+  public async signTransaction(transaction: ITransaction): Promise<void> {
+    KeychainProvider.ensureKeychainInstalled();
 
     const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
       this.accountName,

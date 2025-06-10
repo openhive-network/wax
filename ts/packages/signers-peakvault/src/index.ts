@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 type KeyRole = string;
 
@@ -44,6 +44,13 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
     this.role = mapRoles[role];
   }
 
+  /**
+   * Creates a new instance of the PeakVaultProvider for signing transactions.
+   *
+   * @param accountName The account name to use for signing transactions. This should be a valid Wax account name.
+   * @param role The role to use for signing transactions. Should be one of the valid roles: "active", "posting", or "memo".
+   * @returns An instance of the PeakVaultProvider that can be used to sign transactions.
+   */
   public static for(accountName: TAccountName, role: TRole): PeakVaultProvider {
     return new PeakVaultProvider(accountName, role);
   }
@@ -55,9 +62,50 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
     return typeof window === "object" && typeof (window as any).peakvault === "object";
   }
 
-  public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!(PeakVaultProvider.isExtensionInstalled()))
+  private static ensurePeakVaultInstalled(): void {
+    if (!PeakVaultProvider.isExtensionInstalled())
       throw new WaxPeakVaultProviderError(`Peak Vault is not installed`);
+  }
+
+  /**
+   * Encrypts data using the Peak Vault extension.
+   *
+   * @param buffer The string to encrypt. The string should start with the `#` prefix.
+   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @returns A string containing the encrypted data. The string starts with the `#` prefix.
+   * @throws on any error from the Peak Vault invocation.
+   */
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+    PeakVaultProvider.ensurePeakVaultInstalled();
+
+    const response = await (window as any).peakvault.requestEncodeWithKeys(this.accountName, "memo", [recipient], buffer.startsWith("#") ? buffer : `#${buffer}`);
+
+    return response.result[0];
+  }
+
+  /**
+   * Decrypts data using the Peak Vault extension.
+   *
+   * @param buffer The string to decrypt. The string should start with the `#` prefix.
+   * @returns The decrypted data as a string.
+   * @throws on any error from the Peak Vault invocation.
+   */
+  public async decryptData(buffer: string): Promise<string> {
+    PeakVaultProvider.ensurePeakVaultInstalled();
+
+    const response = await (window as any).peakvault.requestDecode(this.accountName, buffer, "memo");
+
+    return response.result;
+  }
+
+  /**
+   * Signs a transaction using the Peak Vault extension.
+   *
+   * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
+   * @throws on any error from the Peak Vault invocation.
+   */
+  public async signTransaction(transaction: ITransaction): Promise<void> {
+    PeakVaultProvider.ensurePeakVaultInstalled();
 
     const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 

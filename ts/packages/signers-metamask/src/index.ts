@@ -201,7 +201,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    * @returns The encrypted buffer as a string, starting with the `#` prefix.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async encrypt(buffer: string, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
     const response = await this.invokeSnap('hive_encrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex }, secondKey: recipient }) as any;
 
     return response.buffer;
@@ -241,6 +241,12 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     return keysRecord;
   }
 
+  /**
+   * Gets the public key for the given role from the Hive Wallet.
+   *
+   * @param role The role to get the public key for. Should be a valid role.
+   * @returns The public key for the given role.
+   */
   public async getPublicKey(role: TRole): Promise<TPublicKey> {
     // Check if the key is already cached
     const key = this.publicKeyCache.get(role);
@@ -265,7 +271,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    * @returns The decrypted buffer as a string.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async decrypt(buffer: string): Promise<string> {
+  public async decryptData(buffer: string): Promise<string> {
     const response = await this.invokeSnap('hive_decrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex } }) as any;
 
     return response.buffer;
