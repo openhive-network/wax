@@ -1,6 +1,8 @@
 # @hiveio/wax-signers-metamask
 
-Wax signer library extending transaction signing possibilities by a 3rd party Web-only extension - MetaMask
+Wax signer library extending transaction signing possibilities by the Hive Wallet - a 3rd party Web-only MetaMask extension snap
+
+Please read the [Knowledge Base](https://github.com/openhive-network/metamask-snap/wiki/KB#on-chain-usage)
 
 ## Prerequisites
 

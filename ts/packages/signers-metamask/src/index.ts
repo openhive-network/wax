@@ -1,5 +1,5 @@
 import type { IOnlineSignatureProvider, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
-import type { MetaMaskInpageProvider } from "@metamask/providers";
+import type { MetaMaskInpageProvider, RequestArguments } from "@metamask/providers";
 import { getSnapsProvider } from "./provider.js";
 
 type MetamaskSnapData = {
@@ -14,12 +14,15 @@ type MetamaskSnapsResponse = Record<string, MetamaskSnapData>;
 export class WaxMetaMaskProviderError extends Error {}
 
 /**
- * The snap origin to use.
+ * The Hive Wallet snap origin to use.
  * Will default to the local hosted snap if no value is provided in environment.
  */
 export const defaultSnapOrigin = `npm:@hiveio/metamask-snap`; // local:http://localhost:8080
 
-// 1.6.0 is the latest, audited version of the snap as of June 2025.
+/**
+ * The Hive Wallet snap version to use.
+ * 1.6.0 is the latest, audited version of the snap as of June 2025.
+ */
 export const defaultSnapVersion: string | undefined = '1.6.0';
 
 /**
@@ -28,11 +31,12 @@ export const defaultSnapVersion: string | undefined = '1.6.0';
  * @param snapId - The snap ID.
  * @returns True if it's a local Snap, or false otherwise.
  */
-export const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
-
+const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
 
 /**
- * Wax transaction signature provider using the MetaMask SDK.
+ * Wax transaction signature provider using the Hive Wallet MetaMask integration.
+ *
+ * Knowledge Base: https://github.com/openhive-network/metamask-snap/wiki/KB#on-chain-usage
  *
  * @example
  * ```
@@ -60,24 +64,49 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
   }
 
   /**
+   * Indicates if the MetaMask Flask development version is detected.
+   */
+  public readonly isFlaskDetected: boolean;
+
+  /**
    * Indicates either the snap is local or not.
    */
   public readonly isLocalSnap: boolean;
 
-  public constructor(
+  /**
+   * @param provider The MetaMask provider instance. This is usually obtained from `window.ethereum` in the browser.
+   * @param isFlaskDetected Indicates if the MetaMask Flask development version is detected.
+   * @param currentSnap The current snap data if it is installed, or null if not.
+   * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
+   * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
+   */
+  private constructor(
     private readonly provider: MetaMaskInpageProvider,
-    public readonly isFlaskDetected: boolean,
+    isFlaskDetected: boolean,
     private currentSnap: MetamaskSnapData | null = null,
     private readonly accountIndex: number = 0,
     private readonly snapOrigin: string = defaultSnapOrigin
   ) {
+    this.isFlaskDetected = isFlaskDetected;
     this.isLocalSnap = isLocalSnap(snapOrigin);
   }
 
-  private request(method: string, params?: any) {
+  /**
+   * @internal method to make requests to the MetaMask provider.
+   */
+  private request(method: RequestArguments['method'], params?: RequestArguments['params']) {
     return this.provider.request(params ? { method, params } : { method });
   }
 
+  /**
+   * Signs a transaction using the Hive Wallet MetaMask integration.
+   * Automatically detects the required authorities from the transaction and signs it using the Hive Wallet snap.
+   *
+   * @param transaction The transaction to sign. Should be an instance of {@link ITransaction}, created by Wax library.
+   *
+   * @throws WaxMetaMaskProviderError if no authorities are required to sign the transaction.
+   * @throws on any error from the Hive Wallet invocation.
+   */
   public async signTransaction(transaction: ITransaction): Promise<void> {
     const requiredAuthorities = transaction.requiredAuthorities;
     const authorities = new Set<TRole>();
@@ -95,10 +124,13 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
   }
 
   /**
-   * Connects to the metamask provider and returns a {@link MetaMaskProvider} instance.
+   * Connects to the MetaMask provider and returns a {@link MetaMaskProvider} instance.
+   *
+   * Knowledge Base: https://github.com/openhive-network/metamask-snap/wiki/KB#on-chain-usage
    *
    * @param accountIndex - The index of the account to use for signing transactions. Defaults to 0.
    * @param snapOrigin - The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
+   * @throws on any error from the Hive Wallet invocation.
    */
   public static async for(accountIndex: number = 0, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
     // Get the provider - this will be the MetaMask provider if it is installed
@@ -118,12 +150,28 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex, snapOrigin);
   }
 
+  /**
+   * Encrypts the given buffer using the Hive Wallet.
+   *
+   * @param buffer The buffer to encrypt. Should be a string.
+   * @param recipient The public key of the recipient to encrypt the buffer for.
+   * The recipient should be a valid public key in the format expected by the Hive Wallet - Starting with "STM".
+   * @returns The encrypted buffer as a string, starting with the `#` prefix.
+   * @throws on any error from the Hive Wallet invocation.
+   */
   public async encrypt(buffer: string, recipient: TPublicKey): Promise<string> {
     const response = await this.invokeSnap('hive_encrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex }, secondKey: recipient }) as any;
 
     return response.buffer;
   }
 
+  /**
+   * Decrypts the given encrypted buffer using the Hive Wallet.
+   *
+   * @param buffer The encrypted buffer to decrypt. Should start with the `#` prefix.
+   * @returns The decrypted buffer as a string.
+   * @throws on any error from the Hive Wallet invocation.
+   */
   public async decrypt(buffer: string): Promise<string> {
     const response = await this.invokeSnap('hive_decrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex } }) as any;
 
@@ -131,8 +179,11 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
   }
 
   /**
-   * Request the snap to be installed or reinstalled.
+   * Request the Hive Wallet snap to be installed or reinstalled.
    * You can check if snap is installed using {@link isSnapInstalled}
+   *
+   * @param version The version of the Hive Wallet to install. If not provided, the default Hive Wallet version will be used.
+   * @throws on any error from the Hive Wallet invocation.
    */
   public async installSnap(version: string | undefined = defaultSnapVersion) {
     const snaps = await this.request('wallet_requestSnaps', {
@@ -144,9 +195,15 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
 
   /**
    * Invokes the snap method with the given parameters.
-   * In order to call this method, you should install the snap first, see {@link isSnapInstalled}
+   * In order to call this method, you should install the snap first, see {@link isSnapInstalled} and {@link installSnap}.
+   *
+   * @note This method is intented mainly for development purposes and backward compatibility, so please use it with caution.
+   *
+   * @param method The method to invoke on the snap (e.g. `"hive_signTransaction"`).
+   * @param params The parameters to pass to the snap method. Should be compatible with the snap's API.
+   * @throws on any error from the Hive Wallet invocation.
    */
-  public async invokeSnap(method: string, params?: any) {
+  public async invokeSnap(method: RequestArguments['method'], params?: RequestArguments['params']) {
     if (!this.isSnapInstalled)
       throw new WaxMetaMaskProviderError('The snap is not installed');
 
