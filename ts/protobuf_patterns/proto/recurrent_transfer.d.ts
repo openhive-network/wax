@@ -1,13 +1,6 @@
 import { asset } from "./asset.js";
-import { void_t } from "./future_extensions.js";
+import { recurrent_transfer_extension } from "./recurrent_transfer_extension.js";
 export declare const protobufPackage = "hive.protocol.buffers";
-export interface recurrent_transfer_pair_id {
-    pair_id: number;
-}
-export interface recurrent_transfer_extension {
-    void_t?: void_t | undefined;
-    recurrent_transfer_pair_id?: recurrent_transfer_pair_id | undefined;
-}
 /**
  * Creates/updates/removes a recurrent transfer in the currency Hive or HBD.
  * Since HF 28, if user has more than one recurrent transfer to the same receiver
@@ -57,18 +50,6 @@ export interface recurrent_transfer {
      */
     extensions: recurrent_transfer_extension[];
 }
-export declare const recurrent_transfer_pair_id: {
-    fromJSON(object: any): recurrent_transfer_pair_id;
-    toJSON(message: recurrent_transfer_pair_id): unknown;
-    create<I extends Exact<DeepPartial<recurrent_transfer_pair_id>, I>>(base?: I): recurrent_transfer_pair_id;
-    fromPartial<I extends Exact<DeepPartial<recurrent_transfer_pair_id>, I>>(object: I): recurrent_transfer_pair_id;
-};
-export declare const recurrent_transfer_extension: {
-    fromJSON(object: any): recurrent_transfer_extension;
-    toJSON(message: recurrent_transfer_extension): unknown;
-    create<I extends Exact<DeepPartial<recurrent_transfer_extension>, I>>(base?: I): recurrent_transfer_extension;
-    fromPartial<I extends Exact<DeepPartial<recurrent_transfer_extension>, I>>(object: I): recurrent_transfer_extension;
-};
 export declare const recurrent_transfer: {
     fromJSON(object: any): recurrent_transfer;
     toJSON(message: recurrent_transfer): unknown;

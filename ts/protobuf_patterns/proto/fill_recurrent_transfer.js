@@ -1,8 +1,9 @@
 /* eslint-disable */
 import { asset } from "./asset.js";
+import { recurrent_transfer_extension } from "./recurrent_transfer_extension.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasefill_recurrent_transfer() {
-    return { from_account: "", to_account: "", amount: undefined, memo: "", remaining_executions: 0 };
+    return { from_account: "", to_account: "", amount: undefined, memo: "", remaining_executions: 0, extensions: [] };
 }
 export const fill_recurrent_transfer = {
     fromJSON(object) {
@@ -12,6 +13,9 @@ export const fill_recurrent_transfer = {
             amount: isSet(object.amount) ? asset.fromJSON(object.amount) : undefined,
             memo: isSet(object.memo) ? globalThis.String(object.memo) : "",
             remaining_executions: isSet(object.remaining_executions) ? globalThis.Number(object.remaining_executions) : 0,
+            extensions: globalThis.Array.isArray(object?.extensions)
+                ? object.extensions.map((e) => recurrent_transfer_extension.fromJSON(e))
+                : [],
         };
     },
     toJSON(message) {
@@ -31,6 +35,9 @@ export const fill_recurrent_transfer = {
         if (message.remaining_executions !== undefined) {
             obj.remaining_executions = Math.round(message.remaining_executions);
         }
+        if (message.extensions?.length) {
+            obj.extensions = message.extensions.map((e) => recurrent_transfer_extension.toJSON(e));
+        }
         return obj;
     },
     create(base) {
@@ -45,6 +52,7 @@ export const fill_recurrent_transfer = {
             : undefined;
         message.memo = object.memo ?? "";
         message.remaining_executions = object.remaining_executions ?? 0;
+        message.extensions = object.extensions?.map((e) => recurrent_transfer_extension.fromPartial(e)) || [];
         return message;
     },
 };

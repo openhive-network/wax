@@ -1,4 +1,5 @@
 import { asset } from "./asset.js";
+import { recurrent_transfer_extension } from "./recurrent_transfer_extension.js";
 export declare const protobufPackage = "hive.protocol.buffers";
 /**
  * Related to recurrent_transfer_operation.
@@ -19,6 +20,12 @@ export interface fill_recurrent_transfer {
     memo: string;
     /** @param {number} remaining_executions - number of remaining pending transferss */
     remaining_executions: number;
+    /**
+     * @param {recurrent_transfer_extension} extensions - Extensions. Since HF 28 it may contain the 'pair_id'.
+     *                                                    It allows to define more than one recurrent transfer from sender to the same receiver 'to'.
+     *                                                    Default value 'pair_id=0'.
+     */
+    extensions: recurrent_transfer_extension[];
 }
 export declare const fill_recurrent_transfer: {
     fromJSON(object: any): fill_recurrent_transfer;

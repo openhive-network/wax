@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { asset } from "./asset.js";
+import { recurrent_transfer_extension } from "./recurrent_transfer_extension.js";
 export const protobufPackage = "hive.protocol.buffers";
 function createBasefailed_recurrent_transfer() {
     return {
@@ -10,6 +11,7 @@ function createBasefailed_recurrent_transfer() {
         consecutive_failures: 0,
         remaining_executions: 0,
         deleted: false,
+        extensions: [],
     };
 }
 export const failed_recurrent_transfer = {
@@ -22,6 +24,9 @@ export const failed_recurrent_transfer = {
             consecutive_failures: isSet(object.consecutive_failures) ? globalThis.Number(object.consecutive_failures) : 0,
             remaining_executions: isSet(object.remaining_executions) ? globalThis.Number(object.remaining_executions) : 0,
             deleted: isSet(object.deleted) ? globalThis.Boolean(object.deleted) : false,
+            extensions: globalThis.Array.isArray(object?.extensions)
+                ? object.extensions.map((e) => recurrent_transfer_extension.fromJSON(e))
+                : [],
         };
     },
     toJSON(message) {
@@ -47,6 +52,9 @@ export const failed_recurrent_transfer = {
         if (message.deleted !== undefined) {
             obj.deleted = message.deleted;
         }
+        if (message.extensions?.length) {
+            obj.extensions = message.extensions.map((e) => recurrent_transfer_extension.toJSON(e));
+        }
         return obj;
     },
     create(base) {
@@ -63,6 +71,7 @@ export const failed_recurrent_transfer = {
         message.consecutive_failures = object.consecutive_failures ?? 0;
         message.remaining_executions = object.remaining_executions ?? 0;
         message.deleted = object.deleted ?? false;
+        message.extensions = object.extensions?.map((e) => recurrent_transfer_extension.fromPartial(e)) || [];
         return message;
     },
 };
