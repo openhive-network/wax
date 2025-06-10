@@ -159,6 +159,13 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
   }
 
   /**
+   * @returns Either True or False if the supported extension (MetaMask) is installed, false otherwise.
+   */
+  public static async isExtensionInstalled(): Promise<boolean> {
+    return await getSnapsProvider() !== null;
+  }
+
+  /**
    * Encrypts the given buffer using the Hive Wallet.
    *
    * @param buffer The buffer to encrypt. Should be a string.

@@ -53,8 +53,23 @@ class KeychainProvider implements IOnlineSignatureProvider {
     return new KeychainProvider(accountName, role);
   }
 
+  /**
+   * @returns Either True or False if the supported extension (Keychain) is installed, false otherwise.
+   */
+  public static async isExtensionInstalled(): Promise<boolean> {
+    try {
+      if(!KeychainProvider.keychain)
+        KeychainProvider.keychain = new KeychainSDK(window);
+    } catch (error) {
+      console.error(`Keychain is not installed or not available:`, error);
+      return false;
+    }
+
+    return KeychainProvider.keychain.isKeychainInstalled();
+  }
+
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!(await KeychainProvider.keychain.isKeychainInstalled()))
+    if (!(await KeychainProvider.isExtensionInstalled()))
       throw new WaxKeychainProviderError(`Keychain is not installed`);
 
     const data = await KeychainProvider.keychain.signTx({

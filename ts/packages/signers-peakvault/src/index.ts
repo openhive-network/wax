@@ -55,9 +55,24 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
     return new PeakVaultProvider(accountName, role);
   }
 
+  /**
+   * @returns Either True or False if the supported extension (Peak Vault) is installed, false otherwise.
+   */
+  public static async isExtensionInstalled(): Promise<boolean> {
+    try {
+      if (!PeakVaultProvider.peakVaultWallet)
+        PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+    } catch (error) {
+      console.error(`Peak Vault is not installed or not available:`, error);
+      return false;
+    }
+
+    return PeakVaultProvider.peakVaultWallet.available;
+  }
+
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!PeakVaultProvider.peakVaultWallet)
-      PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
+    if (!(await PeakVaultProvider.isExtensionInstalled()))
+      throw new WaxPeakVaultProviderError(`Peak Vault is not installed`);
 
     const data = await PeakVaultProvider.peakVaultWallet.signTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 
