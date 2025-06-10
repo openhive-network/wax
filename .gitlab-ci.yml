@@ -397,7 +397,7 @@ test_helpy:
         CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
     - variables:
         # default branch is exposed at GitLab Pages root
-        CURRENT_CONTENT_PATH: "."
+        CURRENT_CONTENT_PATH: ""
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
