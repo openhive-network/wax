@@ -62,14 +62,17 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
   /**
    * Indicates either the snap is local or not.
    */
-  public readonly isLocalSnap = isLocalSnap(defaultSnapOrigin);
+  public readonly isLocalSnap: boolean;
 
   public constructor(
     private readonly provider: MetaMaskInpageProvider,
     public readonly isFlaskDetected: boolean,
     private currentSnap: MetamaskSnapData | null = null,
-    private readonly accountIndex: number = 0
-  ) {}
+    private readonly accountIndex: number = 0,
+    private readonly snapOrigin: string = defaultSnapOrigin
+  ) {
+    this.isLocalSnap = isLocalSnap(snapOrigin);
+  }
 
   private request(method: string, params?: any) {
     return this.provider.request(params ? { method, params } : { method });
@@ -93,8 +96,11 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
 
   /**
    * Connects to the metamask provider and returns a {@link MetaMaskProvider} instance.
+   *
+   * @param accountIndex - The index of the account to use for signing transactions. Defaults to 0.
+   * @param snapOrigin - The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
    */
-  public static async for(accountIndex: number = 0): Promise<MetaMaskProvider> {
+  public static async for(accountIndex: number = 0, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
     // Get the provider - this will be the MetaMask provider if it is installed
     const provider = await getSnapsProvider();
     if (!provider)
@@ -106,10 +112,10 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
 
     // Check if the snap is already installed
     const snaps = await provider.request({ method: 'wallet_getSnaps' }) as MetamaskSnapsResponse;
-    const installedSnap = snaps[defaultSnapOrigin] ?? null;
+    const installedSnap = snaps[snapOrigin] ?? null;
 
     // Provide all of the data to our MetaMaskProvider wrapper exposing the public API
-    return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex);
+    return new MetaMaskProvider(provider, isFlaskDetected, installedSnap, accountIndex, snapOrigin);
   }
 
   public async encrypt(buffer: string, recipient: TPublicKey): Promise<string> {
@@ -130,10 +136,10 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    */
   public async installSnap(version: string | undefined = defaultSnapVersion) {
     const snaps = await this.request('wallet_requestSnaps', {
-      [defaultSnapOrigin]: (typeof version === "undefined" || version.length === 0) ? {} : { version }
+      [this.snapOrigin]: (typeof version === "undefined" || version.length === 0) ? {} : { version }
     }) as MetamaskSnapsResponse;
 
-    this.currentSnap = snaps[defaultSnapOrigin]!;
+    this.currentSnap = snaps[this.snapOrigin]!;
   }
 
   /**
@@ -145,7 +151,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
       throw new WaxMetaMaskProviderError('The snap is not installed');
 
     return this.request('wallet_invokeSnap', {
-      snapId: defaultSnapOrigin,
+      snapId: this.snapOrigin,
       request: params ? { method, params } : { method },
     });
   }
