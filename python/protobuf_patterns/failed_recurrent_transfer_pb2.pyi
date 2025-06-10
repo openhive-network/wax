@@ -4,8 +4,11 @@ isort:skip_file
 """
 import asset_pb2
 import builtins
+import collections.abc
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.message
+import recurrent_transfer_extension_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -33,6 +36,7 @@ class failed_recurrent_transfer(google.protobuf.message.Message):
     CONSECUTIVE_FAILURES_FIELD_NUMBER: builtins.int
     REMAINING_EXECUTIONS_FIELD_NUMBER: builtins.int
     DELETED_FIELD_NUMBER: builtins.int
+    EXTENSIONS_FIELD_NUMBER: builtins.int
     from_account: builtins.str
     """@param {string} from_account - user that initiated the transfer (source of amount that has not enough balance to cover it)"""
     to_account: builtins.str
@@ -48,6 +52,12 @@ class failed_recurrent_transfer(google.protobuf.message.Message):
     """ @param {number} remaining_executions - number of remaining pending transfers"""
     deleted: builtins.bool
     """ @param {bool} deleted - true if whole recurrent transfer was discontinued due to too many consecutive failures"""
+    @property
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[recurrent_transfer_extension_pb2.recurrent_transfer_extension]:
+        """@param {recurrent_transfer_extension} extensions - Extensions. Since HF 28 it may contain the 'pair_id'.
+                                                           It allows to define more than one recurrent transfer from sender to the same receiver 'to'. 
+                                                           Default value 'pair_id=0'.
+        """
     def __init__(
         self,
         *,
@@ -58,8 +68,9 @@ class failed_recurrent_transfer(google.protobuf.message.Message):
         consecutive_failures: builtins.int | None = ...,
         remaining_executions: builtins.int | None = ...,
         deleted: builtins.bool | None = ...,
+        extensions: collections.abc.Iterable[recurrent_transfer_extension_pb2.recurrent_transfer_extension] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["amount", b"amount", "consecutive_failures", b"consecutive_failures", "deleted", b"deleted", "from_account", b"from_account", "memo", b"memo", "remaining_executions", b"remaining_executions", "to_account", b"to_account"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["amount", b"amount", "consecutive_failures", b"consecutive_failures", "deleted", b"deleted", "from_account", b"from_account", "memo", b"memo", "remaining_executions", b"remaining_executions", "to_account", b"to_account"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["amount", b"amount", "consecutive_failures", b"consecutive_failures", "deleted", b"deleted", "extensions", b"extensions", "from_account", b"from_account", "memo", b"memo", "remaining_executions", b"remaining_executions", "to_account", b"to_account"]) -> None: ...
 
 global___failed_recurrent_transfer = failed_recurrent_transfer

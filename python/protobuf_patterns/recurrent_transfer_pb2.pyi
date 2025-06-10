@@ -5,10 +5,10 @@ isort:skip_file
 import asset_pb2
 import builtins
 import collections.abc
-import future_extensions_pb2
 import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
+import recurrent_transfer_extension_pb2
 import sys
 
 if sys.version_info >= (3, 8):
@@ -17,44 +17,6 @@ else:
     import typing_extensions
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
-
-@typing_extensions.final
-class recurrent_transfer_pair_id(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    PAIR_ID_FIELD_NUMBER: builtins.int
-    pair_id: builtins.int
-    def __init__(
-        self,
-        *,
-        pair_id: builtins.int | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["pair_id", b"pair_id"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["pair_id", b"pair_id"]) -> None: ...
-
-global___recurrent_transfer_pair_id = recurrent_transfer_pair_id
-
-@typing_extensions.final
-class recurrent_transfer_extension(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    VOID_T_FIELD_NUMBER: builtins.int
-    RECURRENT_TRANSFER_PAIR_ID_FIELD_NUMBER: builtins.int
-    @property
-    def void_t(self) -> future_extensions_pb2.void_t: ...
-    @property
-    def recurrent_transfer_pair_id(self) -> global___recurrent_transfer_pair_id: ...
-    def __init__(
-        self,
-        *,
-        void_t: future_extensions_pb2.void_t | None = ...,
-        recurrent_transfer_pair_id: global___recurrent_transfer_pair_id | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["extension", b"extension", "recurrent_transfer_pair_id", b"recurrent_transfer_pair_id", "void_t", b"void_t"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["extension", b"extension", "recurrent_transfer_pair_id", b"recurrent_transfer_pair_id", "void_t", b"void_t"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["extension", b"extension"]) -> typing_extensions.Literal["void_t", "recurrent_transfer_pair_id"] | None: ...
-
-global___recurrent_transfer_extension = recurrent_transfer_extension
 
 @typing_extensions.final
 class recurrent_transfer(google.protobuf.message.Message):
@@ -107,7 +69,7 @@ class recurrent_transfer(google.protobuf.message.Message):
                                  Executions must be at least 2, if you set executions to 1 the recurrent transfer will not be executed.
     """
     @property
-    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___recurrent_transfer_extension]:
+    def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[recurrent_transfer_extension_pb2.recurrent_transfer_extension]:
         """@param {recurrent_transfer_extension} extensions - Extensions. Since HF 28 it may contain the 'pair_id'.
                                                            It allows to define more than one recurrent transfer from sender to the same receiver 'to'. 
                                                            Default value 'pair_id=0'.
@@ -121,7 +83,7 @@ class recurrent_transfer(google.protobuf.message.Message):
         memo: builtins.str | None = ...,
         recurrence: builtins.int | None = ...,
         executions: builtins.int | None = ...,
-        extensions: collections.abc.Iterable[global___recurrent_transfer_extension] | None = ...,
+        extensions: collections.abc.Iterable[recurrent_transfer_extension_pb2.recurrent_transfer_extension] | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "from_account", b"from_account", "memo", b"memo", "recurrence", b"recurrence", "to_account", b"to_account"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["amount", b"amount", "executions", b"executions", "extensions", b"extensions", "from_account", b"from_account", "memo", b"memo", "recurrence", b"recurrence", "to_account", b"to_account"]) -> None: ...
