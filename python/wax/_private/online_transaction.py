@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.transaction import Transaction
-from wax.interfaces import ApiCollectionT, IOnlineTransaction
+from wax.interfaces import IOnlineTransaction
 from wax.wax_options import WaxOptions
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class OnlineTransaction(Transaction, IOnlineTransaction):
     def __init__(
         self,
-        chain_api: HiveChainApi[ApiCollectionT],
+        chain_api: HiveChainApi,
         chain_reference_data: ChainReferenceData,
         expiration_time: timedelta = DEFAULT_TRANSACTION_EXPIRATION_TIME,
     ) -> None:

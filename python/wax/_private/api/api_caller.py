@@ -24,7 +24,7 @@ def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable)
 
 
 class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT], HiveHandleCommonHelpers):  # type: ignore[type-var]
-    _INSTANCES: ClassVar[set[WaxApiCaller]] = set()  # type: ignore[type-arg]
+    _INSTANCES: ClassVar[set[WaxApiCaller]] = set()
 
     def __init__(self, api_collection: ApiCollectionT, endpoint_url: HttpUrl) -> None:
         self._api_collection = api_collection  # assigned here because `_constuct_api` method

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeAlias
 
 from typing_extensions import Self, TypeVar
 
+from wax.api.collection import WaxApiCollection
 from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
@@ -37,7 +38,7 @@ TTimestamp: TypeAlias = datetime | timedelta
 ChainConfig: TypeAlias = dict[str, str]
 """ChainConfig is a type alias for a dictionary containing chain configuration parameters."""
 
-ApiCollectionT = TypeVar("ApiCollectionT")
+ApiCollectionT = TypeVar("ApiCollectionT", default=WaxApiCollection)
 """TypeVar for API collection, available by default in the IHiveChainInterface."""
 ExtendedApiCollectionT = TypeVar("ExtendedApiCollectionT")
 """TypeVar for API collection that will be added to the IHiveChainInterface by the user."""
