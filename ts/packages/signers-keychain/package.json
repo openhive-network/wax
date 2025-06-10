@@ -14,8 +14,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/wax": "workspace:../..",
-    "keychain-sdk": "^0.8.5"
+    "@hiveio/wax": "workspace:../.."
   },
   "files": [
     "dist/index.d.ts",

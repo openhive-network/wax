@@ -1,9 +1,6 @@
 import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
-import { getWallet } from '@peakd/hive-wallet-sdk'
-
-// @peakd/hive-wallet-sdk fails to provide this type import
-type KeyRole = Parameters<typeof PeakVaultProvider['peakVaultWallet']['signTx']>[2];
+type KeyRole = string;
 
 const mapRoles: Record<TRole, KeyRole | undefined> = {
   active: 'active',
@@ -11,8 +8,6 @@ const mapRoles: Record<TRole, KeyRole | undefined> = {
   owner: undefined,
   memo: 'memo'
 };
-
-const PEAKVAULT_WALLET_ID: Parameters<typeof getWallet>[0] = 'peakvault';
 
 // We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
 export class WaxPeakVaultProviderError extends Error {}
@@ -39,8 +34,6 @@ export class WaxPeakVaultProviderError extends Error {}
 class PeakVaultProvider implements IOnlineSignatureProvider {
   private readonly role: KeyRole;
 
-  private static peakVaultWallet: Awaited<ReturnType<typeof getWallet>>;
-
   private constructor(
     private readonly accountName: TAccountName,
     role: TRole
@@ -58,23 +51,15 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
   /**
    * @returns Either True or False if the supported extension (Peak Vault) is installed, false otherwise.
    */
-  public static async isExtensionInstalled(): Promise<boolean> {
-    try {
-      if (!PeakVaultProvider.peakVaultWallet)
-        PeakVaultProvider.peakVaultWallet = await getWallet(PEAKVAULT_WALLET_ID);
-    } catch (error) {
-      console.error(`Peak Vault is not installed or not available:`, error);
-      return false;
-    }
-
-    return PeakVaultProvider.peakVaultWallet.available;
+  public static isExtensionInstalled(): boolean {
+    return typeof window === "object" && typeof (window as any).peakvault === "object";
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!(await PeakVaultProvider.isExtensionInstalled()))
+    if (!(PeakVaultProvider.isExtensionInstalled()))
       throw new WaxPeakVaultProviderError(`Peak Vault is not installed`);
 
-    const data = await PeakVaultProvider.peakVaultWallet.signTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
+    const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 
     for(const sig of data.result.signatures)
       transaction.sign(sig);

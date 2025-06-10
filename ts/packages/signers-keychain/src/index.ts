@@ -1,12 +1,12 @@
 import type { IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
-import { KeychainKeyTypes, KeychainSDK } from "keychain-sdk";
+type KeychainKeyTypes = string;
 
 const mapRoles: Record<TRole, KeychainKeyTypes | undefined> = {
-  active: KeychainKeyTypes.active,
-  posting: KeychainKeyTypes.posting,
+  active: "active",
+  posting: "posting",
   owner: undefined,
-  memo: KeychainKeyTypes.memo
+  memo: "memo"
 };
 
 // We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
@@ -34,17 +34,12 @@ export class WaxKeychainProviderError extends Error {}
 class KeychainProvider implements IOnlineSignatureProvider {
   private readonly role: KeychainKeyTypes;
 
-  private static keychain: KeychainSDK;
-
   private constructor(
     private readonly accountName: TAccountName,
     role: TRole
   ) {
     if (!mapRoles[role])
       throw new Error(`Role ${role} is not supported by the Wax signature provider: ${KeychainProvider.name}`);
-
-    if(!KeychainProvider.keychain)
-      KeychainProvider.keychain = new KeychainSDK(window);
 
     this.role = mapRoles[role];
   }
@@ -56,27 +51,25 @@ class KeychainProvider implements IOnlineSignatureProvider {
   /**
    * @returns Either True or False if the supported extension (Keychain) is installed, false otherwise.
    */
-  public static async isExtensionInstalled(): Promise<boolean> {
-    try {
-      if(!KeychainProvider.keychain)
-        KeychainProvider.keychain = new KeychainSDK(window);
-    } catch (error) {
-      console.error(`Keychain is not installed or not available:`, error);
-      return false;
-    }
-
-    return KeychainProvider.keychain.isKeychainInstalled();
+  public static isExtensionInstalled(): boolean {
+    return typeof window === "object" || typeof (window as any).hive_keychain === "object";
   }
 
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    if (!(await KeychainProvider.isExtensionInstalled()))
+    if (!(KeychainProvider.isExtensionInstalled()))
       throw new WaxKeychainProviderError(`Keychain is not installed`);
 
-    const data = await KeychainProvider.keychain.signTx({
-      method: this.role,
-      username: this.accountName,
-      tx: JSON.parse(transaction.toLegacyApi())
-    });
+    const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
+      this.accountName,
+      JSON.parse(transaction.toLegacyApi()),
+      this.role,
+      (response: any) => {
+        if (response.error)
+          reject(response);
+        else
+          resolve(response);
+      }
+    )) as any;
 
     for(const sig of data.result.signatures)
       transaction.sign(sig);
