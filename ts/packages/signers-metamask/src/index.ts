@@ -106,6 +106,8 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     private readonly role: TRole | undefined
   ) {}
 
+  private readonly publicKeyCache = new Map<TRole, TPublicKey>();
+
   /**
    * @internal method to make requests to the MetaMask provider.
    */
@@ -203,6 +205,57 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     const response = await this.invokeSnap('hive_encrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex }, secondKey: recipient }) as any;
 
     return response.buffer;
+  }
+
+  /**
+   * Gets the public keys for the given roles from the Hive Wallet.
+   *
+   * @param roles The roles to get the public keys for. Should be an array of TRole.
+   * @returns A record of {@link TRole} to {@link TPublicKey}, where each role is mapped to its corresponding public key.
+   * @throws on any error from the Hive Wallet invocation or unsupported role.
+   */
+  public async getPublicKeys<Roles extends TRole[]>(...roles: Roles): Promise<{ [Role in Roles[number]]: TPublicKey }> {
+    const keysRecord = Object.fromEntries(([...(new Set(roles))]).map(role => [role, undefined])) as unknown as { [Role in Roles[number]]: TPublicKey };
+
+    for(const role in keysRecord) {
+      const cachedKey = this.publicKeyCache.get(role as TRole);
+      if (cachedKey)
+        keysRecord[role as TRole] = cachedKey;
+    }
+
+    const missingRoles = Object.entries(keysRecord).filter(([, key]) => !key).map(([role]) => role as TRole);
+
+    // All keys are already cached so return the cached keys
+    if (missingRoles.length === 0)
+      return keysRecord;
+
+    // This will fail if any of the requested roles is not supported
+    const response = await this.invokeSnap('hive_getPublicKeys', { keys: missingRoles.map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
+
+    // Update the cache with the new keys
+    for(const key of response.publicKeys) {
+      keysRecord[key.role] = key.publicKey;
+      this.publicKeyCache.set(key.role, key.publicKey);
+    }
+
+    return keysRecord;
+  }
+
+  public async getPublicKey(role: TRole): Promise<TPublicKey> {
+    // Check if the key is already cached
+    const key = this.publicKeyCache.get(role);
+    if (key)
+      return key;
+
+    // This will fail if the requested role is not supported
+    const response = await this.invokeSnap('hive_getPublicKey', { keys: [{ role, accountIndex: this.accountIndex }] }) as any;
+
+    const publicKey = response.publicKeys[0].publicKey;
+
+    // Update the cache with the new key
+    this.publicKeyCache.set(role, publicKey);
+
+    return publicKey;
   }
 
   /**
