@@ -60,44 +60,57 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    * If you want to install or reinstall the snap, use {@link installSnap}
    */
   public get isSnapInstalled() {
-    return !!this.currentSnap;
+    return !!MetaMaskProvider.#currentSnap;
   }
 
   /**
    * Indicates if the MetaMask Flask development version is detected.
    */
-  public readonly isFlaskDetected: boolean;
+  public get isFlaskDetected() {
+    return MetaMaskProvider.#isFlaskDetected;
+  }
 
   /**
    * Indicates either the snap is local or not.
    */
-  public readonly isLocalSnap: boolean;
+  public get isLocalSnap() {
+    return isLocalSnap(MetaMaskProvider.#snapOrigin);
+  }
 
   /**
-   * @param provider The MetaMask provider instance. This is usually obtained from `window.ethereum` in the browser.
-   * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
-   * @param isFlaskDetected Indicates if the MetaMask Flask development version is detected.
-   * @param currentSnap The current snap data if it is installed, or null if not.
+   * @internal The MetaMask provider instance. This is usually obtained from `window.ethereum` in the browser.
+   */
+  static #provider: MetaMaskInpageProvider;
+
+  /**
+   * @internal Indicates if the MetaMask Flask development version is detected.
+   */
+  static #isFlaskDetected: boolean;
+
+  /**
+   * @internal The current snap data if it is installed, or null if not.
+   */
+  static #currentSnap: MetamaskSnapData | null = null;
+
+  /**
+   * @internal The origin of the snap to use.
+   */
+  static #snapOrigin: string;
+
+  /**
    * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
-   * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
+   * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
    */
   private constructor(
-    private readonly provider: MetaMaskInpageProvider,
-    private readonly role: TRole | undefined,
-    isFlaskDetected: boolean,
-    private currentSnap: MetamaskSnapData | null = null,
-    private readonly accountIndex: number = 0,
-    private readonly snapOrigin: string = defaultSnapOrigin
-  ) {
-    this.isFlaskDetected = isFlaskDetected;
-    this.isLocalSnap = isLocalSnap(snapOrigin);
-  }
+    private readonly accountIndex: number,
+    private readonly role: TRole | undefined
+  ) {}
 
   /**
    * @internal method to make requests to the MetaMask provider.
    */
   private request(method: RequestArguments['method'], params?: RequestArguments['params']) {
-    return this.provider.request(params ? { method, params } : { method });
+    return MetaMaskProvider.#provider.request(params ? { method, params } : { method });
   }
 
   /**
@@ -135,27 +148,39 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    *
    * Knowledge Base: https://github.com/openhive-network/metamask-snap/wiki/KB#on-chain-usage
    *
+   * @note This method caches the MetaMask connection for optimization.
+   * @note For security reasons, when you call this method multiple times with different snap origin it will fail, so users wouldn't silently switch to a different inpage provider or snap.
+   *
    * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
    * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
    * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
    * @throws on any error from the Hive Wallet invocation.
    */
   public static async for(accountIndex: number = 0, role?: TRole | undefined, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
-    // Get the provider - this will be the MetaMask provider if it is installed
-    const provider = await getSnapsProvider();
-    if (!provider)
-      throw new Error("Could not retrieve the provider. Make sure you have a wallet installed.");
+    if (!MetaMaskProvider.#snapOrigin) {
+      // Get the provider - this will be the MetaMask provider if it is installed
+      const provider = await getSnapsProvider();
+      if (!provider)
+        throw new Error("Could not retrieve the provider. Make sure you have a wallet installed.");
 
-    // Check for client version - detect if we are using metamask flask development version
-    const clientVersion = await provider.request({ method: 'web3_clientVersion' });
-    const isFlaskDetected = (clientVersion as string[])?.includes('flask');
+      MetaMaskProvider.#provider = provider;
 
-    // Check if the snap is already installed
-    const snaps = await provider.request({ method: 'wallet_getSnaps' }) as MetamaskSnapsResponse;
-    const installedSnap = snaps[snapOrigin] ?? null;
+      // Check for client version - detect if we are using metamask flask development version
+      const clientVersion = await MetaMaskProvider.#provider.request({ method: 'web3_clientVersion' });
+      MetaMaskProvider.#isFlaskDetected = (clientVersion as string[])?.includes('flask');
+
+      // Check if the snap is already installed
+      const snaps = await MetaMaskProvider.#provider.request({ method: 'wallet_getSnaps' }) as MetamaskSnapsResponse;
+      MetaMaskProvider.#currentSnap = snaps[snapOrigin] ?? null;
+
+      MetaMaskProvider.#snapOrigin = snapOrigin;
+    }
+
+    if (MetaMaskProvider.#snapOrigin !== snapOrigin)
+      throw new WaxMetaMaskProviderError(`The snap origin is already set to "${MetaMaskProvider.#snapOrigin}". You cannot change it to ${snapOrigin} after the first call.`);
 
     // Provide all of the data to our MetaMaskProvider wrapper exposing the public API
-    return new MetaMaskProvider(provider, role, isFlaskDetected, installedSnap, accountIndex, snapOrigin);
+    return new MetaMaskProvider(accountIndex, role);
   }
 
   /**
@@ -202,10 +227,10 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
    */
   public async installSnap(version: string | undefined = defaultSnapVersion) {
     const snaps = await this.request('wallet_requestSnaps', {
-      [this.snapOrigin]: (typeof version === "undefined" || version.length === 0) ? {} : { version }
+      [MetaMaskProvider.#snapOrigin]: (typeof version === "undefined" || version.length === 0) ? {} : { version }
     }) as MetamaskSnapsResponse;
 
-    this.currentSnap = snaps[this.snapOrigin]!;
+    MetaMaskProvider.#currentSnap = snaps[MetaMaskProvider.#snapOrigin]!;
   }
 
   /**
@@ -223,7 +248,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
       throw new WaxMetaMaskProviderError('The snap is not installed');
 
     return this.request('wallet_invokeSnap', {
-      snapId: this.snapOrigin,
+      snapId: MetaMaskProvider.#snapOrigin,
       request: params ? { method, params } : { method },
     });
   }
