@@ -426,6 +426,9 @@ build_python_docs:
     paths: [ public ]
   artifacts:
     paths: [ public ]
+  tags:  # has to be a single runner or cache should be shared between multiple runners
+    - data-cache-storage
+    - hived
 
 deploy_python_docs:
   pages: true
