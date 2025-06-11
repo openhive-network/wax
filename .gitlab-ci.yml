@@ -394,8 +394,8 @@ test_helpy:
     - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
       variables:
         # subpath to branches content for preview
-        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-        CURRENT_URL: $CURRENT_CONTENT_PATH
+        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_URL: ""
     - variables:
         # default branch is exposed at GitLab Pages root
         CURRENT_CONTENT_PATH: "default/"
