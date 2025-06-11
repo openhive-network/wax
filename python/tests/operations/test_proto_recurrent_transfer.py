@@ -7,17 +7,18 @@ from wax.proto.operations import (
 )
 from wax.proto.asset import asset
 from wax.proto.transaction import transaction
+from wax._private.proto.recurrent_transfer_extension_pb2 import recurrent_transfer_extension, recurrent_transfer_pair_id
 
 def test_recurrent_transfer():
     amount: asset = asset(
         nai="@@000000021", precision=3, amount="10"
     )
-    recurrent_transfer_pair_id: recurrent_transfer_pb2.recurrent_transfer_pair_id = (
-        recurrent_transfer_pb2.recurrent_transfer_pair_id(pair_id=0)
+    _recurrent_transfer_pair_id: recurrent_transfer_pair_id = (
+        recurrent_transfer_pair_id(pair_id=0)
     )
-    extensions: recurrent_transfer_pb2.recurrent_transfer_extension = (
-        recurrent_transfer_pb2.recurrent_transfer_extension(
-            recurrent_transfer_pair_id=recurrent_transfer_pair_id
+    extensions: recurrent_transfer_extension = (
+        recurrent_transfer_extension(
+            recurrent_transfer_pair_id=_recurrent_transfer_pair_id
         )
     )
     recurrent_transfer_proto: recurrent_transfer = (
