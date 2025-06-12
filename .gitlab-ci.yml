@@ -424,6 +424,8 @@ build_python_docs:
   extends: .python_docs_variables
   stage: deploy
   cache:
+    # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
+    # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
     key: gitlab-pages
     paths: [ public ]
   artifacts:
