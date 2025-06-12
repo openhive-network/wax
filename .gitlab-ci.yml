@@ -395,9 +395,11 @@ test_helpy:
       variables:
         # subpath to branches content for preview
         CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+        CURRENT_URL: $CURRENT_CONTENT_PATH
     - variables:
         # default branch is exposed at GitLab Pages root
-        CURRENT_CONTENT_PATH: ""
+        CURRENT_CONTENT_PATH: "default/"
+        CURRENT_URL: ""
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
@@ -436,7 +438,7 @@ deploy_python_docs:
     - job: build_python_docs
       artifacts: true
   variables:
-    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_CONTENT_PATH}"
+    PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
     - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
     - rm -rf $PAGES_CONTENT_PATH
