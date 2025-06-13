@@ -208,13 +208,13 @@ extras = ["regex"]
 
 [[package]]
 name = "beekeepy"
-version = "0.0.1.dev381+3f2ed76"
+version = "0.0.1.dev382+8d1f0c3"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main"]
 files = [
-    {file = "beekeepy-0.0.1.dev381+3f2ed76-py3-none-any.whl", hash = "sha256:4d9b52d54f241484adede45278b90281bccbede3cc37dbd202ee17e182b4c7e3"},
+    {file = "beekeepy-0.0.1.dev382+8d1f0c3-py3-none-any.whl", hash = "sha256:024975cf5e733cd54f915829be55702d2ff52cb626a20c019e65f1138361952c"},
 ]
 
 [package.dependencies]
@@ -2303,4 +2303,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "5e6caba8ee449c427684baf36c911c44d5bb8433ccbb52e84e47dc748454e88d"
+content-hash = "9d02f073a0b9c0c01a017b0513a8ae9619b3e7a215bbfcfbf90b1adb736aab0c"
