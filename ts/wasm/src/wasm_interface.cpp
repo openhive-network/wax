@@ -368,6 +368,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_generate_binary_operation_metadata", &protocol_wasm::cpp_generate_binary_operation_metadata)
     .function("cpp_validate_operation", &protocol_wasm::cpp_validate_operation)
     .function("cpp_validate_transaction", &protocol_wasm::cpp_validate_transaction)
+    .function("cpp_get_default_comment_options_operation", &protocol_wasm::cpp_get_default_comment_options_operation)
     .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
     .function("cpp_calculate_legacy_transaction_id", &protocol_wasm::cpp_calculate_legacy_transaction_id)
     .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
