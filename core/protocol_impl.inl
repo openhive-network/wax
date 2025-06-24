@@ -116,6 +116,22 @@ result protocol_impl<FoundationProvider>::cpp_validate_transaction(const std::st
 
 template <class FoundationProvider>
 inline
+std::string protocol_impl<FoundationProvider>::cpp_get_default_comment_options_operation() const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string
+    {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+      hive::protocol::comment_options_operation op;
+      hive::protocol::operation finalOp(op);
+
+      return fc::json::to_string(finalOp);
+    });
+}
+
+template <class FoundationProvider>
+inline
 result protocol_impl<FoundationProvider>::cpp_calculate_transaction_id(const std::string& transaction)
 {
   return method_wrapper([&](result& _result)

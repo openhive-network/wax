@@ -43,7 +43,9 @@ public:
 
   result cpp_validate_operation(const std::string& operation);
   result cpp_validate_transaction(const std::string& transaction);
-  
+  /// Allows to retrieve json form of comment options operation initialized to blockchain defaults.
+  std::string cpp_get_default_comment_options_operation() const;
+
   ///  Allows to calculate hf26 compliant transaction-id (serialized using hf26 form)
   result cpp_calculate_transaction_id(const std::string& transaction);
   /**  Allows to calculate legacy transaction-id (serialized using pre-hf26 form)
