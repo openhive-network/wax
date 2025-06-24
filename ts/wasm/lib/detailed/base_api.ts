@@ -5,7 +5,7 @@ import type { ApiOperation, NaiAsset } from "./api";
 
 import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
-import { operation, transaction } from "./protocol";
+import { comment_options, operation, transaction } from "./protocol";
 
 import { WaxError, WaxPrivateKeyLeakDetectedException } from './errors.js';
 import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
@@ -29,11 +29,30 @@ export enum EAssetName {
   VESTS = "VESTS"
 }
 
+const extractWasmResult = (wax: MainModule, res: result): string => {
+  if(res.value !== wax.error_code.ok)
+    throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
+
+  return res.content as string;
+}
+
+class BlockchainDefaultInitializer {
+  public static defaultCommentOptions(wax: MainModule,proto: proto_protocol, protocol: protocol): comment_options {
+    const protoOpResult = safeWasmCall(() => proto.cpp_api_to_proto(protocol.cpp_get_default_comment_options_operation()));
+    const protoOpJson = extractWasmResult(wax, protoOpResult);
+
+    const op = operation.fromJSON(JSON.parse(protoOpJson));
+    const commentOptionOp = op.comment_options!;
+    return commentOptionOp
+  }
+};
+
 export class WaxBaseApi implements IWaxBaseInterface {
-  public proto: proto_protocol;
-  public protocol: protocol;
+  public readonly proto: proto_protocol;
+  public readonly protocol: protocol;
 
   public readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
+  private readonly blockChainDefaultCommentOptions: comment_options;
 
   public readonly formatter = WaxFormatter.create(this);
   public get waxify() {
@@ -113,6 +132,14 @@ export class WaxBaseApi implements IWaxBaseInterface {
       resultingSet.add(vector.get(i) as TAccountName);
 
     return resultingSet;
+  }
+
+  public getDefaultCommentOptionsOperation(author: TAccountName, permlink: string): comment_options {
+    const commentOptionOp = comment_options.fromPartial(this.blockChainDefaultCommentOptions);
+    commentOptionOp.author = author;
+    commentOptionOp.permlink = permlink;
+
+    return commentOptionOp;
   }
 
   private assertAssetSymbol(requiredSymbolType: EAssetName[] | EAssetName, asset: NaiAsset): NaiAsset {
@@ -277,10 +304,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public extract(res: result): string {
-    if(res.value !== this.wax.error_code.ok)
-      throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
-
-    return res.content as string;
+    return extractWasmResult(this.wax, res);
   }
 
   public constructor(
@@ -289,6 +313,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
   ) {
     this.proto = safeWasmCall(() => new wax.proto_protocol());
     this.protocol = safeWasmCall(() => new wax.protocol());
+    this.blockChainDefaultCommentOptions = BlockchainDefaultInitializer.defaultCommentOptions(wax, this.proto, this.protocol);
+
     this.ASSETS = {
       [EAssetName.HBD]: this.hbdSatoshis(0),
       [EAssetName.HIVE]: this.hiveSatoshis(0),
