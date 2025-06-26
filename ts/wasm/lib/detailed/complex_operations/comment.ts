@@ -2,6 +2,7 @@ import type { TAccountName } from "../hive_apps_operations/factory";
 import { operation, comment, asset } from "../protocol.js";
 import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { WaxError } from "../errors.js";
+import { deepEqual } from "../util/equal.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import Long from "long";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
@@ -154,10 +155,14 @@ class CommentOperation extends OperationBase {
     operations.push({ comment: this.comment });
 
     if(typeof this.commentOptions === "object") {
-      if (this.maxAcceptedPayoutToSet !== undefined)
-        this.commentOptions.max_accepted_payout = (sink.api as WaxBaseApi).createAssetWithRequiredSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet);
+      const waxBase = sink.api as WaxBaseApi;
 
-      operations.push({ comment_options: this.commentOptions });
+      if (this.maxAcceptedPayoutToSet !== undefined)
+        this.commentOptions.max_accepted_payout = waxBase.createAssetWithRequiredSymbol(EAssetName.HBD, this.maxAcceptedPayoutToSet);
+
+      const defaultCommentOptions = waxBase.getDefaultCommentOptionsOperation(this.comment.author, this.comment.permlink);
+      if (deepEqual(defaultCommentOptions, this.commentOptions) === false)
+        operations.push({ comment_options: this.commentOptions });
     }
 
     return operations;
