@@ -955,6 +955,39 @@ test.describe('Wax complex operation tests', () => {
     ]);
   });
 
+  test('Using blockchain defaults in comment_options should skip this operation', async ({ waxTest }) => {
+    const retVal = await waxTest(({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      tx.pushOperation(new wax.BlogPostOperation({
+        category: "test-category",
+        author: "gtg",
+        title: "Set allow votes",
+        body: "Set allow votes",
+        permlink: "set-allow-votes",
+        allowVotes: true /// Using blockchain default should not create comment_options operation
+      }));
+
+      return tx.toApi();
+    });
+
+    expect(JSON.parse(retVal).operations).toStrictEqual([
+      {
+        type: 'comment_operation',
+        value: {
+          author: 'gtg',
+          body: 'Set allow votes',
+          json_metadata: `{"format":"markdown+html","app":"${app}"}`,
+          parent_author: "",
+          parent_permlink: "test-category",
+          permlink: 'set-allow-votes',
+          title: 'Set allow votes'
+        }
+      }
+    ]);
+  });
+
+
   test('Should be able to set format in BlogPostOperation', async ({ waxTest }) => {
     const retVal = await waxTest(({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
