@@ -6,9 +6,9 @@ Please do not modify it!
 from __future__ import annotations
 
 from pathlib import Path
-from dataclasses import dataclass
 
 from beekeepy.handle.remote import AbstractAsyncApi
+from msgspec import Struct
 
 from schemas.transaction import Transaction
 from schemas.apis.api_client_generator.generate_api_collection import generate_api_collection
@@ -17,14 +17,12 @@ from schemas.apis.database_api.response_schemas import GetDynamicGlobalPropertie
 from schemas.apis.network_broadcast_api.response_schemas import BroadcastTransaction as BroadcastTransactionResult
 
 
-@dataclass
-class FindAccountsParams:
+class FindAccountsParams(Struct):
     accounts: list[str]
     delayed_votes_active: bool = False
 
 
-@dataclass
-class BroadcastTransactionParams:
+class BroadcastTransactionParams(Struct):
     transaction: Transaction
 
 
