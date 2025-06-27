@@ -75,12 +75,19 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       return data;
     }, data => { // Rewrite response data to JSON-RPC format
-      if (typeof data.response === "object" && "result" in data.response)
-        data.response = data.response.result;
-      else
-        throw new WaxChainApiError(`Invalid response from API: ${JSON.stringify(data.response)}`, data.response);
+      if (typeof data.response === "object") {
+        if ("result" in data.response) {
+          data.response = data.response.result;
+          return data;
+        }
 
-      return data;
+        if ("error" in data.response && typeof data.response.error === "object" && "data" in data.response.error) {
+          // Possibly an exception that we can recognize & repackage.
+          this.protocol.cpp_process_error_data(JSON.stringify(data.response.error.data));
+        }
+      }
+      
+      throw new WaxChainApiError(`Invalid response from API: ${JSON.stringify(data.response)}`, data.response);
     });
     this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate(originator ? structuredClone(originator.restApiCaller.localTypes) : {}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator

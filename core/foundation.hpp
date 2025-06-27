@@ -107,6 +107,7 @@ public:
 
   void cpp_throws(int type) const;
   transaction_handle_stats cpp_report_transaction_handle_stats() const;
+  void cpp_process_error_data(const std::string& data) const;
 
   /* Allows to decode a `crypto-memo` string into structure providing such data directly (needed to start actual decryption process).
   *  To be used as 1st step of decryption process.

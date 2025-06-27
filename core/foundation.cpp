@@ -563,6 +563,29 @@ transaction_handle_stats foundation::cpp_report_transaction_handle_stats() const
   return { hive_transaction_handle::instance_count, hive_transaction_handle::max_instance_count };
 }
 
+void foundation::cpp_process_error_data(const std::string& data) const
+{
+  fc::exception e;
+  try {
+    fc::variant json = fc::json::from_string(data, fc::json::format_validation_mode::full);
+    fc::from_variant(json, e);
+  }
+  catch (...) {
+    // Apparently the error data don't represent a fc::exception.
+    return;
+  }
+
+  if(e.code() != fc::assert_exception::code_value)
+  {
+    // Not an assert_exception either.
+    return;
+  }
+
+  fc::assert_exception ae(e);
+  throw_appropriate_wax_assertion(ae);
+  // If the exception was not thrown, it means that the assertion code is not recognized.
+}
+
 crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const
 {
   return cpp::safe_exception_wrapper([&]() -> crypto_memo {
