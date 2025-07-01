@@ -42,7 +42,7 @@ class BlockchainDefaultInitializer {
     const protoOpJson = extractWasmResult(wax, protoOpResult);
 
     const op = operation.fromJSON(JSON.parse(protoOpJson));
-    const commentOptionOp = op.comment_options!;
+    const commentOptionOp = op.comment_options_operation!;
     return commentOptionOp
   }
 };
