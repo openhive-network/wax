@@ -34,7 +34,9 @@ class CustomBuild(build_ext):
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
         configure_args = [
-            "-GNinja"
+            "-GNinja",
+            # Avoid caching python path from temporary venv directory (See `PYTHON_EXECUTABLE:FILEPATH` in CMakeCache.txt)
+            "--fresh"
         ]
         if useDebugBuild():
             configure_args.append("-DCMAKE_BUILD_TYPE=Debug")
