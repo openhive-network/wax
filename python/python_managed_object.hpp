@@ -1,6 +1,5 @@
 #pragma once
 
-#include "core/protocol_transaction.hpp"
 #include "py_object_ptr.hpp"
 #include <fc/exception/exception.hpp>
 #include <fc/variant.hpp>

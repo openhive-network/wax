@@ -10,8 +10,29 @@ from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 from libcpp cimport bool
+from libcpp.memory cimport unique_ptr
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
+    cdef cppclass wax_tx_ptr_deleter:
+        pass
+
+    cdef cppclass wax_op_ptr_deleter:
+        pass
+
+    cdef cppclass hive_tx:
+        pass
+
+    cdef cppclass hive_op:
+        pass
+
+    cdef cppclass hive_transaction_handle:
+        hive_transaction_handle() except +
+        unique_ptr[hive_tx, wax_tx_ptr_deleter] tx
+
+    cdef cppclass hive_operation_handle:
+        hive_operation_handle() except +
+        unique_ptr[hive_op, wax_op_ptr_deleter] op
+
     cdef enum error_code:
         fail = 0
         ok = 1
@@ -50,6 +71,15 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
          account_set posting_accounts
          account_set active_accounts
          account_set owner_accounts
+         vector[wax_authority] other_authorities
+
+    cdef cppclass required_authority_collectionV:
+         required_authority_collectionV() except +
+         ctypedef vector[string] account_vector
+
+         account_vector posting_accounts
+         account_vector active_accounts
+         account_vector owner_accounts
          vector[wax_authority] other_authorities
 
     cdef cppclass crypto_memo:
@@ -135,6 +165,19 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         cpp_optional[uint32_t] max_account_auths
         bool allow_strict_and_mixed_authorities
 
+    cdef cppclass binary_data_node:
+        string key
+        string type
+        uint32_t offset
+        uint32_t size
+        string value
+        uint32_t length
+        vector[binary_data_node] children
+
+    cdef cppclass binary_data:
+        string binary
+        vector[binary_data_node] offsets
+
     cdef cppclass protocol:
         vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
         vector[string] cpp_transaction_get_impacted_accounts( string transaction ) except +
@@ -188,6 +231,27 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         result cpp_calculate_transaction_id( string transaction )
         result cpp_calculate_legacy_transaction_id( string transaction )
         result cpp_calculate_sig_digest( string transaction, string chain_id )
+
+        void cpp_tx_proto_to_api( object transaction ) except +
+        void cpp_tx_api_to_proto( object transaction ) except +
+
+        hive_transaction_handle cpp_create_transaction_handle( object transaction, bool is_protobuf ) except +
+        hive_operation_handle cpp_create_operation_handle( object operation, bool is_protobuf ) except +
+
+        void cpp_tx_add_operation( hive_transaction_handle hTx, hive_operation_handle hOp ) except +
+        void cpp_tx_add_signature( hive_transaction_handle hTx, string signature ) except +
+        void cpp_tx_set_expiration( hive_transaction_handle hTx, string expiration ) except +
+        string cpp_tx_to_legacy_json( hive_transaction_handle hTx ) except +
+        string cpp_tx_to_binary( hive_transaction_handle hTx, bool use_hf26_serialization, bool strip_to_unsigned_transaction ) except +
+        string cpp_tx_to_json( hive_transaction_handle hTx ) except +
+        string cpp_tx_id( hive_transaction_handle hTx, bool use_hf26_serialization ) except +
+        binary_data cpp_tx_binary( hive_transaction_handle hTx, bool use_hf26_serialization, bool strip_to_unsigned_transaction ) except +
+        required_authority_collectionV cpp_tx_required_authorities( hive_transaction_handle hTx ) except +
+        vector[string] cpp_tx_impacted_accounts( hive_transaction_handle hTx ) except +
+        vector[string] cpp_tx_signature_keys( hive_transaction_handle hTx, string chain_id, bool use_hf26_serialization ) except +
+        string cpp_tx_sig_digest( hive_transaction_handle hTx, string chain_id, bool use_hf26_serialization ) except +
+        void cpp_tx_validate( hive_transaction_handle hTx ) except +
+
         result cpp_calculate_legacy_sig_digest( string transaction, string chain_id )
         result cpp_serialize_transaction( string transaction, bool strip_to_unsigned_transaction )
         result cpp_deserialize_transaction( string transaction )

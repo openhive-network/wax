@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # distutils: language = c++
 
+from dataclasses import dataclass
 from typing import Callable
 from functools import wraps
 
@@ -10,12 +11,13 @@ from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.vector cimport vector
 from libcpp.optional cimport optional
+from libcpp.utility cimport move
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
 import cython
 from cython.operator cimport dereference, preincrement
 
-from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, proto_protocol
+from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, proto_protocol, binary_data, binary_data_node, required_authority_collectionV, hive_transaction_handle, hive_operation_handle
 from .wax_result import (
     python_result,
     python_error_code,
@@ -24,6 +26,8 @@ from .wax_result import (
     python_required_authority_collection,
     python_encrypted_memo,
     python_private_key_data,
+    python_binary_data,
+    python_binary_data_node,
     python_brain_key_data,
     python_witness_set_properties_data,
     python_price,
@@ -346,6 +350,151 @@ def proto_to_api(operation_or_tx: bytes) -> python_result:
   cdef proto_protocol obj
   response = obj.cpp_proto_to_api( operation_or_tx )
   return response.value, response.content, response.exception_message
+
+def tx_proto_to_api( tx: object ) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to convert the transaction from proto to API format.
+    obj.cpp_tx_proto_to_api( tx )
+
+def tx_api_to_proto( object transaction ) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to convert the transaction from API to proto format.
+    obj.cpp_tx_api_to_proto( transaction )
+
+cdef class WaxTransactionHandle:
+  cdef hive_transaction_handle hTx
+
+cdef class WaxOperationHandle:
+  cdef hive_operation_handle hOp
+
+def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandle:
+    cdef proto_protocol obj
+    # Call the C++ method which returns a transaction pointer.
+    cdef hive_transaction_handle hTx = obj.cpp_create_transaction_handle( tx, is_protobuf )
+    # Wrap the C++ python_transaction pointer in the Python WaxTransactionHandle class.
+    cdef WaxTransactionHandle wax_tx = WaxTransactionHandle.__new__(WaxTransactionHandle)
+    wax_tx.hTx = move(hTx)
+    return wax_tx
+
+def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
+    cdef proto_protocol obj
+    # Call the C++ method which returns an operation pointer.
+    cdef hive_operation_handle hOp = obj.cpp_create_operation_handle( op, is_protobuf )
+    # Wrap the C++ operation pointer in the Python WaxOperationHandle class.
+    cdef WaxOperationHandle wax_op = WaxOperationHandle.__new__(WaxOperationHandle)
+    wax_op.hOp = move(hOp)
+    return wax_op
+
+def tx_add_operation(wax_tx: WaxTransactionHandle, wax_op: WaxOperationHandle) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to add the operation to the transaction.
+    obj.cpp_tx_add_operation(wax_tx.hTx, wax_op.hOp)
+
+def tx_add_signature(wax_tx: WaxTransactionHandle, signature: bytes) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to add the signature to the transaction.
+    obj.cpp_tx_add_signature(wax_tx.hTx, signature)
+
+def tx_set_expiration(wax_tx: WaxTransactionHandle, expiration: bytes) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to set the expiration for the transaction.
+    obj.cpp_tx_set_expiration(wax_tx.hTx, expiration)
+
+def tx_to_legacy_json(wax_tx: WaxTransactionHandle) -> bytes:
+    cdef proto_protocol obj
+    # Call the C++ method to convert the transaction to legacy JSON format.
+    return obj.cpp_tx_to_legacy_json(wax_tx.hTx)
+
+def tx_to_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> bytes:
+    cdef proto_protocol obj
+    # Call the C++ method to convert the transaction to binary format.
+    return obj.cpp_tx_to_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction)
+
+def tx_to_json(wax_tx: WaxTransactionHandle) -> bytes:
+    cdef proto_protocol obj
+    # Call the C++ method to convert the transaction to JSON format.
+    return obj.cpp_tx_to_json(wax_tx.hTx)
+
+def tx_id(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
+    cdef proto_protocol obj
+    # Call the C++ method to get the transaction ID.
+    return obj.cpp_tx_id(wax_tx.hTx, use_hf26_serialization)
+
+cdef object convert_binary_data_node_to_python(binary_data_node node):
+    """Recursively convert C++ binary_data_node to Python python_binary_data_node."""
+    cdef list children = []
+
+    # Recursively convert all children
+    for child in node.children:
+        children.append(convert_binary_data_node_to_python(child))
+
+    # Create and return the Python object
+    return python_binary_data_node(
+        key=node.key,
+        type=node.type,
+        offset=node.offset,
+        size=node.size,
+        value=node.value,
+        length=node.length,
+        children=children
+    )
+
+def tx_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> python_binary_data:
+    cdef proto_protocol obj
+    # Call the C++ method to get the binary data of the transaction.
+    cdef binary_data data = obj.cpp_tx_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction)
+    # Convert the C++ binary_data to a Python binary_data.
+    cdef list offsets = []
+    for node in data.offsets:
+        offsets.append(convert_binary_data_node_to_python(node))
+    # Wrap the C++ binary_data in a Python python_binary_data class.
+    return python_binary_data(
+        binary=data.binary,
+        offsets=offsets
+    )
+
+def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_authority_collection:
+    cdef proto_protocol obj
+    # Call the C++ method to get the required authorities for the transaction.
+    cdef required_authority_collectionV collection = obj.cpp_tx_required_authorities(wax_tx.hTx)
+
+    op = set(collection.posting_accounts)
+    oa = set(collection.active_accounts)
+    oo = set(collection.owner_accounts)
+    other_auths = []
+    for auth in collection.other_authorities:
+      other_auths.append(python_authority(
+        weight_threshold = auth.weight_threshold,
+        key_auths = auth.key_auths,
+        account_auths = auth.account_auths
+      ))
+
+    return python_required_authority_collection(
+      posting_accounts=op,
+      active_accounts=oa,
+      owner_accounts=oo,
+      other_authorities=other_auths,
+    )
+
+def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> vector[string]:
+    cdef proto_protocol obj
+    # Call the C++ method to get the impacted accounts for the transaction.
+    return obj.cpp_tx_impacted_accounts(wax_tx.hTx)
+
+def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> vector[string]:
+    cdef proto_protocol obj
+    # Call the C++ method to get the signature keys for the transaction.
+    return obj.cpp_tx_signature_keys(wax_tx.hTx, chain_id, use_hf26_serialization)
+
+def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
+    cdef proto_protocol obj
+    # Call the C++ method to get the signature digest for the transaction.
+    return obj.cpp_tx_sig_digest(wax_tx.hTx, chain_id, use_hf26_serialization)
+
+def tx_validate(wax_tx: WaxTransactionHandle) -> None:
+    cdef proto_protocol obj
+    # Call the C++ method to validate the transaction.
+    obj.cpp_tx_validate(wax_tx.hTx)
 
 @return_python_result
 def proto_to_legacy_api(operation_or_tx: bytes) -> python_result:
