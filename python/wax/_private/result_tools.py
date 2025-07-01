@@ -15,6 +15,10 @@ def to_python_string(value: bytes | str) -> str:
     return value.decode()
 
 
+def to_python_str_list(value: list[bytes]) -> list[str]:
+    return [to_python_string(item) for item in value]
+
+
 def to_cpp_string(value: bytes | str) -> bytes:
     if isinstance(value, str):
         return value.encode()
