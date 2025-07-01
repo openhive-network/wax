@@ -33,7 +33,7 @@ def test_account_create_with_delegation():
     )
 
     account_create_with_delegation_operation: operation = operation(
-        account_create_with_delegation=account_create_with_delegation_proto
+        account_create_with_delegation_operation=account_create_with_delegation_proto
     )
 
     check_operations(account_create_with_delegation_operation)

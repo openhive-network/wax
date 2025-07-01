@@ -41,6 +41,7 @@ def test_basic_recurrent_transfer_operation(wax: IWaxBaseInterface, transaction:
             "memo": "thanks for the service",
             "recurrence": 24,
             "to": "bob",
+            "extensions": [],
         },
     }
 
@@ -54,7 +55,7 @@ def test_basic_recurrent_transfer_operation(wax: IWaxBaseInterface, transaction:
 def test_recurrent_transfer_with_pair_id_extension(
     wax: IWaxBaseInterface, transaction: ITransaction, asset_type: str
 ) -> None:
-    id_: Final[int] = 12345
+    id_: Final[int] = 57
     transfer_amount = getattr(wax, asset_type).satoshis(100)
 
     transaction.push_operation(

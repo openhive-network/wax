@@ -6,13 +6,13 @@ from tests.utils.refs import PROTO_REF_VOTE_OP, PROTO_REF_TRANSACTION
 from wax import proto_transaction_get_impacted_accounts, proto_operation_get_impacted_accounts
 
 EXPECTED_OPERATION_IMPACTED_ACCOUNTS: Final[list[str]] = [
-    PROTO_REF_VOTE_OP["vote"]["author"],
-    PROTO_REF_VOTE_OP["vote"]["voter"],
+    PROTO_REF_VOTE_OP["vote_operation"]["author"],
+    PROTO_REF_VOTE_OP["vote_operation"]["voter"],
 ]
 
 EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS: Final[list[str]] = [
-    PROTO_REF_TRANSACTION["operations"][0]["vote"]["author"],
-    PROTO_REF_TRANSACTION["operations"][0]["vote"]["voter"],
+    PROTO_REF_TRANSACTION["operations"][0]["vote_operation"]["author"],
+    PROTO_REF_TRANSACTION["operations"][0]["vote_operation"]["voter"],
 ]
 
 def test_proto_operation_get_impacted_accounts():

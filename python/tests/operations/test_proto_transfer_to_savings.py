@@ -22,7 +22,7 @@ def test_transfer_to_savings():
     )
 
     transfer_to_savings_operation: operation = (
-        operation(transfer_to_savings=transfer_to_savings_proto)
+        operation(transfer_to_savings_operation=transfer_to_savings_proto)
     )
 
     check_operations(transfer_to_savings_operation)

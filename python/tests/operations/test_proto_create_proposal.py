@@ -45,7 +45,7 @@ def test_create_proposal():
         )
     )
     create_proposal_operation: operation = operation(
-        create_proposal=create_proposal_proto
+        create_proposal_operation=create_proposal_proto
     )
 
     check_operations(create_proposal_operation)

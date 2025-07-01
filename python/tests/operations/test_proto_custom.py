@@ -25,7 +25,7 @@ def test_custom():
     )
 
     custom_operation: operation = operation(
-        custom=custom_proto
+        custom_operation=custom_proto
     )
     check_operations(custom_operation)
 

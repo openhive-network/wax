@@ -28,7 +28,7 @@ def test_recover_account():
     )
 
     recover_account_operation: operation = operation(
-        recover_account=recover_account_proto
+        recover_account_operation=recover_account_proto
     )
 
     check_operations(recover_account_operation)

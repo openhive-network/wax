@@ -12,7 +12,7 @@ def test_limit_order_cancel():
     )
 
     limit_order_cancel_operation: operation = operation(
-        limit_order_cancel=limit_order_cancel_proto
+        limit_order_cancel_operation=limit_order_cancel_proto
     )
 
     check_operations(limit_order_cancel_operation)

@@ -16,7 +16,7 @@ def test_escrow_dispute():
     )
 
     escrow_dispute_operation: operation = (
-        operation(escrow_dispute=escrow_dispute_proto)
+        operation(escrow_dispute_operation=escrow_dispute_proto)
     )
 
     check_operations(escrow_dispute_operation)

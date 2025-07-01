@@ -20,7 +20,7 @@ def test_transfer():
     )
 
     transfer_operation: operation = (
-        operation(transfer=transfer_proto)
+        operation(transfer_operation=transfer_proto)
     )
 
     check_operations(transfer_operation)

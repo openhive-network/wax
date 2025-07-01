@@ -17,7 +17,7 @@ def test_set_withdraw_vesting_route():
     )
 
     set_withdraw_vesting_route_opertaion: operation = (
-        operation(set_withdraw_vesting_route=set_withdraw_vesting_route_proto)
+        operation(set_withdraw_vesting_route_operation=set_withdraw_vesting_route_proto)
     )
 
     check_operations(set_withdraw_vesting_route_opertaion)

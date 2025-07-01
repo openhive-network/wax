@@ -19,7 +19,7 @@ def test_comment():
     )
 
     comment_operation: operation = operation(
-        comment=comment_proto
+        comment_operation=comment_proto
     )
 
     check_operations(comment_operation)

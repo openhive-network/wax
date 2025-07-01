@@ -59,7 +59,7 @@ def test_witness_update():
     )
 
     witness_update_operation: operation = operation(
-        witness_update=witness_update_proto
+        witness_update_operation=witness_update_proto
     )
 
     check_operations(witness_update_operation)

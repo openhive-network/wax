@@ -10,7 +10,7 @@ def get_proto_operation_name(operation: dict[str, Any]) -> str:
     Example:
     -------
     operation = {
-        "comment": {
+        "comment_operation": {
             "parent_permlink": "/",
             "author": "alice",
             "permlink": "/",
@@ -20,6 +20,6 @@ def get_proto_operation_name(operation: dict[str, Any]) -> str:
         }
     }
 
-    get_proto_operation_name(operation) -> "comment"
+    get_proto_operation_name(operation) -> "comment_operation"
     """
     return next(iter(operation))

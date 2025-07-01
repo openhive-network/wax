@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import random
-import string
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -26,24 +25,24 @@ if TYPE_CHECKING:
 POSSIBLE_ROLE_TYPES: Final[list[ActiveRoleName | OwnerRoleName | PostingRoleName]] = ["active", "owner", "posting"]
 
 
-def generate_random_public_key() -> str:
-    chars = string.ascii_letters + string.digits
-    random_part = "".join(random.choices(chars, k=50))
-    return "STM" + random_part
+def generate_random_public_key(chain: IHiveChainInterface[ApiCollectionT]) -> str:
+    return chain.suggest_brain_key().associated_public_key
 
 
-def get_public_keys(num: int) -> list[str]:
-    return [generate_random_public_key() for _ in range(num)]
+def get_public_keys(num: int, chain: IHiveChainInterface[ApiCollectionT]) -> list[str]:
+    return [generate_random_public_key(chain) for _ in range(num)]
 
 
 def generate_account_names(num: int) -> list[str]:
     return [f"alice-{n}" for n in range(num)]
 
 
-def create_mixed_entries(start: int, limit: int) -> dict[str, list[str]]:
+def create_mixed_entries(
+    start: int, limit: int, remote_chain: IHiveChainInterface[ApiCollectionT]
+) -> dict[str, list[str]]:
     account_auths_number = random.randint(start, limit)
     account_names = generate_account_names(account_auths_number)
-    public_keys = get_public_keys(limit - account_auths_number)
+    public_keys = get_public_keys(limit - account_auths_number, remote_chain)
 
     return {"account_names": account_names, "public_keys": public_keys, "all_entries": account_names + public_keys}
 
@@ -60,13 +59,13 @@ async def test_add_entries_to_account_authority_update_operation(
     role = getattr(account_update.roles, role_type)
 
     if auths_type == "key_auths":
-        all_entries = get_public_keys(entry)
+        all_entries = get_public_keys(entry, remote_chain)
     elif auths_type == "account_auths":
         all_entries = generate_account_names(entry)
     elif entry == 1:
-        all_entries = random.choice([get_public_keys(entry), "alice-0"])  # type: ignore[list-item]
+        all_entries = random.choice([get_public_keys(entry, remote_chain), "alice-0"])  # type: ignore[list-item]
     else:
-        entries = create_mixed_entries(1, entry - 1)
+        entries = create_mixed_entries(1, entry - 1, remote_chain)
         all_entries = entries["all_entries"]
 
     for e in all_entries:
@@ -113,11 +112,11 @@ async def test_account_authority_update_exceeded_auth_limit(
     role = getattr(account_update.roles, role_type)
 
     if auths_type == "key_auths":
-        entries = get_public_keys(exceeded_auth_limit)
+        entries = get_public_keys(exceeded_auth_limit, remote_chain)
     elif auths_type == "account_auths":
         entries = generate_account_names(exceeded_auth_limit)
     else:
-        entries = create_mixed_entries(1, exceeded_auth_limit)["all_entries"]
+        entries = create_mixed_entries(1, exceeded_auth_limit, remote_chain)["all_entries"]
 
     for entry in entries:
         role.add(account_or_key=entry, weight=3)
@@ -139,7 +138,7 @@ async def test_account_authority_update_under_weight_threshold_limit(
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
-    entries = get_public_keys(1) if auths_type == "key_auths" else generate_account_names(1)
+    entries = get_public_keys(1, remote_chain) if auths_type == "key_auths" else generate_account_names(1)
 
     for entry in entries:
         role.add(account_or_key=entry, weight=weight_threshold)
@@ -192,7 +191,11 @@ async def test_account_authority_update_clear_authority(
     assert len(operations) == 1
     assert operations[0]["type"] == "account_update2_operation"
     assert operations[0]["value"]["account"] == "initminer"
-    assert operations[0]["value"][role_type] == {"weight_threshold": 1}  # default authority
+    assert operations[0]["value"][role_type] == {
+        "weight_threshold": 1,
+        "account_auths": [],
+        "key_auths": [],
+    }  # default authority
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
@@ -205,7 +208,7 @@ async def test_account_authority_update_reset_role(
     original_key_auths = len(role.authority.key_auths)
     original_account_auths = len(role.authority.account_auths)
 
-    extra_keys = get_public_keys(3)
+    extra_keys = get_public_keys(3, remote_chain)
     extra_account_auths = generate_account_names(3)
     for entry in extra_keys + extra_account_auths:
         role.add(account_or_key=entry)
@@ -230,7 +233,11 @@ async def test_account_authority_update_remove_role(
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
-    entries = get_public_keys(entries_number) if auths_type == "key_auths" else generate_account_names(entries_number)
+    entries = (
+        get_public_keys(entries_number, remote_chain)
+        if auths_type == "key_auths"
+        else generate_account_names(entries_number)
+    )
     for entry in entries:
         role.add(account_or_key=entry)
 
@@ -248,12 +255,16 @@ async def test_account_authority_update_replace_entry_in_role(
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
-    entries = get_public_keys(entries_number) if auths_type == "key_auths" else generate_account_names(entries_number)
+    entries = (
+        get_public_keys(entries_number, remote_chain)
+        if auths_type == "key_auths"
+        else generate_account_names(entries_number)
+    )
     for entry in entries:
         role.add(account_or_key=entry)
 
     entry_to_replace: Final[str] = entries[0]
-    new_entry = generate_random_public_key() if auths_type == "key_auths" else "new-account"
+    new_entry = generate_random_public_key(remote_chain) if auths_type == "key_auths" else "new-account"
     role.replace(account_or_key=entries[0], new_account_or_key=new_entry, weight=1)
 
     assert entry_to_replace not in getattr(role.authority, auths_type)
@@ -295,11 +306,11 @@ async def test_account_authority_update_replace_entry_type_to_another_one(
     role = getattr(account_update.roles, role_type)
 
     if auths_type == "key_auths":
-        entry = get_public_keys(1)[0]
+        entry = get_public_keys(1, remote_chain)[0]
         new_entry = generate_account_names(1)[0]
     else:
         entry = generate_account_names(1)[0]
-        new_entry = get_public_keys(1)[0]
+        new_entry = get_public_keys(1, remote_chain)[0]
 
     new_auths_type = "account_auths" if auths_type == "key_auths" else "key_auths"
 
@@ -332,7 +343,7 @@ async def test_account_authority_update_role_has_a_entry(
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
-    entry = get_public_keys(1)[0] if auths_type == "key_auths" else generate_account_names(1)[0]
+    entry = get_public_keys(1, remote_chain)[0] if auths_type == "key_auths" else generate_account_names(1)[0]
     role.add(account_or_key=entry, weight=weight)
 
     assert role.has(account_or_key=entry, weight=weight)

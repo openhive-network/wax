@@ -27,7 +27,7 @@ RECOVER_ACCOUNT: Final[recover_account] = recover_account(
     account_to_recover="account", new_owner_authority=AUTHORITY_1, recent_owner_authority=AUTHORITY_2, extensions=[]
 )
 
-PROTO_OPERATION: Final[operation] = operation(recover_account=RECOVER_ACCOUNT)
+PROTO_OPERATION: Final[operation] = operation(recover_account_operation=RECOVER_ACCOUNT)
 API_OPERATION_DICT: Final[dict[str, Any]] = {
     "type": "claim_reward_balance_operation",
     "value": {
@@ -69,7 +69,7 @@ def test_get_operation_impacted_accounts_0(wax: IWaxBaseInterface) -> None:
 def test_get_operation_impacted_accounts_1(wax: IWaxBaseInterface) -> None:
     result = wax.get_operation_impacted_accounts(
         operation=operation(
-            vote=vote(
+            vote_operation=vote(
                 author="c0ff33a",
                 permlink="ewxhnjbj",
                 voter="otom",

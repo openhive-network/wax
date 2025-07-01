@@ -32,7 +32,7 @@ def test_limit_order_create2():
     )
 
     limit_order_create2_operation: operation = operation(
-        limit_order_create2=limit_order_create2_proto
+        limit_order_create2_operation=limit_order_create2_proto
     )
 
     check_operations(limit_order_create2_operation)

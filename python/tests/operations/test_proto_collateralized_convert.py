@@ -32,7 +32,7 @@ def test_collateralized_convert():
     )
 
     collateralized_convert_operation: operation = (
-        operation(collateralized_convert=collateralized_convert_proto)
+        operation(collateralized_convert_operation=collateralized_convert_proto)
     )
 
     check_operations(collateralized_convert_operation)

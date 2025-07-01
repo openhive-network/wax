@@ -22,7 +22,7 @@ def test_feed_publish():
     )
 
     feed_publish_operation: operation =operation(
-        feed_publish=feed_publish_proto
+        feed_publish_operation=feed_publish_proto
     )
 
     check_operations(feed_publish_operation)
