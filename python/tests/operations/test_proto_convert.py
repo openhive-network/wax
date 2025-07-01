@@ -30,7 +30,7 @@ def test_convert():
     )
 
     convert_operation: operation = operation(
-        convert=convert_proto
+        convert_operation=convert_proto
     )
     check_operations(convert_operation)
 

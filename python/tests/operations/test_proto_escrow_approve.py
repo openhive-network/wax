@@ -17,7 +17,7 @@ def test_escrow_approve():
     )
 
     escrow_approve_operation: operation = (
-        operation(escrow_approve=escrow_approve_proto)
+        operation(escrow_approve_operation=escrow_approve_proto)
     )
 
     check_operations(escrow_approve_operation)

@@ -29,7 +29,7 @@ def test_escrow_transfer():
     )
 
     escrow_transfer_operation: operation = (
-        operation(escrow_transfer=escrow_transfer_proto)
+        operation(escrow_transfer_operation=escrow_transfer_proto)
     )
 
     check_operations(escrow_transfer_operation)

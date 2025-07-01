@@ -13,7 +13,7 @@ def test_delete_comment():
     )
 
     delete_comment_operation: operation = operation(
-        delete_comment=delete_comment_proto
+        delete_comment_operation=delete_comment_proto
     )
 
     check_operations(delete_comment_operation)

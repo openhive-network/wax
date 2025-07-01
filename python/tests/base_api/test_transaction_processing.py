@@ -56,7 +56,7 @@ def test_transaction_processing_1(wax: IWaxBaseInterface) -> None:
         expiration="2021-12-13T11:31:33",
         operations=[
             operation(
-                vote=vote(
+                vote_operation=vote(
                     author="c0ff33a",
                     permlink="ewxhnjbj",
                     voter="otom",
@@ -156,7 +156,7 @@ def test_transaction_processing_4(wax: IWaxBaseInterface) -> None:
             expiration="2021-12-13T11:31:33",
             operations=[
                 operation(
-                    vote=vote(
+                    vote_operation=vote(
                         author="c0ff33a",
                         permlink="ewxhnjbj",
                         voter="otom",
@@ -234,36 +234,42 @@ async def test_transaction_processing_6(wallet: AsyncUnlockedWallet, wax: IWaxBa
 def test_transaction_processing_7(wax: IWaxBaseInterface) -> None:
     tx = wax.create_transaction_from_json(json.dumps(SIGNATURE_TRANSACTION))
 
-    assert next(iter(tx.required_authorities.posting_accounts)) == "thatcryptodave"
-    assert len(tx.required_authorities.posting_accounts) == 1
+    req_auths = tx.required_authorities
 
-    assert len(tx.required_authorities.owner_accounts) == 0
-    assert len(tx.required_authorities.active_accounts) == 0
-    assert len(tx.required_authorities.other_authorities) == 0
+    assert next(iter(req_auths.posting_accounts)) == "thatcryptodave"
+    assert len(req_auths.posting_accounts) == 1
+
+    assert len(req_auths.owner_accounts) == 0
+    assert len(req_auths.active_accounts) == 0
+    assert len(req_auths.other_authorities) == 0
 
 
 @pytest.mark.describe("Should be able to get transaction required active authority")
 def test_transaction_processing_8(wax: IWaxBaseInterface) -> None:
     tx = wax.create_transaction_from_json(json.dumps(REQUIRED_ACTIVE_AUTHORITY_TRANSACTION))
 
-    assert next(iter(tx.required_authorities.active_accounts)) == "droida"
-    assert len(tx.required_authorities.active_accounts) == 1
+    req_auths = tx.required_authorities
 
-    assert len(tx.required_authorities.owner_accounts) == 0
-    assert len(tx.required_authorities.posting_accounts) == 0
-    assert len(tx.required_authorities.other_authorities) == 0
+    assert next(iter(req_auths.active_accounts)) == "droida"
+    assert len(req_auths.active_accounts) == 1
+
+    assert len(req_auths.owner_accounts) == 0
+    assert len(req_auths.posting_accounts) == 0
+    assert len(req_auths.other_authorities) == 0
 
 
 @pytest.mark.describe("Should be able to get transaction required owner authority")
 def test_transaction_processing_9(wax: IWaxBaseInterface) -> None:
     tx = wax.create_transaction_from_json(json.dumps(REQUIRED_OWNER_AUTHORITY_TRANSACTION))
 
-    assert next(iter(tx.required_authorities.owner_accounts)) == "vsc.gateway"
-    assert len(tx.required_authorities.owner_accounts) == 1
+    req_auths = tx.required_authorities
 
-    assert len(tx.required_authorities.active_accounts) == 0
-    assert len(tx.required_authorities.posting_accounts) == 0
-    assert len(tx.required_authorities.other_authorities) == 0
+    assert next(iter(req_auths.owner_accounts)) == "vsc.gateway"
+    assert len(req_auths.owner_accounts) == 1
+
+    assert len(req_auths.active_accounts) == 0
+    assert len(req_auths.posting_accounts) == 0
+    assert len(req_auths.other_authorities) == 0
 
 
 @pytest.mark.describe(
@@ -272,14 +278,12 @@ def test_transaction_processing_9(wax: IWaxBaseInterface) -> None:
 def test_transaction_processing_10(wax: IWaxBaseInterface) -> None:
     tx = wax.create_transaction_from_json(json.dumps(RECOVER_ACCOUNT_TRANSACTION))
 
+    req_auths = tx.required_authorities
+
     expected_otger_authorities: Final[int] = 2
-    assert len(tx.required_authorities.other_authorities) == expected_otger_authorities
-    assert tx.required_authorities.other_authorities[0].key_auths == {
-        "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW": 1
-    }
-    assert tx.required_authorities.other_authorities[1].key_auths == {
-        "STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1
-    }
-    assert len(tx.required_authorities.owner_accounts) == 0
-    assert len(tx.required_authorities.posting_accounts) == 0
-    assert len(tx.required_authorities.active_accounts) == 0
+    assert len(req_auths.other_authorities) == expected_otger_authorities
+    assert req_auths.other_authorities[0].key_auths == {"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW": 1}
+    assert req_auths.other_authorities[1].key_auths == {"STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1}
+    assert len(req_auths.owner_accounts) == 0
+    assert len(req_auths.posting_accounts) == 0
+    assert len(req_auths.active_accounts) == 0

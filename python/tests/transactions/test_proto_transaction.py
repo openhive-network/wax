@@ -5,7 +5,7 @@ from wax.proto.transaction import transaction
 
 def test_transaction() -> None:
     vote_proto: vote = vote(voter="alice", author="author", permlink="/", weight=11)
-    vote_operation: operation = operation(vote=vote_proto)
+    vote_operation: operation = operation(vote_operation=vote_proto)
 
     comment_proto: comment = comment(
         parent_permlink="/",
@@ -16,7 +16,7 @@ def test_transaction() -> None:
         body="<span>comment</span>",
         json_metadata="{}",
     )
-    comment_operation: operation = operation(comment=comment_proto)
+    comment_operation: operation = operation(comment_operation=comment_proto)
 
     transaction_proto: transaction = transaction(operations=[vote_operation, comment_operation])
 

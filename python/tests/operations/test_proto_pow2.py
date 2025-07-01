@@ -45,7 +45,7 @@ def test_pow2_1():
     )
 
     pow2_operation: operation = operation(
-        pow2=pow2_proto
+        pow2_operation=pow2_proto
     )
 
     check_operations(pow2_operation)
@@ -84,7 +84,7 @@ def test_pow2_2():
     )
 
     pow2_operation: operation = operation(
-        pow2=pow2_proto
+        pow2_operation=pow2_proto
     )
 
     check_operations(pow2_operation)

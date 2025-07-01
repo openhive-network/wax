@@ -22,7 +22,7 @@ def test_update_proposal_votes():
         )
     )
     update_proposal_votes_operations: operation = (
-        operation(update_proposal_votes=update_proposal_votes_proto)
+        operation(update_proposal_votes_operation=update_proposal_votes_proto)
     )
 
     check_operations(update_proposal_votes_operations)

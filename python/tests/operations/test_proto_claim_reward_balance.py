@@ -50,7 +50,7 @@ def test_claim_reward_balance():
     )
 
     claim_reward_balance_operation: operation = (
-        operation(claim_reward_balance=claim_reward_balance_proto)
+        operation(claim_reward_balance_operation=claim_reward_balance_proto)
     )
 
     check_operations(claim_reward_balance_operation)

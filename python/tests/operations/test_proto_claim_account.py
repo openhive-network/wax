@@ -17,7 +17,7 @@ def test_claim_account():
     )
 
     claim_account_operation: operation = operation(
-        claim_account=claim_account_proto
+        claim_account_operation=claim_account_proto
     )
 
     check_operations(claim_account_operation)

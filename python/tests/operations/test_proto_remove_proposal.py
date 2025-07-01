@@ -19,7 +19,7 @@ def test_remove_proposal():
     )
 
     remove_proposal_operation: operation = operation(
-        remove_proposal=remove_proposal_proto
+        remove_proposal_operation=remove_proposal_proto
     )
 
     check_operations(remove_proposal_operation)

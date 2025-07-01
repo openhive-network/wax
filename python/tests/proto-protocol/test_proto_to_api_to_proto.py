@@ -54,7 +54,7 @@ def test_proto_to_api_to_proto():
     )
 
     pow2_operation: operation = operation(
-        pow2=pow2_proto
+        pow2_operation=pow2_proto
     )
 
     proto_json = MessageToJson(pow2_operation)
@@ -92,7 +92,7 @@ def test_proto_to_api_to_proto():
     )
 
     recover_account_operation: operation = operation(
-        recover_account=recover_account_proto
+        recover_account_operation=recover_account_proto
     )
 
     proto_json = MessageToJson(recover_account_operation)
@@ -127,7 +127,7 @@ def test_proto_to_api_to_proto():
     )
 
     witness_set_properties_operation: operation = (
-        operation(witness_set_properties=witness_set_properties_proto)
+        operation(witness_set_properties_operation=witness_set_properties_proto)
     )
 
     proto_json = MessageToJson(witness_set_properties_operation)

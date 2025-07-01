@@ -32,7 +32,8 @@ def test_initialize_update_proposal_with_mandatory_fields(transaction: ITransact
             "creator": "alice",
             "daily_pay": {"amount": "1000", "nai": "@@000000013", "precision": 3},
             "permlink": "improve-ui",
-            "proposal_id": "123",
+            "proposal_id": 123,
+            "extensions": [],
             "subject": "Improve UI Design",
         },
     }
@@ -63,7 +64,7 @@ def test_adds_end_date_to_update_proposal_when_provided(transaction: ITransactio
             "daily_pay": {"amount": "1000", "nai": "@@000000013", "precision": 3},
             "extensions": [{"type": "update_proposal_end_date", "value": {"end_date": "2023-03-14T00:00:00"}}],
             "permlink": "improve-ui",
-            "proposal_id": "123",
+            "proposal_id": 123,
             "subject": "Improve UI Design",
         },
     }
@@ -100,7 +101,7 @@ def test_handles_update_proposal_with_timestamp_end_date(transaction: ITransacti
             "daily_pay": {"amount": "1000", "nai": "@@000000013", "precision": 3},
             "extensions": [{"type": "update_proposal_end_date", "value": {"end_date": "2023-03-15T22:00:00"}}],
             "permlink": "improve-ui",
-            "proposal_id": "123",
+            "proposal_id": 123,
             "subject": "Improve UI Design",
         },
     }
@@ -133,12 +134,13 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(transaction: ITrans
     )
 
     expected_in_legacy_format: Final[list[str | dict[str, Any]]] = [
-        "update_proposal",
+        "update_proposal_operation",
         {
             "creator": "alice",
             "daily_pay": "1.000 HBD",
             "extensions": [[1, {"end_date": "2023-03-14T00:00:00"}]],
             "permlink": "improve-ui",
+            "extensions": [],  # noqa: F601
             "proposal_id": 123,
             "subject": "Improve UI Design",
         },
@@ -208,7 +210,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
 
     expected: Final[list[dict[str, Any]]] = [
         {
-            "update_proposal": {
+            "update_proposal_operation": {
                 "creator": "initminer",
                 "daily_pay": {"amount": "0", "nai": "@@000000013", "precision": 3},
                 "permlink": "permlink",
@@ -218,7 +220,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
             }
         },
         {
-            "update_proposal": {
+            "update_proposal_operation": {
                 "creator": "initminer",
                 "daily_pay": {"amount": "0", "nai": "@@000000013", "precision": 3},
                 "permlink": "permlink",
