@@ -85,6 +85,33 @@ class python_private_key_data:  # noqa: N801
 
 
 @dataclass
+class python_binary_data_node:  # noqa: N801
+    key: string
+    type: string
+    offset: int
+    size: int
+    value: string
+    length: int
+    children: list[python_binary_data_node]
+
+
+@dataclass
+class python_required_authority_collectionV:  # noqa: N801
+    posting_accounts: list[string]
+    active_accounts: list[string]
+    owner_accounts: list[string]
+    other_authorities: list[wax_authority]  # type: ignore[name-defined] # noqa: F821
+
+
+@dataclass
+class python_binary_data:  # noqa: N801
+    # base58 encoded binary data
+    binary: string
+    # base58 encoded hash of the binary data
+    offsets: list[python_binary_data_node]
+
+
+@dataclass
 class python_brain_key_data:  # noqa: N801
     # a string containing space separated list of N words generated as a brain key (atm 16)
     brain_key: string
@@ -114,6 +141,14 @@ class python_witness_set_properties_data:  # noqa: N801
     account_subsidy_budget: int | None = None
     # What fraction of the "stockpiled" free accounts "expire" per elected witness block. Scaled so that 1 << HIVE_RD_DECAY_DENOM_SHIFT represents 100% of accounts expiring. # NOQA: E501
     account_subsidy_decay: int | None = None
+
+
+class python_transaction_handle:  # noqa: N801
+    pass
+
+
+class python_operation_handle:  # noqa: N801
+    pass
 
 
 @dataclass
