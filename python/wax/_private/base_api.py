@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from wax._private.converters.decimal_converter import DecimalConverter
 from wax._private.converters.operation_converters.from_proto_to_cpp_string import from_proto_to_cpp_string
@@ -293,7 +293,7 @@ class WaxBaseApi(IWaxBaseInterface):
     def create_transaction_from_proto(self, transaction: ProtoTransaction) -> ITransaction:
         return Transaction(api=self, tapos_block_id=transaction)
 
-    def create_transaction_from_json(self, transaction: JsonTransaction) -> ITransaction:
+    def create_transaction_from_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
         return Transaction.from_api(api=self, transaction=transaction)
 
     def _resolve_expiration(self, expiration: datetime | timedelta | None) -> timedelta:
