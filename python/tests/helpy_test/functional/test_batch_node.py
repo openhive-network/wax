@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
-from msgspec import ValidationError  # TODO: new msgspec refactor should encapsulate schemas !!!
 
 from beekeepy.exceptions import CommunicationError, NothingToSendError, ResponseNotReadyError
 from beekeepy.interfaces import SuppressApiNotFound
@@ -12,30 +11,28 @@ if TYPE_CHECKING:
     from wax.helpy._handles.hived.async_handle import AsyncHived
     from wax.helpy._handles.hived.sync_handle import Hived
 
+# https://gitlab.syncad.com/hive/wax/-/merge_requests/306
+# Below calls are executed on `api.hive.blog`, so it's better to use `get_version` instead of `get_config`
+# because when we add a new parameter to the configuration, the server `api.hive.blog` is out-of-date resulting failing
+# `test_batch_node`/`test_async_batch_node` tests
+
 
 def test_batch_node(sync_node: Hived) -> None:
-    try:
-        with sync_node.batch() as node:
-            dynamic_properties = node.api.database.get_dynamic_global_properties()
-            config = node.api.database.get_config()
+    with sync_node.batch() as node:
+        dynamic_properties = node.api.database.get_dynamic_global_properties()
+        config = node.api.database.get_version()
 
-        assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
-        assert len(config.dict()) != 0, "Config should not be empty"
-
-    except ValidationError as ex:
-        repr(ex).index("Object missing required field `HIVE_CUSTOM_OP_BLOCK_LIMIT")
+    assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
+    assert len(config.dict()) != 0, "Version should not be empty"
 
 
 async def test_async_batch_node(async_node: AsyncHived) -> None:
-    try:
-        async with await async_node.batch() as node:
-            dynamic_properties = await node.api.database.get_dynamic_global_properties()
-            config = await node.api.database.get_config()
+    async with await async_node.batch() as node:
+        dynamic_properties = await node.api.database.get_dynamic_global_properties()
+        config = await node.api.database.get_version()
 
-        assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
-        assert len(config.dict()) != 0, "Config should not be empty"
-    except ValidationError as ex:
-        repr(ex).index("Object missing required field `HIVE_CUSTOM_OP_BLOCK_LIMIT")
+    assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
+    assert len(config.dict()) != 0, "Version should not be empty"
 
 
 def test_batch_node_response_not_ready(sync_node: Hived) -> None:
