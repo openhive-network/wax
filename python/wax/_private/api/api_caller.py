@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import atexit
 from functools import partial
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from beekeepy import Settings
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
@@ -24,7 +24,7 @@ def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable)
 
 
 class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT], HiveHandleCommonHelpers):  # type: ignore[type-var]
-    _INSTANCES: ClassVar[set[WaxApiCaller]] = set()
+    _INSTANCES: ClassVar[set[WaxApiCaller[Any]]] = set()
 
     def __init__(self, api_collection: ApiCollectionT, endpoint_url: HttpUrl) -> None:
         self._api_collection = api_collection  # assigned here because `_constuct_api` method
