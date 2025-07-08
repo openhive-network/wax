@@ -120,7 +120,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             dgpo = await self._internal_api.database_api.get_dynamic_global_properties()
             self._tapos_cache = ChainReferenceData(
                 head_block_id=dgpo.head_block_id,
-                time=cast(HiveDateTime, dgpo.time),
+                time=HiveDateTime(dgpo.time),
             )
             self._last_tapos_cache_update = now
 

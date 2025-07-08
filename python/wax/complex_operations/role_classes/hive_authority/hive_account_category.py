@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Final, Iterable, Iterator, Literal
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
+from wax._private.models.hive_date_time import HiveDateTime
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     HiveRoleAuthorityDefinition,
 )
@@ -153,8 +154,8 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
             owner=HiveRoleAuthorityDefinition(
                 "owner",
                 lambda role: raise_cannot_update_owner_error()  # noqa: ARG005
-                if not check_owner_time_diff(searched_account.last_owner_update)
-                and check_owner_time_diff(searched_account.previous_owner_update)
+                if not check_owner_time_diff(HiveDateTime(searched_account.last_owner_update))
+                and check_owner_time_diff(HiveDateTime(searched_account.previous_owner_update))
                 else None,
             ),
             posting=HiveRoleAuthorityDefinition("posting"),

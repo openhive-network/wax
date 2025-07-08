@@ -183,7 +183,7 @@ class Transaction(ITransaction):
         else:
             expiration = HiveDateTime.now() + self._expiration_time
 
-        self._target.expiration = str(expiration.replace(microsecond=0).isoformat())
+        self._target.expiration = expiration.replace(microsecond=0).serialize()
         tx_set_expiration(self._handle, to_cpp_string(self._target.expiration))
 
     def _calculate_signer_public_keys(self) -> list[PublicKey]:
