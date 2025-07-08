@@ -1,11 +1,5 @@
 from __future__ import annotations
 
-import datetime
+from schemas.fields.hive_datetime import HiveDateTime
 
-from typing_extensions import Self
-
-
-class HiveDateTime(datetime.datetime):
-    @classmethod
-    def now(cls) -> Self:  # type: ignore[override]
-        return cls.utcnow().replace(microsecond=0)
+__all__ = ["HiveDateTime"]
