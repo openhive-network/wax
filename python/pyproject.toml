@@ -15,14 +15,13 @@ description = ""
 repository = "https://gitlab.syncad.com/hive/wax"
 authors = []
 packages = [{ include = "wax"}]
-include = [
-    "wax/_private/proto/*",
-    "wax/api/*",
-]
+include = ["wax/_private/proto/*"]
 source = [
     { name = "PyPI", priority = "primary" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-database_api", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-network_broadcast_api", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
 
 [tool.poetry.build]
@@ -32,7 +31,8 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.12"
 protobuf = "4.24.4"
-beekeepy = "0.0.1.dev394+893b31f"
+database_api = "1.25.2rc0.dev5173+56d5ad9a8"
+network_broadcast_api = "1.25.2rc0.dev5173+56d5ad9a8"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
@@ -93,12 +93,6 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "wax.proto.*"
-ignore_missing_imports = true
-follow_imports = "skip"
-ignore_errors = true
-
-[[tool.mypy.overrides]]
-module = "wax.api.collection"
 ignore_missing_imports = true
 follow_imports = "skip"
 ignore_errors = true

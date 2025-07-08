@@ -27,8 +27,9 @@ variables:
   PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
   # PIP INDEX URL's
-  FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple "
+  FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
   SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+  THIRD_INDEX: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
 
   # colors:
   TXT_BLUE: "\e[1;34m"
@@ -185,7 +186,7 @@ push_to_wiki:
       artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
-    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${PYPROJECT_DIR}/dist/*.whl
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
     - pip list
 
 .test_python_env:
