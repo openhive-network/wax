@@ -235,13 +235,13 @@ extras = ["regex"]
 
 [[package]]
 name = "beekeepy"
-version = "0.0.1.dev395+7844f5f"
+version = "0.0.1.dev399+80e8b8a"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main"]
 files = [
-    {file = "beekeepy-0.0.1.dev395+7844f5f-py3-none-any.whl", hash = "sha256:1e62cef1d0eb98c21d96c3355bd6b153d40c56ffcaeba82930f11e9e73cf60b1"},
+    {file = "beekeepy-0.0.1.dev399+80e8b8a-py3-none-any.whl", hash = "sha256:24c6e1d0fd9e59dbafb948ca749b049214a6bf212fcb8c4b086ee422997e947d"},
 ]
 
 [package.dependencies]
@@ -252,8 +252,6 @@ psutil = "7.0.0"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
 schemas = "0.0.1.dev369+ef896c2"
-setuptools = "77.0.3"
-types-setuptools = "76.0.0.20250313"
 
 [package.source]
 type = "legacy"
@@ -464,17 +462,17 @@ markers = {main = "sys_platform == \"win32\" or platform_system == \"Windows\"",
 
 [[package]]
 name = "database-api"
-version = "1.25.2rc0.dev5173+56d5ad9a8"
+version = "1.25.2rc0.dev5203+c9d7607f2"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main"]
 files = [
-    {file = "database_api-1.25.2rc0.dev5173+56d5ad9a8-py3-none-any.whl", hash = "sha256:3db6f79290392a274a9694577b8b239e0fa7ed059987d4a1d096577ee52af51b"},
+    {file = "database_api-1.25.2rc0.dev5203+c9d7607f2-py3-none-any.whl", hash = "sha256:f9ee5f42a9c7b0c3caf557513d03b55a9c95ca4d77561017824a2baad25e26f8"},
 ]
 
 [package.dependencies]
-beekeepy = "0.0.1.dev395+7844f5f"
+beekeepy = "0.0.1.dev399+80e8b8a"
 
 [package.source]
 type = "legacy"
@@ -1588,17 +1586,17 @@ types-protobuf = ">=4.23.0.2"
 
 [[package]]
 name = "network-broadcast-api"
-version = "1.25.2rc0.dev5173+56d5ad9a8"
+version = "1.25.2rc0.dev5203+c9d7607f2"
 description = ""
 optional = false
 python-versions = ">=3.12,<4.0"
 groups = ["main"]
 files = [
-    {file = "network_broadcast_api-1.25.2rc0.dev5173+56d5ad9a8-py3-none-any.whl", hash = "sha256:bf6f5982fa3e5facde96aac567ca8903318320817e9aa5b639bea717e5a459a6"},
+    {file = "network_broadcast_api-1.25.2rc0.dev5203+c9d7607f2-py3-none-any.whl", hash = "sha256:ed78d14ba924e795a5d67286371c31e0af77ae11ece54180e3b0db3acf167059"},
 ]
 
 [package.dependencies]
-beekeepy = "0.0.1.dev395+7844f5f"
+beekeepy = "0.0.1.dev399+80e8b8a"
 
 [package.source]
 type = "legacy"
@@ -2281,7 +2279,7 @@ version = "77.0.3"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "setuptools-77.0.3-py3-none-any.whl", hash = "sha256:67122e78221da5cf550ddd04cf8742c8fe12094483749a792d56cd669d6cf58c"},
     {file = "setuptools-77.0.3.tar.gz", hash = "sha256:583b361c8da8de57403743e756609670de6fb2345920e36dc5c2d914c319c945"},
@@ -2369,7 +2367,7 @@ version = "76.0.0.20250313"
 description = "Typing stubs for setuptools"
 optional = false
 python-versions = ">=3.9"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "types_setuptools-76.0.0.20250313-py3-none-any.whl", hash = "sha256:bf454b2a49b8cfd7ebcf5844d4dd5fe4c8666782df1e3663c5866fd51a47460e"},
     {file = "types_setuptools-76.0.0.20250313.tar.gz", hash = "sha256:b2be66f550f95f3cad2a7d46177b273c7e9c80df7d257fa57addbbcfc8126a9e"},
@@ -2625,4 +2623,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "0412b79385f9fa3287c8a1178fc3e76d3d064c5312bc1a74a077ca015e16a3b0"
+content-hash = "488891ace68b2c54c743c716936acefec6fabe79f5a54581cc3a2f48e5b6bd92"
