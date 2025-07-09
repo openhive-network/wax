@@ -4,7 +4,6 @@ import math
 from typing import TYPE_CHECKING, Generic
 
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings, RemoteSettingsT
-from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection
 from wax.helpy._handles.hived.common_helpers import HiveHandleCommonHelpers
 from wax.helpy._interfaces.time import Time
 from wax.helpy.exceptions import BlockWaitTimeoutError
@@ -14,11 +13,15 @@ if TYPE_CHECKING:
 
     from schemas.fields.basic import AccountName
 
+    from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection
+
 
 class AsyncHivedTemplate(
-    AbstractAsyncHandle[RemoteSettingsT, HivedAsyncApiCollection], HiveHandleCommonHelpers, Generic[RemoteSettingsT]
+    AbstractAsyncHandle[RemoteSettingsT, "HivedAsyncApiCollection"], HiveHandleCommonHelpers, Generic[RemoteSettingsT]
 ):
     def _construct_api(self) -> HivedAsyncApiCollection:
+        from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection
+
         return HivedAsyncApiCollection(owner=self)
 
     def _target_service(self) -> str:

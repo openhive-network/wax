@@ -3,7 +3,6 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Final, cast
 
-from wax._private.api.api_caller import WaxApiCaller
 from wax._private.base_api import WaxBaseApi
 from wax._private.converters.url_converter import convert_to_http_url
 from wax._private.models.hive_date_time import HiveDateTime
@@ -48,6 +47,8 @@ class HiveChainApi(IHiveChainInterface[ApiCollectionT], WaxBaseApi):
         Raises:
             AssertionError: if the constructor is called directly.
         """
+        from wax._private.api.api_caller import WaxApiCaller
+
         assert _private, "HiveChainApi should not be instantiated directly. Use create_hive_chain() instead."
         super().__init__(chain_id, _private=True)
         self._chain_id = chain_id
