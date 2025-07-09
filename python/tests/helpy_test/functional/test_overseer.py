@@ -5,12 +5,10 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from beekeepy.communication import (
-    AioHttpCommunicator,
     CommonOverseer,
     CommunicationSettings,
-    HttpxCommunicator,
-    RequestCommunicator,
     StrictOverseer,
+    get_communicator_cls,
 )
 from beekeepy.exceptions import (
     ApiNotFoundError,
@@ -46,12 +44,12 @@ ERRORS_TO_DETECT: Final[list[tuple[type[OverseerError], str]]] = [
 ]
 
 SYNC_COMMUNICATORS: Final[list[type[AbstractCommunicator]]] = [
-    HttpxCommunicator,
-    RequestCommunicator,
+    get_communicator_cls("request"),
+    get_communicator_cls("httpx"),
 ]
 ASYNC_COMMUNICATORS: Final[list[type[AbstractCommunicator]]] = [
-    HttpxCommunicator,
-    AioHttpCommunicator,
+    get_communicator_cls("aiohttp"),
+    get_communicator_cls("httpx"),
 ]
 OVERSEERS: Final[list[type[AbstractOverseer]]] = [CommonOverseer, StrictOverseer]
 

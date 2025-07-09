@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-from beekeepy.communication import AbstractCommunicator, AioHttpCommunicator, HttpxCommunicator, RequestCommunicator
+from beekeepy.communication import AbstractCommunicator, get_communicator_cls
 
 __all__ = [
     "AbstractCommunicator",
-    "AioHttpCommunicator",
-    "RequestCommunicator",
-    "HttpxCommunicator",
+    "get_communicator_cls",
 ]
