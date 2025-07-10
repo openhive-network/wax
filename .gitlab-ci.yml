@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: b87d23ff08491d5006db9eddbec1520190266c0d
+    ref: ab4d4c78df8ebc5b5d7744fe2cfa64c51143fe01
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -22,7 +22,7 @@ variables:
   CI_BASE_IMAGE_TAG: "@sha256:d2bf82e7c8d080f2416c4d738a8bb8f6437b2828587657aaac9f13db77926df9"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
 
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu22.04-3
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
   PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
   PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
