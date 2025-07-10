@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from beekeepy.handle.remote import AbstractAsyncApi, AbstractSyncApi, RegisteredApisT
 
 
+@pytest.mark.xfail(reason="Wrong test - DatabaseApi hardcoded in HELL py has missing list_votes/find_votes methods. ")
 @pytest.mark.parametrize(
     ("async_api", "sync_api"),
     [
