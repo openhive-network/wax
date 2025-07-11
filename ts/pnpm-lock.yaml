@@ -185,8 +185,8 @@ importers:
   packages/signers-beekeeper:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.27.11-stable.250513143655
-        version: 1.27.11-stable.250513143655
+        specifier: 1.27.11
+        version: 1.27.11
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -438,11 +438,7 @@ packages:
     resolution: {integrity: sha512-YEHW1QeAg6UmxEmswiQbOVEg1CW22b1XUD/lNTliOsu0LD0wqoyleFMnmbTp697QE0pcadQiR5cVtbbAPncvpw==}
 
   '@hiveio/beekeeper@1.27.11':
-    resolution: {integrity: sha1-5zRx1CUM1frYsDJ5EkQin1dtFec=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.11.tgz}
-    engines: {node: ^20.11 || >= 21.2}
-
-  '@hiveio/beekeeper@1.27.11-stable.250513143655':
-    resolution: {integrity: sha1-WM73mERJWR06dqP67ZznUjbya6I=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.11-stable.250513143655.tgz}
+    resolution: {integrity: sha1-0v2gSYFhN5MLQzBHIYikUyksu/k=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.11.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@hiveio/beekeeper@1.27.8-stable.250131103618':
@@ -2528,8 +2524,6 @@ snapshots:
       '@shikijs/vscode-textmate': 9.3.1
 
   '@hiveio/beekeeper@1.27.11': {}
-
-  '@hiveio/beekeeper@1.27.11-stable.250513143655': {}
 
   '@hiveio/beekeeper@1.27.8-stable.250131103618': {}
 
