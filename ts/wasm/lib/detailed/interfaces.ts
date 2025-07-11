@@ -1,6 +1,3 @@
-import type { TPublicKey } from "@hiveio/beekeeper";
-export type { TPublicKey, TSignature } from "@hiveio/beekeeper";
-
 // @ts-expect-error ts(6133) Type WaxError is used in JSDoc
 import type { WaxError } from "./errors";
 import type { operation, transaction } from "./protocol";
@@ -17,6 +14,9 @@ import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAc
 import type { IChainConfig } from "../build_wasm/config";
 import { ISignatureProvider, IOnlineSignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
+
+export type TSignature = string;
+export type TPublicKey = string;
 
 export type { IChainConfig };
 

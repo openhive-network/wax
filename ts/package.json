@@ -63,6 +63,7 @@
     "./package.json": "./package.json"
   },
   "devDependencies": {
+    "@hiveio/beekeeper": "1.27.11",
     "@playwright/test": "catalog:playwright-toolset",
     "@rollup/plugin-commonjs": "catalog:rollup-toolset",
     "@rollup/plugin-node-resolve": "catalog:rollup-toolset",
@@ -96,7 +97,6 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.11-stable.250513143655",
     "events": "^3.3.0",
     "long": "^5.2.3"
   },
