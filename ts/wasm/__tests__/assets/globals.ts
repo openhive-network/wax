@@ -20,9 +20,14 @@ export interface IWaxGlobals {
   wax: typeof Wax;
   outputPath: string;
 }
+
+interface MainModuleEmscriptenExtended extends MainModule {
+  getExceptionMessage: (e: any) => [string, string];
+}
+
 export interface IWasmGlobals {
   protocol: protocol_foundation;
-  provider: MainModule;
+  provider: MainModuleEmscriptenExtended;
 }
 
 declare global {
@@ -89,7 +94,7 @@ globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
   // Provide results
   return {
     protocol: new provider.protocol_foundation(),
-    provider
+    provider: provider as MainModuleEmscriptenExtended
   };
 };
 

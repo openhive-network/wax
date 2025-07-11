@@ -49,6 +49,11 @@ export default defineConfig<IWaxedTest>({
       }
     },
     {
+      name: "wax_hive_assertion",
+      testDir: "./wasm/dist",
+      testMatch: "hive_assertion*",
+    },
+    {
       name: "wax_regression_tests",
       testDir: "./wasm/dist",
       testMatch: "regression_hive_operations*"

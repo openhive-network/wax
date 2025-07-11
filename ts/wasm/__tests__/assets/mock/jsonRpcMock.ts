@@ -9,6 +9,7 @@ import directSigners_6 from "./data/directSigners_6";
 import alice from "./data/alice";
 import hivebuzz from "./data/hivebuzz";
 import guest4test8 from "./data/guest4test8";
+import zero_max_block_age from "./data/zero_max_block_age";
 
 export default {
   "database_api.find_accounts": (params: Record<string, any>) => {
@@ -45,6 +46,17 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'guest4test8')
       return guest4test8;
+
+    return;
+  },
+  "network_broadcast_api.broadcast_transaction": (params: Record<string, any>) => {
+    const { max_block_age } = params;
+
+    if (max_block_age === undefined || !(typeof max_block_age === "number"))
+      return;
+
+    if (max_block_age === 0)
+      return zero_max_block_age;
 
     return;
   }

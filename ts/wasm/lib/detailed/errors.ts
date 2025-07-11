@@ -8,6 +8,30 @@ export class WaxError extends Error
   }
  }
 
+export class WaxAssertionError extends WaxError {
+  assertionHash: string;
+
+  constructor(assertionHash: string, sourceJson: string) {
+    super(sourceJson);
+    this.assertionHash = assertionHash;
+    this.name = "WaxAssertionError";
+  }
+};
+
+export class WaxProtocolAssertionError extends WaxAssertionError {
+  constructor(assertionHash: string, sourceJson: string) {
+    super(assertionHash, sourceJson);
+    this.name = "WaxProtocolAssertionError";
+  }
+};
+
+export class WaxChainAssertionError extends WaxAssertionError {
+  constructor(assertionHash: string, sourceJson: string) {
+    super(assertionHash, sourceJson);
+    this.name = "WaxChainAssertionError";
+  }
+};
+
 export class WaxChainApiError extends WaxError {
   apiError: object;
 

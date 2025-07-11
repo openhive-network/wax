@@ -238,7 +238,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_tx_sig_digest", &foundation_wasm::cpp_tx_sig_digest)
     .function("cpp_tx_validate", &foundation_wasm::cpp_tx_validate)
 
-    .function("cpp_process_error_data", &foundation_wasm::cpp_process_error_data)
+    .function("cpp_transform_api_error_response_into_exception", &foundation_wasm::cpp_transform_api_error_response_into_exception)
     ;
 }
 

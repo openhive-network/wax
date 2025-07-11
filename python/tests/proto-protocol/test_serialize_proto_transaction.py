@@ -38,4 +38,4 @@ def test_serialize_proto_transaction():
     result = serialize_proto_transaction(tx_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:68 from_jsval')
+        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'val_protocol.hpp', 'line': 68, 'method': 'from_jsval', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Could not find the supported property in static variant: ${nextkey}', 'data': {'nextkey': 'type'}}], 'extension': {'assertion_expression': 'it != to_tag.end()'}, 'assert_hash': '10056067403021329111'}")

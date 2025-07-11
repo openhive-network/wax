@@ -132,7 +132,7 @@ test.describe('WASM Base tests', () => {
       try {
         protocol.cpp_throws(4);
       } catch(error) {
-        console.error((provider as any).getExceptionMessage(error));
+        console.error(provider.getExceptionMessage(error));
         const e: Error = error as Error;
         console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
@@ -140,4 +140,26 @@ test.describe('WASM Base tests', () => {
       }
     }).toThrow();
   });
+
+  test('Should test getExceptionMessage with fc::assert_exception', async () => {
+    const { protocol, provider } = await createWasmTestFor('node');
+
+    expect(() => {
+      try {
+        protocol.cpp_throws(4);
+      } catch(error) {
+        const tuple = provider.getExceptionMessage(error);
+        //console.error(`Here you are: ${tuple}`);
+        //console.error(`Here you are: ${tuple[0]}, ${tuple[1]}`);
+        const assertionObject = JSON.parse(tuple[1]);
+        const assertionHash: string = assertionObject.assert_hash;
+        //const hae: WaxAssertionError = new WaxAssertionError(assertionHash, tuple[1]);
+        //console.error(`name: ${hae.name}, assertionHash: ${hae.assertionHash}, sourceJson: ${hae.message}`);
+        console.error(`assertionHash: ${assertionHash}, sourceJson: ${tuple[1]}`);
+
+        throw error;
+      }
+    }).toThrow();
+  });
+
 });

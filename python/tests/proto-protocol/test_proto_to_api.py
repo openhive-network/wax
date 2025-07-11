@@ -18,4 +18,4 @@ def test_proto_to_api():
     assert api.status == api.status.fail
     print(api.exception_message)
     assert api.exception_message == (
-        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    api_converter.hpp:180 call')
+        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'api_converter.hpp', 'line': 180, 'method': 'call', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Could not find the supported property in static variant: ${nextkey}', 'data': {'nextkey': 'type'}}], 'extension': {'assertion_expression': 'it != to_tag.end()'}, 'assert_hash': '10056067403021329111'}")

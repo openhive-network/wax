@@ -29,4 +29,4 @@ def test_serialize_transaction():
     result = serialize_transaction(tx_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function call failed: \'type\'\n    {"pyerr":"\'type\'"}\n    python_managed_object.hpp:63 call_python_function')
+        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")

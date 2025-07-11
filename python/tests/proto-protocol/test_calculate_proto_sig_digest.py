@@ -16,7 +16,7 @@ def test_calculate_proto_sig_digest():
     result = calculate_proto_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:68 from_jsval')
+        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'val_protocol.hpp', 'line': 68, 'method': 'from_jsval', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Could not find the supported property in static variant: ${nextkey}', 'data': {'nextkey': 'type'}}], 'extension': {'assertion_expression': 'it != to_tag.end()'}, 'assert_hash': '10056067403021329111'}")
 
 def test_calculate_proto_serialization_sensitive_sig_digest():
     tx_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)

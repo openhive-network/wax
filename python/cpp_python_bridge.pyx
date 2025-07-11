@@ -51,7 +51,12 @@ def return_python_result(foo):
                     result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
             return python_result(status=python_error_code.ok, result=result, exception_message=b'')
         except Exception as ex:
-            return python_result(status=python_error_code.fail, result=b'', exception_message=str(ex).encode('utf-8'))
+            aux = json.loads(str(ex))
+            if isinstance(aux, dict) and 'stack' in aux and isinstance(aux['stack'], list):
+                for val in aux['stack']:
+                    if isinstance(val, dict) and 'context' in val and isinstance(val['context'], dict):
+                        val['context'].pop('timestamp', None)
+            return python_result(status=python_error_code.fail, result=b'', exception_message=str(aux).encode('utf-8'))
     return wrapper
 
 def return_python_json_asset(foo):

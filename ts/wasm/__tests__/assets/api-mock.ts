@@ -5,7 +5,8 @@ export type TTestAnySerializableTypeExceptUndefined = string | number | boolean 
 export type IJsonRpcResponse = {
   id: number;
   jsonrpc: string;
-  result: TTestAnySerializableTypeExceptUndefined;
+  result?: TTestAnySerializableTypeExceptUndefined;
+  error?: TTestAnySerializableTypeExceptUndefined;
 };
 
 export interface IApiMockData {

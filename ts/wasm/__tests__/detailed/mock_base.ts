@@ -6,6 +6,8 @@ import { JsonRpcMock } from '../assets/api-mock';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
 import steem from '../assets/mock/data/steem';
 import data4nonexistingAccount from "../assets/mock/data/data4nonexistingaccount";
+import type { claim_account, operation } from '../../dist/bundle';
+import type { WaxAssertionError } from '../../dist/bundle';
 
 let closeServer: () => Promise<void>;
 
@@ -22,6 +24,52 @@ test.describe('Wax base mock tests', () => {
     });
 
     expect(retVal).toStrictEqual(steem.result);
+  });
+
+  test('Testing assertion during transaction broadcast', async ({ waxTest }) => {
+    const retVal = await waxTest( async ({ chain, wax }) => {
+      const testedOp: claim_account = {
+        creator: "user123",
+        fee: { nai: "@@000000013", amount: "1", precision: 3 },
+        extensions: []
+      };
+      const op: operation = { claim_account_operation: testedOp };
+      const tx = await chain.createTransaction();
+      tx.pushOperation(op);
+      try {
+        await chain.api.network_broadcast_api.broadcast_transaction({
+          max_block_age: 0,
+          trx: tx.toApiJson()
+        });
+      }
+      catch (e) {
+        if(e && typeof e === "object") {
+          const error: object = e as object;
+          if(e instanceof wax.WaxAssertionError) {
+            const caughtAssertion: WaxAssertionError = error as WaxAssertionError;
+            // To extract assertion expression we need object form of message json.
+            const objectMsg = JSON.parse(caughtAssertion.message);
+            return {
+              detectedError: {
+                source: "unknown",
+                expression: objectMsg.extension.assertion_expression || "Unknown assertion expression",
+                hash: caughtAssertion.assertionHash
+              }
+            };
+          } else {
+            const errorStr = JSON.stringify(error);
+            return { detectedError: {message: errorStr} };
+          }
+        }
+        throw new Error("Unexpected error type caught: " + e);
+      };
+      throw new Error("No error detected");
+    });
+    expect(retVal.detectedError).toStrictEqual({
+      source: "unknown",
+      expression: "!check_max_block_age( args.max_block_age )",
+      hash: "4716502953486857149"
+    });
   });
 
   test('Should be able to find NONEXISTING account based on mock interface', async ({ waxTest }) => {

@@ -563,7 +563,7 @@ transaction_handle_stats foundation::cpp_report_transaction_handle_stats() const
   return { hive_transaction_handle::instance_count, hive_transaction_handle::max_instance_count };
 }
 
-void foundation::cpp_process_error_data(const std::string& data) const
+void foundation::cpp_transform_api_error_response_into_exception(const std::string& data) const
 {
   fc::exception e;
   try {
@@ -572,18 +572,18 @@ void foundation::cpp_process_error_data(const std::string& data) const
   }
   catch (...) {
     // Apparently the error data don't represent a fc::exception.
-    return;
+    throw std::runtime_error("Non-fc::exception error received: " + data);
   }
 
   if(e.code() != fc::assert_exception::code_value)
   {
     // Not an assert_exception either.
-    return;
+    throw std::runtime_error("Non assert_exception error received: " + e.to_detail_string());
   }
 
   fc::assert_exception ae(e);
-  throw_appropriate_wax_assertion(ae);
-  // If the exception was not thrown, it means that the assertion code is not recognized.
+  uint64_t unrecognized_assertion_code = throw_recognized_wax_assertion( ae );
+  throw wax_unknown_assertion( unrecognized_assertion_code, ae );
 }
 
 crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const

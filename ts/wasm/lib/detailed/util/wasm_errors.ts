@@ -1,4 +1,4 @@
-import { WaxError } from "../errors.js";
+import { WaxError, WaxAssertionError, WaxChainAssertionError, WaxProtocolAssertionError } from "../errors.js";
 
 export type TWaxStdExceptionData = {
   msg: string;
@@ -10,7 +10,24 @@ export type TCustomExceptionHandlerFunction = (error: TWaxStdExceptionData) => v
 
 const handleWaxStdException = (e: any, customExceptionHandler?: TCustomExceptionHandlerFunction): void => {
   /// unfortunately we can't use instanceof FinalExceptionClass here (probably because of Playwright's context isolation)
+  // TODO replace the code below with getExceptionMessage call when available here.
   if(typeof e === "object" && e && "message" in e) {
+    if (Array.isArray(e.message) && e.message[0].search("cpp::wax_[^_]+_assertion") >= 0) {
+      //e.message.forEach(function(item){
+      //  console.log(`Received array item: ${JSON.stringify(item)} of type ${typeof item}`);
+      //});
+      const jsonMsg = JSON.parse(e.message[1]);
+      const assertionCode = jsonMsg.assert_hash || "Unknown assertion code";
+      switch (e.message[0]) {
+        case "cpp::wax_chain_assertion":
+          throw new WaxChainAssertionError(assertionCode, JSON.stringify(jsonMsg));
+        case "cpp::wax_protocol_assertion":
+          throw new WaxProtocolAssertionError(assertionCode, JSON.stringify(jsonMsg));
+        default:
+          throw new WaxAssertionError(assertionCode, JSON.stringify(jsonMsg));
+      }
+    }
+
     const eObject: {message: string} = e as {message: string};
     /// Warning: toString() is necessary here, because otherwise string methods do not work
     const msg = eObject.message.toString();
