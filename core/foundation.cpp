@@ -21,6 +21,7 @@
 #include <hive/protocol/hive_collateral.hpp>
 #include <hive/protocol/forward_impacted.hpp>
 #include <hive/protocol/get_config.hpp>
+#include <hive/protocol/operation_util.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -714,6 +715,15 @@ std::string foundation::cpp_tx_to_binary(const hive_transaction_handle& tx_handl
   });
 }
 
+std::string foundation::cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    return cpp::serialize_operation(*op_handle.op, use_hf26_serialization);
+  });
+}
+
 std::string foundation::cpp_tx_to_json(const hive_transaction_handle& tx_handle)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string {
@@ -741,6 +751,15 @@ binary_data foundation::cpp_tx_binary(const hive_transaction_handle& tx_handle, 
     FC_ASSERT(tx_handle.tx, "Transaction handle is not initialized");
 
     return cpp::generate_binary_transaction_metadata(*tx_handle.tx, use_hf26_serialization, strip_to_unsigned_transaction);
+  });
+}
+
+binary_data foundation::cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const
+{
+  return cpp::safe_exception_wrapper([&]() -> binary_data {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    return cpp::generate_binary_operation_metadata(*op_handle.op, use_hf26_serialization);
   });
 }
 
@@ -786,6 +805,43 @@ required_authority_collectionV foundation::cpp_tx_required_authorities(const hiv
   });
 }
 
+required_authority_collectionV foundation::cpp_op_required_authorities(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+    typedef flat_set<hive::protocol::account_name_type> raw_account_set;
+
+    raw_account_set active;
+    raw_account_set owner;
+    raw_account_set posting;
+    raw_account_set witness;
+    std::vector<hive::protocol::authority> other_authorities;
+    hive::protocol::get_required_authorities(*op_handle.op, active, owner, posting, witness, other_authorities);
+
+    required_authority_collectionV ret_val;
+    using account_collection_t = typename required_authority_collectionV::account_collection_t;
+    ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
+    ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
+    ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
+
+    for(const auto& auth : other_authorities)
+    {
+      wax_authority wa;
+      wa.weight_threshold = auth.weight_threshold;
+
+      for(const auto& [account, weight] : auth.account_auths)
+        wa.account_auths.emplace(account.operator std::string(), weight);
+
+      for(const auto& [key, weight] : auth.key_auths)
+        wa.key_auths.emplace(key.operator std::string(), weight);
+
+      ret_val.other_authorities.emplace_back(wa);
+    }
+
+    return ret_val;
+  });
+}
+
 std::vector<std::string> foundation::cpp_tx_impacted_accounts(const hive_transaction_handle& tx_handle)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
@@ -801,6 +857,20 @@ std::vector<std::string> foundation::cpp_tx_impacted_accounts(const hive_transac
     return result;
   });
 }
+
+std::vector<std::string> foundation::cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    std::vector<std::string> result;
+    fc::flat_set<hive::protocol::account_name_type> impacted;
+    hive::app::operation_get_impacted_accounts(*op_handle.op, impacted);
+    result.insert( result.end(), impacted.begin(), impacted.end() );
+    return result;
+  });
+}
+
 std::vector<std::string> foundation::cpp_tx_signature_keys(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
@@ -848,6 +918,15 @@ void foundation::cpp_tx_validate(const hive_transaction_handle& tx_handle)const
     FC_ASSERT(tx_handle.tx, "Transaction handle is not initialized");
 
     tx_handle.tx->validate();
+  });
+}
+
+void foundation::cpp_op_validate(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> void {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    hive::protocol::operation_validate(*op_handle.op);
   });
 }
 

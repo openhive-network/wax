@@ -347,4 +347,16 @@ std::string serialize_transaction( const hive::protocol::signed_transaction& tx,
 
   return fc::to_hex( binForm );
 }
+
+std::string serialize_operation( const hive::protocol::operation& op, bool use_hf26_serialization /*=true*/ )
+{
+  const auto serialization_type = use_hf26_serialization ? hive::protocol::transaction_serialization_type::hf26 : hive::protocol::transaction_serialization_type::legacy;
+
+  hive::protocol::serialization_mode_controller::mode_guard guard( serialization_type );
+  hive::protocol::serialization_mode_controller::set_pack( serialization_type );
+
+  std::vector<char> binForm = fc::raw::pack_to_vector( op );
+
+  return fc::to_hex( binForm );
+}
 } // namespace cpp

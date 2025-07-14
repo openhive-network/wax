@@ -186,6 +186,12 @@ public:
    */
   bool cpp_is_valid_account_name( const std::string& name ) const;
 
+  std::vector<std::string>       cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
+  std::string                    cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
+  binary_data                    cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
+  void                           cpp_op_validate(const hive_operation_handle& op_handle)const;
+  required_authority_collectionV cpp_op_required_authorities(const hive_operation_handle& op_handle)const;
+
   void                           cpp_tx_add_operation(hive_transaction_handle& tx_handle, const hive_operation_handle& op_handle)const;
   void                           cpp_tx_add_signature(hive_transaction_handle& tx_handle, const std::string& signature)const;
   void                           cpp_tx_set_expiration(hive_transaction_handle& tx_handle, const std::string& expiration)const;
