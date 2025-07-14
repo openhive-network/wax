@@ -1,12 +1,11 @@
-import { asset, operation, witness_set_properties } from "../protocol.js";
+import { operation, witness_set_properties } from "../protocol.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
 import { type witness_set_properties_data } from "../../build_wasm/wax.common.js";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
-import type Long from "long";
 import { TAccountName } from "../hive_apps_operations/index.js";
-import type { TPublicKey } from "../interfaces";
+import type { TNaiAssetSource, TPublicKey } from "../interfaces";
 
-export type TInternalAsset = asset | Long | string | BigInt | number;
+export type TInternalAsset = TNaiAssetSource;
 
 export interface IWitnessSetPropertiesData {
   /**

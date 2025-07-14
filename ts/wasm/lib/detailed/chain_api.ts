@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain } from "./interfaces";
+import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain, TNaiAssetConvertible } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
@@ -10,7 +10,6 @@ import { iterate } from "./util/iterate.js";
 import { OnlineTransaction} from "./online_transaction";
 import { dateFromString } from "./util/expiration_parser.js";
 
-import Long from "long";
 import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api_caller";
 
 import { TAccountName } from "./hive_apps_operations";
@@ -292,7 +291,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     const dgpo = await this.api.database_api.get_dynamic_global_properties({});
 
     let manabar: ApiManabar;
-    let max: string | number | Long;
+    let max: TNaiAssetConvertible;
 
     if(manabarType === EManabarType.RC) {
       ({ rc_manabar: manabar, max_rc: max } = await this.getRcManabarForAccount(accountName));
@@ -300,13 +299,15 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       const account = await this.findAccount(accountName);
 
       manabar = manabarType === EManabarType.UPVOTE ? account.voting_manabar : account.downvote_manabar;
-      max = Long.fromValue(account.post_voting_power.amount);
+      max = BigInt(account.post_voting_power.amount);
 
-      if(manabarType === EManabarType.DOWNVOTE)
-        if(max.divide(ONE_HUNDRED_PERCENT).greaterThan(ONE_HUNDRED_PERCENT))
-          max = max.divide(ONE_HUNDRED_PERCENT).multiply(dgpo.downvote_pool_percent);
+      if(manabarType === EManabarType.DOWNVOTE) {
+        const downvotePoolPercent = BigInt(dgpo.downvote_pool_percent);
+        if(max / ONE_HUNDRED_PERCENT > ONE_HUNDRED_PERCENT)
+          max = (max / ONE_HUNDRED_PERCENT) * downvotePoolPercent;
         else
-          max = max.multiply(dgpo.downvote_pool_percent).divide(ONE_HUNDRED_PERCENT);
+          max = (max * downvotePoolPercent) / ONE_HUNDRED_PERCENT;
+      }
     }
 
     return [
@@ -328,7 +329,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   public async calculateManabarFullRegenerationTimeForAccount(accountName: string, manabarType: EManabarType = EManabarType.UPVOTE): Promise<Date> {
     const args = await this.getManabarDataArguments(accountName, manabarType);
 
-    if(Long.fromValue(args[1]).equals(Long.ZERO))
+    if (args[1] === 0n)
       return new Date();
 
     const time = super.calculateManabarFullRegenerationTime(

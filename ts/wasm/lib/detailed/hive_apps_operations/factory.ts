@@ -1,5 +1,4 @@
 import { WaxError } from '../errors.js';
-import Long from 'long';
 import { OperationBase, type IOperationSink } from '../operation_base.js';
 import { type operation } from '../protocol.js';
 
@@ -43,7 +42,7 @@ export abstract class HiveAppsOperation<ChildT extends HiveAppsOperation<any, Bo
           id: this.id,
           // XXX: We have to believe the node's fc JSON serializer with as_int64 directive, which allows stringified numbers
           // This may be a temporary solution that can be replaced by writing our custom JSON stringifier with nested object iteration:
-          json: JSON.stringify(body, (_key: string, value: any) => value instanceof Long ? value.toString() : value),
+          json: JSON.stringify(body, (_key: string, value: any) => typeof value === "bigint" ? value.toString() : value),
           required_auths: auths,
           required_posting_auths: postingAuths
         }

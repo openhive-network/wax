@@ -11,7 +11,6 @@ import { WaxError, WaxPrivateKeyLeakDetectedException } from './errors.js';
 import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
 import { JSON_stringify_operation, matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";
-import Long from "long";
 
 import { WaxFormatter } from "./formatters/waxify.js";
 
@@ -21,7 +20,7 @@ import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // 
 import { ISignatureProvider } from "./extensions/signatures";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
-export const ONE_HUNDRED_PERCENT = 100 * PERCENT_VALUE_DOUBLE_PRECISION;
+export const ONE_HUNDRED_PERCENT = BigInt(100) * BigInt(PERCENT_VALUE_DOUBLE_PRECISION);
 
 export enum EAssetName {
   HIVE = "HIVE",
@@ -197,12 +196,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return JSON.parse(this.extract(conversionResult));
   }
 
-  private naiAssetToLong(amount: number, precision: number): Long {
-    let satoshisValue = Long.fromNumber(amount).multiply(10 ** precision);
-
-    const [ , frac ] = amount.toString().split('.') as [string, string | undefined];
+  private naiAssetToLong(amount: number, precision: number): bigint {
+    const [ base, frac ] = amount.toString().split('.') as [string, string | undefined];
+    let satoshisValue = BigInt(base) * BigInt(10 ** precision);
     if (frac)
-      satoshisValue = satoshisValue.add(frac.substring(0, precision) + '0'.repeat(Math.max(0, precision - frac.length)));
+      satoshisValue += BigInt(frac.substring(0, precision) + '0'.repeat(Math.max(0, precision - frac.length)));
 
     return satoshisValue;
   }
@@ -232,21 +230,15 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public hiveSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    const long = Long.fromString(amount.toString());
-
-    return safeWasmCall(() => this.proto.cpp_hive(long.low, long.high) as NaiAsset);
+    return safeWasmCall(() => this.proto.cpp_hive(BigInt(amount)) as NaiAsset);
   }
 
   public hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    const long = Long.fromString(amount.toString());
-
-    return safeWasmCall(() => this.proto.cpp_hbd(long.low, long.high) as NaiAsset);
+    return safeWasmCall(() => this.proto.cpp_hbd(BigInt(amount)) as NaiAsset);
   }
 
   public vestsSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    const long = Long.fromString(amount.toString());
-
-    return safeWasmCall(() => this.proto.cpp_vests(long.low, long.high) as NaiAsset);
+    return safeWasmCall(() => this.proto.cpp_vests(BigInt(amount)) as NaiAsset);
   }
 
   public vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
@@ -430,53 +422,44 @@ export class WaxBaseApi implements IWaxBaseInterface {
     );
   }
 
-  private calculateManabarPercent(current: Long, max: Long): number {
-    if(max.isZero())
+  private calculateManabarPercent(current: bigint, max: bigint): number {
+    if(max === 0n)
       return 0;
 
-    // Prevent int64 overflow before calculations
-    if(Long.MAX_UNSIGNED_VALUE.divide(ONE_HUNDRED_PERCENT).lessThan(max)) {
-      max = max.divide(ONE_HUNDRED_PERCENT);
-      current = current.divide(ONE_HUNDRED_PERCENT);
-    }
-
-    const percent = current.multiply(ONE_HUNDRED_PERCENT).divide(max).toNumber() / PERCENT_VALUE_DOUBLE_PRECISION;
+    const percent = Number((current * ONE_HUNDRED_PERCENT) / max) / PERCENT_VALUE_DOUBLE_PRECISION;
 
     return percent;
   }
 
-  public calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData {
-    const maxMana: Long = typeof maxManaLH === "object" ? maxManaLH : Long.fromValue(maxManaLH, true);
-    const currentMana: Long = typeof currentManaLH === "object" ? currentManaLH : Long.fromValue(currentManaLH, true);
-
-    if(maxMana.equals(0))
+  public calculateCurrentManabarValue(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): IManabarData {
+    if(maxMana == 0) // Intentionally do not use type check comparison (`===`) for universal check between number, string and bigint
       return {
-        max: maxMana,
-        current: Long.ZERO,
+        max: BigInt(0),
+        current: BigInt(0),
         percent: 100
       };
 
-    const manabarValue = safeWasmCall(() => this.proto.cpp_calculate_current_manabar_value(now, maxMana.low, maxMana.high, currentMana.low, currentMana.high, lastUpdateTime));
+    const maxManaBigInt = BigInt(maxMana);
+    const currentManaBigInt = BigInt(currentMana);
 
-    const current = Long.fromString(this.extract(manabarValue), true);
+    const manabarValue = safeWasmCall(() => this.proto.cpp_calculate_current_manabar_value(now, maxManaBigInt, currentManaBigInt, lastUpdateTime));
 
-    const percent = this.calculateManabarPercent(current, maxMana);
+    const current = BigInt(this.extract(manabarValue));
+
+    const percent = this.calculateManabarPercent(current, maxManaBigInt);
 
     return {
-      max: maxMana,
+      max: maxManaBigInt,
       current,
       percent
     };
   }
 
-  public calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number {
-    const maxMana: Long = typeof maxManaLH === "object" ? maxManaLH : Long.fromValue(maxManaLH, true);
-    const currentMana: Long = typeof currentManaLH === "object" ? currentManaLH : Long.fromValue(currentManaLH, true);
-
-    if(maxMana.equals(0))
+  public calculateManabarFullRegenerationTime(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): number {
+    if(maxMana == 0) // Intentionally do not use type check comparison (`===`) for universal check between number, string and bigint
       return Math.floor(Date.now() / 1000);
 
-    const manabarRegenerationTime = safeWasmCall(() => this.proto.cpp_calculate_manabar_full_regeneration_time(now, maxMana.low, maxMana.high, currentMana.low, currentMana.high, lastUpdateTime));
+    const manabarRegenerationTime = safeWasmCall(() => this.proto.cpp_calculate_manabar_full_regeneration_time(now, BigInt(maxMana), BigInt(currentMana), lastUpdateTime));
 
     return Number.parseInt(this.extract(manabarRegenerationTime));
   }

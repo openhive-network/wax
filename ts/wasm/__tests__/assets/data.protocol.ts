@@ -2,15 +2,12 @@
  * Required data for the protocol.spec.ts tests
  */
 
-import Long from "long";
 import type { transaction as transactionT } from "../../dist/lib";
 import type { witness_set_properties_data } from "../../dist/lib/build_wasm/wax.common";
 
 /// Converts given number to the array of low and high number parts
-export const numToHighLow = (value: number | string | Long): [ number, number ] => {
-  const long = Long.fromValue(value);
-
-  return [ long.low, long.high ];
+export const numToHighLow = (value: number | string | bigint): [ bigint ] => {
+  return [ BigInt(value) ];
 };
 
 export const serializedWitnessSetProperties = {

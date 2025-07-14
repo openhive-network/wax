@@ -1,6 +1,5 @@
-import type { IWaxBaseInterface } from "../interfaces";
+import type { IWaxBaseInterface, TNaiAssetConvertible } from "../interfaces";
 import type { WaxFormattable } from "../decorators/formatters";
-import type Long from "long";
 import type { ITransaction } from "../interfaces";
 
 export type DeepPartial<T> = T extends object ? {
@@ -187,11 +186,11 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
   /**
    * Formats numbers in given format
    *
-   * @param {string | number | BigInt | Long} amount number to be formatted
+   * @param {TNaiAssetConvertible} amount number to be formatted
    * @param {number} precision the exact precision of the given number (defaults to undefined - dynamic precision)
    * @param {string | string[] | undefined} locales A string with a BCP 47 language, or an array of such locale identifiers (defaults to undefined - current locale)
    *
    * @returns {string} formatted number
    */
-  formatNumber(amount: string | number | BigInt | Long, precision?: number, locales?: string | string[]): string;
+  formatNumber(amount: TNaiAssetConvertible, precision?: number, locales?: string | string[]): string;
 }

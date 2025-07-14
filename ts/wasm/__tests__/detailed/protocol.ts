@@ -746,22 +746,22 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to calculate HP APR 1', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, ...args) => {
-      const virtual_supply = protocol.cpp_hive(args[2], args[3]);
-      const total_vesting_fund_hive = protocol.cpp_hive(args[4], args[5]);
-      return protocol.cpp_calculate_hp_apr(args[0], args[1], virtual_supply, total_vesting_fund_hive);
-    }, 1_000_000, 1_500, ...numToHighLow(530_656_835_180), ...numToHighLow(173_009_633_181));
+    const retVal = await wasmTest(({ protocol }) => {
+      const virtual_supply = protocol.cpp_hive(BigInt(530_656_835_180));
+      const total_vesting_fund_hive = protocol.cpp_hive(BigInt(173_009_633_181));
+      return protocol.cpp_calculate_hp_apr(1_000_000, 1_500, virtual_supply, total_vesting_fund_hive);
+    });
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toEqual("4.48");
   });
 
   test('Should be able to calculate HP APR 2', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, ...args) => {
-      const virtual_supply = protocol.cpp_hive(args[2], args[3]);
-      const total_vesting_fund_hive = protocol.cpp_hive(args[4], args[5]);
-      return protocol.cpp_calculate_hp_apr(args[0], args[1], virtual_supply, total_vesting_fund_hive);
-    }, 82_779_364, 1_500, ...numToHighLow(530_656_835_180), ...numToHighLow(173_009_633_181));
+    const retVal = await wasmTest(({ protocol }) => {
+      const virtual_supply = protocol.cpp_hive(BigInt(530_656_835_180));
+      const total_vesting_fund_hive = protocol.cpp_hive(BigInt(173_009_633_181));
+      return protocol.cpp_calculate_hp_apr(82_779_364, 1_500, virtual_supply, total_vesting_fund_hive);
+    });
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toEqual("2.97");
@@ -838,20 +838,20 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to estimate hive collateral', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, ...args) => {
-      const current_median_history_base = protocol.cpp_hbd(args[0], args[1]);
-      const current_median_history_quote = protocol.cpp_hive(args[2], args[3]);
+    const retVal = await wasmTest(({ protocol }) => {
+      const current_median_history_base = protocol.cpp_hbd(BigInt(201));
+      const current_median_history_quote = protocol.cpp_hive(BigInt(1000));
 
-      const current_min_history_base = protocol.cpp_hbd(args[4], args[5]);
-      const current_min_history_quote = protocol.cpp_hive(args[6], args[7]);
+      const current_min_history_base = protocol.cpp_hbd(BigInt(197));
+      const current_min_history_quote = protocol.cpp_hive(BigInt(1000));
 
       const current_median_history:json_price = {base:current_median_history_base, quote:current_median_history_quote};
       const current_min_history:json_price = {base:current_min_history_base, quote:current_min_history_quote};
 
-      const hbd_amount_to_get = protocol.cpp_hbd(args[8], args[9]);
+      const hbd_amount_to_get = protocol.cpp_hbd(BigInt(100000));
 
       return protocol.cpp_estimate_hive_collateral(current_median_history, current_min_history, hbd_amount_to_get);
-    }, ...numToHighLow(201), ...numToHighLow(1000), ...numToHighLow(197), ...numToHighLow(1000), ...numToHighLow(100000));
+    });
 
     expect(retVal).toEqual({
       nai: "@@000000021",

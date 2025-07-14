@@ -1,6 +1,5 @@
-import type { NaiAsset } from "../index";
+import type { NaiAsset, TNaiAssetConvertible } from "../index";
 import { HiveAppsOperation, TAccountName } from './factory.js';
-import Long from 'long';
 
 export class ResourceCreditsOperationData {
   public constructor(
@@ -18,14 +17,14 @@ export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsO
    *
    * @param {string} workingAccount The account which has to authorize transaction.
    *                                Also it will be the account which delegates resource credits (aka from)
-   * @param {string | number | Long} maxRc maximum resource credits delegated (must pe non-negative value)
+   * @param {TNaiAssetConvertible} maxRc maximum resource credits delegated (must pe non-negative value)
    * @param {TAccountName} delegatee target account to delegate. Remember you cannot delegate to yourself!
    * @param {TAccountName[]} otherDelegatees optional list of other target accounts to delegate.
    *                                         In the standard node configuration there may be 100 delegatees at most.
    *
    * @returns {ResourceCreditsOperation} itself
    */
-  public delegate(workingAccount: TAccountName, maxRc: string | number | Long, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperation {
+  public delegate(workingAccount: TAccountName, maxRc: TNaiAssetConvertible, delegatee: TAccountName, ...otherDelegatees: TAccountName[]): ResourceCreditsOperation {
     const delegatees = [ delegatee, ...otherDelegatees ];
 
     this.body.push([
@@ -33,7 +32,7 @@ export class ResourceCreditsOperation extends HiveAppsOperation<ResourceCreditsO
       {
         from: workingAccount,
         delegatees,
-        max_rc: Long.fromValue(maxRc),
+        max_rc: maxRc.toString(),
         extensions: []
       }
     ]);

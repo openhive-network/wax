@@ -7,7 +7,6 @@ import type { IWaxExtendableFormatter } from "./formatters/types";
 import type { ApiOperation, ApiTransaction, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
 import type { TTransactionRequiredAuthorities } from '.';
-import type Long from "long";
 import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
@@ -24,7 +23,7 @@ export * from "./verify_authority_trace_interface";
 
 export type {TAccountName};
 
-export type TNaiAssetConvertible = number | string | BigInt | Long;
+export type TNaiAssetConvertible = number | string | bigint;
 
 export type TNaiAssetSource = TNaiAssetConvertible | NaiAsset;
 
@@ -77,19 +76,19 @@ export interface IManabarData {
   /**
    * Current manabar value
    *
-   * @type {Long}
+   * @type {bigint}
    */
-  current: Long;
+  current: bigint;
 
   /**
    * Maximum manabar value
    *
-   * @type {Long}
+   * @type {bigint}
    */
-  max: Long;
+  max: bigint;
 
   /**
-   * Percent of manabar load with two digits of precision, safely calculated based on the {@link current} and {@link max} values (prevents 64-bit Long precision overflow)
+   * Percent of manabar load with two digits of precision, safely calculated based on the {@link current} and {@link max} values
    *
    * @type {number}
    */
@@ -894,33 +893,33 @@ export interface IWaxBaseInterface {
    * Calculates current manabar value for Hive account based on given arguments
    *
    * @param {number} now head block time. Can be obtained using time property from dynamic global properties
-   * @param {number | string | Long} maxManaLH maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes.
-   *                                           For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call.
-   *                                           For rc manabar calculations use max_rc value from the rc_accounts API call.
-   * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
-   *                                               For rc manabar calculations use rc_manabar value from the rc_accounts API call
+   * @param {TNaiAssetConvertible} maxMana maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes.
+   *                                       For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call.
+   *                                       For rc manabar calculations use max_rc value from the rc_accounts API call.
+   * @param {TNaiAssetConvertible} currentMana current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
+   *                                           For rc manabar calculations use rc_manabar value from the rc_accounts API call
    * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
-   *                                               For rc manabar calculations use rc_manabar value from the rc_accounts API call
+   *                                For rc manabar calculations use rc_manabar value from the rc_accounts API call
    *
    * @returns {IManabarData} Manabar data
    */
-  calculateCurrentManabarValue(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): IManabarData;
+  calculateCurrentManabarValue(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): IManabarData;
 
   /**
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
    *
    * @param {number} now head block time. Can be obtained using time property from dynamic global properties
-   * @param {number | string | Long} maxManaLH maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes.
-   *                                           For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call.
-   *                                           For rc manabar calculations use max_rc value from the rc_accounts API call.
-   * @param {number | string | Long} currentManaLH current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
-   *                                               For rc manabar calculations use rc_manabar value from the rc_accounts API call
+   * @param {TNaiAssetConvertible} maxMana maximum account mana. Should equal post_voting_power.amount from the find_account API call for upvotes.
+   *                                       For downvotes remember to multiply this value by downvote_pool_percent from the dynamic global properties API call.
+   *                                       For rc manabar calculations use max_rc value from the rc_accounts API call.
+   * @param {TNaiAssetConvertible} currentMana current account mana. Should equal voting_manabar.current_mana from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
+   *                                           For rc manabar calculations use rc_manabar value from the rc_accounts API call
    * @param {number} lastUpdateTime last update of the current account mana. Should equal voting_manabar.last_update_time from the find_account API call for upvotes or downvote_manabar.current_mana for downvotes
-   *                                               For rc manabar calculations use rc_manabar value from the rc_accounts API call
+   *                                For rc manabar calculations use rc_manabar value from the rc_accounts API call
    *
    * @returns {number} Full regeneration timestamp (in seconds)
    */
-  calculateManabarFullRegenerationTime(now: number, maxManaLH: number | string | Long, currentManaLH: number | string | Long, lastUpdateTime: number): number;
+  calculateManabarFullRegenerationTime(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): number;
 
   /**
    * Calculates account HP based on given vests, total vesting fund HIVE and total vesting shares

@@ -1,10 +1,10 @@
 import type { TAccountName } from "../hive_apps_operations/factory";
-import { operation, comment, asset } from "../protocol.js";
+import type { TInternalAsset } from "./witness_set_properties";
+import { operation, comment } from "../protocol.js";
 import { beneficiary_route_type, comment_options, type comment_payout_beneficiaries } from "../../proto/comment_options.js";
 import { WaxError } from "../errors.js";
 import { deepEqual } from "../util/equal.js";
 import { OperationBase, IOperationSink } from "../operation_base.js";
-import Long from "long";
 import { EAssetName, type WaxBaseApi } from '../base_api.js';
 
 export enum ECommentFormat {
@@ -118,7 +118,7 @@ export interface ICommentData {
    *
    * @default 1_000_000_000
    */
-  maxAcceptedPayout?: asset | Long | string | BigInt | number;
+  maxAcceptedPayout?: TInternalAsset;
 }
 
 export interface IReplyData extends Omit<ICommentData, 'jsonMetadata' | 'permlink' | 'title'> {
@@ -141,7 +141,7 @@ class CommentOperation extends OperationBase {
     format: ECommentFormat.MIXED
   };
 
-  private maxAcceptedPayoutToSet?: asset | Long | string | BigInt | number;
+  private maxAcceptedPayoutToSet?: TInternalAsset;
 
   /**
    * @internal

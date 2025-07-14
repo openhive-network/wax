@@ -183,36 +183,29 @@ private:
 
 class foundation_wasm : public foundation
 {
-private:
-  long long join_lh(int32_t low, int32_t high)const
-{ return (long long) high << 32 | (uint32_t) low; }
-
-  unsigned long long join_lh(uint32_t low, uint32_t high)const
-{ return (unsigned long long) high << 32 | low; }
-
 public:
   using required_authority_collection_t = required_authority_collectionV;
 
-  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const uint32_t max_mana_low, const uint32_t max_mana_high, const uint32_t current_mana_low, const uint32_t current_mana_high, const uint32_t last_update_time) 
-{ return foundation::cpp_calculate_manabar_full_regeneration_time(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
+  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const uint64_t max_mana, const uint64_t current_mana, const uint32_t last_update_time)
+{ return foundation::cpp_calculate_manabar_full_regeneration_time(now, max_mana, current_mana, last_update_time); }
 
-result cpp_calculate_current_manabar_value(const int32_t now, const uint32_t max_mana_low, const uint32_t max_mana_high, const uint32_t current_mana_low, const uint32_t current_mana_high, const uint32_t last_update_time) 
-{ return foundation::cpp_calculate_current_manabar_value(now, join_lh(max_mana_low, max_mana_high), join_lh(current_mana_low, current_mana_high), last_update_time); }
+result cpp_calculate_current_manabar_value(const int32_t now, const uint64_t max_mana, const uint64_t current_mana, const uint32_t last_update_time)
+{ return foundation::cpp_calculate_current_manabar_value(now, max_mana, current_mana, last_update_time); }
 
-json_asset cpp_general_asset(const uint32_t asset_num, const int32_t amount_low, const int32_t amount_high)const 
-{ return foundation::cpp_general_asset(asset_num, join_lh(amount_low, amount_high)); }
+json_asset cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
+{ return foundation::cpp_general_asset(asset_num, amount); }
 
-json_asset cpp_hive(const int32_t amount_low, const int32_t amount_high)const 
-{ return foundation::cpp_hive(join_lh(amount_low, amount_high)); }
+json_asset cpp_hive(const int64_t amount)const
+{ return foundation::cpp_hive(amount); }
 
-json_asset cpp_hbd(const int32_t amount_low, const int32_t amount_high)const 
-{ return foundation::cpp_hbd(join_lh(amount_low, amount_high)); }
+json_asset cpp_hbd(const int64_t amount)const
+{ return foundation::cpp_hbd(amount); }
 
 wasm_transaction cpp_create_wasm_transaction(val obj, bool is_protobuf)const
 { return wasm_transaction{ obj, is_protobuf }; }
 
-json_asset cpp_vests(const int32_t amount_low, const int32_t amount_high)const 
-{ return foundation::cpp_vests(join_lh(amount_low, amount_high)); }
+json_asset cpp_vests(const int64_t amount)const
+{ return foundation::cpp_vests(amount); }
 
 witness_set_properties_serialized cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const
 { return foundation::cpp_serialize_witness_set_properties(value); }
@@ -529,10 +522,10 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
 
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:
-    .function("cpp_general_asset", select_overload<json_asset(const uint32_t, const int32_t, const int32_t)const>(&foundation_wasm::cpp_general_asset))
-    .function("cpp_hive", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_hive))
-    .function("cpp_hbd", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_hbd))
-    .function("cpp_vests", select_overload<ext_json_asset_fn_t>(&foundation_wasm::cpp_vests))
+    .function("cpp_general_asset", &foundation_wasm::cpp_general_asset)
+    .function("cpp_hive", &foundation_wasm::cpp_hive)
+    .function("cpp_hbd", &foundation_wasm::cpp_hbd)
+    .function("cpp_vests", &foundation_wasm::cpp_vests)
 
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
@@ -549,8 +542,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_scan_text_for_matching_private_keys)
 
-    .function("cpp_calculate_manabar_full_regeneration_time", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_manabar_full_regeneration_time))
-    .function("cpp_calculate_current_manabar_value", select_overload<manabar_fn_t>(&foundation_wasm::cpp_calculate_current_manabar_value))
+    .function("cpp_calculate_manabar_full_regeneration_time", &foundation_wasm::cpp_calculate_manabar_full_regeneration_time)
+    .function("cpp_calculate_current_manabar_value", &foundation_wasm::cpp_calculate_current_manabar_value)
 
     .function("cpp_get_tapos_data", &foundation_wasm::cpp_get_tapos_data)
 
