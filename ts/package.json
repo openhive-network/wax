@@ -97,8 +97,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "events": "^3.3.0",
-    "long": "^5.2.3"
+    "events": "^3.3.0"
   },
   "size-limit": [
     {

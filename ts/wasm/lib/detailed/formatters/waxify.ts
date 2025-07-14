@@ -3,7 +3,6 @@ import type { IWaxBaseInterface } from "../interfaces";
 
 import { WaxFormatterBase } from "./base";
 import { DefaultFormatters } from "./default_formatters";
-import Long from "long";
 import { getMetadata } from "reflect-metadata/no-conflict";
 import { structuredClone } from "../shims/structuredclone.js";
 
@@ -58,7 +57,7 @@ export class WaxFormatter extends WaxFormatterBase implements IWaxExtendableForm
   }
 
   // Similar thing could be achieved using Intl.NumberFormat interface only, but it does not allow dynamic precision and precision larger than 20, which HIVE may provide in the SMTs
-  public formatNumber(amount: string | number | BigInt | Long, precision?: number, locales?: string | string[]): string {
+  public formatNumber(amount: string | number | BigInt | bigint, precision?: number, locales?: string | string[]): string {
     if(Number.isNaN(amount))
       amount = 0;
 

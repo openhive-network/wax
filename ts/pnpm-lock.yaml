@@ -81,9 +81,6 @@ importers:
       events:
         specifier: ^3.3.0
         version: 3.3.0
-      long:
-        specifier: ^5.2.3
-        version: 5.2.3
     devDependencies:
       '@hiveio/beekeeper':
         specifier: 1.27.11
