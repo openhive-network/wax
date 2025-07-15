@@ -19,13 +19,14 @@ set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/protocol )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/protocol build_protocol_minimal )
 
-file(GLOB HEADERS "core/*.hpp")
+file(GLOB HEADERS "core/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 set( SOURCES
       ${WAX_ROOT_PATH}/core/exception.cpp
       ${WAX_ROOT_PATH}/core/foundation.cpp
       ${WAX_ROOT_PATH}/core/utils.cpp
       ${WAX_ROOT_PATH}/core/binary_view_helper.cpp
+      foundation_wasm.cpp
       wasm_interface.cpp
 )
 

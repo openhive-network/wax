@@ -338,6 +338,123 @@ brain_key_data foundation::cpp_suggest_brain_key()
     }
   );
 }
+static inline
+hive::protocol::authority convert_wax_authority_to_protocol_authority(const wax_authority& w_authority)
+{
+  using authority = hive::protocol::authority;
+  auto convert_wax_key_auth_map_to_hive_key_auth_map = [](const wax_authority::authority_map& auth_map) -> authority::key_authority_map {
+    authority::key_authority_map result;
+    for (const auto& auth : auth_map)
+      result.emplace(auth.first, auth.second);
+    return result;
+    };
+
+  authority a;
+  a.weight_threshold = w_authority.weight_threshold;
+  a.key_auths = convert_wax_key_auth_map_to_hive_key_auth_map(w_authority.key_auths);
+  a.account_auths = authority::account_authority_map(w_authority.account_auths.cbegin(), w_authority.account_auths.cend());
+
+  return a;
+}
+hive::protocol::authority_verification_trace foundation::cpp_trace_authority_verification(
+  const required_authority_collection_t& required_authorities,
+  const std::vector<std::string>& decodedSignaturePublicKeys,
+  IAccountAuthorityProvider& authorityProvider) const
+{
+  struct Impl final : public hive::protocol::authority_getter_i
+  {
+    explicit Impl(IAccountAuthorityProvider& authorityProvider) : _authorityProvider(authorityProvider) {}
+    virtual ~Impl() = default;
+
+    using authority = hive::protocol::authority;
+    using public_key_type = hive::protocol::public_key_type;
+
+    virtual std::optional<authority> get_active(const std::string& a) const override
+    {
+      return acquireAuthority(a, "active");
+    }
+
+    virtual std::optional<authority> get_owner(const std::string& a) const override
+    {
+      return acquireAuthority(a, "owner");
+    }
+
+    virtual std::optional<authority> get_posting(const std::string& a) const override
+    {
+      return acquireAuthority(a, "posting");
+    }
+
+    virtual std::optional<public_key_type> get_witness_key(const std::string& account) const override
+    {
+      std::optional<public_key_type> retval;
+      const auto signingKey = _authorityProvider.getWitnessPublicKey(account);
+      if(signingKey)
+        retval = fc::ecc::public_key::from_base58_with_prefix(*signingKey, HIVE_ADDRESS_PREFIX);
+      return retval;
+    }
+
+  private:
+    std::optional<authority> acquireAuthority(const std::string& account, const char* role) const
+    {
+      auto wAuth = _authorityProvider.getAuthority(account, role);
+      if(wAuth)
+        return convert_wax_authority_to_protocol_authority(*wAuth);
+
+      return std::optional<authority>();
+    }
+
+  private:
+    IAccountAuthorityProvider& _authorityProvider;
+  };
+
+  return cpp::safe_exception_wrapper([&]() ->hive::protocol::authority_verification_trace {
+  flat_set<hive::protocol::public_key_type> _signatureDecodedPublicKeys;
+  for(const auto& decodedKey : decodedSignaturePublicKeys)
+  {
+    auto key = fc::ecc::public_key::from_base58_with_prefix(decodedKey, HIVE_ADDRESS_PREFIX);
+    _signatureDecodedPublicKeys.insert(key);
+  }
+
+  hive::protocol::required_authorities_type _requiredAuths;
+
+  _requiredAuths.required_active.insert(required_authorities.active_accounts.cbegin(), required_authorities.active_accounts.end());
+  _requiredAuths.required_owner.insert(required_authorities.owner_accounts.cbegin(), required_authorities.owner_accounts.end());
+  _requiredAuths.required_posting.insert(required_authorities.posting_accounts.cbegin(), required_authorities.posting_accounts.end());
+
+  ///_requiredAuths.required_witness; /// ? missing field in required_authority_collection_t?
+  for(const auto& o : required_authorities.other_authorities)
+  {
+    _requiredAuths.other.emplace_back(convert_wax_authority_to_protocol_authority(o));
+  }
+
+  /// TODO: FIXME allow to pass by params
+  const bool allow_strict_and_mixed_authorities = false;
+  const bool allow_redundant_signatures = false;
+
+  Impl protocolDataProvider(authorityProvider);
+
+  hive::protocol::authority_verification_trace trace = hive::protocol::verify_authority_with_tracing(
+    allow_strict_and_mixed_authorities,
+    allow_redundant_signatures,
+    _requiredAuths,
+    _signatureDecodedPublicKeys,
+    protocolDataProvider);
+
+  return trace;
+  });
+}
+std::string foundation::cpp_get_default_comment_options_operation() const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string
+    {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+      hive::protocol::comment_options_operation op;
+
+      return fc::json::to_string(op);
+    });
+}
 std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(const std::string& chain_id)
 {
   return cpp::safe_exception_wrapper([&]() -> std::map<std::string, std::string> {
@@ -763,15 +880,15 @@ binary_data foundation::cpp_op_binary(const hive_operation_handle& op_handle, bo
   });
 }
 
-required_authority_collectionV foundation::cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const
+foundation::required_authority_collection_t foundation::cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const
 {
-  return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+  return cpp::safe_exception_wrapper([&]() -> foundation::required_authority_collection_t {
     FC_ASSERT(tx_handle.tx, "Transaction handle is not initialized");
     typedef flat_set<hive::protocol::account_name_type> raw_account_set;
 
     if (tx_handle.tx->operations.empty())
     {
-      return required_authority_collectionV{};
+      return foundation::required_authority_collection_t{};
     }
 
     raw_account_set active;
@@ -781,8 +898,8 @@ required_authority_collectionV foundation::cpp_tx_required_authorities(const hiv
     std::vector<hive::protocol::authority> other_authorities;
     tx_handle.tx->get_required_authorities(active, owner, posting, witness, other_authorities);
 
-    required_authority_collectionV ret_val;
-    using account_collection_t = typename required_authority_collectionV::account_collection_t;
+    foundation::required_authority_collection_t ret_val;
+    using account_collection_t = typename foundation::required_authority_collection_t::account_collection_t;
     ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
     ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
     ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
@@ -805,9 +922,9 @@ required_authority_collectionV foundation::cpp_tx_required_authorities(const hiv
   });
 }
 
-required_authority_collectionV foundation::cpp_op_required_authorities(const hive_operation_handle& op_handle)const
+foundation::required_authority_collection_t foundation::cpp_op_required_authorities(const hive_operation_handle& op_handle)const
 {
-  return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+  return cpp::safe_exception_wrapper([&]() -> foundation::required_authority_collection_t {
     FC_ASSERT(op_handle.op, "Operation handle is not initialized");
     typedef flat_set<hive::protocol::account_name_type> raw_account_set;
 
@@ -816,10 +933,10 @@ required_authority_collectionV foundation::cpp_op_required_authorities(const hiv
     raw_account_set posting;
     raw_account_set witness;
     std::vector<hive::protocol::authority> other_authorities;
-    hive::protocol::get_required_authorities(*op_handle.op, active, owner, posting, witness, other_authorities);
+    hive::protocol::operation_get_required_authorities(*op_handle.op, active, owner, posting, witness, other_authorities);
 
-    required_authority_collectionV ret_val;
-    using account_collection_t = typename required_authority_collectionV::account_collection_t;
+    foundation::required_authority_collection_t ret_val;
+    using account_collection_t = typename foundation::required_authority_collection_t::account_collection_t;
     ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
     ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
     ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));

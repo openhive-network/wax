@@ -11,21 +11,6 @@
 
 namespace cpp {
 
-/** Helper interface instance to allow integration of TS/JS/Python environment and override (implement) a virtual methods
-*   to provide data to underlying C++ algoruthms.
-*/
-class IAccountAuthorityProvider
-{
-public:
-  /** Allows to query for given account authority and specific role (owner, active, posting).
-  */
-  virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) = 0;
-  /// Allows to query for given witness signing key.
-  virtual std::optional<std::string> getWitnessPublicKey(std::string witness_name) = 0;
-
-  virtual ~IAccountAuthorityProvider() = default;
-};
-
 /** Common implementation of protocol interface, next exposed to other languages
     It provides Hive protocol functionality operating on Hive native JSON format.
 */

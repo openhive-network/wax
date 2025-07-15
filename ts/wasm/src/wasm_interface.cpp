@@ -1,120 +1,12 @@
 #include "core/foundation.hpp"
-#include "core/protocol_impl.hpp"
-#include "core/protobuf_protocol_impl.hpp"
-
-#include "core/protocol_impl.inl"
-#include "core/protobuf_protocol_impl.inl"
-
-#include "core/val_protocol.hpp"
-#include "core/proto_converter.hpp"
-#include "core/api_converter.hpp"
+#include "foundation_wasm.hpp"
 
 #include <emscripten/bind.h>
-
-#include "emscripten_managed_object.hpp"
 
 using namespace cpp;
 using namespace emscripten;
 
 using authority_verification_trace = hive::protocol::authority_verification_trace;
-
-class foundation_wasm : public foundation
-{
-public:
-bool cpp_get_js_object(val obj) const
-{
-  std::string author = obj["author"].as<std::string>();
-  dlog((author));
-
-  return author == "user";
-}
-
-hive_transaction_handle cpp_create_transaction_handle(val emval, bool is_protobuf)const
-{
-  return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
-    hive_transaction_handle h;
-
-    hive::protocol::signed_transaction obj;
-
-    fc::reflector< hive::protocol::signed_transaction >::visit(
-      val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, obj, is_protobuf }
-    );
-
-    h.tx.reset(new hive_tx(std::move(obj)));
-
-    return h;
-  });
-}
-
-hive_operation_handle cpp_create_operation_handle(val emval, bool is_protobuf)const
-{
-  return cpp::safe_exception_wrapper([&]() -> hive_operation_handle {
-    hive_operation_handle h;
-
-    hive::protocol::operation obj;
-
-    cpp::from_jsval(emscripten_managed_object{ emval }, obj, is_protobuf);
-
-    h.op.reset(new hive_op(std::move(obj)));
-
-    return h;
-  });
-}
-
-void cpp_tx_proto_to_api(val emval)const
-{
-  cpp::safe_exception_wrapper([&]() -> void {
-    fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_api_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval } }
-    );
-  });
-}
-void cpp_tx_api_to_proto(val emval)const
-{
-  cpp::safe_exception_wrapper([&]() -> void {
-    fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_proto_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval } }
-    );
-  });
-}
-
-hive_transaction_handle cpp_deserialize_transaction(std::string hex)const
-{
-  return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
-
-    std::vector<char> raw_data{hex.size()};
-    fc::from_hex(hex, raw_data.data(), raw_data.size());
-
-    hive::protocol::signed_transaction obj;
-    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
-
-    hive_transaction_handle h;
-    h.tx.reset(new hive_tx(std::move(obj)));
-
-    return h;
-  });
-}
-hive_operation_handle cpp_deserialize_operation(std::string hex)const
-{
-  return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
-    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
-    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
-
-    std::vector<char> raw_data{hex.size()};
-    fc::from_hex(hex, raw_data.data(), raw_data.size());
-
-    hive::protocol::operation obj;
-    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
-
-    hive_operation_handle h;
-    h.op.reset(new hive_op(std::move(obj)));
-
-    return h;
-  });
-}
-};
 
 class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
 {
@@ -131,8 +23,6 @@ public:
     return call<std::optional<std::string>>("getWitnessPublicKey", account_name);
   }
 };
-
-using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
 
 EMSCRIPTEN_BINDINGS(wax_api_instance) {
   enum_<error_code>("error_code")
@@ -213,12 +103,10 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("offsets", &binary_data::offsets)
       ;
 
-  value_object<transaction_handle>("transaction_handle")
-      .field("tx", &transaction_handle::tx)
+  value_object<hive_transaction_handle>("transaction_handle")
       ;
 
-  value_object<transaction_handle>("operation_handle")
-      .field("op", &transaction_handle::op)
+  value_object<hive_operation_handle>("operation_handle")
       ;
 
   register_optional<std::string>();
@@ -234,8 +122,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_vector<authority_verification_trace::path_entry>("VectorPathEntry");
   register_map<std::string, std::string>("MapStringString");
   register_map<std::string, uint16_t>("MapStringUInt16");
-  register_smart_pointer<hive_tx>("hive_tx");
-  register_smart_pointer<hive_op>("hive_op");
 
   value_object<witness_set_properties_data>("witness_set_properties_data")
       .field("key",                     &witness_set_properties_data::key)
@@ -273,18 +159,15 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
   class_<foundation_wasm>("protocol_foundation")
     .constructor<>()
-    .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
 
-    .function("cpp_tx_api_to_proto", &foundation_wasm::tx_api_to_proto)
-    .function("cpp_tx_proto_to_api", &foundation_wasm::tx_proto_to_api)
+    .function("cpp_tx_api_to_proto", &foundation_wasm::cpp_tx_api_to_proto)
+    .function("cpp_tx_proto_to_api", &foundation_wasm::cpp_tx_proto_to_api)
 
-    .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
-
-    .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
-    .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
+    .function("cpp_generate_private_key", select_overload<result()>(&foundation_wasm::cpp_generate_private_key))
+    .function("cpp_generate_private_key_password_based", select_overload<private_key_data(const std::string&, const std::string&, const std::string&)>(&foundation_wasm::cpp_generate_private_key))
     .function("cpp_convert_raw_private_key_to_wif", &foundation_wasm::cpp_convert_raw_private_key_to_wif)
     .function("cpp_convert_raw_public_key_to_wif", &foundation_wasm::cpp_convert_raw_public_key_to_wif)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
@@ -308,7 +191,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
     .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)
 
-    .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_scan_text_for_matching_private_keys)
+    .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_check_memo_for_private_keys)
 
     .function("cpp_calculate_manabar_full_regeneration_time", &foundation_wasm::cpp_calculate_manabar_full_regeneration_time)
     .function("cpp_calculate_current_manabar_value", &foundation_wasm::cpp_calculate_current_manabar_value)
@@ -323,16 +206,10 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
+
+    .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+    .function("cpp_trace_authority_verification", &foundation_wasm::cpp_trace_authority_verification)
     ;
-
-
-  class_<protocol_wasm, base<foundation_wasm>>("protocol")
-    .constructor<>()
-    .function("cpp_get_default_comment_options_operation", &protocol_wasm::cpp_get_default_comment_options_operation)
-    .function("cpp_deserialize_transaction", &protocol_wasm::cpp_deserialize_transaction)
-    .function("cpp_trace_authority_verification", &protocol_wasm::cpp_trace_authority_verification)
-    .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
-  ;
 }
 
 int main() {

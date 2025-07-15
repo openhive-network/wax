@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include <hive/protocol/authority_trace_data.hpp>
+
 #include "operations_fwd.hpp"
 
 namespace hive { namespace protocol {
@@ -12,6 +14,21 @@ namespace hive { namespace protocol {
 } } // namespace hive::protocol
 
 namespace cpp {
+
+/** Helper interface instance to allow integration of TS/JS/Python environment and override (implement) a virtual methods
+*   to provide data to underlying C++ algoruthms.
+*/
+class IAccountAuthorityProvider
+{
+public:
+  /** Allows to query for given account authority and specific role (owner, active, posting).
+  */
+  virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) = 0;
+  /// Allows to query for given witness signing key.
+  virtual std::optional<std::string> getWitnessPublicKey(std::string witness_name) = 0;
+
+  virtual ~IAccountAuthorityProvider() = default;
+};
 
 using hive_tx = hive::protocol::signed_transaction;
 using hive_op = hive::protocol::operation;
@@ -41,7 +58,7 @@ public:
 class foundation
 {
 public:
-  using required_authority_collection_t = required_authority_collection;
+  using required_authority_collection_t = required_authority_collectionV;
 
   result cpp_calculate_public_key(const std::string& wif);
   result cpp_generate_private_key();
@@ -186,25 +203,34 @@ public:
    */
   bool cpp_is_valid_account_name( const std::string& name ) const;
 
-  std::vector<std::string>       cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
-  std::string                    cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
-  binary_data                    cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
-  void                           cpp_op_validate(const hive_operation_handle& op_handle)const;
-  required_authority_collectionV cpp_op_required_authorities(const hive_operation_handle& op_handle)const;
+  /** Allows to perform traced verify_authority call, and collect data gathered during analysis, returned through authority_verification_trace object.
+  */
+  hive::protocol::authority_verification_trace cpp_trace_authority_verification(
+    const required_authority_collection_t& required_authorities,
+    const std::vector<std::string>& decodedSignaturePublicKeys,
+    IAccountAuthorityProvider& authorityProvider) const;
 
-  void                           cpp_tx_add_operation(hive_transaction_handle& tx_handle, const hive_operation_handle& op_handle)const;
-  void                           cpp_tx_add_signature(hive_transaction_handle& tx_handle, const std::string& signature)const;
-  void                           cpp_tx_set_expiration(hive_transaction_handle& tx_handle, const std::string& expiration)const;
-  std::string                    cpp_tx_to_legacy_json(const hive_transaction_handle& tx_handle)const;
-  std::string                    cpp_tx_to_binary(const hive_transaction_handle& tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
-  std::string                    cpp_tx_to_json(const hive_transaction_handle& tx_handle)const;
-  std::string                    cpp_tx_id(const hive_transaction_handle& tx_handle, bool use_hf26_serialization)const;
-  binary_data                    cpp_tx_binary(const hive_transaction_handle& tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
-  required_authority_collectionV cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const;
-  std::vector<std::string>       cpp_tx_impacted_accounts(const hive_transaction_handle& tx_handle)const;
-  std::vector<std::string>       cpp_tx_signature_keys(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
-  std::string                    cpp_tx_sig_digest(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
-  void                           cpp_tx_validate(const hive_transaction_handle& tx_handle)const;
+  std::string cpp_get_default_comment_options_operation() const;
+
+  std::vector<std::string>        cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
+  std::string                     cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
+  binary_data                     cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
+  void                            cpp_op_validate(const hive_operation_handle& op_handle)const;
+  required_authority_collection_t cpp_op_required_authorities(const hive_operation_handle& op_handle)const;
+
+  void                            cpp_tx_add_operation(hive_transaction_handle& tx_handle, const hive_operation_handle& op_handle)const;
+  void                            cpp_tx_add_signature(hive_transaction_handle& tx_handle, const std::string& signature)const;
+  void                            cpp_tx_set_expiration(hive_transaction_handle& tx_handle, const std::string& expiration)const;
+  std::string                     cpp_tx_to_legacy_json(const hive_transaction_handle& tx_handle)const;
+  std::string                     cpp_tx_to_binary(const hive_transaction_handle& tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
+  std::string                     cpp_tx_to_json(const hive_transaction_handle& tx_handle)const;
+  std::string                     cpp_tx_id(const hive_transaction_handle& tx_handle, bool use_hf26_serialization)const;
+  binary_data                     cpp_tx_binary(const hive_transaction_handle& tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)const;
+  required_authority_collection_t cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const;
+  std::vector<std::string>        cpp_tx_impacted_accounts(const hive_transaction_handle& tx_handle)const;
+  std::vector<std::string>        cpp_tx_signature_keys(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
+  std::string                     cpp_tx_sig_digest(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
+  void                            cpp_tx_validate(const hive_transaction_handle& tx_handle)const;
 
 protected:
   /// use this only through derived classes
