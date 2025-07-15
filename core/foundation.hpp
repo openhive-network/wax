@@ -232,7 +232,7 @@ public:
   std::string                     cpp_tx_sig_digest(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
   void                            cpp_tx_validate(const hive_transaction_handle& tx_handle)const;
 
-protected:
+// protected: // XXX: Temporary remove this, as it may not be supported by emscripten
   /// use this only through derived classes
   foundation() = default;
   ~foundation() = default;

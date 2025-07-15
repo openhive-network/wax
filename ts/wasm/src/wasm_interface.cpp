@@ -157,7 +157,10 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
-  class_<foundation_wasm>("protocol_foundation")
+  class_<foundation>("foundation")
+    ;
+
+  class_<foundation_wasm, base<foundation>>("protocol_foundation")
     .constructor<>()
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
