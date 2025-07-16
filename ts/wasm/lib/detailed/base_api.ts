@@ -1,5 +1,5 @@
 import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
-import type { binary_data_node, json_price, MainModule, proto_protocol, protocol, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
+import type { binary_data_node, json_price, MainModule, protocol_foundation, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
 import type { ApiOperation, NaiAsset } from "./api";
 
@@ -9,7 +9,7 @@ import { comment_options, operation, transaction } from "./protocol";
 
 import { WaxError, WaxPrivateKeyLeakDetectedException } from './errors.js';
 import { safeWasmCall, TWaxStdExceptionData } from "./util/wasm_errors.js";
-import { JSON_stringify_operation, matchesHiveProtocolType } from "./util/proto_type_utils";
+import { matchesHiveProtocolType } from "./util/proto_type_utils";
 import { Transaction } from "./transaction.js";
 
 import { WaxFormatter } from "./formatters/waxify.js";
@@ -36,19 +36,15 @@ const extractWasmResult = (wax: MainModule, res: result): string => {
 }
 
 class BlockchainDefaultInitializer {
-  public static defaultCommentOptions(wax: MainModule,proto: proto_protocol, protocol: protocol): comment_options {
-    const protoOpResult = safeWasmCall(() => proto.cpp_api_to_proto(protocol.cpp_get_default_comment_options_operation()));
-    const protoOpJson = extractWasmResult(wax, protoOpResult);
+  public static defaultCommentOptions(protocol: protocol_foundation): comment_options {
+    const protoOpResult = JSON.parse(safeWasmCall(() => protocol.cpp_get_default_comment_options_operation()));
 
-    const op = operation.fromJSON(JSON.parse(protoOpJson));
-    const commentOptionOp = op.comment_options_operation!;
-    return commentOptionOp
+    return protoOpResult;
   }
 };
 
 export class WaxBaseApi implements IWaxBaseInterface {
-  public readonly proto: proto_protocol;
-  public readonly protocol: protocol;
+  public readonly protocol: protocol_foundation;
 
   public readonly ASSETS: Readonly<Record<EAssetName, NaiAsset>>;
   private readonly blockChainDefaultCommentOptions: comment_options;
@@ -79,13 +75,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
   };
 
   public operationBinaryViewMetadata(operation: operation | ApiOperation, isHf26Serialization = true): IBinaryViewOutputData {
-    let result;
+    const opHandle = safeWasmCall(() => this.protocol.cpp_create_operation_handle(operation, !matchesHiveProtocolType(operation)));
 
-    const stringifiedOperation = JSON_stringify_operation(operation);
-    if (matchesHiveProtocolType(operation))
-      result = safeWasmCall(() => this.protocol.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
-    else
-      result = safeWasmCall(() => this.proto.cpp_generate_binary_operation_metadata(stringifiedOperation, isHf26Serialization));
+    const result = safeWasmCall(() => this.protocol.cpp_op_binary(opHandle, isHf26Serialization));
+
+    opHandle.delete();
 
     return {
       binary: result.binary as string,
@@ -94,14 +88,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public operationGetImpactedAccounts(op: operation | ApiOperation): Set<TAccountName> {
-    let vector: VectorString;
+    const opHandle = safeWasmCall(() => this.protocol.cpp_create_operation_handle(op, !matchesHiveProtocolType(op)));
 
-    const stringifiedOperation = JSON_stringify_operation(op);
+    const vector = safeWasmCall(() => this.protocol.cpp_op_impacted_accounts(opHandle));
 
-    if (matchesHiveProtocolType(op))
-      vector = safeWasmCall(() => this.protocol.cpp_operation_get_impacted_accounts(stringifiedOperation));
-    else
-      vector = safeWasmCall(() => this.proto.cpp_operation_get_impacted_accounts(stringifiedOperation));
+    opHandle.delete();
 
     const resultingSet = new Set<TAccountName>();
 
@@ -157,7 +148,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     const actualHbdAmountToGet = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbdAmountToGet);
 
-    return safeWasmCall(() => this.proto.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset);
   }
 
   public deserializeWitnessProps(serializedWitnessProps: Array<[string, string]>): witness_set_properties_data {
@@ -165,11 +156,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
     for (const [key, serializedValue] of serializedWitnessProps)
       map.set(key, serializedValue);
 
-    return safeWasmCall(() => this.proto.cpp_deserialize_witness_set_properties(map))
+    return safeWasmCall(() => this.protocol.cpp_deserialize_witness_set_properties(map))
   }
 
   public serializeWitnessProps(witnessProps: witness_set_properties_data): Record<string, string> {
-    const propsSerialized = safeWasmCall(() => this.proto.cpp_serialize_witness_set_properties(witnessProps));
+    const propsSerialized = safeWasmCall(() => this.protocol.cpp_serialize_witness_set_properties(witnessProps));
     const propsKeys = propsSerialized.keys();
 
     const keys: string[] = [];
@@ -191,9 +182,9 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction {
-    const conversionResult = safeWasmCall(() => this.protocol.cpp_deserialize_transaction(transaction));
+    const txHandle = safeWasmCall(() => this.protocol.cpp_deserialize_transaction(transaction));
 
-    return JSON.parse(this.extract(conversionResult));
+    return JSON.parse(safeWasmCall(() => this.protocol.cpp_tx_to_json(txHandle))) as ApiTransaction;
   }
 
   private naiAssetToLong(amount: number, precision: number): bigint {
@@ -230,15 +221,15 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public hiveSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    return safeWasmCall(() => this.proto.cpp_hive(BigInt(amount)) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_hive(BigInt(amount)) as NaiAsset);
   }
 
   public hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    return safeWasmCall(() => this.proto.cpp_hbd(BigInt(amount)) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_hbd(BigInt(amount)) as NaiAsset);
   }
 
   public vestsSatoshis(amount: TNaiAssetConvertible): NaiAsset {
-    return safeWasmCall(() => this.proto.cpp_vests(BigInt(amount)) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_vests(BigInt(amount)) as NaiAsset);
   }
 
   public vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
@@ -246,7 +237,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
     const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
-    return safeWasmCall(() => this.proto.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_vests_to_hp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
   }
 
   public hpToVests(hive: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
@@ -254,7 +245,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
     const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
 
-    return safeWasmCall(() => this.proto.cpp_hp_to_vests(hiveAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_hp_to_vests(hiveAsset, totalVestingFundHiveAsset, totalVestingSharesAsset) as NaiAsset);
   }
 
   public hbdToHive(hbd: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset {
@@ -262,7 +253,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const baseAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, base as NaiAsset);
     const quoteAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, quote as NaiAsset);
 
-    return safeWasmCall(() => this.proto.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_hbd_to_hive(hbdAsset, baseAsset, quoteAsset) as NaiAsset);
   }
 
   public hiveToHbd(amount: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset {
@@ -270,7 +261,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const baseAsset = this.createAssetWithRequiredSymbol(EAssetName.HBD, base);
     const quoteAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, quote);
 
-    return safeWasmCall(() => this.proto.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset);
+    return safeWasmCall(() => this.protocol.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset);
   }
 
   public extract(res: result): string {
@@ -281,9 +272,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
     public readonly wax: MainModule,
     public readonly chainId: string
   ) {
-    this.proto = safeWasmCall(() => new wax.proto_protocol());
-    this.protocol = safeWasmCall(() => new wax.protocol());
-    this.blockChainDefaultCommentOptions = BlockchainDefaultInitializer.defaultCommentOptions(wax, this.proto, this.protocol);
+    this.protocol = safeWasmCall(() => new wax.protocol_foundation());
+    this.blockChainDefaultCommentOptions = BlockchainDefaultInitializer.defaultCommentOptions(this.protocol);
 
     this.ASSETS = {
       [EAssetName.HBD]: this.hbdSatoshis(0),
@@ -293,7 +283,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public isValidAccountName(name: string): boolean {
-    return safeWasmCall(() => this.proto.cpp_is_valid_account_name(name));
+    return safeWasmCall(() => this.protocol.cpp_is_valid_account_name(name));
   }
 
   public createTransactionFromProto(protoTransaction: transaction): ITransaction {
@@ -326,8 +316,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public getAsset(nai: NaiAsset): IHiveAssetData {
-    const symbol = safeWasmCall(() => this.proto.cpp_asset_symbol(nai));
-    const amount = safeWasmCall(() => this.proto.cpp_asset_value(nai));
+    const symbol = safeWasmCall(() => this.protocol.cpp_asset_symbol(nai));
+    const amount = safeWasmCall(() => this.protocol.cpp_asset_value(nai));
 
     return {
       symbol,
@@ -344,7 +334,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString {
-    const publicKey = safeWasmCall(() => this.proto.cpp_get_public_key_from_signature(sigDigest, signature));
+    const publicKey = safeWasmCall(() => this.protocol.cpp_get_public_key_from_signature(sigDigest, signature));
 
     return this.extract(publicKey);
   }
@@ -352,7 +342,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
     const encrypted = wallet.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
 
-    return safeWasmCall(() => this.proto.cpp_crypto_memo_dump_string({
+    return safeWasmCall(() => this.protocol.cpp_crypto_memo_dump_string({
       content: encrypted,
       from: mainEncryptionKey,
       to: otherEncryptionKey ?? mainEncryptionKey
@@ -380,7 +370,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public decrypt(wallet: ISignatureProvider, encrypted: string): string {
-    const data = safeWasmCall(() => this.proto.cpp_crypto_memo_from_string(encrypted));
+    const data = safeWasmCall(() => this.protocol.cpp_crypto_memo_from_string(encrypted));
 
     return wallet.decryptData(data.content as string, data.from as string, data.to as string);
   }
@@ -412,7 +402,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
         actualOtherKeys.push_back(key);
     }
 
-    safeWasmCall(()=>this.proto.cpp_scan_text_for_matching_private_keys(content, account, accountAuthorities, memoKey, actualOtherKeys),
+    safeWasmCall(() => this.protocol.cpp_scan_text_for_matching_private_keys(content, account, accountAuthorities, memoKey, actualOtherKeys),
       (e: TWaxStdExceptionData): void => {
         if(e.msg === "Detected private key leak.") {
           const json = e.data as {public_key: string, authority_role: string};
@@ -442,7 +432,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const maxManaBigInt = BigInt(maxMana);
     const currentManaBigInt = BigInt(currentMana);
 
-    const manabarValue = safeWasmCall(() => this.proto.cpp_calculate_current_manabar_value(now, maxManaBigInt, currentManaBigInt, lastUpdateTime));
+    const manabarValue = safeWasmCall(() => this.protocol.cpp_calculate_current_manabar_value(now, maxManaBigInt, currentManaBigInt, lastUpdateTime));
 
     const current = BigInt(this.extract(manabarValue));
 
@@ -459,13 +449,13 @@ export class WaxBaseApi implements IWaxBaseInterface {
     if(maxMana == 0) // Intentionally do not use type check comparison (`===`) for universal check between number, string and bigint
       return Math.floor(Date.now() / 1000);
 
-    const manabarRegenerationTime = safeWasmCall(() => this.proto.cpp_calculate_manabar_full_regeneration_time(now, BigInt(maxMana), BigInt(currentMana), lastUpdateTime));
+    const manabarRegenerationTime = safeWasmCall(() => this.protocol.cpp_calculate_manabar_full_regeneration_time(now, BigInt(maxMana), BigInt(currentMana), lastUpdateTime));
 
     return Number.parseInt(this.extract(manabarRegenerationTime));
   }
 
   public suggestBrainKey(): IBrainKeyData {
-    const data = safeWasmCall(() => this.proto.cpp_suggest_brain_key());
+    const data = safeWasmCall(() => this.protocol.cpp_suggest_brain_key());
 
     return {
       associatedPublicKey: data.associated_public_key as string,
@@ -475,7 +465,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData {
-    const data = safeWasmCall(() => this.proto.cpp_generate_private_key_password_based(account, role, password));
+    const data = safeWasmCall(() => this.protocol.cpp_generate_private_key_password_based(account, role, password));
 
     return {
       associatedPublicKey: data.associated_public_key as string,
@@ -484,12 +474,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public convertRawPrivateKeyToWif(rawPrivateKey: THexString): string {
-    const wif = safeWasmCall(() => this.proto.cpp_convert_raw_private_key_to_wif(rawPrivateKey));
+    const wif = safeWasmCall(() => this.protocol.cpp_convert_raw_private_key_to_wif(rawPrivateKey));
     return wif;
   }
 
   public convertRawPublicKeyToWif(rawPublicKey: THexString): string {
-    const wif = safeWasmCall(() => this.proto.cpp_convert_raw_public_key_to_wif(rawPublicKey));
+    const wif = safeWasmCall(() => this.protocol.cpp_convert_raw_public_key_to_wif(rawPublicKey));
     return wif;
   }
 
@@ -512,13 +502,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const virtualSupplyAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, virtualSupply);
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
 
-    const hpApr = safeWasmCall(() => this.proto.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset));
+    const hpApr = safeWasmCall(() => this.protocol.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset));
 
     return Number.parseFloat(this.extract(hpApr));
   }
 
   public delete(): void {
-    safeWasmCall(() => this.proto.delete());
     safeWasmCall(() => this.protocol.delete());
   }
 }
