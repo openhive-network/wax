@@ -103,12 +103,6 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("offsets", &binary_data::offsets)
       ;
 
-  value_object<hive_transaction_handle>("transaction_handle")
-      ;
-
-  value_object<hive_operation_handle>("operation_handle")
-      ;
-
   register_optional<std::string>();
   register_optional<uint32_t>();
   register_optional<uint16_t>();
@@ -157,6 +151,14 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
+  class_<hive_transaction_handle>("transaction_handle")
+    .constructor<>()
+    ;
+
+  class_<hive_operation_handle>("operation_handle")
+    .constructor<>()
+    ;
+
   class_<foundation>("foundation")
     ;
 
@@ -183,6 +185,12 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
+
+    .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, return_value_policy::take_ownership())
+    .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, return_value_policy::take_ownership())
+
+    .function("cpp_create_transaction_handle", &foundation_wasm::cpp_create_transaction_handle, return_value_policy::take_ownership())
+    .function("cpp_create_operation_handle", &foundation_wasm::cpp_create_operation_handle, return_value_policy::take_ownership())
 
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
@@ -212,6 +220,28 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
     .function("cpp_trace_authority_verification", &foundation_wasm::cpp_trace_authority_verification)
+
+    .function("cpp_get_default_comment_options_operation", &foundation_wasm::cpp_get_default_comment_options_operation)
+
+    .function("cpp_op_impacted_accounts", &foundation_wasm::cpp_op_impacted_accounts)
+    .function("cpp_op_to_binary", &foundation_wasm::cpp_op_to_binary)
+    .function("cpp_op_binary", &foundation_wasm::cpp_op_binary)
+    .function("cpp_op_validate", &foundation_wasm::cpp_op_validate)
+    .function("cpp_op_required_authorities", &foundation_wasm::cpp_op_required_authorities)
+
+    .function("cpp_tx_add_operation", &foundation_wasm::cpp_tx_add_operation)
+    .function("cpp_tx_add_signature", &foundation_wasm::cpp_tx_add_signature)
+    .function("cpp_tx_set_expiration", &foundation_wasm::cpp_tx_set_expiration)
+    .function("cpp_tx_to_legacy_json", &foundation_wasm::cpp_tx_to_legacy_json)
+    .function("cpp_tx_to_binary", &foundation_wasm::cpp_tx_to_binary)
+    .function("cpp_tx_to_json", &foundation_wasm::cpp_tx_to_json)
+    .function("cpp_tx_id", &foundation_wasm::cpp_tx_id)
+    .function("cpp_tx_binary", &foundation_wasm::cpp_tx_binary)
+    .function("cpp_tx_required_authorities", &foundation_wasm::cpp_tx_required_authorities)
+    .function("cpp_tx_impacted_accounts", &foundation_wasm::cpp_tx_impacted_accounts)
+    .function("cpp_tx_signature_keys", &foundation_wasm::cpp_tx_signature_keys)
+    .function("cpp_tx_sig_digest", &foundation_wasm::cpp_tx_sig_digest)
+    .function("cpp_tx_validate", &foundation_wasm::cpp_tx_validate)
     ;
 }
 
