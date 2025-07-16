@@ -212,6 +212,9 @@ public:
 
   std::string cpp_get_default_comment_options_operation() const;
 
+  cpp::hive_transaction_handle cpp_deserialize_transaction(std::string hex)const;
+  cpp::hive_operation_handle cpp_deserialize_operation(std::string hex)const;
+
   std::vector<std::string>        cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
   std::string                     cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
   binary_data                     cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;

@@ -1047,6 +1047,43 @@ void foundation::cpp_op_validate(const hive_operation_handle& op_handle)const
   });
 }
 
+cpp::hive_transaction_handle foundation::cpp_deserialize_transaction(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> cpp::hive_transaction_handle {
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+    std::vector<char> raw_data(hex.size());
+    fc::from_hex(hex, raw_data.data(), raw_data.size());
+
+    hive::protocol::signed_transaction obj;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
+
+    cpp::hive_transaction_handle h;
+    h.tx.reset(new cpp::hive_tx(std::move(obj)));
+
+    return h;
+  });
+}
+cpp::hive_operation_handle foundation::cpp_deserialize_operation(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> cpp::hive_operation_handle {
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+    std::vector<char> raw_data(hex.size());
+    fc::from_hex(hex, raw_data.data(), raw_data.size());
+
+    hive::protocol::operation obj;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
+
+    cpp::hive_operation_handle h;
+    h.op.reset(new cpp::hive_op(std::move(obj)));
+
+    return h;
+  });
+}
+
 } /// namespace cpp
 
 // Instead of specifying the custom pack/unpack functions for the cpp::json_asset and cpp::price types,

@@ -20,7 +20,4 @@ cpp::hive_operation_handle cpp_create_operation_handle(emscripten::val emval, bo
 
 void cpp_tx_proto_to_api(emscripten::val emval)const;
 void cpp_tx_api_to_proto(emscripten::val emval)const;
-
-cpp::hive_transaction_handle cpp_deserialize_transaction(std::string hex)const;
-cpp::hive_operation_handle cpp_deserialize_operation(std::string hex)const;
 };
