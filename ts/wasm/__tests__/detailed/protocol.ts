@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
+import { protoTx } from '../assets/data.proto-protocol';
 import { numToHighLow, transaction, serialization_sensitive_transaction, witness_properties, vote_operation, required_authorities_transaction, transfer_operation } from "../assets/data.protocol";
 import type { binary_data_node, json_price, VectorBinaryDataNode } from '../../dist/lib/build_wasm/wax.common';
 import { binaryDataHf26Transfer, binaryDataHf26TransferOperation, binaryDataHf26Vote, binaryDataLegacyTransfer, binaryDataLegacyTransferOperation } from '../assets/data.binary';
@@ -92,7 +93,7 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to convert to protobuf - proper authority object serialization', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ proto_protocol }) => {
+    const retVal = await wasmTest(({ protocol }) => {
       try {
         const tx = {
           "ref_block_num": 27909,
@@ -150,7 +151,7 @@ test.describe('WASM Protocol', () => {
           ]
         }; // Mainnet block 95'448'326
 
-        proto_protocol.cpp_tx_api_to_proto(tx);
+        protocol.cpp_tx_api_to_proto(tx);
 
         return tx;
       } catch(error) {
@@ -207,10 +208,181 @@ test.describe('WASM Protocol', () => {
     });
   });
 
-  test('Should be able to create WasmTransaction', async ({ wasmTest }) => {
+  test('Should be able to convert to api', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }) => {
       try {
-        const tx = protocol.cpp_create_wasm_transaction({
+        const tx = {
+          "expiration": "2024-05-15T13:04:16",
+          "extensions": [],
+          "operations": [
+            {
+              "vote_operation": {
+                "author": "macchiata",
+                "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+                "voter": "esecholo",
+                "weight": 10000
+              }
+            }
+          ],
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "signatures": [
+            "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+          ]
+        }; // Mainnet block 85'418'673
+
+        protocol.cpp_tx_proto_to_api(tx);
+
+        return tx;
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toStrictEqual({
+      "expiration": "2024-05-15T13:04:16",
+      "extensions": [],
+      "operations": [
+        {
+          "type": "vote_operation",
+          "value": {
+            "author": "macchiata",
+            "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+            "voter": "esecholo",
+            "weight": 10000
+          }
+        }
+      ],
+      "ref_block_num": 25263,
+      "ref_block_prefix": 1797793300,
+      "signatures": [
+        "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+      ]
+    });
+  });
+
+  test('Should be able to convert to api - proper authority object serialization', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      try {
+        const tx = {
+          "ref_block_num": 27909,
+          "ref_block_prefix": 3930921467,
+          "extensions": [],
+          "expiration": "2025-04-29T10:17:31",
+          "operations": [
+            {
+              "account_create_operation": {
+                "fee": {
+                  "nai": "@@000000021",
+                  "amount": "3000",
+                  "precision": 3
+                },
+                "owner": {
+                  "key_auths": {
+                    "STM6DPSYYtmKJ1uq5KVdobMSbqSLAN3x8AWKACjoJ18kt1Zm1mxnp": 1
+                  },
+                  "account_auths": {},
+                  "weight_threshold": 1
+                },
+                "active": {
+                  "key_auths": {
+                    "STM6m6dt3qPDf4H3jQc3BLy91msyV4udzb5Qxjd48jUSDDAWAo682": 1
+                  },
+                  "account_auths": {},
+                  "weight_threshold": 1
+                },
+                "creator": "creatorofhivewal",
+                "posting": {
+                  "key_auths": {
+                    "STM5JicVMtvU8aYHDTU986DBNqvFL2Cy1TPFUHgrV8iHyZaoub7Qh": 1
+                  },
+                  "account_auths": {},
+                  "weight_threshold": 1
+                },
+                "memo_key": "STM849LXW2sJxVPvuNdLvDkKXLBY1gnCxz7hGj2bix358MdPNQkbF",
+                "json_metadata": "{}",
+                "new_account_name": "uid39111864"
+              }
+            }
+          ],
+          "signatures": [
+            "2009d17b3abb7197652a43e70e767f10032721fc250671eec02b14873be74c9b812b9b246f24ee6623ecbf9ba115b2cc8c8c45a4ea3574de94c5006870d6d550bf"
+          ]
+        }; // Mainnet block 95'448'326
+
+        protocol.cpp_tx_proto_to_api(tx);
+
+        return tx;
+      } catch(error) {
+        console.error(error, (error as any).message);
+
+        throw error;
+      }
+    });
+
+    expect(retVal).toStrictEqual({
+      "ref_block_num": 27909,
+      "ref_block_prefix": 3930921467,
+      "extensions": [],
+      "expiration": "2025-04-29T10:17:31",
+      "operations": [
+        {
+          "type": "account_create_operation",
+          "value": {
+            "fee": {
+              "nai": "@@000000021",
+              "amount": "3000",
+              "precision": 3
+            },
+            "owner": {
+              "key_auths": [
+                [
+                  "STM6DPSYYtmKJ1uq5KVdobMSbqSLAN3x8AWKACjoJ18kt1Zm1mxnp",
+                  1
+                ]
+              ],
+              "account_auths": [],
+              "weight_threshold": 1
+            },
+            "active": {
+              "key_auths": [
+                [
+                  "STM6m6dt3qPDf4H3jQc3BLy91msyV4udzb5Qxjd48jUSDDAWAo682",
+                  1
+                ]
+              ],
+              "account_auths": [],
+              "weight_threshold": 1
+            },
+            "creator": "creatorofhivewal",
+            "posting": {
+              "key_auths": [
+                [
+                  "STM5JicVMtvU8aYHDTU986DBNqvFL2Cy1TPFUHgrV8iHyZaoub7Qh",
+                  1
+                ]
+              ],
+              "account_auths": [],
+              "weight_threshold": 1
+            },
+            "memo_key": "STM849LXW2sJxVPvuNdLvDkKXLBY1gnCxz7hGj2bix358MdPNQkbF",
+            "json_metadata": "{}",
+            "new_account_name": "uid39111864"
+          }
+        }
+      ],
+      "signatures": [
+        "2009d17b3abb7197652a43e70e767f10032721fc250671eec02b14873be74c9b812b9b246f24ee6623ecbf9ba115b2cc8c8c45a4ea3574de94c5006870d6d550bf"
+      ]
+    });
+  });
+
+  test('Should be able to create WASM handle for transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      try {
+        const txHandle = protocol.cpp_create_transaction_handle({
           "expiration": "2024-05-15T13:04:16",
           "extensions": [],
           "operations": [
@@ -231,9 +403,13 @@ test.describe('WASM Protocol', () => {
           ]
         }, false);
 
-        console.log(tx.toString(), tx.id(true), tx.id(false));
+        console.log(
+          protocol.cpp_tx_to_json(txHandle),
+          protocol.cpp_tx_id(txHandle, true),
+          protocol.cpp_tx_id(txHandle, false)
+        );
 
-        return tx.id(true);
+        return protocol.cpp_tx_id(txHandle, true);
       } catch(error) {
         console.error(error, (error as any).message);
 
@@ -245,9 +421,9 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to create WasmTransaction - proper authority object serialization', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ proto_protocol }) => {
+    const retVal = await wasmTest(({ protocol }) => {
       try {
-        const tx = proto_protocol.cpp_create_wasm_transaction({
+        const txHandle = protocol.cpp_create_transaction_handle({
           "ref_block_num": 27909,
           "ref_block_prefix": 3930921467,
           "extensions": [],
@@ -303,9 +479,13 @@ test.describe('WASM Protocol', () => {
           ]
         }, false);
 
-        console.log(tx.toString(), tx.id(true), tx.id(false));
+        console.log(
+          protocol.cpp_tx_to_json(txHandle),
+          protocol.cpp_tx_id(txHandle, true),
+          protocol.cpp_tx_id(txHandle, false)
+        );
 
-        return tx.id(false);
+        return protocol.cpp_tx_id(txHandle, false);
       } catch(error) {
         console.error(error, (error as any).message);
 
@@ -319,7 +499,7 @@ test.describe('WASM Protocol', () => {
   test('Should be able to create WasmTransaction from scratch', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }) => {
       try {
-        const tx = protocol.cpp_create_wasm_transaction({
+        const txHandle = protocol.cpp_create_transaction_handle({
           "ref_block_num": 25263,
           "ref_block_prefix": 1797793300,
           "extensions": [],
@@ -328,7 +508,7 @@ test.describe('WASM Protocol', () => {
           "signatures": []
         }, false);
 
-        tx.push({
+        const opHandle = protocol.cpp_create_operation_handle({
           "type": "vote_operation",
           "value": {
             "author": "macchiata",
@@ -338,13 +518,19 @@ test.describe('WASM Protocol', () => {
           }
         }, false);
 
-        tx.setExpiration("2024-05-15T13:04:16");
+        protocol.cpp_tx_add_operation(txHandle, opHandle);
 
-        tx.sign("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf");
+        protocol.cpp_tx_set_expiration(txHandle, "2024-05-15T13:04:16");
 
-        console.log(tx.toString(), tx.id(true), tx.id(false));
+        protocol.cpp_tx_add_signature(txHandle, "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf");
 
-        return tx.id(true);
+        console.log(
+          protocol.cpp_tx_to_json(txHandle),
+          protocol.cpp_tx_id(txHandle, true),
+          protocol.cpp_tx_id(txHandle, false)
+        );
+
+        return protocol.cpp_tx_id(txHandle, true);
       } catch(error) {
         console.error(error, (error as any).message);
 
@@ -389,7 +575,8 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to generate binary metadata information - tx with vote operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true, false);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      const values = protocol.cpp_tx_binary(handle, true, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -404,7 +591,8 @@ test.describe('WASM Protocol', () => {
   });
   test('Should be able to generate binary metadata information using hf26 pack type - tx with transfer', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, true, false);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      const values = protocol.cpp_tx_binary(handle, true, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -420,7 +608,8 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to generate binary metadata information using legacy pack type - tx with transfer', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_transaction_metadata(transaction, false, false);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      const values = protocol.cpp_tx_binary(handle, false, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -435,7 +624,9 @@ test.describe('WASM Protocol', () => {
   });
   test('Should be able to generate binary metadata information using hf26 pack type - single transfer operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, operation, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_operation_metadata(JSON.stringify(operation), true);
+      const transferOp = structuredClone(operation);
+      const handle = protocol.cpp_create_operation_handle(transferOp, false);
+      const values = protocol.cpp_op_binary(handle, true);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -451,7 +642,9 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to generate binary metadata information using legacy pack type - single transfer operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, operation, parseChildrenFn) => {
-      const values = protocol.cpp_generate_binary_operation_metadata(JSON.stringify(operation), false);
+      const transferOp = structuredClone(operation);
+      const handle = protocol.cpp_create_operation_handle(transferOp, false);
+      const values = protocol.cpp_op_binary(handle, false);
 
       const parseBinaryChildren = eval(parseChildrenFn);
 
@@ -495,72 +688,73 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to calculate the transaction id', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
-      return protocol.cpp_calculate_transaction_id(transaction);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      return protocol.cpp_tx_id(handle, true);
     }, transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("da8ca54c9c3acad06915ae9d93988c367f5cd164");
+    expect(retVal).toBe("da8ca54c9c3acad06915ae9d93988c367f5cd164");
   });
 
   test('Should be able to calculate the legacy transaction id of the serialization sensitive transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, serialization_sensitive_transaction) => {
-      return protocol.cpp_calculate_legacy_transaction_id(serialization_sensitive_transaction);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(serialization_sensitive_transaction), false);
+      return protocol.cpp_tx_id(handle, false);
     }, serialization_sensitive_transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("7f34699e9eea49d1bcc10c88f96e38897839ece3"); /// See Hive mainnet block 80021416
+    expect(retVal).toBe("7f34699e9eea49d1bcc10c88f96e38897839ece3"); /// See Hive mainnet block 80021416
   });
 
   test('Should be able to calculate the HF26 transaction id of the serialization sensitive transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, serialization_sensitive_transaction) => {
-      return protocol.cpp_calculate_transaction_id(serialization_sensitive_transaction);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(serialization_sensitive_transaction), false);
+      return protocol.cpp_tx_id(handle, true);
     }, serialization_sensitive_transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("3725c81634f152011e2043eb7119911b953d4267"); /// See Hive mainnet block 80021416
+    expect(retVal).toBe("3725c81634f152011e2043eb7119911b953d4267"); /// See Hive mainnet block 80021416
   });
 
   test('Should be able to serialize the transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
-      return protocol.cpp_serialize_transaction(transaction, false);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      return protocol.cpp_tx_to_binary(handle, true, false);
     }, transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000");
+    expect(retVal).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000");
   });
 
   test('Should be able to serialize the (stripped) transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
       /// Even transaction is unsigned, we can strip the signature container to preserve original binary form
       //  of the transaction i.e. specific to calculate its id
-      return protocol.cpp_serialize_transaction(transaction, true);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      return protocol.cpp_tx_to_binary(handle, true, true);
     }, transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a980800");
+    expect(retVal).toBe("ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a980800");
   });
 
   test('Should be able to calculate sig digest of the transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
-      return protocol.cpp_calculate_sig_digest(transaction, "beeab0de00000000000000000000000000000000000000000000000000000000");
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      return protocol.cpp_tx_sig_digest(handle, "beeab0de00000000000000000000000000000000000000000000000000000000", true);
     }, transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("1394412814ea3e444f65c46f075e15b9b82e6bea9241319b02743a8e593219e1");
+    expect(retVal).toBe("1394412814ea3e444f65c46f075e15b9b82e6bea9241319b02743a8e593219e1");
   });
 
   test('Should be able to calculate legacy sig digest of the transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, serialization_sensitive_transaction) => {
-      return protocol.cpp_calculate_legacy_sig_digest(serialization_sensitive_transaction, "beeab0de00000000000000000000000000000000000000000000000000000000");
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(serialization_sensitive_transaction), false);
+      return protocol.cpp_tx_sig_digest(handle, "beeab0de00000000000000000000000000000000000000000000000000000000", false);
     }, serialization_sensitive_transaction);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe");
+    expect(retVal).toBe("7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe");
   });
 
   test('Should be able to get required authorities for the transaction', async ({ wasmTest }) => {
     const serializedRequiredAuthorities = await wasmTest(({ protocol }, required_authorities_transaction) => {
-      const reqAuths = protocol.cpp_collect_transaction_required_authorities(required_authorities_transaction);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(required_authorities_transaction), false);
+      const reqAuths = protocol.cpp_tx_required_authorities(handle);
 
       const postingSize = reqAuths.posting_accounts.size();
       const ownerSize = reqAuths.owner_accounts.size();
@@ -611,17 +805,31 @@ test.describe('WASM Protocol', () => {
     expect(hiveProtocolConfig.HIVE_INIT_PUBLIC_KEY).toBe("STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX");
   });
 
-  test('Should be able to validate example operation', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, operation) => {
-      return protocol.cpp_validate_operation(operation);
-    }, JSON.stringify(vote_operation));
+  test('Should not crash the program - transaction validation - but fail', async ({ wasmTest }) => {
+    await expect(wasmTest(({ protocol }) => {
+      const handle = protocol.cpp_create_transaction_handle({}, false);
+      protocol.cpp_tx_validate(handle);
+    })).rejects.toThrow();
+  });
 
-    expect(retVal.exception_message).toHaveLength(0);
+  test('Should not crash the program - operation validation - but fail', async ({ wasmTest }) => {
+    await expect(wasmTest(({ protocol }) => {
+      const handle = protocol.cpp_create_operation_handle({}, false);
+      protocol.cpp_op_validate(handle);
+    })).rejects.toThrow();
+  });
+
+  test('Should be able to validate example operation', async ({ wasmTest }) => {
+    await wasmTest(({ protocol }, operation) => {
+      const handle = protocol.cpp_create_operation_handle(JSON.parse(operation), false);
+      protocol.cpp_op_validate(handle);
+    }, JSON.stringify(vote_operation));
   });
 
   test('Should be able to get impacted accounts from example operation', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, operation) => {
-      const vector = protocol.cpp_operation_get_impacted_accounts(operation);
+      const handle = protocol.cpp_create_operation_handle(JSON.parse(operation), false);
+      const vector = protocol.cpp_op_impacted_accounts(handle);
 
       // Convert VectorString to JS-array
       return new Array(vector.size()).fill("").map((_, i) => vector.get(i));
@@ -632,7 +840,8 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to get impacted accounts from example transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
-      const vector = protocol.cpp_transaction_get_impacted_accounts(transaction);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      const vector = protocol.cpp_tx_impacted_accounts(handle);
 
       // Convert VectorString to JS-array
       return new Array(vector.size()).fill("").map((_, i) => vector.get(i));
@@ -642,11 +851,10 @@ test.describe('WASM Protocol', () => {
   });
 
   test('Should be able to validate example transaction', async ({ wasmTest }) => {
-    const retVal = await wasmTest(({ protocol }, transaction) => {
-      return protocol.cpp_validate_transaction(transaction);
+    await wasmTest(({ protocol }, transaction) => {
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);
+      protocol.cpp_tx_validate(handle);
     }, transaction);
-
-    expect(retVal.exception_message).toHaveLength(0);
   });
 
   test('Should be able to calculate manabar full regeneration time', async ({ wasmTest }) => {
@@ -680,6 +888,15 @@ test.describe('WASM Protocol', () => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
       return protocol.cpp_calculate_current_manabar_value(...args);
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 10);
+
+    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal.content).toBe("100");
+  });
+
+  test('Should be able to calculate the current manabar full regeneration time', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, ...args) => {
+      return protocol.cpp_calculate_current_manabar_value(...args);
+    }, 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
     expect(retVal.exception_message).toHaveLength(0);
     expect(retVal.content).toBe("100");
@@ -858,5 +1075,74 @@ test.describe('WASM Protocol', () => {
       precision: 3,
       amount: "1065988"
     });
+  });
+
+  test('Should be able to convert api schema to proto schema without data loss - basic transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, transaction) => {
+      const parsedTx = JSON.parse(transaction);
+      protocol.cpp_tx_api_to_proto(parsedTx);
+      return parsedTx;
+    }, transaction);
+
+    expect(retVal).toEqual(JSON.parse(protoTx));
+  });
+
+  test('Should be able to convert proto schema to api schema without data loss - basic transaction', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }, transaction) => {
+      const parsedTx = JSON.parse(transaction);
+      protocol.cpp_tx_proto_to_api(parsedTx);
+      return parsedTx;
+    }, protoTx);
+
+    expect(retVal).toEqual(JSON.parse(transaction));
+  });
+
+  test('Should be able to perform multiple bidirectional conversion - basic transaction', async ({ wasmTest }) => {
+    const toApi1 = await wasmTest(({ protocol }, transaction) => {
+      const parsedTx = JSON.parse(transaction);
+      protocol.cpp_tx_proto_to_api(parsedTx);
+      return parsedTx;
+    }, protoTx);
+
+    const toProto = await wasmTest(({ protocol }, transaction) => {
+      const tx = JSON.parse(transaction);
+      protocol.cpp_tx_api_to_proto(tx);
+      return tx;
+    }, JSON.stringify(toApi1));
+
+    const toApi2 = await wasmTest(({ protocol }, transaction) => {
+      const tx = JSON.parse(transaction);
+      protocol.cpp_tx_proto_to_api(tx);
+      return tx;
+    }, JSON.stringify(toProto));
+
+    expect(toApi1).toEqual(toApi2);
+  });
+
+  test('Should be able to validate basic transaction after transforming from api schema to proto schema', async ({ wasmTest }) => {
+    const toProto = await wasmTest(({ protocol }, transaction) => {
+      const parsedTx = JSON.parse(transaction);
+      protocol.cpp_tx_api_to_proto(parsedTx);
+      return parsedTx;
+    }, transaction);
+
+    await wasmTest(({ protocol }, transaction) => {
+      const handle = protocol.cpp_create_transaction_handle(transaction, true);
+      protocol.cpp_tx_validate(handle);
+    }, toProto);
+  });
+
+  test('Should be able to validate basic transaction by the standard protocol after transforming from proto schema to api schema', async ({ wasmTest }) => {
+    const toApi = await wasmTest(({ protocol }, transaction) => {
+      const parsedTx = JSON.parse(transaction);
+      protocol.cpp_tx_proto_to_api(parsedTx);
+      return parsedTx;
+    }, protoTx);
+
+    await wasmTest(({ protocol }, transaction) => {
+      const tx = JSON.parse(transaction);
+      const handle = protocol.cpp_create_transaction_handle(tx, false);
+      protocol.cpp_tx_validate(handle);
+    }, JSON.stringify(toApi));
   });
 });

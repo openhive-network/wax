@@ -3,7 +3,7 @@ import path, { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import WaxModule from '../../dist/bundle/build_wasm/wax.node.js';
-import type {protocol} from '../../dist/lib/build_wasm/wax.common';
+import type { protocol_foundation } from '../../dist/lib/build_wasm/wax.common';
 
 import { test } from '../assets/jest-helper';
 import { numToHighLow, specificBenchmarkTransaction, vote_operation } from "../assets/data.protocol";
@@ -21,7 +21,7 @@ interface IBenchmarkData {
 let totalExecutingTime = 0;
 
 let provider!: MainModule;
-let protocol!: protocol;
+let protocol!: protocol_foundation;
 let chain!: IHiveChainInterface;
 
 let transaction!: string;
@@ -59,8 +59,8 @@ const utilFunctionTest = (functionName: string, totalCallsCount: number, functio
 test.describe('WASM Protocol benchmarks', () => {
   test.beforeAll(async () => {
     provider = await (WaxModule as unknown as () => Promise<MainModule>)();
-    protocol = new provider.protocol();
-    chain = await createHiveChain();
+    protocol = new provider.protocol_foundation();
+    chain = await createHiveChain() as unknown as IHiveChainInterface;
 
     transaction = JSON.stringify(chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48").pushOperation(specificBenchmarkTransaction).transaction);
   });
@@ -97,8 +97,12 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Calculate transaction id', 7_500, () => {
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+
       for(let i = 0; i < 7_500; ++i)
-        noDiscard += (protocol.cpp_calculate_transaction_id(transaction).content as string).length % 10 + i;
+        noDiscard += protocol.cpp_tx_id(handle, true).length % 10 + i;
+
+      handle.delete();
 
       return noDiscard;
     });
@@ -110,8 +114,12 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Serialize transaction', 7_500, () => {
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+
       for(let i = 0; i < 7_500; ++i)
-        noDiscard += (protocol.cpp_serialize_transaction(transaction, false).content as string).length % 10 + i;
+        noDiscard += protocol.cpp_tx_to_binary(handle, true, true).length % 10 + i;
+
+      handle.delete();
 
       return noDiscard;
     });
@@ -123,8 +131,12 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Calculate sig digest', 7_500, () => {
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+
       for(let i = 0; i < 7_500; ++i)
-        noDiscard += (protocol.cpp_calculate_sig_digest(transaction, 'beeab0de00000000000000000000000000000000000000000000000000000000').content as string).length % 10 + i;
+        noDiscard += protocol.cpp_tx_sig_digest(handle, 'beeab0de00000000000000000000000000000000000000000000000000000000', true).length % 10 + i;
+
+      handle.delete();
 
       return noDiscard;
     });
@@ -136,8 +148,10 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Validate operation', 100_000, () => {
+      const handle = protocol.cpp_create_operation_handle(vote_operation, false);
+
       for(let i = 0; i < 100_000; ++i)
-        noDiscard += (protocol.cpp_validate_operation(JSON.stringify(vote_operation)).content as string).length % 10 + i;
+        noDiscard += +protocol.cpp_op_validate(handle) + i;
 
       return noDiscard;
     });
@@ -149,8 +163,12 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Validate transaction', 7_500, () => {
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+
       for(let i = 0; i < 7_500; ++i)
-        noDiscard += (protocol.cpp_validate_transaction(transaction).content as string).length % 10 + i;
+        noDiscard += +protocol.cpp_tx_validate(handle) + i;
+
+      handle.delete();
 
       return noDiscard;
     });
