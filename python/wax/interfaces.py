@@ -22,7 +22,7 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax.models.authority import ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
+    from wax.models.authority import AuthorityAccount, ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
     from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.key_data import IBrainKeyData, IPrivateKeyData
     from wax.models.operations import Operation, WaxMetaOperation
@@ -42,6 +42,14 @@ ApiCollectionT = TypeVar("ApiCollectionT", default=WaxApiCollection)
 """TypeVar for API collection, available by default in the IHiveChainInterface."""
 ExtendedApiCollectionT = TypeVar("ExtendedApiCollectionT")
 """TypeVar for API collection that will be added to the IHiveChainInterface by the user."""
+
+
+class IAuthorityDataProvider(ABC):
+    """Interface providing authority data."""
+
+    @abstractmethod
+    async def get(self, name: AccountName) -> AuthorityAccount:
+        """Get AuthorityAccount by account name."""
 
 
 class ITransactionBase(ABC):

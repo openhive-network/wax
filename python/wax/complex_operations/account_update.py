@@ -4,14 +4,19 @@ from dataclasses import asdict, dataclass
 from typing import TYPE_CHECKING, Any, Iterable
 
 from wax._private.operation_base import ConvertedToProtoOperation, OperationBase
-from wax.complex_operations.role_classes.hive_authority.hive_account_category import HiveAccountCategory
+from wax.complex_operations.data_providers.authority_data_provider import OnlineChainAuthorityDataProvider
+from wax.complex_operations.role_classes.hive_authority.hive_account_category import (
+    HiveAccountCategory,
+)
 from wax.complex_operations.role_classes.hive_authority.hive_roles import HiveRoles
-from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
+from wax.exceptions.validation_errors import (
+    NoAuthorityOperationGeneratedError,
+)
 
 if TYPE_CHECKING:
     from wax.complex_operations.role_classes.level_base import LevelBase
     from wax.complex_operations.role_classes.role_category_base import RoleCategoryBase
-    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface, IWaxBaseInterface
     from wax.models.basic import AccountName
 
 
@@ -56,14 +61,37 @@ class AccountAuthorityUpdateOperation(OperationBase):
 
     @staticmethod
     async def create_for(
-        chain: IHiveChainInterface[ApiCollectionT], account: AccountName
+        wax_interface: IHiveChainInterface,
+        account_name: AccountName,
     ) -> AccountAuthorityUpdateOperation:
         """
         Factory method for creating AccountAuthorityUpdateOperation.
 
+        This is an online version - creates default provider instance and does call to api.
+
         Args:
-            chain (IHiveChainInterface): instance of IHiveChainInterface.
-            account (AccountName): account name to update authority.
+            wax_interface (IHiveChainInterface): instance of interface.
+            account_name (AccountName): account name of account to gain authority data from.
+
+        Returns:
+            AccountAuthorityUpdateOperation instance.
+        """
+        provider = OnlineChainAuthorityDataProvider(wax_interface)
+        return await AccountAuthorityUpdateOperation.create_for_with_provider(wax_interface, account_name, provider)
+
+    @staticmethod
+    async def create_for_with_provider(
+        wax_interface: IWaxBaseInterface, account_name: AccountName, provider: IAuthorityDataProvider
+    ) -> AccountAuthorityUpdateOperation:
+        """
+        Factory method for creating AccountAuthorityUpdateOperation.
+
+        This one support providing own authority data provider.
+
+        Args:
+            wax_interface (IWaxBaseInterface): instance of interface.
+            account_name (AccountName): account name of account to gain authority data from.
+            provider (IAuthorityDataProvider): authority provider.
 
         Returns:
             AccountAuthorityUpdateOperation instance.
@@ -71,12 +99,14 @@ class AccountAuthorityUpdateOperation(OperationBase):
         role_per_role_name: dict[str, LevelBase[Any]] = {}
         category_per_category_name: dict[str, RoleCategoryBase[Any]] = {}
 
+        authority_account_data = await provider.get(account_name)
+
         for category in AuthorityRoleCategories:
             container = category()
             category_per_category_name[container.category] = container
 
         for category_instance in category_per_category_name.values():
-            await category_instance.init(chain, account)
+            await category_instance.init(wax_interface, authority_account_data)
 
             for role_name, role_instance in category_instance.authorities.__dict__.items():
                 role_per_role_name[role_name] = role_instance  # noqa: PERF403

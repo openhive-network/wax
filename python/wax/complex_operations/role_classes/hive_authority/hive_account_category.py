@@ -16,7 +16,7 @@ from wax.complex_operations.role_classes.hive_authority.hive_roles import (
     PostingRoleName,
 )
 from wax.complex_operations.role_classes.role_category_base import RoleCategoryBase
-from wax.exceptions import AccountNotFoundError, WaxError
+from wax.exceptions import WaxError
 from wax.exceptions.chain_errors import (
     AuthorityCannotBeSatisfiedError,
     HiveMaxAuthorityMembershipExceededError,
@@ -27,8 +27,8 @@ from wax.proto.operations import account_update2
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
-    from wax.models.authority import WaxAuthority
+    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
+    from wax.models.authority import AuthorityAccount, WaxAuthority
     from wax.models.basic import AccountName, PublicKey
 
 
@@ -93,7 +93,11 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
     ]:
         return iter(self.authorities.__dict__.values())
 
-    async def init(self, chain: IHiveChainInterface[ApiCollectionT], account: AccountName) -> None:
+    async def init(
+        self,
+        api: IHiveChainInterface | IWaxBaseInterface,
+        account_authority_data: AuthorityAccount,
+    ) -> None:
         """
         Initializes the hive account category.
 
@@ -113,49 +117,38 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
 
         def check_owner_time_diff(time: datetime) -> bool:
             return datetime.now(tz=timezone.utc) - time > timedelta(
-                seconds=int(self._ensure_chain_config_reachable(chain.config.get("HIVE_OWNER_UPDATE_LIMIT")))
-                / 1_000_000
+                seconds=int(self._ensure_chain_config_reachable(api.config.get("HIVE_OWNER_UPDATE_LIMIT"))) / 1_000_000
             )
 
-        if chain.config.get("HIVE_TEMP_ACCOUNT") == account:
+        self._account = account_authority_data.name
+
+        if api.config.get("HIVE_TEMP_ACCOUNT") == account_authority_data.name:
             raise HiveTempAccountUsedError
 
-        self._account = account
         self._HIVE_MAX_AUTHORITY_MEMBERSHIP = int(
-            self._ensure_chain_config_reachable(chain.config.get("HIVE_MAX_AUTHORITY_MEMBERSHIP"))
-        )
-
-        api_accounts = await chain.api.database_api.find_accounts(accounts=[account])  # type: ignore[attr-defined]
-
-        searched_account = None
-
-        for api_account in api_accounts.accounts:
-            if api_account.name == account:
-                searched_account = api_account
-                break
-
-        if searched_account is None:
-            raise AccountNotFoundError(f"Account {account} not found on the chain")
-
-        active, posting, owner, memo_key = (
-            searched_account.active,
-            searched_account.posting,
-            searched_account.owner,
-            searched_account.memo_key,
+            self._ensure_chain_config_reachable(api.config.get("HIVE_MAX_AUTHORITY_MEMBERSHIP"))
         )
 
         max_account_name_length = int(
-            self._ensure_chain_config_reachable(chain.config.get("HIVE_MAX_ACCOUNT_NAME_LENGTH"))
+            self._ensure_chain_config_reachable(api.config.get("HIVE_MAX_ACCOUNT_NAME_LENGTH"))
         )
-        address_prefix = self._ensure_chain_config_reachable(chain.config.get("HIVE_ADDRESS_PREFIX"))
+
+        address_prefix = self._ensure_chain_config_reachable(api.config.get("HIVE_ADDRESS_PREFIX"))
+
+        active, posting, owner, memo_key = (
+            account_authority_data.active,
+            account_authority_data.posting,
+            account_authority_data.owner,
+            account_authority_data.memo_key,
+        )
 
         self._authorities = HiveRoles(
             active=HiveRoleAuthorityDefinition("active"),
             owner=HiveRoleAuthorityDefinition(
                 "owner",
                 lambda role: raise_cannot_update_owner_error()  # noqa: ARG005
-                if not check_owner_time_diff(HiveDateTime(searched_account.last_owner_update))
-                and check_owner_time_diff(HiveDateTime(searched_account.previous_owner_update))
+                if not check_owner_time_diff(HiveDateTime(account_authority_data.last_owner_update))
+                and check_owner_time_diff(HiveDateTime(account_authority_data.previous_owner_update))
                 else None,
             ),
             posting=HiveRoleAuthorityDefinition("posting"),
