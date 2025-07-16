@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Generic, Iterable, TypeVar
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import ApiCollectionT, IHiveChainInterface, IWaxBaseInterface
-    from wax.models.basic import AccountName
+    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
+    from wax.models.authority import AuthorityAccount
 
 
 AuthType = TypeVar("AuthType")
@@ -32,13 +32,17 @@ class RoleCategoryBase(ABC, Generic[AuthType]):
         """Indicates if any of the authority levels has changed since the last update."""
 
     @abstractmethod
-    async def init(self, chain: IHiveChainInterface[ApiCollectionT], account: AccountName) -> None:
+    async def init(
+        self,
+        api: IHiveChainInterface | IWaxBaseInterface,
+        account_authority_data: AuthorityAccount,
+    ) -> None:
         """
         Responsible for gathering authority types for the given account.
 
         Args:
-            chain (IHiveChainInterface): Wax chain api instance.
-            account (AccountName): Account name to gather authority from the given chain.
+            api (IWaxBaseInterface | IWaxBaseInterface): instance of the wax base api subclass.
+            account_authority_data (IAuthorityAccount): object that holds authority data.
         """
 
     @abstractmethod
