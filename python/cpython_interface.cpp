@@ -12,10 +12,7 @@
 namespace cpp
 {
 
-template class protocol_impl<foundation>;
-template class proto_protocol_impl<foundation>;
-
-hive_transaction_handle proto_protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf)const
+hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf)const
 {
   return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
     hive_transaction_handle h;
@@ -32,7 +29,7 @@ hive_transaction_handle proto_protocol::cpp_create_transaction_handle(PyObject* 
   });
 }
 
-hive_operation_handle proto_protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf)const
+hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf)const
 {
   return cpp::safe_exception_wrapper([&]() -> hive_operation_handle {
     hive_operation_handle h;
@@ -47,7 +44,7 @@ hive_operation_handle proto_protocol::cpp_create_operation_handle(PyObject* ptr,
   });
 }
 
-void proto_protocol::cpp_tx_proto_to_api(PyObject* ptr)const
+void protocol::cpp_tx_proto_to_api(PyObject* ptr)const
 {
   cpp::safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
@@ -56,7 +53,7 @@ void proto_protocol::cpp_tx_proto_to_api(PyObject* ptr)const
   });
 }
 
-void proto_protocol::cpp_tx_api_to_proto(PyObject* ptr)const
+void protocol::cpp_tx_api_to_proto(PyObject* ptr)const
 {
   cpp::safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
