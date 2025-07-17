@@ -1111,9 +1111,9 @@ export type TDefaultJsonRpcApi = Readonly<{
   rc_api: JsonRpcApiData<'rc_api'>;
 }>;
 
-export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly api: TDefaultJsonRpcApi & { readonly [k in keyof YourApi]: YourApiData<YourApi[k]> } };
+export type TWaxExtended<YourApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly api: TDefaultJsonRpcApi & YourApiData<YourApi> };
 
-export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & { readonly [k in keyof YourRestApi]: YourApiData<YourRestApi[k]> } };
+export type TWaxRestExtended<YourRestApi, PreviousCHain extends IHiveChainInterface = IHiveChainInterface> = PreviousCHain & { readonly restApi: TDefaultRestApi & YourApiData<YourRestApi> };
 
 export interface IHiveChainInterface extends IWaxBaseInterface {
   /**

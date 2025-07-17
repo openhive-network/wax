@@ -238,6 +238,31 @@ test.describe('Wax object interface chain REST API tests', () => {
     expect(retVal).toBe(url1);
   });
 
+  test('Should be able to create a callable top-level rest api', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const extended = chain.extendRest<{
+        a: {
+          params: undefined;
+          result: string;
+
+          b: {
+            params: undefined;
+            result: number;
+          }
+        }
+      }>();
+
+      try {
+        await extended.restApi.a(); // Compilation should fail here before running if callable top-level is not possible
+        await extended.restApi.a.b(); // If something went wrong, also this should fail
+      } catch {}
+
+      return [typeof extended.restApi.a, typeof extended.restApi.a.b];
+    });
+
+    expect(retVal).toStrictEqual(["function", "function"]);
+  });
+
   test('Should be able to set REST API endpoint URL on different APIs', async ({ waxTest }) => {
     const url1 = "https://best.honey.provider";
     const url2 = "https://other.honey.provider";
