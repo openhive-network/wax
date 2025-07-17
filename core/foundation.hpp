@@ -58,7 +58,7 @@ public:
 class foundation
 {
 public:
-  using required_authority_collection_t = required_authority_collectionV;
+  using required_authority_collection_t = required_authority_collection;
 
   std::string cpp_calculate_public_key(const std::string& wif);
   std::string cpp_generate_private_key();

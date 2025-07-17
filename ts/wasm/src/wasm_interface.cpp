@@ -71,11 +71,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .field("posting", &wax_authorities::posting)
     ;
 
-  value_object<required_authority_collectionV>("required_authority_collection")
-      .field("posting_accounts", &required_authority_collectionV::posting_accounts)
-      .field("active_accounts", &required_authority_collectionV::active_accounts)
-      .field("owner_accounts", &required_authority_collectionV::owner_accounts)
-      .field("other_authorities", &required_authority_collectionV::other_authorities)
+  value_object<required_authority_collection>("required_authority_collection")
+      .field("posting_accounts", &required_authority_collection::posting_accounts)
+      .field("active_accounts", &required_authority_collection::active_accounts)
+      .field("owner_accounts", &required_authority_collection::owner_accounts)
+      .field("other_authorities", &required_authority_collection::other_authorities)
       ;
 
   value_object<ref_block_data>("ref_block_data")
