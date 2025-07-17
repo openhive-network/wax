@@ -6,8 +6,6 @@
 #include "core/val_protocol.hpp"
 #include "core/api_converter.hpp"
 #include "core/proto_converter.hpp"
-#include "core/protocol_impl.inl"
-#include "core/protobuf_protocol_impl.inl"
 
 namespace cpp
 {

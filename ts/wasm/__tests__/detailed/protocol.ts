@@ -546,7 +546,7 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_generate_private_key();
     });
 
-    expect(retVal.exception_message).toHaveLength(0);
+    expect(retVal).toHaveLength(51);
   });
 
   test('Should be able to convert between raw private key -> WIF formats', async ({ wasmTest }) => {
@@ -682,8 +682,7 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_public_key(privateKey);
     }, '5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12');
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe('STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3');
+    expect(retVal).toBe('STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3');
   });
 
   test('Should be able to calculate the transaction id', async ({ wasmTest }) => {
@@ -859,47 +858,42 @@ test.describe('WASM Protocol', () => {
 
   test('Should be able to calculate manabar full regeneration time', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
-      return protocol.cpp_calculate_manabar_full_regeneration_time(...args);
+      return Number(protocol.cpp_calculate_manabar_full_regeneration_time(...args));
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("0");
+    expect(retVal).toBe(0);
   });
 
   test('Should be able to calculate manabar full regeneration time (relaxed)', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
-      return protocol.cpp_calculate_manabar_full_regeneration_time(...args);
+      return Number(protocol.cpp_calculate_manabar_full_regeneration_time(...args));
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 10);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("10");
+    expect(retVal).toBe(10);
   });
 
   test('Should be able to calculate the current manabar value', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
-      return protocol.cpp_calculate_current_manabar_value(...args);
+      return Number(protocol.cpp_calculate_current_manabar_value(...args));
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("100");
+    expect(retVal).toBe(100);
   });
 
   test('Should be able to calculate the current manabar value (relaxed)', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
-      return protocol.cpp_calculate_current_manabar_value(...args);
+      return Number(protocol.cpp_calculate_current_manabar_value(...args));
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 10);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("100");
+    expect(retVal).toBe(100);
   });
 
   test('Should be able to calculate the current manabar full regeneration time', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, ...args) => {
-      return protocol.cpp_calculate_current_manabar_value(...args);
+      return Number(protocol.cpp_calculate_current_manabar_value(...args));
     }, 0, ...numToHighLow(100), ...numToHighLow(100), 0);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("100");
+    expect(retVal).toBe(100);
   });
 
   test('Should be able to create Hive in NAI form', async ({ wasmTest }) => {
@@ -969,8 +963,7 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_hp_apr(1_000_000, 1_500, virtual_supply, total_vesting_fund_hive);
     });
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toEqual("4.48");
+    expect(retVal).toEqual("4.48");
   });
 
   test('Should be able to calculate HP APR 2', async ({ wasmTest }) => {
@@ -980,35 +973,31 @@ test.describe('WASM Protocol', () => {
       return protocol.cpp_calculate_hp_apr(82_779_364, 1_500, virtual_supply, total_vesting_fund_hive);
     });
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toEqual("2.97");
+    expect(retVal).toEqual("2.97");
   });
 
   test('Should be able to calculate inflation rate for block 1_000_000', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, block_num) => {
-      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+      return Number(protocol.cpp_calculate_inflation_rate_for_block(block_num));
     }, 1_000_000);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("974");
+    expect(retVal).toBe(974);
   });
 
   test('Should be able to calculate inflation rate for block 7_000_000', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, block_num) => {
-      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+      return Number(protocol.cpp_calculate_inflation_rate_for_block(block_num));
     }, 7_000_000);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("950");
+    expect(retVal).toBe(950);
   });
 
   test('Should be able to calculate inflation rate for block 9_000_000', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, block_num) => {
-      return protocol.cpp_calculate_inflation_rate_for_block(block_num);
+      return Number(protocol.cpp_calculate_inflation_rate_for_block(block_num));
     }, 9_000_000);
 
-    expect(retVal.exception_message).toHaveLength(0);
-    expect(retVal.content).toBe("942");
+    expect(retVal).toBe(942);
   });
 
   test('Should be able to serialize witness properties and retrieve serialized data', async ({ wasmTest }) => {

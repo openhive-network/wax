@@ -70,7 +70,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Generate private key', 1_500, () => {
       for(let i = 0; i < 1500; ++i)
-        noDiscard += (protocol.cpp_generate_private_key().content as string).length % 10 + i;
+        noDiscard += protocol.cpp_generate_private_key().length % 10 + i;
 
       return noDiscard;
     });
@@ -79,13 +79,13 @@ test.describe('WASM Protocol benchmarks', () => {
   });
 
   test('Should be able to calculate public key', () => {
-    const privateKey = protocol.cpp_generate_private_key().content as string;
+    const privateKey = protocol.cpp_generate_private_key() as string;
 
     let noDiscard = 0;
 
     utilFunctionTest('Calculate public key', 15_000, () => {
       for(let i = 0; i < 15_000; ++i)
-        noDiscard += (protocol.cpp_calculate_public_key(privateKey).content as string).length % 10 + i;
+        noDiscard += protocol.cpp_calculate_public_key(privateKey).length % 10 + i;
 
       return noDiscard;
     });
@@ -181,7 +181,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Calculate manabar full regeneration time', 2_000_000, () => {
       for(let i = 0; i < 2_000_000; ++i)
-        noDiscard += (protocol.cpp_calculate_manabar_full_regeneration_time(0 + i, ...numToHighLow(100_000), ...numToHighLow(100_000), 0).content as string).length % 10;
+        noDiscard += Number(protocol.cpp_calculate_manabar_full_regeneration_time(0 + i, ...numToHighLow(100_000), ...numToHighLow(100_000), 0)) % 10;
 
       return noDiscard;
     });
@@ -194,7 +194,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Calculate current manabar value', 3_000_000, () => {
       for(let i = 0; i < 3_000_000; ++i)
-        noDiscard += (protocol.cpp_calculate_current_manabar_value(0 + i, ...numToHighLow(100_000), ...numToHighLow(100_000), 0).content as string).length % 10;
+        noDiscard += Number(protocol.cpp_calculate_current_manabar_value(0 + i, ...numToHighLow(100_000), ...numToHighLow(100_000), 0)) % 10;
 
       return noDiscard;
     });
@@ -261,7 +261,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Calculate HP APR', 300_000, () => {
       for(let i = 0; i < 300_000; ++i)
-        noDiscard += (protocol.cpp_calculate_hp_apr(1_000_000 + i, 1_500, virtual_supply, total_vesting_fund_hive).content as string).length % 10;
+        noDiscard += Number.parseFloat(protocol.cpp_calculate_hp_apr(1_000_000 + i, 1_500, virtual_supply, total_vesting_fund_hive)) % 10;
 
       return noDiscard;
     });
@@ -274,7 +274,7 @@ test.describe('WASM Protocol benchmarks', () => {
 
     utilFunctionTest('Calculate inflation rate', 5_000_000, () => {
       for(let i = 0; i < 250_000; ++i)
-        noDiscard += (protocol.cpp_calculate_inflation_rate_for_block(1_000_000 + i).content as string).length % 10;
+        noDiscard += Number(protocol.cpp_calculate_inflation_rate_for_block(1_000_000 + i)) % 10;
 
       return noDiscard;
     });

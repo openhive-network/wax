@@ -60,8 +60,8 @@ class foundation
 public:
   using required_authority_collection_t = required_authority_collectionV;
 
-  result cpp_calculate_public_key(const std::string& wif);
-  result cpp_generate_private_key();
+  std::string cpp_calculate_public_key(const std::string& wif);
+  std::string cpp_generate_private_key();
   private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password);
   /** Allows to convert 32 bytes data buffer expressed as hex string (pointing private key secret) into private key encoded as WIF format.
   */
@@ -80,7 +80,7 @@ public:
   std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id);
 
   ///  Allows to retrieve public key in WIF format from the signature and digest in hexadecimal format
-  result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
+  std::string cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
 
   json_asset cpp_general_asset(const uint32_t asset_num, const int64_t amount)const;
   json_asset cpp_hive(const int64_t amount)const;
@@ -111,8 +111,8 @@ public:
   void cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
     const std::vector<std::string>& imported_keys) const;
 
-  result cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
-  result cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
+  uint64_t cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
+  int64_t cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
 
   ref_block_data cpp_get_tapos_data(const std::string& block_id);
 
@@ -124,9 +124,11 @@ public:
    * @param virtual_supply - from dgpo
    * @param total_vesting_fund_hive - from dgpo
    *
-   * @returns HP APR percent with 2 decimals as string in result.content
+   * @returns HP APR percent with 2 decimals as string
+   *          We have to pass the result as string to avoid issues with floating point precision.
+   *          Also, returning double could result in overflow for large values (int64_t)
    */
-  result cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const;
+  std::string cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const;
 
   /**
    * Convert HBD to HIVE.
@@ -179,7 +181,7 @@ public:
    *
    * @returns curent inflation rate.
    */
-  result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const;
+  int64_t cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const;
 
   /**
    * Estimate hive collateral

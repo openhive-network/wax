@@ -1,5 +1,5 @@
 import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
-import type { binary_data_node, json_price, MainModule, protocol_foundation, result, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
+import type { binary_data_node, json_price, MainModule, protocol_foundation, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
 import type { ApiOperation, NaiAsset } from "./api";
 
@@ -26,13 +26,6 @@ export enum EAssetName {
   HIVE = "HIVE",
   HBD = "HBD",
   VESTS = "VESTS"
-}
-
-const extractWasmResult = (wax: MainModule, res: result): string => {
-  if(res.value !== wax.error_code.ok)
-    throw new WaxError(`Wax API error: "${String(res.exception_message as string)}"`);
-
-  return res.content as string;
 }
 
 class BlockchainDefaultInitializer {
@@ -264,10 +257,6 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return safeWasmCall(() => this.protocol.cpp_hive_to_hbd(amountAsset, baseAsset, quoteAsset) as NaiAsset);
   }
 
-  public extract(res: result): string {
-    return extractWasmResult(this.wax, res);
-  }
-
   public constructor(
     public readonly wax: MainModule,
     public readonly chainId: string
@@ -336,7 +325,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   public getPublicKeyFromSignature(sigDigest: THexString, signature: THexString): THexString {
     const publicKey = safeWasmCall(() => this.protocol.cpp_get_public_key_from_signature(sigDigest, signature));
 
-    return this.extract(publicKey);
+    return publicKey;
   }
 
   public encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
@@ -434,13 +423,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     const manabarValue = safeWasmCall(() => this.protocol.cpp_calculate_current_manabar_value(now, maxManaBigInt, currentManaBigInt, lastUpdateTime));
 
-    const current = BigInt(this.extract(manabarValue));
-
-    const percent = this.calculateManabarPercent(current, maxManaBigInt);
+    const percent = this.calculateManabarPercent(manabarValue, maxManaBigInt);
 
     return {
       max: maxManaBigInt,
-      current,
+      current: manabarValue,
       percent
     };
   }
@@ -451,7 +438,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     const manabarRegenerationTime = safeWasmCall(() => this.protocol.cpp_calculate_manabar_full_regeneration_time(now, BigInt(maxMana), BigInt(currentMana), lastUpdateTime));
 
-    return Number.parseInt(this.extract(manabarRegenerationTime));
+    return Number(manabarRegenerationTime);
   }
 
   public suggestBrainKey(): IBrainKeyData {
@@ -504,7 +491,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
 
     const hpApr = safeWasmCall(() => this.protocol.cpp_calculate_hp_apr(headBlockNum, vestingRewardPercent, virtualSupplyAsset, totalVestingFundHiveAsset));
 
-    return Number.parseFloat(this.extract(hpApr));
+    return Number.parseFloat(hpApr);
   }
 
   public delete(): void {
