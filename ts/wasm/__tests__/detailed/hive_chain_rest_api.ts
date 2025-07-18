@@ -226,6 +226,38 @@ test.describe('Wax object interface chain REST API tests', () => {
     ]);
   });
 
+  test('Should be able to properly override using urlPath for trailing slash URL', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      // First extend REST API using interfaces only
+      const extended1 = chain.extendRest<{
+        'hivesense-api': {
+          params: undefined,
+          result: boolean
+        }
+      }>({
+        'hivesense-api': {
+          urlPath: 'hivesense-api/'
+        }
+      });
+
+      const getPromise1 = async () => {
+        let requestUrl: string | undefined = undefined;
+
+        try {
+          await ((extended1.restApi['hivesense-api'] as any)._target.withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)() as Promise<any>);
+        } catch {}
+
+        return requestUrl ?? "(could not determine API endpoint)";
+      };
+
+      return getPromise1();
+    });
+
+    expect(retVal).toStrictEqual(
+      "https://api.dev.openhive.network/hivesense-api/" // Note: Non-standard trailing slash at the end
+    );
+  });
+
   test('Should be able to set REST API endpoint URL', async ({ waxTest }) => {
     const url1 = "https://best.honey.provider";
 
