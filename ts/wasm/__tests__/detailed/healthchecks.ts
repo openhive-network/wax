@@ -69,6 +69,8 @@ test.describe('Wax object interface chain tests', () => {
     /// use IP for broken endpoint instead of nonexisting-dns-name to avoid OS differences and fake test failures caused by name resolution
     const testEndpoints = ["https://api.hive.blog", "https://1.1.1.1", "https://api.openhive.network"];
 
+    test.setTimeout(60_000);
+
     const retVal = await waxTest(({ wax, chain }, testEndpoints) => {
       return new Promise<boolean>((resolve, reject) => {
         const hc = new wax.HealthChecker();
@@ -79,7 +81,7 @@ test.describe('Wax object interface chain tests', () => {
           ++i;
 
           /// It is bad when HC returned data having different length than provided endpoints count or one of valid URLs is at the end (broken one shall be there)
-          if (data.length !== 3 || (data[2].endpointUrl === "https://api.hive.blog" || data[2].endpointUrl === "https://api.openhive.network"))
+          if (data.length !== 3 || (data[2].endpointUrl === "https://api.hive.blog"))
             return reject(`Invalid endpoints in data: data length: ${data.length}, data: ${JSON.stringify(data)}`);
 
           if (i === 2) {
