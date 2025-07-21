@@ -10,7 +10,7 @@ from libcpp.string cimport string as cppstring
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.vector cimport vector
-from libcpp.optional cimport optional
+from libcpp.optional cimport optional, make_optional
 from libcpp.utility cimport move
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
@@ -26,6 +26,8 @@ from .wax_result import (
     python_private_key_data,
     python_binary_data,
     python_binary_data_node,
+    python_authority_verification_trace,
+    python_path_entry,
     python_brain_key_data,
     python_witness_set_properties_data,
     python_price,
@@ -389,19 +391,90 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     return response.amount, response.precision, response.nai
 
 def is_valid_account_name(account_name: bytes) -> bool:
-    cdef proto_protocol obj
+    cdef protocol obj
     return obj.cpp_is_valid_account_name(account_name)
+
+cdef class PyIAccountAuthorityProvider(IAccountAuthorityProvider):
+    cdef object getAuthority_func
+    cdef object getWitnessPublicKey_func
+
+    def __cinit__(self, object getAuthority_func, object getWitnessPublicKey_func):
+        self.getAuthority_func = getAuthority_func
+        self.getWitnessPublicKey_func = getWitnessPublicKey_func
+
+    cdef optional[string] getAuthority(self, string name, string role):
+        cdef object result = self.getAuthority_func(name.encode(), role.encode())
+        return optional[string]() if result is None else make_optional[string](result)
+
+    cdef optional[string] getWitnessPublicKey(self, string name, string role):
+        cdef object result = self.getWitnessPublicKey_func(name.encode(), role.encode())
+        return optional[string]() if result is None else make_optional[string](result)
+
+def pylist_to_cppvector_str(lst: list[str]) -> vector[string]:
+    cdef vector[string] cpp_vec
+    cdef str item
+    for item in lst:
+        cpp_vec.push_back(string(item))  # convert Python str -> C++ string
+    return cpp_vec
+
+def pylist_to_cppvector_wax_authority(lst: list[wax_authority]) -> vector[wax_authority]:
+    cdef vector[wax_authority] cpp_vec
+    cdef wax_authority item
+    for item in lst:
+        cpp_vec.push_back(python_authority_to_wax_authority(item))  # convert Python wax_authority -> C++ wax_authority
+    return cpp_vec
+
+cdef object convert_path_entry_to_python(path_entry node):
+    """Recursively convert C++ path_entry to Python python_path_entry."""
+    cdef list children = []
+
+    # Recursively convert all children
+    for child in node.visited_entries:
+        children.append(convert_path_entry_to_python(child))
+
+    # Create and return the Python object
+    return python_path_entry(
+        processed_entry=node.processed_entry,
+        processed_role=node.processed_role,
+        recursion_depth=node.recursion_depth,
+        treshold=node.treshold,
+        weight=node.weight,
+        flags=node.flags,
+        visited_entries=children
+    )
 
 def trace_authority_verification(
     required_authorities: python_required_authority_collection,
-    decodedSignaturePublicKeys: list[bytes],
-    authorityProvider: IAccountAuthorityProvider) -> None:
+    decoded_signature_public_keys: list[bytes],
+    get_authority: Callable[[bytes, bytes], bytes | None],
+    get_witness_public_key: Callable[[bytes], bytes | None]
+) -> authority_verification_trace:
     cdef protocol obj
+    cdef PyIAccountAuthorityProvider cb = IAccountAuthorityProvider(get_authority, get_witness_public_key)
     cdef required_authority_collection wax_required_authorities
-    wax_required_authorities.posting_accounts = list(required_authorities.posting_accounts)
-    wax_required_authorities.active_accounts = list(required_authorities.active_accounts)
-    wax_required_authorities.owner_accounts = list(required_authorities.owner_accounts)
-    wax_required_authorities.other_authorities = list(required_authorities.other_authorities)
+    wax_required_authorities.posting_accounts = pylist_to_cppvector_str(required_authorities.posting_accounts)
+    wax_required_authorities.active_accounts = pylist_to_cppvector_str(required_authorities.active_accounts)
+    wax_required_authorities.owner_accounts = pylist_to_cppvector_str(required_authorities.owner_accounts)
+    wax_required_authorities.other_authorities = pylist_to_cppvector_wax_authority(required_authorities.other_authorities)
+    cdef authority_verification_trace data = obj.cpp_trace_authority_verification(
+        wax_required_authorities,
+        decoded_signature_public_keys,
+        cb
+    )
+    cdef list root = []
+    for node in data.root:
+        root.append(convert_path_entry_to_python(node))
+    cdef list final_authority_path = []
+    for node in data.final_authority_path:
+        final_authority_path.append(convert_path_entry_to_python(node))
+
+    return python_authority_verification_trace(
+        root=root,
+        final_authority_path=final_authority_path,
+        verification_status=verification_status
+    )
+
+    convert_path_entry_to_python
 
 def get_default_comment_options_operation() -> bytes:
     cdef protocol obj
@@ -444,19 +517,19 @@ cdef object convert_binary_data_node_to_python(binary_data_node node):
     )
 
 def op_impacted_accounts(wax_op: WaxOperationHandle) -> vector[string]:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the impacted accounts for the operation.
     return obj.cpp_op_impacted_accounts(wax_op.hOp)
 
-def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> bytes:
-    cdef proto_protocol obj
+def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> bytes:
+    cdef protocol obj
     # Call the C++ method to convert the operation to binary format.
-    return obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization, strip_to_unsigned_transaction)
+    return obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization)
 
-def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> python_binary_data:
-    cdef proto_protocol obj
+def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> python_binary_data:
+    cdef protocol obj
     # Call the C++ method to get the binary data of the operation.
-    cdef binary_data data = obj.cpp_op_binary(wax_op.hOp, use_hf26_serialization, strip_to_unsigned_transaction)
+    cdef binary_data data = obj.cpp_op_binary(wax_op.hOp, use_hf26_serialization)
     # Convert the C++ binary_data to a Python binary_data.
     cdef list offsets = []
     for node in data.offsets:
@@ -468,12 +541,12 @@ def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True, s
     )
 
 def op_validate(wax_op: WaxOperationHandle) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to validate the operation.
     obj.cpp_op_validate(wax_op.hOp)
 
 def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_authority_collection:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the required authorities for the operation.
     cdef required_authority_collection collection = obj.cpp_op_required_authorities(wax_op.hOp)
 
@@ -496,42 +569,42 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
     )
 
 def tx_add_operation(wax_tx: WaxTransactionHandle, wax_op: WaxOperationHandle) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to add the operation to the transaction.
     obj.cpp_tx_add_operation(wax_tx.hTx, wax_op.hOp)
 
 def tx_add_signature(wax_tx: WaxTransactionHandle, signature: bytes) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to add the signature to the transaction.
     obj.cpp_tx_add_signature(wax_tx.hTx, signature)
 
 def tx_set_expiration(wax_tx: WaxTransactionHandle, expiration: bytes) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to set the expiration for the transaction.
     obj.cpp_tx_set_expiration(wax_tx.hTx, expiration)
 
 def tx_to_legacy_json(wax_tx: WaxTransactionHandle) -> bytes:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to convert the transaction to legacy JSON format.
     return obj.cpp_tx_to_legacy_json(wax_tx.hTx)
 
 def tx_to_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> bytes:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to convert the transaction to binary format.
     return obj.cpp_tx_to_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction)
 
 def tx_to_json(wax_tx: WaxTransactionHandle) -> bytes:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to convert the transaction to JSON format.
     return obj.cpp_tx_to_json(wax_tx.hTx)
 
 def tx_id(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the transaction ID.
     return obj.cpp_tx_id(wax_tx.hTx, use_hf26_serialization)
 
 def tx_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> python_binary_data:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the binary data of the transaction.
     cdef binary_data data = obj.cpp_tx_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction)
     # Convert the C++ binary_data to a Python binary_data.
@@ -545,7 +618,7 @@ def tx_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True,
     )
 
 def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_authority_collection:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the required authorities for the transaction.
     cdef required_authority_collection collection = obj.cpp_tx_required_authorities(wax_tx.hTx)
 
@@ -568,34 +641,34 @@ def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_aut
     )
 
 def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> vector[string]:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the impacted accounts for the transaction.
     return obj.cpp_tx_impacted_accounts(wax_tx.hTx)
 
 def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> vector[string]:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the signature keys for the transaction.
     return obj.cpp_tx_signature_keys(wax_tx.hTx, chain_id, use_hf26_serialization)
 
 def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to get the signature digest for the transaction.
     return obj.cpp_tx_sig_digest(wax_tx.hTx, chain_id, use_hf26_serialization)
 
 def tx_validate(wax_tx: WaxTransactionHandle) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to validate the transaction.
     obj.cpp_tx_validate(wax_tx.hTx)
 
 # ============================================================================
 
 def tx_proto_to_api( tx: object ) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to convert the transaction from proto to API format.
     obj.cpp_tx_proto_to_api( tx )
 
 def tx_api_to_proto( object transaction ) -> None:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method to convert the transaction from API to proto format.
     obj.cpp_tx_api_to_proto( transaction )
 
@@ -606,7 +679,7 @@ cdef class WaxOperationHandle:
   cdef hive_operation_handle hOp
 
 def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandle:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method which returns a transaction pointer.
     cdef hive_transaction_handle hTx = obj.cpp_create_transaction_handle( tx, is_protobuf )
     # Wrap the C++ python_transaction pointer in the Python WaxTransactionHandle class.
@@ -615,7 +688,7 @@ def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandl
     return wax_tx
 
 def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
-    cdef proto_protocol obj
+    cdef protocol obj
     # Call the C++ method which returns an operation pointer.
     cdef hive_operation_handle hOp = obj.cpp_create_operation_handle( op, is_protobuf )
     # Wrap the C++ operation pointer in the Python WaxOperationHandle class.
@@ -635,59 +708,9 @@ def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_
     response = calculate_vests_to_hp(_vests, total_vesting_fund_hive, total_vesting_shares)
     return response
 
-cdef wax_authority python_authority_to_wax_authority(object auth_obj):
-    auth = wax_authority()
+def python_authority_to_wax_authority(python_wax_authority auth_obj) -> wax_authority:
+    cdef wax_authority auth
     auth.weight_threshold = auth_obj.weight_threshold
     auth.key_auths = auth_obj.key_auths
     auth.account_auths = auth_obj.account_auths
     return auth
-
-cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
-    auths = wax_authorities()
-    auths.active = python_authority_to_wax_authority(auths_obj.active)
-    auths.owner = python_authority_to_wax_authority(auths_obj.owner)
-    auths.posting = python_authority_to_wax_authority(auths_obj.posting)
-    return auths
-
-cdef cppmap[cppstring, wax_authorities] retrieve_authorities_cb(vector[cppstring] account_names, void* retrieve_authorities_fn):
-    cdef object obj = (<object>retrieve_authorities_fn)(account_names)
-    cdef cppmap[cppstring, wax_authorities] result
-    for k, v in obj.items():
-        auths = python_authorities_to_wax_authorities(v)
-        result[k] = auths
-    return result
-
-def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
-    cdef protocol obj
-    return obj.cpp_collect_signing_keys(transaction, retrieve_authorities_cb, <void*>(retrieve_authorities))
-
-cdef cppstring get_witness_key_cb(cppstring account_name, void* get_witness_key_fn):
-    cdef result = (<object>get_witness_key_fn)(account_name)
-    return result
-
-def minimize_required_signatures(
-    signed_transaction: bytes,
-    minimize_required_signatures_data: python_minimize_required_signatures_data,
-) -> list[bytes]:
-    cdef protocol obj
-    cdef minimize_required_signatures_data_t wax_minimize_required_signatures_data
-    cdef uint32_t _uint_helper
-
-    wax_minimize_required_signatures_data.chain_id = minimize_required_signatures_data.chain_id
-    wax_minimize_required_signatures_data.available_keys = minimize_required_signatures_data.available_keys
-    for k, v in minimize_required_signatures_data.authorities_map.items():
-        auths = python_authorities_to_wax_authorities(v)
-        wax_minimize_required_signatures_data.authorities_map[k] = auths
-    wax_minimize_required_signatures_data.get_witness_key_cb = get_witness_key_cb
-    wax_minimize_required_signatures_data.get_witness_key_fn = <void*>minimize_required_signatures_data.get_witness_key
-    if minimize_required_signatures_data.max_recursion is not None:
-        _uint_helper = int(minimize_required_signatures_data.max_recursion)
-        wax_minimize_required_signatures_data.max_recursion = _uint_helper
-    if minimize_required_signatures_data.max_membership is not None:
-        _uint_helper = int(minimize_required_signatures_data.max_membership)
-        wax_minimize_required_signatures_data.max_membership = _uint_helper
-    if minimize_required_signatures_data.max_account_auths is not None:
-        _uint_helper = int(minimize_required_signatures_data.max_account_auths)
-        wax_minimize_required_signatures_data.max_account_auths = _uint_helper
-    wax_minimize_required_signatures_data.allow_strict_and_mixed_authorities = minimize_required_signatures_data.allow_strict_and_mixed_authorities
-    return obj.cpp_minimize_required_signatures(signed_transaction, wax_minimize_required_signatures_data)

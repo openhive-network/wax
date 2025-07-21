@@ -90,6 +90,21 @@ class python_required_authority_collectionV:  # noqa: N801
     owner_accounts: list[string]
     other_authorities: list[wax_authority]  # type: ignore[name-defined] # noqa: F821
 
+@dataclass
+class python_path_entry:  # noqa: N801
+    processed_entry: string
+    processed_role: string
+    recursion_depth: int
+    treshold: int
+    weight: int
+    flags: int
+    visited_entries: list[python_path_entry]
+
+@dataclass
+class python_authority_verification_trace:  # noqa: N801
+    root: list[python_path_entry]
+    final_authority_path: list[python_path_entry]
+    final_weight: int
 
 @dataclass
 class python_binary_data:  # noqa: N801

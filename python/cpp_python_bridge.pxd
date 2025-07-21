@@ -159,6 +159,20 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string binary
         vector[binary_data_node] offsets
 
+    cdef cppclass path_entry:
+        string processed_entry
+        string processed_role
+        uint32_t recursion_depth
+        uint32_t treshold
+        uint32_t weight
+        uint32_t flags
+        vector[path_entry] visited_entries
+
+    cdef cppclass authority_verification_trace:
+        vector[path_entry] root
+        vector[path_entry] final_authority_path
+        uint32_t verification_status
+
     cdef cppclass IAccountAuthorityProvider:
         IAccountAuthorityProvider() except +
         optional[string] getAuthority(string account_name, string authorityRole) except +
@@ -220,7 +234,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         bool cpp_is_valid_account_name( string name ) except +
 
-        hive::protocol::authority_verification_trace cpp_trace_authority_verification(
+        authority_verification_trace cpp_trace_authority_verification(
             required_authority_collection required_authorities,
             vector[string] decodedSignaturePublicKeys,
             IAccountAuthorityProvider& authorityProvider) except +
@@ -249,3 +263,9 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         vector[string]        cpp_tx_signature_keys(hive_transaction_handle tx_handle, string chain_id, bool use_hf26_serialization)except +
         string                     cpp_tx_sig_digest(hive_transaction_handle tx_handle, string chain_id, bool use_hf26_serialization)except +
         void                            cpp_tx_validate(hive_transaction_handle tx_handle)except +
+
+        void cpp_tx_proto_to_api( object transaction ) except +
+        void cpp_tx_api_to_proto( object transaction ) except +
+
+        hive_transaction_handle cpp_create_transaction_handle( object transaction, bool is_protobuf ) except +
+        hive_operation_handle cpp_create_operation_handle( object operation, bool is_protobuf ) except +
