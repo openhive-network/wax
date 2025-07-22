@@ -19,10 +19,8 @@ from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
 from wax._private.result_tools import (
     decode_impacted_account_names,
-    expose_result_as_python_string,
     to_cpp_string,
     to_python_string,
-    validate_wax_result,
 )
 from wax._private.transaction import Transaction
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
@@ -39,11 +37,10 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     get_hive_protocol_config,
     get_public_key_from_signature,
     is_valid_account_name,
-    operation_get_impacted_accounts,
-    proto_operation_get_impacted_accounts,
     suggest_brain_key,
-    validate_operation,
-    validate_proto_operation,
+    op_validate,
+    op_impacted_accounts,
+    create_wax_operation
 )
 from wax.interfaces import ChainConfig, IWaxBaseInterface, JsonTransaction, ProtoTransaction, TTimestamp
 from wax.models.asset import (
@@ -93,16 +90,11 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:
-        if is_hive_protocol_format(operation):
-            converted = from_protocol_to_cpp_string(operation)
-            validate_wax_result(validate_operation(converted))
-            impacted_accounts = operation_get_impacted_accounts(converted)
-        else:
-            converted = from_proto_to_cpp_string(operation)
-            validate_wax_result(validate_proto_operation(converted))
-            impacted_accounts = proto_operation_get_impacted_accounts(converted)
+        hOp = create_wax_operation(operation, not is_hive_protocol_format(operation))
 
-        return decode_impacted_account_names(impacted_accounts)
+        accounts = op_impacted_accounts(hOp)
+
+        return decode_impacted_account_names(accounts)
 
     def estimate_hive_collateral(
         self,
@@ -185,9 +177,8 @@ class WaxBaseApi(IWaxBaseInterface):
     @staticmethod
     def get_public_key_from_signature(sig_digest: SigDigest, signature: Signature) -> PublicKey:
         public_key = get_public_key_from_signature(to_cpp_string(sig_digest), to_cpp_string(signature))
-        validate_wax_result(public_key)
 
-        return expose_result_as_python_string(public_key)
+        return to_python_string(public_key)
 
     @staticmethod
     def suggest_brain_key() -> BrainKeyData:
@@ -206,9 +197,8 @@ class WaxBaseApi(IWaxBaseInterface):
         manabar_value = calculate_current_manabar_value(
             int(head_block_time.timestamp()), max_mana, current_mana, last_update_time
         )
-        validate_wax_result(manabar_value)
 
-        return ManabarData(max_mana, int(expose_result_as_python_string(manabar_value)))
+        return ManabarData(max_mana, manabar_value)
 
     @staticmethod
     def calculate_manabar_full_regeneration_time(
@@ -217,9 +207,8 @@ class WaxBaseApi(IWaxBaseInterface):
         result = calculate_manabar_full_regeneration_time(
             int(head_block_time.timestamp()), max_mana, current_mana, last_update_time
         )
-        validate_wax_result(result)
 
-        return datetime.fromtimestamp(int(expose_result_as_python_string(result)), tz=timezone.utc)
+        return datetime.fromtimestamp(result, tz=timezone.utc)
 
     def calculate_account_hp(
         self,
@@ -280,7 +269,7 @@ class WaxBaseApi(IWaxBaseInterface):
         )
 
         return DecimalConverter.convert(
-            expose_result_as_python_string(result), precision=HIVE_PERCENT_PRECISION_DOT_PLACES
+            to_python_string(result), precision=HIVE_PERCENT_PRECISION_DOT_PLACES
         )
 
     def create_transaction_with_tapos(self, tapos_block_id: str, expiration: TTimestamp | None = None) -> ITransaction:

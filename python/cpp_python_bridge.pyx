@@ -13,11 +13,7 @@ from libcpp.vector cimport vector
 from libcpp.optional cimport optional, make_optional
 from libcpp.utility cimport move
 from libc.stdint cimport uint16_t, uint32_t, int32_t
-
-import cython
-from cython.operator cimport dereference, preincrement
-
-from cpp_python_bridge cimport IAccountAuthorityProvider, json_asset, json_price, protocol, binary_data, binary_data_node, required_authority_collection, hive_transaction_handle, hive_operation_handle
+from cpp_python_bridge cimport wax_authority, IAccountAuthorityProvider, authority_verification_trace, authority_trace_path_entry, json_asset, json_price, protocol, binary_data, binary_data_node, required_authority_collection, hive_transaction_handle, hive_operation_handle
 from .wax_result import (
     python_json_asset,
     python_ref_block_data,
@@ -28,6 +24,7 @@ from .wax_result import (
     python_binary_data_node,
     python_authority_verification_trace,
     python_path_entry,
+    python_wax_authority,
     python_brain_key_data,
     python_witness_set_properties_data,
     python_price,
@@ -394,88 +391,6 @@ def is_valid_account_name(account_name: bytes) -> bool:
     cdef protocol obj
     return obj.cpp_is_valid_account_name(account_name)
 
-cdef class PyIAccountAuthorityProvider(IAccountAuthorityProvider):
-    cdef object getAuthority_func
-    cdef object getWitnessPublicKey_func
-
-    def __cinit__(self, object getAuthority_func, object getWitnessPublicKey_func):
-        self.getAuthority_func = getAuthority_func
-        self.getWitnessPublicKey_func = getWitnessPublicKey_func
-
-    cdef optional[string] getAuthority(self, string name, string role):
-        cdef object result = self.getAuthority_func(name.encode(), role.encode())
-        return optional[string]() if result is None else make_optional[string](result)
-
-    cdef optional[string] getWitnessPublicKey(self, string name, string role):
-        cdef object result = self.getWitnessPublicKey_func(name.encode(), role.encode())
-        return optional[string]() if result is None else make_optional[string](result)
-
-def pylist_to_cppvector_str(lst: list[str]) -> vector[string]:
-    cdef vector[string] cpp_vec
-    cdef str item
-    for item in lst:
-        cpp_vec.push_back(string(item))  # convert Python str -> C++ string
-    return cpp_vec
-
-def pylist_to_cppvector_wax_authority(lst: list[wax_authority]) -> vector[wax_authority]:
-    cdef vector[wax_authority] cpp_vec
-    cdef wax_authority item
-    for item in lst:
-        cpp_vec.push_back(python_authority_to_wax_authority(item))  # convert Python wax_authority -> C++ wax_authority
-    return cpp_vec
-
-cdef object convert_path_entry_to_python(path_entry node):
-    """Recursively convert C++ path_entry to Python python_path_entry."""
-    cdef list children = []
-
-    # Recursively convert all children
-    for child in node.visited_entries:
-        children.append(convert_path_entry_to_python(child))
-
-    # Create and return the Python object
-    return python_path_entry(
-        processed_entry=node.processed_entry,
-        processed_role=node.processed_role,
-        recursion_depth=node.recursion_depth,
-        treshold=node.treshold,
-        weight=node.weight,
-        flags=node.flags,
-        visited_entries=children
-    )
-
-def trace_authority_verification(
-    required_authorities: python_required_authority_collection,
-    decoded_signature_public_keys: list[bytes],
-    get_authority: Callable[[bytes, bytes], bytes | None],
-    get_witness_public_key: Callable[[bytes], bytes | None]
-) -> authority_verification_trace:
-    cdef protocol obj
-    cdef PyIAccountAuthorityProvider cb = IAccountAuthorityProvider(get_authority, get_witness_public_key)
-    cdef required_authority_collection wax_required_authorities
-    wax_required_authorities.posting_accounts = pylist_to_cppvector_str(required_authorities.posting_accounts)
-    wax_required_authorities.active_accounts = pylist_to_cppvector_str(required_authorities.active_accounts)
-    wax_required_authorities.owner_accounts = pylist_to_cppvector_str(required_authorities.owner_accounts)
-    wax_required_authorities.other_authorities = pylist_to_cppvector_wax_authority(required_authorities.other_authorities)
-    cdef authority_verification_trace data = obj.cpp_trace_authority_verification(
-        wax_required_authorities,
-        decoded_signature_public_keys,
-        cb
-    )
-    cdef list root = []
-    for node in data.root:
-        root.append(convert_path_entry_to_python(node))
-    cdef list final_authority_path = []
-    for node in data.final_authority_path:
-        final_authority_path.append(convert_path_entry_to_python(node))
-
-    return python_authority_verification_trace(
-        root=root,
-        final_authority_path=final_authority_path,
-        verification_status=verification_status
-    )
-
-    convert_path_entry_to_python
-
 def get_default_comment_options_operation() -> bytes:
     cdef protocol obj
     response = obj.cpp_get_default_comment_options_operation()
@@ -550,9 +465,9 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
     # Call the C++ method to get the required authorities for the operation.
     cdef required_authority_collection collection = obj.cpp_op_required_authorities(wax_op.hOp)
 
-    op = set(collection.posting_accounts)
-    oa = set(collection.active_accounts)
-    oo = set(collection.owner_accounts)
+    op = list(collection.posting_accounts)
+    oa = list(collection.active_accounts)
+    oo = list(collection.owner_accounts)
     other_auths = []
     for auth in collection.other_authorities:
       other_auths.append(python_authority(
@@ -708,9 +623,20 @@ def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_
     response = calculate_vests_to_hp(_vests, total_vesting_fund_hive, total_vesting_shares)
     return response
 
-def python_authority_to_wax_authority(python_wax_authority auth_obj) -> wax_authority:
-    cdef wax_authority auth
+cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
+    auths = wax_authorities()
+    auths.active = python_authority_to_wax_authority(auths_obj.active)
+    auths.owner = python_authority_to_wax_authority(auths_obj.owner)
+    auths.posting = python_authority_to_wax_authority(auths_obj.posting)
+    return auths
+
+cdef wax_authority python_authority_to_wax_authority(object auth_obj):
+    auth = wax_authority()
     auth.weight_threshold = auth_obj.weight_threshold
-    auth.key_auths = auth_obj.key_auths
-    auth.account_auths = auth_obj.account_auths
+
+    for key, value in auth_obj.key_auths.items():
+        auth.key_auths[key] = value
+
+    for key, value in auth_obj.account_auths.items():
+        auth.account_auths[key] = value
     return auth

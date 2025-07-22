@@ -48,12 +48,18 @@ class python_ref_block_data:  # noqa: N801
 
 
 @dataclass
-class python_required_authority_collection:  # noqa: N801
-    posting_accounts: set[string]
-    active_accounts: set[string]
-    owner_accounts: set[string]
-    other_authorities: list[wax_authority]  # type: ignore[name-defined] # noqa: F821
+class python_wax_authority: # noqa: N801
+    weight_threshold: int
+    account_auths: list[tuple[string, int]]
+    key_auths: list[tuple[string, int]]
+    address_auths: list[tuple[string, int]]
 
+@dataclass
+class python_required_authority_collection:  # noqa: N801
+    posting_accounts: list[string]
+    active_accounts: list[string]
+    owner_accounts: list[string]
+    other_authorities: list[python_wax_authority]  # type: ignore[name-defined] # noqa: F821
 
 @dataclass
 class python_encrypted_memo:  # noqa: N801
@@ -81,14 +87,6 @@ class python_binary_data_node:  # noqa: N801
     value: string
     length: int
     children: list[python_binary_data_node]
-
-
-@dataclass
-class python_required_authority_collectionV:  # noqa: N801
-    posting_accounts: list[string]
-    active_accounts: list[string]
-    owner_accounts: list[string]
-    other_authorities: list[wax_authority]  # type: ignore[name-defined] # noqa: F821
 
 @dataclass
 class python_path_entry:  # noqa: N801

@@ -20,5 +20,7 @@ namespace cpp
     void cpp_tx_api_to_proto(PyObject* ptr)const;
   };
 
+  using authority_trace_path_entry = hive::protocol::authority_verification_trace::path_entry;
+  using authority_verification_trace = hive::protocol::authority_verification_trace;
 } /// namespace cpp
 

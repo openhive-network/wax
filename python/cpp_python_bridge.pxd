@@ -159,25 +159,24 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string binary
         vector[binary_data_node] offsets
 
-    cdef cppclass path_entry:
+    cdef cppclass authority_trace_path_entry:
         string processed_entry
         string processed_role
         uint32_t recursion_depth
-        uint32_t treshold
+        uint32_t threshold
         uint32_t weight
         uint32_t flags
-        vector[path_entry] visited_entries
+        vector[authority_trace_path_entry] visited_entries
 
     cdef cppclass authority_verification_trace:
-        vector[path_entry] root
-        vector[path_entry] final_authority_path
+        vector[authority_trace_path_entry] root
+        vector[authority_trace_path_entry] final_authority_path
         uint32_t verification_status
 
     cdef cppclass IAccountAuthorityProvider:
         IAccountAuthorityProvider() except +
-        optional[string] getAuthority(string account_name, string authorityRole) except +
+        optional[wax_authority] getAuthority(string account_name, string authorityRole) except +
         optional[string] getWitnessPublicKey(string witness_name) except +
-        # virtual ~IAccountAuthorityProvider() = default;
 
     cdef cppclass protocol:
         string cpp_calculate_public_key(string wif) except +

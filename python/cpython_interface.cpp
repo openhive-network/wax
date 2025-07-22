@@ -7,6 +7,8 @@
 #include "core/api_converter.hpp"
 #include "core/proto_converter.hpp"
 
+#include "core/utils.hpp"
+
 namespace cpp
 {
 
