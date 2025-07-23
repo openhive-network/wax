@@ -31,8 +31,6 @@ generate-setup-file = true
 [tool.poetry.dependencies]
 python = "^3.12"
 protobuf = "4.24.4"
-database_api = "1.25.2rc0.dev5205+e6f34ef25"
-network_broadcast_api = "1.25.2rc0.dev5205+e6f34ef25"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
