@@ -68,7 +68,7 @@ def test_sync_overseer(
     overseer = overseer_cls(communicator=communicator(settings=CommunicationSettings()))
     try:
         with run_simple_server(message) as url, pytest.raises(error):
-            overseer.send(url, REQUEST)
+            overseer.send(url=url, method="POST", data=REQUEST)
     finally:
         overseer.teardown()
 
@@ -85,6 +85,6 @@ async def test_async_overseer(
     overseer = overseer_cls(communicator=communicator(settings=CommunicationSettings()))
     try:
         with run_simple_server(message) as url, pytest.raises(error):
-            await overseer.async_send(url, REQUEST)
+            await overseer.async_send(url=url, method="POST", data=REQUEST)
     finally:
         overseer.teardown()

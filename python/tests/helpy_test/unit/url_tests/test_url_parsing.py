@@ -32,7 +32,7 @@ def test_url_parsing_without_expected_protocol(input_url: str, expected_protocol
     ],
 )
 def test_url_parsing_with_expected_protocol(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
-    url = url_type(input_url, protocol=expected_protocol)  # type: ignore[arg-type]
+    url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
 
     assert url.protocol == expected_protocol
     assert url.address == DEFAULT_ADDRESS
@@ -47,7 +47,7 @@ def test_url_parsing_with_expected_protocol(input_url: str, expected_protocol: s
     ],
 )
 def test_url_parsing_without_port_given(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
-    url = url_type(input_url, protocol=expected_protocol)  # type: ignore[arg-type]
+    url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
 
     assert url.protocol == expected_protocol
     assert url.address == DEFAULT_ADDRESS
@@ -89,4 +89,4 @@ def test_url_schema_validation(url_cls: URL_TYPES | type[P2PUrl]) -> None:
     with pytest.raises(
         ValueError, match=re.escape(f"Unknown protocol: `{invalid_proto}`, allowed: {url_cls._allowed_protocols()}")
     ):
-        url_cls("some-address", protocol=invalid_proto)  # type: ignore[arg-type]
+        url_cls("some-address", protocol=invalid_proto)  # type: ignore[call-overload]
