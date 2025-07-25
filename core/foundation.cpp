@@ -713,6 +713,15 @@ std::string foundation::cpp_tx_to_binary(const hive_transaction_handle& tx_handl
   });
 }
 
+std::string foundation::cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    return cpp::serialize_operation(*op_handle.op, use_hf26_serialization);
+  });
+}
+
 std::string foundation::cpp_tx_to_json(const hive_transaction_handle& tx_handle)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string {
@@ -743,15 +752,24 @@ binary_data foundation::cpp_tx_binary(const hive_transaction_handle& tx_handle, 
   });
 }
 
-required_authority_collectionV foundation::cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const
+binary_data foundation::cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const
 {
-  return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
+  return cpp::safe_exception_wrapper([&]() -> binary_data {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    return cpp::generate_binary_operation_metadata(*op_handle.op, use_hf26_serialization);
+  });
+}
+
+foundation::required_authority_collection_t foundation::cpp_tx_required_authorities(const hive_transaction_handle& tx_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> foundation::required_authority_collection_t {
     FC_ASSERT(tx_handle.tx, "Transaction handle is not initialized");
     typedef flat_set<hive::protocol::account_name_type> raw_account_set;
 
     if (tx_handle.tx->operations.empty())
     {
-      return required_authority_collectionV{};
+      return foundation::required_authority_collection_t{};
     }
 
     raw_account_set active;
@@ -761,8 +779,45 @@ required_authority_collectionV foundation::cpp_tx_required_authorities(const hiv
     std::vector<hive::protocol::authority> other_authorities;
     tx_handle.tx->get_required_authorities(active, owner, posting, witness, other_authorities);
 
-    required_authority_collectionV ret_val;
-    using account_collection_t = typename required_authority_collectionV::account_collection_t;
+    foundation::required_authority_collection_t ret_val;
+    using account_collection_t = typename foundation::required_authority_collection_t::account_collection_t;
+    ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
+    ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
+    ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
+
+    for(const auto& auth : other_authorities)
+    {
+      wax_authority wa;
+      wa.weight_threshold = auth.weight_threshold;
+
+      for(const auto& [account, weight] : auth.account_auths)
+        wa.account_auths.emplace(account.operator std::string(), weight);
+
+      for(const auto& [key, weight] : auth.key_auths)
+        wa.key_auths.emplace(key.operator std::string(), weight);
+
+      ret_val.other_authorities.emplace_back(wa);
+    }
+
+    return ret_val;
+  });
+}
+
+foundation::required_authority_collection_t foundation::cpp_op_required_authorities(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> foundation::required_authority_collection_t {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+    typedef flat_set<hive::protocol::account_name_type> raw_account_set;
+
+    raw_account_set active;
+    raw_account_set owner;
+    raw_account_set posting;
+    raw_account_set witness;
+    std::vector<hive::protocol::authority> other_authorities;
+    hive::protocol::operation_get_required_authorities(*op_handle.op, active, owner, posting, witness, other_authorities);
+
+    foundation::required_authority_collection_t ret_val;
+    using account_collection_t = typename foundation::required_authority_collection_t::account_collection_t;
     ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
     ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
     ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
@@ -800,6 +855,20 @@ std::vector<std::string> foundation::cpp_tx_impacted_accounts(const hive_transac
     return result;
   });
 }
+
+std::vector<std::string> foundation::cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    std::vector<std::string> result;
+    fc::flat_set<hive::protocol::account_name_type> impacted;
+    hive::app::operation_get_impacted_accounts(*op_handle.op, impacted);
+    result.insert( result.end(), impacted.begin(), impacted.end() );
+    return result;
+  });
+}
+
 std::vector<std::string> foundation::cpp_tx_signature_keys(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
@@ -847,6 +916,52 @@ void foundation::cpp_tx_validate(const hive_transaction_handle& tx_handle)const
     FC_ASSERT(tx_handle.tx, "Transaction handle is not initialized");
 
     tx_handle.tx->validate();
+  });
+}
+
+void foundation::cpp_op_validate(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> void {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    hive::protocol::operation_validate(*op_handle.op);
+  });
+}
+
+cpp::hive_transaction_handle foundation::cpp_deserialize_transaction(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> cpp::hive_transaction_handle {
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+    std::vector<char> raw_data(hex.size());
+    fc::from_hex(hex, raw_data.data(), raw_data.size());
+
+    hive::protocol::signed_transaction obj;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
+
+    cpp::hive_transaction_handle h;
+    h.tx.reset(new cpp::hive_tx(std::move(obj)));
+
+    return h;
+  });
+}
+cpp::hive_operation_handle foundation::cpp_deserialize_operation(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> cpp::hive_operation_handle {
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+    std::vector<char> raw_data(hex.size());
+    fc::from_hex(hex, raw_data.data(), raw_data.size());
+
+    hive::protocol::operation obj;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
+
+    cpp::hive_operation_handle h;
+    h.op.reset(new cpp::hive_op(std::move(obj)));
+
+    return h;
   });
 }
 
