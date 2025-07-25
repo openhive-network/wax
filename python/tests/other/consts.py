@@ -181,6 +181,7 @@ VALID_TRX_ID_WITH_TRANSACTIONS = {trx_id: trx for trx_id, _, trx in VALID_TRXID_
 VALID_PROTO_OPERATIONS: Final[list[dict[str, Any]]] = [
     {
         "comment_operation": {
+            "parent_author": "",
             "parent_permlink": "/",
             "author": "alice",
             "permlink": "/",
@@ -193,5 +194,10 @@ VALID_PROTO_OPERATIONS: Final[list[dict[str, Any]]] = [
 ]
 
 VALID_PROTO_TRANSACTION: Final[dict[str, Any]] = {
+    "ref_block_num": 0,
+    "ref_block_prefix": 0,
+    "expiration": "2023-10-29T06:32:22",
+    "extensions": [],
+    "signatures": [],
     "operations": VALID_PROTO_OPERATIONS,
 }

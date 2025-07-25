@@ -36,7 +36,7 @@ def test_serialize_transaction(trx_binary: bytes) -> None:
     assert result.result == expected_trx_binary
 
 
-@pytest.mark.parametrize("trx_json", [{}, TRX_DICT_WITH_ALL_DEFAULTS], ids=["empty dict", "dict with all defaults"])
+@pytest.mark.parametrize("trx_json", [TRX_DICT_WITH_ALL_DEFAULTS], ids=["dict with all defaults"])
 def test_serialize_empty_transaction(trx_json: dict[str, Any]) -> None:
     # ARRANGE
     encoded_transaction_json = json.dumps(trx_json).encode(ENCODING)

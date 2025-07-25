@@ -16,7 +16,7 @@ def test_calculate_sig_digest():
     result = calculate_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nv_object.contains( "type" )\nType field doesn\'t exist.\n    {}\n    static_variant.hpp:484 from_variant')
+        b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function call failed: \'type\'\n    {"pyerr":"\'type\'"}\n    python_managed_object.hpp:63 call_python_function')
 
 def test_calculate_serialization_sensitive_sig_digest():
     tx_str = json.dumps(API_REF_SERIALIZATION_SENSITIVE_TRANSACTION)

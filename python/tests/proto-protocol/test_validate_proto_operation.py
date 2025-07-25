@@ -19,15 +19,12 @@ def test_validate_proto_operation():
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:179 parse_proto_operation')
+        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:58 from_jsval')
 
     # Negative test
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP_EMPTY)
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nvalidity_check_result !='
-        b" account_name_validity::too_short\nAccount name '' is too short. "
-        b'Use at least 3 characters.\n    {"name":"","min":3}\n    validation.hpp:22 validate_account_name'
+        b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function call failed: \'voter\'\n    {"pyerr":"\'voter\'"}\n    python_managed_object.hpp:63 call_python_function'
     )

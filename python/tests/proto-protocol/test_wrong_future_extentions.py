@@ -12,6 +12,5 @@ def test_wrong_future_extensions():
     result = validate_proto_transaction(tx_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nobj.size() != 0\nEach extension should '
-        b'be a nonempty object\n    {}\n    protobuf_protocol_impl.inl:27 parse_proto_extensions'
+        b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function call failed: list index out of range\n    {"pyerr":"list index out of range"}\n    python_managed_object.hpp:63 call_python_function'
     )

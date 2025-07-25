@@ -16,8 +16,7 @@ def test_calculate_proto_sig_digest():
     result = calculate_proto_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:179 parse_proto_operation')
+        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:58 from_jsval')
 
 def test_calculate_proto_serialization_sensitive_sig_digest():
     tx_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)

@@ -4,6 +4,7 @@ import json
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
+from google.protobuf.json_format import MessageToDict
 
 from wax.proto.authority import authority
 from wax.proto.operations import operation, recover_account, vote
@@ -27,7 +28,9 @@ RECOVER_ACCOUNT: Final[recover_account] = recover_account(
     account_to_recover="account", new_owner_authority=AUTHORITY_1, recent_owner_authority=AUTHORITY_2, extensions=[]
 )
 
-PROTO_OPERATION: Final[operation] = operation(recover_account_operation=RECOVER_ACCOUNT)
+PROTO_OPERATION: Final[operation] = MessageToDict(
+    operation(recover_account_operation=RECOVER_ACCOUNT), including_default_value_fields=True
+)
 API_OPERATION_DICT: Final[dict[str, Any]] = {
     "type": "claim_reward_balance_operation",
     "value": {

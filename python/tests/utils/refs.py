@@ -81,6 +81,7 @@ PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
             }
         }
     ],
+    "signatures": [],
     "extensions": []
 }
 
@@ -88,7 +89,9 @@ PROTO_REF_TRANSACTION_EMPTY_OPERATIONS = {
     "ref_block_num": 19260,
     "ref_block_prefix": 2140466769,
     "expiration": "2016-09-15T19:47:33",
-    "operations": []
+    "operations": [],
+    "extensions": [],
+    "signatures": []
 }
 
 PROTO_REF_TRANSACTION_NO_OPERATIONS = {
@@ -578,7 +581,8 @@ API_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {
         }
       }
     ],
-    "extensions": []
+    "extensions": [],
+    "signatures": []
 }
 
 API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION = {

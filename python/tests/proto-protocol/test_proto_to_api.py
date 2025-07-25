@@ -10,7 +10,7 @@ def test_proto_to_api():
     api = proto_to_api(proto_str.encode())
     assert api.status == api.status.ok
     assert api.exception_message == b''
-    assert api.result.decode() == json.dumps(API_REF_TRANSACTION).replace(" ", "")
+    assert api.result.decode() == json.dumps(API_REF_TRANSACTION)
 
     # Negative test
     proto_str = json.dumps(API_REF_TRANSACTION)
@@ -18,5 +18,4 @@ def test_proto_to_api():
     assert api.status == api.status.fail
     print(api.exception_message)
     assert api.exception_message == (
-        b'10 assert_exception: Assert Exception\nop.get_object()[key].is_object()'
-        b'\nOperation should contain the body\n    {}\n    protobuf_protocol_impl.inl:179 parse_proto_operation')
+        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    api_converter.hpp:180 call')
