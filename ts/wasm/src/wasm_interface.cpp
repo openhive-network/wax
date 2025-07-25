@@ -1,345 +1,12 @@
 #include "core/foundation.hpp"
-#include "core/protocol_impl.hpp"
-#include "core/protobuf_protocol_impl.hpp"
-
-#include "core/protocol_impl.inl"
-#include "core/protobuf_protocol_impl.inl"
-
-#include "core/val_protocol.hpp"
-#include "core/proto_converter.hpp"
-#include "core/api_converter.hpp"
+#include "foundation_wasm.hpp"
 
 #include <emscripten/bind.h>
-
-#include "emscripten_managed_object.hpp"
 
 using namespace cpp;
 using namespace emscripten;
 
-using manabar_fn_t = result(const int32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t, const uint32_t);
-using ext_json_asset_fn_t = json_asset(const int32_t, const int32_t)const;
-
 using authority_verification_trace = hive::protocol::authority_verification_trace;
-
-class wasm_transaction
-{
-public:
-  wasm_transaction(val obj, bool is_protobuf)
-  {
-    cpp::safe_exception_wrapper([&]() -> void {
-      fc::reflector< hive::protocol::signed_transaction >::visit(
-        val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj }, this->_transaction, is_protobuf }
-      );
-    });
-  }
-
-  void add_operation(val obj, bool is_protobuf)
-  {
-    cpp::safe_exception_wrapper([&]() -> void {
-      hive::protocol::operation op;
-      cpp::from_jsval(emscripten_managed_object{obj}, op, is_protobuf);
-
-      this->_transaction.operations.emplace_back(op);
-    });
-  }
-
-  void add_signature(const std::string& signature)
-  {
-    cpp::safe_exception_wrapper([&]() -> void {
-      hive::protocol::signature_type sig;
-      fc::from_hex(signature, reinterpret_cast<char *>(&sig.data[0]), sig.size());
-
-      this->_transaction.signatures.emplace_back(sig);
-    });
-  }
-
-  void set_expiration(const std::string& expiration)
-  {
-    cpp::safe_exception_wrapper([&]() -> void {
-      this->_transaction.expiration = fc::time_point_sec::from_iso_string( expiration );
-    });
-  }
-
-  std::string to_legacy_json()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
-      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
-
-      return fc::json::to_string(this->_transaction);
-    });
-  }
-
-  std::string to_binary(bool use_hf26_serialization = true, bool strip_to_unsigned_transaction = false)const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return cpp::serialize_transaction(this->_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
-    });
-  }
-
-  std::string to_json()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return fc::json::to_string(this->_transaction);
-    });
-  }
-
-  std::string id(bool use_hf26_serialization = true)const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return this->_transaction.id(use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
-    });
-  }
-
-  binary_data binary(bool use_hf26_serialization = true, bool strip_to_unsigned_transaction = false)const
-  {
-    return cpp::safe_exception_wrapper([&]() -> binary_data {
-      return cpp::generate_binary_transaction_metadata(_transaction, use_hf26_serialization, strip_to_unsigned_transaction);
-    });
-  }
-
-  required_authority_collectionV required_authorities()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> required_authority_collectionV {
-      typedef flat_set<hive::protocol::account_name_type> raw_account_set;
-
-      raw_account_set active;
-      raw_account_set owner;
-      raw_account_set posting;
-      raw_account_set witness;
-      std::vector<hive::protocol::authority> other_authorities;
-      _transaction.get_required_authorities(active, owner, posting, witness, other_authorities);
-
-      required_authority_collectionV ret_val;
-      using account_collection_t = typename required_authority_collectionV::account_collection_t;
-      ret_val.posting_accounts = std::move(account_collection_t(posting.cbegin(), posting.cend()));
-      ret_val.owner_accounts = std::move(account_collection_t(owner.cbegin(), owner.cend()));
-      ret_val.active_accounts = std::move(account_collection_t(active.cbegin(), active.cend()));
-
-      for(const auto& auth : other_authorities)
-      {
-        wax_authority wa;
-        wa.weight_threshold = auth.weight_threshold;
-
-        for(const auto& [account, weight] : auth.account_auths)
-          wa.account_auths.emplace(account.operator std::string(), weight);
-
-        for(const auto& [key, weight] : auth.key_auths)
-          wa.key_auths.emplace(key.operator std::string(), weight);
-
-        ret_val.other_authorities.emplace_back(wa);
-      }
-
-      return ret_val;
-    });
-  }
-
-  std::vector<std::string> impacted_accounts()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
-      std::vector<std::string> result;
-      fc::flat_set<hive::protocol::account_name_type> impacted;
-      for (const auto& op : this->_transaction.operations)
-      {
-        hive::app::operation_get_impacted_accounts(op, impacted);
-      }
-      result.insert(result.end(), impacted.begin(), impacted.end());
-      return result;
-    });
-  }
-
-  std::vector<std::string> signature_keys(const std::string& chain_id, bool use_hf26_serialization = true)const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
-      std::vector<std::string> result;
-      for (const auto& sig : this->_transaction.signatures)
-      {
-        result.emplace_back(fc::ecc::public_key::to_base58_with_prefix(
-          fc::ecc::public_key{ sig, _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy) },
-          HIVE_ADDRESS_PREFIX
-        ));
-      }
-      return result;
-    });
-  }
-
-  std::string sig_digest(const std::string& chain_id, bool use_hf26_serialization = true)const
-  {
-    return cpp::safe_exception_wrapper([&]() -> std::string {
-      return _transaction.sig_digest(hive::protocol::chain_id_type{ chain_id }, use_hf26_serialization ? hive::protocol::serialization_type::hf26 : hive::protocol::serialization_type::legacy).str();
-    });
-  }
-
-  void validate()const
-  {
-    return cpp::safe_exception_wrapper([&]() -> void {
-      _transaction.validate();
-    });
-  }
-
-private:
-  hive::protocol::signed_transaction _transaction;
-};
-
-class foundation_wasm : public foundation
-{
-public:
-  using required_authority_collection_t = required_authority_collectionV;
-
-  result cpp_calculate_manabar_full_regeneration_time(const int32_t now, const uint64_t max_mana, const uint64_t current_mana, const uint32_t last_update_time)
-{ return foundation::cpp_calculate_manabar_full_regeneration_time(now, max_mana, current_mana, last_update_time); }
-
-result cpp_calculate_current_manabar_value(const int32_t now, const uint64_t max_mana, const uint64_t current_mana, const uint32_t last_update_time)
-{ return foundation::cpp_calculate_current_manabar_value(now, max_mana, current_mana, last_update_time); }
-
-json_asset cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
-{ return foundation::cpp_general_asset(asset_num, amount); }
-
-json_asset cpp_hive(const int64_t amount)const
-{ return foundation::cpp_hive(amount); }
-
-json_asset cpp_hbd(const int64_t amount)const
-{ return foundation::cpp_hbd(amount); }
-
-wasm_transaction cpp_create_wasm_transaction(val obj, bool is_protobuf)const
-{ return wasm_transaction{ obj, is_protobuf }; }
-
-json_asset cpp_vests(const int64_t amount)const
-{ return foundation::cpp_vests(amount); }
-
-witness_set_properties_serialized cpp_serialize_witness_set_properties(const witness_set_properties_data& value) const
-{ return foundation::cpp_serialize_witness_set_properties(value); }
-
-witness_set_properties_data cpp_deserialize_witness_set_properties(const witness_set_properties_serialized& value) const
-{ return foundation::cpp_deserialize_witness_set_properties(value); }
-
-std::string cpp_asset_value(const json_asset& value) const
-{ return foundation::cpp_asset_value(value); }
-
-std::string cpp_asset_symbol(const json_asset& value) const
-{ return foundation::cpp_asset_symbol(value); }
-
-void cpp_throws(int value) const
-{ foundation::cpp_throws(value); }
-
-bool cpp_get_js_object(val obj) const
-{
-  std::string author = obj["author"].as<std::string>();
-  dlog((author));
-
-  return author == "user";
-}
-
-void tx_proto_to_api(val obj) const
-{
-  cpp::safe_exception_wrapper([&]() -> void {
-    fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_api_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj } }
-    );
-  });
-}
-
-void tx_api_to_proto(val obj) const
-{
-  cpp::safe_exception_wrapper([&]() -> void {
-    fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_proto_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ obj } }
-    );
-  });
-}
-
-crypto_memo cpp_crypto_memo_from_string(const std::string& value) const
-{ return foundation::cpp_crypto_memo_from_string(value); }
-
-std::string cpp_crypto_memo_dump_string(const crypto_memo& value) const
-{ return foundation::cpp_crypto_memo_dump_string(value); }
-
-void cpp_scan_text_for_matching_private_keys(const std::string& text, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
-  const std::vector<std::string>& imported_keys) const
-{
-  return foundation::cpp_check_memo_for_private_keys(text, account, auths, memo_key, imported_keys);
-}
-
-brain_key_data cpp_suggest_brain_key()
-{ return foundation::cpp_suggest_brain_key(); }
-
-result cpp_generate_private_key()
-{ return foundation::cpp_generate_private_key(); }
-
-private_key_data cpp_generate_private_key_password_based(const std::string& account, const std::string& role, const std::string& password)
-{ return foundation::cpp_generate_private_key(account, role, password); }
-
-std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData)
-{
-  return foundation::cpp_convert_raw_private_key_to_wif(hexData);
-}
-
-std::string cpp_convert_raw_public_key_to_wif(const std::string& hexData)
-{
-  return foundation::cpp_convert_raw_public_key_to_wif(hexData);
-}
-
-result cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
-{ return foundation::cpp_get_public_key_from_signature(digest, signature); }
-
-result cpp_calculate_public_key(const std::string& wif) 
-{ return foundation::cpp_calculate_public_key(wif); }
-
-std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id)
-{ return foundation::cpp_get_hive_protocol_config(chain_id); }
-
-ref_block_data cpp_get_tapos_data(const std::string& block_id)
-{ return foundation::cpp_get_tapos_data(block_id); }
-
-std::string cpp_get_address_prefix()
-{ return HIVE_ADDRESS_PREFIX; }
-
-result cpp_calculate_hp_apr(
-  const uint32_t head_block_num,
-  const uint16_t vesting_reward_percent,
-  const json_asset& virtual_supply,
-  const json_asset& total_vesting_fund_hive) const
-{
-  return foundation::cpp_calculate_hp_apr(
-    head_block_num, vesting_reward_percent, virtual_supply, total_vesting_fund_hive);
-}
-
-json_asset cpp_hbd_to_hive(const json_asset &hbd, const json_asset& base, const json_asset& quote) const
-{
-  return foundation::cpp_hbd_to_hive(hbd, base, quote);
-}
-
-json_asset cpp_hive_to_hbd(const json_asset& amount, const json_asset& base, const json_asset& quote) const
-{
-  return foundation::cpp_hive_to_hbd(amount, base, quote);
-}
-
-json_asset cpp_vests_to_hp(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
-{
-  return foundation::cpp_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares);
-}
-
-json_asset cpp_hp_to_vests(const json_asset& vests, const json_asset& total_vesting_fund_hive, const json_asset& total_vesting_shares) const
-{
-  return foundation::cpp_hp_to_vests(vests, total_vesting_fund_hive, total_vesting_shares);
-}
-
-result cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
-{
-    return foundation::cpp_calculate_inflation_rate_for_block( block_num );
-}
-
-json_asset cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const
-{
-  return foundation::cpp_estimate_hive_collateral( current_median_history, current_min_history, hbd_amount_to_get );
-}
-
-bool cpp_is_valid_account_name( const std::string& name ) const
-{
-  return foundation::cpp_is_valid_account_name( name );
-}
-
-};
 
 class AccountAuthorityProviderWrapper final : public emscripten::wrapper<IAccountAuthorityProvider>
 {
@@ -357,21 +24,7 @@ public:
   }
 };
 
-using protocol_wasm = cpp::protocol_impl<foundation_wasm>;
-using proto_protocol_wasm = cpp::proto_protocol_impl<foundation_wasm>;
-
 EMSCRIPTEN_BINDINGS(wax_api_instance) {
-  enum_<error_code>("error_code")
-      .value("fail", error_code::fail)
-      .value("ok", error_code::ok)
-      ;
-
-  value_object<result>("result")
-      .field("value", &result::value)
-      .field("content", &result::content)
-      .field("exception_message", &result::exception_message)
-      ;
-
   value_object<brain_key_data>("brain_key_data")
       .field("associated_public_key", &brain_key_data::associated_public_key)
       .field("brain_key", &brain_key_data::brain_key)
@@ -407,11 +60,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .field("posting", &wax_authorities::posting)
     ;
 
-  value_object<required_authority_collectionV>("required_authority_collection")
-      .field("posting_accounts", &required_authority_collectionV::posting_accounts)
-      .field("active_accounts", &required_authority_collectionV::active_accounts)
-      .field("owner_accounts", &required_authority_collectionV::owner_accounts)
-      .field("other_authorities", &required_authority_collectionV::other_authorities)
+  value_object<required_authority_collection>("required_authority_collection")
+      .field("posting_accounts", &required_authority_collection::posting_accounts)
+      .field("active_accounts", &required_authority_collection::active_accounts)
+      .field("owner_accounts", &required_authority_collection::owner_accounts)
+      .field("other_authorities", &required_authority_collection::other_authorities)
       ;
 
   value_object<ref_block_data>("ref_block_data")
@@ -487,36 +140,28 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("getWitnessPublicKey", &IAccountAuthorityProvider::getWitnessPublicKey, pure_virtual())
     ;
 
-  class_<wasm_transaction>("WasmTransaction")
-    .function("id", &wasm_transaction::id)
-    .function("binary", &wasm_transaction::binary)
-    .function("impactedAccounts", &wasm_transaction::impacted_accounts)
-    .function("requiredAuthorities", &wasm_transaction::required_authorities)
-    .function("sigDigest", &wasm_transaction::sig_digest)
-    .function("signatureKeys", &wasm_transaction::signature_keys)
-    .function("validate", &wasm_transaction::validate)
-    .function("push", &wasm_transaction::add_operation)
-    .function("sign", &wasm_transaction::add_signature)
-    .function("setExpiration", &wasm_transaction::set_expiration)
-    .function("toLegacyString", &wasm_transaction::to_legacy_json)
-    .function("toBinary", &wasm_transaction::to_binary)
-    .function("toString", &wasm_transaction::to_json)
-  ;
-
-  class_<foundation_wasm>("protocol_foundation")
+  class_<hive_transaction_handle>("transaction_handle")
     .constructor<>()
-    .function("cpp_get_address_prefix", &foundation_wasm::cpp_get_address_prefix)
+    ;
+
+  class_<hive_operation_handle>("operation_handle")
+    .constructor<>()
+    ;
+
+  class_<foundation>("foundation")
+    ;
+
+  class_<foundation_wasm, base<foundation>>("protocol_foundation")
+    .constructor<>()
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
     .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
 
-    .function("cpp_tx_api_to_proto", &foundation_wasm::tx_api_to_proto)
-    .function("cpp_tx_proto_to_api", &foundation_wasm::tx_proto_to_api)
+    .function("cpp_tx_api_to_proto", &foundation_wasm::cpp_tx_api_to_proto)
+    .function("cpp_tx_proto_to_api", &foundation_wasm::cpp_tx_proto_to_api)
 
-    .function("cpp_create_wasm_transaction", &protocol_wasm::cpp_create_wasm_transaction, return_value_policy::take_ownership())
-
-    .function("cpp_generate_private_key", &foundation_wasm::cpp_generate_private_key)
-    .function("cpp_generate_private_key_password_based", &foundation_wasm::cpp_generate_private_key_password_based)
+    .function("cpp_generate_private_key", select_overload<std::string()>(&foundation_wasm::cpp_generate_private_key))
+    .function("cpp_generate_private_key_password_based", select_overload<private_key_data(const std::string&, const std::string&, const std::string&)>(&foundation_wasm::cpp_generate_private_key))
     .function("cpp_convert_raw_private_key_to_wif", &foundation_wasm::cpp_convert_raw_private_key_to_wif)
     .function("cpp_convert_raw_public_key_to_wif", &foundation_wasm::cpp_convert_raw_public_key_to_wif)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
@@ -530,6 +175,12 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
 
+    .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, return_value_policy::take_ownership())
+    .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, return_value_policy::take_ownership())
+
+    .function("cpp_create_transaction_handle", &foundation_wasm::cpp_create_transaction_handle, return_value_policy::take_ownership())
+    .function("cpp_create_operation_handle", &foundation_wasm::cpp_create_operation_handle, return_value_policy::take_ownership())
+
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
 
@@ -540,7 +191,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_crypto_memo_from_string", &foundation_wasm::cpp_crypto_memo_from_string)
     .function("cpp_crypto_memo_dump_string", &foundation_wasm::cpp_crypto_memo_dump_string)
 
-    .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_scan_text_for_matching_private_keys)
+    .function("cpp_scan_text_for_matching_private_keys", &foundation_wasm::cpp_check_memo_for_private_keys)
 
     .function("cpp_calculate_manabar_full_regeneration_time", &foundation_wasm::cpp_calculate_manabar_full_regeneration_time)
     .function("cpp_calculate_current_manabar_value", &foundation_wasm::cpp_calculate_current_manabar_value)
@@ -555,49 +206,31 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
-    ;
 
+    .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
+    .function("cpp_trace_authority_verification", &foundation_wasm::cpp_trace_authority_verification)
 
-  class_<protocol_wasm, base<foundation_wasm>>("protocol")
-    .constructor<>()
+    .function("cpp_get_default_comment_options_operation", &foundation_wasm::cpp_get_default_comment_options_operation)
 
-    .function("cpp_operation_get_impacted_accounts", &protocol_wasm::cpp_operation_get_impacted_accounts)
-    .function("cpp_transaction_get_impacted_accounts", &protocol_wasm::cpp_transaction_get_impacted_accounts)
-    .function("cpp_generate_binary_transaction_metadata", &protocol_wasm::cpp_generate_binary_transaction_metadata)
-    .function("cpp_generate_binary_operation_metadata", &protocol_wasm::cpp_generate_binary_operation_metadata)
-    .function("cpp_validate_operation", &protocol_wasm::cpp_validate_operation)
-    .function("cpp_validate_transaction", &protocol_wasm::cpp_validate_transaction)
-    .function("cpp_get_default_comment_options_operation", &protocol_wasm::cpp_get_default_comment_options_operation)
-    .function("cpp_calculate_transaction_id", &protocol_wasm::cpp_calculate_transaction_id)
-    .function("cpp_calculate_legacy_transaction_id", &protocol_wasm::cpp_calculate_legacy_transaction_id)
-    .function("cpp_calculate_sig_digest", &protocol_wasm::cpp_calculate_sig_digest)
-    .function("cpp_calculate_legacy_sig_digest", &protocol_wasm::cpp_calculate_legacy_sig_digest)
-    .function("cpp_serialize_transaction", &protocol_wasm::cpp_serialize_transaction)
-    .function("cpp_deserialize_transaction", &protocol_wasm::cpp_deserialize_transaction)
-    .function("cpp_collect_transaction_required_authorities", &protocol_wasm::cpp_collect_transaction_required_authorities)
-    .function("cpp_trace_authority_verification", &protocol_wasm::cpp_trace_authority_verification)
-    .function("cpp_get_hive_protocol_config", &protocol_wasm::cpp_get_hive_protocol_config)
-  ;
+    .function("cpp_op_impacted_accounts", &foundation_wasm::cpp_op_impacted_accounts)
+    .function("cpp_op_to_binary", &foundation_wasm::cpp_op_to_binary)
+    .function("cpp_op_binary", &foundation_wasm::cpp_op_binary)
+    .function("cpp_op_validate", &foundation_wasm::cpp_op_validate)
+    .function("cpp_op_required_authorities", &foundation_wasm::cpp_op_required_authorities)
 
-  // We have to use it this way because JavaScript (and emscripten in conclusion) doesn't support multiple inheritance
-  class_<proto_protocol_wasm, base<foundation_wasm>>("proto_protocol")
-    .constructor<>()
-    .function("cpp_operation_get_impacted_accounts", &proto_protocol_wasm::cpp_operation_get_impacted_accounts)
-    .function("cpp_transaction_get_impacted_accounts", &proto_protocol_wasm::cpp_transaction_get_impacted_accounts)
-    .function("cpp_generate_binary_transaction_metadata", &proto_protocol_wasm::cpp_generate_binary_transaction_metadata)
-    .function("cpp_generate_binary_operation_metadata", &proto_protocol_wasm::cpp_generate_binary_operation_metadata)
-    .function("cpp_validate_operation", &proto_protocol_wasm::cpp_validate_operation)
-    .function("cpp_validate_transaction", &proto_protocol_wasm::cpp_validate_transaction)
-    .function("cpp_calculate_transaction_id", &proto_protocol_wasm::cpp_calculate_transaction_id)
-    .function("cpp_calculate_legacy_transaction_id", &proto_protocol_wasm::cpp_calculate_legacy_transaction_id)
-    .function("cpp_calculate_sig_digest", &proto_protocol_wasm::cpp_calculate_sig_digest)
-    .function("cpp_calculate_legacy_sig_digest", &proto_protocol_wasm::cpp_calculate_legacy_sig_digest)
-    .function("cpp_serialize_transaction", &proto_protocol_wasm::cpp_serialize_transaction)
-    .function("cpp_deserialize_transaction", &proto_protocol_wasm::cpp_deserialize_transaction)
-    .function("cpp_proto_to_api", &proto_protocol_wasm::cpp_proto_to_api)
-    .function("cpp_proto_to_legacy_api", &proto_protocol_wasm::cpp_proto_to_legacy_api)
-    .function("cpp_api_to_proto", &proto_protocol_wasm::cpp_api_to_proto)
-    .function("cpp_collect_transaction_required_authorities", &proto_protocol_wasm::cpp_collect_transaction_required_authorities)
+    .function("cpp_tx_add_operation", &foundation_wasm::cpp_tx_add_operation)
+    .function("cpp_tx_add_signature", &foundation_wasm::cpp_tx_add_signature)
+    .function("cpp_tx_set_expiration", &foundation_wasm::cpp_tx_set_expiration)
+    .function("cpp_tx_to_legacy_json", &foundation_wasm::cpp_tx_to_legacy_json)
+    .function("cpp_tx_to_binary", &foundation_wasm::cpp_tx_to_binary)
+    .function("cpp_tx_to_json", &foundation_wasm::cpp_tx_to_json)
+    .function("cpp_tx_id", &foundation_wasm::cpp_tx_id)
+    .function("cpp_tx_binary", &foundation_wasm::cpp_tx_binary)
+    .function("cpp_tx_required_authorities", &foundation_wasm::cpp_tx_required_authorities)
+    .function("cpp_tx_impacted_accounts", &foundation_wasm::cpp_tx_impacted_accounts)
+    .function("cpp_tx_signature_keys", &foundation_wasm::cpp_tx_signature_keys)
+    .function("cpp_tx_sig_digest", &foundation_wasm::cpp_tx_sig_digest)
+    .function("cpp_tx_validate", &foundation_wasm::cpp_tx_validate)
     ;
 }
 
