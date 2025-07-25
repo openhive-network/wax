@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 
+#include <hive/protocol/authority_trace_data.hpp>
+
 #include "operations_fwd.hpp"
 
 namespace hive { namespace protocol {
@@ -12,6 +14,21 @@ namespace hive { namespace protocol {
 } } // namespace hive::protocol
 
 namespace cpp {
+
+/** Helper interface instance to allow integration of TS/JS/Python environment and override (implement) a virtual methods
+*   to provide data to underlying C++ algoruthms.
+*/
+class IAccountAuthorityProvider
+{
+public:
+  /** Allows to query for given account authority and specific role (owner, active, posting).
+  */
+  virtual std::optional<wax_authority> getAuthority(std::string account_name, std::string authorityRole) = 0;
+  /// Allows to query for given witness signing key.
+  virtual std::optional<std::string> getWitnessPublicKey(std::string witness_name) = 0;
+
+  virtual ~IAccountAuthorityProvider() = default;
+};
 
 using hive_tx = hive::protocol::signed_transaction;
 using hive_op = hive::protocol::operation;
@@ -187,6 +204,13 @@ public:
    * @returns true if account name is valid, false otherwise
    */
   bool cpp_is_valid_account_name( const std::string& name ) const;
+
+  /** Allows to perform traced verify_authority call, and collect data gathered during analysis, returned through authority_verification_trace object.
+  */
+  hive::protocol::authority_verification_trace cpp_trace_authority_verification(
+    const required_authority_collection_t& required_authorities,
+    const std::vector<std::string>& decodedSignaturePublicKeys,
+    IAccountAuthorityProvider& authorityProvider) const;
 
   std::string cpp_get_default_comment_options_operation() const;
 
