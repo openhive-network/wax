@@ -117,13 +117,6 @@ public:
     );
   }
 
-  void add( const char* name, hive::protocol::price& v ) const
-  {
-    val_protocol_visitor< ManagedObjectT, hive::protocol::price > visitor{ jsval[name], v, is_protobuf };
-    visitor.add( "base", v.base );
-    visitor.add( "quote", v.quote );
-  }
-
   void add( const char* name, hive::protocol::json_string& v ) const
   {
     std::string str = jsval[name].template as<std::string>();
@@ -148,15 +141,6 @@ public:
     v = hive::protocol::public_key_type{ str };
   }
 
-  void add( const char* name, hive::protocol::authority& v ) const
-  {
-    val_protocol_visitor< ManagedObjectT, hive::protocol::authority > visitor{ jsval[name], v, is_protobuf };
-
-    visitor.add( "weight_threshold", v.weight_threshold );
-    visitor.add( "account_auths", v.account_auths );
-    visitor.add( "key_auths", v.key_auths );
-  }
-
   template<typename StorageT>
   void add( const char* name, hive::protocol::fixed_string_impl<StorageT>& v ) const
   {
@@ -168,7 +152,7 @@ public:
   void add( const char* name, fc::safe<SafeT>& v ) const
   {
     SafeT tmp;
-    jsval[name].as( tmp );
+    this->add(name, tmp);
     v.value = tmp;
   }
 
@@ -187,56 +171,9 @@ public:
     fc::from_hex(str, reinterpret_cast<char *>(&v.data[0]), NArr);
   }
 
-  void add( const char* name, fc::equihash::proof& v ) const
+  void add( const char* name, hive::protocol::legacy_hive_asset& v ) const
   {
-    std::string seed_str;
-    ManagedObjectT jsvalnext = jsval[name];
-    jsvalnext["seed"].as( seed_str );
-    auto seed = fc::sha256::hash( seed_str );
-    uint32_t n, k;
-    jsvalnext["n"].as( n );
-    jsvalnext["k"].as( k );
-    v = fc::equihash::proof::hash( n, k, seed );
-  }
-
-  void add( const char* name, hive::protocol::legacy_chain_properties& v ) const
-  {
-    ManagedObjectT jsvalnext = jsval[name];
-    ManagedObjectT amount = jsvalnext["account_creation_fee"]["amount"];
-
-    if (amount.is_string())
-    {
-      std::string amount_str;
-      amount.as( amount_str );
-      v.account_creation_fee.amount = boost::lexical_cast<int64_t>(amount_str);
-    }
-    else
-    {
-      int64_t amount_value;
-      amount.as( amount_value );
-      v.account_creation_fee.amount = amount_value;
-    }
-    jsvalnext["maximum_block_size"].as( v.maximum_block_size );
-    jsvalnext["hbd_interest_rate"].as( v.hbd_interest_rate );
-  }
-
-  void add( const char* name, hive::protocol::pow& v ) const
-  {
-    val_protocol_visitor< ManagedObjectT, hive::protocol::pow > visitor{ jsval[name], v, is_protobuf };
-
-    visitor.add( "worker", v.worker );
-    visitor.add( "input", v.input );
-    visitor.add( "signature", v.signature );
-    visitor.add( "work", v.work );
-  }
-
-  void add( const char* name, hive::protocol::pow2_input& v ) const
-  {
-    val_protocol_visitor< ManagedObjectT, hive::protocol::pow2_input > visitor{ jsval[name], v, is_protobuf };
-
-    visitor.add( "worker_account", v.worker_account );
-    visitor.add( "prev_block", v.prev_block );
-    visitor.add( "nonce", v.nonce );
+    val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf }.add( "amount", v.amount );
   }
 
   void add( const char* name, fc::time_point_sec& v ) const
@@ -391,6 +328,14 @@ public:
         v[M{key}] = weight;
       }
     }
+  }
+
+  template<typename M>
+  void add_object( const char* name, M& v ) const
+  {
+    fc::reflector< M >::visit(
+      cpp::val_protocol_visitor< ManagedObjectT, M >{ jsval[name], v, is_protobuf }
+    );
   }
 
   void add_object( const char* name, boost::container::flat_map<std::string, std::vector<char>>& v ) const
