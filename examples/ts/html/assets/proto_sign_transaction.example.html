@@ -52,9 +52,6 @@
       console.log(`Your signature for transmitting: "${tx.transaction.signatures[0]}"`);
       console.log(`Transaction id: ${tx.id} (matches the real one: ${String(tx.id === txId)})`);
 
-      await beekeeper.delete();
-      wax.delete();
-
       window.exampleFinished = true; // Optional - just for our test purposes
     })();
   </script>
