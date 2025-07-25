@@ -115,19 +115,8 @@ struct wax_authority
   authority_map key_auths;
 };
 
-struct required_authority_collection
-{
-  typedef std::set<std::string> account_set;
-  typedef account_set account_collection_t;
-
-  account_set posting_accounts;
-  account_set active_accounts;
-  account_set owner_accounts;
-  std::vector<wax_authority> other_authorities;
-};
-
 /// unfortunetely emscripten can't handle correctly C++ set -> JS Set transformation, so we have to use a vector instead.
-struct required_authority_collectionV
+struct required_authority_collection
 {
   typedef std::vector<std::string> account_vector;
   typedef account_vector account_collection_t;
