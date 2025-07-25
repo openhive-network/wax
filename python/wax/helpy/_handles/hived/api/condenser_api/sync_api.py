@@ -11,7 +11,7 @@ from wax.helpy._handles.hived.api.condenser_api.common import CondenserApiCommon
 
 
 class CondenserApi(AbstractSyncApi, CondenserApiCommons):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     def _serialize_type(self) -> Literal["legacy"]:
         return "legacy"

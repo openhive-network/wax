@@ -9,7 +9,7 @@ from beekeepy.handle.remote import AbstractSyncApi
 
 
 class DebugNodeApi(AbstractSyncApi):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     @api
     def debug_push_blocks(

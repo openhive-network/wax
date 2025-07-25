@@ -11,17 +11,17 @@ from wax.api.collection import DatabaseApi as BaseDatabaseApi
 # You can extend the base API classes to add your own methods and override existing methods to change their behavior.
 # Please just remember to use the same class name as the one you are extending.
 class DatabaseApi(BaseDatabaseApi):
-    @BaseDatabaseApi.endpoint
+    @BaseDatabaseApi.endpoint_jsonrpc
     async def get_config(self) -> Any: ...
 
 
 # You can also define your own API classes to add new APIs.
 # To do this please use `AbstractAsyncApi` as a base class.
-# To define endpoints use the `@AbstractAsyncApi.endpoint` decorator.
+# To define endpoints use the `@AbstractAsyncApi.endpoint_jsonrpc` decorator.
 # Please remember that the class name must be the same as the name of the API you are defining.
 # Please remember that all the endpoint parameters must be defined as keyword arguments.
 class BlockApi(AbstractAsyncApi):
-    @AbstractAsyncApi.endpoint
+    @AbstractAsyncApi.endpoint_jsonrpc
     async def get_block_header(self, *, block_num: int) -> Any: ...
 
 

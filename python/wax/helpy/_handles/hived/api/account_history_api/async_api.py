@@ -6,7 +6,7 @@ from beekeepy.handle.remote import AbstractAsyncApi
 
 
 class AccountHistoryApi(AbstractAsyncApi):
-    api = AbstractAsyncApi.endpoint
+    api = AbstractAsyncApi.endpoint_jsonrpc
 
     @api
     async def get_account_history(

@@ -6,7 +6,7 @@ from beekeepy.handle.remote import AbstractSyncApi
 
 
 class Jsonrpc(AbstractSyncApi):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     @api
     def get_methods(self) -> jsonrpc.GetMethods:

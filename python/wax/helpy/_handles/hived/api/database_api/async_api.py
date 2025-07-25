@@ -12,7 +12,7 @@ from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class DatabaseApi(AbstractAsyncApi, DatabaseApiCommons):
-    api = AbstractAsyncApi.endpoint
+    api = AbstractAsyncApi.endpoint_jsonrpc
 
     @api
     async def find_account_recovery_requests(self, *, accounts: list[str]) -> database_api.FindAccountRecoveryRequests:

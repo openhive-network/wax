@@ -6,7 +6,7 @@ from beekeepy.handle.remote import AbstractSyncApi
 
 
 class RcApi(AbstractSyncApi):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     @api
     def find_rc_accounts(self, *, accounts: list[str], refresh_mana: bool = False) -> rc_api.FindRcAccounts:

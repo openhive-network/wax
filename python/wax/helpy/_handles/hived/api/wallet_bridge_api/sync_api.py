@@ -10,7 +10,7 @@ from wax.helpy._handles.hived.api.wallet_bridge_api.common import WalletBridgeAp
 
 
 class WalletBridgeApi(AbstractSyncApi, WalletBridgeApiCommons):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.DOUBLE_ARRAY

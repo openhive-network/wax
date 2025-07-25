@@ -10,7 +10,7 @@ from wax.helpy._handles.hived.api.condenser_api.common import CondenserApiCommon
 
 
 class CondenserApi(AbstractAsyncApi, CondenserApiCommons):
-    api = AbstractAsyncApi.endpoint
+    api = AbstractAsyncApi.endpoint_jsonrpc
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.ARRAY

@@ -8,7 +8,7 @@ from beekeepy.handle.remote import AbstractSyncApi
 
 
 class MarketHistoryApi(AbstractSyncApi):
-    api = AbstractSyncApi.endpoint
+    api = AbstractSyncApi.endpoint_jsonrpc
 
     @api
     def get_ticker(self) -> market_history_api.GetTicker:
