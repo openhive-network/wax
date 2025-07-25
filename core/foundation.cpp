@@ -259,11 +259,11 @@ std::string foundation::cpp_asset_symbol(const json_asset& value) const
   });
 }
 
-result foundation::cpp_generate_private_key()
+std::string foundation::cpp_generate_private_key()
 {
-  return method_wrapper([&](result& _result)
+  return cpp::safe_exception_wrapper([&]() -> std::string
   {
-    _result.content = fc::ecc::private_key::generate().key_to_wif();
+    return fc::ecc::private_key::generate().key_to_wif();
   });
 }
 
@@ -373,16 +373,16 @@ std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(cons
     });
 }
 
-result foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
+std::string foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
 {
-  return method_wrapper([&](result& _result)
+  return cpp::safe_exception_wrapper([&]() -> std::string
   {
     const auto d = hive::protocol::digest_type{ digest };
     auto sig = hive::protocol::signature_type{};
 
     fc::from_hex(signature, reinterpret_cast<char*>(&*sig.begin()), sig.size());
 
-    _result.content = fc::ecc::public_key::to_base58_with_prefix(fc::ecc::public_key{ sig, d }, HIVE_ADDRESS_PREFIX);
+    return fc::ecc::public_key::to_base58_with_prefix(fc::ecc::public_key{ sig, d }, HIVE_ADDRESS_PREFIX);
   });
 }
 
@@ -491,13 +491,12 @@ void foundation::cpp_check_memo_for_private_keys(const std::string& memo, const 
 }
 
 
-result foundation::cpp_calculate_public_key(const std::string& wif)
+std::string foundation::cpp_calculate_public_key(const std::string& wif)
 {
-  return method_wrapper([&](result& _result)
-  {
+  return cpp::safe_exception_wrapper([&]()-> std::string {
     const auto private_key = fc::ecc::private_key::wif_to_key(wif);
     FC_ASSERT(private_key.valid(), "given string is not valid private key");
-    _result.content = fc::ecc::public_key::to_base58_with_prefix(private_key->get_public_key(), HIVE_ADDRESS_PREFIX);
+    return fc::ecc::public_key::to_base58_with_prefix(private_key->get_public_key(), HIVE_ADDRESS_PREFIX);
   });
 }
 
@@ -515,12 +514,12 @@ int64_t __current_manabar(int32_t* now, const int64_t max_mana, const int64_t cu
   return manabar.current_mana;
 }
 
-result foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
+uint64_t foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
 {
   // safe is used because of detected issue with overflow
   using safe_uint128_t = fc::safe<fc::uint128_t>;
 
-  return method_wrapper([&](result& _result)
+  return cpp::safe_exception_wrapper([&]() -> uint64_t
   {
     const safe_uint128_t hive_rc_regen_time{ HIVE_RC_REGEN_TIME };
     const safe_uint128_t safe_max_mana{ max_mana };
@@ -530,14 +529,14 @@ result foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, con
 
     const safe_uint128_t time_to_regenerate_missing_mana = (safe_max_mana - mana) * hive_rc_regen_time / max_mana;
 
-    _result.content = std::to_string((safe_now + time_to_regenerate_missing_mana).value);
+    return fc::uint128_to_uint64((safe_now + time_to_regenerate_missing_mana).value);
   });
 }
 
-result foundation::cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
-  return method_wrapper([&](result& _result)
+int64_t foundation::cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
+  return cpp::safe_exception_wrapper([&]() -> int64_t
   {
-    _result.content = std::to_string(__current_manabar(&now, max_mana, current_mana, last_update_time));
+    return __current_manabar(&now, max_mana, current_mana, last_update_time);
   });
 }
 
@@ -553,9 +552,9 @@ ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
   });
 }
 
-result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const
+std::string foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uint16_t vesting_reward_percent, const json_asset& virtual_supply, const json_asset& total_vesting_fund_hive) const
 {
-  return method_wrapper([&](result& _result)
+  return cpp::safe_exception_wrapper([&]() -> std::string
   {
     const int64_t current_inflation_rate = calculate_inflation_rate_for_block(head_block_num);
 
@@ -568,7 +567,7 @@ result foundation::cpp_calculate_hp_apr(const uint32_t head_block_num, const uin
     const int64_t hp_apr_percent = hp_apr / 100;
     const int64_t hp_apr_percent_decimals = hp_apr % 100;
 
-    _result.content = std::to_string(hp_apr_percent) + "." + std::to_string(hp_apr_percent_decimals);
+    return std::to_string(hp_apr_percent) + "." + std::to_string(hp_apr_percent_decimals);
   });
 }
 
@@ -636,11 +635,11 @@ json_asset foundation::cpp_hp_to_vests(const json_asset& hive, const json_asset&
   });
 }
 
-result foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const 
+int64_t foundation::cpp_calculate_inflation_rate_for_block(const uint32_t block_num) const
 {
-  return method_wrapper([&](result& _result)
+  return cpp::safe_exception_wrapper([&]() -> int64_t
   {
-    _result.content = std::to_string(calculate_inflation_rate_for_block(block_num));
+    return calculate_inflation_rate_for_block(block_num);
   });
 }
 

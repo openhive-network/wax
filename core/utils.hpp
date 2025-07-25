@@ -11,36 +11,6 @@
 
 namespace cpp
 {
-
-using callback = std::function<void(result&)>;
-
-static result method_wrapper(callback&& method)
-{
-  result _result;
-
-  try
-  {
-    method(_result);
-  }
-  catch (fc::exception& e)
-  {
-    _result.exception_message = e.to_detail_string();
-    _result.value = fail;
-  }
-  catch (const std::exception& e)
-  {
-    _result.exception_message = e.what();
-    _result.value = fail;
-  }
-  catch (...)
-  {
-    _result.exception_message = "Unknown exception.";
-    _result.value = fail;
-  }
-
-  return _result;
-}
-
 uint64_t throw_appropriate_wax_assertion( fc::assert_exception& e );
 
 /** Allows to wrap given function call into exception handler which at most throw std::exception (safely handled by Python/WASM runtimes)
