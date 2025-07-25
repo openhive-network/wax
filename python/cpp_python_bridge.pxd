@@ -11,6 +11,7 @@ from libcpp.optional cimport optional as cpp_optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
+from libcpp.optional cimport optional
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass wax_tx_ptr_deleter:
@@ -66,15 +67,6 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
     cdef cppclass required_authority_collection:
          required_authority_collection() except +
-         ctypedef cppset[string] account_set
-
-         account_set posting_accounts
-         account_set active_accounts
-         account_set owner_accounts
-         vector[wax_authority] other_authorities
-
-    cdef cppclass required_authority_collectionV:
-         required_authority_collectionV() except +
          ctypedef vector[string] account_vector
 
          account_vector posting_accounts
@@ -178,84 +170,112 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string binary
         vector[binary_data_node] offsets
 
-    cdef cppclass protocol:
-        vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
-        vector[string] cpp_transaction_get_impacted_accounts( string transaction ) except +
-        result cpp_validate_operation( string operation )
-        result cpp_validate_transaction( string transaction )
-        result cpp_calculate_transaction_id( string transaction )
-        result cpp_calculate_legacy_transaction_id( string transaction )
-        result cpp_calculate_sig_digest( string transaction, string chain_id )
-        result cpp_calculate_legacy_sig_digest( string transaction, string chain_id )
-        result cpp_serialize_transaction( string transaction, bool strip_to_unsigned_transaction )
-        result cpp_deserialize_transaction( string transaction )
-        result cpp_calculate_public_key( string wif )
-        result cpp_generate_private_key()
-        private_key_data cpp_generate_private_key(string account, string role, string password) except +
-        brain_key_data cpp_suggest_brain_key() except +
-        result cpp_get_public_key_from_signature( string digest, string signature )
-        result cpp_calculate_manabar_full_regeneration_time( int now, long max_mana, long current_mana, int last_update_time )
-        result cpp_calculate_current_manabar_value( int now, long max_mana, long current_mana, int last_update_time )
-        json_asset cpp_general_asset( uint32_t asset_num, long amount )
-        json_asset cpp_hive( long amount )
-        json_asset cpp_hbd( long amount )
-        json_asset cpp_vests( long amount )
-        ref_block_data cpp_get_tapos_data( string block_id )
-        result cpp_calculate_hp_apr( uint32_t head_block_num, uint16_t vesting_reward_percent, json_asset virtual_supply, json_asset total_vesting_fund_hive )
-        json_asset cpp_hbd_to_hive( json_asset hbd, json_asset base, json_asset quote) except +
-        json_asset cpp_hive_to_hbd( json_asset amount, json_asset base, json_asset quote) except +
-        json_asset cpp_vests_to_hp( json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares ) except +
-        json_asset cpp_hp_to_vests( json_asset hive, json_asset total_vesting_fund_hive, json_asset total_vesting_shares ) except +
-        result cpp_calculate_inflation_rate_for_block( uint32_t block_num )
-        required_authority_collection cpp_collect_transaction_required_authorities( string transaction ) except +
-        json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get ) except +
+    cdef cppclass authority_trace_path_entry:
+        string processed_entry
+        string processed_role
+        uint32_t recursion_depth
+        uint32_t threshold
+        uint32_t weight
+        uint32_t flags
+        vector[authority_trace_path_entry] visited_entries
 
-        crypto_memo cpp_crypto_memo_from_string(string encrypted) except +
-        string cpp_crypto_memo_dump_string(crypto_memo value) except +
+    cdef cppclass authority_verification_trace:
+        vector[authority_trace_path_entry] root
+        vector[authority_trace_path_entry] final_authority_path
+        uint32_t verification_status
+
+    cdef cppclass IAccountAuthorityProvider:
+        IAccountAuthorityProvider() except +
+        optional[wax_authority] getAuthority(string account_name, string authorityRole) except +
+        optional[string] getWitnessPublicKey(string witness_name) except +
+
+    cdef cppclass protocol:
+        string cpp_calculate_public_key(string wif) except +
+        string cpp_generate_private_key() except +
+        private_key_data cpp_generate_private_key(string account, string role, string password) except +
+
+        string cpp_convert_raw_private_key_to_wif(string hexData) except +
+
+        string cpp_convert_raw_public_key_to_wif(string hexData) except +
+
+        brain_key_data cpp_suggest_brain_key() except +
+
+        cppmap[string, string] cpp_get_hive_protocol_config(string chain_id) except +
+
+        string cpp_get_public_key_from_signature(string digest, string signature) except +
+
+        json_asset cpp_general_asset(long asset_num, long amount)except +
+        json_asset cpp_hive(long amount)except +
+        json_asset cpp_hbd(long amount)except +
+        json_asset cpp_vests(long amount)except +
 
         witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
         witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
 
-        vector[string] cpp_collect_signing_keys( string transaction, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_fn ) except +
-        vector[string] cpp_minimize_required_signatures( string signed_transaction, minimize_required_signatures_data_t minimize_required_signatures_data ) except +
-        void cpp_check_memo_for_private_keys(string memo, string account, wax_authorities auths, string memo_key, vector[string] imported_keys) except +
-        cppmap[string, string] cpp_get_hive_protocol_config(string chain_id) except +
+        string cpp_asset_value(json_asset value) except +
+        string cpp_asset_symbol(json_asset value) except +
 
         void cpp_throws(int type) except +
 
-    cdef cppclass proto_protocol:
-        vector[string] cpp_operation_get_impacted_accounts( string operation ) except +
-        vector[string] cpp_transaction_get_impacted_accounts( string transaction ) except +
-        result cpp_validate_operation( string operation )
-        result cpp_validate_transaction( string transaction )
-        result cpp_calculate_transaction_id( string transaction )
-        result cpp_calculate_legacy_transaction_id( string transaction )
-        result cpp_calculate_sig_digest( string transaction, string chain_id )
+        crypto_memo cpp_crypto_memo_from_string(string value) except +
+
+        string cpp_crypto_memo_dump_string(crypto_memo value) except +
+
+        void cpp_check_memo_for_private_keys(string memo, string account, wax_authorities auths, string memo_key, vector[string] imported_keys) except +
+
+        long cpp_calculate_manabar_full_regeneration_time(int32_t now, long max_mana, long current_mana, uint32_t last_update_time) except +
+        long cpp_calculate_current_manabar_value(int32_t now, long max_mana, long current_mana, uint32_t last_update_time) except +
+
+        ref_block_data cpp_get_tapos_data(string block_id) except +
+
+        string cpp_calculate_hp_apr(uint32_t head_block_num, uint16_t vesting_reward_percent, json_asset virtual_supply, json_asset total_vesting_fund_hive) except +
+
+        json_asset cpp_hbd_to_hive(json_asset hbd, json_asset base, json_asset quote) except +
+
+        json_asset cpp_hive_to_hbd(json_asset amount, json_asset base, json_asset quote) except +
+
+        json_asset cpp_vests_to_hp(json_asset vests, json_asset total_vesting_fund_hive, json_asset total_vesting_shares) except +
+
+        json_asset cpp_hp_to_vests(json_asset hive, json_asset total_vesting_fund_hive, json_asset total_vesting_shares) except +
+
+        long cpp_calculate_inflation_rate_for_block(uint32_t block_num) except +
+
+        json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get ) except +
+
+        bool cpp_is_valid_account_name( string name ) except +
+
+        authority_verification_trace cpp_trace_authority_verification(
+            required_authority_collection required_authorities,
+            vector[string] decodedSignaturePublicKeys,
+            IAccountAuthorityProvider& authorityProvider) except +
+
+        string cpp_get_default_comment_options_operation() except +
+
+        hive_transaction_handle cpp_deserialize_transaction(string hex)except +
+        hive_operation_handle cpp_deserialize_operation(string hex)except +
+
+        vector[string]        cpp_op_impacted_accounts(hive_operation_handle op_handle)except +
+        string                     cpp_op_to_binary(hive_operation_handle op_handle, bool use_hf26_serialization)except +
+        binary_data                     cpp_op_binary(hive_operation_handle op_handle, bool use_hf26_serialization)except +
+        void                            cpp_op_validate(hive_operation_handle op_handle)except +
+        required_authority_collection cpp_op_required_authorities(hive_operation_handle op_handle)except +
+
+        void                            cpp_tx_add_operation(hive_transaction_handle tx_handle, hive_operation_handle op_handle)except +
+        void                            cpp_tx_add_signature(hive_transaction_handle tx_handle, string signature)except +
+        void                            cpp_tx_set_expiration(hive_transaction_handle tx_handle, string expiration)except +
+        string                     cpp_tx_to_legacy_json(hive_transaction_handle tx_handle)except +
+        string                     cpp_tx_to_binary(hive_transaction_handle tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)except +
+        string                     cpp_tx_to_json(hive_transaction_handle tx_handle)except +
+        string                     cpp_tx_id(hive_transaction_handle tx_handle, bool use_hf26_serialization)except +
+        binary_data                     cpp_tx_binary(hive_transaction_handle tx_handle, bool use_hf26_serialization, bool strip_to_unsigned_transaction)except +
+        required_authority_collection cpp_tx_required_authorities(hive_transaction_handle tx_handle)except +
+        vector[string]        cpp_tx_impacted_accounts(hive_transaction_handle tx_handle)except +
+        vector[string]        cpp_tx_signature_keys(hive_transaction_handle tx_handle, string chain_id, bool use_hf26_serialization)except +
+        string                     cpp_tx_sig_digest(hive_transaction_handle tx_handle, string chain_id, bool use_hf26_serialization)except +
+        void                            cpp_tx_validate(hive_transaction_handle tx_handle)except +
 
         void cpp_tx_proto_to_api( object transaction ) except +
         void cpp_tx_api_to_proto( object transaction ) except +
 
         hive_transaction_handle cpp_create_transaction_handle( object transaction, bool is_protobuf ) except +
         hive_operation_handle cpp_create_operation_handle( object operation, bool is_protobuf ) except +
-
-        void cpp_tx_add_operation( hive_transaction_handle hTx, hive_operation_handle hOp ) except +
-        void cpp_tx_add_signature( hive_transaction_handle hTx, string signature ) except +
-        void cpp_tx_set_expiration( hive_transaction_handle hTx, string expiration ) except +
-        string cpp_tx_to_legacy_json( hive_transaction_handle hTx ) except +
-        string cpp_tx_to_binary( hive_transaction_handle hTx, bool use_hf26_serialization, bool strip_to_unsigned_transaction ) except +
-        string cpp_tx_to_json( hive_transaction_handle hTx ) except +
-        string cpp_tx_id( hive_transaction_handle hTx, bool use_hf26_serialization ) except +
-        binary_data cpp_tx_binary( hive_transaction_handle hTx, bool use_hf26_serialization, bool strip_to_unsigned_transaction ) except +
-        required_authority_collectionV cpp_tx_required_authorities( hive_transaction_handle hTx ) except +
-        vector[string] cpp_tx_impacted_accounts( hive_transaction_handle hTx ) except +
-        vector[string] cpp_tx_signature_keys( hive_transaction_handle hTx, string chain_id, bool use_hf26_serialization ) except +
-        string cpp_tx_sig_digest( hive_transaction_handle hTx, string chain_id, bool use_hf26_serialization ) except +
-        void cpp_tx_validate( hive_transaction_handle hTx ) except +
-
-        result cpp_calculate_legacy_sig_digest( string transaction, string chain_id )
-        result cpp_serialize_transaction( string transaction, bool strip_to_unsigned_transaction )
-        result cpp_deserialize_transaction( string transaction )
-        result cpp_proto_to_api( string operation_or_tx )
-        result cpp_proto_to_legacy_api( string operation_or_tx )
-        result cpp_api_to_proto( string operation_or_tx )
-        bool cpp_is_valid_account_name (string name )
