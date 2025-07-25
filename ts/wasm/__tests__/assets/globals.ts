@@ -6,7 +6,7 @@
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
-import type { MainModule, proto_protocol as proto_protocolT, protocol as protocolT } from "../../dist/lib/build_wasm/wax.common";
+import type { MainModule, protocol_foundation } from "../../dist/lib/build_wasm/wax.common";
 
 // Declare global types
 type TMainModuleFn = () => Promise<MainModule>;
@@ -21,8 +21,7 @@ export interface IWaxGlobals {
   outputPath: string;
 }
 export interface IWasmGlobals {
-  protocol: protocolT;
-  proto_protocol: proto_protocolT;
+  protocol: protocol_foundation;
   provider: MainModule;
 }
 
@@ -89,8 +88,7 @@ globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
 
   // Provide results
   return {
-    protocol: new provider.protocol(),
-    proto_protocol: new provider.proto_protocol(),
+    protocol: new provider.protocol_foundation(),
     provider
   };
 };
