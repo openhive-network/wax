@@ -1,0 +1,32 @@
+{
+  "name": "Runtime image to execute examples for python based Hive wax",
+  "image": "registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1",
+  "containerUser": "user",
+
+  //"workspaceMount": "source=/storage1/src/,target=/storage1/src/,type=bind,consistency=cached",
+  //"workspaceFolder": "/storage1/src/",
+
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}/.gitconfig",
+      "target": "/home/user/.gitconfig",
+      "type": "bind"
+    }
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "eamodio.gitlens",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy"
+      ]
+    }
+  }
+}
