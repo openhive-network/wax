@@ -120,6 +120,17 @@ export enum EAvailableCommunityRoles {
 export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
   protected readonly id = "community";
 
+  private push([action, data]: [ECommunityOperationActions, Record<string, unknown>]): void {
+    for(const key in data)
+      if(typeof data[key] === "string")
+        data[key] = data[key].trim();
+
+    this.body.push([
+      action,
+      data
+    ]);
+  }
+
   /**
    * Flags post on given community
    *
@@ -131,7 +142,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public flagPost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.FLAG_POST,
       {
         community,
@@ -154,7 +165,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public setRole(community: string, account: TAccountName, role: EAvailableCommunityRoles): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.SET_ROLE,
       {
         community,
@@ -176,7 +187,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public setUserTitle(community: string, account: TAccountName, title: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.SET_USER_TITLE,
       {
         community,
@@ -196,7 +207,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public subscribe(community: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.SUBSCRIBE,
       {
         community
@@ -214,7 +225,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public unsubscribe(community: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.UNSUBSCRIBE,
       {
         community
@@ -234,7 +245,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public pinPost(community: string, account: TAccountName, permlink: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.PIN_POST,
       {
         community,
@@ -256,7 +267,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public unpinPost(community: string, account: TAccountName, permlink: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.UNPIN_POST,
       {
         community,
@@ -277,7 +288,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public updateProps(community: string, props: ICommunityProps): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.UPDATE_PROPS,
       {
         community,
@@ -306,7 +317,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public mutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.MUTE_POST,
       {
         community,
@@ -330,7 +341,7 @@ export class CommunityOperation extends HiveAppsOperation<CommunityOperation> {
    * @returns {CommunityOperation} itself
    */
   public unmutePost(community: string, account: TAccountName, permlink: string, notes: string): CommunityOperation {
-    this.body.push([
+    this.push([
       ECommunityOperationActions.UNMUTE_POST,
       {
         community,
