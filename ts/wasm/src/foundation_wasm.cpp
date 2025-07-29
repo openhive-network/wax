@@ -10,9 +10,9 @@ bool foundation_wasm::cpp_get_js_object(emscripten::val obj) const
   return author == "user";
 }
 
-cpp::hive_transaction_handle foundation_wasm::cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf)const
+std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf)const
 {
-  return cpp::safe_exception_wrapper([&]() -> cpp::hive_transaction_handle {
+  return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_transaction_handle> {
     cpp::hive_transaction_handle h;
 
     hive::protocol::signed_transaction obj;
@@ -23,13 +23,13 @@ cpp::hive_transaction_handle foundation_wasm::cpp_create_transaction_handle(emsc
 
     h.tx.reset(new cpp::hive_tx(std::move(obj)));
 
-    return h;
+    return std::make_shared<cpp::hive_transaction_handle>(std::move(h));
   });
 }
 
-cpp::hive_operation_handle foundation_wasm::cpp_create_operation_handle(emscripten::val emval, bool is_protobuf)const
+std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_create_operation_handle(emscripten::val emval, bool is_protobuf)const
 {
-  return cpp::safe_exception_wrapper([&]() -> cpp::hive_operation_handle {
+  return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_operation_handle> {
     cpp::hive_operation_handle h;
 
     hive::protocol::operation obj;
@@ -38,7 +38,25 @@ cpp::hive_operation_handle foundation_wasm::cpp_create_operation_handle(emscript
 
     h.op.reset(new cpp::hive_op(std::move(obj)));
 
-    return h;
+    return std::make_shared<cpp::hive_operation_handle>(std::move(h));
+  });
+}
+
+std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_deserialize_transaction(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_transaction_handle> {
+    cpp::hive_transaction_handle h = foundation::cpp_deserialize_transaction(std::move(hex));
+
+    return std::make_shared<cpp::hive_transaction_handle>(std::move(h));
+  });
+}
+
+std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_deserialize_operation(std::string hex)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_operation_handle> {
+    cpp::hive_operation_handle h = foundation::cpp_deserialize_operation(std::move(hex));
+
+    return std::make_shared<cpp::hive_operation_handle>(std::move(h));
   });
 }
 
