@@ -45,7 +45,19 @@ struct wax_op_ptr_deleter
 class hive_transaction_handle
 {
 public:
+  hive_transaction_handle();
+  ~hive_transaction_handle();
+  hive_transaction_handle(hive_transaction_handle&&)=delete;
+  hive_transaction_handle& operator=(hive_transaction_handle&&) = delete;
+  hive_transaction_handle& operator=(const hive_transaction_handle&) = delete;
+  hive_transaction_handle(const hive_transaction_handle&) = delete;
+
+  hive_tx& get() const { return *tx; }
+
   std::unique_ptr<hive_tx, wax_tx_ptr_deleter> tx;
+
+  static unsigned int instance_count;
+  static unsigned int max_instance_count;
 };
 
 class hive_operation_handle
@@ -214,7 +226,7 @@ public:
 
   std::string cpp_get_default_comment_options_operation() const;
 
-  cpp::hive_transaction_handle cpp_deserialize_transaction(std::string hex)const;
+  void cpp_deserialize_hive_tx(const std::string& hex, hive_tx* storage)const;
   cpp::hive_operation_handle cpp_deserialize_operation(std::string hex)const;
 
   std::vector<std::string>        cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;

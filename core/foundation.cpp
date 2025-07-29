@@ -29,12 +29,31 @@ namespace cpp {
 
 void wax_tx_ptr_deleter::operator()(hive_tx* t) const
 {
+  ilog("Attempting to destroy hive_tx");
   delete t;
 }
 
 void wax_op_ptr_deleter::operator()(hive_op* t) const
 {
   delete t;
+}
+
+unsigned int hive_transaction_handle::instance_count = 0;
+unsigned int hive_transaction_handle::max_instance_count = 0;
+
+hive_transaction_handle::hive_transaction_handle() : tx(new hive_tx())
+{
+  ++instance_count;
+  if(instance_count > max_instance_count)
+    max_instance_count = instance_count;
+
+  ilog("Attempting to construct hive_transaction_handle, instances built: ${n}", ("n", instance_count));
+}
+
+hive_transaction_handle::~hive_transaction_handle()
+{
+  --instance_count;
+  ilog("Attempting to destroy hive_transaction_handle, instances left: ${n}", ("n", instance_count));
 }
 
 json_asset to_json_asset(const hive::protocol::asset& asset)
@@ -1046,22 +1065,16 @@ void foundation::cpp_op_validate(const hive_operation_handle& op_handle)const
   });
 }
 
-cpp::hive_transaction_handle foundation::cpp_deserialize_transaction(std::string hex)const
+void foundation::cpp_deserialize_hive_tx(const std::string& hex, hive_tx* storage)const
 {
-  return cpp::safe_exception_wrapper([&]() -> cpp::hive_transaction_handle {
+  return cpp::safe_exception_wrapper([&]() -> void {
     hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
     hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
     std::vector<char> raw_data(hex.size());
     fc::from_hex(hex, raw_data.data(), raw_data.size());
 
-    hive::protocol::signed_transaction obj;
-    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
-
-    cpp::hive_transaction_handle h;
-    h.tx.reset(new cpp::hive_tx(std::move(obj)));
-
-    return h;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), *storage, 0);
   });
 }
 cpp::hive_operation_handle foundation::cpp_deserialize_operation(std::string hex)const
