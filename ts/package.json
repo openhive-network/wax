@@ -18,6 +18,7 @@
     "test": "unset CI && playwright test --workers 4 --max-failures 1",
     "benchmark": "unset CI && playwright test --workers 4 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "run-s examples:*",
+    "examples:memory-used": "cd ../examples/ts/memory-used && pnpm install && pnpm run test && cd ../../../ts",
     "examples:html": "cd ../examples/ts/html && pnpm install && pnpm run test && cd ../../../ts",
     "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install && pnpm run build && cd ../../../ts",
     "examples:node-app": "cd ../examples/ts/node-app && pnpm install && pnpm run test && cd ../../../ts",
