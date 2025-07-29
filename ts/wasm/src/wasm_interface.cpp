@@ -141,11 +141,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     ;
 
   class_<hive_transaction_handle>("transaction_handle")
-    .constructor<>()
+    .smart_ptr<std::shared_ptr<hive_transaction_handle>>("transaction_handle")
     ;
 
   class_<hive_operation_handle>("operation_handle")
-    .constructor<>()
+    .smart_ptr<std::shared_ptr<hive_operation_handle>>("operation_handle")
     ;
 
   class_<foundation>("foundation")
@@ -175,11 +175,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
 
-    .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, return_value_policy::take_ownership())
-    .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, return_value_policy::take_ownership())
+    .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, nonnull<ret_val>())
+    .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, nonnull<ret_val>())
 
-    .function("cpp_create_transaction_handle", &foundation_wasm::cpp_create_transaction_handle, return_value_policy::take_ownership())
-    .function("cpp_create_operation_handle", &foundation_wasm::cpp_create_operation_handle, return_value_policy::take_ownership())
+    .function("cpp_create_transaction_handle", &foundation_wasm::cpp_create_transaction_handle, nonnull<ret_val>())
+    .function("cpp_create_operation_handle", &foundation_wasm::cpp_create_operation_handle, nonnull<ret_val>())
 
     .function("cpp_asset_value", &foundation_wasm::cpp_asset_value)
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
