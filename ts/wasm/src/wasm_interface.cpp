@@ -72,6 +72,11 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
       ;
 
+  value_object<transaction_handle_stats>("transaction_handle_stats")
+      .field("instance_count", &transaction_handle_stats::instance_count)
+      .field("max_instance_count", &transaction_handle_stats::max_instance_count)
+      ;
+
   value_object<json_price>("json_price")
       .field("base", &json_price::base)
       .field("quote", &json_price::quote)
@@ -175,6 +180,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
 
+    .function("cpp_report_transaction_handle_stats", &foundation_wasm::cpp_report_transaction_handle_stats)
     .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, nonnull<ret_val>())
     .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, nonnull<ret_val>())
 
