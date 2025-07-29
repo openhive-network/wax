@@ -37,6 +37,28 @@ void wax_op_ptr_deleter::operator()(hive_op* t) const
   delete t;
 }
 
+unsigned int hive_transaction_handle::instance_count = 0;
+unsigned int hive_transaction_handle::max_instance_count = 0;
+
+hive_transaction_handle::hive_transaction_handle() : tx(new hive_tx())
+{
+  ++instance_count;
+  if(instance_count > max_instance_count)
+    max_instance_count = instance_count;
+}
+
+hive_transaction_handle::hive_transaction_handle(hive_transaction_handle&& rhs) : tx(std::move(rhs.tx))
+{
+  ++instance_count;
+  if (instance_count > max_instance_count)
+    max_instance_count = instance_count;
+}
+
+hive_transaction_handle::~hive_transaction_handle()
+{
+  --instance_count;
+}
+
 json_asset to_json_asset(const hive::protocol::asset& asset)
 {
   return cpp::safe_exception_wrapper([&]() ->json_asset {
@@ -519,6 +541,11 @@ void foundation::cpp_throws(int type) const
         FC_ASSERT( false, "Hello fc exception!" );
       }
     );
+}
+
+transaction_handle_stats foundation::cpp_report_transaction_handle_stats() const
+{
+  return { hive_transaction_handle::instance_count, hive_transaction_handle::max_instance_count };
 }
 
 crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const
@@ -1046,22 +1073,16 @@ void foundation::cpp_op_validate(const hive_operation_handle& op_handle)const
   });
 }
 
-cpp::hive_transaction_handle foundation::cpp_deserialize_transaction(std::string hex)const
+void foundation::cpp_deserialize_hive_tx(const std::string& hex, hive_tx* storage)const
 {
-  return cpp::safe_exception_wrapper([&]() -> cpp::hive_transaction_handle {
+  return cpp::safe_exception_wrapper([&]() -> void {
     hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
     hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
 
     std::vector<char> raw_data(hex.size());
     fc::from_hex(hex, raw_data.data(), raw_data.size());
 
-    hive::protocol::signed_transaction obj;
-    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
-
-    cpp::hive_transaction_handle h;
-    h.tx.reset(new cpp::hive_tx(std::move(obj)));
-
-    return h;
+    fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), *storage, 0);
   });
 }
 cpp::hive_operation_handle foundation::cpp_deserialize_operation(std::string hex)const
