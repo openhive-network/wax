@@ -40,6 +40,9 @@ RUN set -ex; python3 -m venv --system-site-packages /poetry_venv && \
 
 FROM runtime_base AS devcontainer
 
+ARG WAX_VERSION=''
+ENV WAX_VERSION=${WAX_VERSION}
+
 COPY --from=python_dev /poetry_venv /poetry_venv 
 
 COPY --from=python_dev /usr/bin/python3 /usr/bin/
@@ -56,6 +59,15 @@ ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/
                          https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple \
                          https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
                          https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+
+RUN <<EOF
+  echo 'source /poetry_venv/bin/activate' >> ${HOME}/.bashrc && \
+  echo "installing wax version: ${WAX_VERSION}"
+  if [ -n "${WAX_VERSION}" ]; then
+    . /poetry_venv/bin/activate
+    pip install wax=="${WAX_VERSION}"
+  fi
+EOF
 
 # Command to run upon container start (optional)
 
