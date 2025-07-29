@@ -15,25 +15,19 @@ namespace cpp
 hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf)const
 {
   return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
-    hive_transaction_handle h;
-
     hive::protocol::signed_transaction obj;
 
     fc::reflector< hive::protocol::signed_transaction >::visit(
       val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, obj, is_protobuf }
     );
 
-    h.tx.reset(new hive_tx(std::move(obj)));
-
-    return h;
+    return cpp::hive_transaction_handle::ptr_t{new cpp::hive_tx(std::move(obj))};
   });
 }
 
 hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf)const
 {
   return cpp::safe_exception_wrapper([&]() -> hive_operation_handle {
-    hive_operation_handle h;
-
     hive::protocol::operation obj;
 
     cpp::from_jsval(python_managed_object{ py_object_ptr::share(ptr) }, obj, is_protobuf);

@@ -13,17 +13,13 @@ bool foundation_wasm::cpp_get_js_object(emscripten::val obj) const
 std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_transaction_handle> {
-    cpp::hive_transaction_handle h;
-
     hive::protocol::signed_transaction obj;
 
     fc::reflector< hive::protocol::signed_transaction >::visit(
       cpp::val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, obj, is_protobuf }
     );
 
-    h.tx.reset(new cpp::hive_tx(std::move(obj)));
-
-    return std::make_shared<cpp::hive_transaction_handle>(std::move(h));
+    return std::make_shared<cpp::hive_transaction_handle>( cpp::hive_transaction_handle::ptr_t{new cpp::hive_tx(std::move(obj))} );
   });
 }
 
@@ -45,18 +41,14 @@ std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_create_operatio
 std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_deserialize_transaction(std::string hex)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_transaction_handle> {
-    cpp::hive_transaction_handle h = foundation::cpp_deserialize_transaction(std::move(hex));
-
-    return std::make_shared<cpp::hive_transaction_handle>(std::move(h));
+    return std::make_shared<cpp::hive_transaction_handle>(std::move(foundation::cpp_deserialize_transaction(std::move(hex))));
   });
 }
 
 std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_deserialize_operation(std::string hex)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_operation_handle> {
-    cpp::hive_operation_handle h = foundation::cpp_deserialize_operation(std::move(hex));
-
-    return std::make_shared<cpp::hive_operation_handle>(std::move(h));
+    return std::make_shared<cpp::hive_operation_handle>(std::move(foundation::cpp_deserialize_operation(std::move(hex))));
   });
 }
 

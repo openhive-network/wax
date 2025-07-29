@@ -7,6 +7,7 @@
     "paths": {
       "wasm/build_wasm/*": ["../lib/build_wasm/*"]
     },
+    "noUnusedLocals": false,
     "target": "ES2022",
     "lib": [
       "ES2022",

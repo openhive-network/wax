@@ -37,6 +37,38 @@ test.describe('WASM Protocol', () => {
     expect(retVal).toBeTruthy();
   });
 
+  test('Should call Cpp destructor after creating multiple transactions using Cpp handles', async ({ wasmTest }) => {
+    const retVal = await wasmTest(async ({ protocol }) => {
+      for(let i = 0; i < 100; ++i) {
+        let handle: any = protocol.cpp_create_transaction_handle({
+          "expiration": "2024-05-15T13:04:16",
+          "extensions": [],
+          "operations": [
+            {
+              "type": "vote_operation",
+              "value": {
+                "author": "macchiata",
+                "permlink": "revitalizing-tropical-living-spaces-where-pets-and-human-coexist",
+                "voter": "esecholo",
+                "weight": 10000
+              }
+            }
+          ],
+          "ref_block_num": 25263,
+          "ref_block_prefix": 1797793300,
+          "signatures": [
+            "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf"
+          ]
+        }, false);
+        handle = null;
+      }
+
+      return protocol.get_transaction_handle_instance_count();
+    });
+
+    expect(retVal).toBe(0);
+  });
+
   test('Should be able to convert to protobuf', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }) => {
       try {

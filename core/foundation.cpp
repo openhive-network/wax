@@ -37,6 +37,18 @@ void wax_op_ptr_deleter::operator()(hive_op* t) const
   delete t;
 }
 
+unsigned hive_transaction_handle::instance_count = 0;
+
+hive_transaction_handle::hive_transaction_handle(ptr_t&& ptr)
+  : tx(std::move(ptr))
+{
+  ++instance_count;
+}
+hive_transaction_handle::~hive_transaction_handle()
+{
+  --instance_count;
+}
+
 json_asset to_json_asset(const hive::protocol::asset& asset)
 {
   return cpp::safe_exception_wrapper([&]() ->json_asset {
@@ -519,6 +531,11 @@ void foundation::cpp_throws(int type) const
         FC_ASSERT( false, "Hello fc exception!" );
       }
     );
+}
+
+unsigned foundation::get_transaction_handle_instance_count() const
+{
+  return hive_transaction_handle::instance_count;
 }
 
 crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const
@@ -1058,10 +1075,7 @@ cpp::hive_transaction_handle foundation::cpp_deserialize_transaction(std::string
     hive::protocol::signed_transaction obj;
     fc::raw::unpack_from_char_array(raw_data.data(), static_cast<uint32_t>(raw_data.size()), obj, 0);
 
-    cpp::hive_transaction_handle h;
-    h.tx.reset(new cpp::hive_tx(std::move(obj)));
-
-    return h;
+    return hive_transaction_handle{ hive_transaction_handle::ptr_t{ new hive_tx(std::move(obj)) } };
   });
 }
 cpp::hive_operation_handle foundation::cpp_deserialize_operation(std::string hex)const

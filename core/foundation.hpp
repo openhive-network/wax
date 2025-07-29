@@ -45,7 +45,17 @@ struct wax_op_ptr_deleter
 class hive_transaction_handle
 {
 public:
-  std::unique_ptr<hive_tx, wax_tx_ptr_deleter> tx;
+  using ptr_t = std::unique_ptr<hive_tx, wax_tx_ptr_deleter>;
+  static unsigned instance_count;
+
+  hive_transaction_handle(ptr_t&& ptr);
+  hive_transaction_handle(const hive_transaction_handle&) = delete;
+  hive_transaction_handle(hive_transaction_handle&&) = default;
+  hive_transaction_handle& operator=(const hive_transaction_handle&) = delete;
+  hive_transaction_handle& operator=(hive_transaction_handle&&) = default;
+  ~hive_transaction_handle();
+
+  ptr_t tx;
 };
 
 class hive_operation_handle
@@ -94,6 +104,8 @@ public:
   std::string cpp_asset_symbol(const json_asset& value) const;
 
   void cpp_throws(int type) const;
+
+  unsigned get_transaction_handle_instance_count() const;
 
   /* Allows to decode a `crypto-memo` string into structure providing such data directly (needed to start actual decryption process).
   *  To be used as 1st step of decryption process.

@@ -185,6 +185,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_asset_symbol", &foundation_wasm::cpp_asset_symbol)
 
     .function("cpp_throws", &foundation_wasm::cpp_throws)
+    .function("get_transaction_handle_instance_count", &foundation_wasm::get_transaction_handle_instance_count)
 
     .function("cpp_get_js_object", &foundation_wasm::cpp_get_js_object)
 
