@@ -1,0 +1,16 @@
+{
+  "name": "memory-used",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "npm run start",
+    "start": "tsx --expose-gc index.ts"
+  },
+  "dependencies": {
+    "@hiveio/wax": "file:../../../ts"
+  },
+  "devDependencies": {
+    "@types/node": "20",
+    "tsx": "catalog:typescript-toolset"
+  }
+}
