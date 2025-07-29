@@ -95,7 +95,7 @@ from .wax_result import (
     python_witness_set_properties_data,
 )
 
-__version__ = "0.3.10.dev767+73f86727"
+__version__ = "0.0.0"
 
 __all__ = [
     "IWaxBaseInterface",
