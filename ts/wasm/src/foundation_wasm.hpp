@@ -15,6 +15,7 @@ class foundation_wasm : public cpp::foundation
 public:
 bool cpp_get_js_object(emscripten::val obj) const;
 
+unsigned int cpp_report_transaction_handle_stats() const;
 std::shared_ptr<cpp::hive_transaction_handle> cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf)const;
 std::shared_ptr<cpp::hive_operation_handle> cpp_create_operation_handle(emscripten::val emval, bool is_protobuf)const;
 
