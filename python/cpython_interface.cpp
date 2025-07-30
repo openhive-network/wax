@@ -11,19 +11,23 @@
 
 namespace cpp
 {
+hive_transaction_handle protocol::cpp_deserialize_transaction(std::string hex)const
+{
+  return safe_exception_wrapper([&]() -> hive_transaction_handle {
+    hive_transaction_handle h;
+    cpp_deserialize_hive_tx(hex, &h.get());
+    return h;
+  });
+}
 
 hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf)const
 {
-  return cpp::safe_exception_wrapper([&]() -> hive_transaction_handle {
+  return safe_exception_wrapper([&]() -> hive_transaction_handle {
     hive_transaction_handle h;
 
-    hive::protocol::signed_transaction obj;
-
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, obj, is_protobuf }
+      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, h.get(), is_protobuf }
     );
-
-    h.tx.reset(new hive_tx(std::move(obj)));
 
     return h;
   });
@@ -31,7 +35,7 @@ hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, b
 
 hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf)const
 {
-  return cpp::safe_exception_wrapper([&]() -> hive_operation_handle {
+  return safe_exception_wrapper([&]() -> hive_operation_handle {
     hive_operation_handle h;
 
     hive::protocol::operation obj;
@@ -46,7 +50,7 @@ hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool 
 
 void protocol::cpp_tx_proto_to_api(PyObject* ptr)const
 {
-  cpp::safe_exception_wrapper([&]() -> void {
+  safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
       to_api_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) } }
     );
@@ -55,7 +59,7 @@ void protocol::cpp_tx_proto_to_api(PyObject* ptr)const
 
 void protocol::cpp_tx_api_to_proto(PyObject* ptr)const
 {
-  cpp::safe_exception_wrapper([&]() -> void {
+  safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
       to_proto_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) } }
     );
