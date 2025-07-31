@@ -11,6 +11,7 @@ include:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
+      - '/templates/docker_image_jobs.gitlab-ci.yml'
 
 
 variables:
@@ -21,6 +22,10 @@ variables:
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
   CI_BASE_IMAGE_TAG: "@sha256:d2bf82e7c8d080f2416c4d738a8bb8f6437b2828587657aaac9f13db77926df9"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
+
+  # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
+  WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
+  WAX_PYTHON_RUNTIME_IMAGE: registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
 
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
   PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
@@ -512,3 +517,16 @@ clean_python_docs_preview:
     action: stop
   when: manual
   allow_failure: true
+
+build_and_publish_wax_doc_snippets_image:
+  extends: .docker_image_builder_job_template
+  needs:
+    - job: build_wheel
+  stage: build
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${PYPROJECT_DIR}" "${CI_COMMIT_SHA}"
+  tags:
+  - public-runner-docker
