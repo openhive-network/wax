@@ -1,6 +1,6 @@
 stages:
-  - static_code_analysis
   - build
+  - static_code_analysis
   - test
   - deploy
 
@@ -45,8 +45,49 @@ default:
   tags:
     - public-runner-docker
 
+build_python_api_packages:
+  extends: .configuration_template
+  stage: build
+  variables:
+      API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
+      PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
+  script:
+    - echo -e "${TXT_BLUE}Building Python API packages...${TXT_CLEAR}"
+    - ${CI_PROJECT_DIR}/python/scripts/build_api_packages.sh
+  artifacts:
+    paths:
+      - "${API_GENERATION_DIR}/database_api"
+      - "${API_GENERATION_DIR}//network_broadcast_api"
+      - "build_wheel.env"
+    reports:
+        dotenv: "build_wheel.env"
+
+deploy_python_api_packages_to_gitlab:
+  stage: deploy
+  needs:
+    - job: build_python_api_packages
+      artifacts: true
+  extends: .deploy_wheel_to_gitlab_template
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/api_generation"
+    API_PACKAGES_REGISTRY: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi"
+    DATABASE_API_DIR: "${PYPROJECT_DIR}/../database_api"
+    NETWORK_BROADCAST_API_DIR: "${PYPROJECT_DIR}/../network_broadcast_api"
+  script: # Overrides the script from the template because we need to hardcode the repository URL as we push it to the hive package registry
+    - echo -e "${TXT_BLUE}Deploying python api packages to the GitLab PyPI registry...${TXT_CLEAR}"
+    - ls -al
+    - poetry -C "${DATABASE_API_DIR}" version # version of the database and network_broadcast is the same
+    - poetry -C "${DATABASE_API_DIR}" config repositories.gitlab "${API_PACKAGES_REGISTRY}"
+    - poetry -C "${DATABASE_API_DIR}" config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
+    - poetry -C "${DATABASE_API_DIR}" publish --skip-existing --repository gitlab
+    - poetry -C "${NETWORK_BROADCAST_API_DIR}" publish --skip-existing --repository gitlab
+  when: on_success
+
 build_wheel:
   extends: .build_wheel_template
+  needs:
+    - job: build_python_api_packages
+      artifacts: true
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     GIT_SUBMODULE_STRATEGY: recursive
@@ -60,27 +101,12 @@ build_wheel:
       - "${PYPROJECT_DIR}/.build/logs/"
       - "${PYPROJECT_DIR}/wax/*.so"
       - "build_wheel.env"
-      - "${PYPROJECT_DIR}/wax/api/collection.py"
       - "${PYPROJECT_DIR}/wax/_private/proto"
+      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/database_api"
+      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/network_broadcast_api"
+    expire_in: 1 week
     reports:
       dotenv: "build_wheel.env"
-
-pre_commit_checks:
-  stage: static_code_analysis
-  extends: .pre_commit_checks_template
-  variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
-  before_script:
-    - cd ${PYPROJECT_DIR}
-    - !reference [ .configuration_template, before_script ]
-    - poetry install --no-root
-  after_script:
-    - cd ${CI_PROJECT_DIR}
-  artifacts:
-    when: always
-    expire_in: 1 week
-    paths:
-      - python/poetry.lock
 
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
@@ -160,6 +186,27 @@ generate_docs:
 
     when: always
     expire_in: 1 week
+
+pre_commit_checks:
+  stage: static_code_analysis
+  extends: .pre_commit_checks_template
+  needs:
+    - job: build_wheel
+      artifacts: true
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    API_PACKAGES_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
+  before_script:
+    - cd "${PYPROJECT_DIR}"
+    - !reference [.configuration_template, before_script]
+    - poetry install --no-root
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/database_api/dist/*.whl
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/network_broadcast_api/dist/*.whl
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - python/poetry.lock
 
 push_to_wiki:
   extends: .npm_push_doc_template
