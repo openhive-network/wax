@@ -22,6 +22,7 @@ python/build/
 python/.build/
 develop-eggs/
 python/dist/
+python/temp/ # Temporary files where original pyproject.toml and poetry.lock are stored
 downloads/
 eggs/
 .eggs/
@@ -33,6 +34,7 @@ parts/
 sdist/
 var/
 wheels/
+build_wheel.env
 share/python-wheels/
 *.egg-info/
 .installed.cfg
