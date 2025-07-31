@@ -22,7 +22,7 @@ python/build/
 python/.build/
 develop-eggs/
 python/dist/
-python/temp/ # Temporary files where original pyproject.toml and poetry.lock are stored
+python/.poetry_backup/ # Temporary files where original pyproject.toml and poetry.lock are stored
 downloads/
 eggs/
 .eggs/

@@ -5,7 +5,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")/../python"
 
-WAX_DIR="${PROJECT_DIR}/../"
+WAX_DIR="${PROJECT_DIR}/.."
+HIVE_SUBMODULE_DIR="${WAX_DIR}/hive"
+
 
 DIRECT_EXECUTION=${1:-0}
 WAX_DEBUG=${2:-${WAX_DEBUG:-0}}
@@ -42,9 +44,28 @@ else
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto.sh
 
+  if [ ! -f "${SCRIPT_DIR}/../../build_wheel.env" ]; then
+      ${PROJECT_DIR}/scripts/build_api_packages.sh
+  fi
+
+  set -o allexport
+  source "${SCRIPT_DIR}/../../build_wheel.env"
+  set +o allexport
+
+  mkdir -p ${PROJECT_DIR}/.poetry_backup
+  cp ${PROJECT_DIR}/pyproject.toml ${PROJECT_DIR}/.poetry_backup
+  cp ${PROJECT_DIR}/poetry.lock ${PROJECT_DIR}/.poetry_backup
+
+  poetry add database_api@${WHEEL_BUILD_VERSION} --source gitlab-api-packages
+  poetry add network_broadcast_api@${WHEEL_BUILD_VERSION} --source gitlab-api-packages
+
   echo "Build wax wheel package."
   poetry -C ${PROJECT_DIR} build --format wheel
 
   echo "List dist directory: ${PROJECT_DIR}/dist"
   ls -lA ${PROJECT_DIR}/dist
+
+  mv ${PROJECT_DIR}/.poetry_backup/pyproject.toml ${PROJECT_DIR}/pyproject.toml
+  mv ${PROJECT_DIR}/.poetry_backup/poetry.lock ${PROJECT_DIR}/poetry.lock
+  rm -rf "${PROJECT_DIR}/.poetry_backup"
 fi
