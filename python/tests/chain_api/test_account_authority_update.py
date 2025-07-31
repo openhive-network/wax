@@ -20,16 +20,15 @@ if TYPE_CHECKING:
         OwnerRoleName,
         PostingRoleName,
     )
-    from wax.interfaces import ApiCollectionT
 
 POSSIBLE_ROLE_TYPES: Final[list[ActiveRoleName | OwnerRoleName | PostingRoleName]] = ["active", "owner", "posting"]
 
 
-def generate_random_public_key(chain: IHiveChainInterface[ApiCollectionT]) -> str:
+def generate_random_public_key(chain: IHiveChainInterface) -> str:
     return chain.suggest_brain_key().associated_public_key
 
 
-def get_public_keys(num: int, chain: IHiveChainInterface[ApiCollectionT]) -> list[str]:
+def get_public_keys(num: int, chain: IHiveChainInterface) -> list[str]:
     return [generate_random_public_key(chain) for _ in range(num)]
 
 
@@ -37,9 +36,7 @@ def generate_account_names(num: int) -> list[str]:
     return [f"alice-{n}" for n in range(num)]
 
 
-def create_mixed_entries(
-    start: int, limit: int, remote_chain: IHiveChainInterface[ApiCollectionT]
-) -> dict[str, list[str]]:
+def create_mixed_entries(start: int, limit: int, remote_chain: IHiveChainInterface) -> dict[str, list[str]]:
     account_auths_number = random.randint(start, limit)
     account_names = generate_account_names(account_auths_number)
     public_keys = get_public_keys(limit - account_auths_number, remote_chain)
@@ -52,7 +49,7 @@ def create_mixed_entries(
 @pytest.mark.parametrize("entry", [1, 2, 4, 8, 16, 32, 40])
 @pytest.mark.describe("Should be able to create simple account authority update operation for hive.fund")
 async def test_add_entries_to_account_authority_update_operation(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, entry: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, entry: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
 
@@ -105,7 +102,7 @@ async def test_add_entries_to_account_authority_update_operation(
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths", "mixed"])
 async def test_account_authority_update_exceeded_auth_limit(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str
 ) -> None:
     exceeded_auth_limit: Final[int] = 41
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
@@ -132,7 +129,7 @@ async def test_account_authority_update_exceeded_auth_limit(
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 async def test_account_authority_update_under_weight_threshold_limit(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str
 ) -> None:
     weight_threshold: Final[int] = 0
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
@@ -152,9 +149,7 @@ async def test_account_authority_update_under_weight_threshold_limit(
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
-async def test_account_authority_update_set_threshold(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str
-) -> None:
+async def test_account_authority_update_set_threshold(remote_chain: IHiveChainInterface, role_type: str) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
@@ -171,9 +166,7 @@ async def test_account_authority_update_set_threshold(
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
-async def test_account_authority_update_clear_authority(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str
-) -> None:
+async def test_account_authority_update_clear_authority(remote_chain: IHiveChainInterface, role_type: str) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "initminer")
     role = getattr(account_update.roles, role_type)
     role.add(account_or_key="alice", weight=1)
@@ -199,9 +192,7 @@ async def test_account_authority_update_clear_authority(
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
-async def test_account_authority_update_reset_role(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str
-) -> None:
+async def test_account_authority_update_reset_role(remote_chain: IHiveChainInterface, role_type: str) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "initminer")
     role = getattr(account_update.roles, role_type)
 
@@ -228,7 +219,7 @@ async def test_account_authority_update_reset_role(
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 @pytest.mark.parametrize("entries_number", [1, 2, 4, 8, 16, 32, 40])
 async def test_account_authority_update_remove_role(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, entries_number: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, entries_number: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
@@ -250,7 +241,7 @@ async def test_account_authority_update_remove_role(
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 @pytest.mark.parametrize("entries_number", [1, 2, 4, 8, 16, 32, 40])
 async def test_account_authority_update_replace_entry_in_role(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, entries_number: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, entries_number: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
@@ -275,7 +266,7 @@ async def test_account_authority_update_replace_entry_in_role(
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 @pytest.mark.parametrize("weight", [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
 async def test_account_authority_update_replace_entry_threshold_in_role(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, weight: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, weight: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "initminer")
     role = getattr(account_update.roles, role_type)
@@ -300,7 +291,7 @@ async def test_account_authority_update_replace_entry_threshold_in_role(
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 @pytest.mark.parametrize("weight", [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
 async def test_account_authority_update_replace_entry_type_to_another_one(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, weight: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, weight: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
@@ -338,7 +329,7 @@ async def test_account_authority_update_replace_entry_type_to_another_one(
 @pytest.mark.parametrize("auths_type", ["key_auths", "account_auths"])
 @pytest.mark.parametrize("weight", [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
 async def test_account_authority_update_role_has_a_entry(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str, auths_type: str, weight: int
+    remote_chain: IHiveChainInterface, role_type: str, auths_type: str, weight: int
 ) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
@@ -362,9 +353,7 @@ async def test_account_authority_update_role_has_a_entry(
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
-async def test_account_authority_update_empty_role_entry(
-    remote_chain: IHiveChainInterface[ApiCollectionT], role_type: str
-) -> None:
+async def test_account_authority_update_empty_role_entry(remote_chain: IHiveChainInterface, role_type: str) -> None:
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
     assert not role.has(account_or_key="doesnt-existing-entry")
