@@ -15,7 +15,7 @@ apt install protobuf-compiler
 First, we need to have installed `poetry`. To do that, simply type:
 
 ```bash
-curl -sSL https://install.python-poetry.org | python3 - --version 1.6.1
+curl -sSL https://install.python-poetry.org | python3 - --version 2.1.3
 ```
 
 #### Building
@@ -45,26 +45,28 @@ source ./venv/bin/activate
 Before installing the wax module to python, set env variables to the following value:
 
 ```bash
-export FIRST_INDEX="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple" SECOND_INDEX="https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+export FIRST_INDEX="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple" SECOND_INDEX="https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple" THIRD_INDEX="https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
 ```
 
 Now in order to install wax module to python, one need to type.
 
 ```bash
-python3 -m pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
+python3 -m pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ./dist/CREATED-WAX-WHEEL.whl (for example wax-0.0.0-cp310-cp310-manylinux_2_35_x86_64.whl)
 ```
 
-### Instalation using poetry
+### Developer Installation using dedicated bash script
 
 First, you need to export the `WAX_SKIP_BUILD` variable to `true` in order to skip building the package. 
+If you did not build the package yet, you can skip this step - script will build the package for you.
 ```bash
 export WAX_SKIP_BUILD=true
 ```
 
-Then, you can install the package using poetry. 
+Then, you can install the package using dedicated script. 
+Please remember about creating a virtual environment first, as described above.
 ```bash
-poetry install
-````
+./python/scripts/install_wax.sh
+```
 
 
 You can always take prebuilt PyPI package also pushed to Gitlab package registry - here is for example some `develop` related version: `0.0.3a2.dev131+bb99c4e`:
