@@ -322,23 +322,28 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.api.protocol.cpp_tx_add_signature(this.txHandle, signature);
   }
 
-  public sign(walletOrSignature: ISignatureProvider | THexString, publicKey?: TPublicKey): THexString {
+  /**
+   * @deprecated
+   */
+  public sign(provider: ISignatureProvider, publicKey: TPublicKey): THexString {
     this.validate();
 
-    if (typeof walletOrSignature === 'string') {
-      this.signWithHandle(walletOrSignature);
-
-      return walletOrSignature;
-    }
-
     this.flushTransaction();
-    this.encryptOperations(walletOrSignature);
+    this.encryptOperations(provider);
 
-    const sig = walletOrSignature.signDigest(publicKey as TPublicKey, this.sigDigest);
+    const sig = provider.signDigest(publicKey as TPublicKey, this.sigDigest);
 
     this.signWithHandle(sig);
 
     return sig;
+  }
+
+  public addSignature(signature: THexString): this {
+    this.validate();
+
+    this.signWithHandle(signature);
+
+    return this;
   }
 
   public isSigned(): boolean {

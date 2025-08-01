@@ -18,7 +18,7 @@ export class WaxBeekeeperProviderError extends Error {}
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * await provider.signTransaction(tx);
  *
  * // broadcast
  * await chain.broadcast(tx);
@@ -74,7 +74,9 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
    * @throws on any error from the Beekeeper invocation.
    */
   public async signTransaction(transaction: ITransaction): Promise<void> {
-    transaction.sign(this.wallet, this.publicKey);
+    const signature = this.wallet.signDigest(this.publicKey as TPublicKey, transaction.sigDigest);
+
+    transaction.addSignature(signature);
   }
 }
 

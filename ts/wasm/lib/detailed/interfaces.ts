@@ -11,7 +11,7 @@ import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
 import type { IChainConfig } from "../build_wasm/config";
-import { ISignatureProvider, IOnlineSignatureProvider } from "./extensions/signatures";
+import { ISignatureProvider } from "./extensions/signatures";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
 
 export type TSignature = string;
@@ -399,6 +399,44 @@ export interface ITransactionBase {
    * @throws {WaxError} on any Wax API-related error
    */
   pushOperation(op: operation | OperationBase): this;
+
+ /**
+   * Adds your signature to the internal signatures array inside underlying transaction.
+   *
+   * @param {THexString} signature signature to add
+   *
+   * @returns {this} current transaction instance
+   *
+   * @note If you do not have a signature, create one using dedicated signature providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-hb-auth`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
+   *
+   */
+  addSignature(signature: THexString): this;
+
+  /**
+   * Signs the transaction using given public key. Applies the transaction expiration time
+   *
+   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
+   *
+   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
+   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
+   *
+   * @returns {THexString} transaction signature signed using given key
+   *
+   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
+   *
+   * @deprecated Use dedicated signature providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-hb-auth`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
+   */
+  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
 }
 
 /**
@@ -426,31 +464,7 @@ export interface ITransactionBase {
  * });
  * ```
  */
-export interface ITransaction extends ITransactionBase {
-  /**
-   * Signs the transaction using given public key. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
-   *
-   * @returns {THexString} transaction signature signed using given key
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   */
-  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
-
- /**
-   * Adds your signature to the internal signatures array inside underlying transaction.
-   *
-   * @param {THexString} signature signature to add
-   *
-   * @returns {THexString} added transaction signature
-   *
- */
-  sign(signature: THexString): THexString;
-}
+export interface ITransaction extends ITransactionBase {}
 
 /**
  * Same as {@link ITransaction}, but marks operations as encrypted using given keys, which will be encrypted upon
@@ -516,42 +530,6 @@ export interface IOnlineTransaction extends ITransactionBase {
    * @param {ITransaction} externalTx optional external transaction to be used for authority verification trace generation. If omitted, defaults to HF26
    */
   generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
-
-  /**
-   * Signs the transaction using given public key. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {IOnlineSignatureProvider} wallet unlocked wallet to be used for signing
-   * @returns {Promise<void>} resolves when the wallet finished signing (signature(s) appended internally)
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   */
-  sign(wallet: IOnlineSignatureProvider): Promise<void>;
-
-  /**
-   * Signs the transaction using given public key. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
-   *
-   * @returns {THexString} transaction signature signed using given key
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   */
-  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
-
- /**
-   * Adds your signature to the internal signatures array inside underlying transaction.
-   *
-   * @param {THexString} signature signature to add
-   *
-   * @returns {THexString} added transaction signature
-   *
- */
-  sign(signature: THexString): THexString;
 };
 
 export interface IHiveAssetData {

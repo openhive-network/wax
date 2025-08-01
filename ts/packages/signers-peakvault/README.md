@@ -31,7 +31,7 @@ tx.pushOperation({
 });
 
 // Wait for the keychain to sign the transaction
-await tx.sign(provider);
+await provider.signTransaction(tx);
 
 // broadcast the transaction
 await chain.broadcast(tx);
