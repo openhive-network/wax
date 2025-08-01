@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
+import type { IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
 import type { MetaMaskInpageProvider, RequestArguments } from "@metamask/providers";
 import { getSnapsProvider } from "./provider.js";
 
@@ -54,7 +54,7 @@ const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
  * await chain.broadcast(tx);
  * ```
  */
-export class MetaMaskProvider implements IOnlineSignatureProvider {
+export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
   /**
    * Indicates either the snap is installed or not.
    * If you want to install or reinstall the snap, use {@link installSnap}
@@ -138,6 +138,8 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
 
     if (authorities.size === 0)
       throw new WaxMetaMaskProviderError('No authorities to sign the transaction');
+
+    transaction.performOperationEncryption(this);
 
     const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [...authorities].map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
 

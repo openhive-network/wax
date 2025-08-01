@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IHiveChainInterface, IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
@@ -24,7 +24,7 @@ export class WaxBeekeeperProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class BeekeeperProvider implements IOnlineSignatureProvider {
+class BeekeeperProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
   private constructor(
     private readonly wallet: IBeekeeperUnlockedWallet,
     private readonly publicKey: TPublicKey
@@ -52,7 +52,7 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
    * @returns A string containing the encrypted data. The string starts with the `#` prefix.
    * @throws on any error from the Beekeeper invocation.
    */
-  public encryptData(content: string, recipient: TPublicKey): string {
+  public async encryptData(content: string, recipient: TPublicKey): Promise<string> {
     return this.wallet.encryptData(content, this.publicKey, recipient);
   }
 
@@ -63,7 +63,7 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
    * @returns The decrypted data as a string.
    * @throws on any error from the Beekeeper invocation.
    */
-  public decryptData(content: string): string {
+  public async decryptData(content: string): Promise<string> {
     return this.wallet.decryptData(content, this.publicKey);
   }
 
@@ -74,6 +74,8 @@ class BeekeeperProvider implements IOnlineSignatureProvider {
    * @throws on any error from the Beekeeper invocation.
    */
   public async signTransaction(transaction: ITransaction): Promise<void> {
+    transaction.performOperationEncryption(this);
+
     const signature = this.wallet.signDigest(this.publicKey as TPublicKey, transaction.sigDigest);
 
     transaction.addSignature(signature);

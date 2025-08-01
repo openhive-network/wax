@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
+import type { IOnlineSignatureProvider, IOnlineEncryptionProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
 
@@ -31,7 +31,7 @@ export class WaxKeychainProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class KeychainProvider implements IOnlineSignatureProvider {
+class KeychainProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
   private readonly role: KeychainKeyTypes;
 
   private constructor(
@@ -128,6 +128,8 @@ class KeychainProvider implements IOnlineSignatureProvider {
    */
   public async signTransaction(transaction: ITransaction): Promise<void> {
     KeychainProvider.ensureKeychainInstalled();
+
+    transaction.performOperationEncryption(this);
 
     const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
       this.accountName,

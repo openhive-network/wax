@@ -4,7 +4,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
 import type { IWaxExtendableFormatter } from "./formatters/types";
-import type { ApiOperation, ApiTransaction, NaiAsset } from ".";
+import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
 import type { TTransactionRequiredAuthorities } from '.';
 import type { OperationBase } from "./operation_base";
@@ -416,6 +416,13 @@ export interface ITransactionBase {
    *
    */
   addSignature(signature: THexString): this;
+
+  /**
+   * Allows to encrypt all operations selected to this process by calls to startEncrypt/stopEncrypt methods.
+   *
+   * @internal This method should be called only internally by the encryption providers
+   */
+  performOperationEncryption(provider: IOnlineEncryptionProvider): Promise<void>;
 
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
@@ -873,7 +880,12 @@ export interface IWaxBaseInterface {
    * @param {number} [nonce] optional nonce to be explicitly specified for encryption
    *
    * @returns {string} Encrypted content
-   * @throws {WaxError} on any Wax WASM-related error
+   *
+   * @deprecated Use dedicated encryption providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
    */
   encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
 
@@ -884,7 +896,12 @@ export interface IWaxBaseInterface {
    * @param {string} encrypted Content to be decoded
    *
    * @returns {string} Decoded content
-   * @throws {WaxError} on any Wax WASM-related error
+   *
+   * @deprecated Use dedicated encryption providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
    */
   decrypt(wallet: ISignatureProvider, encrypted: string): string;
 
@@ -1159,6 +1176,12 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @param {string} toAccount second account to retrieve the memo public key used for encryption
    *
    * @returns {Promise<string>} Encrypted content
+   *
+   * @deprecated Use dedicated encryption providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
    */
   encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount: string): Promise<string>;
 
