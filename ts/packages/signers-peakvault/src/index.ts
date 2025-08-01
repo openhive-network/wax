@@ -1,4 +1,4 @@
-import type { IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
+import type { IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
 
 type KeyRole = string;
 
@@ -31,7 +31,7 @@ export class WaxPeakVaultProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class PeakVaultProvider implements IOnlineSignatureProvider {
+class PeakVaultProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
   private readonly role: KeyRole;
 
   private constructor(
@@ -106,6 +106,8 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
    */
   public async signTransaction(transaction: ITransaction): Promise<void> {
     PeakVaultProvider.ensurePeakVaultInstalled();
+
+    transaction.performOperationEncryption(this);
 
     const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 

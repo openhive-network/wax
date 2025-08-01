@@ -8,7 +8,7 @@ import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "./errors.js";
 import type { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
-import { ISignatureProvider } from "./extensions/signatures";
+import { IOnlineEncryptionProvider, ISignatureProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
 import type { transaction_handle } from "../build_wasm/wax.common";
 
@@ -159,6 +159,41 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.indexKeeper.push({ mainEncryptionKey, otherEncryptionKey: otherEncryptionKey ?? mainEncryptionKey, begin: this.target.operations.length });
 
     return this as IEncryptingTransaction<this> & this;
+  }
+
+  public async performOperationEncryption(provider: IOnlineEncryptionProvider): Promise<void> {
+    // As a part of migration from old beekeeper #sign API to new encryption providers API,
+    // instead of modifying the encryption visitor, we will iterate over the operations
+    // to collect data to encrypt, and then iterate over the operations again to apply the encryption
+
+    // Note: After migration is done, we should optimize this to only iterate once with awaits and remove legacy data
+
+    const encryptionPromises: Array<Promise<string>> = [];
+    for(const index of this.indexKeeper)
+      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
+        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
+          encryptionPromises.push(
+            provider.encryptData(data, index.mainEncryptionKey)
+          );
+
+          return "";
+        });
+
+        visitor.accept(this.target.operations[i]);
+      }
+
+    const encryptedData = await Promise.all(encryptionPromises);
+
+    for(const index of this.indexKeeper)
+      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
+        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, () => encryptedData.shift()!);
+
+        visitor.accept(this.target.operations[i]);
+      }
+
+    // XXX: Optimize this maybe
+    this.txHandle = this.api.protocol.cpp_create_transaction_handle(this.target, true);
+    this.indexKeeper = [];
   }
 
   public stopEncrypt(): Transaction {
@@ -315,6 +350,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
     // XXX: Optimize this maybe
     this.txHandle = this.api.protocol.cpp_create_transaction_handle(this.target, true);
+    this.indexKeeper = [];
   }
 
   private signWithHandle(signature: THexString): void {

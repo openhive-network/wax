@@ -8,6 +8,8 @@ export class WaxHBAuthProviderError extends Error {}
 /**
  * Wax transaction signature provider using the hb-auth.
  *
+ * @note This provider does not support encryption. It is designed for signing transactions only.
+ *
  * @example
  * ```
  * const provider = HBAuthProvider.for(hbAuthClient, "gtg", "posting");
@@ -38,6 +40,14 @@ class HBAuthProvider implements IOnlineSignatureProvider {
     return new HBAuthProvider(client, username, role);
   }
 
+  /**
+   * Signs a transaction using the hb-auth.
+   *
+   * @note This method does not support encryption. It is designed for signing transactions only.
+   *
+   * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
+   * @throws on any error from the hb-auth invocation.
+   */
   public async signTransaction(transaction: ITransaction): Promise<void> {
     const signature = await this.client.sign(this.username, transaction.sigDigest, this.role as 'active' | 'owner' | 'posting');
 

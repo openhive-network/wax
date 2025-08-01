@@ -33,6 +33,25 @@ export interface ISignatureProvider {
   decryptData(content: string, key: TPublicKey, anotherKey?: TPublicKey): string;
 };
 
+export interface IOnlineEncryptionProvider {
+  /**
+   * Encrypts data
+   *
+   * @param buffer The string to encrypt.
+   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @returns A string containing the encrypted data.
+   */
+  encryptData(buffer: string, recipient: TPublicKey): Promise<string>
+
+  /**
+   * Decrypts data
+   *
+   * @param buffer The string to decrypt.
+   * @returns The decrypted data as a string.
+   */
+  decryptData(buffer: string): Promise<string>;
+}
+
 export interface IOnlineSignatureProvider {
   /**
    * Signs a transaction by signing a digest of the transaction

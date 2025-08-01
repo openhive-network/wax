@@ -2,6 +2,9 @@
 
 Wax signer library extending transaction signing possibilities by a 3rd party Web-only extension - hb-auth
 
+> [!NOTE]
+> This provider does not support encryption. It is designed for signing transactions only.
+
 ## Example usage
 
 ```ts
