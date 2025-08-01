@@ -48,7 +48,7 @@ const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * await provider.signTransaction(tx);
  *
  * // broadcast
  * await chain.broadcast(tx);
@@ -142,7 +142,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider {
     const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [...authorities].map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
 
     for(const signature of response.signatures)
-      transaction.sign(signature);
+      transaction.addSignature(signature);
   }
 
   /**

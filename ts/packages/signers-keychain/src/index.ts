@@ -25,7 +25,7 @@ export class WaxKeychainProviderError extends Error {}
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * await provider.signTransaction(tx);
  *
  * // broadcast
  * await chain.broadcast(tx);
@@ -142,7 +142,7 @@ class KeychainProvider implements IOnlineSignatureProvider {
     )) as any;
 
     for(const sig of data.result.signatures)
-      transaction.sign(sig);
+      transaction.addSignature(sig);
   }
 }
 

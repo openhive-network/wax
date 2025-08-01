@@ -18,7 +18,7 @@ export class WaxHBAuthProviderError extends Error {}
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * await provider.signTransaction(tx);
  *
  * // broadcast
  * await chain.broadcast(tx);
@@ -41,7 +41,7 @@ class HBAuthProvider implements IOnlineSignatureProvider {
   public async signTransaction(transaction: ITransaction): Promise<void> {
     const signature = await this.client.sign(this.username, transaction.sigDigest, this.role as 'active' | 'owner' | 'posting');
 
-    transaction.sign(signature);
+    transaction.addSignature(signature);
   }
 }
 

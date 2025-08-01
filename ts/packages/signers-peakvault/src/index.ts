@@ -25,7 +25,7 @@ export class WaxPeakVaultProviderError extends Error {}
  * // Perform some operations, e.g. pushing operations...
  *
  * // Sign the transaction
- * await tx.sign(provider);
+ * await provider.signTransaction(tx);
  *
  * // broadcast
  * await chain.broadcast(tx);
@@ -110,7 +110,7 @@ class PeakVaultProvider implements IOnlineSignatureProvider {
     const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
 
     for(const sig of data.result.signatures)
-      transaction.sign(sig);
+      transaction.addSignature(sig);
   }
 }
 
