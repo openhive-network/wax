@@ -55,6 +55,8 @@ add_python_library("cpp_python_bridge" MODULE SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/utils.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/binary_view_helper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../core/minimize_required_signatures_helper.cpp
   cpython_interface.cpp
   ${HEADERS}
   LINK_LIBRARIES hive_protocol)
