@@ -248,6 +248,9 @@ public:
   std::vector<std::string>        cpp_tx_impacted_accounts(const hive_transaction_handle& tx_handle)const;
   std::vector<std::string>        cpp_tx_signature_keys(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
   std::string                     cpp_tx_sig_digest(const hive_transaction_handle& tx_handle, const std::string& chain_id, bool use_hf26_serialization)const;
+  std::vector<std::string>        cpp_collect_signing_keys(const hive_transaction_handle& tx_handle, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_fn) const;
+  std::vector<std::string>        cpp_minimize_required_signatures(const hive_transaction_handle& tx_handle, const minimize_required_signatures_data_t& minimize_required_signatures_data) const;
+
   void                            cpp_tx_validate(const hive_transaction_handle& tx_handle)const;
 
 // protected: // XXX: Temporary remove this, as it may not be supported by emscripten

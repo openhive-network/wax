@@ -3,6 +3,8 @@
 #include "core/types.hpp"
 #include "core/utils.hpp"
 #include "core/binary_view_helper.hpp"
+#include "core/signing_keys_collector.hpp"
+#include "core/minimize_required_signatures_helper.hpp"
 
 #include <fc/reflect/reflect.hpp>
 #include <fc/io/json.hpp>
@@ -378,6 +380,19 @@ hive::protocol::authority convert_wax_authority_to_protocol_authority(const wax_
 
   return a;
 }
+
+static inline
+hive::protocol::authorities_t convert_wax_authorities_to_authorities(const wax_authorities& w_authorities)
+{
+  using authority = hive::protocol::authority;
+
+  authority active = convert_wax_authority_to_protocol_authority(w_authorities.active);
+  authority owner = convert_wax_authority_to_protocol_authority(w_authorities.owner);
+  authority posting = convert_wax_authority_to_protocol_authority(w_authorities.posting);
+
+  return { std::move(active), std::move(owner), std::move(posting) };
+}
+
 hive::protocol::authority_verification_trace foundation::cpp_trace_authority_verification(
   const required_authority_collection_t& required_authorities,
   const std::vector<std::string>& decodedSignaturePublicKeys,
@@ -1053,6 +1068,53 @@ std::string foundation::cpp_tx_sig_digest(const hive_transaction_handle& tx_hand
 
     return sig_digest.str();
   });
+}
+
+std::vector<std::string> foundation::cpp_collect_signing_keys(const hive_transaction_handle& tx_handle, retrieve_authorities_cb_t retrieve_authorities_cb, void* retrieve_authorities_fn) const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    const auto& tx = tx_handle.get();
+    signing_keys_collector::retrieve_authorities_t retrieve_authorities = [&](const std::vector<std::string>& accounts)
+      {
+        const auto wax_authorities_map = retrieve_authorities_cb(accounts, retrieve_authorities_fn);
+        hive::protocol::authorities_map_t authorities_map;
+        for (const auto& wax_authorities_info : wax_authorities_map)
+        {
+          signing_keys_collector::account_name_type account = wax_authorities_info.first;
+          signing_keys_collector::authorities_t authorities = convert_wax_authorities_to_authorities(wax_authorities_info.second);
+          authorities_map.emplace(account, std::move(authorities));
+        }
+
+        return authorities_map;
+      };
+
+    signing_keys_collector signing_keys_collector(retrieve_authorities);
+    std::vector<std::string> result = signing_keys_collector.collect_signing_keys(tx);
+
+    return result;
+    });
+}
+
+std::vector<std::string> foundation::cpp_minimize_required_signatures(const hive_transaction_handle& tx_handle, const minimize_required_signatures_data_t& minimize_required_signatures_data) const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::vector<std::string> {
+    const auto& tx = tx_handle.get();
+    hive::protocol::authorities_map_t authorities_map;
+    for (const auto& wax_authorities_info : minimize_required_signatures_data.authorities_map)
+    {
+      hive::protocol::account_name_type account = wax_authorities_info.first;
+      hive::protocol::authorities_t authorities = convert_wax_authorities_to_authorities(wax_authorities_info.second);
+      authorities_map.emplace(account, std::move(authorities));
+    }
+
+    auto result = minimize_required_signatures_helper::minimize_required_signatures(
+      tx, minimize_required_signatures_data.chain_id, minimize_required_signatures_data.available_keys, authorities_map,
+      minimize_required_signatures_data.get_witness_key_cb, minimize_required_signatures_data.get_witness_key_fn,
+      minimize_required_signatures_data.max_recursion, minimize_required_signatures_data.max_membership, minimize_required_signatures_data.max_account_auths,
+      minimize_required_signatures_data.allow_strict_and_mixed_authorities);
+
+    return result;
+    });
 }
 
 void foundation::cpp_tx_validate(const hive_transaction_handle& tx_handle)const

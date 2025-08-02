@@ -167,7 +167,7 @@ struct minimize_required_signatures_data_t
   std::vector<std::string> available_keys;
   wax_authorities_map_t authorities_map;
   witness_public_key_getter_cb_t get_witness_key_cb;
-  void* get_witness_key_fn;
+  void* get_witness_key_fn = nullptr;
   std::optional<uint32_t> max_recursion;
   std::optional<uint32_t> max_membership;
   std::optional<uint32_t> max_account_auths;
