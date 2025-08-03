@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, Callable, TypeAlias
 
 if TYPE_CHECKING:
     string: TypeAlias = bytes  # noqa: PYI042
@@ -155,3 +155,15 @@ class python_authorities:  # noqa: N801
     active: python_authority
     owner: python_authority
     posting: python_authority
+
+
+@dataclass
+class python_minimize_required_signatures_data:  # noqa: N801
+    chain_id: bytes
+    available_keys: list[bytes]
+    authorities_map: dict[bytes, python_authorities]
+    get_witness_key: Callable[[bytes], bytes]
+    max_recursion: int | None = None
+    max_membership: int | None = None
+    max_account_auths: int | None = None
+    allow_strict_and_mixed_authorities: bool = False
