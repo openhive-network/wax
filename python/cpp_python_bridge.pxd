@@ -212,6 +212,9 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         witness_set_properties_serialized cpp_serialize_witness_set_properties(witness_set_properties_data value) except +
         witness_set_properties_data cpp_deserialize_witness_set_properties(witness_set_properties_serialized value) except +
 
+        vector[string] cpp_collect_signing_keys( hive_transaction_handle tx_handle, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_fn ) except +
+        vector[string] cpp_minimize_required_signatures( hive_transaction_handle tx_handle, minimize_required_signatures_data_t minimize_required_signatures_data ) except +
+
         string cpp_asset_value(json_asset value) except +
         string cpp_asset_symbol(json_asset value) except +
 
