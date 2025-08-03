@@ -79,7 +79,7 @@ template< typename ManagedObjectT, typename T >
 class val_protocol_visitor {
 public:
   val_protocol_visitor( ManagedObjectT jsval, T& val, bool is_protobuf )
-    : jsval( jsval ), is_protobuf( is_protobuf ), val( val )
+    : jsval( jsval ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), val( val )
   {}
 
   template< typename Member, class Class, Member( Class::*member ) >
@@ -102,6 +102,9 @@ public:
 
   void add( const char* name, hive::protocol::asset& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     ManagedObjectT amount = jsval[name];
 
     std::string amount_str = amount["amount"].template as<std::string>();
@@ -119,24 +122,36 @@ public:
 
   void add( const char* name, hive::protocol::json_string& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     v = hive::protocol::json_string{ str };
   }
 
   void add( const char* name, fc::ripemd160& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     v = fc::ripemd160{ str };
   }
 
   void add( const char* name, fc::sha256& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     v = fc::sha256{ str };
   }
 
   void add( const char* name, hive::protocol::public_key_type& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     v = hive::protocol::public_key_type{ str };
   }
@@ -144,6 +159,9 @@ public:
   template<typename StorageT>
   void add( const char* name, hive::protocol::fixed_string_impl<StorageT>& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     v = str;
   }
@@ -151,6 +169,9 @@ public:
   template<typename SafeT>
   void add( const char* name, fc::safe<SafeT>& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     SafeT tmp;
     this->add(name, tmp);
     v.value = tmp;
@@ -158,6 +179,9 @@ public:
 
   void add( const char* name, std::vector<char>& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str;
     jsval[name].as( str );
     v.resize(str.size() / 2);
@@ -167,17 +191,26 @@ public:
   template<typename TArr, size_t NArr>
   void add( const char* name, fc::array<TArr, NArr>& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string str = jsval[name].template as<std::string>();
     fc::from_hex(str, reinterpret_cast<char *>(&v.data[0]), NArr);
   }
 
   void add( const char* name, hive::protocol::legacy_hive_asset& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf }.add( "amount", v.amount );
   }
 
   void add( const char* name, fc::time_point_sec& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     std::string time;
     jsval[name].as(time);
     if (time.empty())
@@ -189,6 +222,9 @@ public:
   template<uint32_t _SYMBOL>
   void add( const char* name, hive::protocol::tiny_asset<_SYMBOL>& v ) const
   {
+    if(can_skip_missing_field(name))
+      return;
+
     int64_t amount_value = jsval[name]["amount"].template as<int64_t>();
     v.amount = amount_value;
   }
@@ -251,9 +287,15 @@ public:
       M item;
 
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
+      {
         fc::reflector< M >::visit( val_protocol_visitor< ManagedObjectT, M >{ arr_val[i], item, is_protobuf } );
+      }
       else
-        val_protocol_visitor< ManagedObjectT, M >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
+      {
+        val_protocol_visitor< ManagedObjectT, M > visitor{ arr_val, item, is_protobuf };
+        visitor.ignore_missing_fields = false;
+        visitor.add( std::to_string( i ).c_str(), item );
+      }
 
       v.insert(item);
     }
@@ -262,22 +304,7 @@ public:
   template<typename M>
   void add_array( const char* name, ::flat_set_ex<M>& v ) const
   {
-    ManagedObjectT arr_val = jsval[name];
-
-    auto arr_size = arr_val.array_length();
-    v.reserve(arr_size);
-
-    for (size_t i = 0; i < arr_size; ++i)
-    {
-      M item;
-
-      if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
-        fc::reflector< M >::visit( val_protocol_visitor< ManagedObjectT, M >{ arr_val[i], item, is_protobuf } );
-      else
-        val_protocol_visitor< ManagedObjectT, M >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
-
-      v.insert(item);
-    }
+    add_array(name, static_cast<boost::container::flat_set<M>&>(v));
   }
 
   template< typename M >
@@ -294,9 +321,15 @@ public:
       TVal item;
 
       if constexpr( std::is_same< typename fc::reflector< TVal >::is_defined, fc::true_type >::value )
+      {
         fc::reflector< TVal >::visit( val_protocol_visitor< ManagedObjectT, TVal >{ arr_val[i], item, is_protobuf } );
+      }
       else
-        val_protocol_visitor< ManagedObjectT, TVal >{ arr_val, item, is_protobuf }.add( std::to_string( i ).c_str(), item );
+      {
+        val_protocol_visitor< ManagedObjectT, TVal > visitor { arr_val, item, is_protobuf };
+        visitor.ignore_missing_fields = false;
+        visitor.add( std::to_string( i ).c_str(), item );
+      }
 
       v.emplace_back(item);
     }
@@ -396,12 +429,23 @@ public:
   template< typename M >
   void add( const char* key, M& value ) const
   {
+    if(can_skip_missing_field(key))
+      return;
+
     add_member_impl(typename binary_view::node_type< M >::node(), key, value);
   }
 
-private:
+  bool can_skip_missing_field(const char* name) const
+  {
+    return ignore_missing_fields && jsval.is_optional_field_present(name) == false;
+  }
+
   ManagedObjectT jsval;
   bool is_protobuf;
+  /** true when missing field in source managedobject should be ignored.
+      It must match fc::from_variant object initialization, which allows to skip members and use their C++ defaults.
+  */
+  bool ignore_missing_fields;
   T& val;
 };
 
