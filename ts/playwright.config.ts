@@ -16,7 +16,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.hive.blog",
-          restApiEndpoint: "https://api.dev.openhive.network",
+          restApiEndpoint: "https://api.syncad.com",
           chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
