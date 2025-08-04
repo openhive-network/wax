@@ -30,15 +30,22 @@ def test_validate_transaction():
     tx_str = json.dumps(API_REF_TRANSACTION_NO_OPERATIONS)
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function '
-        b'call failed: \'operations\'\n    {"pyerr":"\'operations\'"}\n    python_managed_object.hpp:63 call_python_function')
+    assert result.exception_message == (b'10 assert_exception: Assert Exception\noperations.size() > 0\nA transactio'
+        b'n must have at least one operation (unformatted args: ("trx",{"ref_block_num'
+        b'":19260,"ref_block_prefix":2140466769,"expiration":"2016-09-15T19:47:33","op'
+        b'erations":[],"extensions":[]}))\n    {"trx":{"ref_block_num":19260,"ref_b'
+        b'lock_prefix":2140466769,"expiration":"2016-09-15T19:47:33","operations":[],"'
+        b'extensions":[]}}\n    transaction.cpp:42 validate'
+    )
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION_EMPTY_OPERATIONS)
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\n!PyErr_Occurred()\nPython function '
-        b'call failed: \'extensions\'\n    {"pyerr":"\'extensions\'"}\n    python_ma'
-        b'naged_object.hpp:63 call_python_function'
+    assert result.exception_message == (b'10 assert_exception: Assert Exception\noperations.size() > 0\nA transactio'
+        b'n must have at least one operation (unformatted args: ("trx",{"ref_block_num'
+        b'":19260,"ref_block_prefix":2140466769,"expiration":"2016-09-15T19:47:33","op'
+        b'erations":[],"extensions":[]}))\n    {"trx":{"ref_block_num":19260,"ref_b'
+        b'lock_prefix":2140466769,"expiration":"2016-09-15T19:47:33","operations":[],"'
+        b'extensions":[]}}\n    transaction.cpp:42 validate'
     )
