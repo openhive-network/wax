@@ -44,20 +44,33 @@ else
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto.sh
 
-  if [ ! -f "${SCRIPT_DIR}/../../build_wheel.env" ]; then
-      ${PROJECT_DIR}/scripts/build_api_packages.sh
-  fi
+  echo "Build API packages."
+  ${PROJECT_DIR}/scripts/build_api_packages.sh
 
-  set -o allexport
-  source "${SCRIPT_DIR}/../../build_wheel.env"
-  set +o allexport
 
   mkdir -p ${PROJECT_DIR}/.poetry_backup
   cp ${PROJECT_DIR}/pyproject.toml ${PROJECT_DIR}/.poetry_backup
   cp ${PROJECT_DIR}/poetry.lock ${PROJECT_DIR}/.poetry_backup
 
-  poetry add database_api@${WHEEL_BUILD_VERSION} --source gitlab-api-packages
-  poetry add network_broadcast_api@${WHEEL_BUILD_VERSION} --source gitlab-api-packages
+  set -o allexport
+  source "${SCRIPT_DIR}/../../build_wheel.env"
+  set +o allexport
+
+  add_api_dependency() {
+    local api_package_name=$1
+    local api_wheel_version=$2
+
+    if poetry add --dry-run "${api_package_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
+      echo "Using ${api_package_name} from registry."
+      poetry add "${api_package_name}@${api_wheel_version}" --source gitlab-api-packages
+    else
+      echo "${api_package_name} not found in registry, using local source."
+      poetry add "../hive/libraries/plugins/apis/api_generation/${api_package_name}"
+    fi
+  }
+
+  add_api_dependency "database_api" "${DATABASE_API_WHEEL_BUILD_VERSION}"
+  add_api_dependency "network_broadcast_api" "${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}"
 
   echo "Build wax wheel package."
   poetry -C ${PROJECT_DIR} build --format wheel
