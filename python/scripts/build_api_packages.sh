@@ -13,6 +13,8 @@ ${API_GENERATION_DIR}/generate_api_packages.sh database_api network_broadcast_ap
 poetry -C "${API_GENERATION_DIR}/database_api" build --format wheel
 poetry -C "${API_GENERATION_DIR}/network_broadcast_api" build --format wheel
 
-WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/database_api" version -s)
+DATABASE_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/database_api" version -s)
+NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/network_broadcast_api" version -s)
 
-echo "WHEEL_BUILD_VERSION=${WHEEL_BUILD_VERSION}" > "${SCRIPT_DIR}/../../build_wheel.env"
+echo "DATABASE_API_WHEEL_BUILD_VERSION=${DATABASE_API_WHEEL_BUILD_VERSION}" >> "${SCRIPT_DIR}/../../build_wheel.env"
+echo "NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION=${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}" >> "${SCRIPT_DIR}/../../build_wheel.env"
