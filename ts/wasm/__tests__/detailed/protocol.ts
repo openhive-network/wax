@@ -806,8 +806,16 @@ test.describe('WASM Protocol', () => {
 
   test('Should not crash the program - transaction validation - but fail', async ({ wasmTest }) => {
     await expect(wasmTest(({ protocol }) => {
-      const handle = protocol.cpp_create_transaction_handle({}, false);
-      protocol.cpp_tx_validate(handle);
+      try {
+        const handle = protocol.cpp_create_transaction_handle({}, false);
+        protocol.cpp_tx_validate(handle);
+      }
+      catch (error) {
+        console.error(error, (error as any).message);
+
+        throw new Error((error as any).message);
+
+      }
     })).rejects.toThrow();
   });
 
