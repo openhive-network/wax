@@ -5,6 +5,16 @@
 #include "binary_view/node_types.hpp"
 #include "binary_view/traits.hpp"
 
+//#define VAL_PROTOCOL_LOGGING
+
+#ifdef VAL_PROTOCOL_LOGGING
+  #define VAL_PROTOCOL_ILOG( FORMAT, ...) ilog( FORMAT, __VA_ARGS__ )
+  #define VAL_PROTOCOL_WLOG( FORMAT, ...) wlog( FORMAT, __VA_ARGS__ )
+#else
+  #define VAL_PROTOCOL_ILOG( FORMAT, ...) /* nothing */
+  #define VAL_PROTOCOL_WLOG( FORMAT, ...) /* nothing */
+#endif /// VAL_PROTOCOL_LOGGING
+
 namespace cpp {
 
 namespace {
@@ -85,6 +95,7 @@ public:
   template< typename Member, class Class, Member( Class::*member ) >
   void operator()( const char* name ) const
   {
+    VAL_PROTOCOL_ILOG("Attemptng to visit member ${name} from object ${jsval}", (name)("jsval", jsval.operator std::string()));
     this->add( name, val.*member );
   }
 
@@ -94,9 +105,14 @@ public:
   {
     if(jsval.is_optional_field_present(name))
     {
+      VAL_PROTOCOL_ILOG("Processing optional member ${name} from object ${jsval}", (name)("jsval", jsval.operator std::string()));
       M tmp;
       this->add( name, tmp );
       v = tmp;
+    }
+    else
+    {
+      VAL_PROTOCOL_ILOG("Skipping optional member ${name} from object ${jsval}", (name)("jsval", jsval.operator std::string()));
     }
   }
 
@@ -282,6 +298,8 @@ public:
     auto arr_size = arr_val.array_length();
     v.reserve(arr_size);
 
+    VAL_PROTOCOL_ILOG("Processing ${name} member: Attempting to load ${arr_size} items from ${arr_val} into flat_set container...", ("arr_val", arr_val.operator std::string())(arr_size)(name));
+
     for (size_t i = 0; i < arr_size; ++i)
     {
       M item;
@@ -297,8 +315,12 @@ public:
         visitor.add( std::to_string( i ).c_str(), item );
       }
 
+      VAL_PROTOCOL_ILOG("Attempting to insert into set another item # ${i}: ${item}", (i)(item));
+
       v.insert(item);
     }
+
+    FC_ASSERT(v.size() == arr_size);
   }
 
   template<typename M>
@@ -313,6 +335,9 @@ public:
     ManagedObjectT arr_val = jsval[name];
 
     auto arr_size = arr_val.array_length();
+
+    VAL_PROTOCOL_ILOG("Processing ${name} member: Attempting to load ${arr_size} items from ${arr_val} into generic-array container...", ("arr_val", arr_val.operator std::string())(arr_size)(name));
+
     v.reserve(arr_size);
 
     for (size_t i = 0; i < arr_size; ++i)
@@ -331,8 +356,11 @@ public:
         visitor.add( std::to_string( i ).c_str(), item );
       }
 
+      VAL_PROTOCOL_ILOG("Attempting to push into array another item # ${i}: ${item}", (i)(item));
       v.emplace_back(item);
     }
+
+    FC_ASSERT(v.size() == arr_size);
   }
 
   template<typename M>
@@ -345,12 +373,22 @@ public:
       for (const auto& key : arr_val.get_map_keys())
       {
         hive::protocol::weight_type weight = arr_val[key].template as<hive::protocol::weight_type>();
-        v[M{key}] = weight;
+
+        VAL_PROTOCOL_ILOG("Attempting to push into map item ${key}/${weight}", (key)(weight));
+
+        /// WARNING: According to compatibility to hive::protocol maps serialization (fc from_variant/unpack), duplicates SHALL BE IGNORED, and first key/value association preserved.
+        auto insert_info = v.emplace(M{ key }, weight);
+        if (insert_info.second == false)
+        {
+          VAL_PROTOCOL_WLOG("Ignored duplicate for item: ${key}", (key));
+        }
       }
     }
     else
     {
       auto arr_size = arr_val.array_length();
+
+      VAL_PROTOCOL_ILOG("Processing ${name} member: Attempting to load ${arr_size} items from ${arr_val} into flat_map container...", ("arr_val", arr_val.operator std::string())(arr_size)(name));
 
       for (size_t i = 0; i < arr_size; ++i)
       {
@@ -358,7 +396,15 @@ public:
         std::string key = el[0].template as<std::string>();
         hive::protocol::weight_type weight = el[1].template as<hive::protocol::weight_type>();
 
-        v[M{key}] = weight;
+        VAL_PROTOCOL_ILOG("Attempting to push into map item # ${i}: ${key}/${weight}", (i)(key)(weight));
+
+        /// WARNING: According to compatibility to hive::protocol maps serialization (fc from_variant/unpack), duplicates SHALL BE IGNORED, and first key/value association preserved.
+        auto insert_info = v.emplace(M{key}, weight);
+
+        if (insert_info.second == false)
+        {
+          VAL_PROTOCOL_WLOG("Ignored duplicate for item # ${i}: ${key}", (i)(key));
+        }
       }
     }
   }
@@ -385,12 +431,18 @@ public:
         value.resize(hex_value.size() / 2);
         fc::from_hex(hex_value, value.data(), hex_value.size() / 2);
 
-        v[key] = value;
+        auto insert_info = v.emplace(std::move(key), std::move(value));
+        if (insert_info.second == false)
+        {
+          VAL_PROTOCOL_WLOG("Ignored duplicate for item ${key}", ("key", insert_info.first->first));
+        }
       }
     }
     else
     {
       auto arr_size = arr_val.array_length();
+
+      VAL_PROTOCOL_ILOG("Processing ${name} member: Attempting to load ${arr_size} items from ${arr_val} into flat_map container...", ("arr_val", arr_val.operator std::string())(arr_size)(name));
 
       for (size_t i = 0; i < arr_size; ++i)
       {
@@ -403,7 +455,12 @@ public:
         value.resize(hex_value.size() / 2);
         fc::from_hex(hex_value, value.data(), hex_value.size() / 2);
 
-        v[key] = value;
+        /// WARNING: According to compatibility to hive::protocol maps serialization (fc from_variant/unpack), duplicates SHALL BE IGNORED, and first value preserved.
+        auto insert_info = v.emplace(std::move(key), std::move(value));
+        if (insert_info.second == false)
+        {
+          VAL_PROTOCOL_WLOG("Ignored duplicate for item # ${i}: ${key}", (i)("key", insert_info.first->first));
+        }
       }
     }
   }
@@ -437,7 +494,13 @@ public:
 
   bool can_skip_missing_field(const char* name) const
   {
-    return ignore_missing_fields && jsval.is_optional_field_present(name) == false;
+    if(ignore_missing_fields && jsval.is_optional_field_present(name) == false)
+    {
+      VAL_PROTOCOL_WLOG("Skipping missing member: ${name} of object: ${o}", (name)("o", this->jsval.operator std::string()));
+      return true;
+    }
+
+    return false;
   }
 
   ManagedObjectT jsval;
@@ -456,7 +519,12 @@ typename val_to_static_variant<ManagedObjectT>::result_type val_to_static_varian
   static_assert( !binary_view::is_hive_array< T >::value, "We currently do not support arrays in static_variants when converting from ManagedObjectT" );
   static_assert( !std::is_scalar< T >::value, "We only support objects in static_variants when converting from ManagedObjectT" );
 
+  VAL_PROTOCOL_ILOG("Processing SV item: Attempting to load  object from ${jsval}", ("jsval", jsval.operator std::string()));
+
   fc::reflector< T >::visit( val_protocol_visitor< ManagedObjectT, T >{ jsval, v, is_protobuf } );
 }
 
 } // namespac cpp
+
+#undef VAL_PROTOCOL_ILOG
+#undef VAL_PROTOCOL_WLOG
