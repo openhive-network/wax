@@ -19,7 +19,7 @@ def test_validate_proto_operation():
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:58 from_jsval')
+        b'10 assert_exception: Assert Exception\nit != to_tag.end()\nCould not find the supported property in static variant: type\n    {"nextkey":"type"}\n    val_protocol.hpp:68 from_jsval')
 
     # Negative test
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP_EMPTY)
