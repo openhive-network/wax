@@ -323,73 +323,105 @@ public:
 
   void as(int64_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int64_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to int64_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = call_python_function([&] {
-      return PyLong_AsLongLong(pyobj);
+      return PyLong_AsLongLong(intermediate);
     });
   }
 
   void as(int32_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int32_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to int32_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<int32_t>(call_python_function([&] {
-      return PyLong_AsLong(pyobj);
+      return PyLong_AsLong(intermediate);
     }));
   }
 
   void as(int16_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int16_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to int16_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<int16_t>(call_python_function([&] {
-      return PyLong_AsLong(pyobj);
+      return PyLong_AsLong(intermediate);
     }));
   }
 
   void as(int8_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to int8_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to int8_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<int8_t>(call_python_function([&] {
-      return PyLong_AsLong(pyobj);
+      return PyLong_AsLong(intermediate);
     }));
   }
 
   void as(uint64_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint64_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to uint64_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = call_python_function([&] {
-      return PyLong_AsUnsignedLongLong(pyobj);
+      return PyLong_AsUnsignedLongLong(intermediate);
     });
   }
 
   void as(uint32_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint32_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to uint32_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<uint32_t>(call_python_function([&] {
-      return PyLong_AsUnsignedLong(pyobj);
+      return PyLong_AsUnsignedLong(intermediate);
     }));
   }
 
   void as(uint16_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint16_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to uint16_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<uint16_t>(call_python_function([&] {
-      return PyLong_AsUnsignedLong(pyobj);
+      return PyLong_AsUnsignedLong(intermediate);
     }));
   }
 
   void as(uint8_t& out)const
   {
-    FC_ASSERT(PyLong_Check(pyobj), "Cannot convert object to uint8_t: ${pyobj}", (pyobj));
+    FC_ASSERT(accept_integer_number(), "Cannot convert object to uint8_t: ${pyobj}", (pyobj));
+
+    auto intermediate = call_python_function([&] {
+      return PyNumber_Long(pyobj);
+    });
 
     out = static_cast<uint8_t>(call_python_function([&] {
-      return PyLong_AsUnsignedLong(pyobj);
+      return PyLong_AsUnsignedLong(intermediate);
     }));
   }
 
@@ -482,6 +514,11 @@ private:
       return PyMapping_GetItemString(fields_by_name, name);
     });
     return field_desc;
+  }
+
+  bool accept_integer_number() const
+  {
+    return PyLong_Check(pyobj) || (PyFloat_Check(pyobj) && std::floor(PyFloat_AsDouble(pyobj)) == PyFloat_AsDouble(pyobj));
   }
 
   private:
