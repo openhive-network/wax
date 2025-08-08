@@ -15,7 +15,7 @@ import { authority_verification_trace, MapStringUInt16, required_authority_colle
 import type { IOnlineSignatureProvider, ISignatureProvider } from "./extensions/signatures";
 
 type TAuthorityHolder = {
-  owner?: authority, /// unfortunetely protobuf defs have optional values allowed on defined authority levels
+  owner?: authority, /// unfortunately protobuf defs have optional values allowed on defined authority levels
   active?: authority,
   posting?: authority
 };

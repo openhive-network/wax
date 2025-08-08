@@ -35,7 +35,7 @@ const getModuleExt = (fileLocation?: string) => {
 /**
  * Creates a Wax Hive chain instance
  *
- * @param {?Partial<IWaxOptionsChain>} options wax options
+ * @param {Partial<IWaxOptionsChain>} [options] wax options
  *
  * @returns {Promise<IHiveChainInterface>} Wax Hive chain API Instance
  *
@@ -50,7 +50,7 @@ export const createHiveChain = (options: Partial<IWaxOptionsChain> = {}): Promis
 /**
  * Creates a Wax Hive base instance
  *
- * @param {?Partial<IWaxOptions>} options wax options
+ * @param {Partial<IWaxOptions>} [options] wax options
  *
  * @returns {Promise<IWaxBaseInterface>} Wax Hive Base API Instance
  *

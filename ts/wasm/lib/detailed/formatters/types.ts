@@ -47,7 +47,7 @@ export interface IWaxFormatterOptions {
   };
   transaction: {
     /**
-     * Displays transactiona as its id (new format) instead of an object
+     * Displays transaction as its id (new format) instead of an object
      *
      * @default true
      */
@@ -89,7 +89,7 @@ export interface IFormatFunctionArguments<TSource = object, TTarget = any> {
 /**
  * Formatter function that receives input value for the matched property and returns the formatted output
  * Remember that this function takes two arguments. The first one is for data parsing, e.g. for transactions
- * parsing using {@link ITransaction["createTransactionFromJson"]}. That data should mantain immutable.
+ * parsing using {@link ITransaction["createTransactionFromJson"]}. That data should maintain immutable.
  *
  * The second argument is the target working argument which should be returned from the formatter function
  * if your options specify to ignore given formatting.
@@ -170,7 +170,7 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
    * Allows users to extend the default wax formatter using custom user-defined formatters with {@link WaxFormattable}
    *
    * @param {TWaxCustomFormatterConstructor} formatterConstructor constructable formatter object
-   * @param {?Partial<IWaxFormatterOptions>} options formatter options
+   * @param {Partial<IWaxFormatterOptions>} [options] formatter options
    * @returns {WaxFormatter} extended formatter class
    */
   extend(formatterConstructor: TWaxCustomFormatterConstructor, options?: Partial<IWaxFormatterOptions>): IWaxExtendableFormatter;
@@ -178,7 +178,7 @@ export interface IWaxExtendableFormatter extends IWaxFormatter {
   /**
    * Allows users to extend the default wax formatter using given options
    *
-   * @param {?Partial<IWaxFormatterOptions>} options formatter options
+   * @param {Partial<IWaxFormatterOptions>} [options] formatter options
    * @returns {WaxFormatter} extended formatter class
    */
   extend(options: Partial<IWaxFormatterOptions>): IWaxExtendableFormatter;

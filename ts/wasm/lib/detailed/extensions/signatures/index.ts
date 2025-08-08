@@ -15,8 +15,8 @@ export interface ISignatureProvider {
    *
    * @param {string} content Content to be encrypted
    * @param {TPublicKey} key public key to find the private key in the underlying container and encrypt the data
-   * @param {?TPublicKey} anotherKey other public key to find the private key in the underlying container and encrypt the data (optional - use if the message is to encrypt for somebody else)
-   * @param {?number} nonce optional nonce to be explicitly specified for encryption
+   * @param {TPublicKey} [anotherKey] other public key to find the private key in the underlying container and encrypt the data (optional - use if the message is to encrypt for somebody else)
+   * @param {number} [nonce] optional nonce to be explicitly specified for encryption
    *
    * @returns {string} base58 encrypted buffer
    */
@@ -26,7 +26,7 @@ export interface ISignatureProvider {
    *
    * @param {string} content Base58 content to be decrypted
    * @param {TPublicKey} key public key to find the private key in the underlying container and decrypt the data
-   * @param {?TPublicKey} anotherKey other public key to find the private key in the underlying container and decrypt the data (optional - use if the message was encrypted for somebody else)
+   * @param {TPublicKey} [anotherKey] other public key to find the private key in the underlying container and decrypt the data (optional - use if the message was encrypted for somebody else)
    *
    * @returns {string} decrypted buffer
    */
@@ -39,7 +39,7 @@ export interface IOnlineSignatureProvider {
    *
    * @param {ITransaction} transaction transaction to be signed
    *
-   * @returns {Promise<void>} signed data in hex format
+   * @returns {Promise<void>} resolves when the wallet finished signing (signature(s) appended internally)
    */
   signTransaction(transaction: ITransaction): Promise<void>;
 };

@@ -259,7 +259,7 @@ class CommentOperation extends OperationBase {
    * Assigns given object or sets given value on key in comment meta values
    *
    * @param {string | object} keyOrObject key to set the value on or the entire object of key-value pairs to assign to the json metadata object
-   * @param {?any} value value to be set (optional when passing the entire object)
+   * @param {any} [value] value to be set (optional when passing the entire object)
    *
    * @throws {WaxError} if key already exists on the jsonmetadata object
    * @returns {this} itself

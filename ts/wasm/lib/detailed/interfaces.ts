@@ -181,7 +181,7 @@ export interface ITransactionBase {
    *
    * @returns {Set<TAccountName>} A set containing the account names that are impacted by the current transaction
    *
-   * @throws {WaxError} on any Wax WASM related error
+   * @throws {WaxError} on any Wax WASM-related error
    */
   get impactedAccounts(): Set<TAccountName>;
 
@@ -271,14 +271,14 @@ export interface ITransactionBase {
   /**
    * Retrieves transaction binary view packed "AST" data (in same form as in the block_log)
    *
-   * @return {IBinaryViewOutputData} binary view metadata
+   * @returns {IBinaryViewOutputData} binary view metadata
    */
   get binaryViewMetadata(): IBinaryViewOutputData;
 
   /**
    * Retrieves transaction binary view packed "AST" data (in same form as in the block_log) (legacy serialization form is used).
    *
-   * @return {IBinaryViewOutputData} binary view metadata
+   * @returns {IBinaryViewOutputData} binary view metadata
    *
    * @deprecated
    */
@@ -315,7 +315,7 @@ export interface ITransactionBase {
    * you have to import those keys into the wallet passed to the {@link ITransaction.sign} method
    *
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
-   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
+   * @param {TPublicKey} [otherEncryptionKey] Optional second key to encrypt operations
    *
    * @returns {this & IEncryptingTransaction<this>} current transaction instance
    */
@@ -344,7 +344,7 @@ export interface ITransactionBase {
 
   /**
    * Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
-   * @param {boolean} stripToUnsignedTransaction optional flag to strip the transaction to unsigned form (without signature container).
+   * @param {boolean} [stripToUnsignedTransaction] optional flag to strip the transaction to unsigned form (without signature container).
    *        This form can be useful for external transaction hash calculation.
    */
   toBinaryForm(stripToUnsignedTransaction?: boolean): THexString;
@@ -361,7 +361,7 @@ export interface ITransactionBase {
    * @see Complex operations:
    *  {@link AccountAuthorityUpdateOperation} Creates an account authority update operation
    *  {@link BlogPostOperation} Creates a blog post. It requires the category on blog post to be set,
-   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requiers parent author and parent permlink to be set,
+   *  {@link ReplyOperation} Creates a reply to a comment or a blog post. It requires parent author and parent permlink to be set,
    *  {@link DefineRecurrentTransferOperation} Creates or updates a recurrent transfer. It requires the amount to be set and to be non-zero, otherwise the removal will be generated automatically,
    *  {@link RecurrentTransferRemovalOperation} Creates an operation removing existing recurrent transfer
    *  {@link UpdateProposalOperation} Creates an update proposal operation. You can optionally set the end date of the proposal,
@@ -385,7 +385,7 @@ export interface ITransactionBase {
    *  }));
    * ```
    *
-   * @example Building recurrent transfer with pair id and automaically generated removal
+   * @example Building recurrent transfer with pair id and automatically generated removal
    * ```typescript
    *  tx.pushOperation(new DefineRecurrentTransferOperation({
    *    from: "initminer",
@@ -414,7 +414,7 @@ export interface ITransactionBase {
  * Example usage:
  * @example Base transaction usage
  * ```typescript
- * const tx = new waxFoundation.Transaction();
+ * const tx = await waxFoundation.createTransaction();
  *
  * tx.pushOperation({
  *   vote: {
@@ -467,7 +467,7 @@ export interface ITransaction extends ITransactionBase {
  *
  * @example Base encrypting transaction usage
  * ```typescript
- * const tx = new waxFoundation.Transaction();
+ * const tx = await waxFoundation.createTransaction();
  *
  * tx.startEncrypt(myPublicKey).pushOperation({
  *    transfer: {
@@ -509,10 +509,10 @@ export interface IOnlineTransaction extends ITransactionBase {
 
   /**
    * Allows to generate authority verification trace for the currently loaded/built transaction.
-   * Transaction should be already signed, othwerwise the function throws.
+   * Transaction should be already signed, otherwise the function throws.
    * The authority trace process requires online access to the chain APIs to retrieve account data.
    *
-   * @param {boolean} useLegacySerialization optional flag to force using legacy (pre HF26) serialization mode on processed transaction
+   * @param {boolean} [useLegacySerialization] optional flag to force using legacy (pre HF26) serialization mode on processed transaction
    * @param {ITransaction} externalTx optional external transaction to be used for authority verification trace generation. If omitted, defaults to HF26
    */
   generateAuthorityVerificationTrace(useLegacySerialization?: boolean, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace>;
@@ -523,8 +523,7 @@ export interface IOnlineTransaction extends ITransactionBase {
    * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
    *
    * @param {IOnlineSignatureProvider} wallet unlocked wallet to be used for signing
-   *
-   * @returns {Promise<void>} transaction signature signed using given key
+   * @returns {Promise<void>} resolves when the wallet finished signing (signature(s) appended internally)
    *
    * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
    */
@@ -598,20 +597,22 @@ export interface IWaxBaseInterface {
   /**
    * Retrieves the set of account names (not authorities!) that are impacted by a given operation.
    *
-   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf opereation or operation returned from the Hive Nodes API
+   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf operation or operation returned from the Hive Nodes API
    * @returns {Set<TAccountName>} A set containing the account names that are impacted by the given operation.
    *
-   * @throws {WaxError} on any Wax WASM related error
+   * @throws {WaxError} on any Wax WASM-related error
    */
   operationGetImpactedAccounts(operation: operation | ApiOperation): Set<TAccountName>;
 
   /**
    * Retrieves given operation binary view packed "AST" data (in same form as in the block_log)
    *
-   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf opereation or operation returned from the Hive Nodes API
-   * @returns {?isHf26Serialization} A flag indicating if serialization should be done in HF26 form or legacy form (defaults to `true` - hf26 type)
+   * @param {operation | ApiOperation} operation The operation object which could be either a protobuf operation or operation returned from the Hive Nodes API
+   * @param {boolean} [isHf26Serialization] A flag indicating if serialization should be done in HF26 form or legacy form (defaults to `true` - hf26 type)
    *
-   * @return {IBinaryViewOutputData} binary view metadata
+   * @returns {IBinaryViewOutputData} binary view metadata
+   *
+   * @throws {WaxError} on any Wax WASM-related error
    */
   operationBinaryViewMetadata(operation: operation | ApiOperation, isHf26Serialization?: boolean): IBinaryViewOutputData;
 
@@ -645,6 +646,8 @@ export interface IWaxBaseInterface {
    * @param {TNaiAssetSource} hbdAmountToGet HBD asset used to get HIVE asset
    *
    * @returns {NaiAsset} value in HIVE asset
+   *
+   * @throws {WaxError} on any Wax WASM-related error
    */
   estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetSource, currentMedianHistoryQuote: TNaiAssetSource, currentMinHistoryBase: TNaiAssetSource, currentMinHistoryQuote: TNaiAssetSource, hbdAmountToGet: TNaiAssetSource): NaiAsset;
 
@@ -659,6 +662,7 @@ export interface IWaxBaseInterface {
    *
    * @param {number} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hiveCoins(amount: number): NaiAsset;
 
@@ -673,6 +677,7 @@ export interface IWaxBaseInterface {
    *
    * @param {number} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hbdCoins(amount: number): NaiAsset;
 
@@ -687,6 +692,7 @@ export interface IWaxBaseInterface {
    *
    * @param {number} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   vestsCoins(amount: number): NaiAsset;
 
@@ -701,6 +707,7 @@ export interface IWaxBaseInterface {
    *
    * @param {TNaiAssetConvertible} amount amount of HIVE
    * @returns {NaiAsset} HIVE in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hiveSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
@@ -715,6 +722,7 @@ export interface IWaxBaseInterface {
    *
    * @param {TNaiAssetConvertible} amount amount of HBD
    * @returns {NaiAsset} HBD in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hbdSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
@@ -729,6 +737,7 @@ export interface IWaxBaseInterface {
    *
    * @param {TNaiAssetConvertible} amount amount of VESTS
    * @returns {NaiAsset} VESTS in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   vestsSatoshis(amount: TNaiAssetConvertible): NaiAsset;
 
@@ -745,6 +754,7 @@ export interface IWaxBaseInterface {
    * @returns {NaiAsset} HIVE in nai form
    *
    * @deprecated Use {@link hiveSatoshis} or {@link hiveCoins} instead
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hive(amount: TNaiAssetConvertible): NaiAsset;
 
@@ -761,6 +771,7 @@ export interface IWaxBaseInterface {
    * @returns {NaiAsset} HBD in nai form
    *
    * @deprecated Use {@link hbdSatoshis} or {@link hbdCoins} instead
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hbd(amount: TNaiAssetConvertible): NaiAsset;
 
@@ -777,40 +788,47 @@ export interface IWaxBaseInterface {
    * @returns {NaiAsset} VESTS in nai form
    *
    * @deprecated Use {@link vestsSatoshis} or {@link vestsCoins} instead
+   * @throws {WaxError} on any Wax WASM-related error
    */
   vests(amount: TNaiAssetConvertible): NaiAsset;
 
   /**
    * Converts VESTS to HP in nai form
-   * @param {NaiAsset} vests VESTS asset
-   * @param {NaiAsset} totalVestingFundHive HIVE assest total vesting fund
-   * @param {NaiAsset} totalVestingShares VESTS asset total shares
+   * @param {TNaiAssetSource} vests VESTS asset
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
+   * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} HP in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   vestsToHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset
 
   /**
    * Converts HP to VESTS in nai form
-   * @param {NaiAsset} hive HIVE asset
-   * @param {NaiAsset} totalVestingFundHive HIVE assest total vesting fund
-   * @param {NaiAsset} totalVestingShares VESTS asset total shares
+   * @param {TNaiAssetSource} hive HIVE asset
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
+   * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} VESTS in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hpToVests(hive: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
    * Converts HBD to HIVE in nai form
-   * @param {NaiAsset} hbd HBD asset
-   * @param {NaiAsset} base HBD asset price base
-   * @param {NaiAsset} quote HIVE asset price quote
+   * @param {TNaiAssetSource} hbd HBD asset
+   * @param {TNaiAssetSource} base HBD asset price base
+   * @param {TNaiAssetSource} quote HIVE asset price quote
    * @returns {NaiAsset} HIVE in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hbdToHive(hbd: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset;
 
   /**
    * Converts given amount of HIVE asset to HBD (nai form)
-   * @param {NaiAsset} amount HIVE asset
-   * @param {NaiAsset} base HBD asset price base taken i.e. from database_api.get_current_price_feed call
-   * @param {NaiAsset} quote HIVE asset price quote taken i.e. from database_api.get_current_price_feed call
+   * @param {TNaiAssetSource} amount HIVE asset
+   * @param {TNaiAssetSource} base HBD asset price base taken i.e. from database_api.get_current_price_feed call
+   * @param {TNaiAssetSource} quote HIVE asset price quote taken i.e. from database_api.get_current_price_feed call
    * @returns {NaiAsset} HBD in nai form
+   * @throws {WaxError} on any Wax WASM-related error
    */
   hiveToHbd(amount: TNaiAssetSource, base: TNaiAssetSource, quote: TNaiAssetSource): NaiAsset;
 
@@ -846,23 +864,24 @@ export interface IWaxBaseInterface {
    * @param {string} role active | owner | posting | memo
    * @param {string} password the Master Password to derive key from
    *
-   * @returns {IPrivateKeyData} Genrated private key along with the associated public key in WIF format
-   *
+   * @returns {IPrivateKeyData} Generated private key along with the associated public key in WIF format
    * @throws {WaxError} on any Wax API-related error
    */
   getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData;
 
   /**
    * Allows to convert raw private key to WIF format.
-   * @param rawPrivateKey 32 bytes buffer (64 characters hex string) representing private key secret
+   * @param {THexString} rawPrivateKey 32 bytes buffer (64 characters hex string) representing private key secret
    * @returns WIF formatted private key
+   * @throws {WaxError} on any Wax WASM-related error
    */
   convertRawPrivateKeyToWif(rawPrivateKey: THexString): string;
 
   /**
    * Allows to convert raw public key to WIF format.
-   * @param rawPublicKey 33 or 65 bytes buffer (doubled characters hex string) representing compressed or uncompressed public key data
+   * @param {THexString} rawPublicKey 33 or 65 bytes buffer (doubled characters hex string) representing compressed or uncompressed public key data
    * @returns WIF formatted public key (including prefix)
+   * @throws {WaxError} on any Wax WASM-related error
    */
   convertRawPublicKeyToWif(rawPublicKey: THexString): string;
 
@@ -872,10 +891,11 @@ export interface IWaxBaseInterface {
    * @param {ISignatureProvider} wallet Wallet with imported {@link mainEncryptionKey} and {@link otherEncryptionKey} keys
    * @param {string} content Content to be encoded
    * @param {TPublicKey} mainEncryptionKey First key to encrypt operations
-   * @param {?TPublicKey} otherEncryptionKey Optional second key to encrypt operations
-   * @param {?number} nonce optional nonce to be explicitly specified for encryption
+   * @param {TPublicKey} [otherEncryptionKey] Optional second key to encrypt operations
+   * @param {number} [nonce] optional nonce to be explicitly specified for encryption
    *
    * @returns {string} Encrypted content
+   * @throws {WaxError} on any Wax WASM-related error
    */
   encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
 
@@ -886,6 +906,7 @@ export interface IWaxBaseInterface {
    * @param {string} encrypted Content to be decoded
    *
    * @returns {string} Decoded content
+   * @throws {WaxError} on any Wax WASM-related error
    */
   decrypt(wallet: ISignatureProvider, encrypted: string): string;
 
@@ -902,6 +923,7 @@ export interface IWaxBaseInterface {
    *                                For rc manabar calculations use rc_manabar value from the rc_accounts API call
    *
    * @returns {IManabarData} Manabar data
+   * @throws {WaxError} on any Wax WASM related error
    */
   calculateCurrentManabarValue(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): IManabarData;
 
@@ -918,6 +940,7 @@ export interface IWaxBaseInterface {
    *                                For rc manabar calculations use rc_manabar value from the rc_accounts API call
    *
    * @returns {number} Full regeneration timestamp (in seconds)
+   * @throws {WaxError} on any Wax WASM related error
    */
   calculateManabarFullRegenerationTime(now: number, maxMana: TNaiAssetConvertible, currentMana: TNaiAssetConvertible, lastUpdateTime: number): number;
 
@@ -928,6 +951,7 @@ export interface IWaxBaseInterface {
    * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
    * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
    * @returns {NaiAsset} HP in nai form
+   * @throws {WaxError} on any Wax WASM related error
    */
   calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
@@ -938,6 +962,7 @@ export interface IWaxBaseInterface {
    * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
    * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
    * @returns {NaiAsset} HP in nai form
+   * @throws {WaxError} on any Wax WASM related error
    */
   calculateWitnessVotesHp(votes: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
@@ -949,6 +974,7 @@ export interface IWaxBaseInterface {
    * @param {TNaiAssetSource} virtualSupply virtual supply
    * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund HIVE
    * @returns {number} HP APR percent with 2 decimals
+   * @throws {WaxError} on any Wax WASM related error
    */
   calculateHpApr(headBlockNum: number, vestingRewardPercent: number, virtualSupply: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource): number;
 
@@ -974,7 +1000,7 @@ export interface IWaxBaseInterface {
    * Constructs a new Transaction object with given data
    *
    * @param {TBlockHash} taposBlockId reference block id (can be head block id) for TaPoS
-   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
+   * @param {TTimestamp} [expirationTime] expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
    *                                    Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours
    *                                    (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                    `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`.
@@ -991,9 +1017,10 @@ export interface IWaxBaseInterface {
    * Converts given transaction from Hive API-form JSON to HF26 specific binary form
    *
    * @param {ApiTransaction} transaction transaction in Hive API-form JSON
-   * @param {boolean} stripToUnsignedTransaction optional flag to strip the transaction to unsigned form (without signature container).
+   * @param {boolean} [stripToUnsignedTransaction] optional flag to strip the transaction to unsigned form (without signature container).
    *        This form can be useful for external transaction hash calculation.
    * @returns {THexString} transaction in hexstring
+   * @throws {WaxError} on any Wax WASM-related error
    */
   convertTransactionToBinaryForm(transaction: ApiTransaction, stripToUnsignedTransaction?: boolean): THexString;
 
@@ -1003,11 +1030,13 @@ export interface IWaxBaseInterface {
    * @param {THexString} transaction transaction in hexstring
    *
    * @returns {ApiTransaction} transaction in Hive API-form JSON
+   * @throws {WaxError} on any Wax WASM-related error
    */
   convertTransactionFromBinaryForm(transaction: THexString): ApiTransaction;
 
   /**
    * Deletes the created wax proto_protocol instance
+   * @throws {WaxError} on any Wax WASM-related error
    */
   delete(): void;
 }
@@ -1130,7 +1159,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    *
    * Same as {@link IWaxBaseInterface.createTransactionWithTaPoS}, but pulls the reference block data from the remote
    *
-   * @param {?TTimestamp} expirationTime expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
+   * @param {TTimestamp} [expirationTime] expiration time for the transaction. Applies upon the {@link ITransaction.sign} call or reading {@link ITransaction.transaction} property.
    *                                     Can be either any argument parsable by the Date constructor or relative time in seconds, minutes or hours
    *                                     (remember maximum expiration time for the transaction in mainnet is 1 hour), e.g.:
    *                                     `1699550966300` `"2023-11-09T17:29:30.028Z"` `new Date()` `"+10s"` `+30m` `+1h`. Defaults to `+1m`.
@@ -1149,11 +1178,11 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @param {ISignatureProvider} wallet Wallet with imported {@link fromAccount} and {@link toAccount} memo public keys
    * @param {string} content Content to be encoded
    * @param {string} fromAccount first account to retrieve the memo public key used for encryption
-   * @param {?string} toAccount second account to retrieve the memo public key used for encryption
+   * @param {string} toAccount second account to retrieve the memo public key used for encryption
    *
    * @returns {Promise<string>} Encrypted content
    */
-  encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount?: string): Promise<string>;
+  encryptForAccounts(wallet: ISignatureProvider, content: string, fromAccount: string, toAccount: string): Promise<string>;
 
   /**
    * Allows to override default endpoint URL used to call RPC APIs initially configured by {@link IWaxOptionsChain} passed to {@link createHiveChain} builder function.
@@ -1168,7 +1197,8 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Extends hive chain interface with your custom API definitions
    *
-   * @param extendedHiveApiData your custom api definitions for use with class-validators and class-transformers
+   * @template YourApi
+   * @param {YourApi} extendedHiveApiData your custom api definitions for use with class-validators and class-transformers
    *
    * @returns Wax Hive chain instance containing extended api
    */
@@ -1177,7 +1207,8 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Extends hive chain interface with your custom REST API definitions
    *
-   * @param extendedHiveRestApiData your custom Rest api definitions for use with class-validators and class-transformers
+   * @template YourRestApi
+   * @param {TDeepWaxApiRequestPartial<YourRestApi>} [extendedHiveRestApiData] your custom Rest api definitions for use with class-validators and class-transformers
    *
    * @returns Wax Hive chain instance containing extended Rest api
    */
@@ -1186,6 +1217,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
   /**
    * Extends hive chain interface with your custom API definitions (allows you to call remote endpoints without response validation)
    *
+   * @template YourApi
    * @returns Wax Hive chain instance containing extended api
    */
   extend<YourApi>(): TWaxExtended<YourApi>;
@@ -1194,7 +1226,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * Calculates current manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate current manabar value
-   * @param {?EManabarType} manabarType manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
+   * @param {EManabarType} [manabarType] manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<IManabarData>} Manabar data
    */
@@ -1204,7 +1236,7 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * Calculates full regeneration time of the manabar value for Hive account based on given arguments
    *
    * @param {string} account account for which we want to calculate manabar full regeneration time
-   * @param {?EManabarType} manabarType manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
+   * @param {EManabarType} [manabarType] manabar type to calculate (can be upvote, downvote or rc manabar. Defaults to {@link EManabarType.UPVOTE})
    *
    * @returns {Promise<Date>} Full regeneration time
    */

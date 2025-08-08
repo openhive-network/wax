@@ -40,7 +40,7 @@ export type TWaxFormatterDecorator = (target: any, propertyKey: string, descript
  * When used on method, marks that this method is intended to be used for wax formatting with given property matching.
  * When no options provided, method name is used for property matching
  *
- * @param {?(IWaxFormatterDecoratorOptions | string)} options property to match or decorator options
+ * @param {(IWaxFormatterDecoratorOptions | string)} [options] property to match or decorator options
  * @returns {TWaxFormatterDecorator}
  *
  * @example Simple wax decorator usage

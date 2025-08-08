@@ -100,7 +100,7 @@ export class HealthChecker extends EventEmitter {
   /**
    * Removes URL from endpoints matching given criteria
    * @param {string} endpointUrl Endpoint URL to remove
-   * @param type Type of the endpoint
+   * @param {EChainApiType} type Type of the endpoint
    */
   public removeEndpointUrl(endpointUrl: string, type: EChainApiType): void {
     for(const endpoint of this.endpoints.values())
@@ -127,10 +127,10 @@ export class HealthChecker extends EventEmitter {
   /**
    * Creates a new HealthChecker instance.
    *
-   * @param {?Readonly<Array<string>>} defaultEndpoints default endpoints for checkers.
+   * @param {Readonly<Array<string>>} [defaultEndpoints] default endpoints for checkers.
    *  If `undefined` (default) uses {@link DefaultJsonRpcEndpoints} for json rpc or {@link DefaultRestApiEndpoints} for rest api
-   * @param {number} minimalCheckIntervalMs minimal interval between checks in milliseconds (default: 10 seconds)
-   * @param {TCalculateScoresFunction} calculateScoresFunction function to calculate scores (default: {@link defaultCalcScores})
+   * @param {number} [minimalCheckIntervalMs] minimal interval between checks in milliseconds (default: 10 seconds)
+   * @param {TCalculateScoresFunction} [calculateScoresFunction] function to calculate scores (default: {@link defaultCalcScores})
    *
    * @example
    * ```ts
@@ -183,7 +183,7 @@ export class HealthChecker extends EventEmitter {
    * @param {TFn} endpointToCheck Function to check (e.g. `chain.api.block_api.get_block`)
    * @param {Parameters<TFn>[0]} toSend param to endpointToCheck
    * @param {(data: Awaited<ReturnType<TFn>>) => (true | string)} validator optional validator for fields. Return true to pass validation and string to fail with given message
-   * @param {?string[]} testOnEndpoints explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
+   * @param {string[]} [testOnEndpoints] explicit list of endpoints. If not provided defaults to {@link defaultEndpoints}
    *
    * @returns {IHiveEndpoint} hive endpoint to check
    *
@@ -284,8 +284,8 @@ export class HealthChecker extends EventEmitter {
    * Unregisters the checker from the healthcheck intervals
    *
    * @param {IHiveEndpoint} api api to unregister
-   * @param {?boolean} clearUnusedEndpointUrlsFromStats if true, clears unused endpoint urls from stats (defaults to true)
-   * @returns {boolean} either true or false if api has been unregistered succesfully
+   * @param {boolean} [clearUnusedEndpointUrlsFromStats] if true, clears unused endpoint urls from stats (defaults to true)
+   * @returns {boolean} either true or false if api has been unregistered successfully
    */
   public unregister(api: IHiveEndpoint, clearUnusedEndpointUrlsFromStats: boolean = true): boolean {
     const endpoint = this.endpoints.get((api as HiveEndpoint).id);
@@ -305,7 +305,7 @@ export class HealthChecker extends EventEmitter {
 
   /**
    * Unregisters the checker from all of the healthcheck intervals
-   * @param {?boolean} clearUnusedEndpointUrlsFromStats if true, clears unused endpoint urls from stats (defaults to true)
+   * @param {boolean} [clearUnusedEndpointUrlsFromStats] if true, clears unused endpoint urls from stats (defaults to true)
    */
   public unregisterAll(clearUnusedEndpointUrlsFromStats: boolean = true): void {
     const registrationKeys = this.endpoints.values();

@@ -368,11 +368,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
    * actual WaxAuthorities interface, operating on native JS containers (Array/Map). Best reuse such type with
    * {@link AccountAuthorityUpdateOperation} implementation.
    *
-   * @param content text to be scanned
-   * @param account name of account being protected against security leak
-   * @param accountAuthorities account authority definition (to retrieve public keys)
-   * @param memoKey memo public key
-   * @param otherKeys optional list of keys to be checked
+   * @param {string} content text to be scanned
+   * @param {string} account name of account being protected against security leak
+   * @param {IWaxAuthorities} accountAuthorities account authority definition (to retrieve public keys)
+   * @param {TPublicKey} memoKey memo public key
+   * @param {TPublicKey[]} [otherKeys] optional list of keys to be checked
    *
    * @throws {WaxError} on found private key references
    *

@@ -110,7 +110,7 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * If the account or key already exists, its weight is updated.
    *
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be added to the currently selected role.
-   * @param {?number} weight Account or key weight in the authority. Default is 1.
+   * @param {number} [weight] Account or key weight in the authority. Default is 1.
    * @returns itself
    */
   public add(accountOrKey: TPublicKey | TAccountName, weight: number = 1): this {
@@ -161,7 +161,7 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * Checks if the account or key is present in the currently selected role.
    *
    * @param {TPublicKey | TAccountName} accountOrKey Account or key to be checked.
-   * @param {?number} weight Account or key weight in the authority. If provided, the weight is checked as well.
+   * @param {number} [weight] Account or key weight in the authority. If provided, the weight is checked as well.
    * @returns {boolean} Either true or false depending on whether the account or key is present in the currently selected role.
    */
   public has(accountOrKey: TPublicKey | TAccountName, weight?: number): boolean {
@@ -176,9 +176,9 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
   }
 
   /**
-   * Sets weigth treshold for the currently selected role.
+   * Sets weight threshold for the currently selected role.
    *
-   * @param {?number} treshold weight treshold for the currently selected role. Defaults to 1.
+   * @param {number} [treshold] weight threshold for the currently selected role. Defaults to 1.
    * @returns itself
    */
   public setTreshold(treshold: number = 1): this {
