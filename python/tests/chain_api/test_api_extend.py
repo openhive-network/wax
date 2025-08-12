@@ -17,13 +17,11 @@ class TestApi(AbstractAsyncApi):
 
 class TestApiCollection:
     def __init__(self) -> None:
-        super().__init__()
         self.test_api = TestApi
 
 
 class SecondTestApiCollection:
     def __init__(self) -> None:
-        super().__init__()
         self.second_test_api = TestApi
 
 

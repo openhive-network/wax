@@ -71,7 +71,11 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         current_api: type[ApiCollectionT | ExtendedApiCollectionT] = self._api_collection
 
         class NewApi(new_api, current_api):  # type: ignore[valid-type, misc]
-            ...
+            def __init__(self) -> None:
+                new_api.__init__(self)
+                current_api.__init__(self)
+                # super().__init__() is not used here as it requires the user to call the super() method also,
+                # which causes that it is required when some collection has not base class
 
         return HiveChainApi[ExtendedApiCollectionT | ApiCollectionT](
             self.chain_id, self.endpoint_url, NewApi, _private=True
