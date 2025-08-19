@@ -1,0 +1,26 @@
+FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04 AS runtime_base
+
+ARG USER_NAME=user
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+SHELL ["/bin/bash", "-c"]
+
+RUN groupadd -o -g $GROUP_ID usergroup && \
+    useradd -o -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME}
+
+USER ${USER_NAME}
+
+FROM runtime_base AS runtime_wax_environment
+
+ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
+                         https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple \
+                         https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
+                         https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+
+
+RUN /python_venv/bin/pip install --no-cache-dir 'wax==0.3.10.dev785+aeb3abb8'
+ENV PATH="/python_venv/bin:${PATH}"
+
+ENTRYPOINT ["/python_venv/bin/python"]
+CMD ["bash"]
