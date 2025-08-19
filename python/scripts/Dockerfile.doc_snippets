@@ -1,0 +1,24 @@
+FROM python:3.12-slim
+
+ARG USER_NAME=user
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -o -g $GROUP_ID $USER_NAME && \
+    useradd -m -u $USER_ID -g $GROUP_ID -s /bin/bash $USER_NAME
+
+WORKDIR /workspaces/wax-doc-snippets
+
+ENV VENV_PATH=/home/$USER_NAME/python_venv
+ENV PATH="$VENV_PATH/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
+ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+
+RUN python3 -m venv $VENV_PATH && \
+    $VENV_PATH/bin/pip install --upgrade pip && \
+    $VENV_PATH/bin/pip install --no-cache-dir 'hiveio-wax==1.27.12rc1' && \
+    $VENV_PATH/bin/pip install 'hiveio-rc-api' && \
+    $VENV_PATH/bin/pip install 'hiveio-reputation-api' && \
+    $VENV_PATH/bin/pip install 'jupyterlab==4.4.7' ipykernel
+
+USER $USER_NAME
