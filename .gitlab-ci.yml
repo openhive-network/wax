@@ -530,3 +530,19 @@ build_and_publish_wax_doc_snippets_image:
     - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${PYPROJECT_DIR}" "${CI_COMMIT_SHA}"
   tags:
   - public-runner-docker
+
+test_wax_doc_snippets_image:
+  image: docker:24.0.2
+  stage: test
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  needs:
+    - job: build_and_publish_wax_doc_snippets_image
+  services:
+    - docker:dind
+  script:
+    - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}"
+    - docker run --rm "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}" -c 'import wax; print(f"Installed WAX version - {wax.__version__}"); assert wax.__version__ == "0.3.10.dev785+aeb3abb8"'
+  tags:
+    - public-runner-docker
