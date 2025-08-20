@@ -9,6 +9,9 @@ SHELL ["/bin/bash", "-c"]
 RUN groupadd -o -g $GROUP_ID usergroup && \
     useradd -o -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME}
 
+USER root
+RUN apt-get update && apt-get install -y curl wget libssl-dev libffi-dev libstdc++6
+
 USER ${USER_NAME}
 
 FROM runtime_base AS runtime_wax_environment
@@ -22,5 +25,4 @@ ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/
 RUN /python_venv/bin/pip install --no-cache-dir 'wax==0.3.10.dev785+aeb3abb8'
 ENV PATH="/python_venv/bin:${PATH}"
 
-ENTRYPOINT ["/python_venv/bin/python"]
-CMD ["bash"]
+CMD ["/bin/bash", "-l"]
