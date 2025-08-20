@@ -1,3 +1,14 @@
+FROM ubuntu:24.04 AS python_dev
+
+ARG PYTHON_VERSION=3.12
+ENV APT_CACHE_DIR=/var/cache/buildkit/apt
+
+RUN apt-get update && \
+    apt-get install -y \
+        curl wget git bash sudo python3.${PYTHON_VERSION#3.} python3-venv python3-pip libssl-dev libffi-dev libstdc++6 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    python3 -m venv --system-site-packages /python_venv
+
 FROM registry.gitlab.syncad.com/hive/common-ci-configuration/python_runtime:3.12-u24.04 AS runtime_base
 
 ARG USER_NAME=user
@@ -6,23 +17,29 @@ ARG GROUP_ID=1000
 
 SHELL ["/bin/bash", "-c"]
 
-RUN groupadd -o -g $GROUP_ID usergroup && \
+RUN groupadd -o -g $GROUP_ID user && \
     useradd -o -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME}
 
-USER root
-RUN apt-get update && apt-get install -y curl wget libssl-dev libffi-dev libstdc++6
+COPY --from=python_dev /usr/bin/curl /usr/bin/wget /usr/bin/git /usr/bin/python3 /usr/bin/python3.12 /usr/bin/pip3 /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/libffi.so* /usr/lib/x86_64-linux-gnu/libstdc++.so* /usr/bin/
+
+COPY --from=python_dev /python_venv /python_venv
+ENV PATH="/python_venv/bin:${PATH}" VIRTUAL_ENV=/python_venv
 
 USER ${USER_NAME}
 
 FROM runtime_base AS runtime_wax_environment
+
+USER root
+RUN mkdir -p /workspaces && chown -R user:user /workspaces
+
+USER user
+WORKDIR /workspaces
 
 ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
                          https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple \
                          https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple \
                          https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
 
-
 RUN /python_venv/bin/pip install --no-cache-dir 'wax==0.3.10.dev785+aeb3abb8'
-ENV PATH="/python_venv/bin:${PATH}"
 
 CMD ["/bin/bash", "-l"]
