@@ -5,7 +5,10 @@ ENV APT_CACHE_DIR=/var/cache/buildkit/apt
 
 RUN apt-get update && \
     apt-get install -y \
-        curl wget git bash sudo python3.${PYTHON_VERSION#3.} python3-venv python3-pip libssl-dev libffi-dev libstdc++6 && \
+        curl wget git bash sudo python3.${PYTHON_VERSION#3.} python3-venv python3-pip \
+        libssl-dev libffi-dev libstdc++6 libbz2-dev liblzma-dev zlib1g-dev libselinux1 libacl1 \
+        coreutils tar dpkg openssh-client procps locales iproute2 iputils-ping lsb-release \
+        ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     python3 -m venv --system-site-packages /python_venv
 
@@ -17,22 +20,32 @@ ARG GROUP_ID=1000
 
 SHELL ["/bin/bash", "-c"]
 
-RUN groupadd -o -g $GROUP_ID user && \
-    useradd -o -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME}
+RUN groupadd -o -g $GROUP_ID $USER_NAME && \
+    useradd -o -m -s /bin/bash -u $USER_ID -g $GROUP_ID $USER_NAME
 
-COPY --from=python_dev /usr/bin/curl /usr/bin/wget /usr/bin/git /usr/bin/python3 /usr/bin/python3.12 /usr/bin/pip3 /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/libffi.so* /usr/lib/x86_64-linux-gnu/libstdc++.so* /usr/bin/
+COPY --from=python_dev \
+    /usr/bin/curl /usr/bin/wget /usr/bin/git /usr/bin/python3 /usr/bin/python3.12 /usr/bin/pip3 \
+    /usr/bin/tar /usr/bin/dpkg /usr/bin/bash /usr/bin/sudo /usr/bin/ls /usr/bin/id /usr/bin/whoami \
+    /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/libffi.so* /usr/lib/x86_64-linux-gnu/libstdc++.so* \
+    /usr/lib/x86_64-linux-gnu/libbz2.so* /usr/lib/x86_64-linux-gnu/liblzma.so* /usr/lib/x86_64-linux-gnu/libz.so* \
+    /usr/lib/x86_64-linux-gnu/libselinux.so* /usr/lib/x86_64-linux-gnu/libacl.so* /usr/bin/
 
 COPY --from=python_dev /python_venv /python_venv
 ENV PATH="/python_venv/bin:${PATH}" VIRTUAL_ENV=/python_venv
 
-USER ${USER_NAME}
+USER $USER_NAME
 
 FROM runtime_base AS runtime_wax_environment
 
 USER root
-RUN mkdir -p /workspaces && chown -R user:user /workspaces
+RUN mkdir -p /workspaces && chown -R $USER_NAME:$USER_NAME /workspaces
 
-USER user
+USER $USER_NAME
+RUN mkdir -p ~/.vscode-server/bin && \
+    curl -fsSL https://update.code.visualstudio.com/latest/server-linux-x64/stable -o vscode-server.tar.gz && \
+    tar -xzf vscode-server.tar.gz -C ~/.vscode-server/bin --strip-components=1 && \
+    rm vscode-server.tar.gz
+
 WORKDIR /workspaces
 
 ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
@@ -41,5 +54,3 @@ ENV PIP_EXTRA_INDEX_URL="https://gitlab.syncad.com/api/v4/projects/362/packages/
                          https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
 
 RUN /python_venv/bin/pip install --no-cache-dir 'wax==0.3.10.dev785+aeb3abb8'
-
-CMD ["/bin/bash", "-l"]
