@@ -27,6 +27,10 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
   constructor(private readonly chain: HiveChainApi, private readonly requestedAccounts: Set<TAccountName> = new Set()) {
   }
 
+  public [Symbol.dispose](): void {
+    this.delete();
+  }
+
   /**
    * Allows to collect data for set of requested accounts, being asked for authorities in previous round of getAccountAuthority calls.
    */
