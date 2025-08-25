@@ -1,7 +1,13 @@
-from wax.exceptions.chain_errors import AccountNotFoundError
-from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface
-from wax.models.authority import AuthorityAccount
-from wax.models.basic import AccountName
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from wax.interfaces import IAuthorityDataProvider
+
+if TYPE_CHECKING:
+    from wax import IHiveChainInterface
+    from wax.models.authority import WaxAccountAuthorityInfo
+    from wax.models.basic import AccountName
 
 
 class OnlineChainAuthorityDataProvider(IAuthorityDataProvider):
@@ -14,24 +20,17 @@ class OnlineChainAuthorityDataProvider(IAuthorityDataProvider):
         """
         self._chain_api = chain_api
 
-    async def get(self, name: AccountName) -> AuthorityAccount:
+    async def get_hive_authority_data(self, account: AccountName) -> WaxAccountAuthorityInfo:
         """
         Get AuthorityAccount from account name.
 
         Args:
-            name (AccountName): name of account that will be passed to api call.
+            account(AccountName): name of account that will be passed to api call.
 
         Raises:
             AccountNotFoundError: When account with given name was not found.
 
         Returns:
             Object that holds authority data.
-
-
         """
-        api_accounts = await self._chain_api.api.database_api.find_accounts(accounts=[name])
-
-        for api_account in api_accounts.accounts:
-            if api_account.name == name:
-                return api_account  # type: ignore[no-any-return]
-        raise AccountNotFoundError(name)
+        return await self._chain_api.collect_account_authorities(account=account)

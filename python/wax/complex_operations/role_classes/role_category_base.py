@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Generic, Iterable, TypeVar
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
-    from wax.models.authority import AuthorityAccount
+    from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface, IWaxBaseInterface
+    from wax.models.basic import AccountName
 
 
 AuthType = TypeVar("AuthType")
@@ -35,14 +35,16 @@ class RoleCategoryBase(ABC, Generic[AuthType]):
     async def init(
         self,
         api: IHiveChainInterface | IWaxBaseInterface,
-        account_authority_data: AuthorityAccount,
+        account_name: AccountName,
+        provider: IAuthorityDataProvider,
     ) -> None:
         """
         Responsible for gathering authority types for the given account.
 
         Args:
             api (IWaxBaseInterface | IWaxBaseInterface): instance of the wax base api subclass.
-            account_authority_data (IAuthorityAccount): object that holds authority data.
+            account_name (AccountName): name of the account that will be used to gather authority data.
+            provider (IAuthorityDataProvider): object that delivers authority data.
         """
 
     @abstractmethod

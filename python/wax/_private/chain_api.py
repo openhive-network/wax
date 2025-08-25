@@ -167,6 +167,8 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
                 posting=self._transform_api_authority(account_data.posting),
             ),
             account_data.memo_key,
+            HiveDateTime(account_data.last_owner_update),
+            HiveDateTime(account_data.previous_owner_update),
         )
 
     def _current_milli_time(self) -> int:
