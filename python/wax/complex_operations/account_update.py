@@ -99,14 +99,12 @@ class AccountAuthorityUpdateOperation(OperationBase):
         role_per_role_name: dict[str, LevelBase[Any]] = {}
         category_per_category_name: dict[str, RoleCategoryBase[Any]] = {}
 
-        authority_account_data = await provider.get(account_name)
-
         for category in AuthorityRoleCategories:
             container = category()
             category_per_category_name[container.category] = container
 
         for category_instance in category_per_category_name.values():
-            await category_instance.init(wax_interface, authority_account_data)
+            await category_instance.init(wax_interface, account_name, provider)
 
             for role_name, role_instance in category_instance.authorities.__dict__.items():
                 role_per_role_name[role_name] = role_instance  # noqa: PERF403

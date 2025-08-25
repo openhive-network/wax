@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Final, Iterable, Iterator, Literal
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
-from wax._private.models.hive_date_time import HiveDateTime
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     HiveRoleAuthorityDefinition,
 )
@@ -22,14 +21,13 @@ from wax.exceptions.chain_errors import (
     HiveMaxAuthorityMembershipExceededError,
     HiveTempAccountUsedError,
 )
-from wax.proto.authority import authority as proto_authority
 from wax.proto.operations import account_update2
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import IHiveChainInterface, IWaxBaseInterface
-    from wax.models.authority import AuthorityAccount, WaxAuthority
-    from wax.models.basic import AccountName, PublicKey
+    from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface, IWaxBaseInterface
+    from wax.models.authority import WaxAuthority
+    from wax.models.basic import AccountName
 
 
 NULL_AUTH_SIZE: Final[int] = 0
@@ -96,7 +94,8 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
     async def init(
         self,
         api: IHiveChainInterface | IWaxBaseInterface,
-        account_authority_data: AuthorityAccount,
+        account_name: AccountName,
+        provider: IAuthorityDataProvider,
     ) -> None:
         """
         Initializes the hive account category.
@@ -109,9 +108,6 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
             AssertionError: When the chain config is not reachable.
         """
 
-        def transform_entries(entry: list[tuple[AccountName | PublicKey, int]]) -> dict[PublicKey | AccountName, int]:
-            return {entry[0]: entry[1] for entry in entry}
-
         def raise_cannot_update_owner_error() -> None:
             raise WaxError("Owner authority cannot be updated due to owner authority update limit - twice an hour")
 
@@ -120,9 +116,10 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
                 seconds=int(self._ensure_chain_config_reachable(api.config.get("HIVE_OWNER_UPDATE_LIMIT"))) / 1_000_000
             )
 
-        self._account = account_authority_data.name
+        authority_data = await provider.get_hive_authority_data(account_name)
+        self._account = authority_data.account
 
-        if api.config.get("HIVE_TEMP_ACCOUNT") == account_authority_data.name:
+        if api.config.get("HIVE_TEMP_ACCOUNT") == authority_data.account:
             raise HiveTempAccountUsedError
 
         self._HIVE_MAX_AUTHORITY_MEMBERSHIP = int(
@@ -136,10 +133,10 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
         address_prefix = self._ensure_chain_config_reachable(api.config.get("HIVE_ADDRESS_PREFIX"))
 
         active, posting, owner, memo_key = (
-            account_authority_data.active,
-            account_authority_data.posting,
-            account_authority_data.owner,
-            account_authority_data.memo_key,
+            authority_data.authorities.active,
+            authority_data.authorities.posting,
+            authority_data.authorities.owner,
+            authority_data.memo_key,
         )
 
         self._authorities = HiveRoles(
@@ -147,8 +144,8 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
             owner=HiveRoleAuthorityDefinition(
                 "owner",
                 lambda role: raise_cannot_update_owner_error()  # noqa: ARG005
-                if not check_owner_time_diff(HiveDateTime(account_authority_data.last_owner_update))
-                and check_owner_time_diff(HiveDateTime(account_authority_data.previous_owner_update))
+                if not check_owner_time_diff(authority_data.last_owner_update)
+                and check_owner_time_diff(authority_data.previous_owner_update)
                 else None,
             ),
             posting=HiveRoleAuthorityDefinition("posting"),
@@ -158,31 +155,19 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
         self._authorities.active.init(
             max_account_name_length,
             address_prefix,
-            proto_authority(
-                weight_threshold=active.weight_threshold,
-                account_auths=transform_entries(active.account_auths),
-                key_auths=transform_entries(active.key_auths),
-            ),
+            active,
         )
 
         self._authorities.owner.init(
             max_account_name_length,
             address_prefix,
-            proto_authority(
-                weight_threshold=owner.weight_threshold,
-                account_auths=transform_entries(owner.account_auths),
-                key_auths=transform_entries(owner.key_auths),
-            ),
+            owner,
         )
 
         self._authorities.posting.init(
             max_account_name_length,
             address_prefix,
-            proto_authority(
-                weight_threshold=posting.weight_threshold,
-                account_auths=transform_entries(posting.account_auths),
-                key_auths=transform_entries(posting.key_auths),
-            ),
+            posting,
         )
 
         self._authorities.memo.init(
@@ -199,7 +184,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
         posting = self.authorities.posting.value if self.authorities.posting.changed else None
         memo = self.authorities.memo.value if self.authorities.memo.changed else None
 
-        if active is not None and not self._can_authority_be_satisfied(active):
+        if active and not self._can_authority_be_satisfied(active):
             raise AuthorityCannotBeSatisfiedError("active")
 
         if owner and not self._can_authority_be_satisfied(owner):

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax.models.authority import AuthorityAccount, ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
+    from wax.models.authority import ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
     from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.key_data import IBrainKeyData, IPrivateKeyData
     from wax.models.operations import Operation, WaxMetaOperation
@@ -48,8 +48,8 @@ class IAuthorityDataProvider(ABC):
     """Interface providing authority data."""
 
     @abstractmethod
-    async def get(self, name: AccountName) -> AuthorityAccount:
-        """Get AuthorityAccount by account name."""
+    async def get_hive_authority_data(self, name: AccountName) -> WaxAccountAuthorityInfo:
+        """Get hive authority by account name."""
 
 
 class ITransactionBase(ABC):
