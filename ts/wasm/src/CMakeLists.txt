@@ -2,12 +2,14 @@ PROJECT( WaxWASM )
 cmake_minimum_required( VERSION 3.22.1 )
 
 set( CMAKE_CXX_STANDARD 17 )
-set( CMAKE_CXX_EXTENSIONS OFF )
+set( CMAKE_CXX_EXTENSIONS ON )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 set( CMAKE_C_STANDARD 99 )
-set( CMAKE_C_STANDARD_REQUIRED ON )
+set( CMAKE_C_STANDARD_REQUIRED OFF )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
+
+set( BEEKEEPER_AS_LIBRARY ON CACHE BOOL "Build beekeeper_wasm as a library" )
 
 set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
@@ -25,12 +27,12 @@ add_subdirectory( ${HIVE_ROOT_PATH}/assertion_id_verifier build_assertion_id_ver
 file(GLOB HEADERS "core/*.hpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 set( SOURCES
-      ${WAX_ROOT_PATH}/core/exception.cpp
-      ${WAX_ROOT_PATH}/core/foundation.cpp
-      ${WAX_ROOT_PATH}/core/utils.cpp
-      ${WAX_ROOT_PATH}/core/binary_view_helper.cpp
-      foundation_wasm.cpp
-      wasm_interface.cpp
+     ${WAX_ROOT_PATH}/core/exception.cpp
+     ${WAX_ROOT_PATH}/core/foundation.cpp
+     ${WAX_ROOT_PATH}/core/utils.cpp
+     ${WAX_ROOT_PATH}/core/binary_view_helper.cpp
+     foundation_wasm.cpp
+     wasm_interface.cpp
 )
 
 set( INCLUDES "${WAX_ROOT_PATH}"
@@ -38,6 +40,31 @@ set( INCLUDES "${WAX_ROOT_PATH}"
               "${HIVE_ROOT_PATH}/libraries/chain/include"
               "${GENERATED_ASSERT_ID_DIR}"
 )
+
+if(BEEKEEPER_AS_LIBRARY)
+  set( BEEKEEPER_ROOT_PATH "${HIVE_ROOT_PATH}/programs/beekeeper/beekeeper_wasm" )
+  add_subdirectory( ${BEEKEEPER_ROOT_PATH}/../core beekeeper_core )
+
+  file( GLOB HEADERS "${BEEKEEPER_ROOT_PATH}/include/beekeeper_wasm/*.hpp" )
+
+  set( SOURCES
+       ${BEEKEEPER_ROOT_PATH}/main.cpp
+       ${BEEKEEPER_ROOT_PATH}/beekeeper_wasm_app.cpp
+       ${BEEKEEPER_ROOT_PATH}/beekeeper_wasm_api.cpp
+       ${SOURCES}
+  )
+
+  set( INCLUDES ${BEEKEEPER_ROOT_PATH}/../core/include
+                ${BEEKEEPER_ROOT_PATH}/include
+                ${INCLUDES}
+  )
+
+  set( ADDITIONAL_COMPILE_DEFINITIONS __BEEKEEPER_AS_LIBRARY__ )
+  set( ADDITIONAL_NODE_LINK_LIBRARIES beekeeper_core nodefs.js )
+  set( ADDITIONAL_WEB_LINK_LIBRARIES beekeeper_core idbfs.js )
+  set( ADDITIONAL_NODE_LINK_OPTIONS -sEXPORTED_RUNTIME_METHODS=["FS"] -sNODERAWFS=1 )
+  set( ADDITIONAL_WEB_LINK_OPTIONS -sEXPORTED_RUNTIME_METHODS=["FS"] )
+endif(BEEKEEPER_AS_LIBRARY)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../../../hive/libraries/protocol/get_config.d/generate_get_config.cmake")
 generate_get_config(
@@ -52,15 +79,16 @@ INSTALL( FILES  "${CMAKE_CURRENT_BINARY_DIR}/config.ts"
 
 DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "web"
-  LINK_LIBRARIES hive_protocol
-  LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
-  # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
+  COMPILE_DEFINITIONS ${ADDITIONAL_COMPILE_DEFINITIONS}
+  LINK_LIBRARIES hive_protocol ${ADDITIONAL_WEB_LINK_LIBRARIES}
+  LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 ${ADDITIONAL_WEB_LINK_OPTIONS} #-gsource-map=inline
 )
 
 DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "node"
-  LINK_LIBRARIES hive_protocol
-  LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  COMPILE_DEFINITIONS ${ADDITIONAL_COMPILE_DEFINITIONS}
+  LINK_LIBRARIES hive_protocol ${ADDITIONAL_NODE_LINK_LIBRARIES}
+  LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 ${ADDITIONAL_NODE_LINK_OPTIONS} #-gsource-map=inline
   # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
 )
 
