@@ -43,7 +43,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.fake.openhive.network/",
-          restApiEndpoint: "https://api.fake.openhive.network/", /// really not yet supported but ignored in this test group
+          restApiEndpoint: "https://api.syncad.com/", /// really not yet supported but ignored in this test group
           chainId: "42"
         }
       }
