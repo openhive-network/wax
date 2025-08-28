@@ -676,6 +676,10 @@ class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
         """
 
     @abstractmethod
+    def teardown(self) -> None:
+        """Call when work with API communication is over."""
+
+    @abstractmethod
     async def create_transaction(self, expiration: TTimestamp | None = None) -> IOnlineTransaction:
         """
         Same as `IWaxBaseInterface.create_transaction_with_tapos` but pulls the reference block data from the remote.
