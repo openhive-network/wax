@@ -25,7 +25,7 @@ from wax.proto.operations import account_update2
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import IAuthorityDataProvider, IWaxBaseInterface
     from wax.models.authority import WaxAuthority
     from wax.models.basic import AccountName
 
@@ -93,7 +93,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
 
     async def init(
         self,
-        api: IHiveChainInterface | IWaxBaseInterface,
+        api: IWaxBaseInterface,
         account_name: AccountName,
         provider: IAuthorityDataProvider,
     ) -> None:
