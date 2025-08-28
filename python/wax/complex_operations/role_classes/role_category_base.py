@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Generic, Iterable, TypeVar
 
 if TYPE_CHECKING:
     from wax._private.operation_base import ConvertedToProtoOperation
-    from wax.interfaces import IAuthorityDataProvider, IHiveChainInterface, IWaxBaseInterface
+    from wax.interfaces import IAuthorityDataProvider, IWaxBaseInterface
     from wax.models.basic import AccountName
 
 
@@ -34,7 +34,7 @@ class RoleCategoryBase(ABC, Generic[AuthType]):
     @abstractmethod
     async def init(
         self,
-        api: IHiveChainInterface | IWaxBaseInterface,
+        api: IWaxBaseInterface,
         account_name: AccountName,
         provider: IAuthorityDataProvider,
     ) -> None:
