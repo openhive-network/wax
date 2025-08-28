@@ -90,37 +90,11 @@ export class WasmManager {
       case "cpp::wax_unknown_assertion":
       case "cpp::wax_assertion":
         this.throwGivenWaxAssertionError(errorMessageList[1], WaxAssertionError);
-    }
-
-    const eObject: {message: string} = error as {message: string};
-    /// Warning: toString() is necessary here, because otherwise string methods do not work
-    const msg = eObject.message.toString();
-
-    // This is a legacy code, handling exception classes the old way and we should rewrite it to exception classes and eliminate or make more universal
-    if(msg.indexOf("WAX_STD_EXCEPTION") > 0) {
-      const jsonBody = msg.replace("std::runtime_error,", "");
-      const contextMsg = JSON.parse(jsonBody);
-      //console.log(`Received contextMsg: ${JSON.stringify(contextMsg)}`);
-
-      const waxStdExceptionData: TWaxStdExceptionData = {
-        msg: contextMsg.msg,
-        data: contextMsg,
-        sourceException: error as Error|WebAssembly.RuntimeError
-      };
-
-      switch(waxStdExceptionData.msg) {
-        case "Detected private key leak.":
-            const json = waxStdExceptionData.data as {public_key: string, account: string, authority_role: string};
-          throw new WaxPrivateKeyLeakDetectedException(waxStdExceptionData.msg, json.public_key, json.account, json.authority_role);
-        default:
+      case "cpp::wax_private_key_leak":
+      {
+        const contextMsg = JSON.parse(errorMessageList[1]);
+        throw new WaxPrivateKeyLeakDetectedException(contextMsg.msg, contextMsg.public_key, contextMsg.account, contextMsg.authority_role);
       }
-
-      const waxError = new WaxError(`Error during Wasm call: ${msg}`, error);
-
-      if ("stack" in error)
-        throw Object.assign(waxError, { stack: error.stack });
-
-      throw waxError;
     }
 
     //console.log("Non-typed Error during Wasm call...", e);

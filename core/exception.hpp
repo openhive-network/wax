@@ -10,6 +10,12 @@ namespace fc {
 
 namespace cpp {
 
+class wax_private_key_leak : public std::runtime_error
+{
+public:
+  using std::runtime_error::runtime_error;
+};
+
 class wax_assertion : public std::runtime_error
 {
 public:
