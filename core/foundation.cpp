@@ -636,6 +636,7 @@ void foundation::cpp_check_memo_for_private_keys(const std::string& memo, const 
       fc::mutable_variant_object vo;
       vo["type"] = "WAX_STD_EXCEPTION";
       vo["msg"] = "Detected private key leak.";
+      vo["account"] = account;
       vo["authority_role"] = role;
       vo["public_key"] = publicKey;
 

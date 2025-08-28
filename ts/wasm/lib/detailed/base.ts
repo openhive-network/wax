@@ -1,6 +1,6 @@
 import type { IWaxBaseInterface, IWaxOptions } from "./index.js";
 
-import { safeAsyncWasmCall } from "./util/wasm_errors.js";
+import { WasmManager } from "./util/wasm_errors.js";
 import { WaxBaseApi } from "./base_api.js";
 import type waxmodule from "../build_wasm/wax.common.js";
 import type { IOptionalModuleArgs } from "./module_types.js";
@@ -11,7 +11,7 @@ export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
 
 // We have to keep wasmFn as any because createWaxFoundation is exported and will require wasmFn to have a type of module, we do not want to expose
 export const createWaxFoundation = async(wasmFn: typeof waxmodule, ModuleExt: IOptionalModuleArgs = {}, options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  const waxProvider = await safeAsyncWasmCall(() => wasmFn(ModuleExt));
+  const waxProvider = await new WasmManager(wasmFn, ModuleExt).module;
 
   const apiOptions: IWaxOptions = { ...DEFAULT_WAX_OPTIONS, ...options };
 

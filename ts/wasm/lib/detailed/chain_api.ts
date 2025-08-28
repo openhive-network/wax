@@ -3,7 +3,6 @@ import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from
 import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
 import { WaxError, WaxChainApiError } from "./errors.js";
-import { safeWasmCall } from './util/wasm_errors.js';
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
 import { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data.js";
 import { iterate } from "./util/iterate.js";
@@ -83,7 +82,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
         if ("error" in data.response && typeof data.response.error === "object" && "data" in data.response.error) {
           // Possibly an exception that we can recognize & repackage.
-          safeWasmCall(() => this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data)));
+          this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data));
         }
       }
 
@@ -287,11 +286,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     const encrypted = wallet.encryptData(content, from, to);
 
-    return safeWasmCall(() => this.protocol.cpp_crypto_memo_dump_string({
+    return this.protocol.cpp_crypto_memo_dump_string({
       content: encrypted,
       from,
       to
-    }));
+    });
   }
 
   private async getManabarDataArguments(accountName: string, manabarType: EManabarType): Promise<Parameters<WaxBaseApi['calculateCurrentManabarValue']>> {
