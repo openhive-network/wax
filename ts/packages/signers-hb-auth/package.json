@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hiveio/wax": "workspace:../..",
-    "@hiveio/hb-auth": "0.0.1-stable.250131124251"
+    "@hiveio/hb-auth": "0.0.1-250901164037"
   },
   "files": [
     "dist/index.d.ts",
