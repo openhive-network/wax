@@ -1,4 +1,6 @@
-import type { IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TPublicKey, TRole } from "@hiveio/wax";
+import type { ITransaction, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider } from "@hiveio/wax";
+
 import type { MetaMaskInpageProvider, RequestArguments } from "@metamask/providers";
 import { getSnapsProvider } from "./provider.js";
 
@@ -54,7 +56,7 @@ const isLocalSnap = (snapId: string) => snapId.startsWith('local:');
  * await chain.broadcast(tx);
  * ```
  */
-export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
+export class MetaMaskProvider extends AEncryptionProvider {
   /**
    * Indicates either the snap is installed or not.
    * If you want to install or reinstall the snap, use {@link installSnap}
@@ -104,7 +106,9 @@ export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryp
   private constructor(
     private readonly accountIndex: number,
     private readonly role: TRole | undefined
-  ) {}
+  ) {
+    super();
+  }
 
   private readonly publicKeyCache = new Map<TRole, TPublicKey>();
 
@@ -116,7 +120,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryp
   }
 
   /**
-   * Signs a transaction using the Hive Wallet MetaMask integration.
+   * Generates signatures for given transaction using the Hive Wallet MetaMask integration.
    * Automatically detects the required authorities from the transaction and signs it using the Hive Wallet snap.
    *
    * @param transaction The transaction to sign. Should be an instance of {@link ITransaction}, created by Wax library.
@@ -124,7 +128,7 @@ export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryp
    * @throws WaxMetaMaskProviderError if no authorities are required to sign the transaction.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
     const authorities = new Set<TRole>();
 
     if (this.role) {
@@ -139,12 +143,9 @@ export class MetaMaskProvider implements IOnlineSignatureProvider, IOnlineEncryp
     if (authorities.size === 0)
       throw new WaxMetaMaskProviderError('No authorities to sign the transaction');
 
-    transaction.performOperationEncryption(this);
-
     const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [...authorities].map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
 
-    for(const signature of response.signatures)
-      transaction.addSignature(signature);
+    return response.signatures;
   }
 
   /**
