@@ -1,4 +1,5 @@
-import type { IOnlineSignatureProvider, IOnlineEncryptionProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
+import type { ITransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
 
@@ -31,13 +32,14 @@ export class WaxKeychainProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class KeychainProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
+class KeychainProvider extends AEncryptionProvider {
   private readonly role: KeychainKeyTypes;
 
   private constructor(
     private readonly accountName: TAccountName,
     role: TRole
   ) {
+    super();
     if (!mapRoles[role])
       throw new Error(`Role ${role} is not supported by the Wax signature provider: ${KeychainProvider.name}`);
 
@@ -121,15 +123,13 @@ class KeychainProvider implements IOnlineSignatureProvider, IOnlineEncryptionPro
   }
 
   /**
-   * Signs a transaction using the Keychain extension.
+   * Generates signatures for given transaction using the Keychain extension.
    *
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Keychain invocation.
    */
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
     KeychainProvider.ensureKeychainInstalled();
-
-    transaction.performOperationEncryption(this);
 
     const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
       this.accountName,
@@ -143,8 +143,7 @@ class KeychainProvider implements IOnlineSignatureProvider, IOnlineEncryptionPro
       }
     )) as any;
 
-    for(const sig of data.result.signatures)
-      transaction.addSignature(sig);
+    return data.result.signatures;
   }
 }
 
