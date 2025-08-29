@@ -1,4 +1,5 @@
-import type { IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TAccountName, TPublicKey, TRole } from "@hiveio/wax";
+import type { ITransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeyRole = string;
 
@@ -31,13 +32,14 @@ export class WaxPeakVaultProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class PeakVaultProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
+class PeakVaultProvider extends AEncryptionProvider {
   private readonly role: KeyRole;
 
   private constructor(
     private readonly accountName: TAccountName,
     role: TRole
   ) {
+    super();
     if (!mapRoles[role])
       throw new Error(`Role ${role} is not supported by the Wax signature provider: ${PeakVaultProvider.name}`);
 
@@ -99,20 +101,15 @@ class PeakVaultProvider implements IOnlineSignatureProvider, IOnlineEncryptionPr
   }
 
   /**
-   * Signs a transaction using the Peak Vault extension.
+   * Generates signatures for given transaction transaction using the Peak Vault extension.
    *
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Peak Vault invocation.
    */
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
     PeakVaultProvider.ensurePeakVaultInstalled();
-
-    transaction.performOperationEncryption(this);
-
     const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
-
-    for(const sig of data.result.signatures)
-      transaction.addSignature(sig);
+    return data.result.signatures;
   }
 }
 
