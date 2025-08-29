@@ -1,4 +1,5 @@
-import type { IOnlineSignatureProvider, ITransaction, TRole } from "@hiveio/wax";
+import type { ITransaction, TRole, TSignature } from "@hiveio/wax";
+import { ASignatureProvider } from "@hiveio/wax";
 
 import { type OfflineClient, type OnlineClient } from "@hiveio/hb-auth";
 
@@ -26,12 +27,14 @@ export class WaxHBAuthProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class HBAuthProvider implements IOnlineSignatureProvider {
+class HBAuthProvider extends ASignatureProvider {
   private constructor(
     public readonly client: OnlineClient | OfflineClient,
     public readonly username: string,
     public readonly role: TRole
-  ) {}
+  ) {
+    super();
+  }
 
   public static for(client: OnlineClient | OfflineClient, username: string, role: TRole): HBAuthProvider {
     if (role !== 'active' && role !== 'owner' && role !== 'posting')
@@ -41,17 +44,16 @@ class HBAuthProvider implements IOnlineSignatureProvider {
   }
 
   /**
-   * Signs a transaction using the hb-auth.
+   * Generates signatures for given transaction using the hb-auth.
    *
    * @note This method does not support encryption. It is designed for signing transactions only.
    *
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the hb-auth invocation.
    */
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
     const signature = await this.client.sign(this.username, transaction.sigDigest, this.role as 'active' | 'owner' | 'posting');
-
-    transaction.addSignature(signature);
+    return [signature];
   }
 }
 
