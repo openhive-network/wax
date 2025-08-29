@@ -62,3 +62,5 @@ export interface IOnlineSignatureProvider {
    */
   signTransaction(transaction: ITransaction): Promise<void>;
 };
+
+export * from "./extension_helpers";
