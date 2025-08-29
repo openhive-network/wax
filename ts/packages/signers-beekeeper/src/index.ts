@@ -1,4 +1,5 @@
-import type { IHiveChainInterface, IOnlineEncryptionProvider, IOnlineSignatureProvider, ITransaction, TAccountName, TRole } from "@hiveio/wax";
+import type { IHiveChainInterface, ITransaction, TAccountName, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
@@ -24,11 +25,13 @@ export class WaxBeekeeperProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class BeekeeperProvider implements IOnlineSignatureProvider, IOnlineEncryptionProvider {
+class BeekeeperProvider extends AEncryptionProvider {
   private constructor(
     private readonly wallet: IBeekeeperUnlockedWallet,
     private readonly publicKey: TPublicKey
-  ) {}
+  ) {
+    super();
+  }
 
   public static for(wallet: IBeekeeperUnlockedWallet, publicKeyOrAccount: TPublicKey | TAccountName, role?: TRole, chain?: IHiveChainInterface): BeekeeperProvider | Promise<BeekeeperProvider> {
     if (role === undefined)
@@ -68,19 +71,17 @@ class BeekeeperProvider implements IOnlineSignatureProvider, IOnlineEncryptionPr
   }
 
   /**
-   * Signs a transaction using the Beekeeper.
+   * Generates signatures for given transaction using the Beekeeper.
    *
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Beekeeper invocation.
    */
-  public async signTransaction(transaction: ITransaction): Promise<void> {
-    transaction.performOperationEncryption(this);
+  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
+    const signature = this.wallet.signDigest(this.publicKey, transaction.sigDigest);
 
-    const signature = this.wallet.signDigest(this.publicKey as TPublicKey, transaction.sigDigest);
-
-    transaction.addSignature(signature);
+    return [signature];
   }
-}
+};
 
 export interface WaxBeekeeperProviderCreator {
   /**
