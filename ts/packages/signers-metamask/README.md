@@ -23,7 +23,7 @@ const tx = await chain.createTransaction();
 
 // Perform some operations, e.g. push the vote operation:
 tx.pushOperation({
-  vote: {
+  vote_operation: {
     voter: "alice",
     author: "bob",
     permlink: "example-post",
