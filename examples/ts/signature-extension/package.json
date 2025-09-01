@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@hiveio/beekeeper": "1.27.11",
-    "@hiveio/hb-auth": "0.0.1-250901164037",
+    "@hiveio/hb-auth": "0.0.1-stable.250901182519",
     "@hiveio/wax": "file:../../../ts",
     "@hiveio/wax-signers-beekeeper": "file:../../../ts/packages/signers-beekeeper",
     "@hiveio/wax-signers-hb-auth": "file:../../../ts/packages/signers-hb-auth",

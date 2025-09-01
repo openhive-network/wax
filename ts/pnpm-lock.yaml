@@ -195,8 +195,8 @@ importers:
   packages/signers-hb-auth:
     dependencies:
       '@hiveio/hb-auth':
-        specifier: 0.0.1-250901164037
-        version: 0.0.1-250901164037
+        specifier: 0.0.1-stable.250901182519
+        version: 0.0.1-stable.250901182519
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -421,12 +421,12 @@ packages:
     resolution: {integrity: sha1-0v2gSYFhN5MLQzBHIYikUyksu/k=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.11.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
-  '@hiveio/hb-auth@0.0.1-250901164037':
-    resolution: {integrity: sha1-bB8Ok6bCghHkjcYU9F0ytlvpsiw=, tarball: https://gitlab.syncad.com/api/v4/projects/429/packages/npm/@hiveio/hb-auth/-/@hiveio/hb-auth-0.0.1-250901164037.tgz}
+  '@hiveio/hb-auth@0.0.1-stable.250901182519':
+    resolution: {integrity: sha1-lpNbrG3vRNIPzv4jXBI0S/wCN4A=, tarball: https://gitlab.syncad.com/api/v4/projects/429/packages/npm/@hiveio/hb-auth/-/@hiveio/hb-auth-0.0.1-stable.250901182519.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
-  '@hiveio/wax@1.27.6-rc10-250828234308':
-    resolution: {integrity: sha1-1zYrs6MKXnQsA4rjmfPjlhxpIhY=, tarball: https://gitlab.syncad.com/api/v4/projects/419/packages/npm/@hiveio/wax/-/@hiveio/wax-1.27.6-rc10-250828234308.tgz}
+  '@hiveio/wax@1.27.6-rc10-stable.250901172848':
+    resolution: {integrity: sha1-WjDM3uVlzdeemHvc4ofnlPrQW3g=, tarball: https://gitlab.syncad.com/api/v4/projects/419/packages/npm/@hiveio/wax/-/@hiveio/wax-1.27.6-rc10-stable.250901172848.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
@@ -2188,12 +2188,12 @@ snapshots:
 
   '@hiveio/beekeeper@1.27.11': {}
 
-  '@hiveio/hb-auth@0.0.1-250901164037':
+  '@hiveio/hb-auth@0.0.1-stable.250901182519':
     dependencies:
-      '@hiveio/wax': 1.27.6-rc10-250828234308
+      '@hiveio/wax': 1.27.6-rc10-stable.250901172848
       comlink: 4.4.2
 
-  '@hiveio/wax@1.27.6-rc10-250828234308':
+  '@hiveio/wax@1.27.6-rc10-stable.250901172848':
     dependencies:
       events: 3.3.0
 
