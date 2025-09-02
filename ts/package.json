@@ -25,7 +25,7 @@
     "examples:vue-webpack": "cd ../examples/ts/vue-webpack && pnpm install && pnpm run build && cd ../../../ts",
     "examples:vue-vite": "cd ../examples/ts/vue-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
     "examples:react-vite": "cd ../examples/ts/react-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && pnpm install --config.engine-strict=false && pnpm run test && pnpm run build && cd ../../../ts",
     "examples:signature-extension": "cd ../examples/ts/signature-extension && pnpm install && pnpm run build && pnpm run test && cd ../../../ts"
   },
   "exports": {
