@@ -71,6 +71,8 @@ target_include_directories("cpp_python_bridge" PRIVATE
   "${GENERATED_ASSERT_ID_DIR}"
 )
 
+add_dependencies( "cpp_python_bridge" assertion_id_verifier )
+
 python_extension_module("cpp_python_bridge")
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpython_interface.hpp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
