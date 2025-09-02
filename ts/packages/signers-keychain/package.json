@@ -8,7 +8,7 @@
   "private": false,
   "scripts": {
     "build": "tsc",
-    "prepack": "jq --argfile source ../../package.json '.version = $source.version | .publishConfig.registry = $source.publishConfig.registry | .publishConfig.tag = $source.publishConfig.tag' package.json > package.json.tmp && mv package.json.tmp package.json"
+    "prepack": "jq --argfile source ../../package.json '.version = $source.version' package.json > package.json.tmp && mv package.json.tmp package.json"
   },
   "devDependencies": {
     "typescript": "catalog:typescript-toolset"
@@ -31,9 +31,5 @@
   "repository": {
     "type": "git",
     "url": "https://gitlab.syncad.com/hive/wax.git"
-  },
-  "publishConfig": {
-    "registry": "https://RegistryPlaceholder",
-    "tag": "DistTagPlaceholder"
   }
 }
