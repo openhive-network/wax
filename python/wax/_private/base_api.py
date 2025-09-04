@@ -34,6 +34,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_manabar_full_regeneration_time,
     calculate_vests_to_hp,
     calculate_witness_votes_hp,
+    deserialize_witness_set_properties,
     estimate_hive_collateral,
     generate_password_based_private_key,
     get_hive_protocol_config,
@@ -41,6 +42,8 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     is_valid_account_name,
     operation_get_impacted_accounts,
     proto_operation_get_impacted_accounts,
+    python_witness_set_properties_data,
+    serialize_witness_set_properties,
     suggest_brain_key,
     validate_operation,
     validate_proto_operation,
@@ -295,6 +298,14 @@ class WaxBaseApi(IWaxBaseInterface):
 
     def create_transaction_from_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
         return Transaction.from_api(api=self, transaction=transaction)
+
+    def serialize_witness_props(self, witness_props: python_witness_set_properties_data) -> dict[str, str]:
+        serialized_props = serialize_witness_set_properties(witness_props)
+        return {to_python_string(k): to_python_string(v) for k, v in serialized_props.items()}
+
+    def deserialize_witness_props(self, serialized_props: dict[str, str]) -> python_witness_set_properties_data:
+        cpp_serialized_props = {to_cpp_string(k): to_cpp_string(v) for k, v in serialized_props.items()}
+        return deserialize_witness_set_properties(cpp_serialized_props)
 
     def _resolve_expiration(self, expiration: datetime | timedelta | None) -> timedelta:
         expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
