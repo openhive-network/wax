@@ -7,6 +7,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")/../python"
 
 WAX_DIR="${PROJECT_DIR}/.."
 HIVE_SUBMODULE_DIR="${WAX_DIR}/hive"
+API_PACKAGES_GEN_DIR="${HIVE_SUBMODULE_DIR}/libraries/plugins/apis/api_generation"
 
 
 DIRECT_EXECUTION=${1:-0}
@@ -44,6 +45,23 @@ else
   echo "Create proto files."
   ${PROJECT_DIR}/scripts/compile_proto.sh
 
+  cleanup_old_api_package() {
+    local api_package_name=$1
+
+    if [ -d "${API_PACKAGES_GEN_DIR}/${api_package_name}" ]; then
+      echo "Found old ${api_package_name} package. Removing it."
+      rm -rf "${API_PACKAGES_GEN_DIR:?}/${api_package_name}"
+    fi
+  }
+
+  cleanup_old_api_package "database_api"
+  cleanup_old_api_package "network_broadcast_api"
+
+  if [ -d "${SCRIPT_DIR}/../../build_wheel.env}" ]; then
+    echo "Found old build_wheel.env Removing it."
+    rm -rf "${SCRIPT_DIR}/../../build_wheel.env"
+  fi
+
   echo "Build API packages."
   ${PROJECT_DIR}/scripts/build_api_packages.sh
 
@@ -55,6 +73,7 @@ else
   set -o allexport
   source "${SCRIPT_DIR}/../../build_wheel.env"
   set +o allexport
+
 
   add_api_dependency() {
     local api_package_name=$1
