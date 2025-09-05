@@ -114,10 +114,11 @@ class Asset:
 
         try:
             if isinstance(asset, dict):
-                asset = proto_asset(**asset)  # type: ignore[arg-type, unused-ignore] # proto generated
+                asset = proto_asset(**asset)
                 self._assert_asset_nai_valid(proper_asset, asset)
+                return asset
 
-            asset = proto_asset(**json.loads(asset))  # type: ignore[arg-type] # check for the proto asset is done above
+            asset = proto_asset(**json.loads(asset))
             self._assert_asset_nai_valid(proper_asset, asset)
 
         except Exception as error:
