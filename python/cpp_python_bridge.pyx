@@ -18,6 +18,43 @@ import json
 import cython
 from cython.operator cimport dereference, preincrement
 
+create_custom_exceptions()
+PyChainAssertionError = <object> ChainAssertionErrorIndicator
+PyProtocolAssertionError = <object> ProtocolAssertionErrorIndicator
+PyAssertionError = <object> AssertionErrorIndicator
+
+from .exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
+def assertion_exception_relay_helper(relayed_exception_type, original_exception):
+    aux = json.loads(str(original_exception))
+    if isinstance(aux, dict) and 'assert_hash' in aux:
+        assertion_code = aux['assert_hash']
+        raise relayed_exception_type(assertion_code, str(aux).encode('utf-8'))
+    raise WaxError(str(aux).encode('utf-8'))
+
+def call_with_exception_relay(foo):
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        try:
+            result = foo(*args, **kwargs)
+            if result is None:
+                result = b''  # Ensure result is bytes
+            else:
+                if isinstance(result, str):
+                    result = result.encode('utf-8')
+                elif not isinstance(result, bytes):
+                    result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
+            return result
+        except PyChainAssertionError as ex:
+            assertion_exception_relay_helper(WaxChainAssertionError, ex)
+        except PyProtocolAssertionError as ex:
+            assertion_exception_relay_helper(WaxProtocolAssertionError, ex)
+        except PyAssertionError as ex:
+            assertion_exception_relay_helper(WaxAssertionError, ex)
+        except Exception as ex:
+            aux = json.loads(str(ex))
+            raise WaxError(str(aux).encode('utf-8'))
+    return wrapper
+
 from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, binary_data, binary_data_node, required_authority_collection, hive_transaction_handle, hive_operation_handle
 from .wax_result import (
     python_result,
@@ -849,3 +886,9 @@ def get_hive_protocol_config(chain_id: bytes) -> dict[bytes, bytes]:
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj
     obj.cpp_throws(throw_type)
+
+@call_with_exception_relay
+def cpp_throws(type: int) -> bytes:
+    cdef protocol obj
+    obj.cpp_throws(type)
+    return b''

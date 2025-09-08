@@ -13,6 +13,52 @@ from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.optional cimport optional
 
+cdef extern from "Python.h" nogil:
+    ctypedef struct PyObject
+
+cdef extern from *:
+    """
+    #include "core/exception.hpp"
+    #include <Python.h>
+    #include <stdexcept>
+    #include <ios>
+
+    PyObject *ChainAssertionErrorIndicator;
+    PyObject *ProtocolAssertionErrorIndicator;
+    PyObject *AssertionErrorIndicator;
+
+    void create_custom_exceptions() {
+        ChainAssertionErrorIndicator = PyErr_NewException("wax.ChainAssertionErrorIndicator", NULL, NULL);
+        ProtocolAssertionErrorIndicator = PyErr_NewException("wax.ProtocolAssertionErrorIndicator", NULL, NULL);
+        AssertionErrorIndicator = PyErr_NewException("wax.AssertionErrorIndicator", NULL, NULL);
+    }
+
+    void custom_exception_handler() {
+        try {
+            if (PyErr_Occurred()) {
+                ; // let the latest Python exn pass through and ignore the current one
+            } else {
+                throw;
+            }
+        } catch (const cpp::wax_chain_assertion& exn) {
+            PyErr_SetString(ChainAssertionErrorIndicator, exn.what());
+        } catch (const cpp::wax_protocol_assertion& exn) {
+            PyErr_SetString(ProtocolAssertionErrorIndicator, exn.what());
+        } catch (const cpp::wax_assertion& exn) {
+            PyErr_SetString(AssertionErrorIndicator, exn.what());
+        } catch (const std::exception& exn) {
+            PyErr_SetString(PyExc_RuntimeError, exn.what());
+        } catch (...) {
+            PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
+        }
+    }
+    """
+    cdef PyObject* ChainAssertionErrorIndicator
+    cdef PyObject* ProtocolAssertionErrorIndicator
+    cdef PyObject* AssertionErrorIndicator
+    cdef void create_custom_exceptions()
+    cdef void custom_exception_handler()
+
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass wax_tx_ptr_deleter:
         pass
@@ -218,7 +264,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string cpp_asset_value(json_asset value) except +
         string cpp_asset_symbol(json_asset value) except +
 
-        void cpp_throws(int type) except +
+        void cpp_throws(int type) except +custom_exception_handler
 
         crypto_memo cpp_crypto_memo_from_string(string value) except +
 

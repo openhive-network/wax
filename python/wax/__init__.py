@@ -23,6 +23,7 @@ from .cpp_python_bridge import (
     calculate_witness_votes_hp,
     check_memo_for_private_keys,
     collect_signing_keys,
+    cpp_throws,
     create_wax_operation,
     create_wax_transaction,
     decode_encrypted_memo,
@@ -203,4 +204,5 @@ __all__ = [
     "transaction_get_impacted_accounts",
     "proto_operation_get_impacted_accounts",
     "proto_transaction_get_impacted_accounts",
+    "cpp_throws",
 ]
