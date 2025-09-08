@@ -8,14 +8,18 @@
   "private": false,
   "scripts": {
     "build": "tsc",
+    "postbuild": "pnpm run test",
+    "test": "tsx ./__tests__/index.ts",
     "prepack": "jq --argfile source ../../package.json '.version = $source.version' package.json > package.json.tmp && mv package.json.tmp package.json"
   },
   "devDependencies": {
+    "@types/node": "22",
+    "tsx": "catalog:typescript-toolset",
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/wax": "workspace:../..",
-    "@hiveio/beekeeper": "1.27.11"
+    "@hiveio/beekeeper": "1.27.11",
+    "@hiveio/wax": "workspace:../.."
   },
   "files": [
     "dist/index.d.ts",
