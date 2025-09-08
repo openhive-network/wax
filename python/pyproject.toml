@@ -34,6 +34,8 @@ httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
+database-api = {path = "../hive/libraries/plugins/apis/api_generation/database_api"}
+network-broadcast-api = {path = "../hive/libraries/plugins/apis/api_generation/network_broadcast_api"}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"

@@ -20,6 +20,8 @@ namespace cpp
 
     void cpp_tx_proto_to_api(PyObject* ptr)const;
     void cpp_tx_api_to_proto(PyObject* ptr)const;
+
+    cpp::hive_exception_data cpp_translate_to_wax_exception_data(std::exception_ptr ex)const;
   };
 
 } /// namespace cpp

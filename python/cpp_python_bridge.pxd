@@ -12,6 +12,7 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.optional cimport optional
+from exception cimport exception_ptr, exception_ptr_error_handler
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass wax_tx_ptr_deleter:
@@ -33,6 +34,10 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass hive_operation_handle:
         hive_operation_handle() except +
         unique_ptr[hive_op, wax_op_ptr_deleter] op
+
+    cdef cppclass hive_exception_data:
+        string wax_exception_name
+        string what
 
     cdef enum error_code:
         fail = 0
@@ -218,7 +223,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string cpp_asset_value(json_asset value) except +
         string cpp_asset_symbol(json_asset value) except +
 
-        void cpp_throws(int type) except +
+        void cpp_throws(int type) except +exception_ptr_error_handler
 
         crypto_memo cpp_crypto_memo_from_string(string value) except +
 
@@ -254,6 +259,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         string cpp_get_default_comment_options_operation() except +
 
+        hive_exception_data cpp_translate_to_wax_exception_data(exception_ptr eptr)
         hive_transaction_handle cpp_deserialize_transaction(string hex)except +
         hive_operation_handle cpp_deserialize_operation(string hex)except +
 

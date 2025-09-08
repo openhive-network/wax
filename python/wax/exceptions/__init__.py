@@ -26,12 +26,21 @@ from .validation_errors import (
     InvalidOperationFormatError,
     WaxValidationFailedError,
 )
-from .wax_error import WaxError, WaxImportProtoBeforeCompileError
+from .wax_error import (
+    WaxAssertionError,
+    WaxChainAssertionError,
+    WaxError,
+    WaxImportProtoBeforeCompileError,
+    WaxProtocolAssertionError,
+)
 
 __all__ = [
     # Base error for all wax errors.
     "WaxError",
     "WaxImportProtoBeforeCompileError",
+    "WaxAssertionError",
+    "WaxChainAssertionError",
+    "WaxProtocolAssertionError",
     # Asset-related errors.
     "AssetError",
     "InvalidAssetAmountError",

@@ -66,6 +66,12 @@ public:
   std::unique_ptr<hive_op, wax_op_ptr_deleter> op;
 };
 
+struct hive_exception_data
+{
+  std::string wax_exception_name;
+  std::string what;
+};
+
 ///  Common base providing functionality independent on JSON format being used for parameter transport
 class foundation
 {

@@ -12,13 +12,63 @@ from libcpp.vector cimport vector
 from libcpp.optional cimport optional
 from libcpp.utility cimport move
 from libc.stdint cimport uint16_t, uint32_t, int32_t
+from exception cimport exception_ptr, wrapped_exception_ptr_from_exception
 
 import json
 
 import cython
 from cython.operator cimport dereference, preincrement
 
-from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, binary_data, binary_data_node, required_authority_collection, hive_transaction_handle, hive_operation_handle
+from .exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
+def raise_appropriate_wax_exception(ex: object):
+    cdef protocol obj
+    cdef exception_ptr eptr = wrapped_exception_ptr_from_exception(ex)
+    cdef hive_exception_data raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+    wax_exception_name = raw_data.wax_exception_name.decode()
+    wax_exception_what = raw_data.what.decode()
+    if wax_exception_name == "WaxError":
+        raise WaxError(wax_exception_what)
+    else:
+        try:
+            aux = json.loads(wax_exception_what)
+            assertion_code = aux['assert_hash']
+        except Exception as ex:
+            print("Internal error: Expected JSON document containing assert_hash key, but got " + wax_exception_what)
+            raise WaxError(wax_exception_what)
+        assertion_type = eval(wax_exception_name)
+        raise assertion_type(assertion_code, wax_exception_what)
+
+
+def call_with_exception_relay(foo):
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        try:
+            result = foo(*args, **kwargs)
+            if result is None:
+                result = b''  # Ensure result is bytes
+            else:
+                if isinstance(result, str):
+                    result = result.encode('utf-8')
+                elif not isinstance(result, bytes):
+                    result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
+            return result
+        except Exception as ex:
+            raise_appropriate_wax_exception(ex)
+    return wrapper
+
+from cpp_python_bridge cimport (
+    error_code,
+    json_asset,
+    json_price,
+    result,
+    protocol,
+    binary_data,
+    binary_data_node,
+    required_authority_collection,
+    hive_transaction_handle,
+    hive_operation_handle,
+    hive_exception_data,
+)
 from .wax_result import (
     python_result,
     python_error_code,
@@ -846,6 +896,13 @@ def get_hive_protocol_config(chain_id: bytes) -> dict[bytes, bytes]:
     cdef protocol obj
     return obj.cpp_get_hive_protocol_config(chain_id)
 
+@call_with_exception_relay
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj
     obj.cpp_throws(throw_type)
+
+@call_with_exception_relay
+def cpp_throws(type: int) -> bytes:
+    cdef protocol obj
+    obj.cpp_throws(type)
+    return b''
