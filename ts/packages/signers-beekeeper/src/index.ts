@@ -25,7 +25,7 @@ export class WaxBeekeeperProviderError extends Error {}
  * await chain.broadcast(tx);
  * ```
  */
-class BeekeeperProvider extends AEncryptionProvider {
+export class BeekeeperProvider extends AEncryptionProvider {
   private constructor(
     private readonly wallet: IBeekeeperUnlockedWallet,
     private readonly publicKey: TPublicKey
