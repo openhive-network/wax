@@ -198,19 +198,6 @@ importers:
         specifier: catalog:typescript-toolset
         version: 5.7.3
 
-  packages/signers-hb-auth:
-    dependencies:
-      '@hiveio/hb-auth':
-        specifier: 0.0.1-stable.250901182519
-        version: 0.0.1-stable.250901182519
-      '@hiveio/wax':
-        specifier: workspace:../..
-        version: link:../..
-    devDependencies:
-      typescript:
-        specifier: catalog:typescript-toolset
-        version: 5.7.3
-
   packages/signers-keychain:
     dependencies:
       '@hiveio/wax':
@@ -425,14 +412,6 @@ packages:
 
   '@hiveio/beekeeper@1.27.11':
     resolution: {integrity: sha1-0v2gSYFhN5MLQzBHIYikUyksu/k=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.27.11.tgz}
-    engines: {node: ^20.11 || >= 21.2}
-
-  '@hiveio/hb-auth@0.0.1-stable.250901182519':
-    resolution: {integrity: sha1-lpNbrG3vRNIPzv4jXBI0S/wCN4A=, tarball: https://gitlab.syncad.com/api/v4/projects/429/packages/npm/@hiveio/hb-auth/-/@hiveio/hb-auth-0.0.1-stable.250901182519.tgz}
-    engines: {node: ^20.11 || >= 21.2}
-
-  '@hiveio/wax@1.27.6-rc10-stable.250901172848':
-    resolution: {integrity: sha1-WjDM3uVlzdeemHvc4ofnlPrQW3g=, tarball: https://gitlab.syncad.com/api/v4/projects/419/packages/npm/@hiveio/wax/-/@hiveio/wax-1.27.6-rc10-stable.250901172848.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
@@ -890,9 +869,6 @@ packages:
 
   colorette@1.4.0:
     resolution: {integrity: sha512-Y2oEozpomLn7Q3HFP7dpww7AtMJplbM9lGZP6RDfHqmbeRjiwRg4n6VM6j4KLmRke85uWEI7JqF17f3pqdRA0g==}
-
-  comlink@4.4.2:
-    resolution: {integrity: sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g==}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -2194,15 +2170,6 @@ snapshots:
 
   '@hiveio/beekeeper@1.27.11': {}
 
-  '@hiveio/hb-auth@0.0.1-stable.250901182519':
-    dependencies:
-      '@hiveio/wax': 1.27.6-rc10-stable.250901172848
-      comlink: 4.4.2
-
-  '@hiveio/wax@1.27.6-rc10-stable.250901172848':
-    dependencies:
-      events: 3.3.0
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -2680,8 +2647,6 @@ snapshots:
   color-name@1.1.4: {}
 
   colorette@1.4.0: {}
-
-  comlink@4.4.2: {}
 
   commander@2.20.3: {}
 

@@ -14,7 +14,6 @@
   <button onclick="usePeakVault()">Use Peak Vault</button>
   <button onclick="useMetaMask()">Use MetaMask</button>
   <button onclick="useBeekeeper()">Use Beekeeper</button>
-  <button onclick="useHbAuth()">Use HBAuth</button>
 
   <pre><code id="operating-private-key"></code></pre>
   <pre><code id="tx-result"></code></pre>
@@ -27,8 +26,6 @@
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
     import MetaMaskProvider from "@hiveio/wax-signers-metamask";
     import BeekeeperProvider from "@hiveio/wax-signers-beekeeper";
-    import HBAuthProvider from "@hiveio/wax-signers-hb-auth";
-    import { OfflineClient } from "@hiveio/hb-auth";
 
     const txResult = document.getElementById('tx-result');
     const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
@@ -100,23 +97,6 @@
       } catch (error) {
         console.error('Beekeeper provider not available', error);
       }
-      const hbAuthClient = new OfflineClient({
-        chainId: testEnv.configuredChain.chainId,
-        node: testEnv.configuredChain.endpointUrl,
-        workerUrl: './worker.js',
-        sessionTimeout: 900
-      });
-      const hbAuthProvider = await HBAuthProvider.for(hbAuthClient, accountName, testEnv.role);
-      try {
-        await hbAuthClient.initialize();
-        const registeredUser = await hbAuthClient.getRegisteredUserByUsername(accountName);
-        if (registeredUser)
-          await hbAuthClient.authenticate(accountName, "password", testEnv.role);
-        else
-          await hbAuthClient.register(accountName, "password", testEnv.privateKey, testEnv.role);
-      } catch (error) {
-        console.error('Could not initialize hb-auth', error);
-      }
       const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
       let metaMaskProvider;
       try {
@@ -129,7 +109,6 @@
       window.usePeakVault = () => void sign(peakVaultProvider);
       window.useMetaMask = () => void sign(metaMaskProvider);
       window.useBeekeeper = () => void sign(beekeeperProvider);
-      window.useHbAuth = () => void sign(hbAuthProvider);
     })();
   </script>
 </body>
