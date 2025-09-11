@@ -4,6 +4,7 @@ from datetime import datetime  # noqa: TCH003
 
 from schemas.apis import debug_node_api
 from schemas.fields.compound import Price
+from schemas.fields.hex import TransactionId
 
 from beekeepy.handle.remote import AbstractSyncApi
 
@@ -63,4 +64,8 @@ class DebugNodeApi(AbstractSyncApi):
 
     @api
     def debug_throw_exception(self, throw_exception: bool = False) -> debug_node_api.DebugThrowException:
+        raise NotImplementedError
+
+    @api
+    def debug_fail_transaction(self, tx_id: TransactionId) -> debug_node_api.DebugFailTransaction:
         raise NotImplementedError
