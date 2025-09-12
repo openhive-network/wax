@@ -4,7 +4,7 @@ import pytest
 
 import wax
 
-from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError
+from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
 
 
 def test_exception_handling() -> None:
@@ -26,7 +26,7 @@ def test_exception_handling() -> None:
         ex_what = str(inst)
         print(ex_what)  # call __str__
 
-    assert ex_type == RuntimeError
+    assert ex_type == WaxError
     assert ex_args == ("Hello, my exception!",)
     assert ex_what == "Hello, my exception!"
 

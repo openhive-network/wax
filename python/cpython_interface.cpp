@@ -11,6 +11,37 @@
 
 namespace cpp
 {
+std::vector<std::string> protocol::cpp_translate_to_wax_exception_data(std::exception_ptr ex)const
+{
+  if (not ex)
+    return { "WaxError", "Unknown exception" };
+
+  try
+  {
+    std::rethrow_exception(ex);
+  }
+  catch(const cpp::wax_chain_assertion& e)
+  {
+    return { "WaxChainAssertionError", e.what() };
+  }
+  catch(const cpp::wax_protocol_assertion& e)
+  {
+    return { "WaxProtocolAssertionError", e.what() };
+  }
+  catch(const cpp::wax_assertion& e)
+  {
+    return { "WaxAssertionError", e.what() };
+  }
+  catch(const std::exception& e)
+  {
+    return { "WaxError", e.what() };
+  }
+  catch(...)
+  {
+    return { "WaxError", "Unknown exception" };
+  }
+}
+
 hive_transaction_handle protocol::cpp_deserialize_transaction(std::string hex)const
 {
   return safe_exception_wrapper([&]() -> hive_transaction_handle {

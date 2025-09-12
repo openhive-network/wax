@@ -12,23 +12,19 @@ from libcpp.vector cimport vector
 from libcpp.optional cimport optional
 from libcpp.utility cimport move
 from libc.stdint cimport uint16_t, uint32_t, int32_t
+from libcpp.exception cimport exception_ptr, wrapped_exception_ptr_from_exception
 
 import json
 
 import cython
 from cython.operator cimport dereference, preincrement
 
-create_custom_exceptions()
-PyChainAssertionError = <object> ChainAssertionErrorIndicator
-PyProtocolAssertionError = <object> ProtocolAssertionErrorIndicator
-PyAssertionError = <object> AssertionErrorIndicator
-
 from .exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
-def assertion_exception_relay_helper(relayed_exception_type, original_exception):
-    aux = json.loads(str(original_exception))
+def assertion_exception_relay_helper(relayed_exception_type, relayed_exception_message):
+    aux = json.loads(relayed_exception_message)
     if isinstance(aux, dict) and 'assert_hash' in aux:
         assertion_code = aux['assert_hash']
-        raise relayed_exception_type(assertion_code, str(aux).encode('utf-8'))
+        raise relayed_exception_type(assertion_code, relayed_exception_message)
     raise WaxError(str(aux).encode('utf-8'))
 
 def call_with_exception_relay(foo):
@@ -44,15 +40,16 @@ def call_with_exception_relay(foo):
                 elif not isinstance(result, bytes):
                     result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
             return result
-        except PyChainAssertionError as ex:
-            assertion_exception_relay_helper(WaxChainAssertionError, ex)
-        except PyProtocolAssertionError as ex:
-            assertion_exception_relay_helper(WaxProtocolAssertionError, ex)
-        except PyAssertionError as ex:
-            assertion_exception_relay_helper(WaxAssertionError, ex)
         except Exception as ex:
-            aux = json.loads(str(ex))
-            raise WaxError(str(aux).encode('utf-8'))
+            translated_exception_data = translate_to_wax_exception_data(ex)
+            exception_type_string = translated_exception_data[0].decode()
+            exception_message_string = translated_exception_data[1].decode()
+            if exception_type_string == "WaxError":
+                print("Raising WaxError!")
+                raise WaxError(exception_message_string)
+            else:
+                exc_type = eval(exception_type_string)
+                assertion_exception_relay_helper(exc_type, exception_message_string)
     return wrapper
 
 from cpp_python_bridge cimport error_code, json_asset, json_price, result, protocol, binary_data, binary_data_node, required_authority_collection, hive_transaction_handle, hive_operation_handle
@@ -442,6 +439,11 @@ def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
     cdef WaxOperationHandle wax_op = WaxOperationHandle.__new__(WaxOperationHandle)
     wax_op.hOp = move(hOp)
     return wax_op
+
+def translate_to_wax_exception_data(ex: object) -> list[bytes]:
+    cdef protocol obj
+    cdef exception_ptr eptr = wrapped_exception_ptr_from_exception(ex)
+    return obj.cpp_translate_to_wax_exception_data(eptr)
 
 def handle_deserialize_transaction(transaction_data: bytes) -> WaxTransactionHandle:
     cdef protocol obj
@@ -883,6 +885,7 @@ def get_hive_protocol_config(chain_id: bytes) -> dict[bytes, bytes]:
     cdef protocol obj
     return obj.cpp_get_hive_protocol_config(chain_id)
 
+@call_with_exception_relay
 def verify_exception_handling(throw_type: int) -> None:
     cdef protocol obj
     obj.cpp_throws(throw_type)
