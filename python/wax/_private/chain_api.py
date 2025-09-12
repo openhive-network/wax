@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
     from beekeepy.interfaces import HttpUrl
-    from wax._private.api.models import ApiAuthority, FindAccountsApiResponse
+    from wax._private.api.models import FindAccountsApiResponse, PossibleAuthorityApi
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
 
@@ -130,7 +130,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
 
         return self._tapos_cache
 
-    def _transform_api_authority(self, api_authority: ApiAuthority) -> WaxAuthority | None:
+    def _transform_api_authority(self, api_authority: PossibleAuthorityApi) -> WaxAuthority | None:
         if not api_authority:
             return None
 
@@ -139,11 +139,8 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
 
         return WaxAuthority(
             weight_threshold=api_authority.weight_threshold,
-            account_auths={
-                cast(str, account[entity_index]): cast(int, account[weight_index])
-                for account in api_authority.account_auths
-            },
-            key_auths={cast(str, key[entity_index]): cast(int, key[weight_index]) for key in api_authority.key_auths},
+            account_auths={account[entity_index]: account[weight_index] for account in api_authority.account_auths},
+            key_auths={key[entity_index]: cast(int, key[weight_index]) for key in api_authority.key_auths},
         )
 
     def _extract_authority_from_find_accounts_response(
