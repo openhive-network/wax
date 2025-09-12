@@ -10,7 +10,11 @@ USER root
 RUN groupadd -g $GROUP_ID usergroup && \
     useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
     usermod -a -G $(id -g hived_admin) ${USER_NAME} && \
-    DEBIAN_FRONTEND=noninteractive apt update && DEBIAN_FRONTEND=noninteractive apt install -y gdb python3.12-dbg
+    DEBIAN_FRONTEND=noninteractive apt update && DEBIAN_FRONTEND=noninteractive apt install -y gdb python3.12-dbg && \
+    apt update && apt install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt install -y nodejs
+
 
 # Switch to created user
 USER ${USER_NAME}
