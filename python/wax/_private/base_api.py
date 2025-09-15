@@ -199,7 +199,7 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def get_private_key_from_password(account: AccountName, role: str, password: str) -> PrivateKeyData:
-        data = generate_password_based_private_key(account, role, password)
+        data = generate_password_based_private_key(to_cpp_string(account), to_cpp_string(role), to_cpp_string(password))
         return PrivateKeyData(data)
 
     @staticmethod
