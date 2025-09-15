@@ -1224,24 +1224,24 @@ API_TRX_SIG1 = {
 }
 
 API_TRX_SIG1_AUTHORITIES = {
-    "account_name": "brofund-witness",
+    "account_name": b"brofund-witness",
     "authorities": {
         "owner": {
-            "key_auths": [["STM79McmNPY35nkuk37crGF6irhz5CkrBgDvnH68Zav7sYkrz79ce", 1]],
+            "key_auths": [[b"STM79McmNPY35nkuk37crGF6irhz5CkrBgDvnH68Zav7sYkrz79ce", 1]],
             "account_auths": [],
             "weight_threshold": 1,
         },
         "active": {
-            "key_auths": [["STM5zw6KDtQiiJMhkdkFm8CXxPUEa2QyitHBhkCE1iMJEGmEfd5aE", 1]],
+            "key_auths": [[b"STM5zw6KDtQiiJMhkdkFm8CXxPUEa2QyitHBhkCE1iMJEGmEfd5aE", 1]],
             "account_auths": [],
             "weight_threshold": 1,
         },
         "posting": {
-            "key_auths": [["STM8AaJXJfZ6gdSLKcVgMcNU6oEkuL7hcYxrqrUjN3Kwd2eHvXp4v", 1]],
-            "account_auths": [["steemauto", 1], ["ecency.app", 1]],
+            "key_auths": [[b"STM8AaJXJfZ6gdSLKcVgMcNU6oEkuL7hcYxrqrUjN3Kwd2eHvXp4v", 1]],
+            "account_auths": [[b"steemauto", 1], [b"ecency.app", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM6wUkXGebWb9qaHEc59CPARQmzZmwQNedZ3ukb53wGLBsehrZ2g",
+        "memo": b"STM6wUkXGebWb9qaHEc59CPARQmzZmwQNedZ3ukb53wGLBsehrZ2g",
         "witness_signing": "",
     },
 }
@@ -1308,297 +1308,297 @@ API_TRX_SIG5_v0 = {
 }
 
 API_TRX_SIG5_AUTHORITIES_0 = {
-    "account_name": "esteem.app",
+    "account_name": b"esteem.app",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM6zXVBarPvth5XjcVmcyAiGEndvyiQAokVJHSsPGKWaoSqwHk5K", 1]],
+            "key_auths": [[b"STM6zXVBarPvth5XjcVmcyAiGEndvyiQAokVJHSsPGKWaoSqwHk5K", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM5XKXqoieAtbq8isuXty8SrysvsXfehJGZeLBQ6STEAsP4gHUBV", 1]],
+            "key_auths": [[b"STM5XKXqoieAtbq8isuXty8SrysvsXfehJGZeLBQ6STEAsP4gHUBV", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["ecency.app", 1]],
-            "key_auths": [["STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK", 1]],
+            "account_auths": [[b"ecency.app", 1]],
+            "key_auths": [[b"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM7rYhpTmVrhBmLcEaoxWvVk5M3FrN4xtapk1utikFD8hhrNmzAf",
+        "memo": b"STM7rYhpTmVrhBmLcEaoxWvVk5M3FrN4xtapk1utikFD8hhrNmzAf",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_1 = {
-    "account_name": "ecency",
+    "account_name": b"ecency",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM4yhxC7Bum8St36z3nZmj9VA59EXM7DXReMLMRn8fwrazgNbKYQ", 1]],
+            "key_auths": [[b"STM4yhxC7Bum8St36z3nZmj9VA59EXM7DXReMLMRn8fwrazgNbKYQ", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM51ApnQm3HNieuy3ZUQNtXbdu8CzEFEWRPqMLY1422i8Gy7g2PJ", 1]],
+            "key_auths": [[b"STM51ApnQm3HNieuy3ZUQNtXbdu8CzEFEWRPqMLY1422i8Gy7g2PJ", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["ecency.app", 1]],
-            "key_auths": [["STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43", 1]],
+            "account_auths": [[b"ecency.app", 1]],
+            "key_auths": [[b"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5vCxUjSAZAgKBornswBuzXgAZasbE3EkPHpLmDEVHmPVGMnnah",
+        "memo": b"STM5vCxUjSAZAgKBornswBuzXgAZasbE3EkPHpLmDEVHmPVGMnnah",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_2 = {
-    "account_name": "ecency.stats",
+    "account_name": b"ecency.stats",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM8h5aXWY4xxVZfUCT3Bp3un6G4aAu2aRseJ4U2QXEb6HmLzo98n", 1]],
+            "key_auths": [[b"STM8h5aXWY4xxVZfUCT3Bp3un6G4aAu2aRseJ4U2QXEb6HmLzo98n", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM6yT137LvnvqENnQj1mZx62SGxA5gpXUpMo2yAmCBXNfjnH3RjZ", 1]],
+            "key_auths": [[b"STM6yT137LvnvqENnQj1mZx62SGxA5gpXUpMo2yAmCBXNfjnH3RjZ", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["demo", 1], ["ecency.app", 1]],
-            "key_auths": [["STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd", 1]],
+            "account_auths": [[b"demo", 1], [b"ecency.app", 1]],
+            "key_auths": [[b"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM73YE8rEQoDh6Y6EvrX2tXmmzhEnoTTwrL5jh3Wet3iMxKBJJty",
+        "memo": b"STM73YE8rEQoDh6Y6EvrX2tXmmzhEnoTTwrL5jh3Wet3iMxKBJJty",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_3 = {
-    "account_name": "good-karma",
+    "account_name": b"good-karma",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM7Wv1ZehXeLJbUbauam6h3khcnMXD9BLmuMBoD1v8jxh8Qm6Wgt", 1]],
+            "key_auths": [[b"STM7Wv1ZehXeLJbUbauam6h3khcnMXD9BLmuMBoD1v8jxh8Qm6Wgt", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM6FgbXf53uLD7m2skkzWR6Y4VU5zYwDqC476W2vva1aVognPnT2", 1]],
+            "key_auths": [[b"STM6FgbXf53uLD7m2skkzWR6Y4VU5zYwDqC476W2vva1aVognPnT2", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["ecency.app", 1], ["peakd.app", 1]],
-            "key_auths": [["STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR", 1]],
+            "account_auths": [[b"ecency.app", 1], [b"peakd.app", 1]],
+            "key_auths": [[b"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM8mZcbokoRM8LvRk1CGibFyfuTXp77w72ktgJrZNsjKYmoF3gTx",
+        "memo": b"STM8mZcbokoRM8LvRk1CGibFyfuTXp77w72ktgJrZNsjKYmoF3gTx",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_4 = {
-    "account_name": "esteemapp",
+    "account_name": b"esteemapp",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM6drpX8y9nRyMykbonvXXkFbtESvWKG35NrNhoQ97uRhRQxbUhg", 1]],
+            "key_auths": [[b"STM6drpX8y9nRyMykbonvXXkFbtESvWKG35NrNhoQ97uRhRQxbUhg", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM8eKCcDrQhmqmHjA2ifrtVUs5U7KXqXScnh4dwGzk6rhyRt2DtB", 1]],
+            "key_auths": [[b"STM8eKCcDrQhmqmHjA2ifrtVUs5U7KXqXScnh4dwGzk6rhyRt2DtB", 1]],
             "weight_threshold": 1,
         },
         "posting": {
             "account_auths": [
-                ["ecency.app", 1],
-                ["hivesigner", 1],
-                ["peakd.app", 1],
-                ["steemconnect", 1],
+                [b"ecency.app", 1],
+                [b"hivesigner", 1],
+                [b"peakd.app", 1],
+                [b"steemconnect", 1],
             ],
-            "key_auths": [["STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP", 1]],
+            "key_auths": [[b"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM6W6WwFy5P8putgwPppiyG1ySM65wvSQSPKErkDCNG9sTSevhjf",
+        "memo": b"STM6W6WwFy5P8putgwPppiyG1ySM65wvSQSPKErkDCNG9sTSevhjf",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_5 = {
-    "account_name": "demo",
+    "account_name": b"demo",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM7N79vVmojHW4ZkCTytB753Eg938R3f8GA3M2ra7dd7TsTQKSCb", 1]],
+            "key_auths": [[b"STM7N79vVmojHW4ZkCTytB753Eg938R3f8GA3M2ra7dd7TsTQKSCb", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
             "key_auths": [
-                ["STM5YR5MnAkAP4iKRWuzPv9Z33sdqDvyWHtknDse3c94M2krs9CDd", 1],
-                ["STM5YRGgcSyWr9PWgPfMucw8sAaryQ71vaHwv1SNsSETcf5jQZj36", 1],
-                ["STM5Z5Dmqt5hyidjhQYZkaoze3AW1BGm9LXVHL8oLt8gMTPhyZQm2", 1],
-                ["STM5auKGdpPM5bJuQeeayASWn4yCifgrSWgn4K3tH5f123N7M41gB", 1],
-                ["STM64nx2weChqikvdeYMzaR3hdVNrgvDtJyjNCAL4N8jQLC9kTmTX", 1],
-                ["STM77EkCQWHwVfCESvhevCzw3TWgVLexwr2f4pxmY1oZtMnz7gsEJ", 1],
-                ["STM7Vo1uyWAoyWKM7A7ExHEkfFCnq8ZRGyrZwZGpuJESCQ79cJ5cc", 1],
-                ["STM7bvNHzp4nMNmVysBbicDtogYg7TyWrPxnXw9aegCzNgELsNvM4", 1],
-                ["STM7nWjvRqLrdKKuqYZ2kL75TPMePNFc4dQpq6cHUkPJzmz5shP35", 1],
-                ["STM7nnkD6ZdoMHKta3rA9XVeeqQ3wy41Kmv3J8JWc5hx5oHbZXEK5", 1],
-                ["STM7sxc377Hac7vfVAT6xusAjVTMSHR4qSNy41CvZoJjnMLTePzK2", 1],
-                ["STM8PcNaC4Zk5yKXYiUjikj4P3hadU7H6WBCKtqPQzkhMiK3YBr5t", 1],
-                ["STM8fFik5Q7D8u9cD1WZW9pXGbqATxcyZT1SPaS21NCjqEar7zibD", 1],
+                [b"STM5YR5MnAkAP4iKRWuzPv9Z33sdqDvyWHtknDse3c94M2krs9CDd", 1],
+                [b"STM5YRGgcSyWr9PWgPfMucw8sAaryQ71vaHwv1SNsSETcf5jQZj36", 1],
+                [b"STM5Z5Dmqt5hyidjhQYZkaoze3AW1BGm9LXVHL8oLt8gMTPhyZQm2", 1],
+                [b"STM5auKGdpPM5bJuQeeayASWn4yCifgrSWgn4K3tH5f123N7M41gB", 1],
+                [b"STM64nx2weChqikvdeYMzaR3hdVNrgvDtJyjNCAL4N8jQLC9kTmTX", 1],
+                [b"STM77EkCQWHwVfCESvhevCzw3TWgVLexwr2f4pxmY1oZtMnz7gsEJ", 1],
+                [b"STM7Vo1uyWAoyWKM7A7ExHEkfFCnq8ZRGyrZwZGpuJESCQ79cJ5cc", 1],
+                [b"STM7bvNHzp4nMNmVysBbicDtogYg7TyWrPxnXw9aegCzNgELsNvM4", 1],
+                [b"STM7nWjvRqLrdKKuqYZ2kL75TPMePNFc4dQpq6cHUkPJzmz5shP35", 1],
+                [b"STM7nnkD6ZdoMHKta3rA9XVeeqQ3wy41Kmv3J8JWc5hx5oHbZXEK5", 1],
+                [b"STM7sxc377Hac7vfVAT6xusAjVTMSHR4qSNy41CvZoJjnMLTePzK2", 1],
+                [b"STM8PcNaC4Zk5yKXYiUjikj4P3hadU7H6WBCKtqPQzkhMiK3YBr5t", 1],
+                [b"STM8fFik5Q7D8u9cD1WZW9pXGbqATxcyZT1SPaS21NCjqEar7zibD", 1],
             ],
             "weight_threshold": 1,
         },
         "posting": {
             "account_auths": [
-                ["demo-app", 1],
-                ["ecency.app", 1],
-                ["hivesigner", 1],
-                ["leofinance", 1],
+                [b"demo-app", 1],
+                [b"ecency.app", 1],
+                [b"hivesigner", 1],
+                [b"leofinance", 1],
             ],
-            "key_auths": [["STM62fkRnTJSeJoWMLS5r61cgQbxSo3JJ7BoxCgZrkfRuNN71hA1A", 1]],
+            "key_auths": [[b"STM62fkRnTJSeJoWMLS5r61cgQbxSo3JJ7BoxCgZrkfRuNN71hA1A", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5PV4XZSdKe9JdPXm7nxn3AtZPSzsrcD8hxFqueokxpqXbKxEs7",
+        "memo": b"STM5PV4XZSdKe9JdPXm7nxn3AtZPSzsrcD8hxFqueokxpqXbKxEs7",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_6 = {
-    "account_name": "ecency.app",
+    "account_name": b"ecency.app",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM6DFboChKgXFzkvEh18u2iXL7Q5N7ExNjqfPnuJ518uyRKWrsmJ", 1]],
+            "key_auths": [[b"STM6DFboChKgXFzkvEh18u2iXL7Q5N7ExNjqfPnuJ518uyRKWrsmJ", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM78Cf8BNZ6HmmeskFwGPfcjKzYhQHZD1bAiYHbmGFGQRJjQHuny", 1]],
+            "key_auths": [[b"STM78Cf8BNZ6HmmeskFwGPfcjKzYhQHZD1bAiYHbmGFGQRJjQHuny", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["hivesigner", 1]],
-            "key_auths": [["STM7KDcjUNMqUdohFu9iYjCAqYEyXfM7pjNLx96GhRNpdYscB3aQc", 1]],
+            "account_auths": [[b"hivesigner", 1]],
+            "key_auths": [[b"STM7KDcjUNMqUdohFu9iYjCAqYEyXfM7pjNLx96GhRNpdYscB3aQc", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM8fACNECP4r4BvfMBJ8n8ScZ4sgEMRraNBVosuibPR1vbs25pAa",
+        "memo": b"STM8fACNECP4r4BvfMBJ8n8ScZ4sgEMRraNBVosuibPR1vbs25pAa",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_7 = {
-    "account_name": "hivesigner",
+    "account_name": b"hivesigner",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM7peJ4EfsE4yBrTcRqPwcrzuFyhHEZkHyaJMX7nscW78cEB1YjD", 1]],
+            "key_auths": [[b"STM7peJ4EfsE4yBrTcRqPwcrzuFyhHEZkHyaJMX7nscW78cEB1YjD", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM6DkcEaV3Jjo4owZEcK94kwc6hHhLAkLvxf9gsGUs6Fh6oG66tA", 1]],
+            "key_auths": [[b"STM6DkcEaV3Jjo4owZEcK94kwc6hHhLAkLvxf9gsGUs6Fh6oG66tA", 1]],
             "weight_threshold": 1,
         },
         "posting": {
             "account_auths": [],
-            "key_auths": [["STM574A9CiTg3EkcsZ7VfXin8tVtFVWqGq5x2wrfoqv5yMfxvx96d", 1]],
+            "key_auths": [[b"STM574A9CiTg3EkcsZ7VfXin8tVtFVWqGq5x2wrfoqv5yMfxvx96d", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5gPXMTMA8MPQBTUccSiTVBxgqKAijS4FQLkS6bZb3mN92ac6Xr",
+        "memo": b"STM5gPXMTMA8MPQBTUccSiTVBxgqKAijS4FQLkS6bZb3mN92ac6Xr",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_8 = {
-    "account_name": "peakd.app",
+    "account_name": b"peakd.app",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM6UYws2MJVPp32z1DhdwakP9Bhh9rfHeYq8zLPpcmJKafWKMHfU", 1]],
+            "key_auths": [[b"STM6UYws2MJVPp32z1DhdwakP9Bhh9rfHeYq8zLPpcmJKafWKMHfU", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM6XFJgZM4Nfau2fVyVcQrVJJbqvvnD3RV2gRrPTiTaMVq5a1LcN", 1]],
+            "key_auths": [[b"STM6XFJgZM4Nfau2fVyVcQrVJJbqvvnD3RV2gRrPTiTaMVq5a1LcN", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["hivesigner", 1]],
-            "key_auths": [["STM64peLPcuSsUk591okRGUwv5rsTadSnnqi9ddMZhrVkxkDaSUzo", 1]],
+            "account_auths": [[b"hivesigner", 1]],
+            "key_auths": [[b"STM64peLPcuSsUk591okRGUwv5rsTadSnnqi9ddMZhrVkxkDaSUzo", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5YNzowSc6EwLjBhpHMN7iutMa5VAUjcRPcxifJW6N3udWWXVSP",
+        "memo": b"STM5YNzowSc6EwLjBhpHMN7iutMa5VAUjcRPcxifJW6N3udWWXVSP",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_9 = {
-    "account_name": "steemconnect",
+    "account_name": b"steemconnect",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM5HNbqoTitv3dN4iNttaUQnbWDZhNQRohQ59CFuEf7z4AiCoDTz", 1]],
+            "key_auths": [[b"STM5HNbqoTitv3dN4iNttaUQnbWDZhNQRohQ59CFuEf7z4AiCoDTz", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM58efjiXLKkjYvrqNCHQ5J4DTBXgCN9EE5K4gNaYPdixREfuW1F", 1]],
+            "key_auths": [[b"STM58efjiXLKkjYvrqNCHQ5J4DTBXgCN9EE5K4gNaYPdixREfuW1F", 1]],
             "weight_threshold": 1,
         },
         "posting": {
             "account_auths": [],
-            "key_auths": [["STM5khoFYgEg8Mvh989JmXLhgEgwAF78nPRr2xppQgafzWCXe2krQ", 1]],
+            "key_auths": [[b"STM5khoFYgEg8Mvh989JmXLhgEgwAF78nPRr2xppQgafzWCXe2krQ", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM7PApWPMRoKL1vGrsVrTS3Aqm95X8xGbpebWgNTFWWb5ex71W1M",
+        "memo": b"STM7PApWPMRoKL1vGrsVrTS3Aqm95X8xGbpebWgNTFWWb5ex71W1M",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_10 = {
-    "account_name": "demo-app",
+    "account_name": b"demo-app",
     "authorities": {
         "owner": {
-            "account_auths": [["steemconnect", 1]],
-            "key_auths": [["STM82hFUKjN2j8KGqQ8rz9YgFAbMrWFuCPkabtrAnUfV2JQshNPLz", 1]],
+            "account_auths": [[b"steemconnect", 1]],
+            "key_auths": [[b"STM82hFUKjN2j8KGqQ8rz9YgFAbMrWFuCPkabtrAnUfV2JQshNPLz", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM7g438Ha3LB7kfuYNyT2MXaFKdogKad5B7vp7Lj35mNay4RwKPf", 1]],
+            "key_auths": [[b"STM7g438Ha3LB7kfuYNyT2MXaFKdogKad5B7vp7Lj35mNay4RwKPf", 1]],
             "weight_threshold": 1,
         },
         "posting": {
-            "account_auths": [["ecency.app", 1], ["steemconnect", 1]],
-            "key_auths": [["STM6v5nwZYvAmyZZUoSdjJvgJ3FwiDHdKuWsAaB4zx3qhuhdyy76s", 1]],
+            "account_auths": [[b"ecency.app", 1], [b"steemconnect", 1]],
+            "key_auths": [[b"STM6v5nwZYvAmyZZUoSdjJvgJ3FwiDHdKuWsAaB4zx3qhuhdyy76s", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5kKfxHjCdhgCNS5vA67iKCJTYXEWzbQdm3fv7cv9SRs1f4UZ1N",
+        "memo": b"STM5kKfxHjCdhgCNS5vA67iKCJTYXEWzbQdm3fv7cv9SRs1f4UZ1N",
     },
 }
 
 API_TRX_SIG5_AUTHORITIES_11 = {
-    "account_name": "leofinance",
+    "account_name": b"leofinance",
     "authorities": {
         "owner": {
             "account_auths": [],
-            "key_auths": [["STM5QemqxTCU4peHzSVL7vPGExgzsdRbAB3uYk8xAQVzuTycbU3hN", 1]],
+            "key_auths": [[b"STM5QemqxTCU4peHzSVL7vPGExgzsdRbAB3uYk8xAQVzuTycbU3hN", 1]],
             "weight_threshold": 1,
         },
         "active": {
             "account_auths": [],
-            "key_auths": [["STM8dDctyAECwcwxgt4toBGockzs7WSUaXUrCkETP68pPLRAXSNsc", 1]],
+            "key_auths": [[b"STM8dDctyAECwcwxgt4toBGockzs7WSUaXUrCkETP68pPLRAXSNsc", 1]],
             "weight_threshold": 1,
         },
         "posting": {
             "account_auths": [
-                ["hivesigner", 1],
-                ["leofinance", 1],
-                ["peakd.app", 1],
-                ["steem.leo", 1],
-                ["steemauto", 1],
-                ["threespeak", 1],
+                [b"hivesigner", 1],
+                [b"leofinance", 1],
+                [b"peakd.app", 1],
+                [b"steem.leo", 1],
+                [b"steemauto", 1],
+                [b"threespeak", 1],
             ],
-            "key_auths": [["STM57hDwzvNYEYfL4wLj9REhaRgiNxdFt232SxVzPwZYPqiH2ZfNW", 1]],
+            "key_auths": [[b"STM57hDwzvNYEYfL4wLj9REhaRgiNxdFt232SxVzPwZYPqiH2ZfNW", 1]],
             "weight_threshold": 1,
         },
-        "memo": "STM5Vz7MkUod4kzCoj5N4xW2FUyXUEgn5eqHx9m8EuupqXyej9aD3",
+        "memo": b"STM5Vz7MkUod4kzCoj5N4xW2FUyXUEgn5eqHx9m8EuupqXyej9aD3",
     },
 }
 
@@ -1760,7 +1760,7 @@ def to_python_authorities(account_authorities: dict[str, Any]) -> python_authori
                                )
     return result
 
-ACCOUNT_AUTHS: dict[str, python_authorities] = { # type: ignore[no-redef]
+ACCOUNT_AUTHS: dict[bytes, python_authorities] = { # type: ignore[no-redef]
     account_auth["account_name"]: to_python_authorities(account_auth["authorities"]) # type: ignore[arg-type]
     for account_auth in ACCOUNT_AUTHS
 }

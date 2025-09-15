@@ -20,8 +20,8 @@ from tests.utils.refs import (
 def retrieve_authorities(account_names: list[bytes]) -> dict[bytes, python_authorities]:
     authorities_map: dict[bytes, python_authorities] = {}
     for account_name in account_names:
-        print(f"python retrieve_authorities:account_name = '{account_name.decode()}'")
-        auths = ACCOUNT_AUTHS[account_name.decode()]
+        print(f"python retrieve_authorities:account_name = '{account_name}'")
+        auths = ACCOUNT_AUTHS[account_name]
         authorities_map[account_name] = auths
     print(f"python retrieve_authorities:authorities_map = {authorities_map}")
     return authorities_map
