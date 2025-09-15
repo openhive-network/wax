@@ -18,7 +18,9 @@ packages = [{ include = "wax"}]
 include = ["wax/_private/proto/*"]
 source = [
     { name = "PyPI", priority = "primary" },
-    { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/groups/hive/-/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-api-packages", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
 
 [tool.poetry.build]
