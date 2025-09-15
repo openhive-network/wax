@@ -22,21 +22,21 @@ PROPS_TO_SERIALIZE = (
     [
         {
             "account_creation_fee": python_json_asset(
-                amount="28000", precision=3, nai="@@000000021"
+                amount=b"28000", precision=3, nai=b"@@000000021"
             ),
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_subsidy_budget": 797,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_subsidy_decay": 347321,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "maximum_block_size": 131072,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "hbd_interest_rate": 1000,
@@ -44,36 +44,36 @@ PROPS_TO_SERIALIZE = (
         },
         {
             "hbd_exchange_rate": python_price(
-                base=python_json_asset(amount="100000", precision=3, nai="@@000000013"),
+                base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
                 quote=python_json_asset(
-                    amount="100000", precision=3, nai="@@000000021"
+                    amount=b"100000", precision=3, nai=b"@@000000021"
                 ),
             ),
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "url": b"http://new-url.html",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "new_signing_key": "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_creation_fee": python_json_asset(
-                amount="28000", precision=3, nai="@@000000021"
+                amount=b"28000", precision=3, nai=b"@@000000021"
             ),
             "maximum_block_size": 131072,
             "hbd_interest_rate": 1000,
             "hbd_exchange_rate": python_price(
-                base=python_json_asset(amount="100000", precision=3, nai="@@000000013"),
+                base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
                 quote=python_json_asset(
-                    amount="100000", precision=3, nai="@@000000021"
+                    amount=b"100000", precision=3, nai=b"@@000000021"
                 ),
             ),
             "new_signing_key": b"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
             "url": "http://new-url.html",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
             "account_subsidy_budget": 797,
             "account_subsidy_decay": 347321,
         },
