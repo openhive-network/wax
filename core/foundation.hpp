@@ -219,6 +219,21 @@ public:
   json_asset cpp_estimate_hive_collateral( const json_price& current_median_history, const json_price& current_min_history, const json_asset& hbd_amount_to_get ) const;
 
   /**
+   * Evaluate current interest
+   * 
+   * @param hbd_seconds_low - account's savings_hbd_seconds (part of database_api::find_account response) lower 64 bits
+   * @param hbd_seconds_high - account's hbd_seconds higher 64 bits 
+   * @param head_block_time - current head block time
+   * @param hbd - account's HBD balance
+   * @param hbd_seconds_last_update - account's savings_hbd_seconds_last_update
+   * @param hbd_interest_rate - current HBD interest rate (from dgpo)
+   * 
+   * @returns interest in HBD asset
+   */
+  json_asset cpp_evaluate_hbd_interest( const uint64_t hbd_seconds_low, const uint64_t hbd_seconds_high, const uint32_t head_block_time, const json_asset hbd, const uint32_t hbd_seconds_last_update,
+                                        const uint16_t hbd_interest_rate ) const;
+
+  /**
    * Check if given account name is valid, which means it follows given rules:
    * - Names must comply with RFC 1035 grammar
    * - All letters must be lowercase

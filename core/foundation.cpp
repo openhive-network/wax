@@ -24,6 +24,7 @@
 #include <hive/protocol/forward_impacted.hpp>
 #include <hive/protocol/get_config.hpp>
 #include <hive/protocol/operation_util.hpp>
+#include <hive/protocol/hbd_interest.hpp>
 
 #include <hive/chain/util/manabar.hpp>
 
@@ -872,6 +873,20 @@ json_asset foundation::cpp_estimate_hive_collateral( const json_price& current_m
     const hive::protocol::asset _hive = hive::protocol::hive_collateral::estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get);
 
     return to_json_asset(_hive);
+  });
+}
+
+json_asset foundation::cpp_evaluate_hbd_interest( const uint64_t hbd_seconds_low, const uint64_t hbd_seconds_high, const uint32_t head_block_time, const json_asset hbd, const uint32_t hbd_seconds_last_update,
+                                                  const uint16_t hbd_interest_rate ) const
+{
+  return cpp::safe_exception_wrapper([&]() -> json_asset {
+    fc::uint128_t hbd_seconds = fc::to_uint128(hbd_seconds_high, hbd_seconds_low);
+    hive::protocol::asset _hbd = to_asset(hbd);
+    fc::time_point_sec _head_block_time = fc::time_point_sec(head_block_time);
+    fc::time_point_sec _hbd_seconds_last_update = fc::time_point_sec(hbd_seconds_last_update);
+    fc::uint128_t interest = hive::protocol::hbd_interest::evaluate_hbd_interest(&hbd_seconds, _head_block_time, _hbd, _hbd_seconds_last_update, hbd_interest_rate, true);
+    hive::protocol::asset interest_paid(fc::uint128_to_uint64(interest), HBD_SYMBOL);
+    return to_json_asset(interest_paid);
   });
 }
 
