@@ -1,0 +1,40 @@
+{
+  "name": "Image to develop Hive wax, python based",
+  "image": "wax-python-builder:devcontainer",
+  "containerUser": "user",
+
+  //"runArgs": ["--network=host"],
+  "containerEnv": {
+    "DISPLAY": "host.docker.internal:0.0"
+  },
+
+  "workspaceMount": "source=/storage1/src/,target=/storage1/src/,type=bind,consistency=cached",
+  "workspaceFolder": "/storage1/src/",
+  "mounts": [
+    {
+      "source": "${localEnv:HOME}/.gitconfig",
+      "target": "/home/user/.gitconfig",
+      "type": "bind"
+    }
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "Vue.volar",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-vscode.cpptools-themes",
+        "ms-vscode.cmake-tools",
+        "eamodio.gitlens",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.jupyter-renderers",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "ms-python.debugpy"
+      ]
+    }
+  }
+}
