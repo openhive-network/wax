@@ -17,10 +17,10 @@ class WaxImportProtoBeforeCompileError(WaxError):
 class WaxAssertionError(WaxError):
     """Raises when an assertion occurred while calling C++ code."""
 
-    def __init__(self, assertion_hash: str, message: str) -> None:
+    def __init__(self, assertion_hash: str, assertion_data: str) -> None:
         self.assertion_hash = assertion_hash
-        self.message = message
-        super().__init__(self.message)
+        self.assertion_data = assertion_data
+        super().__init__(self.assertion_data)
 
 
 class WaxChainAssertionError(WaxAssertionError):
