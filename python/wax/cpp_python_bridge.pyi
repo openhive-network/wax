@@ -145,6 +145,13 @@ def estimate_hive_collateral(
     current_min_history: python_price,
     hbd_amount_to_get: python_json_asset
 ) -> python_json_asset: ...
+def evaluate_hbd_interest(
+    hbd_seconds: int,
+    head_block_time: int,
+    hbd: python_json_asset,
+    hbd_seconds_last_update: int,
+    hbd_interest_rate: int
+) -> python_json_asset: ...
 def check_memo_for_private_keys(
     memo: bytes,
     account: bytes,

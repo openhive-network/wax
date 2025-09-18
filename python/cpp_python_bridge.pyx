@@ -347,6 +347,17 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
     return response.amount, response.precision, response.nai
 
+@return_python_json_asset
+def evaluate_hbd_interest(hbd_seconds: int, head_block_time: int, hbd: python_json_asset, hbd_seconds_last_update: int, hbd_interest_rate: int) -> python_json_asset:
+    cdef protocol obj
+
+    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
+    cdef uint64_t hbd_seconds_low = hbd_seconds & 0xFFFFFFFF_FFFFFFFF
+    cdef uint64_t hbd_seconds_high = hbd_seconds >> 64
+
+    response = obj.cpp_evaluate_hbd_interest(hbd_seconds_low, hbd_seconds_high, head_block_time, _hbd, hbd_seconds_last_update, hbd_interest_rate)
+    return response.amount, response.precision, response.nai
+
 def is_valid_account_name(account_name: bytes) -> bool:
     cdef protocol obj
     return obj.cpp_is_valid_account_name(account_name)

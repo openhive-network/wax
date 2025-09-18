@@ -8,7 +8,7 @@ from libcpp.vector cimport vector
 from libcpp.set cimport set as cppset
 from libcpp.map cimport map as cppmap
 from libcpp.optional cimport optional as cpp_optional
-from libc.stdint cimport uint16_t, uint32_t, int32_t
+from libc.stdint cimport uint16_t, uint32_t, int32_t, uint64_t
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.optional cimport optional
@@ -251,6 +251,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         long cpp_calculate_inflation_rate_for_block(uint32_t block_num) except +
 
         json_asset cpp_estimate_hive_collateral( json_price current_median_history, json_price current_min_history, json_asset hbd_amount_to_get ) except +
+        json_asset cpp_evaluate_hbd_interest( uint64_t hbd_seconds_low, uint64_t hbd_seconds_high, uint32_t head_block_time, json_asset hbd, uint32_t hbd_seconds_last_update, uint16_t hbd_interest_rate ) except +
 
         bool cpp_is_valid_account_name( string name ) except +
 
