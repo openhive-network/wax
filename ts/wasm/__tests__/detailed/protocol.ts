@@ -1083,6 +1083,44 @@ test.describe('WASM Protocol', () => {
     });
   });
 
+  test('Should be able to evaluate hbd interest 1', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      const hbd_seconds_low = (BigInt(0xFFFFFFFF) << 32n) | BigInt(0xFFFFFFFF);
+      const hbd_seconds_hi = BigInt(0);
+      const head_block_time = 3_000_000;
+      const hbd = protocol.cpp_hbd(BigInt(100_000_000_000));
+      const hbd_seconds_last_update = 3_000_333;
+      const hbd_interest_rate = 15;
+
+      return protocol.cpp_evaluate_hbd_interest(hbd_seconds_low, hbd_seconds_hi, head_block_time, hbd, hbd_seconds_last_update, hbd_interest_rate);
+    });
+
+    expect(retVal).toEqual({
+      nai: "@@000000013",
+      precision: 3,
+      amount: "877412042"
+    });
+  });
+
+  test('Should be able to evaluate hbd interest 2', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      const hbd_seconds_low = (BigInt(0xFFFFFFFF) << 32n) | BigInt(0xFFFFFFFF);
+      const hbd_seconds_hi = BigInt(0xFF);
+      const head_block_time = 3_000_000;
+      const hbd = protocol.cpp_hbd(BigInt(100_000_000));
+      const hbd_seconds_last_update = 3_003_000;
+      const hbd_interest_rate = 15;
+
+      return protocol.cpp_evaluate_hbd_interest(hbd_seconds_low, hbd_seconds_hi, head_block_time, hbd, hbd_seconds_last_update, hbd_interest_rate);
+    });
+
+    expect(retVal).toEqual({
+      nai: "@@000000013",
+      precision: 3,
+      amount: "224617888250"
+    });
+  });
+
   test('Should be able to convert api schema to proto schema without data loss - basic transaction', async ({ wasmTest }) => {
     const retVal = await wasmTest(({ protocol }, transaction) => {
       const parsedTx = JSON.parse(transaction);

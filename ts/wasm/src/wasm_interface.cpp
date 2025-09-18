@@ -212,6 +212,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_hbd_to_hive", &foundation_wasm::cpp_hbd_to_hive)
     .function("cpp_hive_to_hbd", &foundation_wasm::cpp_hive_to_hbd)
     .function("cpp_estimate_hive_collateral", &foundation_wasm::cpp_estimate_hive_collateral)
+    .function("cpp_evaluate_hbd_interest", &foundation_wasm::cpp_evaluate_hbd_interest)
     .function("cpp_is_valid_account_name", &foundation_wasm::cpp_is_valid_account_name)
 
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
