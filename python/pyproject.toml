@@ -9,7 +9,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 
 [tool.poetry]
-name = "wax"
+name = "hiveio-wax"
 version = "0.0.0"
 description = ""
 repository = "https://gitlab.syncad.com/hive/wax"
