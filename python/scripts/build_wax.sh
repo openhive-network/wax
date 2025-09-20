@@ -79,11 +79,14 @@ else
     local api_package_name=$1
     local api_wheel_version=$2
 
-    if poetry add --dry-run "${api_package_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
-      echo "Using ${api_package_name} from registry."
-      poetry add "${api_package_name}@${api_wheel_version}" --source gitlab-api-packages
+    local published_name="hiveio-${api_package_name//_/-}"
+    echo "Published name: ${published_name}"
+
+    if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
+      echo "Using ${published_name} from registry."
+      poetry add "${published_name}@${api_wheel_version}" --source gitlab-api-packages
     else
-      echo "${api_package_name} not found in registry, using local source."
+      echo "${published_name} not found in registry, using local source."
       poetry add "../hive/libraries/plugins/apis/api_generation/${api_package_name}"
     fi
   }
