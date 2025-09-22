@@ -8,12 +8,11 @@ from typing import TYPE_CHECKING, Any, Generic, TypeAlias
 from typing_extensions import Self, TypeVar
 
 from wax.api.collection import WaxApiCollection
-from wax.proto.transaction import transaction as proto_transaction
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy._interface.abc import AsyncUnlockedWallet
     from beekeepy.interfaces import HttpUrl
     from wax.models.asset import (
         AssetFactory,
@@ -26,12 +25,8 @@ if TYPE_CHECKING:
     from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.key_data import IBrainKeyData, IPrivateKeyData
     from wax.models.operations import Operation, WaxMetaOperation
+    from wax.transaction_type_aliases import JsonTransaction, ProtoTransaction
 
-
-ProtoTransaction: TypeAlias = proto_transaction
-"""Type alias for a transaction in proto format."""
-JsonTransaction: TypeAlias = str
-"""Type alias for a transaction in JSON format, which is used in Hive API calls."""
 TTimestamp: TypeAlias = datetime | timedelta
 """TTimestamp is a type alias for a timestamp that can be either a datetime object or a timedelta object."""
 

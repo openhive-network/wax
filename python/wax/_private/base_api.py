@@ -48,7 +48,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_operation,
     validate_proto_operation,
 )
-from wax.interfaces import ChainConfig, IWaxBaseInterface, JsonTransaction, ProtoTransaction, TTimestamp
+from wax.interfaces import ChainConfig, IWaxBaseInterface, TTimestamp
 from wax.models.asset import (
     AssetFactory,
     AssetName,
@@ -64,6 +64,7 @@ if TYPE_CHECKING:
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
     from wax.models.operations import Operation
+    from wax.transaction_type_aliases import JsonTransaction, ProtoTransaction
 
 
 class WaxBaseApi(IWaxBaseInterface):

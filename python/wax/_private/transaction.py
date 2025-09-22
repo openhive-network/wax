@@ -34,13 +34,13 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     tx_to_json,
     tx_validate,
 )
-from wax.interfaces import ITransaction, JsonTransaction, ProtoTransaction
-from wax.proto.transaction import transaction as proto_transaction
+from wax.interfaces import ITransaction
+from wax.transaction_type_aliases import JsonTransaction, ProtoTransaction, proto_transaction
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy._interface.abc import AsyncUnlockedWallet
     from wax import IWaxBaseInterface
     from wax.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.operations import WaxMetaOperation
