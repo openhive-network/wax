@@ -4,9 +4,7 @@ import atexit
 from functools import partial
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from beekeepy import Settings
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
-from wax.helpy._handles.hived.common_helpers import HiveHandleCommonHelpers
 from wax.interfaces import ApiCollectionT
 
 if TYPE_CHECKING:
@@ -23,13 +21,13 @@ def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable)
     return api_collection
 
 
-class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT], HiveHandleCommonHelpers):  # type: ignore[type-var]
+class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  # type: ignore[type-var]
     _INSTANCES: ClassVar[set[WaxApiCaller[Any]]] = set()
 
     def __init__(self, api_collection: ApiCollectionT, endpoint_url: HttpUrl) -> None:
         self._api_collection = api_collection  # assigned here because `_constuct_api` method
         # is called in the constructor of the parent class
-        settings = Settings()
+        settings = RemoteHandleSettings()
         settings.http_endpoint = endpoint_url
         super().__init__(settings=settings)
         self._INSTANCES.add(self)
@@ -57,7 +55,7 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT], Hi
         return api_collection_factory(self._api_collection, self)
 
     def _target_service(self) -> str:
-        return self._hived_target_service_name()
+        return "wax_api_caller"
 
 
 def _cleanup_instances() -> None:
