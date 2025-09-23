@@ -11,7 +11,7 @@ from wax.proto.transaction import transaction
 
 def test_serialize_proto_transaction():
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
-    result = serialize_proto_transaction(tx_str.encode())
+    result = serialize_proto_transaction(tx_str)
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result == (
@@ -24,7 +24,7 @@ def test_serialize_proto_transaction():
         b'b37d3fb3'
         ) 
 
-    result = deserialize_proto_transaction(result.result)
+    result = deserialize_proto_transaction(result.result.decode())
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result.decode() == tx_str
@@ -35,7 +35,7 @@ def test_serialize_proto_transaction():
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION)
-    result = serialize_proto_transaction(tx_str.encode())
+    result = serialize_proto_transaction(tx_str)
     assert result.status == result.status.fail
     assert result.exception_message == (
         b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'val_protocol.hpp', 'line': 68, 'method': 'from_jsval', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Could not find the supported property in static variant: ${nextkey}', 'data': {'nextkey': 'type'}}], 'extension': {'assertion_expression': 'it != to_tag.end()'}, 'assert_hash': '10056067403021329111'}")

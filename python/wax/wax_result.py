@@ -146,8 +146,8 @@ class python_operation_handle:  # noqa: N801
 @dataclass
 class python_authority:  # noqa: N801
     weight_threshold: int
-    account_auths: dict[bytes, int]
-    key_auths: dict[bytes, int]
+    account_auths: dict[str, int]
+    key_auths: dict[str, int]
 
 
 @dataclass

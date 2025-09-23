@@ -12,7 +12,6 @@ from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
 from wax._private.result_tools import (
-    to_cpp_string,
     to_python_str_list,
     to_python_string,
 )
@@ -67,7 +66,7 @@ class Transaction(ITransaction):
             self._handle = create_wax_transaction(self._target, is_protobuf=True)
         else:
             tapos = (
-                get_tapos_data(to_cpp_string(tapos_block_id))
+                get_tapos_data(tapos_block_id)
                 if isinstance(tapos_block_id, str)
                 else self._resolve_tapos_from_transaction(tapos_block_id)
             )
@@ -87,9 +86,7 @@ class Transaction(ITransaction):
     @property
     def sig_digest(self) -> SigDigest:
         self._flush_transaction()
-        return to_python_string(
-            tx_sig_digest(self._handle, chain_id=to_cpp_string(self._api.chain_id), use_hf26_serialization=True)
-        )
+        return to_python_string(tx_sig_digest(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True))
 
     @property
     def impacted_accounts(self) -> list[AccountName]:
@@ -103,7 +100,7 @@ class Transaction(ITransaction):
     @property
     def signature_keys(self) -> list[PublicKey]:
         return to_python_str_list(
-            tx_signature_keys(self._handle, chain_id=to_cpp_string(self._api.chain_id), use_hf26_serialization=True)
+            tx_signature_keys(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
         )
 
     @property
@@ -122,7 +119,8 @@ class Transaction(ITransaction):
 
     def add_signature(self, signature: Signature) -> Signature:
         self._target.signatures.append(signature)
-        tx_add_signature(self._handle, to_cpp_string(signature))
+        tx_add_signature(self._handle, str(signature))
+        # ^ "Note that Cython is deliberately stricter than PEP-484 and rejects subclasses of builtin types."
         return signature
 
     def to_string(self) -> str:
@@ -184,7 +182,7 @@ class Transaction(ITransaction):
             expiration = HiveDateTime.now() + self._expiration_time
 
         self._target.expiration = expiration.replace(microsecond=0).serialize()
-        tx_set_expiration(self._handle, to_cpp_string(self._target.expiration))
+        tx_set_expiration(self._handle, self._target.expiration)
 
     def _calculate_signer_public_keys(self) -> list[PublicKey]:
         """Calculate public keys of signers."""

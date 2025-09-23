@@ -12,7 +12,7 @@ def test_get_transaction_required_autorities():
 
     #print(f"get_transaction_required_authorities: {get_transaction_required_authorities}")
 
-    auths = get_transaction_required_authorities( transaction = tx_str.encode() )
+    auths = get_transaction_required_authorities( transaction = tx_str )
 
     other_auth_length = len(auths.other_authorities)
 
@@ -75,7 +75,7 @@ def test_verify_testcase_with_bug_is_work_correctly():
         ],
     }
 
-    auths = get_transaction_required_authorities(transaction=json.dumps(trx).encode())
+    auths = get_transaction_required_authorities(transaction=json.dumps(trx))
 
     assert auths.active_accounts == set()
     assert auths.owner_accounts == set()
@@ -83,11 +83,11 @@ def test_verify_testcase_with_bug_is_work_correctly():
         python_authority(
             weight_threshold=1,
             account_auths={},
-            key_auths={b"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW": 1},
+            key_auths={"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW": 1},
         ),
         python_authority(
             weight_threshold=1,
             account_auths={},
-            key_auths={b"STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1},
+            key_auths={"STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s": 1},
         ),
     ]

@@ -6,6 +6,7 @@ import pytest
 
 from tests.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
 from wax import cpp_python_bridge
+from wax._private.result_tools import to_python_string
 
 
 def test_serialize_witness_set_properties_0() -> None:
@@ -36,5 +37,6 @@ def test_serialize_witness_set_properties_1() -> Any:  # noqa: ANN401
 @pytest.mark.describe("Should be able to serialize witness properties and then deserialize")
 def test_serialize_witness_set_properties_2() -> None:
     serialized = test_serialize_witness_set_properties_1()
-    deserialized = cpp_python_bridge.deserialize_witness_set_properties(serialized)
+    decoded = {to_python_string(k): to_python_string(v) for k, v in serialized.items()}
+    deserialized = cpp_python_bridge.deserialize_witness_set_properties(decoded)
     assert deserialized == WITNESS_PROPERTIES

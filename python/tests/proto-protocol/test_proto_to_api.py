@@ -7,14 +7,14 @@ from wax import proto_to_api
 
 def test_proto_to_api():
     proto_str = json.dumps(PROTO_REF_TRANSACTION)
-    api = proto_to_api(proto_str.encode())
+    api = proto_to_api(proto_str)
     assert api.status == api.status.ok
     assert api.exception_message == b''
     assert api.result.decode() == json.dumps(API_REF_TRANSACTION)
 
     # Negative test
     proto_str = json.dumps(API_REF_TRANSACTION)
-    api = proto_to_api(proto_str.encode())
+    api = proto_to_api(proto_str)
     assert api.status == api.status.fail
     print(api.exception_message)
     assert api.exception_message == (

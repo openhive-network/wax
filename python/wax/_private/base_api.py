@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 from wax._private.converters.decimal_converter import DecimalConverter
-from wax._private.converters.operation_converters.from_proto_to_cpp_string import from_proto_to_cpp_string
-from wax._private.converters.operation_converters.from_protocol_to_cpp_string import from_protocol_to_cpp_string
+from wax._private.converters.operation_converters.from_proto_to_str import from_proto_to_str
+from wax._private.converters.operation_converters.from_protocol_to_str import from_protocol_to_str
 from wax._private.converters.python_price_converter import convert_to_python_price
 from wax._private.core.constants import (
     DEFAULT_TRANSACTION_EXPIRATION_TIME,
@@ -18,9 +18,7 @@ from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
 from wax._private.result_tools import (
-    decode_impacted_account_names,
     expose_result_as_python_string,
-    to_cpp_string,
     to_python_string,
     validate_wax_result,
 )
@@ -86,7 +84,7 @@ class WaxBaseApi(IWaxBaseInterface):
         if self._cached_config is None:
             self._cached_config = {
                 to_python_string(key): to_python_string(value)
-                for key, value in get_hive_protocol_config(to_cpp_string(self.chain_id)).items()
+                for key, value in get_hive_protocol_config(self.chain_id).items()
             }
         return self._cached_config
 
@@ -96,20 +94,20 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def is_valid_account_name(account_name: AccountName) -> bool:
-        return is_valid_account_name(to_cpp_string(account_name))
+        return is_valid_account_name(account_name)
 
     @staticmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:
         if is_hive_protocol_format(operation):
-            converted = from_protocol_to_cpp_string(operation)
+            converted = from_protocol_to_str(operation)
             validate_wax_result(validate_operation(converted))
             impacted_accounts = operation_get_impacted_accounts(converted)
         else:
-            converted = from_proto_to_cpp_string(operation)
+            converted = from_proto_to_str(operation)
             validate_wax_result(validate_proto_operation(converted))
             impacted_accounts = proto_operation_get_impacted_accounts(converted)
 
-        return decode_impacted_account_names(impacted_accounts)
+        return impacted_accounts
 
     def estimate_hive_collateral(
         self,
@@ -191,7 +189,7 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def get_public_key_from_signature(sig_digest: SigDigest, signature: Signature) -> PublicKey:
-        public_key = get_public_key_from_signature(to_cpp_string(sig_digest), to_cpp_string(signature))
+        public_key = get_public_key_from_signature(sig_digest, signature)
         validate_wax_result(public_key)
 
         return expose_result_as_python_string(public_key)
@@ -308,8 +306,7 @@ class WaxBaseApi(IWaxBaseInterface):
         return {to_python_string(k): to_python_string(v) for k, v in serialized_props.items()}
 
     def deserialize_witness_props(self, serialized_props: dict[str, str]) -> python_witness_set_properties_data:
-        cpp_serialized_props = {to_cpp_string(k): to_cpp_string(v) for k, v in serialized_props.items()}
-        return deserialize_witness_set_properties(cpp_serialized_props)
+        return deserialize_witness_set_properties(serialized_props)
 
     def scan_text_for_matching_private_keys(
         self,

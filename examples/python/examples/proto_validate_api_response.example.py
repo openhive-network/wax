@@ -25,8 +25,8 @@ response = {
 
 if __name__ == "__main__":
     response_str = json.dumps(response)
-    proto = api_to_proto(response_str.encode())
+    proto = api_to_proto(response_str)
     assert proto.status == proto.status.ok
 
-    api = proto_to_api(proto.result)
+    api = proto_to_api(proto.result.encode())
     assert api.status == api.status.ok

@@ -3,7 +3,7 @@ from typing import Any
 from wax.wax_result import python_authority, python_authorities
 
 
-MAINNET_CHAIN_ID = b"beeab0de00000000000000000000000000000000000000000000000000000000"
+MAINNET_CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 
 TREASURY_NAME = b"hive.fund"
 
@@ -1748,8 +1748,8 @@ def list_to_dict(l: list[Any]) -> dict[str, Any]:
 
 def to_python_authority(account_authority: dict[str, Any]) -> python_authority:
     result = python_authority(weight_threshold=account_authority["weight_threshold"],
-                              account_auths=list_to_dict(account_authority["account_auths"]), # type: ignore[arg-type] # TODO
-                              key_auths=list_to_dict(account_authority["key_auths"]), # type: ignore[arg-type] # TODO
+                              account_auths=list_to_dict(account_authority["account_auths"]),
+                              key_auths=list_to_dict(account_authority["key_auths"]),
                              )
     return result
 

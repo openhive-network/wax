@@ -3,7 +3,7 @@ from wax import generate_private_key, calculate_public_key
 
 def test_key_methods():
     result = generate_private_key()
-    private_key = result.result
+    private_key = result.result.decode()
     assert result.status == result.status.ok
     assert result.exception_message == b''
 

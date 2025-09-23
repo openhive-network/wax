@@ -14,13 +14,13 @@ from wax._private.proto.future_extensions_pb2 import future_extensions
 
 def test_proto_to_api_to_proto():
     proto_str = json.dumps(PROTO_REF_TRANSACTION)
-    api = proto_to_api(proto_str.encode())
+    api = proto_to_api(proto_str)
     assert api.status == api.status.ok
     assert api.exception_message == b''
     assert api.result.decode() == json.dumps(API_REF_TRANSACTION)
 
     api_str = api.result.decode()
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     print(proto)
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
@@ -62,13 +62,13 @@ def test_proto_to_api_to_proto():
     # proto_json = MessageToJson(pow2_operation)
     # print(proto_json)
     # print(proto_json.replace(" ", "").replace("\n", ""))
-    # api_result = proto_to_api(proto_json.encode())
+    # api_result = proto_to_api(proto_json)
     # assert api_result.status == api_result.status.ok
     # assert api_result.exception_message == b''
 
     # api_json = api_result.result.decode()
     # print(api_json)
-    # proto_result = api_to_proto(api_json.encode())
+    # proto_result = api_to_proto(api_json)
     # print(proto_result.result.decode())
     # assert proto_result.status == proto_result.status.ok
     # assert proto_result.exception_message == b''
@@ -100,13 +100,13 @@ def test_proto_to_api_to_proto():
     # proto_json = MessageToJson(recover_account_operation)
     # print(proto_json)
     # print(proto_json.replace(" ", "").replace("\n", ""))
-    # api_result = proto_to_api(proto_json.encode())
+    # api_result = proto_to_api(proto_json)
     # assert api_result.status == api_result.status.ok
     # assert api_result.exception_message == b''
 
     # api_json = api_result.result.decode()
     # print(api_json)
-    # proto_result = api_to_proto(api_json.encode())
+    # proto_result = api_to_proto(api_json)
     # print(proto_result.result.decode())
     # assert proto_result.status == proto_result.status.ok
     # assert proto_result.exception_message == b''
@@ -135,13 +135,13 @@ def test_proto_to_api_to_proto():
     # proto_json = MessageToJson(witness_set_properties_operation)
     # print(proto_json)
     # print(proto_json.replace(" ", "").replace("\n", ""))
-    # api_result = proto_to_api(proto_json.encode())
+    # api_result = proto_to_api(proto_json)
     # assert api_result.status == api_result.status.ok
     # assert api_result.exception_message == b''
 
     # api_json = api_result.result.decode()
     # print(api_json)
-    # proto_result = api_to_proto(api_json.encode())
+    # proto_result = api_to_proto(api_json)
     # print(proto_result.result.decode())
     # assert proto_result.status == proto_result.status.ok
     # assert proto_result.exception_message == b''

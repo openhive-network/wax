@@ -20,11 +20,11 @@ def test_proto_operation_get_impacted_accounts():
     vote_operation = PROTO_REF_VOTE_OP
 
     # ACT
-    impacted_accounts = proto_operation_get_impacted_accounts(json.dumps(vote_operation).encode())
+    impacted_accounts = proto_operation_get_impacted_accounts(json.dumps(vote_operation))
 
     # ASSERT
     assert [
-        impacted_account.decode() for impacted_account in impacted_accounts
+        impacted_account for impacted_account in impacted_accounts
     ] == EXPECTED_OPERATION_IMPACTED_ACCOUNTS, "Returned account should be one of the ones used in operation."
 
 
@@ -33,11 +33,11 @@ def test_proto_transaction_get_impacted_accounts():
     transaction = PROTO_REF_TRANSACTION
 
     # ACT
-    impacted_accounts = proto_transaction_get_impacted_accounts(json.dumps(transaction).encode())
+    impacted_accounts = proto_transaction_get_impacted_accounts(json.dumps(transaction))
 
     # ASSERT
     assert [ 
-        impacted_account.decode() for impacted_account in impacted_accounts
+        impacted_account for impacted_account in impacted_accounts
     ] == EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS, "Returned account should be one of the ones used in transaction."
 
 

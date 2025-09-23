@@ -132,8 +132,8 @@ def test_deserialize_witness_set_properties_with_additional_argument() -> None:
     with pytest.raises(TypeError):
         wax.deserialize_witness_set_properties(
             {
-                b"account_creation_fee": b"606d00000000000003535445454d0000",
-                b"key": b"021df13f04fc422c703043db939c2f98a600fafd0f719a0ff351b8e36c5cad2eff",
+                "account_creation_fee": "606d00000000000003535445454d0000",
+                "key": "021df13f04fc422c703043db939c2f98a600fafd0f719a0ff351b8e36c5cad2eff",
             },
             "addtional_argument",
         )

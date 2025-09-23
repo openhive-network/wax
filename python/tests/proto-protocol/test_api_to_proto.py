@@ -25,7 +25,7 @@ def test_api_to_proto():
     from wax._private.proto import block_pb2
 
     api_str = json.dumps(API_REF_TRANSACTION)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
     assert proto.result.decode() == json.dumps(PROTO_REF_TRANSACTION, separators=(',', ':'))
@@ -33,7 +33,7 @@ def test_api_to_proto():
 
     # Negative test
     api_str = json.dumps(PROTO_REF_TRANSACTION)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.fail
     assert proto.exception_message == (
         b'10 assert_exception: Assert Exception\nop.is_object() && op.get_object().'
@@ -49,21 +49,21 @@ def test_api_to_proto():
     )
 
     api_str = json.dumps(API_REF_RELEASE_BLOCK)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
     assert proto.result.decode() == json.dumps(PROTO_REF_RELEASE_BLOCK, separators=(',', ':'))
     block: block_pb2.block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
 
     api_str = json.dumps(API_REF_HF_BLOCK)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
     assert proto.result.decode() == json.dumps(PROTO_REF_HF_BLOCK, separators=(',', ':'))
     block: block_pb2.block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
 
     api_str = json.dumps(API_REF_BLOCK_EMPTY_TRANSACTIONS)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.ok
     assert proto.exception_message == b''
     assert proto.result.decode() == json.dumps(PROTO_REF_BLOCK_EMPTY_TRANSACTION, separators=(',', ':'))
@@ -71,7 +71,7 @@ def test_api_to_proto():
 
     # Negative test
     api_str = json.dumps(API_REF_BLOCK_NO_TRANSACTIONS)
-    proto = api_to_proto(api_str.encode())
+    proto = api_to_proto(api_str)
     assert proto.status == proto.status.fail
     assert proto.exception_message == (
         b'10 assert_exception: Assert Exception\nop.is_object() && op.get_object().'

@@ -38,7 +38,7 @@ def retrieve_authorities(account_names: list[bytes]) -> dict[bytes, python_autho
 )
 def test_collect_signing_keys(transaction: dict, signing_keys: list) -> None:
     tx_str = json.dumps(transaction)
-    keys = collect_signing_keys(tx_str.encode(), retrieve_authorities)
+    keys = collect_signing_keys(tx_str, retrieve_authorities)
 
     for key in keys:
         print(f"key: {key}")

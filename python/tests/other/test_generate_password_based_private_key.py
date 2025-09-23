@@ -4,8 +4,6 @@ import pytest
 
 import wax
 
-from .consts import ENCODING
-
 
 @pytest.mark.parametrize(
     ("account", "role", "password", "wif_private_key", "associated_public_key"),
@@ -62,7 +60,7 @@ def test_generate_password_based_private_key(
     associated_public_key: bytes,
 ) -> None:
     private_key = wax.generate_password_based_private_key(
-        account.encode(ENCODING), role.encode(ENCODING), password.encode(ENCODING)
+        account, role, password
     )
 
     assert private_key.wif_private_key == wif_private_key

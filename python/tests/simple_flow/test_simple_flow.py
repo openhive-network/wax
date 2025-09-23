@@ -43,7 +43,7 @@ class WalletInfoWithKeysToImport(WalletInfo):
             list_of_private_keys = json.load(file)
 
         for private_key in list_of_private_keys:
-            wax_result = wax.calculate_public_key(private_key)
+            wax_result = wax.calculate_public_key(private_key.encode())
             result.keys.append(
                 KeyPair(
                     public_key=wax_result,

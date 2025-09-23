@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 import wax
-from .consts import VALID_PROTO_OPERATIONS, ENCODING
+from .consts import VALID_PROTO_OPERATIONS
 from .util import get_proto_operation_name
 
 
@@ -17,7 +17,7 @@ def test_valid_proto_operation(operation: dict[str, Any]) -> None:
     operation_json = json.dumps(operation)
 
     # ACT
-    result = wax.validate_proto_operation(operation_json.encode(ENCODING))
+    result = wax.validate_proto_operation(operation_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.ok
@@ -30,7 +30,7 @@ def test_invalid_empty_proto_operation() -> None:
     operation_json = json.dumps(operation)
 
     # ACT
-    result = wax.validate_proto_operation(operation_json.encode(ENCODING))
+    result = wax.validate_proto_operation(operation_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
@@ -49,7 +49,7 @@ def test_invalid_proto_operation_without_a_key(operation: dict[str, Any]) -> Non
     operation_json = json.dumps(operation)
 
     # ACT
-    result = wax.validate_proto_operation(operation_json.encode(ENCODING))
+    result = wax.validate_proto_operation(operation_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.fail

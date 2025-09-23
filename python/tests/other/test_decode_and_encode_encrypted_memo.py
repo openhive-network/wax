@@ -11,9 +11,9 @@ ENCRYPTED_MEMO = "111111118N2MrWbLqudcbQR4EUziLoGAqR7XN"
 
 def test_encode_and_decode_encrypted_memo() -> None:
     encoded_encrypted_memo = wax.encode_encrypted_memo(
-        encrypted_content=ENCRYPTED_MEMO.encode(ENCODING),
-        main_encryption_key=MAIN_ENCRYPTION_KEY.encode(ENCODING),
-        other_encryption_key=OTHER_ENCRYPTION_KEY.encode(ENCODING),
+        encrypted_content=ENCRYPTED_MEMO,
+        main_encryption_key=MAIN_ENCRYPTION_KEY,
+        other_encryption_key=OTHER_ENCRYPTION_KEY,
     )
 
     assert (
@@ -21,7 +21,7 @@ def test_encode_and_decode_encrypted_memo() -> None:
         == b"#11111111Df8FT8j6nHi6PtLVffSXtyhuz56j8imYp82xBvikZHtG1aZWAhzbEntrdfwUfECqximeaHNsi1ZwKG1ArVUyg8qMh4G5bVPNMvqVTceJCMvCJx6eUH1YumE"
     )
 
-    decoded_encrypted_memo = wax.decode_encrypted_memo(encoded_encrypted_memo)
+    decoded_encrypted_memo = wax.decode_encrypted_memo(encoded_encrypted_memo.decode())
 
     assert decoded_encrypted_memo.encrypted_content == ENCRYPTED_MEMO.encode(ENCODING)
     assert decoded_encrypted_memo.main_encryption_key == MAIN_ENCRYPTION_KEY.encode(

@@ -22,12 +22,12 @@ def test_operation_api_format_get_impacted_accounts() -> None:
 
     # ACT
     impacted_accounts = operation_get_impacted_accounts(
-        json.dumps(vote_operation).encode()
+        json.dumps(vote_operation)
     )
 
     # ASSERT
     assert [
-        impacted_account.decode() for impacted_account in impacted_accounts
+        impacted_account for impacted_account in impacted_accounts
     ] == EXPECTED_OPERATION_IMPACTED_ACCOUNTS
 
 
@@ -37,10 +37,10 @@ def test_transaction_api_format_get_impacted_accounts() -> None:
 
     # ACT
     impacted_accounts = transaction_get_impacted_accounts(
-        json.dumps(transaction).encode()
+        json.dumps(transaction)
     )
 
     # ASSERT
     assert [
-        impacted_account.decode() for impacted_account in impacted_accounts
+        impacted_account for impacted_account in impacted_accounts
     ] == EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS

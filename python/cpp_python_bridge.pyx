@@ -80,6 +80,41 @@ from .wax_result import (
     python_minimize_required_signatures_data,
 )
 
+def encode_str(value: bytes | str) -> bytes:
+    return value.encode('utf-8') if isinstance(value, str) else value
+
+def decode_str(value: bytes | str) -> str:
+    return value.decode() if isinstance(value, bytes) else value
+
+def encode_dict(source: dict[bytes | str, int]) -> dict[bytes, int]:
+    encoded: dict[bytes, int] = {}
+    for k, v in source.items():
+        encoded[encode_str(k)] = v
+    return encoded
+
+def encode_list(source: list[bytes]) -> list[str]:
+    encoded: list[bytes] = []
+    for element in source:
+        encoded.append(encode_str(element))
+    return encoded
+
+def decode_list(source: list[bytes]) -> list[str]:
+    decoded: list[str] = []
+    for element in source:
+        decoded.append(decode_str(element))
+    return decoded
+
+def decode_dict(source: dict[bytes | str, int]) -> dict[str, int]:
+    decoded: dict[str, int] = {}
+    for k, v in source.items():
+        decoded[decode_str(k)] = v
+    return decoded
+
+cdef json_asset encode_json_asset( _source: python_json_asset ):
+    amount: bytes = encode_str(_source.amount)
+    nai : bytes = encode_str(_source.nai)
+    return json_asset( amount, _source.precision, nai)
+
 def return_python_result(foo):
     @wraps(foo)
     def wrapper(*args, **kwargs):
@@ -107,9 +142,9 @@ def return_python_json_asset(foo):
     def wrapper(*args, **kwargs):
         amount, precision, nai = foo(*args, **kwargs)
         return python_json_asset(
-            amount=amount,
+            amount=encode_str(amount),
             precision=precision,
-            nai=nai
+            nai=encode_str(nai)
         )
 
     return wrapper
@@ -125,66 +160,66 @@ def return_python_ref_block_data(foo):
 
     return wrapper
 
-def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+def operation_get_impacted_accounts(operation: str) -> list[str]:
     op = json.loads(operation)
     hOp = create_wax_operation(op, False)
     return op_impacted_accounts(hOp)
 
-def transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+def transaction_get_impacted_accounts(transaction: str) -> list[str]:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_impacted_accounts(hTx)
 
 @return_python_result
-def validate_operation(operation: bytes) -> python_result:
+def validate_operation(operation: str) -> python_result:
     op = json.loads(operation)
     hOp = create_wax_operation(op, False)
     op_validate(hOp)
 
 @return_python_result
-def validate_transaction(transaction: bytes) -> python_result:
+def validate_transaction(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_validate(hTx)
 
 @return_python_result
-def calculate_transaction_id(transaction: bytes) -> python_result:
+def calculate_transaction_id(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_id(hTx, True)
 
 @return_python_result
-def calculate_legacy_transaction_id(transaction: bytes) -> python_result:
+def calculate_legacy_transaction_id(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_id(hTx, False)
 
 @return_python_result
-def calculate_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_sig_digest(hTx, chain_id, True)
 
 @return_python_result
-def calculate_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_sig_digest(hTx, chain_id, False)
 
 @return_python_result
-def get_public_key_from_signature(digest: bytes, signature: bytes) -> python_result:
+def get_public_key_from_signature(digest: str, signature: str) -> python_result:
     cdef protocol obj
-    response = obj.cpp_get_public_key_from_signature(digest, signature)
+    response = obj.cpp_get_public_key_from_signature(encode_str(digest), encode_str(signature))
     return response
 
 @return_python_result
-def serialize_transaction(transaction: bytes) -> python_result:
+def serialize_transaction(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_to_binary(hTx, True, False)
 
 @return_python_result
-def deserialize_transaction(transaction: bytes)  -> python_result:
+def deserialize_transaction(transaction: str)  -> python_result:
     hTx = handle_deserialize_transaction(transaction)
     return tx_to_json(hTx)
 
@@ -194,9 +229,9 @@ def generate_private_key() -> python_result:
     response =  obj.cpp_generate_private_key()
     return response
 
-def generate_password_based_private_key(account: string, role: string, password: string) -> python_private_key_data:
+def generate_password_based_private_key(account: str, role: str, password: str) -> python_private_key_data:
     cdef protocol obj
-    pkd = obj.cpp_generate_private_key(account, role, password)
+    pkd = obj.cpp_generate_private_key(encode_str(account), encode_str(role), encode_str(password))
     return python_private_key_data(pkd.wif_private_key, pkd.associated_public_key)
 
 def suggest_brain_key() -> python_brain_key_data:
@@ -205,9 +240,9 @@ def suggest_brain_key() -> python_brain_key_data:
     return python_brain_key_data(bki.brain_key, bki.wif_private_key, bki.associated_public_key)
 
 @return_python_result
-def calculate_public_key(wif: bytes) -> python_result:
+def calculate_public_key(wif: str) -> python_result:
     cdef protocol obj
-    response = obj.cpp_calculate_public_key(wif)
+    response = obj.cpp_calculate_public_key(encode_str(wif))
     return response
 
 def convert_wif_public_key_to_raw(wif: bytes) -> str:
@@ -252,9 +287,9 @@ def vests(amount: int) -> python_json_asset:
     return response.amount, response.precision, response.nai
 
 @return_python_ref_block_data
-def get_tapos_data(block_id: bytes) -> python_ref_block_data:
+def get_tapos_data(block_id: str) -> python_ref_block_data:
     cdef protocol obj
-    response = obj.cpp_get_tapos_data(block_id)
+    response = obj.cpp_get_tapos_data(encode_str(block_id))
     return response.ref_block_num, response.ref_block_prefix
 
 @return_python_result
@@ -265,44 +300,44 @@ def calculate_hp_apr(
     total_vesting_fund_hive: python_json_asset
 ) -> python_result:
     cdef protocol obj
-    cdef json_asset _virtual_supply = json_asset(virtual_supply.amount, virtual_supply.precision, virtual_supply.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _virtual_supply = encode_json_asset(virtual_supply)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
     response = obj.cpp_calculate_hp_apr(head_block_num, vesting_reward_percent, _virtual_supply, _total_vesting_fund_hive)
     return response
 
 @return_python_json_asset
 def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset ) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
-    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
-    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
+    cdef json_asset _hbd = encode_json_asset(hbd)
+    cdef json_asset _base = encode_json_asset(base)
+    cdef json_asset _quote = encode_json_asset(quote)
     response = obj.cpp_hbd_to_hive(_hbd, _base, _quote)
     return response.amount, response.precision, response.nai
 
 @return_python_json_asset
 def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, quote: python_json_asset ) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _amount = json_asset(amount.amount, amount.precision, amount.nai)
-    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
-    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
+    cdef json_asset _amount = encode_json_asset(amount)
+    cdef json_asset _base = encode_json_asset(base)
+    cdef json_asset _quote = encode_json_asset(quote)
     response = obj.cpp_hive_to_hbd(_amount, _base, _quote)
     return response.amount, response.precision, response.nai
 
 @return_python_json_asset
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    cdef json_asset _vests = encode_json_asset(vests)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
+    cdef json_asset _total_vesting_shares = encode_json_asset(total_vesting_shares)
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
 @return_python_json_asset
 def calculate_hp_to_vests(hive: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     cdef protocol obj
-    cdef json_asset _hive = json_asset(hive.amount, hive.precision, hive.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    cdef json_asset _hive = encode_json_asset(hive)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
+    cdef json_asset _total_vesting_shares = encode_json_asset(total_vesting_shares)
     response = obj.cpp_hp_to_vests(_hive, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
@@ -311,7 +346,6 @@ def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: pyth
     return response
 
 def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
-    cdef protocol obj
     _vests: python_json_asset = vests(votes) 
     response = calculate_vests_to_hp(_vests, total_vesting_fund_hive, total_vesting_shares)
     return response
@@ -328,11 +362,11 @@ def calculate_inflation_rate_for_block(
 def estimate_hive_collateral(current_median_history: python_price, current_min_history: python_price, hbd_amount_to_get: python_json_asset ) -> python_json_asset:
     cdef protocol obj
 
-    cdef json_asset _current_median_history_base = json_asset(current_median_history.base.amount, current_median_history.base.precision, current_median_history.base.nai)
-    cdef json_asset _current_median_history_quote = json_asset(current_median_history.quote.amount, current_median_history.quote.precision, current_median_history.quote.nai)
+    cdef json_asset _current_median_history_base = encode_json_asset(current_median_history.base)
+    cdef json_asset _current_median_history_quote = encode_json_asset(current_median_history.quote)
 
-    cdef json_asset _current_min_history_base = json_asset(current_min_history.base.amount, current_min_history.base.precision, current_min_history.base.nai)
-    cdef json_asset _current_min_history_quote = json_asset(current_min_history.quote.amount, current_min_history.quote.precision, current_min_history.quote.nai)
+    cdef json_asset _current_min_history_base = encode_json_asset(current_min_history.base)
+    cdef json_asset _current_min_history_quote = encode_json_asset(current_min_history.quote)
 
     cdef json_price _current_median_history
     _current_median_history.base = _current_median_history_base
@@ -342,69 +376,69 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     _current_min_history.base = _current_min_history_base
     _current_min_history.quote = _current_min_history_quote
 
-    cdef json_asset _hbd_amount_to_get = json_asset(hbd_amount_to_get.amount, hbd_amount_to_get.precision, hbd_amount_to_get.nai)
+    cdef json_asset _hbd_amount_to_get = encode_json_asset(hbd_amount_to_get)
 
     response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
     return response.amount, response.precision, response.nai
 
-def is_valid_account_name(account_name: bytes) -> bool:
+def is_valid_account_name(account_name: str) -> bool:
     cdef protocol obj
-    return obj.cpp_is_valid_account_name(account_name)
+    return obj.cpp_is_valid_account_name(encode_str(account_name))
 
-def proto_operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+def proto_operation_get_impacted_accounts(operation: str) -> list[str]:
     op = json.loads(operation)
     hOp = create_wax_operation(op, True)
     return op_impacted_accounts(hOp)
 
-def proto_transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+def proto_transaction_get_impacted_accounts(transaction: str) -> list[str]:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_impacted_accounts(hTx)
 
 @return_python_result
-def validate_proto_operation(operation: bytes) -> python_result:
+def validate_proto_operation(operation: str) -> python_result:
     op = json.loads(operation)
     hOp = create_wax_operation(op, True)
     op_validate(hOp)
 
 @return_python_result
-def validate_proto_transaction(transaction: bytes) -> python_result:
+def validate_proto_transaction(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     tx_validate(hTx)
 
 @return_python_result
-def calculate_proto_transaction_id(transaction: bytes) -> python_result:
+def calculate_proto_transaction_id(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_id(hTx, True)
 
 @return_python_result
-def calculate_proto_legacy_transaction_id(transaction: bytes) -> python_result:
+def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_id(hTx, False)
 
 @return_python_result
-def calculate_proto_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_sig_digest(hTx, chain_id, True)
 
 @return_python_result
-def calculate_proto_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_sig_digest(hTx, chain_id, False)
 
 @return_python_result
-def serialize_proto_transaction(transaction: bytes) -> python_result:
+def serialize_proto_transaction(transaction: str) -> python_result:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, True)
     return tx_to_binary(hTx, True, False)
 
 @return_python_result
-def deserialize_proto_transaction(transaction: bytes) -> python_result:
+def deserialize_proto_transaction(transaction: str) -> python_result:
     hTx = handle_deserialize_transaction(transaction)
     # Convert from api to proto:
     tx = json.loads(tx_to_json(hTx))
@@ -412,7 +446,7 @@ def deserialize_proto_transaction(transaction: bytes) -> python_result:
     return json.dumps(tx)
 
 @return_python_result
-def proto_to_api(only_tx: bytes) -> python_result:
+def proto_to_api(only_tx: str) -> python_result:
     tx = json.loads(only_tx)
     if not "ref_block_num" in tx:
         raise ValueError("Invalid input: Expected a transaction object.")
@@ -425,7 +459,7 @@ def tx_proto_to_api( tx: object ) -> None:
     # Call the C++ method to convert the transaction from proto to API format.
     obj.cpp_tx_proto_to_api( tx )
 
-def tx_api_to_proto( object transaction ) -> None:
+def tx_api_to_proto( transaction: object ) -> None:
     cdef protocol obj
     # Call the C++ method to convert the transaction from API to proto format.
     obj.cpp_tx_api_to_proto( transaction )
@@ -456,26 +490,26 @@ def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
     wax_op.hOp = move(hOp)
     return wax_op
 
-def handle_deserialize_transaction(transaction_data: bytes) -> WaxTransactionHandle:
+def handle_deserialize_transaction(transaction_data: str) -> WaxTransactionHandle:
     cdef protocol obj
-    cdef hive_transaction_handle hTx = obj.cpp_deserialize_transaction(transaction_data)
+    cdef hive_transaction_handle hTx = obj.cpp_deserialize_transaction(encode_str(transaction_data))
     # Wrap the C++ python_transaction pointer in the Python WaxTransactionHandle class.
     cdef WaxTransactionHandle wax_tx = WaxTransactionHandle.__new__(WaxTransactionHandle)
     wax_tx.hTx = move(hTx)
     return wax_tx
 
-def handle_deserialize_operation(operation_data: bytes) -> WaxOperationHandle:
+def handle_deserialize_operation(operation_data: str) -> WaxOperationHandle:
     cdef protocol obj
-    cdef hive_operation_handle hOp = obj.cpp_deserialize_operation(operation_data)
+    cdef hive_operation_handle hOp = obj.cpp_deserialize_operation(encode_str(operation_data))
     # Wrap the C++ operation pointer in the Python WaxOperationHandle class.
     cdef WaxOperationHandle wax_op = WaxOperationHandle.__new__(WaxOperationHandle)
     wax_op.hOp = move(hOp)
     return wax_op
 
-def op_impacted_accounts(wax_op: WaxOperationHandle) -> vector[string]:
+def op_impacted_accounts(wax_op: WaxOperationHandle) -> list[str]:
     cdef protocol obj
     # Call the C++ method to get the impacted accounts for the operation.
-    return obj.cpp_op_impacted_accounts(wax_op.hOp)
+    return decode_list(obj.cpp_op_impacted_accounts(wax_op.hOp))
 
 def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> bytes:
     cdef protocol obj
@@ -519,7 +553,7 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
       other_auths.append(python_authority(
         weight_threshold = auth.weight_threshold,
         key_auths = auth.key_auths,
-        account_auths = auth.account_auths
+        account_auths = decode_str(auth.account_auths)
       ))
 
     return python_required_authority_collection(
@@ -534,15 +568,15 @@ def tx_add_operation(wax_tx: WaxTransactionHandle, wax_op: WaxOperationHandle) -
     # Call the C++ method to add the operation to the transaction.
     obj.cpp_tx_add_operation(wax_tx.hTx, wax_op.hOp)
 
-def tx_add_signature(wax_tx: WaxTransactionHandle, signature: bytes) -> None:
+def tx_add_signature(wax_tx: WaxTransactionHandle, signature: str) -> None:
     cdef protocol obj
     # Call the C++ method to add the signature to the transaction.
-    obj.cpp_tx_add_signature(wax_tx.hTx, signature)
+    obj.cpp_tx_add_signature(wax_tx.hTx, encode_str(signature))
 
-def tx_set_expiration(wax_tx: WaxTransactionHandle, expiration: bytes) -> None:
+def tx_set_expiration(wax_tx: WaxTransactionHandle, expiration: str) -> None:
     cdef protocol obj
     # Call the C++ method to set the expiration for the transaction.
-    obj.cpp_tx_set_expiration(wax_tx.hTx, expiration)
+    obj.cpp_tx_set_expiration(wax_tx.hTx, encode_str(expiration))
 
 def tx_to_legacy_json(wax_tx: WaxTransactionHandle) -> bytes:
     cdef protocol obj
@@ -609,8 +643,8 @@ def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_aut
     for auth in collection.other_authorities:
       other_auths.append(python_authority(
         weight_threshold = auth.weight_threshold,
-        key_auths = auth.key_auths,
-        account_auths = auth.account_auths
+        key_auths = decode_dict(auth.key_auths),
+        account_auths = decode_dict(auth.account_auths)
       ))
 
     return python_required_authority_collection(
@@ -620,20 +654,20 @@ def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_aut
       other_authorities=other_auths,
     )
 
-def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> vector[string]:
+def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> list[str]:
     cdef protocol obj
     # Call the C++ method to get the impacted accounts for the transaction.
-    return obj.cpp_tx_impacted_accounts(wax_tx.hTx)
+    return decode_list(obj.cpp_tx_impacted_accounts(wax_tx.hTx))
 
-def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> vector[string]:
+def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> list[bytes]:
     cdef protocol obj
     # Call the C++ method to get the signature keys for the transaction.
-    return obj.cpp_tx_signature_keys(wax_tx.hTx, chain_id, use_hf26_serialization)
+    return obj.cpp_tx_signature_keys(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization)
 
-def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
+def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> bytes:
     cdef protocol obj
     # Call the C++ method to get the signature digest for the transaction.
-    return obj.cpp_tx_sig_digest(wax_tx.hTx, chain_id, use_hf26_serialization)
+    return obj.cpp_tx_sig_digest(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization)
 
 def tx_validate(wax_tx: WaxTransactionHandle) -> None:
     cdef protocol obj
@@ -641,7 +675,7 @@ def tx_validate(wax_tx: WaxTransactionHandle) -> None:
     obj.cpp_tx_validate(wax_tx.hTx)
 
 @return_python_result
-def proto_to_legacy_api(only_tx: bytes) -> python_result:
+def proto_to_legacy_api(only_tx: str) -> python_result:
     tx = json.loads(only_tx)
     if not "ref_block_num" in tx:
         raise ValueError("Invalid input: Expected a transaction object.")
@@ -650,7 +684,7 @@ def proto_to_legacy_api(only_tx: bytes) -> python_result:
     return tx_to_legacy_json(hTx)
 
 @return_python_result
-def api_to_proto(only_tx: bytes) -> python_result:
+def api_to_proto(only_tx: str) -> python_result:
     tx = json.loads(only_tx)
     if not "ref_block_num" in tx:
         raise ValueError("Invalid input: Expected a transaction object.")
@@ -658,26 +692,26 @@ def api_to_proto(only_tx: bytes) -> python_result:
     tx_api_to_proto(tx)
     return json.dumps(tx)
 
-def get_transaction_required_authorities( transaction: bytes ) -> python_required_authority_collection:
+def get_transaction_required_authorities( transaction: str ) -> python_required_authority_collection:
     tx = json.loads(transaction)
     hTx = create_wax_transaction(tx, False)
     return tx_required_authorities(hTx)
 
-def encode_encrypted_memo(encrypted_content: bytes, main_encryption_key: bytes, other_encryption_key: bytes = b'') -> bytes:
+def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, other_encryption_key: str = '') -> bytes:
     cdef protocol obj
     cdef crypto_memo data_to_encode
-    data_to_encode._from = main_encryption_key
-    if other_encryption_key == b'':
+    data_to_encode._from = encode_str(main_encryption_key)
+    if other_encryption_key == '':
       other_encryption_key = main_encryption_key
 
-    data_to_encode.to = other_encryption_key
-    data_to_encode.content = encrypted_content
+    data_to_encode.to = encode_str(other_encryption_key)
+    data_to_encode.content = encode_str(encrypted_content)
     encoded_memo = obj.cpp_crypto_memo_dump_string(data_to_encode)
     return encoded_memo
 
-def decode_encrypted_memo(encoded_memo: bytes) -> python_encrypted_memo:
+def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
     cdef protocol obj
-    decoded = obj.cpp_crypto_memo_from_string(encoded_memo)
+    decoded = obj.cpp_crypto_memo_from_string(encode_str(encoded_memo))
     return python_encrypted_memo(
       main_encryption_key=decoded._from,
       other_encryption_key = decoded.to,
@@ -687,7 +721,7 @@ def decode_encrypted_memo(encoded_memo: bytes) -> python_encrypted_memo:
 def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[bytes, bytes]:
     cdef protocol obj
     cdef witness_set_properties_data _props_to_serialize
-    _props_to_serialize.key = input_props.key
+    _props_to_serialize.key = encode_str(input_props.key)
     cdef optional[string] str_opt
     cdef cppstring c_str
 
@@ -705,40 +739,23 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
     cdef optional[json_price] _price_opt
 
     if input_props.new_signing_key is not None:
-      if isinstance(input_props.new_signing_key, str):
-        byte_string = input_props.new_signing_key.encode('utf-8')
-      else:
-        byte_string = input_props.new_signing_key
-
-      c_str = byte_string
+      c_str = encode_str(input_props.new_signing_key)
       str_opt=c_str
       _props_to_serialize.new_signing_key=str_opt
 
     if input_props.account_creation_fee is not None:
-      _base = json_asset(input_props.account_creation_fee.amount,
-        input_props.account_creation_fee.precision,
-        input_props.account_creation_fee.nai
-        )
+      _base = encode_json_asset(input_props.account_creation_fee)
       _props_to_serialize.account_creation_fee=_base
 
     if input_props.url is not None:
-      if isinstance(input_props.url, str):
-        byte_string = input_props.url.encode('utf-8')
-      else:
-        byte_string = input_props.url
-
-      c_str = byte_string
+      c_str = encode_str(input_props.url)
       str_opt=c_str
       _props_to_serialize.url=str_opt
 
     if input_props.hbd_exchange_rate is not None:
-      _base = json_asset(input_props.hbd_exchange_rate.base.amount,
-        input_props.hbd_exchange_rate.base.precision,
-        input_props.hbd_exchange_rate.base.nai)
+      _base = encode_json_asset(input_props.hbd_exchange_rate.base)
 
-      _quote = json_asset(input_props.hbd_exchange_rate.quote.amount,
-        input_props.hbd_exchange_rate.quote.precision,
-        input_props.hbd_exchange_rate.quote.nai)
+      _quote = encode_json_asset(input_props.hbd_exchange_rate.quote)
 
       _price_helper.base=_base
       _price_helper.quote=_quote
@@ -769,12 +786,12 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
     serialized_properties = obj.cpp_serialize_witness_set_properties(_props_to_serialize)
     return serialized_properties
 
-def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]) -> python_witness_set_properties_data:
+def deserialize_witness_set_properties(serialized_properties: dict[str, str]) -> python_witness_set_properties_data:
     cdef protocol obj
     cdef witness_set_properties_serialized _serialized_props
 
     for prop, value in serialized_properties.items():
-      _serialized_props[prop] = value
+      _serialized_props[encode_str(prop)] = encode_str(value)
 
     deserialized_props = obj.cpp_deserialize_witness_set_properties(_serialized_props)
 
@@ -821,8 +838,10 @@ def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]
 cdef wax_authority python_authority_to_wax_authority(object auth_obj):
     auth = wax_authority()
     auth.weight_threshold = auth_obj.weight_threshold
-    auth.key_auths = auth_obj.key_auths
-    auth.account_auths = auth_obj.account_auths
+    print(auth_obj.key_auths)
+    print(auth_obj)
+    auth.key_auths = encode_dict(auth_obj.key_auths)
+    auth.account_auths = encode_dict(auth_obj.account_auths)
     return auth
 
 cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
@@ -844,7 +863,7 @@ def tx_collect_signing_keys(wax_tx: WaxTransactionHandle, retrieve_authorities: 
     cdef protocol obj
     return obj.cpp_collect_signing_keys(wax_tx.hTx, retrieve_authorities_cb, <void*>(retrieve_authorities))
 
-def collect_signing_keys(transaction: bytes, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
+def collect_signing_keys(transaction: str, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
     tx = json.loads(transaction)
     wax_tx = create_wax_transaction(tx, False)
 
@@ -857,16 +876,16 @@ cdef cppstring get_witness_key_cb(cppstring account_name, void* get_witness_key_
 def tx_minimize_required_signatures(
     wax_tx: WaxTransactionHandle,
     minimize_required_signatures_data: python_minimize_required_signatures_data,
-) -> list[bytes]:
+) -> list[str]:
     cdef protocol obj
     cdef minimize_required_signatures_data_t wax_minimize_required_signatures_data
     cdef uint32_t _uint_helper
 
-    wax_minimize_required_signatures_data.chain_id = minimize_required_signatures_data.chain_id
-    wax_minimize_required_signatures_data.available_keys = minimize_required_signatures_data.available_keys
+    wax_minimize_required_signatures_data.chain_id = encode_str(minimize_required_signatures_data.chain_id)
+    wax_minimize_required_signatures_data.available_keys = encode_list(minimize_required_signatures_data.available_keys)
     for k, v in minimize_required_signatures_data.authorities_map.items():
         auths = python_authorities_to_wax_authorities(v)
-        wax_minimize_required_signatures_data.authorities_map[k] = auths
+        wax_minimize_required_signatures_data.authorities_map[encode_str(k)] = auths
     wax_minimize_required_signatures_data.get_witness_key_cb = get_witness_key_cb
     wax_minimize_required_signatures_data.get_witness_key_fn = <void*>minimize_required_signatures_data.get_witness_key
     if minimize_required_signatures_data.max_recursion is not None:
@@ -880,26 +899,31 @@ def tx_minimize_required_signatures(
         wax_minimize_required_signatures_data.max_account_auths = _uint_helper
     wax_minimize_required_signatures_data.allow_strict_and_mixed_authorities = minimize_required_signatures_data.allow_strict_and_mixed_authorities
 
-    return obj.cpp_minimize_required_signatures(wax_tx.hTx, wax_minimize_required_signatures_data)
+    return decode_list(obj.cpp_minimize_required_signatures(wax_tx.hTx, wax_minimize_required_signatures_data))
 
 def minimize_required_signatures(
-    transaction: bytes,
+    transaction: str,
     minimize_required_signatures_data: python_minimize_required_signatures_data,
-) -> list[bytes]:
+) -> list[str]:
 
     tx = json.loads(transaction)
     tx_handle = create_wax_transaction(tx, False)
 
     return tx_minimize_required_signatures(tx_handle, minimize_required_signatures_data)
 
-def check_memo_for_private_keys(memo: bytes, account: bytes, auths: python_authorities, memo_key: bytes, imported_keys: list[bytes]) -> None:
+def check_memo_for_private_keys(memo: str, account: str, auths: python_authorities, memo_key: str, imported_keys: list[str]) -> None:
     cdef protocol obj
     cdef wax_authorities wax_auths = python_authorities_to_wax_authorities(auths)
-    obj.cpp_check_memo_for_private_keys(memo, account, wax_auths, memo_key, imported_keys)
+    obj.cpp_check_memo_for_private_keys(
+        encode_str(memo),
+        encode_str(account),
+        wax_auths,
+        encode_str(memo_key),
+        encode_list(imported_keys))
 
-def get_hive_protocol_config(chain_id: bytes) -> dict[bytes, bytes]:
+def get_hive_protocol_config(chain_id: str) -> dict[bytes, bytes]:
     cdef protocol obj
-    return obj.cpp_get_hive_protocol_config(chain_id)
+    return obj.cpp_get_hive_protocol_config(encode_str(chain_id))
 
 @call_with_exception_relay
 def verify_exception_handling(throw_type: int) -> None:
@@ -907,7 +931,6 @@ def verify_exception_handling(throw_type: int) -> None:
     obj.cpp_throws(throw_type)
 
 @call_with_exception_relay
-def cpp_throws(type: int) -> bytes:
+def cpp_throws(type: int) -> str:
     cdef protocol obj
     obj.cpp_throws(type)
-    return b''

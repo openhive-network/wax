@@ -6,7 +6,7 @@ from wax import serialize_transaction, deserialize_transaction
 
 def test_serialize_transaction():
     tx_str = json.dumps(API_REF_TRANSACTION)
-    result = serialize_transaction(tx_str.encode())
+    result = serialize_transaction(tx_str)
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result == (
@@ -19,14 +19,14 @@ def test_serialize_transaction():
         b'b37d3fb3'
         ) 
 
-    result = deserialize_transaction(result.result)
+    result = deserialize_transaction(result.result.decode())
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result.decode() == tx_str.replace(" ", "").replace("\n","")
     
     # Negative test
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
-    result = serialize_transaction(tx_str.encode())
+    result = serialize_transaction(tx_str)
     assert result.status == result.status.fail
     assert result.exception_message == (
         b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
