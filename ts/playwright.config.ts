@@ -16,7 +16,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.hive.blog",
-          restApiEndpoint: "https://api.syncad.com",
+          restApiEndpoint: "https://api.hive.blog",
           chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
@@ -30,7 +30,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.hive.blog/",
-          restApiEndpoint: "https://api.syncad.com/",
+          restApiEndpoint: "https://api.hive.blog/",
           chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
         }
       }
@@ -43,7 +43,7 @@ export default defineConfig<IWaxedTest>({
       {
         config: {
           apiEndpoint: "https://api.fake.openhive.network/",
-          restApiEndpoint: "https://api.syncad.com/", /// really not yet supported but ignored in this test group
+          restApiEndpoint: "https://api.hive.blog/", /// really not yet supported but ignored in this test group
           chainId: "42"
         }
       }
