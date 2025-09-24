@@ -63,7 +63,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         return found ||= this.originator.jsonRpcApiCaller.setEndpointUrlForPath(path, newValue, found);
 
       return found || false;
-    }, data => { // Rewrite request data to JSON-RPC format
+    }, config.waxApiCaller, data => { // Rewrite request data to JSON-RPC format
         data.data = JSON.stringify({
         jsonrpc: "2.0",
         method: data.paths.join('.'),
@@ -88,12 +88,13 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
       throw new WaxChainApiError(`Invalid response from chain API`, data.response);
     });
+
     this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate(originator ? structuredClone(originator.restApiCaller.localTypes) : {}, HiveRestApiTypes), 'GET', (path, newValue, found) => {
       if (this.originator !== null) // Propagate the change to the originator
         return found ||= this.originator.restApiCaller.setEndpointUrlForPath(path, newValue, found);
 
       return found || false;
-    });
+    }, config.waxApiCaller);
   }
 
   public async broadcast(transaction: ApiTransaction | ITransaction | IOnlineTransaction): Promise<void> {
@@ -135,6 +136,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
       restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
       apiTimeout: this.apiTimeout,
+      waxApiCaller: this.jsonRpcApiCaller.defaultWaxApiCaller,
     }, this);
 
     if(typeof extendedHiveApiData === "object")
@@ -149,6 +151,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
       restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
       apiTimeout: this.apiTimeout,
+      waxApiCaller: this.jsonRpcApiCaller.defaultWaxApiCaller,
     }, this);
 
     if(typeof extendedHiveRestApiData === "object")

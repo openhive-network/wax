@@ -12,7 +12,8 @@ export const DEFAULT_WAX_OPTIONS_CHAIN: IWaxOptionsChain = {
   ...DEFAULT_WAX_OPTIONS,
   apiEndpoint: "https://api.hive.blog",
   restApiEndpoint: "https://api.syncad.com",
-  apiTimeout: API_CALL_TIMEOUT_MS
+  apiTimeout: API_CALL_TIMEOUT_MS,
+  waxApiCaller: undefined
 }
 
 // We have to keep wasmFn as any because createHiveChain is exported and will require wasmFn to have a type of module, we do not want to expose
@@ -25,7 +26,8 @@ export const createHiveChain = async(wasmFn: typeof waxmodule, ModuleExt: IOptio
     chainId: apiOptions.chainId,
     apiEndpoint: apiOptions.apiEndpoint,
     restApiEndpoint: apiOptions.restApiEndpoint,
-    apiTimeout: apiOptions.apiTimeout
+    apiTimeout: apiOptions.apiTimeout,
+    waxApiCaller: apiOptions.waxApiCaller
   }, null);
 
   return api;

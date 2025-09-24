@@ -143,6 +143,17 @@ export interface IWaxOptionsChain extends IWaxOptions {
   restApiEndpoint: string;
 
   /**
+   * X-Wax-Api-Caller header value for all requests (both API and REST API).
+   * This header is used to identify the application making requests to the server.
+   * If not set, the X-Wax-Api-Caller header will not be sent with requests.
+   * This setting is global for the entire chain configuration and cannot be overridden per API.
+   *
+   * @default undefined
+   * @type {string}
+   */
+  waxApiCaller?: string;
+
+  /**
    * Timeout for all of the API requests in milliseconds.
    * Set to 0 to disable timeout
    *

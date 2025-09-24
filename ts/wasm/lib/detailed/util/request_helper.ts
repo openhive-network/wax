@@ -27,6 +27,10 @@ export interface IRequestOptions {
    * @default `"text"`
    */
   responseType?: "text" | "json";
+  /**
+   * X-Wax-Api-Caller header value for the request
+   */
+  waxApiCaller?: string;
 }
 
 export class RequestHelper {
@@ -46,8 +50,16 @@ export class RequestHelper {
     try {
       const finalUrl = config.endpoint + config.url;
 
+      const headers = new Headers();
+
+      if (typeof config.data !== "undefined")
+        headers.set('content-type', 'application/json');
+
+      if (config.waxApiCaller)
+        headers.set('x-wax-api-caller', config.waxApiCaller);
+
       const response = await fetch(finalUrl, {
-        headers: typeof config.data === "undefined" ? undefined : new Headers({'content-type': 'application/json'}),
+        headers: headers.has('content-type') || headers.has('user-agent') || headers.has('x-wax-api-caller') ? headers : undefined,
         method: config.method,
         signal: config.timeout === 0 ? undefined : AbortSignal.timeout(config.timeout),
         body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data

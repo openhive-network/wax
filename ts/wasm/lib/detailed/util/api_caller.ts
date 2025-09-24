@@ -50,6 +50,7 @@ export class ApiCaller extends RequestHelper {
     public readonly localTypes: Record<string, any> = {},
     public readonly defaultMethod: string = 'GET',
     private readonly changeEndpointUrlFn: (path: string[], newValue: string | undefined, found: boolean) => boolean = () => true,
+    public defaultWaxApiCaller?: string,
     private readonly staticRequestInterceptor: (data: TInterceptorRequestOptions) => TInterceptorRequestOptions = (data: TInterceptorRequestOptions) => data,
     private readonly staticResponseInterceptor: TResponseInterceptor = (data: IDetailedResponseData<any>) => data
   ) {
@@ -85,6 +86,7 @@ export class ApiCaller extends RequestHelper {
 
     return foundApi ?? this.defaultEndpointUrl;
   }
+
   private getRestTypeFromPath(path: string[]): object {
     let currObj: Record<string, any> = this.localTypes;
     for (const appendPath of path) {
@@ -135,6 +137,7 @@ export class ApiCaller extends RequestHelper {
         timeout: that.apiTimeout,
         url,
         data: body,
+        waxApiCaller: that.defaultWaxApiCaller,
         paths: callFn.realPaths,
         apiCallerId: that.id
       }))))) as IDetailedResponseData<object>;
@@ -198,7 +201,6 @@ export class ApiCaller extends RequestHelper {
 
           return setValue;
         }
-
 
         return false;
       },
