@@ -3,7 +3,12 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Generic
 
-from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings, RemoteSettingsT
+from beekeepy.handle.remote import (
+    AbstractAsyncHandle,
+    AsyncBatchHandle,
+    RemoteHandleSettings,
+    RemoteSettingsT,
+)
 from wax.helpy._handles.hived.api.api_collection import HivedAsyncApiCollection
 from wax.helpy._handles.hived.common_helpers import HiveHandleCommonHelpers
 from wax.helpy._interfaces.time import Time

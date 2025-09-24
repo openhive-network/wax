@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
-import beekeepy.communication.overseer as bk_over
-import beekeepy.exceptions as bk_exc
-import beekeepy.interfaces as bk_inter
-
 if TYPE_CHECKING:
     from beekeepy.exceptions import ApiNotFoundError
+
+from beekeepy.communication.overseer import rules
+from beekeepy.exceptions import ApiNotFoundError, GroupedErrorsError
+from beekeepy.interfaces import HttpUrl, SuppressApiNotFound
 
 
 def api_not_found_error(api: str) -> ApiNotFoundError:
@@ -23,12 +23,12 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
         "id": 1,
     }
 
-    result = bk_over.rules.ApiNotFound(
-        url=bk_inter.HttpUrl("0.0.0.0:0"),
+    result = rules.ApiNotFound(
+        url=HttpUrl("0.0.0.0:0"),
         request={"jsonrpc": "2.0", "id": 1, "method": f"{api}.some_method"},
     ).check(response=response, response_raw=json.dumps(response))
     assert len(result) == 1, "Exception has not been generated"
-    return cast(bk_exc.ApiNotFoundError, result[0])
+    return cast(ApiNotFoundError, result[0])
 
 
 @pytest.mark.parametrize(
@@ -45,8 +45,8 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
 )
 def test_suppress_api_not_found(error: ApiNotFoundError) -> None:
     # ARRANGE & ACT
-    with bk_inter.SuppressApiNotFound(error.api) as suppressed:
-        raise error from bk_exc.GroupedErrorsError([error])
+    with SuppressApiNotFound(error.api) as suppressed:
+        raise error from GroupedErrorsError([error])
 
     # ASSERT
     assert suppressed.errors[0].api == error.api
@@ -63,7 +63,7 @@ def test_suppress_api_not_found_rethrow(error: Exception) -> None:
     # ARRANGE
 
     # ACT & ASSERT
-    with pytest.raises(type(error)), bk_inter.SuppressApiNotFound("rc_api", "database_api") as suppressed:
-        raise error from bk_exc.GroupedErrorsError([error])
+    with pytest.raises(type(error)), SuppressApiNotFound("rc_api", "database_api") as suppressed:
+        raise error from GroupedErrorsError([error])
 
     assert len(suppressed.errors) == 0, "No errors should be suppressed"
