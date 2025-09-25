@@ -106,7 +106,7 @@ test.describe('Wax object interface chain tests', () => {
   });
 
    test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
-    const testEndpoint = "https://api.syncad.com";
+    const testEndpoint = "https://api.hive.blog";
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -127,11 +127,11 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-     expect(retVal).toStrictEqual("https://api.syncad.com");
+     expect(retVal).toStrictEqual("https://api.hive.blog");
    });
 
    test('Should be able to create REST endpoint healthchecker (explicit endpoint)', async ({ waxTest }) => {
-    const testEndpoint = "https://api.syncad.com";
+    const testEndpoint = "https://api.hive.blog";
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -152,7 +152,7 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-    expect(retVal).toStrictEqual("https://api.syncad.com");
+    expect(retVal).toStrictEqual("https://api.hive.blog");
    });
 
    test('Should be able to handle multithreaded calls - should not exceed the timeout', async ({ waxTest }) => {

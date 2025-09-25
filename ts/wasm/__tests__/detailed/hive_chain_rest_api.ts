@@ -221,8 +221,8 @@ test.describe('Wax object interface chain REST API tests', () => {
     });
 
     expect(retVal).toStrictEqual([
-      "https://api.syncad.com/hafah-api/headblock",
-      "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
+      "https://api.hive.blog/hafah-api/headblock",
+      "https://api.hive.blog/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
     ]);
   });
 
@@ -254,7 +254,7 @@ test.describe('Wax object interface chain REST API tests', () => {
     });
 
     expect(retVal).toStrictEqual(
-      "https://api.syncad.com/hivesense-api/" // Note: Non-standard trailing slash at the end
+      "https://api.hive.blog/hivesense-api/" // Note: Non-standard trailing slash at the end
     );
   });
 
@@ -306,6 +306,6 @@ test.describe('Wax object interface chain REST API tests', () => {
       return [chain.restApi.endpointUrl, chain.restApi['hafbe-api'].witnesses.endpointUrl, chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl];
     }, url1, url2);
 
-    expect(retVal).toStrictEqual(["https://api.syncad.com", url1, url2]);
+    expect(retVal).toStrictEqual(["https://api.hive.blog", url1, url2]);
   });
 });

@@ -107,7 +107,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       {
         const delegated_vesting_shares = "6909522651976083";
-        /// according to result taken from: https://api.syncad.com/hafbe-api/witnesses/blocktrades/voters?sort=vests&direction=desc&result-limit=2147483647
+        /// according to result taken from: https://api.hive.blog/hafbe-api/witnesses/blocktrades/voters?sort=vests&direction=desc&result-limit=2147483647
         const self_witness_vote = "43357485398000965";
 
         ///                                     vests-balance    total-hive   total-vests
