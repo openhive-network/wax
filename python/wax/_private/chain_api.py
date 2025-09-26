@@ -113,6 +113,11 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         account_response = await self._internal_api.database_api.find_accounts(accounts=[account])
         return self._extract_authority_from_find_accounts_response(account_response, account)
 
+    def extend_rest(  # type: ignore[override]
+        self, new_rest_api: type[ExtendedApiCollectionT]
+    ) -> HiveChainApi[ExtendedApiCollectionT | ApiCollectionT]:
+        return self.extends(new_rest_api)
+
     @property
     def _internal_api(self) -> WaxApiCollection:
         return cast(WaxApiCollection, self._api_caller.api)

@@ -679,6 +679,30 @@ class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
         """
 
     @abstractmethod
+    def extend_rest(
+        self, new_rest_api: type[ExtendedApiCollectionT]
+    ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
+        """
+        Extends the current rest API collection with a new one.
+
+        Args:
+            new_rest_api: New rest API collection class to be added.
+
+        Returns:
+            IHiveChainInterface: New chain instance with the extended rest API collection.
+
+        Examples:
+            class MyCustomApiCollection:
+                def __init__(self):
+                   self.my_custom_api = MyCustomApi
+
+            chain = create_hive_chain()
+            extended_chain = chain.extend_rest(ExtendedApiCollection)
+
+            response = await extended_chain.api.my_custom_api.custom_endpoint()  # With full intellisense support
+        """
+
+    @abstractmethod
     def teardown(self) -> None:
         """Call when work with API communication is over."""
 
