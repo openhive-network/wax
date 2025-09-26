@@ -102,6 +102,20 @@ export default defineConfig<IWaxedTest>({
         }
       }
 
+    },
+    {
+      name: "wax_api_caller_header_test",
+      testDir: "./wasm/dist",
+      testMatch: "wax_api_caller_header*",
+      use:
+      {
+        config: {
+          apiEndpoint: "https://api.hive.blog",
+          restApiEndpoint: "https://api.hive.blog",
+          chainId: "beeab0de00000000000000000000000000000000000000000000000000000000",
+          waxApiCaller: "test-wax-client-v1.0"
+        }
+      }
     }
   ],
   // Run your local dev server before starting the tests
