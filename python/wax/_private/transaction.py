@@ -40,7 +40,7 @@ from wax.transaction_type_aliases import JsonTransaction, ProtoTransaction, prot
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from beekeepy._interface.abc import AsyncUnlockedWallet
+    from beekeepy import AsyncUnlockedWallet
     from wax import IWaxBaseInterface
     from wax.models.basic import AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.operations import WaxMetaOperation

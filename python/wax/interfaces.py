@@ -12,7 +12,7 @@ from wax.api.collection import WaxApiCollection
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from beekeepy._interface.abc import AsyncUnlockedWallet
+    from beekeepy import AsyncUnlockedWallet
     from beekeepy.interfaces import HttpUrl
     from wax.models.asset import (
         AssetFactory,

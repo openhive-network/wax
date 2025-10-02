@@ -5,7 +5,7 @@ from typing import cast
 
 import pytest
 
-from beekeepy.communication import rules
+from beekeepy.communication.overseer import rules
 from beekeepy.exceptions import ApiNotFoundError, GroupedErrorsError
 from beekeepy.interfaces import HttpUrl, SuppressApiNotFound
 
