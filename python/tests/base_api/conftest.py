@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING, AsyncGenerator, Generator
 
 import pytest
 
-from beekeepy import AsyncBeekeeper, Settings
+import beekeepy as bk
 from wax import ITransaction, IWaxBaseInterface, create_wax_foundation
 
 if TYPE_CHECKING:
-    from beekeepy import AsyncUnlockedWallet
+    from beekeepy import AsyncBeekeeper, AsyncUnlockedWallet
 
 
 @pytest.fixture(autouse=True)
@@ -31,7 +31,9 @@ def beekeeper_output_dir(request: pytest.FixtureRequest) -> Generator[Path, None
 
 @pytest.fixture
 async def beekeeper(beekeeper_output_dir: Path) -> AsyncGenerator[AsyncBeekeeper, None]:
-    async with await AsyncBeekeeper.factory(settings=Settings(working_directory=beekeeper_output_dir)) as beekeeper:
+    async with await bk.AsyncBeekeeper.factory(
+        settings=bk.InterfaceSettings(working_directory=beekeeper_output_dir)
+    ) as beekeeper:
         yield beekeeper
 
 
