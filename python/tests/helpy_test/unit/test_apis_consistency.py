@@ -5,38 +5,32 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from beekeepy.handle.remote import AsyncBeekeeperApi, SyncBeekeeperApi
+from beekeepy.handle.remote import AsyncBeekeeperApi
 from wax.helpy._handles.hived.api.account_by_key_api import (
     AsyncAccountByKeyApi,
-    SyncAccountByKeyApi,
 )
 from wax.helpy._handles.hived.api.account_history_api import (
     AsyncAccountHistoryApi,
-    SyncAccountHistoryApi,
 )
-from wax.helpy._handles.hived.api.block_api import AsyncBlockApi, SyncBlockApi
-from wax.helpy._handles.hived.api.condenser_api import AsyncCondenserApi, SyncCondenserApi
-from wax.helpy._handles.hived.api.database_api import AsyncDatabaseApi, SyncDatabaseApi
-from wax.helpy._handles.hived.api.debug_node_api import AsyncDebugNodeApi, SyncDebugNodeApi
-from wax.helpy._handles.hived.api.jsonrpc import AsyncJsonrpc, SyncJsonrpc
+from wax.helpy._handles.hived.api.block_api import AsyncBlockApi
+from wax.helpy._handles.hived.api.condenser_api import AsyncCondenserApi
+from wax.helpy._handles.hived.api.database_api import AsyncDatabaseApi
+from wax.helpy._handles.hived.api.debug_node_api import AsyncDebugNodeApi
+from wax.helpy._handles.hived.api.jsonrpc import AsyncJsonrpc
 from wax.helpy._handles.hived.api.market_history_api import (
     AsyncMarketHistoryApi,
-    SyncMarketHistoryApi,
 )
 from wax.helpy._handles.hived.api.network_broadcast_api import (
     AsyncNetworkBroadcastApi,
-    SyncNetworkBroadcastApi,
 )
-from wax.helpy._handles.hived.api.network_node_api import AsyncNetworkNodeApi, SyncNetworkNodeApi
-from wax.helpy._handles.hived.api.rc_api import AsyncRcApi, SyncRcApi
-from wax.helpy._handles.hived.api.reputation_api import AsyncReputationApi, SyncReputationApi
+from wax.helpy._handles.hived.api.network_node_api import AsyncNetworkNodeApi
+from wax.helpy._handles.hived.api.rc_api import AsyncRcApi
+from wax.helpy._handles.hived.api.reputation_api import AsyncReputationApi
 from wax.helpy._handles.hived.api.transaction_status_api import (
     AsyncTransactionStatusApi,
-    SyncTransactionStatusApi,
 )
 from wax.helpy._handles.hived.api.wallet_bridge_api import (
     AsyncWalletBridgeApi,
-    SyncWalletBridgeApi,
 )
 
 if TYPE_CHECKING:
@@ -45,23 +39,23 @@ if TYPE_CHECKING:
 
 @pytest.mark.xfail(reason="Wrong test - DatabaseApi hardcoded in HELL py has missing list_votes/find_votes methods. ")
 @pytest.mark.parametrize(
-    ("async_api", "sync_api"),
+    ("async_api"),
     [
-        (AsyncAccountByKeyApi, SyncAccountByKeyApi),
-        (AsyncAccountHistoryApi, SyncAccountHistoryApi),
-        (AsyncBeekeeperApi, SyncBeekeeperApi),
-        (AsyncBlockApi, SyncBlockApi),
-        (AsyncCondenserApi, SyncCondenserApi),
-        (AsyncDatabaseApi, SyncDatabaseApi),
-        (AsyncDebugNodeApi, SyncDebugNodeApi),
-        (AsyncJsonrpc, SyncJsonrpc),
-        (AsyncMarketHistoryApi, SyncMarketHistoryApi),
-        (AsyncNetworkBroadcastApi, SyncNetworkBroadcastApi),
-        (AsyncNetworkNodeApi, SyncNetworkNodeApi),
-        (AsyncRcApi, SyncRcApi),
-        (AsyncReputationApi, SyncReputationApi),
-        (AsyncTransactionStatusApi, SyncTransactionStatusApi),
-        (AsyncWalletBridgeApi, SyncWalletBridgeApi),
+        (AsyncAccountByKeyApi,),
+        (AsyncAccountHistoryApi,),
+        (AsyncBeekeeperApi,),
+        (AsyncBlockApi,),
+        (AsyncCondenserApi,),
+        (AsyncDatabaseApi,),
+        (AsyncDebugNodeApi,),
+        (AsyncJsonrpc,),
+        (AsyncMarketHistoryApi,),
+        (AsyncNetworkBroadcastApi,),
+        (AsyncNetworkNodeApi,),
+        (AsyncRcApi,),
+        (AsyncReputationApi,),
+        (AsyncTransactionStatusApi,),
+        (AsyncWalletBridgeApi,),
     ],
 )
 def test_is_api_consistent(
