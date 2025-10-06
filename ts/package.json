@@ -64,7 +64,7 @@
     "./package.json": "./package.json"
   },
   "devDependencies": {
-    "@hiveio/beekeeper": "1.27.11",
+    "@hiveio/beekeeper": "1.27.12",
     "@playwright/test": "catalog:playwright-toolset",
     "@rollup/plugin-commonjs": "catalog:rollup-toolset",
     "@rollup/plugin-node-resolve": "catalog:rollup-toolset",

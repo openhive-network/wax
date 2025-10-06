@@ -8,7 +8,7 @@
     "test:manual": "rm -rf ./.parcel-cache && parcel test/index.html"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.27.11",
+    "@hiveio/beekeeper": "1.27.12",
     "@hiveio/wax": "file:../../../ts",
     "@hiveio/wax-signers-beekeeper": "file:../../../ts/packages/signers-beekeeper",
     "@hiveio/wax-signers-keychain": "file:../../../ts/packages/signers-keychain",
