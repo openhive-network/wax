@@ -61,6 +61,7 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.poetry-dynamic-versioning]
 enable = true
+pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>\d+))?$'''
 format-jinja = """
     {%- if distance == 0 -%}
         {{ serialize_pep440(base, stage, revision) }}
