@@ -1,11 +1,11 @@
-import type {IOnlineEncryptionProvider, IOnlineSignatureProvider} from './index';
-import type {ITransaction, TPublicKey, TSignature } from '../../interfaces';
+import type { IOnlineEncryptionProvider, IOnlineSignatureProvider } from './index';
+import type { ISignatureTransaction, TPublicKey, TSignature } from '../../interfaces';
 
 /**
  * Helper class encapsulating transaction signing flow. Derived class must implement signature generation logic.
  */
 export abstract class ASignatureProvider implements IOnlineSignatureProvider {
-  public async signTransaction(transaction: ITransaction): Promise<void> {
+  public async signTransaction(transaction: ISignatureTransaction): Promise<void> {
     // Calls the provider-specific signature generation logic
     const signatures = await this.generateSignatures(transaction);
 
@@ -14,7 +14,7 @@ export abstract class ASignatureProvider implements IOnlineSignatureProvider {
   }
 
     /// Generates the signatures for the given transaction in a way specific to given provider..
-  protected abstract generateSignatures(transaction: ITransaction): Promise<TSignature[]>;
+  protected abstract generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]>;
 };
 
 /**
@@ -23,12 +23,12 @@ export abstract class ASignatureProvider implements IOnlineSignatureProvider {
  */
 export abstract class AEncryptionProvider extends ASignatureProvider
                                           implements IOnlineEncryptionProvider {
-  public async signTransaction(transaction: ITransaction): Promise<void> {
-    transaction.performOperationEncryption(this);
+  public async signTransaction(transaction: ISignatureTransaction): Promise<void> {
+    transaction.performOperationEncryption?.(this);
     /// Call the base implementation to complete transaction signing flow
     await super.signTransaction(transaction);
   }
-  
+
   /// Provider specific implementation of data encryption
   public abstract encryptData(buffer: string, recipient: TPublicKey): Promise<string>;
 

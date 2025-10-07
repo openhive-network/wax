@@ -163,8 +163,7 @@ export interface IWaxOptionsChain extends IWaxOptions {
   apiTimeout: number;
 }
 
-export interface ITransactionBase {
-
+export interface ISignatureTransaction {
   /**
    * Generates digest of the transaction for signing (HF26 serialization form is used).
    *
@@ -173,6 +172,76 @@ export interface ITransactionBase {
    * @throws {WaxError} on any Wax API-related error
    */
   get sigDigest(): THexString;
+
+ /**
+   * Adds your signature to the internal signatures array inside underlying transaction.
+   *
+   * @param {THexString} signature signature to add
+   *
+   * @returns {this} current transaction instance
+   *
+   * @note If you do not have a signature, create one using dedicated signature providers, such as:
+   *   - `@hiveio/wax-signers-beekeeper`
+   *   - `@hiveio/wax-signers-hb-auth`
+   *   - `@hiveio/wax-signers-metamask`
+   *   - `@hiveio/wax-signers-keychain`
+   *   - `@hiveio/wax-signers-peakvault`
+   *
+   */
+  addSignature(signature: THexString): this;
+
+  /**
+   * Converts the created transaction into the Hive API-legacy form JSON string.
+   *
+   * Legacy form differs in few aspects to regular (HF26) one:
+   * - for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
+   * - asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
+   *
+   * Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
+   * produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
+   * In general, preferred way of generating transactions is HF-26 form (default in this library).
+   *
+   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
+   *
+   * @note This must always return an L1 API transaction form, as signers do not support any other forms for digest generation.
+   *
+   * @returns {string} transaction in Legacy Hive API-form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
+   */
+  toLegacyApi(): string;
+
+  /**
+   * Converts the created transaction into the Hive API-form string
+   *
+   * @note This must always return an L1 API transaction form, as signers do not support any other forms for digest generation.
+   *
+   * @returns {string} transaction in Hive API-form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  toApi(): string;
+
+  /**
+   * Checks if underlying transaction has been already signed at least one time (after {@link ITransaction.sign})
+   *
+   * @returns {boolean} either true or false based on the signatures amount
+   */
+  isSigned(): boolean;
+
+  /**
+   * Allows to encrypt all operations selected to this process by calls to startEncrypt/stopEncrypt methods.
+   *
+   * If you are implementing your transaction class and do not have operations to encrypt, you can leave this method not implemented
+   *
+   * @internal This method should be called only internally by the encryption providers
+   */
+  performOperationEncryption?(provider: IOnlineEncryptionProvider): Promise<void>;
+}
+
+export interface ITransactionBase extends ISignatureTransaction {
 
   /**
    * Generates digest of the transaction for signing (legacy serialization form is used).
@@ -215,6 +284,24 @@ export interface ITransactionBase {
    * @deprecated
    */
   get legacy_id(): TTransactionId;
+
+  /**
+   * Converts transaction object into the protobuf JSON string
+   *
+   * @returns {string} protobuf JSON string
+   *
+   * @throws {WaxError} on any Wax API-related error including validation error
+   */
+  toString(): string;
+
+  /**
+   * Allows to encrypt all operations selected to this process by calls to startEncrypt/stopEncrypt methods.\
+   *
+   * If you are implementing your transaction class and do not have operations to encrypt, you can leave this method empty
+   *
+   * @internal This method should be called only internally by the encryption providers
+   */
+  performOperationEncryption(provider: IOnlineEncryptionProvider): Promise<void>;
 
   /**
    * Returns signature keys from the transaction signatures
@@ -264,22 +351,6 @@ export interface ITransactionBase {
   validate(): void;
 
   /**
-   * Converts transaction object into the protobuf JSON string
-   *
-   * @returns {string} protobuf JSON string
-   *
-   * @throws {WaxError} on any Wax API-related error including validation error
-   */
-  toString(): string;
-
-  /**
-   * Checks if underlying transaction has been already signed at least one time (after {@link ITransaction.sign})
-   *
-   * @returns {boolean} either true or false based on the signatures amount
-   */
-  isSigned(): boolean;
-
-  /**
    * Retrieves transaction binary view packed "AST" data (in same form as in the block_log)
    *
    * @returns {IBinaryViewOutputData} binary view metadata
@@ -302,15 +373,6 @@ export interface ITransactionBase {
   get transaction(): transaction;
 
   /**
-   * Converts the created transaction into the Hive API-form string
-   *
-   * @returns {string} transaction in Hive API-form
-   *
-   * @throws {WaxError} on any Wax API-related error
-   */
-  toApi(): string;
-
-  /**
    * Converts the created transaction into the Hive API-form JSON
    *
    * @returns {ApiTransaction} transaction in Hive API-form
@@ -331,27 +393,6 @@ export interface ITransactionBase {
    * @returns {this & IEncryptingTransaction<this>} current transaction instance
    */
  startEncrypt(mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey): this & IEncryptingTransaction<this>;
-
-  /**
-   * Converts the created transaction into the Hive API-legacy form JSON string.
-   *
-   * Legacy form differs in few aspects to regular (HF26) one:
-   * - for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
-   * - asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
-   *
-   * Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
-   * produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
-   * In general, preferred way of generating transactions is HF-26 form (default in this library).
-   *
-   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
-   *
-   * @returns {string} transaction in Legacy Hive API-form
-   *
-   * @throws {WaxError} on any Wax API-related error
-   *
-   * @deprecated
-   */
-  toLegacyApi(): string;
 
   /**
    * Allows to serialize underlying transaction to HF26 specific binary form, then return it as hexstring.
@@ -410,30 +451,6 @@ export interface ITransactionBase {
    * @throws {WaxError} on any Wax API-related error
    */
   pushOperation(op: operation | OperationBase): this;
-
- /**
-   * Adds your signature to the internal signatures array inside underlying transaction.
-   *
-   * @param {THexString} signature signature to add
-   *
-   * @returns {this} current transaction instance
-   *
-   * @note If you do not have a signature, create one using dedicated signature providers, such as:
-   *   - `@hiveio/wax-signers-beekeeper`
-   *   - `@hiveio/wax-signers-hb-auth`
-   *   - `@hiveio/wax-signers-metamask`
-   *   - `@hiveio/wax-signers-keychain`
-   *   - `@hiveio/wax-signers-peakvault`
-   *
-   */
-  addSignature(signature: THexString): this;
-
-  /**
-   * Allows to encrypt all operations selected to this process by calls to startEncrypt/stopEncrypt methods.
-   *
-   * @internal This method should be called only internally by the encryption providers
-   */
-  performOperationEncryption(provider: IOnlineEncryptionProvider): Promise<void>;
 
   /**
    * Signs the transaction using given public key. Applies the transaction expiration time
