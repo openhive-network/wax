@@ -110,6 +110,15 @@ test.describe('Wax object interface chain tests', () => {
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
+        const extended = chain.extendRest<{
+          "hafbe-api": {
+            "operation-type-counts": {
+              params: { "result-limit": number; };
+              result: { block_num: number; }[];
+            }
+          }
+        }>();
+
         const hc = new wax.HealthChecker([testEndpoint]);
 
         hc.on("newbest", ({ endpointUrl }) => {
@@ -123,7 +132,7 @@ test.describe('Wax object interface chain tests', () => {
           }); // New data from all endpoint checks - scores ready
         hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain');
+        hc.register(extended.restApi['hafbe-api']["operation-type-counts"], { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain');
       });
     }, testEndpoint);
 
@@ -135,6 +144,15 @@ test.describe('Wax object interface chain tests', () => {
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
+        const extended = chain.extendRest<{
+          "hafbe-api": {
+            "operation-type-counts": {
+              params: { "result-limit": number; };
+              result: { block_num: number; }[];
+            }
+          }
+        }>();
+
         const hc = new wax.HealthChecker();
 
         hc.on("newbest", ({ endpointUrl }) => {
@@ -148,7 +166,7 @@ test.describe('Wax object interface chain tests', () => {
           }); // New data from all endpoint checks - scores ready
         hc.on("error", (error) => {hc.unregisterAll(); reject(error);}); // Error handled
 
-        hc.register(chain.restApi['hafbe-api'].operationTypeCounts, { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain', [testEndpoint]);
+        hc.register(extended.restApi['hafbe-api']["operation-type-counts"], { "result-limit": 1 }, data => data[0].block_num > 1 ? true : 'Should not be a new chain', [testEndpoint]);
       });
     }, testEndpoint);
 

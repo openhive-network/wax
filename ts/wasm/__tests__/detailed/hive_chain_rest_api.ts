@@ -5,21 +5,6 @@ import { test } from '../assets/jest-helper';
 import type { IDetailedResponseData, IRequestOptions } from '../../dist/bundle';
 
 test.describe('Wax object interface chain REST API tests', () => {
-  test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
-    const retVal = await waxTest.dynamic(async({ chain }) => {
-      const blocks = await chain.restApi['hafbe-api'].operationTypeCounts({ "result-limit": 1 });
-
-      return blocks;
-    });
-
-    expect(retVal.length).toBeGreaterThan(0);
-    expect(typeof retVal[0].block_num).toBe("number");
-    expect(typeof retVal[0].witness).toBe("string");
-    expect(retVal[0].operations.length).toBeGreaterThan(0);
-    expect(typeof retVal[0].operations[0].op_count).toBe("number");
-    expect(typeof retVal[0].operations[0].op_type_id).toBe("number");
-  });
-
   test('Should be able to extend and perform REST API calls', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ chain }) => {
       class TransactionByIdRequest {
@@ -302,10 +287,22 @@ test.describe('Wax object interface chain REST API tests', () => {
     const url2 = "https://other.honey.provider";
 
     const retVal = await waxTest(async({ chain }, url1, url2) => {
-      chain.restApi['hafbe-api'].witnesses.endpointUrl = url1;
-      chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl = url2;
+      const extended = chain.extendRest<{
+        a: {
+          params: undefined;
+          result: string;
 
-      return [chain.restApi.endpointUrl, chain.restApi['hafbe-api'].witnesses.endpointUrl, chain.restApi['hafbe-api'].witnesses.accountName.endpointUrl];
+          b: {
+            params: undefined;
+            result: number;
+          }
+        }
+      }>();
+
+      extended.restApi.a.endpointUrl = url1;
+      extended.restApi.a.b.endpointUrl = url2;
+
+      return [extended.restApi.endpointUrl, extended.restApi.a.endpointUrl, extended.restApi.a.b.endpointUrl];
     }, url1, url2);
 
     expect(retVal).toStrictEqual(["https://api.hive.blog", url1, url2]);

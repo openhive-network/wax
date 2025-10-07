@@ -9,30 +9,7 @@ import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
 import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
-import { OperationTypeCountsRequest, OperationTypeCountsResponse } from "./rest-api/index.js";
-import { GetWitnessesByNameRequest, SingleWitnessResponse } from "./rest-api/hafbe/witnesses/by-name.js";
-import { GetAllWitnessesRequest } from "./rest-api/hafbe/witnesses/all.js";
-
-export type HiveRestApiTypes = {
-  'hafbe-api': {
-    witnesses: {
-      params: GetAllWitnessesRequest,
-      result: SingleWitnessResponse,
-      responseArray: true,
-      accountName: {
-        params: GetWitnessesByNameRequest,
-        result: SingleWitnessResponse,
-        urlPath: "{accountName}"
-      }
-    },
-    operationTypeCounts: {
-      params: OperationTypeCountsRequest,
-      result: OperationTypeCountsResponse,
-      responseArray: true,
-      urlPath: 'operation-type-counts'
-    }
-  }
-};
+export type HiveRestApiTypes = {};
 
 export const HiveRestApiTypes = {
   'hafbe-api': {
