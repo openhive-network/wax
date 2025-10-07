@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IWaxBaseInterface, ITransaction, TAccountName, TRole, TSignature } from "@hiveio/wax";
+import type { IHiveChainInterface, IWaxBaseInterface, ISignatureTransaction, TAccountName, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
@@ -77,7 +77,7 @@ export class BeekeeperProvider extends AEncryptionProvider {
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Beekeeper invocation.
    */
-  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
+  protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
     const signature = this.wallet.signDigest(this.publicKey, transaction.sigDigest);
 
     return [signature];

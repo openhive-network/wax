@@ -1,4 +1,4 @@
-import type { ITransaction, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { MetaMaskInpageProvider, RequestArguments } from "@metamask/providers";
@@ -105,7 +105,7 @@ export class MetaMaskProvider extends AEncryptionProvider {
    */
   private constructor(
     private readonly accountIndex: number,
-    private readonly role: TRole | undefined
+    private readonly role: TRole
   ) {
     super();
   }
@@ -125,25 +125,10 @@ export class MetaMaskProvider extends AEncryptionProvider {
    *
    * @param transaction The transaction to sign. Should be an instance of {@link ITransaction}, created by Wax library.
    *
-   * @throws WaxMetaMaskProviderError if no authorities are required to sign the transaction.
    * @throws on any error from the Hive Wallet invocation.
    */
-  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
-    const authorities = new Set<TRole>();
-
-    if (this.role) {
-      authorities.add(this.role);
-    } else {
-      const requiredAuthorities = transaction.requiredAuthorities;
-      for(const auth in requiredAuthorities)
-        if (!!requiredAuthorities[auth].length || !!requiredAuthorities[auth].size)
-          authorities.add(auth as TRole);
-    }
-
-    if (authorities.size === 0)
-      throw new WaxMetaMaskProviderError('No authorities to sign the transaction');
-
-    const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [...authorities].map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
+  protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
+    const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [{ role: this.role, accountIndex: this.accountIndex }] }) as any;
 
     return response.signatures;
   }
@@ -156,12 +141,13 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @note This method caches the MetaMask connection for optimization.
    * @note For security reasons, when you call this method multiple times with different snap origin it will fail, so users wouldn't silently switch to a different inpage provider or snap.
    *
-   * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
-   * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
+   * @param accountIndex The index of the account to use for signing transactions. Should be 0 if you want to use the default account.
+   * @param role The role to use for signing transactions.
    * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
+   *
    * @throws on any error from the Hive Wallet invocation.
    */
-  public static async for(accountIndex: number = 0, role?: TRole | undefined, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
+  public static async for(accountIndex: number, role: TRole, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
     if (!MetaMaskProvider.#snapOrigin) {
       // Get the provider - this will be the MetaMask provider if it is installed
       const provider = await getSnapsProvider();

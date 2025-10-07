@@ -100,7 +100,7 @@
       const peakVaultProvider = PeakVaultProvider.for(accountName, testEnv.role);
       let metaMaskProvider;
       try {
-        metaMaskProvider = await MetaMaskProvider.for(0);
+        metaMaskProvider = await MetaMaskProvider.for(0, testEnv.role);
         await metaMaskProvider.installSnap();
       } catch (error) {
         console.error('Metamask provider not available', error);

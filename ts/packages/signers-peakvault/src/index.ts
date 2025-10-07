@@ -1,4 +1,4 @@
-import type { ITransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeyRole = string;
@@ -106,7 +106,7 @@ class PeakVaultProvider extends AEncryptionProvider {
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Peak Vault invocation.
    */
-  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
+  protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
     PeakVaultProvider.ensurePeakVaultInstalled();
     const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
     return data.result.signatures;

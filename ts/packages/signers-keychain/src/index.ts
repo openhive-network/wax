@@ -1,4 +1,4 @@
-import type { ITransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
@@ -128,7 +128,7 @@ class KeychainProvider extends AEncryptionProvider {
    * @param transaction The transaction to sign. The transaction should be created using the Wax Hive chain instance.
    * @throws on any error from the Keychain invocation.
    */
-  protected async generateSignatures(transaction: ITransaction): Promise<TSignature[]> {
+  protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
     KeychainProvider.ensureKeychainInstalled();
 
     const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
