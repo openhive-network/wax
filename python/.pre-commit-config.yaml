@@ -44,7 +44,7 @@ repos:
       - id: mypy
         name: type check with mypy
         entry: mypy
-        args: ["--config-file", "python/pyproject.toml"]
+        args: ["--enable-incomplete-feature=NewGenericSyntax", "--config-file", "python/pyproject.toml"]
         language: system
         types: [ python ]
   - repo: https://github.com/codespell-project/codespell
