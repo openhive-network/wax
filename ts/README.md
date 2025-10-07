@@ -1,8 +1,31 @@
-# wax
+# Wax
 
 Provides Hive Protocol features to JavaScript
 
-## Install
+[![npm version](https://badge.fury.io/js/%40hiveio%2Fwax.svg)](https://badge.fury.io/js/%40hiveio%2Fwax)
+[![CI](https://gitlab.syncad.com/hive/wax/badges/develop/pipeline.svg)](https://gitlab.syncad.com/hive/wax/-/pipelines)
+
+---
+
+## ✨ Features
+
+- Create and manipulate Hive transactions
+- Sign transactions using various signing providers
+- Broadcast transactions to the Hive network
+- Extendable API and REST API interfaces
+- Custom formatters for data output
+- Calculate user manabar regeneration time
+- Compatible with various frameworks and bundlers
+
+---
+
+## 📖 High-level Documentation
+
+You can find the high-level documentation with snippets for this library at [https://hive.pages.syncad.com/workerbee-doc](https://hive.pages.syncad.com/workerbee-doc)
+
+## 🚀 Getting Started
+
+### Installation
 
 This is a [Node.js](https://nodejs.org/en/) module available through the
 [npm registry](https://www.npmjs.com/).
@@ -20,25 +43,66 @@ echo @hiveio:registry=https://gitlab.syncad.com/api/v4/groups/136/-/packages/npm
 npm install @hiveio/wax
 ```
 
-## Frameworks support
+### Basic usage
+
+```ts
+import { createWaxFoundation } from '@hiveio/wax';
+
+const wax = await createWaxFoundation();
+
+// Creates a representation of 5 HIVE coins in NAI format
+console.log(wax.hiveCoins(5));
+```
+
+## 🏗️ Frameworks support
 
 We currently support multiple environments / bundlers / frameworks, such as:
 
 - [Node.js](https://nodejs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/node-app)
 - [Next.js](https://nextjs.org/) + [Webpack](https://webpack.js.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nextjs-app)
 - [Rollup](https://rollupjs.org/) - You may require to add plugin for proper WASM file dependency copying - [@web/rollup-plugin-import-meta-assets](https://www.npmjs.com/package/@web/rollup-plugin-import-meta-assets), see [example project using WASM in Workers](https://gitlab.syncad.com/hive/hb-auth)
-- [React](https://react.dev/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/react-vite) (__Requires different import - `/vite`__)
-- [Nuxt](https://nuxt.com/) ([Vite](https://vite.dev/)), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nuxt-app) (__Requires different import - `/vite`__)
-- [Vue](https://vuejs.org/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-vite) (__Requires different import - `/vite`__)
+- [React](https://react.dev/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/react-vite) (**Requires different import - `/vite`**)
+- [Nuxt](https://nuxt.com/) ([Vite](https://vite.dev/)), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nuxt-app) (**Requires different import - `/vite`**)
+- [Vue](https://vuejs.org/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-vite) (**Requires different import - `/vite`**)
 - [Vue.js](https://vuejs.org/) + [Webpack](https://webpack.js.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-webpack)
 - [Parcel](https://parceljs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/html). Parcel will probably require [`Buffer` polyfill](https://www.npmjs.com/package/buffer) installation
-- Web "Vanilla JS" (you have to provide sourcemap in order to properly resolve our imports, simirarly as in [our tests](./wasm/__tests__/assets/test.html)) (__not recommended__)
+- Web "Vanilla JS" (you have to provide sourcemap in order to properly resolve our imports, simirarly as in [our tests](./wasm/__tests__/assets/test.html)) (**not recommended**)
 
 Imports should automatically resolve to either `@hiveio/wax/web` or `@hiveio/wax/node` based on your environment, but it is required to use `@hiveio/wax/vite` when using Vite in your stack.
 
 You can also force the usage of specific Wax version by providing proper import alias as mentioned above.
 
-## Usage
+## 🧩 Extensions
+
+### Signers
+
+You can use various signers to sign transactions and encode/decode buffers.
+
+Their exact usage examples and documentation can be found in their respective packages and the [high-level documentation](#-high-level-documentation):
+
+- [`@hiveio/signers-beekeeper`](https://npmjs.com/package/@hiveio/wax-signers-beekeeper) - Beekeeper in-browser wallet integration
+- [`@hiveio/signers-hb-auth`](https://npmjs.com/package/@hiveio/wax-signers-hb-auth) - Hb-auth service worker signer integration
+- [`@hiveio/signers-metamask`](https://npmjs.com/package/@hiveio/wax-signers-metamask) - MetaMask Hive Wallet integration
+- [`@hiveio/signers-keychain`](https://npmjs.com/package/@hiveio/wax-signers-keychain) - Keychain Web3 wallet browser extension integration
+- [`@hiveio/signers-peakvault`](https://npmjs.com/package/@hiveio/wax-signers-peakvault) - PeakVault Web3 wallet browser extension integration
+
+### API definitions
+
+Having all the API definitions in the main package would bloat the package size significantly and would cause a headache to maintain with every API change.
+
+That's why we have split the API definitions into separate packages, so you can install only the ones you need. You can also extend the API definitions by yourself or generate the new ones using our [API definition generator](https://npmjs.com/package/@hiveio/wax-spec-generator) according to your needs. All of this is explained in the [high-level documentation](#-high-level-documentation).
+
+Currently available API definitions:
+
+- [`@hiveio/wax-api-jsonrpc`](https://npmjs.com/package/@hiveio/wax-api-jsonrpc) - Full JSON-RPC API hived node definitions
+- [`@hiveio/wax-api-hafbe`](https://npmjs.com/package/@hiveio/wax-api-hafbe) - Full Block Explorer REST API definitions
+- [`@hiveio/wax-api-reputation-tracker`](https://npmjs.com/package/@hiveio/wax-api-reputation-tracker) - Full Reputation Tracker REST API definitions
+- [`@hiveio/wax-api-balance-tracker`](https://npmjs.com/package/@hiveio/wax-api-balance-tracker) - Full Balance Tracker REST API definitions
+- [`@hiveio/wax-api-hafah`](https://npmjs.com/package/@hiveio/wax-api-hafah) - Full Account History REST API definitions
+
+---
+
+## 📚 Examples
 
 ### Wax foundation
 
@@ -268,20 +332,22 @@ const result = await await extended.restApi['hafah-api'].transactions.byId({ tra
 console.info(result); // URL response from "https://api.syncad.com/hafah-api/transactions/954f6de36e6715d128fa8eb5a053fc254b05ded0"
 ```
 
-## API
+## 📖 API Reference
 
 See API documentation at [project WIKI](${GEN_DOC_URL})
 
-## Publishing an NPM package
+## 🛠️ Development and Testing
+
+### Publishing an NPM package
 
 Predefined package.json file has specified some dedicated placeholders to be replaced with actual informations before building a final form of a package and publishing it.
-Best to use CI build procedure to build package, which replace such placeholders with actual values [`see npm_generate_version.sh`](https://gitlab.syncad.com/hive/common-ci-configuration/-/blob/develop/scripts/bash/npm-helpers/npm_generate_version.sh?ref_type=heads).
+Best to use CI build procedure to build package, which replace such placeholders with actual values [`see npm_generate_version.sh`](https://gitlab.syncad.com/hive/common-ci-configuration/-/blob/develop/scripts/bash/npm-helpers/npm_generate_version.sh).
 
 You will also need this file to specify the scope for bumping the `@hiveio` developer versions of our packages
 
 Warning: Commiting a package.json file without such placeholder definitions is disallowed. See [`scripts/precommit_hook.sh`](scripts/precommit_hook.sh) for placeholder verification details.
 
-## Support and tests
+### Support and tests
 
 Tested on the latest Chromium
 
@@ -303,22 +369,24 @@ pnpm install
 Then compile the source:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 Build and run tests:
 
 ```bash
-npm run build:test
-npm run test
+pnpm run build:test
+pnpm run test
 ```
 
 And examples:
 
 ```bash
-npm run examples
+pnpm run examples
 ```
 
-## License
+---
 
-See license in the [LICENSE.md](https://gitlab.syncad.com/hive/wax/-/blob/develop/LICENSE.md?ref_type=heads) file
+## 📄 License
+
+See license in the [LICENSE.md](https://gitlab.syncad.com/hive/wax/-/blob/develop/LICENSE.md) file
