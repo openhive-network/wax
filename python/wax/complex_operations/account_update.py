@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 from wax._private.operation_base import ConvertedToProtoOperation, OperationBase
 from wax.complex_operations.data_providers.authority_data_provider import OnlineChainAuthorityDataProvider

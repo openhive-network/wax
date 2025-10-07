@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import TYPE_CHECKING, Callable, TypeAlias
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    string: TypeAlias = bytes  # noqa: PYI042
+    type string = bytes  # noqa: PYI042
 
 
 def compare_any_string(s0: bytes | str, s1: bytes | str) -> bool:

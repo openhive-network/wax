@@ -1,9 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Final
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Final, Self
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
 from wax.complex_operations.role_classes.level_base import LevelBase, TRole
@@ -68,7 +67,7 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
         if len(account_keys) != len(previous_account_keys):
             return True
 
-        for new, old in zip(account_keys, previous_account_keys):
+        for new, old in zip(account_keys, previous_account_keys, strict=False):
             if new != old or self.authority.account_auths.get(new) != self.previous_authority.account_auths.get(old):
                 return True
 
@@ -78,7 +77,7 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
         if len(key_keys) != len(previous_key_keys):
             return True
 
-        for new, old in zip(key_keys, previous_key_keys):
+        for new, old in zip(key_keys, previous_key_keys, strict=False):
             if new != old or self.authority.key_auths.get(new) != self.previous_authority.key_auths.get(old):
                 return True
 

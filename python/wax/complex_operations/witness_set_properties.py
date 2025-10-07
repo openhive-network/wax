@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterable, cast
+from typing import TYPE_CHECKING, cast
 
 from wax._private.base_api import WaxBaseApi
 from wax._private.converters.python_price_converter import convert_to_python_price

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from schemas.fields.resolvables import Resolvable
@@ -50,7 +50,7 @@ class HiveDateTime(datetime, Resolvable["HiveDateTime", str | datetime]):
 
     @classmethod
     def __normalize(cls, value: datetime) -> datetime:
-        return value.replace(tzinfo=timezone.utc)
+        return value.replace(tzinfo=UTC)
 
     @staticmethod
     def resolve(incoming_cls: type, value: str | datetime) -> HiveDateTime:  # noqa: ARG004

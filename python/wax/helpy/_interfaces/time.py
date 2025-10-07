@@ -5,7 +5,7 @@ import math
 import re
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -150,7 +150,7 @@ class Time:
         time: str,
         *,
         format_: TimeFormats | str | None = None,
-        time_zone: timezone | None = timezone.utc,
+        time_zone: timezone | None = UTC,
     ) -> datetime:
         """
         Parses given string with given format in given timezone.
@@ -251,7 +251,7 @@ class Time:
         cls,
         *,
         serialize: bool = True,
-        time_zone: timezone | None = timezone.utc,
+        time_zone: timezone | None = UTC,
         serialize_format: TimeFormats | str = TimeFormats.DEFAULT_FORMAT,
     ) -> str | datetime:
         time = datetime.now(time_zone)
@@ -269,7 +269,7 @@ class Time:
         weeks: int = 0,
         months: int = 0,
         years: int = 0,
-        time_zone: timezone | None = timezone.utc,
+        time_zone: timezone | None = UTC,
         serialize: bool = True,
         serialize_format: TimeFormats | str = TimeFormats.DEFAULT_FORMAT,
     ) -> str | datetime:

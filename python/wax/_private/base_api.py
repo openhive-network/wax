@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
 from wax._private.converters.decimal_converter import DecimalConverter
@@ -223,7 +223,7 @@ class WaxBaseApi(IWaxBaseInterface):
         )
         validate_wax_result(result)
 
-        return datetime.fromtimestamp(int(expose_result_as_python_string(result)), tz=timezone.utc)
+        return datetime.fromtimestamp(int(expose_result_as_python_string(result)), tz=UTC)
 
     def calculate_account_hp(
         self,
@@ -290,7 +290,7 @@ class WaxBaseApi(IWaxBaseInterface):
     def create_transaction_with_tapos(self, tapos_block_id: str, expiration: TTimestamp | None = None) -> ITransaction:
         expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
         if isinstance(expiration, datetime):
-            expiration = expiration.replace(microsecond=0) - datetime.now(timezone.utc).replace(microsecond=0)
+            expiration = expiration.replace(microsecond=0) - datetime.now(UTC).replace(microsecond=0)
         assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
         return Transaction(api=self, tapos_block_id=tapos_block_id, expiration_time=expiration)
 
@@ -311,6 +311,6 @@ class WaxBaseApi(IWaxBaseInterface):
     def _resolve_expiration(self, expiration: datetime | timedelta | None) -> timedelta:
         expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME
         if isinstance(expiration, datetime):
-            expiration = expiration - datetime.now(timezone.utc)
+            expiration = expiration - datetime.now(UTC)
         assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
         return expiration

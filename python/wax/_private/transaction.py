@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any, Self, TypeAlias
 
 from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
-from typing_extensions import Self
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime

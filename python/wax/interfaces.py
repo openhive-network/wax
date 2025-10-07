@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Generic, TypeAlias
+from typing import TYPE_CHECKING, Any, Generic, Self, TypeAlias
 
-from typing_extensions import Self, TypeVar
+from typing_extensions import TypeVar
 
 from wax.api.collection import WaxApiCollection
 

@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final, Literal
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Final, Literal, Self
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
 from wax.complex_operations.role_classes.level_base import LevelBase

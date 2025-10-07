@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Final, Iterable, Iterator, Literal
+from collections.abc import Iterable, Iterator
+from datetime import UTC, datetime, timedelta
+from typing import TYPE_CHECKING, Final, Literal
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
@@ -112,7 +113,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
             raise WaxError("Owner authority cannot be updated due to owner authority update limit - twice an hour")
 
         def check_owner_time_diff(time: datetime) -> bool:
-            return datetime.now(tz=timezone.utc) - time > timedelta(
+            return datetime.now(tz=UTC) - time > timedelta(
                 seconds=int(self._ensure_chain_config_reachable(api.config.get("HIVE_OWNER_UPDATE_LIMIT"))) / 1_000_000
             )
 
