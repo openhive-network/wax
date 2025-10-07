@@ -1,19 +1,30 @@
 [build-system]
 requires = [
-    "poetry-core>=1.1.0",
+    "poetry-core>=1.7.0",
     "cython==3.0.12",
     "setuptools>=67.8.0",
-    "poetry-dynamic-versioning>=0.22.0"
+    "poetry-dynamic-versioning>=1.0.0,<2.0.0",
 ]
 build-backend = "poetry_dynamic_versioning.backend"
 
+[project]
+name = "hiveio-wax"
+description = ""
+dynamic = ["version"]
+authors = []
+requires-python = '>=3.12,<3.13'
+dependencies = [
+    'protobuf (==4.24.4)',
+    'httpx[http2] (==0.23.3)',
+    'loguru (==0.7.2)',
+    'python-dateutil (==2.8.2)',
+    'requests (==2.32.3)'
+]
+
+[project.urls]
+repository = "https://gitlab.syncad.com/hive/wax"
 
 [tool.poetry]
-name = "hiveio-wax"
-version = "0.0.0"
-description = ""
-repository = "https://gitlab.syncad.com/hive/wax"
-authors = []
 packages = [{ include = "wax"}]
 include = ["wax/_private/proto/*"]
 source = [
@@ -22,18 +33,12 @@ source = [
     { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-api-packages", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
+requires-poetry = '>=2.0.0,<3.0.0'
+version = "0.0.0"
 
 [tool.poetry.build]
 script = "build.py"
 generate-setup-file = true
-
-[tool.poetry.dependencies]
-python = "^3.12"
-protobuf = "4.24.4"
-httpx = {extras = ["http2"], version = "0.23.3"}
-loguru = "0.7.2"
-python-dateutil = "2.8.2"
-requests = "2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
