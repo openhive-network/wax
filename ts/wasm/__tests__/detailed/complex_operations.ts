@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';

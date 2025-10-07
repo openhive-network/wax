@@ -33,11 +33,6 @@ export interface IWasmGlobals {
 declare global {
   function createWaxTestFor(env: TEnvType, outputpath: string, config?: IWaxOptionsChain): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
-
-  // Reexport every function as a namespace for type extraction in jest-helper - if you add new functions to the global scope, you need to add them here too
-  namespace WaxTestGlobalFunctions {
-    export { createWaxTestFor, createWasmTestFor };
-  }
 }
 
 // Define the actual global function bodies
@@ -48,7 +43,7 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
   // Import required libraries env-dependent
-  const wax = await import(locWax) as typeof import("../../dist/bundle");
+  const wax = await import(locWax) as typeof import("../../dist/bundle") as unknown as typeof Wax;
   const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
 
   try {

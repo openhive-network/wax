@@ -4,7 +4,12 @@ import { test } from '../assets/jest-helper';
 
 import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
 import type { IFormatFunctionArguments, ResourceCreditsOperationData, operation } from '../../dist/bundle/index';
-import { ECommunityOperationActions, EFollowActions, WaxFormattable } from '../../dist/bundle/node';
+
+const {
+  ECommunityOperationActions,
+  EFollowActions,
+  WaxFormattable
+} = await import('../../dist/bundle/node') as unknown as typeof import('../../dist/bundle/index');
 
 test.describe('Wax object interface formatters tests', () => {
   test('Should traverse from bottom to top of the object using default formatters from hive chain interface', async({}, testInfo) => {
@@ -58,7 +63,7 @@ test.describe('Wax object interface formatters tests', () => {
         expect(source).toStrictEqual(obj[NestedKey1]);
         expect(target).toStrictEqual({ [NestedKey2]: 123, [NestedKey3]: { [BottomKey2]: "123" }, [NestedKey4]: { [BottomKey3]: { a: myClass.a } } });
 
-        return target[NestedKey2][BottomKey1];
+        return undefined; // Do not change anything
       }
       @wax.WaxFormattable({ matchProperty: BottomKey2 })
       public bottomKey2Handler({ source, target }: IFormatFunctionArguments<typeof obj['nestedKey1']['nestedKey3'], { [BottomKey2]: string }>) {
@@ -612,12 +617,12 @@ test.describe('Wax object interface formatters tests', () => {
 
   test('Should be able to format values using custom formatters extended from hive chain interface', async({}, testInfo) => {
     class MyFormatters {
-      myFunction(value) {
+      myFunction(value: number) {
         return value.toString();
       }
 
       @WaxFormattable()
-      myCustomProp({ source }) {
+      myCustomProp({ source }: { source: { myCustomProp: number } }) {
         return this.myFunction(source.myCustomProp);
       }
     }
@@ -641,8 +646,8 @@ test.describe('Wax object interface formatters tests', () => {
       }
 
       @WaxFormattable({ requireDefined: false /* default */, matchProperty: "undefinedProperty" })
-      myCustomProp({ source }): void | string {
-        if (source.myCustomProp === undefined)
+      myCustomProp({ source }: { source: { undefinedProperty?: number } }): void | string {
+        if (source.undefinedProperty === undefined)
           return "This should be called";
       }
     }
@@ -662,12 +667,12 @@ test.describe('Wax object interface formatters tests', () => {
   test('Should be able to match values on properties using custom formatters extended from hive chain interface', async({}, testInfo) => {
     class OperationsFormatter {
       @WaxFormattable({ matchProperty: "type", matchValue: "transfer_operation" })
-      public transferOperationFormatter({ source }): string {
+      public transferOperationFormatter({ source }: { source: { value: { from: string, amount: number, to: string } } }): string {
         return `${source.value.from} transferred ${chain.waxify`${source.value.amount!}`} to ${source.value.to}`;
       }
 
       @WaxFormattable({ matchProperty: "type", matchValue: "vote_operation" })
-      public voteOperationFormatter({ source }): string {
+      public voteOperationFormatter({ source }: { source: { value: { voter: string, author: string, permlink: string } } }): string {
         return `${source.value.voter} voted on @${source.value.author}/${source.value.permlink}`;
       }
     }

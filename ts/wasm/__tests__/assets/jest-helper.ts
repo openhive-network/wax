@@ -1,3 +1,5 @@
+/// <reference types="node" />
+
 import { TestInfo, ConsoleMessage, Page, test as base, expect } from '@playwright/test';
 
 import "./globals";
@@ -69,8 +71,6 @@ type FirstArgType<T extends Callable> = T extends (fn: infer FirstArgument, ...a
 type RestArgType<T extends Callable> = T extends (first: any, ...args: infer ArgsType) => any ? ArgsType : never;
 type FirstCallableArg<T extends Callable> = FirstArgType<T> extends Callable ? FirstArgType<T> : never;
 
-//type TAvailableGlobalWaxFunction = typeof WaxTestGlobalFunctions[keyof typeof WaxTestGlobalFunctions];
-
 const envTestFor = <
   ExpectedWaxedTestFunction extends TCallableWaxedTestProperties,
   TGlobalFunction extends Callable,
@@ -94,7 +94,7 @@ const envTestFor = <
             finalArgs.push(value);
 
         eval(`window.webEvalFn = ${webFn};`);
-        return (window as Window & typeof globalThis & { webEvalFn: TTestCallableFn }).webEvalFn(await (globalThis[globalFunction])('web', ...envArgs), ...finalArgs);
+        return (window as Window & typeof globalThis & { webEvalFn: TTestCallableFn }).webEvalFn(await ((globalThis as any)[globalFunction])('web', ...envArgs), ...finalArgs);
       }, {
         // Transform arguments passed to the test body function, to serializable values (functions are converted to their textual representation)
         args: args.map(value => {

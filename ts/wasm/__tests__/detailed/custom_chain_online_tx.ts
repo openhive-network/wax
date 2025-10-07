@@ -1,13 +1,14 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
+import type { IWaxGlobals } from '../assets/globals';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import type { IWaxOptionsChain, WaxPrivateKeyLeakDetectedException } from '../../dist/bundle';
 
 import type { IOnlineTransaction, operation, transfer } from '../../dist/bundle';
 
 test.describe('Wax chain tests to cover Online Transaction flow', () => {
-  const txSecurityLeakBody = async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
+  const txSecurityLeakBody = async ({ beekeeper, wax }: { beekeeper: IWaxGlobals["beekeeper"]; wax: IWaxGlobals["wax"] }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
     // Create wallet:
     const session = beekeeper.createSession("salt");
     const { wallet } = await session.createWallet("w0");

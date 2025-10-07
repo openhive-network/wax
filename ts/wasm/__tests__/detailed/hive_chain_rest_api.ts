@@ -1,6 +1,8 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
+// Only the type hints - these types are intentionally not bundled and exported
+import type { IDetailedResponseData, IRequestOptions } from '../../dist/bundle';
 
 test.describe('Wax object interface chain REST API tests', () => {
   test('Should be able to call basic REST API endpoint', async ({ waxTest }) => {
@@ -114,7 +116,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended.restApi['hafah-api'].headblock as any)._target.withProxy(data => { requestUrl = data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended.restApi['hafah-api'].headblock as any)._target.withProxy((data: IRequestOptions) => { requestUrl = data.url; return data; }, (data: IDetailedResponseData) => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -197,7 +199,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise1 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi['hafah-api'].headblock as any)._target.withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)() as Promise<any>).then(() => {
+        ((extended2.restApi['hafah-api'].headblock as any)._target.withProxy((data: IRequestOptions) => { requestUrl = data.endpoint + data.url; return data; }, (data: IDetailedResponseData) => data)() as Promise<any>).then(() => {
           resolve(requestUrl);
         }).catch(reject);
       });
@@ -205,7 +207,7 @@ test.describe('Wax object interface chain REST API tests', () => {
       const getPromise2 = () => new Promise((resolve, reject) => {
         let requestUrl: string;
 
-        ((extended2.restApi['hafah-api'].transactions.transactionId as any)._target.withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)({
+        ((extended2.restApi['hafah-api'].transactions.transactionId as any)._target.withProxy((data: IRequestOptions) => { requestUrl = data.endpoint + data.url; return data; }, (data: IDetailedResponseData) => data)({
           transactionId: "954f6de36e6715d128fa8eb5a053fc254b05ded0"
         }) as Promise<any>).then(() => {
           resolve(requestUrl);
@@ -244,7 +246,7 @@ test.describe('Wax object interface chain REST API tests', () => {
         let requestUrl: string | undefined = undefined;
 
         try {
-          await ((extended1.restApi['hivesense-api'] as any)._target.withProxy(data => { requestUrl = data.endpoint + data.url; return data; }, data => data)() as Promise<any>);
+          await ((extended1.restApi['hivesense-api'] as any)._target.withProxy((data: IRequestOptions) => { requestUrl = data.endpoint + data.url; return data; }, (data: IDetailedResponseData) => data)() as Promise<any>);
         } catch {}
 
         return requestUrl ?? "(could not determine API endpoint)";
