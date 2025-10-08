@@ -8,7 +8,7 @@ import pytest
 if TYPE_CHECKING:
     from beekeepy.exceptions import ApiNotFoundError
 
-from beekeepy.communication.overseer import rules
+from beekeepy.communication import rules
 from beekeepy.exceptions import ApiNotFoundError, GroupedErrorsError
 from beekeepy.interfaces import HttpUrl, SuppressApiNotFound
 

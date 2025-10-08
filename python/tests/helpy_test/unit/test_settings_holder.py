@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from beekeepy.handle.settings import CommunicationSettings
 from beekeepy.interfaces import SharedSettingsHolder, UniqueSettingsHolder
+from beekeepy.settings import CommunicationSettings
 
 TestSharedSettingsHolder = SharedSettingsHolder[CommunicationSettings]
 TestUniqueSettingsHolder = UniqueSettingsHolder[CommunicationSettings]
