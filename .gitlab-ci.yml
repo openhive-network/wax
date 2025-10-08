@@ -62,7 +62,8 @@ build_python_api_packages:
   artifacts:
     paths:
       - "${API_GENERATION_DIR}/database_api"
-      - "${API_GENERATION_DIR}//network_broadcast_api"
+      - "${API_GENERATION_DIR}/network_broadcast_api"
+      - "${API_GENERATION_DIR}/rc_api"
       - "build_wheel.env"
     reports:
         dotenv: "build_wheel.env"
@@ -78,14 +79,16 @@ deploy_python_api_packages_to_gitlab:
     API_PACKAGES_REGISTRY: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi"
     DATABASE_API_DIR: "${PYPROJECT_DIR}/../database_api"
     NETWORK_BROADCAST_API_DIR: "${PYPROJECT_DIR}/../network_broadcast_api"
+    RC_API_DIR: "${PYPROJECT_DIR}/../rc_api"
   script: # Overrides the script from the template because we need to hardcode the repository URL as we push it to the hive package registry
     - echo -e "${TXT_BLUE}Deploying python api packages to the GitLab PyPI registry...${TXT_CLEAR}"
     - ls -al
-    - poetry -C "${DATABASE_API_DIR}" version # version of the database and network_broadcast is the same
+    - poetry -C "${DATABASE_API_DIR}" version # version of the database and network_broadcast and rc_api is the same
     - poetry -C "${DATABASE_API_DIR}" config repositories.gitlab "${API_PACKAGES_REGISTRY}"
     - poetry -C "${DATABASE_API_DIR}" config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
     - poetry -C "${DATABASE_API_DIR}" publish --skip-existing --repository gitlab
     - poetry -C "${NETWORK_BROADCAST_API_DIR}" publish --skip-existing --repository gitlab
+    - poetry -C "${RC_API_DIR}" publish --skip-existing --repository gitlab
   when: on_success
 
 build_wheel:
@@ -109,6 +112,7 @@ build_wheel:
       - "${PYPROJECT_DIR}/wax/_private/proto"
       - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/database_api"
       - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/network_broadcast_api"
+      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/rc_api"
     expire_in: 1 week
     reports:
       dotenv: "build_wheel.env"
@@ -207,6 +211,7 @@ pre_commit_checks:
     - poetry install --no-root
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/database_api/dist/*.whl
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/network_broadcast_api/dist/*.whl
+    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/rc_api/dist/*.whl
   artifacts:
     when: always
     expire_in: 1 week
