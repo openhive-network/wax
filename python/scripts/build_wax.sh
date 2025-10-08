@@ -93,6 +93,7 @@ else
 
   add_api_dependency "database_api" "${DATABASE_API_WHEEL_BUILD_VERSION}"
   add_api_dependency "network_broadcast_api" "${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}"
+  add_api_dependency "rc_api" "${RC_API_WHEEL_BUILD_VERSION}"
 
   if [ -d "${PROJECT_DIR}/dist" ]; then
     echo "Found existing dist directory, removing it."

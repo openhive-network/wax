@@ -20,4 +20,5 @@ export WAX_SKIP_BUILD=true
 
 poetry run pip install --index-url $SCHEMAS_REGISTRY_URL --extra-index-url $BEEKEEPY_REGISTRY_URL ${API_GENERATION_DIR}/database_api/dist/*.whl
 poetry run pip install --index-url $SCHEMAS_REGISTRY_URL --extra-index-url $BEEKEEPY_REGISTRY_URL ${API_GENERATION_DIR}/network_broadcast_api/dist/*.whl
+poetry run pip install --index-url $SCHEMAS_REGISTRY_URL --extra-index-url $BEEKEEPY_REGISTRY_URL ${API_GENERATION_DIR}/rc_api/dist/*.whl
 poetry install
