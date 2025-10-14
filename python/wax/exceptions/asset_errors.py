@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from wax.exceptions.wax_error import WaxError
+
+if TYPE_CHECKING:
+    from wax.models.asset import AssetName, NaiAsset
 
 
 class AssetError(WaxError):
@@ -38,4 +41,12 @@ class CannotCreateAssetError(AssetError):
     def __init__(self, potential_asset: Any) -> None:  # noqa: ANN401
         self.potential_asset = potential_asset
         self.message = f"Cannot create asset from {potential_asset}."
+        super().__init__(self.message)
+
+
+class UnexpectedAssetTypeError(AssetError):
+    def __init__(self, asset: NaiAsset, expected: AssetName | list[AssetName]) -> None:
+        self.asset = asset
+        self.expected = expected
+        self.message = f"Unexpected asset: {asset}, expected: {expected}"
         super().__init__(self.message)

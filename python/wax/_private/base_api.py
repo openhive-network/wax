@@ -314,3 +314,18 @@ class WaxBaseApi(IWaxBaseInterface):
             expiration = expiration - datetime.now(timezone.utc)
         assert isinstance(expiration, timedelta), "Expiration has to be timedelta type"
         return expiration
+
+    def check_is_proper_asset(self, asset_name: AssetName | list[AssetName], asset: NaiAsset) -> bool:
+        def contains(expected: AssetName) -> bool:
+            if isinstance(asset_name, list):
+                return expected in asset_name
+            return asset_name == expected
+
+        return (
+            asset.nai == self._asset_handler.get_asset_info(AssetName.Hive).nai
+            and contains(AssetName.Hive)
+            or asset.nai == self._asset_handler.get_asset_info(AssetName.Hbd).nai
+            and contains(AssetName.Hbd)
+            or asset.nai == self._asset_handler.get_asset_info(AssetName.Vests).nai
+            and contains(AssetName.Vests)
+        )
