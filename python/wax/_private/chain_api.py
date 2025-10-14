@@ -106,12 +106,19 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             trx=ApiTransaction(**transaction.to_dict()), max_block_age=-1
         )
 
-    async def collect_account_authorities(self, account: AccountName) -> WaxAccountAuthorityInfo:
-        if not self.is_valid_account_name(account):
-            raise InvalidAccountNameError(account)
+    async def collect_account_authorities(
+        self, *accounts: AccountName
+    ) -> WaxAccountAuthorityInfo | list[WaxAccountAuthorityInfo]:
+        for account in accounts:
+            if not self.is_valid_account_name(account):
+                raise InvalidAccountNameError(account)
 
-        account_response = await self._internal_api.database_api.find_accounts(accounts=[account])
-        return self._extract_authority_from_find_accounts_response(account_response, account)
+        accounts_response = await self._internal_api.database_api.find_accounts(accounts=[*accounts])
+
+        if len(accounts) == 1:
+            return self._extract_authority_from_find_accounts_response(accounts_response, accounts[0])[0]
+
+        return self._extract_authority_from_find_accounts_response(accounts_response, *accounts)
 
     def extend_rest(  # type: ignore[override]
         self, new_rest_api: type[ExtendedApiCollectionT]
@@ -151,31 +158,39 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
     def _extract_authority_from_find_accounts_response(
         self,
         response: FindAccountsApiResponse,
-        searched_account: AccountName,
-    ) -> WaxAccountAuthorityInfo:
+        *searched_accounts: AccountName,
+    ) -> list[WaxAccountAuthorityInfo]:
         if not response.accounts:
-            raise AccountNotFoundError(searched_account)
+            raise AccountNotFoundError(*searched_accounts)
 
-        account_data = None
+        accounts_to_search = set(searched_accounts)
+        accounts_data = []
+
         for account in response.accounts:
-            if account.name == searched_account:
-                account_data = account
-                break
+            if account.name in searched_accounts:
+                accounts_data.append(account)
+                accounts_to_search.remove(account.name)
 
-        if account_data is None:
-            raise AccountNotFoundError(searched_account)
+                if not accounts_to_search:
+                    break
 
-        return WaxAccountAuthorityInfo(
-            account_data.name,
-            WaxAuthorities(
-                owner=self._transform_api_authority(account_data.owner),
-                active=self._transform_api_authority(account_data.active),
-                posting=self._transform_api_authority(account_data.posting),
-            ),
-            account_data.memo_key,
-            HiveDateTime(account_data.last_owner_update),
-            HiveDateTime(account_data.previous_owner_update),
-        )
+        if not accounts_data:
+            raise AccountNotFoundError(*accounts_to_search)
+
+        return [
+            WaxAccountAuthorityInfo(
+                account_data.name,
+                WaxAuthorities(
+                    owner=self._transform_api_authority(account_data.owner),
+                    active=self._transform_api_authority(account_data.active),
+                    posting=self._transform_api_authority(account_data.posting),
+                ),
+                account_data.memo_key,
+                HiveDateTime(account_data.last_owner_update),
+                HiveDateTime(account_data.previous_owner_update),
+            )
+            for account_data in accounts_data
+        ]
 
     def _current_milli_time(self) -> int:
         return round(time.time() * 1000)

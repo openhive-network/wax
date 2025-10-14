@@ -33,4 +33,6 @@ class OnlineChainAuthorityDataProvider(IAuthorityDataProvider):
         Returns:
             Object that holds authority data.
         """
-        return await self._chain_api.collect_account_authorities(account=account)
+        authorities = await self._chain_api.collect_account_authorities(account)
+        assert not isinstance(authorities, list), f"Found multiple authorities for the {account} account."
+        return authorities
