@@ -9,11 +9,11 @@ if TYPE_CHECKING:
 
 
 class AccountNotFoundError(WaxError):
-    """Raised when an account is not found when calling `find_accounts` API call."""
+    """Raised when an account(s) not found when calling `find_accounts` API call."""
 
-    def __init__(self, account: AccountName) -> None:
-        self.account = account
-        self.message = f"Account '{account}' not found."
+    def __init__(self, *accounts: AccountName) -> None:
+        self.accounts = accounts
+        self.message = f"Account '{accounts}' not found."
         super().__init__(self.message)
 
 
