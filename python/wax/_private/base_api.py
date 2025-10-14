@@ -34,6 +34,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_manabar_full_regeneration_time,
     calculate_vests_to_hp,
     calculate_witness_votes_hp,
+    check_memo_for_private_keys,
     deserialize_witness_set_properties,
     estimate_hive_collateral,
     generate_password_based_private_key,
@@ -48,6 +49,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     validate_operation,
     validate_proto_operation,
 )
+from wax.exceptions.chain_errors import PrivateKeyDetectedInMemoError
 from wax.interfaces import ChainConfig, IWaxBaseInterface, TTimestamp
 from wax.models.asset import (
     AssetFactory,
@@ -61,6 +63,7 @@ from wax.models.asset import (
 if TYPE_CHECKING:
     from decimal import Decimal
 
+    from wax import python_authorities
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
     from wax.models.operations import Operation
@@ -307,6 +310,27 @@ class WaxBaseApi(IWaxBaseInterface):
     def deserialize_witness_props(self, serialized_props: dict[str, str]) -> python_witness_set_properties_data:
         cpp_serialized_props = {to_cpp_string(k): to_cpp_string(v) for k, v in serialized_props.items()}
         return deserialize_witness_set_properties(cpp_serialized_props)
+
+    def scan_text_for_matching_private_keys(
+        self,
+        content: str,
+        account: AccountName,
+        account_authorities: python_authorities,
+        memo_key: PublicKey,
+        other_keys: list[PublicKey] | None = None,
+    ) -> None:
+        if other_keys is None:
+            other_keys = []
+        try:
+            check_memo_for_private_keys(
+                to_cpp_string(content),
+                to_cpp_string(account),
+                account_authorities,
+                to_cpp_string(memo_key),
+                [to_cpp_string(key) for key in other_keys],
+            )
+        except Exception as error:
+            raise PrivateKeyDetectedInMemoError from error
 
     def _resolve_expiration(self, expiration: datetime | timedelta | None) -> timedelta:
         expiration = expiration or DEFAULT_TRANSACTION_EXPIRATION_TIME

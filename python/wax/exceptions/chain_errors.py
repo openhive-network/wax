@@ -46,3 +46,7 @@ class AuthorityCannotBeSatisfiedError(HiveAccountCategoryError):
         self.message = f"{authority_level} authority cannot be satisfied due to insufficient weight"
         self.authority_level = authority_level
         super().__init__(self.message)
+
+
+class PrivateKeyDetectedInMemoError(WaxError):
+    """Raised when private key was detected in the memo field."""
