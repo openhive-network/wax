@@ -247,7 +247,20 @@ class ITransaction(ITransactionBase):
 
 
 class IOnlineTransaction(ITransaction, ABC):
-    """In the future it will extend ITransaction with ability to perform a verification step (which requires API)."""
+    """Transaction interface with support on-chain verification."""
+
+    @abstractmethod
+    async def perform_on_chain_verification(self) -> None:
+        """
+        Performs on-chain verification of the transaction.
+
+        This method checks if all accounts involved in the transaction exist on the blockchain.
+        It also scans the transaction for any potential private key leaks in operation contents.
+
+        Raises:
+            AccountNotFoundError: If ANY of impacted accounts do not exist in the blockchain.
+            PrivateKeyDetectedInMemoError: If private key detected in the content of the operation.
+        """
 
 
 @dataclass
@@ -726,12 +739,18 @@ class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
         """
         Broadcast transaction to the selected during Wax Chain initialization Hive Node.
 
+        Please note that when IOnlineTransaction is passed `perform_on_chain_verification`
+        method is called automatically.
+
         Args:
             transaction: Transaction object to be broadcasted.
 
         Raises:
             TransactionNotSignedError: When the transaction is not signed.
             WaxValidationFailedError: When the transaction is incorrect.
+            AccountNotFoundError: If IOnlineTransaction provided and ANY of impacted accounts not found on the chain.
+            PrivateKeyDetectedInMemoError: If IOnlineTransaction provided private key detected in the content
+             of the operation.
         """
 
     @abstractmethod

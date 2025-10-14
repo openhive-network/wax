@@ -99,9 +99,12 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
     async def create_transaction(self, expiration: datetime | timedelta | None = None) -> IOnlineTransaction:
         chain_reference_data = await self._acquire_chain_reference_data()
         expiration = self._resolve_expiration(expiration)
-        return OnlineTransaction(self, chain_reference_data, expiration)
+        return OnlineTransaction(self, chain_reference_data, expiration)  # type: ignore[arg-type]
 
-    async def broadcast(self, transaction: ITransaction) -> None:
+    async def broadcast(self, transaction: ITransaction | IOnlineTransaction) -> None:
+        if isinstance(transaction, IOnlineTransaction):
+            await transaction.perform_on_chain_verification()
+
         await self._internal_api.network_broadcast_api.broadcast_transaction(
             trx=ApiTransaction(**transaction.to_dict()), max_block_age=-1
         )
