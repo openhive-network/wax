@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, TypeAlias
 
 from wax.models.basic import AccountName, PublicKey
 from wax.proto.authority import authority as proto_authority
+from wax.wax_result import python_authorities, python_authority
 
 if TYPE_CHECKING:
     from wax._private.models.hive_date_time import HiveDateTime
@@ -25,6 +26,25 @@ class WaxAuthorities:
     owner: WaxAuthority | None = None
     active: WaxAuthority | None = None
     posting: WaxAuthority | None = None
+
+    @staticmethod
+    def to_python_authorities(auths: WaxAuthorities) -> python_authorities:
+        return python_authorities(
+            owner=WaxAuthorities.to_python_authority(auths.owner),
+            active=WaxAuthorities.to_python_authority(auths.active),
+            posting=WaxAuthorities.to_python_authority(auths.posting),
+        )
+
+    @staticmethod
+    def to_python_authority(auth: WaxAuthority | None) -> python_authority:
+        if auth is None:
+            return python_authority(weight_threshold=1, account_auths={}, key_auths={})
+
+        return python_authority(
+            weight_threshold=auth.weight_threshold,
+            account_auths={account.encode(): weight for account, weight in auth.account_auths.items()},
+            key_auths={key.encode(): weight for key, weight in auth.key_auths.items()},
+        )
 
 
 @dataclass
