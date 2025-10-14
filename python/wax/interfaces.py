@@ -735,17 +735,19 @@ class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
         """
 
     @abstractmethod
-    async def collect_account_authorities(self, account: AccountName) -> WaxAccountAuthorityInfo:
+    async def collect_account_authorities(
+        self, *accounts: AccountName
+    ) -> WaxAccountAuthorityInfo | list[WaxAccountAuthorityInfo]:
         """
         Collects account authorities.
 
         Args:
-            account: Account name.
+            accounts: Account name(s).
 
         Returns:
             WaxAccountAuthorityInfo: Account authority info.
 
         Raises:
-            InvalidAccountNameError: When the account name is invalid.
-            AccountNotFoundError: When the account is not found in the HIVE api node.
+            InvalidAccountNameError: When the account(s) name is invalid.
+            AccountNotFoundError: When the account(s) is not found in the HIVE api node.
         """
