@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import json
 from typing import TYPE_CHECKING, Any, Final
 
@@ -7,11 +8,15 @@ import pytest
 from google.protobuf.json_format import MessageToDict
 
 from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax.complex_operations.update_proposal_operation import UpdateProposalOperation, UpdateProposalOperationData
 from wax.exceptions import WaxError
+from wax.exceptions.asset_errors import UnexpectedAssetTypeError
 from wax.proto.operations import update_proposal
 
 if TYPE_CHECKING:
     from wax.interfaces import ITransaction, IWaxBaseInterface
+
+TX_EXPIRATION: Final[str] = "2023-11-09T21:51:27"
 
 
 @pytest.mark.describe("Should initialize update proposal with mandatory fields only")
@@ -235,3 +240,119 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
     assert [
         MessageToDict(op, including_default_value_fields=True) for op in transaction.transaction.operations
     ] == expected
+
+
+@pytest.mark.describe("UpdateProposalOperation.finalize")
+def test_finalize_returns_correct_operation_with_date(wax: IWaxBaseInterface) -> None:
+    # arrange
+    end_date = datetime.datetime(2025, 10, 9, 12, 0, 0, tzinfo=datetime.timezone.utc)
+    op = UpdateProposalOperation(
+        UpdateProposalOperationData(
+            proposal_id=1,
+            creator="alice",
+            daily_pay=wax.hbd.satoshis(1_000),
+            subject="subject",
+            permlink="permlink",
+            end_date=end_date,
+        )
+    )
+
+    expected: Final[dict[str, Any]] = {
+        "creator": "alice",
+        "proposal_id": "1",
+        "daily_pay": {"amount": "1000", "precision": 3, "nai": "@@000000013"},
+        "subject": "subject",
+        "permlink": "permlink",
+        "extensions": [{"update_proposal_end_date": {"end_date": "2025-10-09T12:00:00"}}],
+    }
+
+    # act
+    result_iter = op.finalize(wax)
+    result = list(result_iter)
+    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+
+    # assert
+    assert len(result) == 1
+    assert op_dict == expected
+
+
+@pytest.mark.describe("UpdateProposalOperation.finalize")
+def test_finalize_returns_correct_operation_without_date(wax: IWaxBaseInterface) -> None:
+    # arrange
+    op = UpdateProposalOperation(
+        UpdateProposalOperationData(
+            proposal_id=1,
+            creator="alice",
+            daily_pay=wax.hbd.satoshis(1_000),
+            subject="subject",
+            permlink="permlink",
+        )
+    )
+
+    expected: Final[dict[str, Any]] = {
+        "creator": "alice",
+        "proposal_id": "1",
+        "daily_pay": {"amount": "1000", "precision": 3, "nai": "@@000000013"},
+        "subject": "subject",
+        "permlink": "permlink",
+        "extensions": [],
+    }
+
+    # act
+    result_iter = op.finalize(wax)
+    result = list(result_iter)
+    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+
+    # assert
+    assert len(result) == 1
+    assert op_dict == expected
+
+
+@pytest.mark.describe("UpdateProposalOperation.finalize")
+def test_operation_raises_unexpected_asset_type_error(wax: IWaxBaseInterface) -> None:
+    # arrange
+    op = UpdateProposalOperation(
+        UpdateProposalOperationData(
+            proposal_id=1,
+            creator="alice",
+            daily_pay=wax.hive.satoshis(1_000),
+            subject="subject",
+            permlink="permlink",
+        )
+    )
+    # act & assert
+    with pytest.raises(UnexpectedAssetTypeError):
+        op.finalize(wax)
+
+
+@pytest.mark.describe("UpdateProposalOperation.transaction")
+def test_operation_add_to_transaction(transaction: ITransaction, wax: IWaxBaseInterface) -> None:
+    # arrange
+    transaction.transaction.expiration = TX_EXPIRATION
+    op = UpdateProposalOperation(
+        UpdateProposalOperationData(
+            proposal_id=1,
+            creator="alice",
+            daily_pay=wax.hbd.satoshis(1_000),
+            subject="subject",
+            permlink="permlink",
+        )
+    )
+
+    expected: Final[dict[str, Any]] = {
+        "type": "update_proposal_operation",
+        "value": {
+            "creator": "alice",
+            "daily_pay": {"amount": "1000", "nai": "@@000000013", "precision": 3},
+            "extensions": [],
+            "permlink": "permlink",
+            "proposal_id": 1,
+            "subject": "subject",
+        },
+    }
+
+    # act
+    transaction.push_operation(op)
+
+    # assert
+    assert transaction.to_dict()["operations"][0] == expected
