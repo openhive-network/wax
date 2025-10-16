@@ -24,6 +24,7 @@ from .validation_errors import (
     InvalidAccountOrKeyError,
     InvalidMemoKeyError,
     InvalidOperationFormatError,
+    ToLongFollowingListError,
     WaxValidationFailedError,
 )
 from .wax_error import (
@@ -57,6 +58,7 @@ __all__ = [
     "InvalidAccountOrKeyError",
     "InvalidOperationFormatError",
     "InvalidMemoKeyError",
+    "ToLongFollowingListError",
     # Chain-related errors.
     "AccountNotFoundError",
     "HiveAccountCategoryError",

@@ -69,3 +69,12 @@ class NoAuthorityOperationGeneratedError(WaxError):
     def __init__(self) -> None:
         self.message = "No operations updating account authority generated."
         super().__init__(self.message)
+
+
+class ToLongFollowingListError(WaxError):
+    """Raised when the following list exceeds the maximum allowed length."""
+
+    def __init__(self, max_length: int) -> None:
+        self.max_length = max_length
+        self.message = f"Too long following list. Accepted max length: {max_length}."
+        super().__init__(self.message)
