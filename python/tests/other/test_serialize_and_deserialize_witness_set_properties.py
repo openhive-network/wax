@@ -89,7 +89,7 @@ def test_serialize_witness_set_properties(props_to_serialize: dict) -> None:
 
     for key in props_to_serialize.keys():
         assert isinstance(
-            serialized_witness_set_properties[key.encode(ENCODING)], bytes
+            serialized_witness_set_properties[key], str
         ), f"Key {key} was not serialized"
 
 

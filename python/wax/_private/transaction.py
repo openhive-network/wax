@@ -11,10 +11,6 @@ from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
-from wax._private.result_tools import (
-    to_python_str_list,
-    to_python_string,
-)
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     create_wax_operation,
     create_wax_transaction,
@@ -86,22 +82,20 @@ class Transaction(ITransaction):
     @property
     def sig_digest(self) -> SigDigest:
         self._flush_transaction()
-        return to_python_string(tx_sig_digest(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True))
+        return tx_sig_digest(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
 
     @property
     def impacted_accounts(self) -> list[AccountName]:
-        return to_python_str_list(tx_impacted_accounts(self._handle))
+        return tx_impacted_accounts(self._handle)
 
     @property
     def id(self) -> TransactionId:
         self._flush_transaction()
-        return to_python_string(tx_id(self._handle, use_hf26_serialization=True))
+        return tx_id(self._handle, use_hf26_serialization=True)
 
     @property
     def signature_keys(self) -> list[PublicKey]:
-        return to_python_str_list(
-            tx_signature_keys(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
-        )
+        return tx_signature_keys(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
 
     @property
     def required_authorities(self) -> TransactionRequiredAuthorities:
@@ -129,9 +123,7 @@ class Transaction(ITransaction):
 
     def to_binary_form(self) -> Hex:
         self._flush_transaction()
-        return to_python_string(
-            tx_to_binary(self._handle, use_hf26_serialization=True, strip_to_unsigned_transaction=False)
-        )
+        return tx_to_binary(self._handle, use_hf26_serialization=True, strip_to_unsigned_transaction=False)
 
     @staticmethod
     def from_api(api: IWaxBaseInterface, transaction: JsonTransaction | dict[str, Any]) -> Transaction:
@@ -143,7 +135,7 @@ class Transaction(ITransaction):
 
     def to_api(self) -> str:
         self._flush_transaction()
-        return to_python_string(tx_to_json(self._handle))
+        return tx_to_json(self._handle)
 
     def to_dict(self) -> dict[str, Any]:
         return json.loads(self.to_api())  # type: ignore[no-any-return]

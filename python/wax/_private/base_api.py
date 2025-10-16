@@ -19,7 +19,6 @@ from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
 from wax._private.result_tools import (
     expose_result_as_python_string,
-    to_python_string,
     validate_wax_result,
 )
 from wax._private.transaction import Transaction
@@ -82,10 +81,7 @@ class WaxBaseApi(IWaxBaseInterface):
     @property
     def config(self) -> ChainConfig:
         if self._cached_config is None:
-            self._cached_config = {
-                to_python_string(key): to_python_string(value)
-                for key, value in get_hive_protocol_config(self.chain_id).items()
-            }
+            self._cached_config = dict(get_hive_protocol_config(self.chain_id).items())
         return self._cached_config
 
     @property
@@ -303,7 +299,7 @@ class WaxBaseApi(IWaxBaseInterface):
 
     def serialize_witness_props(self, witness_props: python_witness_set_properties_data) -> dict[str, str]:
         serialized_props = serialize_witness_set_properties(witness_props)
-        return {to_python_string(k): to_python_string(v) for k, v in serialized_props.items()}
+        return dict(serialized_props.items())
 
     def deserialize_witness_props(self, serialized_props: dict[str, str]) -> python_witness_set_properties_data:
         return deserialize_witness_set_properties(serialized_props)
@@ -320,11 +316,11 @@ class WaxBaseApi(IWaxBaseInterface):
             other_keys = []
         try:
             check_memo_for_private_keys(
-                to_cpp_string(content),
-                to_cpp_string(account),
+                content,
+                account,
                 WaxAuthorities.to_python_authorities(account_authorities),
-                to_cpp_string(memo_key),
-                [to_cpp_string(key) for key in other_keys],
+                memo_key,
+                other_keys,
             )
         except Exception as error:
             raise PrivateKeyDetectedInMemoError from error

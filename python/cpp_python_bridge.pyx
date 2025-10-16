@@ -83,10 +83,10 @@ from .wax_result import (
 def encode_str(value: bytes | str) -> bytes:
     return value.encode('utf-8') if isinstance(value, str) else value
 
-def decode_str(value: bytes | str) -> str:
+def decode_bytes(value: bytes | str) -> str:
     return value.decode() if isinstance(value, bytes) else value
 
-def encode_dict(source: dict[bytes | str, int]) -> dict[bytes, int]:
+def encode_dict_str_int(source: dict[bytes | str, int]) -> dict[bytes, int]:
     encoded: dict[bytes, int] = {}
     for k, v in source.items():
         encoded[encode_str(k)] = v
@@ -101,13 +101,19 @@ def encode_list(source: list[bytes]) -> list[str]:
 def decode_list(source: list[bytes]) -> list[str]:
     decoded: list[str] = []
     for element in source:
-        decoded.append(decode_str(element))
+        decoded.append(decode_bytes(element))
     return decoded
 
-def decode_dict(source: dict[bytes | str, int]) -> dict[str, int]:
+def decode_dict_bytes_int(source: dict[bytes | str, int]) -> dict[str, int]:
     decoded: dict[str, int] = {}
     for k, v in source.items():
-        decoded[decode_str(k)] = v
+        decoded[decode_bytes(k)] = v
+    return decoded
+
+def decode_dict_bytes_bytes(source: dict[bytes | str, bytes | str]) -> dict[str, int]:
+    decoded: dict[str, int] = {}
+    for k, v in source.items():
+        decoded[decode_bytes(k)] = decode_bytes(v)
     return decoded
 
 cdef json_asset encode_json_asset( _source: python_json_asset ):
@@ -511,10 +517,10 @@ def op_impacted_accounts(wax_op: WaxOperationHandle) -> list[str]:
     # Call the C++ method to get the impacted accounts for the operation.
     return decode_list(obj.cpp_op_impacted_accounts(wax_op.hOp))
 
-def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> bytes:
+def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> str:
     cdef protocol obj
     # Call the C++ method to convert the operation to binary format.
-    return obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization)
+    return decode_bytes(obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization))
 
 def op_to_json(wax_op: WaxOperationHandle) -> bytes:
     cdef protocol obj
@@ -540,7 +546,7 @@ def op_validate(wax_op: WaxOperationHandle) -> None:
     # Call the C++ method to validate the operation.
     obj.cpp_op_validate(wax_op.hOp)
 
-def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_authority_collection:
+""" def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_authority_collection:
     cdef protocol obj
     # Call the C++ method to get the required authorities for the operation.
     cdef required_authority_collection collection = obj.cpp_op_required_authorities(wax_op.hOp)
@@ -553,7 +559,7 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
       other_auths.append(python_authority(
         weight_threshold = auth.weight_threshold,
         key_auths = auth.key_auths,
-        account_auths = decode_str(auth.account_auths)
+        account_auths = decode_bytes(auth.account_auths)
       ))
 
     return python_required_authority_collection(
@@ -562,7 +568,7 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
       owner_accounts=oo,
       other_authorities=other_auths,
     )
-
+"""
 def tx_add_operation(wax_tx: WaxTransactionHandle, wax_op: WaxOperationHandle) -> None:
     cdef protocol obj
     # Call the C++ method to add the operation to the transaction.
@@ -578,25 +584,25 @@ def tx_set_expiration(wax_tx: WaxTransactionHandle, expiration: str) -> None:
     # Call the C++ method to set the expiration for the transaction.
     obj.cpp_tx_set_expiration(wax_tx.hTx, encode_str(expiration))
 
-def tx_to_legacy_json(wax_tx: WaxTransactionHandle) -> bytes:
+def tx_to_legacy_json(wax_tx: WaxTransactionHandle) -> str:
     cdef protocol obj
     # Call the C++ method to convert the transaction to legacy JSON format.
-    return obj.cpp_tx_to_legacy_json(wax_tx.hTx)
+    return decode_bytes(obj.cpp_tx_to_legacy_json(wax_tx.hTx))
 
-def tx_to_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> bytes:
+def tx_to_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> str:
     cdef protocol obj
     # Call the C++ method to convert the transaction to binary format.
-    return obj.cpp_tx_to_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction)
+    return decode_bytes(obj.cpp_tx_to_binary(wax_tx.hTx, use_hf26_serialization, strip_to_unsigned_transaction))
 
-def tx_to_json(wax_tx: WaxTransactionHandle) -> bytes:
+def tx_to_json(wax_tx: WaxTransactionHandle) -> str:
     cdef protocol obj
     # Call the C++ method to convert the transaction to JSON format.
-    return obj.cpp_tx_to_json(wax_tx.hTx)
+    return decode_bytes(obj.cpp_tx_to_json(wax_tx.hTx))
 
-def tx_id(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
+def tx_id(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> str:
     cdef protocol obj
     # Call the C++ method to get the transaction ID.
-    return obj.cpp_tx_id(wax_tx.hTx, use_hf26_serialization)
+    return decode_bytes(obj.cpp_tx_id(wax_tx.hTx, use_hf26_serialization))
 
 cdef object convert_binary_data_node_to_python(binary_data_node node):
     """Recursively convert C++ binary_data_node to Python python_binary_data_node."""
@@ -643,8 +649,8 @@ def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_aut
     for auth in collection.other_authorities:
       other_auths.append(python_authority(
         weight_threshold = auth.weight_threshold,
-        key_auths = decode_dict(auth.key_auths),
-        account_auths = decode_dict(auth.account_auths)
+        key_auths = decode_dict_bytes_int(auth.key_auths),
+        account_auths = decode_dict_bytes_int(auth.account_auths)
       ))
 
     return python_required_authority_collection(
@@ -659,15 +665,15 @@ def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> list[str]:
     # Call the C++ method to get the impacted accounts for the transaction.
     return decode_list(obj.cpp_tx_impacted_accounts(wax_tx.hTx))
 
-def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> list[bytes]:
+def tx_signature_keys(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> list[str]:
     cdef protocol obj
     # Call the C++ method to get the signature keys for the transaction.
-    return obj.cpp_tx_signature_keys(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization)
+    return decode_list(obj.cpp_tx_signature_keys(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization))
 
-def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> bytes:
+def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> str:
     cdef protocol obj
     # Call the C++ method to get the signature digest for the transaction.
-    return obj.cpp_tx_sig_digest(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization)
+    return decode_bytes(obj.cpp_tx_sig_digest(wax_tx.hTx, encode_str(chain_id), use_hf26_serialization))
 
 def tx_validate(wax_tx: WaxTransactionHandle) -> None:
     cdef protocol obj
@@ -697,7 +703,7 @@ def get_transaction_required_authorities( transaction: str ) -> python_required_
     hTx = create_wax_transaction(tx, False)
     return tx_required_authorities(hTx)
 
-def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, other_encryption_key: str = '') -> bytes:
+def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, other_encryption_key: str = '') -> str:
     cdef protocol obj
     cdef crypto_memo data_to_encode
     data_to_encode._from = encode_str(main_encryption_key)
@@ -707,7 +713,7 @@ def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, othe
     data_to_encode.to = encode_str(other_encryption_key)
     data_to_encode.content = encode_str(encrypted_content)
     encoded_memo = obj.cpp_crypto_memo_dump_string(data_to_encode)
-    return encoded_memo
+    return encoded_memo.decode()
 
 def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
     cdef protocol obj
@@ -718,7 +724,7 @@ def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
       encrypted_content = decoded.content
     )
 
-def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[bytes, bytes]:
+def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[str, str]:
     cdef protocol obj
     cdef witness_set_properties_data _props_to_serialize
     _props_to_serialize.key = encode_str(input_props.key)
@@ -783,7 +789,7 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
       _uint_opt=_uint_helper
       _props_to_serialize.account_subsidy_decay=_uint_opt
 
-    serialized_properties = obj.cpp_serialize_witness_set_properties(_props_to_serialize)
+    serialized_properties = decode_dict_bytes_bytes(obj.cpp_serialize_witness_set_properties(_props_to_serialize))
     return serialized_properties
 
 def deserialize_witness_set_properties(serialized_properties: dict[str, str]) -> python_witness_set_properties_data:
@@ -840,8 +846,8 @@ cdef wax_authority python_authority_to_wax_authority(object auth_obj):
     auth.weight_threshold = auth_obj.weight_threshold
     print(auth_obj.key_auths)
     print(auth_obj)
-    auth.key_auths = encode_dict(auth_obj.key_auths)
-    auth.account_auths = encode_dict(auth_obj.account_auths)
+    auth.key_auths = encode_dict_str_int(auth_obj.key_auths)
+    auth.account_auths = encode_dict_str_int(auth_obj.account_auths)
     return auth
 
 cdef wax_authorities python_authorities_to_wax_authorities(object auths_obj):
@@ -859,11 +865,11 @@ cdef cppmap[cppstring, wax_authorities] retrieve_authorities_cb(vector[cppstring
         result[k] = auths
     return result
 
-def tx_collect_signing_keys(wax_tx: WaxTransactionHandle, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
+def tx_collect_signing_keys(wax_tx: WaxTransactionHandle, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[str]:
     cdef protocol obj
-    return obj.cpp_collect_signing_keys(wax_tx.hTx, retrieve_authorities_cb, <void*>(retrieve_authorities))
+    return decode_list(obj.cpp_collect_signing_keys(wax_tx.hTx, retrieve_authorities_cb, <void*>(retrieve_authorities)))
 
-def collect_signing_keys(transaction: str, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[bytes]:
+def collect_signing_keys(transaction: str, retrieve_authorities: Callable[[list[bytes]], dict[bytes, python_authorities]]) -> list[str]:
     tx = json.loads(transaction)
     wax_tx = create_wax_transaction(tx, False)
 
@@ -921,9 +927,9 @@ def check_memo_for_private_keys(memo: str, account: str, auths: python_authoriti
         encode_str(memo_key),
         encode_list(imported_keys))
 
-def get_hive_protocol_config(chain_id: str) -> dict[bytes, bytes]:
+def get_hive_protocol_config(chain_id: str) -> dict[str, str]:
     cdef protocol obj
-    return obj.cpp_get_hive_protocol_config(encode_str(chain_id))
+    return decode_dict_bytes_bytes(obj.cpp_get_hive_protocol_config(encode_str(chain_id)))
 
 @call_with_exception_relay
 def verify_exception_handling(throw_type: int) -> None:

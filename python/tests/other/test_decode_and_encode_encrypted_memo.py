@@ -18,10 +18,10 @@ def test_encode_and_decode_encrypted_memo() -> None:
 
     assert (
         encoded_encrypted_memo
-        == b"#11111111Df8FT8j6nHi6PtLVffSXtyhuz56j8imYp82xBvikZHtG1aZWAhzbEntrdfwUfECqximeaHNsi1ZwKG1ArVUyg8qMh4G5bVPNMvqVTceJCMvCJx6eUH1YumE"
+        == "#11111111Df8FT8j6nHi6PtLVffSXtyhuz56j8imYp82xBvikZHtG1aZWAhzbEntrdfwUfECqximeaHNsi1ZwKG1ArVUyg8qMh4G5bVPNMvqVTceJCMvCJx6eUH1YumE"
     )
 
-    decoded_encrypted_memo = wax.decode_encrypted_memo(encoded_encrypted_memo.decode())
+    decoded_encrypted_memo = wax.decode_encrypted_memo(encoded_encrypted_memo)
 
     assert decoded_encrypted_memo.encrypted_content == ENCRYPTED_MEMO.encode(ENCODING)
     assert decoded_encrypted_memo.main_encryption_key == MAIN_ENCRYPTION_KEY.encode(
