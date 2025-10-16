@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import json
-from typing import Any
-
 import pytest
-from google.protobuf.json_format import MessageToDict
 
+from tests.apps_operations.extract_operation_from_custom_json import extract_operation_from_custom_json
 from wax.exceptions import WaxError
 from wax.hive_apps_operations.follow import (
     EFollowActions,
@@ -13,11 +10,6 @@ from wax.hive_apps_operations.follow import (
     EFollowOperationActions,
     FollowOperation,
 )
-
-
-def extract_operation_from_custom_json(op: FollowOperation) -> list[Any]:
-    """Get `json` field from the first element of the `ops` list converted to the list."""
-    return [json.loads(MessageToDict(op)["json"]) for op in op.ops]
 
 
 @pytest.mark.describe("FollowOperation.follow_blog should append correct structure")
