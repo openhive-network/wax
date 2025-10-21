@@ -102,7 +102,7 @@ def test_recurrent_transfer_with_pair_id_extension(
 
 
 @pytest.mark.describe("DefineRecurrentTransferOperation.finalize")
-def test_define_recurrent_transfer_finalize_with_pair_id(wax: IWaxBaseInterface) -> None:
+def test_define_recurrent_transfer_with_pair_id(wax: IWaxBaseInterface) -> None:
     # arrange
     op = DefineRecurrentTransferOperation(
         RecurrentTransferData(
@@ -136,7 +136,7 @@ def test_define_recurrent_transfer_finalize_with_pair_id(wax: IWaxBaseInterface)
 
 
 @pytest.mark.describe("DefineRecurrentTransferOperation.finalize")
-def test_define_recurrent_transfer_finalize(wax: IWaxBaseInterface) -> None:
+def test_define_recurrent_transfer_without_pair_id(wax: IWaxBaseInterface) -> None:
     # arrange
     op = DefineRecurrentTransferOperation(
         RecurrentTransferData(
@@ -169,21 +169,18 @@ def test_define_recurrent_transfer_finalize(wax: IWaxBaseInterface) -> None:
 
 
 @pytest.mark.describe("RecurrentTransferRemovalOperation.finalize")
-def test_recurrent_transfer_removal_finalize_with_pair_id(wax: IWaxBaseInterface) -> None:
+def test_recurrent_transfer_removal_with_pair_id(wax: IWaxBaseInterface) -> None:
     # arrange
     op = RecurrentTransferRemovalOperation(
-        RecurrentTransferData(
-            from_account="alice",
-            to_account="bob",
-            amount=wax.hive.satoshis(1_000),
-            pair_id=1,
-        )
+        from_account="alice",
+        to_account="bob",
+        pair_id=1,
     )
 
     expected: Final[dict[str, Any]] = {
         "from": "alice",
         "to": "bob",
-        "amount": {"amount": "1000", "precision": 3, "nai": "@@000000021"},
+        "amount": {"amount": "0", "precision": 3, "nai": "@@000000021"},
         "extensions": [{"recurrent_transfer_pair_id": {"pair_id": 1}}],
         "memo": "",
         "recurrence": 24,
@@ -200,20 +197,14 @@ def test_recurrent_transfer_removal_finalize_with_pair_id(wax: IWaxBaseInterface
 
 
 @pytest.mark.describe("RecurrentTransferRemovalOperation.finalize")
-def test_recurrent_transfer_removal_finalize(wax: IWaxBaseInterface) -> None:
+def test_recurrent_transfer_removal_without_pair_id(wax: IWaxBaseInterface) -> None:
     # arrange
-    op = RecurrentTransferRemovalOperation(
-        RecurrentTransferData(
-            from_account="alice",
-            to_account="bob",
-            amount=wax.hive.satoshis(1_000),
-        )
-    )
+    op = RecurrentTransferRemovalOperation(from_account="alice", to_account="bob")
 
     expected: Final[dict[str, Any]] = {
         "from": "alice",
         "to": "bob",
-        "amount": {"amount": "1000", "precision": 3, "nai": "@@000000021"},
+        "amount": {"amount": "0", "precision": 3, "nai": "@@000000021"},
         "extensions": [],
         "memo": "",
         "recurrence": 24,
@@ -230,7 +221,7 @@ def test_recurrent_transfer_removal_finalize(wax: IWaxBaseInterface) -> None:
 
 
 @pytest.mark.describe("DefineRecurrentTransferOperation.finalize")
-def test_define_recurrent_transfer_rises_unexpected_asset_type_error(wax: IWaxBaseInterface) -> None:
+def test_define_recurrent_transfer_raises_unexpected_asset_type_error(wax: IWaxBaseInterface) -> None:
     # arrange
     op = DefineRecurrentTransferOperation(
         RecurrentTransferData(
@@ -240,21 +231,6 @@ def test_define_recurrent_transfer_rises_unexpected_asset_type_error(wax: IWaxBa
             memo="memo",
             recurrence=5,
             executions=12,
-        )
-    )
-    # act & assert
-    with pytest.raises(UnexpectedAssetTypeError):
-        op.finalize(wax)
-
-
-@pytest.mark.describe("RecurrentTransferRemovalOperation.finalize")
-def test_recurrent_transfer_removal_raises_unexpected_asset_type_error(wax: IWaxBaseInterface) -> None:
-    # arrange
-    op = RecurrentTransferRemovalOperation(
-        RecurrentTransferData(
-            from_account="alice",
-            to_account="bob",
-            amount=wax.vests.satoshis(1_000),
         )
     )
     # act & assert
@@ -298,23 +274,17 @@ def test_define_recurrent_transfer_add_to_transaction(transaction: ITransaction,
 
 
 @pytest.mark.describe("RecurrentTransferRemoval.transaction")
-def test_recurrent_transfer_removal_add_to_transaction(transaction: ITransaction, wax: IWaxBaseInterface) -> None:
+def test_recurrent_transfer_removal_add_to_transaction(transaction: ITransaction) -> None:
     # arrange
     transaction.transaction.expiration = TX_EXPIRATION
-    op = RecurrentTransferRemovalOperation(
-        RecurrentTransferData(
-            from_account="alice",
-            to_account="bob",
-            amount=wax.hive.satoshis(1_000),
-        )
-    )
+    op = RecurrentTransferRemovalOperation(from_account="alice", to_account="bob")
 
     expected: Final[dict[str, Any]] = {
         "type": "recurrent_transfer_operation",
         "value": {
             "from": "alice",
             "to": "bob",
-            "amount": {"amount": "1000", "precision": 3, "nai": "@@000000021"},
+            "amount": {"amount": "0", "precision": 3, "nai": "@@000000021"},
             "extensions": [],
             "memo": "",
             "recurrence": 24,
