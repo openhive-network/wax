@@ -20,6 +20,8 @@ DEFAULT_RECURRENCE: Final[int] = 24
 
 @dataclass
 class RecurrentTransferData:
+    """Data needed to define recurrent transfer operation."""
+
     from_account: AccountName
     to_account: AccountName
     amount: NaiAsset | None = None  # In case of removal - amount is not needed.
@@ -30,6 +32,8 @@ class RecurrentTransferData:
 
 
 class RecurrentTransferOperationBase(OperationBase):
+    """Base class for the recurrent transfer define and removal classes."""
+
     def __init__(self, data: RecurrentTransferData) -> None:
         super().__init__()
         self.data = data
@@ -108,9 +112,11 @@ class RecurrentTransferRemovalOperation(RecurrentTransferOperationBase):
     Ensures that amount is set to zero if not provided or invalid.
     """
 
+    def __init__(self, from_account: AccountName, to_account: AccountName, pair_id: int | None = None) -> None:
+        super().__init__(RecurrentTransferData(from_account, to_account, pair_id=pair_id))
+
     def finalize(self, api: IWaxBaseInterface) -> Iterable[ConvertedToProtoOperation]:
-        if self.data.amount is None:
-            self.data.amount = api.hive.satoshis(0)
+        self.data.amount = api.hive.satoshis(0)
 
         self.recurrent_transfer = self.get_recurrent_transfer_proto_operation()
         return super().finalize(api)
