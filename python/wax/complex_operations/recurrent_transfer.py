@@ -20,11 +20,27 @@ DEFAULT_RECURRENCE: Final[int] = 24
 
 @dataclass
 class RecurrentTransferData:
-    """Data needed to define recurrent transfer operation."""
+    """
+    Data needed to define recurrent transfer operation.
+
+    Attributes:
+        from_account: Account to transfer asset from.
+        to_account: Account to transfer asset to. Cannot set a transfer to yourself.
+        amount: The amount of asset to transfer. Allowed assets: **HIVE** and **HBD**.
+                 In case of removal - amount is not needed.
+        pair_id: Since HF 28, if user has more than one recurrent transfer to the same receiver
+                 or creates the recurrent transfer using `pair_id`, they must specify it in order
+                 to update or remove the defined recurrent transfer.
+        executions: How many times the recurrent payment will be executed.
+                 Executions must be at least 2; if set to 1, the transfer will not execute.
+        recurrence: How often the payment is triggered, in hours. First transfer is immediate.
+                 Minimum value is 24 h.
+        memo: Optional memo for the transfer. Must be shorter than 2048 characters.
+    """
 
     from_account: AccountName
     to_account: AccountName
-    amount: NaiAsset | None = None  # In case of removal - amount is not needed.
+    amount: NaiAsset | None = None
     pair_id: int | None = None
     executions: int = DEFAULT_EXECUTIONS
     recurrence: int = DEFAULT_RECURRENCE
@@ -90,8 +106,18 @@ class DefineRecurrentTransferOperation(RecurrentTransferOperationBase):
     This class validates that the amount is greater than zero and
     provides a name identifier for the operation.
 
+    - The `amount` must be strictly greater than zero. A `ValueError` is raised if `amount` is None or 0.
+    - If a recurrent transfer between the same `from` and `to` accounts already exists:
+        - If the `recurrence` value is unchanged, the next execution will follow the original schedule.
+        - If the `recurrence` value is changed, the next execution will be scheduled for: `update date + recurrence`.
+          In this case, **no** transfer will be executed on the update date itself.
+    - Since HF28, users may define multiple recurrent transfers between the same accounts by using `pair_id`
+      in the extensions.
+    - A single account can define up to **255** recurrent transfers to other accounts.
+    - The final execution date of the recurrent transfer must be **no more than 730 days** in the future.
+
     Raises:
-        ValueError: If the transfer amount is less than or equal to zero or is None.
+        ValueError: If the transfer amount is None or less than or equal to 0.
     """
 
     def __init__(self, data: RecurrentTransferData) -> None:
@@ -110,6 +136,10 @@ class RecurrentTransferRemovalOperation(RecurrentTransferOperationBase):
     Operation class for removing a recurrent transfer.
 
     Ensures that amount is set to zero if not provided or invalid.
+
+    - If multiple recurrent transfers exist between the same `from` and `to` accounts,
+      a `pair_id` must be specified in the extensions to identify the exact one to be removed.
+    - When this operation is executed, it **does not** generate a `fill_recurrent_transfer_operation` virtual operation.
     """
 
     def __init__(self, from_account: AccountName, to_account: AccountName, pair_id: int | None = None) -> None:
