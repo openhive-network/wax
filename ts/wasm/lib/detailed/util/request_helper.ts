@@ -1,4 +1,4 @@
-import { WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxRequestTimeoutError, WaxUnknownRequestError } from "../healthchecker/errors.js";
+import { WaxMalformedJsonError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxRequestTimeoutError, WaxUnknownRequestError } from "../healthchecker/errors.js";
 
 export interface ISingleJitterData {
   loaded: number;
@@ -7,13 +7,9 @@ export interface ISingleJitterData {
 
 export interface IDetailedResponseData<T extends (object | string) = string> {
   start: number;
-  startUpload?: number;
-  jitterUploadData?: Array<ISingleJitterData>;
-  endUpload?: number;
-  jitterDownloadData?: Array<ISingleJitterData>;
-  endReceive?: number;
   end: number;
   status: number;
+  headers: Headers;
   response: T;
 }
 
@@ -37,13 +33,9 @@ export class RequestHelper {
   private async requestHandler<T extends (object | string)>(config: IRequestOptions): Promise<IDetailedResponseData<T>> {
     const runningData: Partial<IDetailedResponseData<T>> = {
       start: Date.now(),
-      startUpload: undefined,
-      jitterUploadData: [],
-      endUpload: undefined,
-      jitterDownloadData: [],
-      endReceive: undefined,
       end: undefined,
       status: undefined,
+      headers: undefined,
       response: undefined
     };
 
@@ -67,15 +59,24 @@ export class RequestHelper {
 
       runningData.status = response.status;
 
-      if(response.status < 200 || response.status > 399)
-        throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData);
+      runningData.headers = response.headers;
 
-      if(config.responseType === "json")
-        runningData.response = await response.json() as T;
-      else
-        runningData.response = await response.text() as T;
+      const responseText = await response.text();
+      runningData.response = responseText as T;
+
+      // 204 No Content responses have no body
+      if ((runningData.response as string).length > 0 && runningData.status !== 204) {
+        try {
+          runningData.response = JSON.parse(responseText);
+        } catch {
+          throw new WaxMalformedJsonError<T>(config, runningData);
+        }
+      }
 
       runningData.end = Date.now();
+
+      if(response.status < 200 || response.status > 399)
+        throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData);
 
       return runningData as IDetailedResponseData<T>;
     } catch (error) {

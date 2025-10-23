@@ -77,25 +77,30 @@ export class WasmManager {
     if (!this.mainModule)
       throw new Error("Internal error: Main module not initialized, but exception handling method called");
 
-    const errorMessageList = this.mainModule.getExceptionMessage(error)
+    let errorMessageList: [string, string] | undefined = undefined;
+    try {
+      errorMessageList = this.mainModule.getExceptionMessage(error)
+    } catch {}
+
     //errorMessageList.forEach(function(item){
     //  console.log(`Received array item: ${JSON.stringify(item)} of type ${typeof item}`);
     //});
-    switch (errorMessageList[0]) {
-      case "cpp::wax_chain_assertion":
-        this.throwGivenWaxAssertionError(errorMessageList[1], WaxChainAssertionError);
-      case "cpp::wax_protocol_assertion":
-        this.throwGivenWaxAssertionError(errorMessageList[1], WaxProtocolAssertionError);
-      case "cpp::wax_api_assertion":
-      case "cpp::wax_unknown_assertion":
-      case "cpp::wax_assertion":
-        this.throwGivenWaxAssertionError(errorMessageList[1], WaxAssertionError);
-      case "cpp::wax_private_key_leak":
-      {
-        const contextMsg = JSON.parse(errorMessageList[1]);
-        throw new WaxPrivateKeyLeakDetectedException(contextMsg.msg, contextMsg.public_key, contextMsg.account, contextMsg.authority_role);
+    if (errorMessageList !== undefined)
+      switch (errorMessageList[0]) {
+        case "cpp::wax_chain_assertion":
+          this.throwGivenWaxAssertionError(errorMessageList[1], WaxChainAssertionError);
+        case "cpp::wax_protocol_assertion":
+          this.throwGivenWaxAssertionError(errorMessageList[1], WaxProtocolAssertionError);
+        case "cpp::wax_api_assertion":
+        case "cpp::wax_unknown_assertion":
+        case "cpp::wax_assertion":
+          this.throwGivenWaxAssertionError(errorMessageList[1], WaxAssertionError);
+        case "cpp::wax_private_key_leak":
+        {
+          const contextMsg = JSON.parse(errorMessageList[1]);
+          throw new WaxPrivateKeyLeakDetectedException(contextMsg.msg, contextMsg.public_key, contextMsg.account, contextMsg.authority_role);
+        }
       }
-    }
 
     //console.log("Non-typed Error during Wasm call...", e);
     throw new WaxError(`Non-typed Error during Wasm call: ${error}`, error);
