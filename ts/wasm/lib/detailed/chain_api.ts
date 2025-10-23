@@ -13,6 +13,7 @@ import { ApiCaller, TRequestInterceptor, TResponseInterceptor } from "./util/api
 
 import { TAccountName } from "./hive_apps_operations";
 import { ISignatureProvider } from "./extensions/signatures";
+import { WasmManager } from "./util/wasm_errors";
 
 export enum EManabarType {
   UPVOTE = 0,
@@ -50,11 +51,12 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private readonly apiTimeout: number;
 
   public constructor(
-    public readonly wax: MainModule,
+    wasmManager: WasmManager,
+    wax: MainModule,
     config: IWaxOptionsChain,
     public readonly originator: HiveChainApi|null
   ) {
-    super(wax, config.chainId);
+    super(wasmManager, wax, config.chainId);
 
     this.apiTimeout = config.apiTimeout;
 
@@ -82,7 +84,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
         if ("error" in data.response && typeof data.response.error === "object" && "data" in data.response.error) {
           // Possibly an exception that we can recognize & repackage.
-          this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data));
+          this.wasmManager.safeWasmCall(() => this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data)));
         }
       }
 
@@ -131,7 +133,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi, this> {
-    const newApi = new HiveChainApi(this.wax, {
+    const newApi = new HiveChainApi(this.wasmManager, this.wax, {
       chainId: this.chainId,
       apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
       restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
@@ -146,7 +148,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public extendRest<YourRestApi>(extendedHiveRestApiData?: TDeepWaxApiRequestPartial<YourRestApi>): HiveChainApi & TWaxRestExtended<YourRestApi, this> {
-    const newApi = new HiveChainApi(this.wax, {
+    const newApi = new HiveChainApi(this.wasmManager, this.wax, {
       chainId: this.chainId,
       apiEndpoint: this.jsonRpcApiCaller.defaultEndpointUrl,
       restApiEndpoint: this.restApiCaller.defaultEndpointUrl,
@@ -289,11 +291,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
     const encrypted = wallet.encryptData(content, from, to);
 
-    return this.protocol.cpp_crypto_memo_dump_string({
+    return this.wasmManager.safeWasmCall(() => this.protocol.cpp_crypto_memo_dump_string({
       content: encrypted,
       from,
       to
-    });
+    }));
   }
 
   private async getManabarDataArguments(accountName: string, manabarType: EManabarType): Promise<Parameters<WaxBaseApi['calculateCurrentManabarValue']>> {

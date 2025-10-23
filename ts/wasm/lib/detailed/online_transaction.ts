@@ -191,7 +191,7 @@ export class OnlineTransaction extends Transaction implements IOnlineTransaction
     do {
       /// Acquire data for each authority layer
       await authorityCache.acquireData();
-      receivedTrace = this.api.protocol.cpp_trace_authority_verification(actualRequiredAuthorities, actualSignatureKeys, impl);
+      receivedTrace = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_trace_authority_verification(actualRequiredAuthorities, actualSignatureKeys, impl));
     }
     while(authorityCache.canContinue);
 
