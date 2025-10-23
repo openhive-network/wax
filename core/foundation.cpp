@@ -572,13 +572,28 @@ void foundation::cpp_transform_api_error_response_into_exception(const std::stri
   }
   catch (...) {
     // Apparently the error data don't represent a fc::exception.
-    throw std::runtime_error("Non-fc::exception error received: " + data);
+    auto ex_ptr = std::current_exception();
+    if(ex_ptr)
+    {
+      try {
+        std::rethrow_exception(ex_ptr);
+      }
+      catch (const std::exception& e) {
+        throw std::runtime_error("fc::exception JSON deserialization caused an exception: " + std::string(e.what()) + ", original data: " + data);
+      }
+    }
+    throw std::runtime_error("Non-fc::exception error received: " + data + " No additional exception data available.");
   }
 
-  if(e.code() != fc::assert_exception::code_value)
+  /** Since there is predefined set of subclasses of fc::assert_exception
+      which have assigned own exception_code values (exceeding fc::exception_code type) 
+      simple condition to verify exception class according to its code fails for example for `transaction_expiration_exception` - see database_exceptions.hpp
+      One of most important data carried by serialized assert_exception is `FC_ASSERT_EXPRESSION_KEY` extension property holding source of assetion hash value.
+  */
+  if(e.get_extension(FC_ASSERT_EXPRESSION_KEY).is_null())
   {
     // Not an assert_exception either.
-    throw std::runtime_error("Non assert_exception error received: " + e.to_detail_string());
+    throw std::runtime_error("Non assert_exception error received: " + e.to_detail_string() + " Original deserialization data: " + data);
   }
 
   fc::assert_exception ae(e);
