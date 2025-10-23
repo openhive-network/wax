@@ -2,12 +2,13 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp, recoverAccountTransaction, requiredActiveAuthorityTransaction, requiredOwnerAuthorityTransaction, signatureTransaction } from "../assets/data.proto-protocol";
+import { WaxAssertionError } from '../../dist/bundle/detailed/index.js'
 
 const HIVE_BLOCK_INTERVAL = 3 * 1000; // 3 seconds
 
 test.describe('Wax object interface chain tests', () => {
-  test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ beekeeper, chain }, protoVoteOp) => {
+  test('Should be able to detect wax assertion error when assert exceptin subclass is thrown (having own exception code)', async ({ waxTest }) => {
+    await expect(waxTest(async({ beekeeper, chain }, protoVoteOp) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -20,16 +21,9 @@ test.describe('Wax object interface chain tests', () => {
       tx.pushOperation(protoVoteOp).validate();
 
       tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
-      const stx = tx.transaction;
 
-      return {
-        sig: stx.signatures[0],
-        digest: tx.sigDigest
-      };
-    }, protoVoteOp);
-
-    expect(retVal.sig).toBe('1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707');
-    expect(retVal.digest).toBe('205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1');
+      await chain.broadcast(tx); /// just to force tx expiration failure
+    }, protoVoteOp)).rejects.toThrowError(WaxAssertionError);
    });
 
    test('Should be able to perform example API call', async ({ waxTest }) => {
