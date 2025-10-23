@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import ClassVar, Literal, TypeAlias
 
-from wax.helpy._handles.hived.api.database_api.common import DatabaseApiCommons
+from wax.helpy._handles.hived.api.common_database_api import DatabaseApiCommons
 
 
 class CondenserApiCommons:
