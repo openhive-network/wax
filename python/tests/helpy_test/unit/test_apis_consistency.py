@@ -4,6 +4,8 @@ from inspect import iscoroutinefunction, signature
 from typing import TYPE_CHECKING
 
 import pytest
+from database_api.database_api_client import DatabaseApi as AsyncDatabaseApi
+from database_api.database_api_client_sync import DatabaseApi as SyncDatabaseApi
 
 from beekeepy.handle.remote import AsyncBeekeeperApi, SyncBeekeeperApi
 from wax.helpy._handles.hived.api.account_by_key_api import (
@@ -16,7 +18,6 @@ from wax.helpy._handles.hived.api.account_history_api import (
 )
 from wax.helpy._handles.hived.api.block_api import AsyncBlockApi, SyncBlockApi
 from wax.helpy._handles.hived.api.condenser_api import AsyncCondenserApi, SyncCondenserApi
-from wax.helpy._handles.hived.api.database_api import AsyncDatabaseApi, SyncDatabaseApi
 from wax.helpy._handles.hived.api.debug_node_api import AsyncDebugNodeApi, SyncDebugNodeApi
 from wax.helpy._handles.hived.api.jsonrpc import AsyncJsonrpc, SyncJsonrpc
 from wax.helpy._handles.hived.api.market_history_api import (
