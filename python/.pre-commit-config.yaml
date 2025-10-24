@@ -4,7 +4,8 @@ files: |
             ^python/tests/base_api/.*$|
             ^python/tests/chain_api/.*$|
             ^python/tests/transactions/.*$|
-            ^python/tests/helpy_test/.*$
+            ^python/tests/helpy_test/.*$|
+            ^python/tests/apps_operations/.*$
     )
 exclude: |
     (?x)(
