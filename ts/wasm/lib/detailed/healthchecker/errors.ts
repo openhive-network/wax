@@ -2,15 +2,6 @@ import { WaxError } from "../errors.js";
 import { IDetailedResponseData, type IRequestOptions } from "../util/request_helper.js";
 import { IHiveEndpoint } from "./endpoint.js";
 
-export class WaxHealthCheckerEndpointUrlError extends WaxError {
-  constructor(
-    cause: Error,
-    public readonly endpointUrl: string
-  ) {
-    super(cause.message, cause);
-  }
-}
-
 export class WaxHealthCheckerError extends WaxError {
   constructor(
     cause: Error,

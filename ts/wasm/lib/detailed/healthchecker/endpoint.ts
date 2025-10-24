@@ -1,7 +1,7 @@
 import { type HealthChecker } from "./healthchecker.js";
 import { type IDetailedResponseData } from "../util/request_helper.js";
 import { EChainApiType } from "../chain_api.js";
-import { WaxHealthCheckerEndpointUrlError, WaxRequestTimeoutError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxHealthCheckerValidatorFailedError } from "./errors.js";
+import { WaxRequestTimeoutError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxHealthCheckerValidatorFailedError, WaxHealthCheckerError } from "./errors.js";
 
 export interface IHiveEndpoint {
   /**
@@ -118,7 +118,11 @@ export class HiveEndpoint implements IHiveEndpoint {
       const result = results[i];
 
       if (result.status === "rejected")
-        this.checker.emit("error", new WaxHealthCheckerEndpointUrlError(result.reason instanceof Error ? result.reason : new Error(String(result.reason)), this.endpointUrls[i]));
+        this.checker.emit("error", new WaxHealthCheckerError(
+          result.reason instanceof Error ? result.reason : new Error(String(result.reason)),
+          this,
+          result.reason instanceof WaxHealthCheckerError ? result.reason.apiUrl : undefined
+        ));
     }
   }
 
@@ -164,7 +168,7 @@ export class HiveEndpoint implements IHiveEndpoint {
       this.checker.emit("stats", data);
       this.down.set(endpointUrl, data);
 
-      throw new WaxHealthCheckerEndpointUrlError(error instanceof Error ? error : new Error(String(error)), endpointUrl);
+      throw new WaxHealthCheckerError(error instanceof Error ? error : new Error(String(error)), this, endpointUrl);
     }
   }
 }

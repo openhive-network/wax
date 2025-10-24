@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import { WaxError } from "../errors.js";
-import { WaxHealthCheckerError, WaxHealthCheckerValidatorFailedError, WaxRequestError } from "./errors.js";
+import { WaxHealthCheckerError, WaxHealthCheckerValidatorFailedError } from "./errors.js";
 import { TRestChainCaller, type TRequestInterceptor, type TResponseInterceptor } from "../util/api_caller.js";
 import { HiveEndpoint, type IHiveEndpointDataBase, type IHiveEndpoint, type INewUpDownEvent, type THiveEndpointData, type TErrorReason } from "./endpoint.js";
 import { IRequestOptions, type IDetailedResponseData } from "../util/request_helper.js";
@@ -435,7 +435,7 @@ export class HealthChecker extends EventEmitter {
         this.emit("error", new WaxHealthCheckerError(
           result.reason instanceof Error ? result.reason : new Error(String(result.reason)),
           endpoints[i],
-          result.reason instanceof WaxRequestError ? result.reason.request.url : undefined
+          result.reason instanceof WaxHealthCheckerError ? result.reason.apiUrl : undefined
         ));
     }
 
