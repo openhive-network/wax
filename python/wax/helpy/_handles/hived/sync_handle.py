@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING, Generic, cast
 
 from beekeepy.handle.remote import (
     AbstractSyncHandle,
@@ -15,7 +15,7 @@ from wax.helpy._interfaces.time import Time
 from wax.helpy.exceptions import BlockWaitTimeoutError
 
 if TYPE_CHECKING:
-    from datetime import datetime, timedelta
+    from datetime import timedelta
 
     from schemas.fields.basic import AccountName
 
@@ -30,7 +30,8 @@ class HivedTemplate(
         return self._hived_target_service_name()
 
     def get_dynamic_global_properties(self) -> HiveHandleCommonHelpers.GetDynamicGlobalPropertiesT:
-        return self.api.database.get_dynamic_global_properties()
+        gdpo = self.api.database.get_dynamic_global_properties()
+        return cast(HiveHandleCommonHelpers.GetDynamicGlobalPropertiesT, gdpo)
 
     def get_last_block_number(self) -> int:
         return self._get_last_block_number(self.get_dynamic_global_properties())
@@ -38,7 +39,7 @@ class HivedTemplate(
     def get_last_irreversible_block_number(self) -> int:
         return self._get_last_irreversible_block_number(self.get_dynamic_global_properties())
 
-    def get_head_block_time(self) -> datetime:
+    def get_head_block_time(self) -> str:
         return self._get_head_block_time(self.get_dynamic_global_properties())
 
     def get_current_witness(self) -> AccountName:
