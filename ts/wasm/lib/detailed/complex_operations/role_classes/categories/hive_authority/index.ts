@@ -123,7 +123,7 @@ export class HiveAccountCategory extends RoleCategoryBase<THiveRoles> {
         active,
         owner,
         posting,
-        memo_key: memoKey
+        memo_key: this.authorities.memo.isSet ? memoKey : undefined
       })
     }];
   }
