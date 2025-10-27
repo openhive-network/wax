@@ -199,7 +199,7 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
                 active=active,
                 owner=owner,
                 posting=posting,
-                memo_key=memo,
+                memo_key=memo if self.authorities.memo.is_set else None,
                 json_metadata="",
                 posting_json_metadata="",
             )
