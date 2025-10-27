@@ -50,3 +50,11 @@ class AuthorityCannotBeSatisfiedError(HiveAccountCategoryError):
 
 class PrivateKeyDetectedInMemoError(WaxError):
     """Raised when private key was detected in the memo field."""
+
+
+class MissingAuthorityError(HiveAccountCategoryError):
+    """Raised when there is a missing authority."""
+
+    def __init__(self) -> None:
+        self.message = "Missing authority"
+        super().__init__(self.message)

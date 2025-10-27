@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, Iterable, Self, TypeVar
 
 from wax._private.operation_base import ConvertedToProtoOperation, OperationBase
-from wax.exceptions import WaxError
+from wax.exceptions import MissingAuthorityError
 from wax.proto.operations import custom_json
 
 if TYPE_CHECKING:
@@ -62,7 +62,7 @@ class HiveAppsOperation(OperationBase, ABC, Generic[HiveAppsOperationDataT]):
         auths = required_auths if required_auths is not None else []
 
         if not auths and not posting_auths:
-            raise WaxError("Missing authority")
+            raise MissingAuthorityError
 
         for operation_in_body in self._body:
             op_as_dict = operation_in_body.to_dict()

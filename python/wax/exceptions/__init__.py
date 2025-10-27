@@ -13,6 +13,7 @@ from .chain_errors import (
     HiveAccountCategoryError,
     HiveMaxAuthorityMembershipExceededError,
     HiveTempAccountUsedError,
+    MissingAuthorityError,
 )
 from .conversion_errors import (
     DecimalConversionError,
@@ -65,4 +66,5 @@ __all__ = [
     "HiveTempAccountUsedError",
     "HiveMaxAuthorityMembershipExceededError",
     "AuthorityCannotBeSatisfiedError",
+    "MissingAuthorityError",
 ]
