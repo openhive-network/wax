@@ -1282,6 +1282,59 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   });
 });
 
+  test('Should allow to create account and send transfer to it in one transaction', async ({ waxTest, config }) => {
+    const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey, config) => {
+      // Create wallet:
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      const matchingPublicKey = await wallet.importKey(mirrornetSkeletonKey);
+
+      const myCustomChain = await wax.createHiveChain(config);
+
+      const { median_props: { account_creation_fee } } = await myCustomChain.api.database_api.get_witness_schedule({});
+
+      // Create online transaction
+      const tx: IOnlineTransaction = await myCustomChain.createTransaction();
+
+      const randomAccountName = 'z' + Math.random().toString(36).substring(2, 12);
+
+      tx.pushOperation({
+        account_create_operation: {
+          fee: account_creation_fee,
+          creator: "blocktrades",
+          json_metadata: "",
+          memo_key: matchingPublicKey,
+          new_account_name: randomAccountName,
+          active: { account_auths: {}, key_auths: {[matchingPublicKey]: 1}, weight_threshold: 1 },
+          owner: { account_auths: {}, key_auths: {[matchingPublicKey]: 1}, weight_threshold: 1 },
+          posting: { account_auths: {}, key_auths: {[matchingPublicKey]: 1}, weight_threshold: 1 },
+        }
+      }).pushOperation({
+        transfer_operation: {
+          from: "blocktrades",
+          to: randomAccountName,
+          amount: myCustomChain.hiveCoins(1),
+          memo: ""
+        }
+      });
+
+      tx.sign(wallet, matchingPublicKey);
+
+      try {
+        await myCustomChain.broadcast(tx);
+      }
+      catch (error) {
+        console.error(error);
+
+        return JSON.stringify(error);
+      }
+
+      return undefined;
+    }, mirrornetSkeletonKey, config!);
+
+    expect(retVal).toBeUndefined();
+  });
+
   test('Should be able to create and sign transaction using online transaction interface', async ({ waxTest, config }) => {
     const retVal = await waxTest(async({ beekeeper, wax }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, config) => {
       // Create wallet:
