@@ -11,20 +11,7 @@ import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_
 
 export type HiveRestApiTypes = {};
 
-export const HiveRestApiTypes = {
-  'hafbe-api': {
-    witnesses: {
-      responseArray: true,
-      accountName: {
-        urlPath: "{accountName}"
-      }
-    },
-    operationTypeCounts: {
-      responseArray: true,
-      urlPath: 'operation-type-counts'
-    }
-  }
-} as HiveRestApiTypes;
+export const HiveRestApiTypes = {} as HiveRestApiTypes;
 
 export type HiveApiTypes = {
   account_by_key_api: {
