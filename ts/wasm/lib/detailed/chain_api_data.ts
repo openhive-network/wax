@@ -7,7 +7,7 @@ import { FindWitnessesRequest, FindWitnessesResponse } from "./api/database_api/
 import { GetDynamicGlobalPropertiesRequest, GetDynamicGlobalPropertiesResponse } from "./api/database_api/get_dynamic_global_properties.js";
 import { FindRcAccountsRequest, FindRcAccountsResponse } from "./api/rc_api/find_rc_accounts.js";
 import { BroadcastTransactionRequest, BroadcastTransactionResponse } from "./api/network_broadcast_api/broadcast_transaction.js";
-import { VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
+import { GetWitnessScheduleRequest, GetWitnessScheduleResponse, VerifyAuthorityRequest, VerifyAuthorityResponse } from "./api/database_api/index.js";
 
 export type HiveRestApiTypes = {};
 
@@ -32,6 +32,10 @@ export type HiveApiTypes = {
     get_dynamic_global_properties: {
       params: GetDynamicGlobalPropertiesRequest,
       result: GetDynamicGlobalPropertiesResponse
+    },
+    get_witness_schedule: {
+      params: GetWitnessScheduleRequest,
+      result: GetWitnessScheduleResponse
     },
     verify_authority: {
       params: VerifyAuthorityRequest,
