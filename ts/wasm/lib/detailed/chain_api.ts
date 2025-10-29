@@ -196,9 +196,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private async findAccounts(...accountNames: string[]): Promise<Array<ApiAccount>> {
     const accounts = await this.findAccountsNoThrow(...accountNames);
     if(accounts.length !== accountNames.length) {
-      const notFoundAccounts = accounts.map(node => node.name).filter(node => !accountNames.includes(node));
+      const foundAccountNames = accounts.map(node => node.name);
+      const notFoundAccounts = accountNames.filter(node => !foundAccountNames.includes(node));
+      const singularStr = notFoundAccounts.length === 1 ? '' : 's';
 
-      throw new WaxError(`No such account(s) on chain with given name(s): "${notFoundAccounts.join(', ')}"`);
+      throw new WaxError(`No such account${singularStr} on chain with given name${singularStr}: "${notFoundAccounts.join(', ')}"`);
     }
 
     return accounts;
@@ -212,9 +214,11 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private async findWitnessAccounts(...witnessNames: string[]): Promise<Array<ApiWitness>> {
     const accounts = await this.findWitnessAccountsNoThrow(...witnessNames);
     if(accounts.length !== witnessNames.length) {
-      const notFoundAccounts = accounts.map(node => node.owner).filter(node => !witnessNames.includes(node));
+      const foundAccountNames = accounts.map(node => node.owner);
+      const notFoundAccounts = witnessNames.filter(node => !foundAccountNames.includes(node));
+      const singularStr = notFoundAccounts.length === 1 ? '' : 's';
 
-      throw new WaxError(`No such witness(s) on chain with given name(s): "${notFoundAccounts.join(', ')}"`);
+      throw new WaxError(`No such witness${singularStr} on chain with given name${singularStr}: "${notFoundAccounts.join(', ')}"`);
     }
 
     return accounts;
