@@ -28,6 +28,7 @@ type TAuthorityEntriesCollection = Record<string, number>;
 class OnChainOperationValidator extends OperationVisitor {
   private readonly privateKeyScannerData: Map<TAccountName, string[]> = new Map();
   private readonly accountsToCheckExists = new Set<string>();
+  private readonly ignoreExistsAccount = new Set<string>();
   private processedOperation!: operation;
   public constructor(private readonly chain: HiveChainApi) {
     super();
@@ -65,14 +66,17 @@ class OnChainOperationValidator extends OperationVisitor {
   }
 
   public override account_create_operation(op: account_create): void {
+    this.ignoreExistsAccount.add(op.new_account_name);
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
   public override account_create_with_delegation_operation(op: account_create_with_delegation): void {
+    this.ignoreExistsAccount.add(op.new_account_name);
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
   public override create_claimed_account_operation(op: create_claimed_account): void {
+    this.ignoreExistsAccount.add(op.new_account_name);
     this.collectModifiedAuthorityData(op.creator, op);
   }
 
@@ -86,8 +90,14 @@ class OnChainOperationValidator extends OperationVisitor {
     this.collectOnlineAccounts(op.account, op);
   }
 
+  private differenceIgnoreAccounts(accounts: Set<string>): Set<string> {
+    // We can use difference as of Node.js v22 here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/difference
+    // return accounts.difference(this.ignoreExistsAccount);
+    return new Set(Array.from(accounts).filter(account => !this.ignoreExistsAccount.has(account)));
+  };
+
   private async ensureAccountsExist(): Promise<void> {
-    const accountsToCheck = Array.from(this.accountsToCheckExists);
+    const accountsToCheck = Array.from(this.differenceIgnoreAccounts(this.accountsToCheckExists));
 
     for(let i = 0; i < accountsToCheck.length; i += MAX_ACCOUNTS_PER_CALL) {
       const slice = accountsToCheck.slice(i, i + MAX_ACCOUNTS_PER_CALL);
@@ -104,7 +114,7 @@ class OnChainOperationValidator extends OperationVisitor {
   }
 
   private collectKeyLeakScannerData(...contents: string[]): void {
-    const impactedAccounts = this.chain.operationGetImpactedAccounts(this.processedOperation);
+    const impactedAccounts = this.differenceIgnoreAccounts(this.chain.operationGetImpactedAccounts(this.processedOperation));
 
     for(const account of impactedAccounts) {
       const collectedStrings = this.privateKeyScannerData.get(account);
@@ -116,8 +126,8 @@ class OnChainOperationValidator extends OperationVisitor {
   }
 
   private async processSecurityLeakScannerData(): Promise<void> {
-    const inputAccounts = this.privateKeyScannerData.keys();
-    const accountAuthorities = await this.chain.collectAccountAuthorities(true, ...Array.from(inputAccounts));
+    const inputAccounts = [...this.differenceIgnoreAccounts(new Set(this.privateKeyScannerData.keys()))];
+    const accountAuthorities = await this.chain.collectAccountAuthorities(true, ...inputAccounts);
 
     /// TODO: Maybe it would be worth to try create a promise for each call and spawn them asynchronuously
 
