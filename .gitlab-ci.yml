@@ -423,13 +423,10 @@ deploy_wax_wasm_production_public_npm:
 
 test_helpy:
   extends: .test_python_env
-  variables:
-    HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
-    - if [ -z "${HIVED_HTTP_ENDPOINT}" ]; then HIVED_HTTP_ENDPOINT=""; else HIVED_HTTP_ENDPOINT="--hived-http-endpoint=${HIVED_HTTP_ENDPOINT}"; fi
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
     - cd ${PYPROJECT_DIR}/tests/helpy_test
-    - python3 -m pytest --asyncio-mode auto -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml ${HIVED_HTTP_ENDPOINT}
+    - python3 -m pytest -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml
     - echo -e "${TXT_BLUE}Tests succesfully...${TXT_CLEAR}"
   artifacts:
     when: always
