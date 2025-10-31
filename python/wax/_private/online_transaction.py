@@ -6,7 +6,6 @@ from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.transaction import Transaction
 from wax.exceptions import AccountNotFoundError
 from wax.interfaces import IOnlineTransaction
-from wax.models.authority import WaxAuthorities
 from wax.wax_options import WaxOptions
 from wax.wax_visitor import OperationVisitor
 
@@ -116,7 +115,7 @@ class OnChainOperationValidator(OperationVisitor):
                 self._chain.scan_text_for_matching_private_keys(
                     text,
                     auth_info.account,
-                    WaxAuthorities.to_python_authorities(auth_info.authorities),
+                    auth_info.authorities,
                     auth_info.memo_key,
                 )
 

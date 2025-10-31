@@ -59,11 +59,11 @@ from wax.models.asset import (
     NaiAsset,
     VestsNaiAssetConvertible,
 )
+from wax.models.authority import WaxAuthorities
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from wax import python_authorities
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId, PublicKey, SigDigest, Signature
     from wax.models.operations import Operation
@@ -315,7 +315,7 @@ class WaxBaseApi(IWaxBaseInterface):
         self,
         content: str,
         account: AccountName,
-        account_authorities: python_authorities,
+        account_authorities: WaxAuthorities,
         memo_key: PublicKey,
         other_keys: list[PublicKey] | None = None,
     ) -> None:
@@ -325,7 +325,7 @@ class WaxBaseApi(IWaxBaseInterface):
             check_memo_for_private_keys(
                 to_cpp_string(content),
                 to_cpp_string(account),
-                account_authorities,
+                WaxAuthorities.to_python_authorities(account_authorities),
                 to_cpp_string(memo_key),
                 [to_cpp_string(key) for key in other_keys],
             )

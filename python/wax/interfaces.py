@@ -21,7 +21,7 @@ if TYPE_CHECKING:
         NaiAsset,
         VestsNaiAssetConvertible,
     )
-    from wax.models.authority import ITransactionRequiredAuthorities, WaxAccountAuthorityInfo
+    from wax.models.authority import ITransactionRequiredAuthorities, WaxAccountAuthorityInfo, WaxAuthorities
     from wax.models.basic import AccountName, ChainId, Hex, PublicKey, SigDigest, Signature, TransactionId
     from wax.models.key_data import IBrainKeyData, IPrivateKeyData
     from wax.models.operations import Operation, WaxMetaOperation
@@ -640,6 +640,29 @@ class IWaxBaseInterface(ABC):
 
         Raises:
             WaxValidationFailedError: When the transaction is incorrect.
+        """
+
+    @abstractmethod
+    def scan_text_for_matching_private_keys(
+        self,
+        content: str,
+        account: AccountName,
+        account_authorities: WaxAuthorities,
+        memo_key: PublicKey,
+        other_keys: list[PublicKey] | None = None,
+    ) -> None:
+        """
+        Scan given content for matching private keys.
+
+        Args:
+            content: Given text for scanning.
+            account: Account name
+            account_authorities: Authorities of given account
+            memo_key: Memo key of given account
+            other_keys: Other keys to analyze.
+
+        Raises:
+            PrivateKeyDetectedInMemoError: When private key in given memo is detected.
         """
 
 
