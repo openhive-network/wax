@@ -80,7 +80,9 @@
           console.log("Atttempting to create & sign transaction...");
           const tx = await createTransaction();
           await provider.signTransaction(tx);
+          console.log("transaction signed...");
           await verifySignature(tx);
+          console.log("signature verified...");
         } catch (error) {
           console.error('Error signing transaction:', error);
           txResult.textContent = `Error: ${error.message}`;
