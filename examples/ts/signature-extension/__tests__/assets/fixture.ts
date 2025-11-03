@@ -3,6 +3,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 
 import { type TTestAccountAuthorityData, prepareTestingEnvironemnt } from "../../common-data"; 
+import { _ } from "@hiveio/wax";
 
 export const test = base.extend<{
   context: BrowserContext,
@@ -12,7 +13,7 @@ export const test = base.extend<{
 }>({
   context: async ({}, use) => {
     console.log('Launched browser');
-    const browserContext = await chromium.launchPersistentContext('', { headless: typeof process.env.PLAYWRIGHT_HEADLESS === "undefined" });
+    const browserContext = await chromium.launchPersistentContext('', { headless: false }); //typeof process.env.PLAYWRIGHT_HEADLESS === "undefined" });
 
     console.log('Before use browserContext');
     await use(browserContext);
