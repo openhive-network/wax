@@ -4,10 +4,6 @@ Inspired by [React + Vite Minimal setup](https://vite.new/react)
 
 [src/App.jsx](src/App.jsx) file was modified.
 
-Important note!:
-
-__**When importing Wax in Vite, remember to import dedicated Vite bundle everywhere in your project: `@hiveio/wax/vite`**__
-
 ## WASM-related Vite issues
 
 Internal Note:

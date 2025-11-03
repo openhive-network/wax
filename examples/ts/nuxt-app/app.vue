@@ -1,9 +1,14 @@
 <script setup>
-import { createWaxFoundation } from "@hiveio/wax/vite";
+import { createWaxFoundation } from "@hiveio/wax";
 import { onBeforeMount } from 'vue';
 
 const version = ref('');
 
+if (process.server) {
+  const wax = await createWaxFoundation();
+
+  version.value = wax.getVersion();
+} else
 onBeforeMount(async () => {
   try {
     const wax = await createWaxFoundation();

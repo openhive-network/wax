@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { createWaxFoundation } from '@hiveio/wax/vite';
+import { createWaxFoundation } from '@hiveio/wax';
 
 window.waxLoaded = false;
 

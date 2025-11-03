@@ -1,5 +1,18 @@
 # TypeScript wax library examples
 
+Important changes to make parcel work:
+
+- Add `@parcel/transformer-raw` to your `.parcelrc` config to handle wasm files:
+
+```diff
+{
+  "extends": "@parcel/config-default",
+  "transformers": {
++    "*.wasm": ["@parcel/transformer-raw"]
+  }
+}
+```
+
 ## Visitor
 
 ### [visitor.example.html](assets/visitor.example.html)

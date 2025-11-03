@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { createWaxFoundation } from '@hiveio/wax/vite';
+import { createWaxFoundation } from '@hiveio/wax';
 import { ref, onBeforeMount } from 'vue';
 
 const version = ref();

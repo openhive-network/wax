@@ -36,6 +36,15 @@ build() {
   cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
   cmake --install "${BUILD_DIR}" --component wasm_runtime_components --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
+
+  # XXX: Remove after Emscripten bump, where we replace all require-s with await import()
+  sed -i "s#var require = createRequire(\"/\")##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#const {createRequire} = await import(\"module\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+
+  sed -i "s#require(\"fs\")#await import(\"fs\")#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"path\");#await import(\"path\");var nodeCrypto=await import(\"crypto\");#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"url\")#(await import(\"url\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#var nodeCrypto = require(\"crypto\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 }
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then

@@ -6,8 +6,9 @@
     "test": "rm -rf ./.parcel-cache ./dist && pnpx tsx index.ts"
   },
   "devDependencies": {
-    "@parcel/config-default": "^2.12.0",
-    "@parcel/core": "^2.12.0",
+    "@parcel/config-default": "2.14.2",
+    "@parcel/core": "2.14.2",
+    "@parcel/transformer-raw": "2.14.2",
     "@playwright/test": "^1.56.1",
     "@types/http-server": "^0.12.4",
     "@types/node": "^20.10.6",

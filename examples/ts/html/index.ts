@@ -11,8 +11,8 @@ const __dirname = path.dirname(__filename);
 
 const configFor = (name: string): ConstructorParameters<typeof Parcel>[0] => ({
   entries: path.resolve(__dirname, `assets/${name}.html`),
-  defaultConfig: '@parcel/config-default',
   mode: 'production',
+  config: path.resolve(__dirname, '.parcelrc'),
   env: {
     NODE_ENV: 'production'
   }
@@ -59,7 +59,7 @@ const configFor = (name: string): ConstructorParameters<typeof Parcel>[0] => ({
 
   console.debug('Done running examples');
 })().catch((error: unknown) => {
-  console.error(error);
+  console.dir(error, { depth: null });
 
   process.exit(1);
 });

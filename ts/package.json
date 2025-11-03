@@ -18,15 +18,16 @@
     "test": "unset CI && playwright test --workers 4 --max-failures 1",
     "benchmark": "unset CI && playwright test --workers 4 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
     "examples": "run-s examples:*",
-    "examples:memory-used": "cd ../examples/ts/memory-used && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:html": "cd ../examples/ts/html && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && pnpm install && pnpm run build && cd ../../../ts",
-    "examples:node-app": "cd ../examples/ts/node-app && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:vue-webpack": "cd ../examples/ts/vue-webpack && pnpm install && pnpm run build && cd ../../../ts",
-    "examples:vue-vite": "cd ../examples/ts/vue-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:react-vite": "cd ../examples/ts/react-vite && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && pnpm install --config.engine-strict=false && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:signature-extension": "cd ../examples/ts/signature-extension && pnpm install && pnpm run build && pnpm run test && cd ../../../ts"
+    "examples:memory-used": "cd ../examples/ts/memory-used && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
+    "examples:html": "cd ../examples/ts/html && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
+    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && rm -rf node_modules && pnpm install && pnpm run build && cd ../../../ts",
+    "examples:node-app": "cd ../examples/ts/node-app && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
+    "examples:vue-webpack": "cd ../examples/ts/vue-webpack && rm -rf node_modules && pnpm install && pnpm run build && cd ../../../ts",
+    "examples:vue-vite": "cd ../examples/ts/vue-vite && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:react-vite": "cd ../examples/ts/react-vite && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:react-ssr": "cd ../examples/ts/react-router-ssr && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && rm -rf node_modules && pnpm install --config.engine-strict=false && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:signature-extension": "cd ../examples/ts/signature-extension && rm -rf node_modules && pnpm install && pnpm run build && pnpm run test && cd ../../../ts"
   },
   "exports": {
     ".": {
@@ -41,24 +42,6 @@
           "types": "./wasm/dist/bundle/index.d.ts",
           "default": "./wasm/dist/bundle/web.js"
         }
-      }
-    },
-    "./web": {
-      "import": {
-        "types": "./wasm/dist/bundle/index.d.ts",
-        "default": "./wasm/dist/bundle/web.js"
-      }
-    },
-    "./vite": {
-      "import": {
-        "types": "./wasm/dist/bundle/index.d.ts",
-        "default": "./wasm/dist/bundle/vite.js"
-      }
-    },
-    "./node": {
-      "import": {
-        "types": "./wasm/dist/bundle/index.d.ts",
-        "default": "./wasm/dist/bundle/node.js"
       }
     },
     "./package.json": "./package.json"

@@ -1,7 +1,17 @@
 # signature-extension
 
-> [!WARNING]
-> This example will not be ran automatically on the CI as it requires direct user action, e.g. OAuth 3rd party app Hive blockchain user authorization
+Important changes to make parcel work:
+
+- Add `@parcel/transformer-raw` to your `.parcelrc` config to handle wasm files:
+
+```diff
+{
+  "extends": "@parcel/config-default",
+  "transformers": {
++    "*.wasm": ["@parcel/transformer-raw"]
+  }
+}
+```
 
 This example presents different ways of implementing 3rd party apps authorization using wax
 

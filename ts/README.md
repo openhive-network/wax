@@ -61,14 +61,14 @@ We currently support multiple environments / bundlers / frameworks, such as:
 - [Node.js](https://nodejs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/node-app)
 - [Next.js](https://nextjs.org/) + [Webpack](https://webpack.js.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nextjs-app)
 - [Rollup](https://rollupjs.org/) - You may require to add plugin for proper WASM file dependency copying - [@web/rollup-plugin-import-meta-assets](https://www.npmjs.com/package/@web/rollup-plugin-import-meta-assets), see [example project using WASM in Workers](https://gitlab.syncad.com/hive/hb-auth)
-- [React](https://react.dev/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/react-vite) (**Requires different import - `/vite`**)
-- [Nuxt](https://nuxt.com/) ([Vite](https://vite.dev/)), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nuxt-app) (**Requires different import - `/vite`**)
-- [Vue](https://vuejs.org/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-vite) (**Requires different import - `/vite`**)
+- [React](https://react.dev/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/react-vite)
+- [Nuxt](https://nuxt.com/) ([Vite](https://vite.dev/)), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/nuxt-app)
+- [Vue](https://vuejs.org/) + [Vite](https://vite.dev/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-vite)
 - [Vue.js](https://vuejs.org/) + [Webpack](https://webpack.js.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/vue-webpack)
 - [Parcel](https://parceljs.org/), see [our examples](https://gitlab.syncad.com/hive/wax/-/tree/develop/examples/ts/html). Parcel will probably require [`Buffer` polyfill](https://www.npmjs.com/package/buffer) installation
 - Web "Vanilla JS" (you have to provide sourcemap in order to properly resolve our imports, simirarly as in [our tests](./wasm/__tests__/assets/test.html)) (**not recommended**)
 
-Imports should automatically resolve to either `@hiveio/wax/web` or `@hiveio/wax/node` based on your environment, but it is required to use `@hiveio/wax/vite` when using Vite in your stack.
+Imports will automatically resolve to either "web" or "node.js" version based on your execution environment, which is helpful in SSR scenarios.
 
 You can also force the usage of specific Wax version by providing proper import alias as mentioned above.
 

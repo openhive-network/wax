@@ -4,10 +4,6 @@ Created by command: `pnpm create vue@latest .`
 
 [src/App.vue](src/App.vue) file was modified.
 
-Important note!:
-
-__**When importing Wax in Vite, remember to import dedicated Vite bundle everywhere in your project: `@hiveio/wax/vite`**__
-
 ## WASM-related Vite issues
 
 Internal Note:

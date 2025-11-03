@@ -2,12 +2,6 @@
 
 [app.vue](app.vue) file was modified.
 
-Important note!:
-
-__**When importing Wax in Vite, remember to import dedicated Vite bundle everywhere in your project: `@hiveio/wax/vite`**__
-
-Also remember that you have to asynchronously import Wax in Nuxt (e.g. using onBeforeMount hook or store)
-
 ## WASM-related Vite issues
 
 Internal Note:
