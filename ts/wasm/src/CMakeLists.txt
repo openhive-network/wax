@@ -66,7 +66,7 @@ DEFINE_WASM_TARGET_FOR( wax
 
 target_link_libraries( protocol_assertion_id_generator PUBLIC nodefs.js )
 target_link_options( protocol_assertion_id_generator PUBLIC 
-    -sENVIRONMENT="node" -sNODERAWFS=1
+    -sENVIRONMENT=node -sNODERAWFS=1
  )
 
 set_target_properties( protocol_assertion_id_generator PROPERTIES
@@ -75,7 +75,7 @@ set_target_properties( protocol_assertion_id_generator PROPERTIES
 
 target_link_libraries( chain_assertion_id_generator PUBLIC nodefs.js )
 target_link_options( chain_assertion_id_generator PUBLIC 
-    -sENVIRONMENT="node" -sNODERAWFS=1
+    -sENVIRONMENT=node -sNODERAWFS=1
  )
 
 set_target_properties( chain_assertion_id_generator PROPERTIES
