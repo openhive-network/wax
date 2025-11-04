@@ -357,3 +357,20 @@ async def test_account_authority_update_empty_role_entry(remote_chain: IHiveChai
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
     assert not role.has(account_or_key="doesnt-existing-entry")
+
+
+async def test_account_authority_update_enforce_owner_role(remote_chain: IHiveChainInterface) -> None:
+    account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "guest4test")
+
+    account_update.roles.active.add(account_or_key="guest4test1")
+
+    account_update.enforce_owner_role_authorisation()
+
+    transaction = await remote_chain.create_transaction()
+    transaction.push_operation(account_update)
+
+    operation = transaction.to_dict()["operations"][0]
+    # test owner authority is present in the operation - it should be due to enforcement
+    owner_authority = operation["value"]["owner"]
+
+    assert len(owner_authority["key_auths"]) > 0
