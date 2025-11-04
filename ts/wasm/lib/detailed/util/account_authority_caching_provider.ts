@@ -101,6 +101,10 @@ export class AccountAuthorityCachingProvider implements IAccountAuthorityProvide
     return this === other;
   }
 
+  public [Symbol.dispose]() {
+
+  }
+
   public deleteLater(): this {
     return this;
   }
