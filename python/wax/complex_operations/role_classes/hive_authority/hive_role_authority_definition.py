@@ -44,6 +44,7 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
         self._HIVE_ADDRESS_PREFIX: str | NotYetInitialized = NotYetInitialized()
         self._authority: WaxAuthority | NotYetInitialized = NotYetInitialized()
         self._previous_authority: WaxAuthority | NotYetInitialized = NotYetInitialized()
+        self._enforced_modifications: bool = False
 
     def init(
         self,
@@ -55,11 +56,14 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
         self._HIVE_ADDRESS_PREFIX = hive_address_prefix
         self._authority = authority
         self._previous_authority = deepcopy(authority)
+        self._enforced_modifications = False
 
     @property
     def changed(self) -> bool:
         """Checks if the authority has changed since the last update."""
-        if self.previous_authority.weight_threshold != self.authority.weight_threshold:
+        if self._enforced_modifications or (
+            self.previous_authority.weight_threshold != self.authority.weight_threshold
+        ):
             return True
 
         account_keys = self.authority.account_auths.keys()
@@ -83,6 +87,9 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
                 return True
 
         return False
+
+    def enforce_modifications(self) -> None:
+        self._enforced_modifications = True
 
     @property
     def value(self) -> WaxAuthority:
@@ -187,6 +194,7 @@ class HiveRoleAuthorityDefinition(LevelBase[TRole]):
 
     def reset(self) -> None:
         self._authority = deepcopy(self.previous_authority)
+        self._enforced_modifications = False
 
     def has(self, account_or_key: PublicKey | AccountName, weight: int | None = None) -> bool:
         """

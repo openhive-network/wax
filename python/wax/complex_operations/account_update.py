@@ -115,6 +115,22 @@ class AccountAuthorityUpdateOperation(OperationBase):
             _private=True,
         )
 
+    def enforce_owner_role_authorisation(self) -> None:
+        """
+        Enforces the requirement for **owner** role authorization when modifying **active** or **posting** roles.
+
+        **HF 28** introduces stricter matching between the authority role required by a given operation and the role
+        used to authorize the transaction.
+            - Since modifying **active** or **posting** roles requires **active** authority at the time of transaction
+              signing, the pre-HF28 behavior — which allowed signing with the **owner** key — will be **disallowed**.
+            - This change may pose difficulties for users who have lost their active keys and attempt to use their
+              owner key to set a new one.
+            - To address this, the function allows the inclusion — within the `account_update2_operation` generated
+              internally — of elements that enforce the **owner** role requirement, specifically through an ineffective
+              change of the owner authority to the same value currently recorded on-chain.
+        """
+        self._possible_roles.owner.enforce_modifications()
+
     @property
     def roles(self) -> PossibleRoles:
         """

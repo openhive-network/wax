@@ -27,6 +27,10 @@ class LevelBase(ABC, Generic[TRole]):
     def changed(self) -> bool:
         """Indicates if the level has changed since the last update."""
 
+    @abstractmethod
+    def enforce_modifications(self) -> None:
+        """Enforces that the modifications are applied during the next operation generation."""
+
     @property
     @abstractmethod
     def value(self) -> Any:  # noqa: ANN401

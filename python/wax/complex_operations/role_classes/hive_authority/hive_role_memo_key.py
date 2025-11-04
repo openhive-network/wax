@@ -38,11 +38,16 @@ class HiveRoleMemoKeyDefinition(LevelBase[MemoKeyRoleName]):
 
         self._public_key: PublicKey | NotYetInitialized = NotYetInitialized()
         self._previous_public_key: PublicKey | NotYetInitialized = NotYetInitialized()
+        self._enforced_modifications = False
 
     def init(self, hive_address_prefix: str, public_key: PublicKey) -> None:
         self._HIVE_ADDRESS_PREFIX = hive_address_prefix
         self._public_key = public_key
         self._previous_public_key = public_key
+        self._enforced_modifications = False
+
+    def enforce_modifications(self) -> None:
+        self._enforced_modifications = True
 
     @property
     def value(self) -> PublicKey:
@@ -51,7 +56,7 @@ class HiveRoleMemoKeyDefinition(LevelBase[MemoKeyRoleName]):
     @property
     def changed(self) -> bool:
         """Checks if the key has changed since the last update."""
-        return self.public_key != self.previous_public_key
+        return self._enforced_modifications or self.public_key != self.previous_public_key
 
     @property
     def is_set(self) -> bool:
@@ -72,6 +77,7 @@ class HiveRoleMemoKeyDefinition(LevelBase[MemoKeyRoleName]):
 
     def reset(self) -> None:
         self._public_key = self.previous_public_key
+        self._enforced_modifications = False
 
     def set(self, public_key: PublicKey) -> Self:
         """
