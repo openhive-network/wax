@@ -37,14 +37,18 @@ build() {
 
   cmake --install "${BUILD_DIR}" --component wasm_runtime_components --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
-  # XXX: Remove after Emscripten bump, where we replace all require-s with await import()
-  sed -i "s#var require = createRequire(\"/\")##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  # Emscripten still uses redundant createRequire for legacy CJS support - remove it so we have proper bundlers support
+  sed -i "s#var require = createRequire(import.meta.url);##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#const {createRequire} = await import(\"module\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 
-  sed -i "s#require(\"fs\")#await import(\"fs\")#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
-  sed -i "s#require(\"path\");#await import(\"path\");var nodeCrypto=await import(\"crypto\");#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  # Replace requires with our await import-s
+  sed -i "s#require(\"fs\");#(await import(\"fs\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"path\")#(await import(\"path\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#require(\"url\")#(await import(\"url\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+
+  # Remove Node.js "crypto" module import, as we already have crypto API support in Node.js 19+
   sed -i "s#var nodeCrypto = require(\"crypto\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#return view => nodeCrypto.randomFillSync(view);##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 }
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
@@ -53,7 +57,7 @@ if [ ${DIRECT_EXECUTION} -eq 0 ]; then
     -it --rm \
     -v "${PROJECT_DIR}/":"${EXECUTION_PATH}" \
     -u $(id -u):$(id -g) \
-    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:4.0.1-2@sha256:d0c5fbd811ef2447fdf411ee1e2a111c50ad0ec610cf3d6bf2d186530bc883ad \
+    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:4.0.18-1@sha256:79edc8ecfe7b13848466d33791daa955eb1762edc329a48c07aa700bc6cfb712 \
     /bin/bash "${EXECUTION_PATH}/ts/wasm/build_wasm_wax.sh" 1 "${EXECUTION_PATH}"
 else
   echo "Performing a build"
