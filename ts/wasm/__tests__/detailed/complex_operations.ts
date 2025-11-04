@@ -1169,6 +1169,53 @@ test.describe('Wax complex operation tests', () => {
     expect(retVal.account_update2_operation!.active!.account_auths["gtg"]).toBe(0);
   });
 
+test('Should be able to create simple account authority update operation for guest4test - no enforced Owner authority', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "guest4test");
+
+      op.role("active").add("guest4test1");
+
+      tx.pushOperation(op);
+
+      return tx.transaction.operations[0];
+    });
+
+    expect(retVal).toBeDefined();
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("guest4test");
+    expect(retVal.account_update2_operation?.active?.account_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.active!.account_auths["guest4test1"]).toBe(1);
+    expect(retVal.account_update2_operation?.owner).toBeUndefined();
+  });
+
+
+test('Should be able to create simple account authority update operation for guest4test - enforced Owner authority', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ wax, chain }) => {
+      const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
+
+      const op = await wax.AccountAuthorityUpdateOperation.createFor(chain, "guest4test");
+
+      op.role("active").add("guest4test1");
+
+      op.enforceOwnerRoleAuthorisation();
+
+      tx.pushOperation(op);
+
+      console.log(JSON.stringify(tx.transaction.operations[0]));
+
+      return tx.transaction.operations[0];
+    });
+
+    expect(retVal).toBeDefined();
+    expect("account_update2_operation" in retVal).toBeTruthy();
+    expect(retVal.account_update2_operation?.account).toBe("guest4test");
+    expect(retVal.account_update2_operation?.active?.account_auths).toBeDefined();
+    expect(retVal.account_update2_operation!.active!.account_auths["guest4test1"]).toBe(1);
+    expect(retVal.account_update2_operation?.owner).toBeDefined();
+  });
+
   test('Should be able to remove owner key for initminer', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ wax, chain }) => {
       const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
