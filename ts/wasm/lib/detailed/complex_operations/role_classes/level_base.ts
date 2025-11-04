@@ -18,6 +18,11 @@ export abstract class LevelBase<TRole extends string> {
   public abstract get changed(): boolean;
 
   /**
+   * Once called, will mark given role as modified, and effectively push its definition into final operation.
+   */
+  public abstract enforceModifications(): void;
+
+  /**
    * Resets the level to its initial state.
    */
   public abstract reset(): void;

@@ -13,6 +13,7 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
 
   private publicKey!: TPublicKey;
   private previousPublicKey!: TPublicKey;
+  private enforcedModifications: boolean = false;
 
   public reset(): void {
     this.publicKey = this.previousPublicKey;
@@ -25,12 +26,19 @@ export class HiveRoleMemoKeyDefinition extends LevelBase<"memo"> {
   }
 
   /**
+   * Once called, will mark given role as modified, and effectively push its definition into final operation.
+   */
+  public enforceModifications(): void {
+    this.enforcedModifications = true;
+  }
+
+  /**
    * Checks if the key has changed since the last update.
    *
    * This check does not rely on previous {@link set} call, but rather on comparison of the public key value.
    */
   public get changed(): boolean {
-    return this.publicKey !== this.previousPublicKey;
+    return this.enforcedModifications || this.publicKey !== this.previousPublicKey;
   }
 
   public get value(): Readonly<TPublicKey> {

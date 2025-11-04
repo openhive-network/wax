@@ -23,12 +23,12 @@ export type TRole = keyof TRolesStruct;
 export type TRoleContainerNames = InstanceType<typeof AuthorityRoleCategories[number]>["category"];
 
 export type TRoleKeyToValueMap = {
-  [K in keyof TRolesStruct]: Omit<TRolesStruct[K], 'init'>
+  [K in keyof TRolesStruct]: Omit<TRolesStruct[K], 'init' | 'enforceModifications'>
 };
 
 export type TRoleContainerKeyToValueMap = {
   [C in InstanceType<typeof AuthorityRoleCategories[number]> as C["category"]]: {
-    [K in keyof C["authorities"]]: Omit<C["authorities"][K], 'init'>
+    [K in keyof C["authorities"]]: Omit<C["authorities"][K], 'init' | 'enforceModifications'>
   }[keyof C["authorities"]];
 };
 
@@ -86,6 +86,20 @@ export class AccountAuthorityUpdateOperation extends OperationBase {
     }
 
     return new AccountAuthorityUpdateOperation(instances, roles);
+  }
+
+  /**
+   * Enforces the requirement for **owner** role authorization when modifying **active** or **posting** roles.
+   * 
+   * **HF 28** introduces stricter matching between the authority role required by a given operation and the role used to authorize the transaction.
+   * - Since modifying **active** or **posting** roles requires **active** authority at the time of transaction signing, the pre-HF28 behavior — which allowed signing with the **owner** key — will be **disallowed**.  
+   * - This change may pose difficulties for users who have lost their active keys and attempt to use their owner key to set a new one.  
+   * - To address this, the function allows the inclusion — within the `account_update2_operation` generated internally — of elements that enforce the **owner** role requirement, specifically through an ineffective change of the owner authority to the same value currently recorded on-chain.
+   */
+  public enforceOwnerRoleAuthorisation(): void {
+    const roleInstance = this.instancesPerRoleName.get("owner")!;
+    const ownerRole = roleInstance.authorities["owner"];
+    ownerRole.enforceModifications()
   }
 
   /**

@@ -21,8 +21,14 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
 
   private previousAuthority!: authority;
 
+  private enforcedModfifications: boolean = false;
+
   public reset(): void {
     this.authority = structuredClone(this.previousAuthority);
+  }
+
+  public enforceModifications(): void {
+    this.enforcedModfifications = true
   }
 
   /**
@@ -31,7 +37,7 @@ export class HiveRoleAuthorityDefinition<TRole extends string> extends LevelBase
    * This check does not rely on previous {@link add}, {@link remove} etc. calls, but rather on deep comparison of the authority object.
    */
   public get changed(): boolean {
-    if (this.previousAuthority.weight_threshold !== this.authority.weight_threshold)
+    if (this.enforcedModfifications || this.previousAuthority.weight_threshold !== this.authority.weight_threshold)
       return true;
 
     const accountKeys = Object.keys(this.authority.account_auths);
