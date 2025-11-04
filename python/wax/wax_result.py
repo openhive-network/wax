@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import TYPE_CHECKING, Callable, TypeAlias
+from typing import TYPE_CHECKING, Any, Callable, TypeAlias
+
+from wax.exceptions import WaxBaseAssertionError
 
 if TYPE_CHECKING:
     string: TypeAlias = bytes  # noqa: PYI042
@@ -27,7 +29,12 @@ class python_error_code(IntEnum):  # noqa: N801
 class python_result:  # noqa: N801
     status: python_error_code
     result: bytes
-    exception_message: bytes
+    exception_message: bytes | dict[str, Any]
+
+    def __post_init__(self) -> None:
+        if self.status == python_error_code.ok:
+            return
+        raise WaxBaseAssertionError.resolve_error_cls(self.exception_message)
 
 
 @dataclass

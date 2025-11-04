@@ -30,9 +30,16 @@ from .validation_errors import (
 )
 from .wax_error import (
     WaxAssertionError,
-    WaxChainAssertionError,
     WaxError,
     WaxImportProtoBeforeCompileError,
+)
+from .wax_specialised_errors import (
+    AbstractCxxError,
+    CategoryNotFoundError,
+    SubcategoryNotFoundError,
+    UnhandableWaxError,
+    WaxBaseAssertionError,
+    WaxChainAssertionError,
     WaxProtocolAssertionError,
 )
 
@@ -41,8 +48,6 @@ __all__ = [
     "WaxError",
     "WaxImportProtoBeforeCompileError",
     "WaxAssertionError",
-    "WaxChainAssertionError",
-    "WaxProtocolAssertionError",
     # Asset-related errors.
     "AssetError",
     "InvalidAssetAmountError",
@@ -67,4 +72,12 @@ __all__ = [
     "HiveMaxAuthorityMembershipExceededError",
     "AuthorityCannotBeSatisfiedError",
     "MissingAuthorityError",
+    # Specialised wax errors.
+    "CategoryNotFoundError",
+    "SubcategoryNotFoundError",
+    "AbstractCxxError",
+    "UnhandableWaxError",
+    "WaxBaseAssertionError",
+    "WaxChainAssertionError",
+    "WaxProtocolAssertionError",
 ]

@@ -21,11 +21,3 @@ class WaxAssertionError(WaxError):
         self.assertion_hash = assertion_hash
         self.assertion_data = assertion_data
         super().__init__(self.assertion_data)
-
-
-class WaxChainAssertionError(WaxAssertionError):
-    pass
-
-
-class WaxProtocolAssertionError(WaxAssertionError):
-    pass

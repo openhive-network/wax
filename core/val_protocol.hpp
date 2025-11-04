@@ -188,7 +188,7 @@ public:
     if(can_skip_missing_field(name))
       return;
 
-    SafeT tmp;
+    SafeT tmp{};
     this->add(name, tmp);
     v.value = tmp;
   }

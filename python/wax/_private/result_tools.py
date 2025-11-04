@@ -27,7 +27,11 @@ def to_cpp_string(value: bytes | str) -> bytes:
 
 def validate_wax_result(result: python_result) -> None:
     if result.status == python_error_code.fail:
-        raise WaxValidationFailedError(to_python_string(result.exception_message))
+        raise WaxValidationFailedError(
+            to_python_string(result.exception_message)
+            if not isinstance(result.exception_message, dict)
+            else str(result.exception_message)
+        )
 
 
 def expose_result_as_python_string(result: python_result) -> str:
