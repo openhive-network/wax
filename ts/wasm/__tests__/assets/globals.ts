@@ -1,9 +1,9 @@
 // We only want to import types here!
 // Type imports are automatically stripped out from the output-JS-code by the TypeScript compiler, which leads to full type safety, but no direct dependencies on the imported modules.
-// When this file is ran in Node environment, JS-imports of "@hiveio/beekeeper/web" make no sense as we are testing Node.js
+// When this file is ran in Node environment, JS-imports of "@hiveio/beekeeper" make no sense as we are testing Node.js
 // Also when testing in Web environment, we would have to import only fully-bundled packages here as we lack any import resolution in the browser except explicitly defined importmap
 // for imports defined in functions "createWaxTestFor" and "createWasmTestFor"
-import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
+import type { IBeekeeperInstance } from "@hiveio/beekeeper";
 import type Wax from "../../dist/bundle";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
 import type { MainModule, protocol_foundation } from "../../dist/lib/build_wasm/wax.common.js";
@@ -40,11 +40,10 @@ declare global {
 
 globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string, config?: Partial<IWaxOptionsChain>) {
   const locWax = env === "web" ? "../../dist/bundle/web.js" : "../../dist/bundle/node.js";
-  const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
   // Import required libraries env-dependent
   const wax = await import(locWax) as typeof import("../../dist/bundle") as unknown as typeof Wax;
-  const beekeeper = await import(locBeekeeper) as typeof import("@hiveio/beekeeper/web");
+  const beekeeper = await import("@hiveio/beekeeper");
 
   try {
     // Initialize data
