@@ -1,3 +1,5 @@
+/* @terser-ignore */
+// We want to skip minification for this file to preserve string concatination hacks used for WASM loading specifically in Vite environment
 export * from "./detailed/index.js";
 
 import { createHiveChain as constructHiveChainWithWasm, createWaxFoundation as constructWaxFoundationWithWasm, type IWaxOptions, type IWaxOptionsChain, type IHiveChainInterface, type IWaxBaseInterface } from "./detailed/index.js";
@@ -7,7 +9,7 @@ import MainModuleFunction from "./build_wasm/wax.common.js";
 
 const getModuleExt = async(fileLocation?: string) => {
   if ((import.meta as any).client || (!(import.meta as any).client && typeof (import.meta as any).env === "object" && !(import.meta as any).env?.SSR)) {
-    // This is import style specific to Vite. Simple hack with concatination to avoid TypeScript & our Rollup bundler related errors
+    // This is import style specific to Vite. Simple hack with concatination to avoid TypeScript & Rollup bundler related errors
     const filePath = fileLocation ?? (await import('./build_wasm/wax.common.wasm' + '?url')).default;
     return {
       locateFile(path: string, scriptDirectory: string): string {
