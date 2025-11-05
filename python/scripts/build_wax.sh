@@ -56,6 +56,7 @@ else
 
   cleanup_old_api_package "database_api"
   cleanup_old_api_package "network_broadcast_api"
+  cleanup_old_api_package "rc_api"
 
   if [ -d "${SCRIPT_DIR}/../../build_wheel.env}" ]; then
     echo "Found old build_wheel.env Removing it."
