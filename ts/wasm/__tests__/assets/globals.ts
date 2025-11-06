@@ -6,7 +6,7 @@
 import type { IBeekeeperInstance } from "@hiveio/beekeeper/web";
 import type Wax from "../../dist/bundle";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
-import type { MainModule, protocol_foundation } from "../../dist/lib/build_wasm/wax.common";
+import type { MainModule, protocol_foundation } from "../../dist/lib/build_wasm/wax.common.js";
 
 // Declare global types
 type TMainModuleFn = () => Promise<MainModule>;
@@ -31,14 +31,14 @@ export interface IWasmGlobals {
 }
 
 declare global {
-  function createWaxTestFor(env: TEnvType, outputpath: string, config?: IWaxOptionsChain): Promise<IWaxGlobals>;
+  function createWaxTestFor(env: TEnvType, outputpath: string, config?: Partial<IWaxOptionsChain>): Promise<IWaxGlobals>;
   function createWasmTestFor(env: TEnvType): Promise<IWasmGlobals>;
 }
 
 // Define the actual global function bodies
 // We are also using function expressions here to be able to extract the function names in the jest-helpers
 
-globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string, config?: IWaxOptionsChain) {
+globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, outputPath: string, config?: Partial<IWaxOptionsChain>) {
   const locWax = env === "web" ? "../../dist/bundle/web.js" : "../../dist/bundle/node.js";
   const locBeekeeper = env === "web" ? "@hiveio/beekeeper/web" : "@hiveio/beekeeper/node";
 
@@ -57,9 +57,9 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
     let chain: IHiveChainInterface;
 
     if (config === undefined)
-      chain = await wax.createHiveChain();
+      chain = await wax.createHiveChain({ apiTimeout: 0 });
     else {
-      chain = await wax.createHiveChain(config);
+      chain = await wax.createHiveChain({ apiTimeout: 0, ...config });
 
       console.log(`Using custom config: API endpoint: ${config.apiEndpoint}, chain id: ${config.chainId}`);
     }
