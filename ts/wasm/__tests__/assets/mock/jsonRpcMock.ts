@@ -10,6 +10,9 @@ import alice from "./data/alice";
 import hivebuzz from "./data/hivebuzz";
 import guest4test8 from "./data/guest4test8";
 import zero_max_block_age from "./data/zero_max_block_age";
+import alphaManabar1 from "./data/vote.manabar-1";
+import alphaManabar50 from "./data/vote.manabar-50";
+import alphaManabar100 from "./data/vote.manabar-100";
 
 export default {
   "database_api.find_accounts": (params: Record<string, any>) => {
@@ -46,6 +49,15 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'guest4test8')
       return guest4test8;
+
+    if (accounts.length === 1 && accounts[0] === 'alpha.manabar1')
+      return alphaManabar1;
+
+    if (accounts.length === 1 && accounts[0] === 'alpha.manabar50')
+      return alphaManabar50;
+
+    if (accounts.length === 1 && accounts[0] === 'alpha.manabar100')
+      return alphaManabar100;
 
     return;
   },
