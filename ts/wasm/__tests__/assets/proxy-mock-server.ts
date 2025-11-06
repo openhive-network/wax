@@ -11,7 +11,10 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
   app.use(express.json());
 
   app.use('/', (req, res, next) => {
-    console.log('Request URL:', req.originalUrl);
+    const isJsonRpc = req.method === 'POST' && typeof req.body === 'object' && typeof req.body.method === 'string';
+    const methodStr = isJsonRpc ? ` [${req.body.method}]` : '';
+
+    console.log('Request URL:', req.originalUrl, methodStr);
 
     if (mockInstance.hasHandler(req)) {
       mockInstance.handle(req, res);
@@ -21,7 +24,7 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
       return;
     }
 
-    console.log(`No mock data found - proxying to "${req.headers['x-hive-target'] as string || target}"...`);
+    console.log(`No mock data found ${methodStr} - proxying to "${req.headers['x-hive-target'] as string || target}"...`);
     next();
   });
 
