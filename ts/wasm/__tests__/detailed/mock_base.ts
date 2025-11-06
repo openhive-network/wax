@@ -16,6 +16,40 @@ test.describe('Wax base mock tests', () => {
     closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000);
   });
 
+  test('Should be able to create proper legacy vote operation', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain, wax }) => {
+      const tx = await chain.createTransaction();
+
+      const accounts = ["alpha.manabar100", "alpha.manabar50", "alpha.manabar1"];
+      const weights = [100, 50, 0, -50, -100];
+
+      const operations = await Promise.all(accounts.flatMap(account => weights.map(weight =>
+        wax.LegacyVoteOperation.for(chain, account, "gtg", "hello-world", weight)
+      )));
+
+      operations.forEach(op => tx.pushOperation(op));
+
+      return tx.transaction.operations;
+    });
+
+    expect(retVal[0].vote_operation).toStrictEqual({
+      voter: 'alpha.manabar100',
+      author: 'gtg',
+      permlink: 'hello-world',
+      weight: 10000
+    });
+
+    const manabarValues = retVal.map(op => op.vote_operation!.weight);
+
+    expect(manabarValues).toEqual([
+    // weight percent:
+    //  100,   50, 0,   -50,   -100
+      10000, 5000, 0, -5000, -10000, // alpha.manabar100
+       4999, 2499, 0, -2499,  -4999, // alpha.manabar50
+         99,   49, 0,   -49,    -99  // alpha.manabar1
+    ]);
+  });
+
   test('Should be able to find account based on mock interface', async ({ waxTest }) => {
     const retVal = await waxTest(async({ chain }) => {
       const foundAccount = await chain.api.database_api.find_accounts({ accounts: ['steem'], delayed_votes_active: true });
