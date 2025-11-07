@@ -127,20 +127,20 @@ def return_python_result(foo):
         try:
             result = foo(*args, **kwargs)
             if result is None:
-                result = b''  # Ensure result is bytes
+                result = ''  # Ensure result is str
             else:
-                if isinstance(result, str):
-                    result = result.encode('utf-8')
-                elif not isinstance(result, bytes):
-                    result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
-            return python_result(status=python_error_code.ok, result=result, exception_message=b'')
+                if isinstance(result, bytes):
+                    result = result.decode()
+                elif not isinstance(result, str):
+                    result = json.dumps(result)  # Convert to str if not already
+            return python_result(status=python_error_code.ok, result=result, exception_message='')
         except Exception as ex:
             aux = json.loads(str(ex))
             if isinstance(aux, dict) and 'stack' in aux and isinstance(aux['stack'], list):
                 for val in aux['stack']:
                     if isinstance(val, dict) and 'context' in val and isinstance(val['context'], dict):
                         val['context'].pop('timestamp', None)
-            return python_result(status=python_error_code.fail, result=b'', exception_message=str(aux).encode('utf-8'))
+            return python_result(status=python_error_code.fail, result='', exception_message=str(aux))
     return wrapper
 
 def return_python_json_asset(foo):
@@ -216,7 +216,7 @@ def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_resul
 def get_public_key_from_signature(digest: str, signature: str) -> python_result:
     cdef protocol obj
     response = obj.cpp_get_public_key_from_signature(encode_str(digest), encode_str(signature))
-    return response
+    return decode_bytes(response)
 
 @return_python_result
 def serialize_transaction(transaction: str) -> python_result:
@@ -232,8 +232,8 @@ def deserialize_transaction(transaction: str)  -> python_result:
 @return_python_result
 def generate_private_key() -> python_result:
     cdef protocol obj
-    response =  obj.cpp_generate_private_key()
-    return response
+    response = obj.cpp_generate_private_key()
+    return decode_bytes(response)
 
 def generate_password_based_private_key(account: str, role: str, password: str) -> python_private_key_data:
     cdef protocol obj
@@ -249,7 +249,7 @@ def suggest_brain_key() -> python_brain_key_data:
 def calculate_public_key(wif: str) -> python_result:
     cdef protocol obj
     response = obj.cpp_calculate_public_key(encode_str(wif))
-    return response
+    return decode_bytes(response)
 
 def convert_wif_public_key_to_raw(wif: bytes) -> str:
     cdef protocol obj
@@ -309,7 +309,7 @@ def calculate_hp_apr(
     cdef json_asset _virtual_supply = encode_json_asset(virtual_supply)
     cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
     response = obj.cpp_calculate_hp_apr(head_block_num, vesting_reward_percent, _virtual_supply, _total_vesting_fund_hive)
-    return response
+    return decode_bytes(response)
 
 @return_python_json_asset
 def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset ) -> python_json_asset:

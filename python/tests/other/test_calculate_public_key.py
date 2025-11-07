@@ -8,17 +8,17 @@ import wax
 @pytest.mark.parametrize(
     ("pv", "pub"),
     [
-        ("5HrsWGvAPXxSt8UbAoosaaNXqwZqSbPcu51AZts5sbWP4FRK75h", b"STM5G7HFCyKq3onQZn2nVGphKfzYpRyLR8bBP1jQewtaNDA76n1RE"),
-        ("5JN1fKJ8Zdrn6NmwCtBx1ktALaUCTxdmVgtE8ZwVyxMiRjwE1Dh", b"STM8hCsdMnyrffbo1UPBn2XLQC5TPbZ8PnBNzRgUVwp3e19JHrWTA"),
-        ("5KPSLEcntyCQ3GL85tq22e4aYPQQAeofGBUMzBwRa338GGPkoaE", b"STM6w5YXbTT2dXNjbfUw6AuFnmtHjoHKVuH6Se21nsjiQDxsAafFt"),
-        ("5HufMWCkd6VSoTWY4Vac7GYZnijmBnahYw4WRFAVWM5WCg41btp", b"STM5bmHcoCxiwL7NB7sAZ3CdcrnS3xjZ1aenxAth7Zh3DHfZwZqu2"),
-        ("5JVpkan3wmfp739qqnHB74SFtquYnbSJKKSNw6eav9FSiSaUZ51", b"STM6cJuz8XUkYMDgAWfjnhCTMTyf19T9hMiqBdnhKt6ZDtSW4eSbn"),
-        ("5JQZYQEC6td4Qgix5XjvVPndn9KPg4s36bYs6GB1RfRKoVcyRbg", b"STM8ed5aCG1z4ytR6SXGu4NP8u5t2NPnjApus1DzTEFhaaJaNTchr"),
-        ("5JWWf8VHH4fgYqWSwkzqFv9bVwfLCKihWDgLUG8VhaSzJK6vgGb", b"STM6SgC7CiAUKnrPPE2xZM26LBvaccpUg8GEw2KTGxzcKas1FQa6o"),
-        ("5KA8z1BDz4Tx1Rv3dkyUE8ySPg5q9iZ47JQtZV9LCkU9WpkT5jx", b"STM8ijGkwArT88m6u93iBrb8HPtBdkfLT2ZqyHa3nGzPKiwyrMGkQ"),
-        ("5KULwD6ifh2kDVfoJzMDiab7dWt1Xm5B3tyacXS2AtAdTTtw8ZR", b"STM4zkfhmsWY1LkUQTRqqMcCkcTYGmwWa66iu9DxpdGf2Fide1MfV"),
-        ("5K9NbgGuV1ptFNXFdD6qtXnZ9cXmnJx9MstkJefK3uVGm92QRMM", b"STM6Ti6u3nyvd1mcRQtXbKCxXXuWVNRpzxudtioTtCtGstfkuDxve"),
+        ("5HrsWGvAPXxSt8UbAoosaaNXqwZqSbPcu51AZts5sbWP4FRK75h", "STM5G7HFCyKq3onQZn2nVGphKfzYpRyLR8bBP1jQewtaNDA76n1RE"),
+        ("5JN1fKJ8Zdrn6NmwCtBx1ktALaUCTxdmVgtE8ZwVyxMiRjwE1Dh", "STM8hCsdMnyrffbo1UPBn2XLQC5TPbZ8PnBNzRgUVwp3e19JHrWTA"),
+        ("5KPSLEcntyCQ3GL85tq22e4aYPQQAeofGBUMzBwRa338GGPkoaE", "STM6w5YXbTT2dXNjbfUw6AuFnmtHjoHKVuH6Se21nsjiQDxsAafFt"),
+        ("5HufMWCkd6VSoTWY4Vac7GYZnijmBnahYw4WRFAVWM5WCg41btp", "STM5bmHcoCxiwL7NB7sAZ3CdcrnS3xjZ1aenxAth7Zh3DHfZwZqu2"),
+        ("5JVpkan3wmfp739qqnHB74SFtquYnbSJKKSNw6eav9FSiSaUZ51", "STM6cJuz8XUkYMDgAWfjnhCTMTyf19T9hMiqBdnhKt6ZDtSW4eSbn"),
+        ("5JQZYQEC6td4Qgix5XjvVPndn9KPg4s36bYs6GB1RfRKoVcyRbg", "STM8ed5aCG1z4ytR6SXGu4NP8u5t2NPnjApus1DzTEFhaaJaNTchr"),
+        ("5JWWf8VHH4fgYqWSwkzqFv9bVwfLCKihWDgLUG8VhaSzJK6vgGb", "STM6SgC7CiAUKnrPPE2xZM26LBvaccpUg8GEw2KTGxzcKas1FQa6o"),
+        ("5KA8z1BDz4Tx1Rv3dkyUE8ySPg5q9iZ47JQtZV9LCkU9WpkT5jx", "STM8ijGkwArT88m6u93iBrb8HPtBdkfLT2ZqyHa3nGzPKiwyrMGkQ"),
+        ("5KULwD6ifh2kDVfoJzMDiab7dWt1Xm5B3tyacXS2AtAdTTtw8ZR", "STM4zkfhmsWY1LkUQTRqqMcCkcTYGmwWa66iu9DxpdGf2Fide1MfV"),
+        ("5K9NbgGuV1ptFNXFdD6qtXnZ9cXmnJx9MstkJefK3uVGm92QRMM", "STM6Ti6u3nyvd1mcRQtXbKCxXXuWVNRpzxudtioTtCtGstfkuDxve"),
     ],
 )
-def test_proper_calculations(pv: str, pub: bytes) -> None:
+def test_proper_calculations(pv: str, pub: str) -> None:
     assert wax.calculate_public_key(pv).result == pub

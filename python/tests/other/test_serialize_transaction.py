@@ -7,7 +7,7 @@ import pytest
 
 import wax
 
-from .consts import ENCODING, VALID_TRXS
+from .consts import VALID_TRXS
 
 TRX_BINARY_ALL_DEFAULTS: Final[bytes] = b"00000000000000000000000000"
 
@@ -33,7 +33,7 @@ def test_serialize_transaction(trx_binary: bytes) -> None:
     # ASSERT
     assert result.status == wax.python_error_code.ok
     assert not result.exception_message
-    assert result.result == expected_trx_binary
+    assert result.result == expected_trx_binary.decode()
 
 
 @pytest.mark.parametrize("trx_json", [TRX_DICT_WITH_ALL_DEFAULTS], ids=["dict with all defaults"])
@@ -48,7 +48,7 @@ def test_serialize_empty_transaction(trx_json: dict[str, Any]) -> None:
     # ASSERT
     assert result.status == wax.python_error_code.ok
     assert not result.exception_message
-    assert result.result == expected_trx_binary
+    assert result.result == expected_trx_binary.decode()
 
 
 @pytest.mark.parametrize("trx_binary", list(VALID_TRXS), ids=range(len(VALID_TRXS)))
@@ -62,7 +62,7 @@ def test_deserialize_transaction(trx_binary: bytes) -> None:
     # ASSERT
     assert result.status == wax.python_error_code.ok
     assert not result.exception_message
-    decoded_transaction = json.loads(result.result.decode(ENCODING))
+    decoded_transaction = json.loads(result.result)
     assert decoded_transaction == expected_transaction
 
 
@@ -77,5 +77,5 @@ def test_deserialize_empty_transaction() -> None:
     # ASSERT
     assert result.status == wax.python_error_code.ok
     assert not result.exception_message
-    decoded_transaction = json.loads(result.result.decode(ENCODING))
+    decoded_transaction = json.loads(result.result)
     assert decoded_transaction == expected_transaction

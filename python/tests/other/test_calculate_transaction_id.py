@@ -12,4 +12,4 @@ def test_proper_transaction_id(trx_id: str) -> None:
     result = wax.calculate_transaction_id(VALID_TRX_ID_WITH_TRANSACTIONS[trx_id])
     assert result.status == wax.python_error_code.ok
     assert not result.exception_message
-    assert result.result.decode(ENCODING) == trx_id
+    assert result.result == trx_id

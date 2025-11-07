@@ -16,15 +16,15 @@ def test_proto_to_api_to_proto():
     proto_str = json.dumps(PROTO_REF_TRANSACTION)
     api = proto_to_api(proto_str)
     assert api.status == api.status.ok
-    assert api.exception_message == b''
-    assert api.result.decode() == json.dumps(API_REF_TRANSACTION)
+    assert api.exception_message == ''
+    assert api.result == json.dumps(API_REF_TRANSACTION)
 
-    api_str = api.result.decode()
+    api_str = api.result
     proto = api_to_proto(api_str)
     print(proto)
     assert proto.status == proto.status.ok
-    assert proto.exception_message == b''
-    assert proto.result.decode() == json.dumps(PROTO_REF_TRANSACTION)
+    assert proto.exception_message == ''
+    assert proto.result == json.dumps(PROTO_REF_TRANSACTION)
 
     # We do not test conversion for operations (legacy code)
 
@@ -63,16 +63,16 @@ def test_proto_to_api_to_proto():
     # print(proto_json)
     # print(proto_json.replace(" ", "").replace("\n", ""))
     # api_result = proto_to_api(proto_json)
-    # assert api_result.status == api_result.status.ok
-    # assert api_result.exception_message == b''
+    # assert api_result.status == api_res`ult.status.ok
+    # assert api_result.exception_message == ''
 
-    # api_json = api_result.result.decode()
+    # api_json = api_result.result
     # print(api_json)
     # proto_result = api_to_proto(api_json)
-    # print(proto_result.result.decode())
+    # print(proto_result.result)
     # assert proto_result.status == proto_result.status.ok
-    # assert proto_result.exception_message == b''
-    # assert proto_result.result.decode() == proto_json.replace(" ", "").replace("\n", "")
+    # assert proto_result.exception_message == ''
+    # assert proto_result.result == proto_json.replace(" ", "").replace("\n", "")
 
     # # Test special case: recover_account operation
     # extension: future_extensions = future_extensions()
@@ -102,15 +102,15 @@ def test_proto_to_api_to_proto():
     # print(proto_json.replace(" ", "").replace("\n", ""))
     # api_result = proto_to_api(proto_json)
     # assert api_result.status == api_result.status.ok
-    # assert api_result.exception_message == b''
+    # assert api_result.exception_message == ''
 
-    # api_json = api_result.result.decode()
+    # api_json = api_result.result
     # print(api_json)
     # proto_result = api_to_proto(api_json)
-    # print(proto_result.result.decode())
+    # print(proto_result.result)
     # assert proto_result.status == proto_result.status.ok
-    # assert proto_result.exception_message == b''
-    # assert proto_result.result.decode() == proto_json.replace(" ", "").replace("\n", "")
+    # assert proto_result.exception_message == ''
+    # assert proto_result.result == proto_json.replace(" ", "").replace("\n", "")
 
     # # Test special case: witness_set_properties operation
     # witness_set_properties_proto: witness_set_properties = witness_set_properties(
@@ -137,12 +137,12 @@ def test_proto_to_api_to_proto():
     # print(proto_json.replace(" ", "").replace("\n", ""))
     # api_result = proto_to_api(proto_json)
     # assert api_result.status == api_result.status.ok
-    # assert api_result.exception_message == b''
+    # assert api_result.exception_message == ''
 
-    # api_json = api_result.result.decode()
+    # api_json = api_result.result
     # print(api_json)
     # proto_result = api_to_proto(api_json)
-    # print(proto_result.result.decode())
+    # print(proto_result.result)
     # assert proto_result.status == proto_result.status.ok
-    # assert proto_result.exception_message == b''
-    # assert proto_result.result.decode() == proto_json.replace(" ", "").replace("\n", "")
+    # assert proto_result.exception_message == ''
+    # assert proto_result.result == proto_json.replace(" ", "").replace("\n", "")

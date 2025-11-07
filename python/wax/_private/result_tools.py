@@ -27,15 +27,15 @@ def to_cpp_string(value: bytes | str) -> bytes:
 
 def validate_wax_result(result: python_result) -> None:
     if result.status == python_error_code.fail:
-        raise WaxValidationFailedError(to_python_string(result.exception_message))
+        raise WaxValidationFailedError(result.exception_message)
 
 
 def expose_result_as_python_string(result: python_result) -> str:
-    return to_python_string(result.result)
+    return result.result
 
 
 def expose_result_as_cpp_string(result: python_result) -> bytes:
-    return result.result
+    return result.result.encode()
 
 
 def decode_impacted_account_names(account_names: list[bytes]) -> list[AccountName]:

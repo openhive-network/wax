@@ -22,5 +22,5 @@ def test_calculate_inflation_rate_for_block(
 ) -> None:
     result = calculate_inflation_rate_for_block(block_num)
     assert result.status == result.status.ok
-    assert result.exception_message == b''
-    assert result.result.decode() == expected
+    assert result.exception_message == ''
+    assert result.result == expected

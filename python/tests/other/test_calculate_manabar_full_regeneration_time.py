@@ -30,4 +30,4 @@ def test_proper_calculate_manabar_full_regeneration_time(
     response = wax.calculate_manabar_full_regeneration_time(now, max_mana, current_mana, last_update_time)
     assert not response.exception_message
     assert response.result
-    assert int(response.result.decode()) == expected
+    assert int(response.result) == expected

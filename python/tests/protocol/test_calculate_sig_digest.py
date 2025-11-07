@@ -8,25 +8,25 @@ def test_calculate_sig_digest():
     tx_str = json.dumps(API_REF_TRANSACTION)
     result = calculate_sig_digest(transaction=tx_str, chain_id='beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.ok
-    assert result.exception_message == b''
-    assert result.result == b'b31ff450905ad705ed0d7fd5e270c3685442203e15e1b1e7d5e94b35dcdc1693'
+    assert result.exception_message == ''
+    assert result.result == 'b31ff450905ad705ed0d7fd5e270c3685442203e15e1b1e7d5e94b35dcdc1693'
 
     # Negative test
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
     result = calculate_sig_digest(tx_str, 'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.fail
     assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
+        "{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
 
 def test_calculate_serialization_sensitive_sig_digest():
     tx_str = json.dumps(API_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
     result = calculate_sig_digest(tx_str, 'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.ok
-    assert result.exception_message == b''
-    assert result.result == b'8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9'
+    assert result.exception_message == ''
+    assert result.result == '8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9'
 
     tx_str = json.dumps(API_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
     result = calculate_legacy_sig_digest(tx_str, 'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.ok
-    assert result.exception_message == b''
-    assert result.result == b'7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe'
+    assert result.exception_message == ''
+    assert result.result == '7fbd09ff2c3a90acfc59adce5abffdaa3fc95e33160c5ac237f0f4366f90e2fe'

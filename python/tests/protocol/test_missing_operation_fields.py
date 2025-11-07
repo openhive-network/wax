@@ -46,7 +46,7 @@ def test_another_bad_serialization():
     )
     result = calculate_transaction_id(trx)
     assert result.status == result.status.ok
-    assert result.result == b'f022d1cab57d8e53e5cc15c833496c800f391e0a'
+    assert result.result == 'f022d1cab57d8e53e5cc15c833496c800f391e0a'
 
 def test_missing_allow_votes_and_allow_curation_rewards_members_in_comment_options_operation():
     """
@@ -247,7 +247,7 @@ def test_bad_array_deserialization():
 
     result = calculate_transaction_id(trx)
     assert result.status == result.status.ok
-    assert result.result == b'2c5cdf6bb4bc5a62eb0e81fa52a8e5598a92c075'
+    assert result.result == '2c5cdf6bb4bc5a62eb0e81fa52a8e5598a92c075'
 
     trx = json.dumps(
       {
@@ -278,5 +278,5 @@ def test_bad_array_deserialization():
 
     result = calculate_transaction_id(trx)
     assert result.status == result.status.ok
-    assert result.result == b'9a970e05ccf2ef77a7149f32ed46228b96908b98'
+    assert result.result == '9a970e05ccf2ef77a7149f32ed46228b96908b98'
 

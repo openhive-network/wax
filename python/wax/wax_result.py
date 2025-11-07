@@ -26,8 +26,8 @@ class python_error_code(IntEnum):  # noqa: N801
 @dataclass
 class python_result:  # noqa: N801
     status: python_error_code
-    result: bytes
-    exception_message: bytes
+    result: str
+    exception_message: str
 
 
 @dataclass
