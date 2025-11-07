@@ -1,0 +1,40 @@
+{
+  "name": "@hiveio/wax-signers-external",
+  "version": "0.0.0-Run-Prepack",
+  "description": "Wax signer library for external encrypted key storage",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "prepack": "jq --argfile source ../../package.json '.version = $source.version' package.json > package.json.tmp && mv package.json.tmp package.json"
+  },
+  "devDependencies": {
+    "typescript": "catalog:typescript-toolset"
+  },
+  "dependencies": {
+    "@hiveio/beekeeper": "1.28.3-251105100532",
+    "@hiveio/wax": "workspace:../.."
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "dist/types.d.ts",
+    "dist/types.js",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": [
+    "wax",
+    "blockchain",
+    "hive",
+    "google-drive",
+    "encrypted-storage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.syncad.com/hive/wax.git"
+  }
+}
