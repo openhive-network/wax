@@ -18,7 +18,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.28.3-251105100532",
+    "@hiveio/beekeeper": "1.28.4-rc0",
     "@hiveio/wax": "workspace:../.."
   },
   "files": [
