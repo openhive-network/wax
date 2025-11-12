@@ -423,6 +423,10 @@ packages:
   '@gerrit0/mini-shiki@1.24.4':
     resolution: {integrity: sha512-YEHW1QeAg6UmxEmswiQbOVEg1CW22b1XUD/lNTliOsu0LD0wqoyleFMnmbTp697QE0pcadQiR5cVtbbAPncvpw==}
 
+  '@hiveio/beekeeper@1.28.3-251105100532':
+    resolution: {integrity: sha1-dRqsIX64FvudhMk0yn8RV9C3tIQ=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.3-251105100532.tgz}
+    engines: {node: ^20.11 || >= 21.2}
+
   '@hiveio/beekeeper@1.28.4-rc0':
     resolution: {integrity: sha1-qLgaAY/l+gXAdleuIeyaMAo6wxA=, tarball: https://gitlab.syncad.com/api/v4/projects/198/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.4-rc0.tgz}
     engines: {node: ^20.11 || >= 21.2}
@@ -2180,6 +2184,8 @@ snapshots:
       '@shikijs/engine-oniguruma': 1.24.2
       '@shikijs/types': 1.24.2
       '@shikijs/vscode-textmate': 9.3.1
+
+  '@hiveio/beekeeper@1.28.3-251105100532': {}
 
   '@hiveio/beekeeper@1.28.4-rc0': {}
 
