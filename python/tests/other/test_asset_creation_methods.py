@@ -5,7 +5,6 @@ from typing import Final, Literal
 import pytest
 
 import wax
-from .consts import ENCODING
 
 INT_32_MIN: Final[int] = -2_147_483_648
 INT_32_MAX: Final[int] = 2_147_483_647
@@ -44,9 +43,9 @@ def test_hive(amount: int, asset: Literal["hbd", "hive", "vests"]) -> None:
     result = wax_function(amount)
 
     # ASSERT
-    assert result.amount == str(amount).encode()
+    assert result.amount == str(amount)
     assert result.precision == expected_precision
-    assert result.nai == expected_nai.encode(ENCODING)
+    assert result.nai == expected_nai
 
 
 @pytest.mark.parametrize("asset", ["hbd", "hive", "vests"])
@@ -66,6 +65,6 @@ def test_general_asset(asset: Literal["hbd", "hive", "vests"]) -> None:
     result = wax.general_asset(asset_num, amount)
 
     # ASSERT
-    assert result.amount == str(amount).encode(ENCODING)
+    assert result.amount == str(amount)
     assert result.precision == expected_precision
-    assert result.nai == expected_nai.encode(ENCODING)
+    assert result.nai == expected_nai

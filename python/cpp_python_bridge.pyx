@@ -148,9 +148,9 @@ def return_python_json_asset(foo):
     def wrapper(*args, **kwargs):
         amount, precision, nai = foo(*args, **kwargs)
         return python_json_asset(
-            amount=encode_str(amount),
+            amount=decode_bytes(amount),
             precision=precision,
-            nai=encode_str(nai)
+            nai=decode_bytes(nai)
         )
 
     return wrapper

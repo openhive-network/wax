@@ -32,9 +32,9 @@ class python_result:  # noqa: N801
 
 @dataclass
 class python_json_asset:  # noqa: N801
-    amount: bytes
+    amount: str
     precision: int
-    nai: bytes
+    nai: str
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, python_json_asset):
