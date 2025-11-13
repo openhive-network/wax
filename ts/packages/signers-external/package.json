@@ -20,8 +20,10 @@
   "files": [
     "dist/index.d.ts",
     "dist/index.js",
-    "dist/types.d.ts",
-    "dist/types.js",
+    "dist/storage-providers/google-storage-provider.js",
+    "dist/storage-providers/google-storage-provider.d.ts",
+    "dist/external-signature-provider.js",
+    "dist/external-signature-provider.d.ts",
     "README.md",
     "LICENSE.md"
   ],
