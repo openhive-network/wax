@@ -159,9 +159,9 @@ class python_authorities:  # noqa: N801
 
 @dataclass
 class python_minimize_required_signatures_data:  # noqa: N801
-    chain_id: bytes
-    available_keys: list[bytes]
-    authorities_map: dict[bytes, python_authorities]
+    chain_id: str
+    available_keys: list[str]
+    authorities_map: dict[str, python_authorities]
     get_witness_key: Callable[[bytes], bytes]
     max_recursion: int | None = None
     max_membership: int | None = None
