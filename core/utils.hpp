@@ -12,11 +12,11 @@
 //#define WAX_EXCEPTION_LOGGING
 #ifdef WAX_EXCEPTION_LOGGING
   #define WAX_EXCEPTION_ILOG( FORMAT, ...) ilog( FORMAT, __VA_ARGS__ )
-  #define WAX_EXCEPTION_WLOG( FORMAT, ...) WAX_EXCEPTION_WLOG( FORMAT, __VA_ARGS__ )
+  #define WAX_EXCEPTION_WLOG( FORMAT, ...) wlog( FORMAT, __VA_ARGS__ )
 #else
   #define WAX_EXCEPTION_ILOG( FORMAT, ...) /* nothing */
   #define WAX_EXCEPTION_WLOG( FORMAT, ...) /* nothing */
-#endif /// VAL_PROTOCOL_LOGGING
+#endif /// WAX_EXCEPTION_LOGGING
 
 namespace cpp
 {
