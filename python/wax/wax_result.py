@@ -116,13 +116,13 @@ class python_brain_key_data:  # noqa: N801
 @dataclass
 class python_witness_set_properties_data:  # noqa: N801
     # Witness key to match the current witness key. Obligatory
-    key: bytes
+    key: str
     # New witness key to set
-    new_signing_key: bytes | None = None
+    new_signing_key: str | None = None
     # HIVE maximum account creation fee
     account_creation_fee: python_json_asset | None = None
     # New witness URL to set
-    url: bytes | None = None
+    url: str | None = None
     # HBD to HIVE ratio proposed by the witness
     hbd_exchange_rate: python_price | None = None
     # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity

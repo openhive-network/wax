@@ -801,10 +801,10 @@ def deserialize_witness_set_properties(serialized_properties: dict[str, str]) ->
 
     deserialized_props = obj.cpp_deserialize_witness_set_properties(_serialized_props)
 
-    ret_val=python_witness_set_properties_data(key=deserialized_props.key)
+    ret_val=python_witness_set_properties_data(key=deserialized_props.key.decode())
 
     if deserialized_props.new_signing_key.has_value():
-      ret_val.new_signing_key = bytes(deserialized_props.new_signing_key.value())
+      ret_val.new_signing_key = deserialized_props.new_signing_key.value().decode()
 
     if deserialized_props.account_creation_fee.has_value():
       ret_val.account_creation_fee = python_json_asset(deserialized_props.account_creation_fee.value().amount,
@@ -813,7 +813,7 @@ def deserialize_witness_set_properties(serialized_properties: dict[str, str]) ->
         )
 
     if deserialized_props.url.has_value():
-      ret_val.url = bytes(deserialized_props.url.value())
+      ret_val.url = deserialized_props.url.value().decode()
 
     if deserialized_props.hbd_exchange_rate.has_value():
       _source=deserialized_props.hbd_exchange_rate.value()

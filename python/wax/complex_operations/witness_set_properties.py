@@ -7,7 +7,6 @@ from wax._private.base_api import WaxBaseApi
 from wax._private.converters.python_price_converter import convert_to_python_price
 from wax._private.models.asset import Asset
 from wax._private.operation_base import ConvertedToProtoOperation, OperationBase
-from wax._private.result_tools import to_cpp_string
 from wax.models.asset import AssetName, HbdNaiAssetConvertible, HiveNaiAssetConvertible
 from wax.proto.operations import witness_set_properties
 from wax.wax_result import python_witness_set_properties_data
@@ -50,10 +49,10 @@ class WitnessSetProperties(OperationBase):
         self.account_creation_fee = data.account_creation_fee
         self.hbd_exchange_rate = data.hbd_exchange_rate
         self.props = python_witness_set_properties_data(
-            to_cpp_string(data.witness_signing_key),
-            to_cpp_string(data.new_signing_key) if data.new_signing_key else None,
+            data.witness_signing_key,
+            data.new_signing_key if data.new_signing_key else None,
             None,  # account_creation_fee -> set in finalize
-            to_cpp_string(data.url) if data.url else None,
+            data.url if data.url else None,
             None,  # hbd_exchange_rate -> set in finalize
             data.maximum_block_size,
             data.hbd_interest_rate,
