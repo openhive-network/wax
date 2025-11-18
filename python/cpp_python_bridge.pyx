@@ -44,13 +44,6 @@ def call_with_exception_relay(foo):
     def wrapper(*args, **kwargs):
         try:
             result = foo(*args, **kwargs)
-            if result is None:
-                result = b''  # Ensure result is bytes
-            else:
-                if isinstance(result, str):
-                    result = result.encode('utf-8')
-                elif not isinstance(result, bytes):
-                    result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
             return result
         except Exception as ex:
             raise_appropriate_wax_exception(ex)
@@ -438,6 +431,7 @@ cdef class WaxTransactionHandle:
 cdef class WaxOperationHandle:
   cdef hive_operation_handle hOp
 
+@call_with_exception_relay
 def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandle:
     cdef protocol obj
     # Call the C++ method which returns a transaction pointer.
@@ -447,6 +441,7 @@ def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandl
     wax_tx.hTx = move(hTx)
     return wax_tx
 
+@call_with_exception_relay
 def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
     cdef protocol obj
     # Call the C++ method which returns an operation pointer.
