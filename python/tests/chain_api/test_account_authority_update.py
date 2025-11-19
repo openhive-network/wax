@@ -386,4 +386,4 @@ async def test_catching_exception_catching_during_account_update_finalization() 
     # Incorrect memo key below to trigger WaxAssertionError during finalization
     wax_account_authority_update_op.roles.memo.set("STM56UB7G2kab5br1eVNVxNfKcwTA1c5pHksZ8WAU52qM8J2538Uw")
     with pytest.raises(WaxAssertionError):
-        transaction.push_operation(next(iter(list(wax_account_authority_update_op.finalize(remote_chain)))))  # Error
+        transaction.push_operation(wax_account_authority_update_op)  # Error
