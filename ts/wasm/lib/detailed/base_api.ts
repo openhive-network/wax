@@ -392,7 +392,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
    *
    * @param {string} content text to be scanned
    * @param {string} account name of account being protected against security leak
-   * @param {IWaxAuthorities} accountAuthorities account authority definition (to retrieve public keys)
+   * @param {wax_authorities} accountAuthorities account authority definition (to retrieve public keys)
    * @param {TPublicKey} memoKey memo public key
    * @param {TPublicKey[]} [otherKeys] optional list of keys to be checked
    *
