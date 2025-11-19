@@ -574,6 +574,14 @@ test.describe('WASM Protocol', () => {
     expect(retVal).toBe('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
   });
 
+  test('Should be able to convert between WIF public key -> raw compressed formats', async ({ wasmTest }) => {
+    const retVal = await wasmTest(({ protocol }) => {
+      return protocol.cpp_convert_wif_public_key_to_raw('STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4');
+    });
+
+    expect(retVal).toBe('02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705');
+  });
+
   test('Should be able to generate binary metadata information - tx with vote operation', async ({ wasmTest }) => {
     const retVal = await wasmTest.dynamic(({ protocol }, transaction, parseChildrenFn) => {
       const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), false);

@@ -346,6 +346,18 @@ std::string foundation::cpp_convert_raw_public_key_to_wif(const std::string& hex
   );
 }
 
+std::string foundation::cpp_convert_wif_public_key_to_raw(const std::string& wifPublicKey)
+{
+  return cpp::safe_exception_wrapper(
+    [&]() -> std::string {
+      fc::ecc::public_key publicKey = fc::ecc::public_key::from_base58_with_prefix(wifPublicKey, HIVE_ADDRESS_PREFIX);
+      fc::ecc::public_key_data keyData = publicKey.serialize();
+
+      return fc::to_hex( (const char*)&keyData, sizeof(keyData) );
+    }
+  );
+}
+
 brain_key_data foundation::cpp_suggest_brain_key()
 {
   return cpp::safe_exception_wrapper(

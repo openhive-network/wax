@@ -210,6 +210,11 @@ def calculate_public_key(wif: bytes) -> python_result:
     response = obj.cpp_calculate_public_key(wif)
     return response
 
+def convert_wif_public_key_to_raw(wif: bytes) -> str:
+    cdef protocol obj
+    response = obj.cpp_convert_wif_public_key_to_raw(wif)
+    return response.decode()
+
 @return_python_result
 def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
     cdef protocol obj

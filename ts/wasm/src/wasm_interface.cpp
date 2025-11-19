@@ -169,6 +169,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_generate_private_key_password_based", select_overload<private_key_data(const std::string&, const std::string&, const std::string&)>(&foundation_wasm::cpp_generate_private_key))
     .function("cpp_convert_raw_private_key_to_wif", &foundation_wasm::cpp_convert_raw_private_key_to_wif)
     .function("cpp_convert_raw_public_key_to_wif", &foundation_wasm::cpp_convert_raw_public_key_to_wif)
+    .function("cpp_convert_wif_public_key_to_raw", &foundation_wasm::cpp_convert_wif_public_key_to_raw)
     .function("cpp_get_public_key_from_signature", &foundation_wasm::cpp_get_public_key_from_signature)
 
     // Based on https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html#overloaded-functions:

@@ -203,6 +203,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         string cpp_convert_raw_public_key_to_wif(string hexData) except +
 
+        string cpp_convert_wif_public_key_to_raw(string wifPublicKey) except +
+
         brain_key_data cpp_suggest_brain_key() except +
 
         cppmap[string, string] cpp_get_hive_protocol_config(string chain_id) except +
