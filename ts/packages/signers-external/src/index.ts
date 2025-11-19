@@ -1,9 +1,5 @@
 export {
   ExternalSignatureProvider,
-  WaxExternalSignatureProviderError,
-  AStorageProviderBase,
-  WALLET_DATA_FORMAT_VERSION,
-  type IWalletKeyEntry,
-  type IWalletData
+  AStorageProviderBase
 } from "./external-signature-provider.js";
 export { GoogleStorageProvider, type TokenProvider, GoogleDriveError } from "./storage-providers/google-storage-provider.js";
