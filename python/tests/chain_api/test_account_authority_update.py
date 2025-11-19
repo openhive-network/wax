@@ -5,11 +5,12 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from wax import create_hive_chain
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     DEFAULT_ACCOUNT_OR_KEY_WEIGHT,
 )
-from wax.exceptions import AuthorityCannotBeSatisfiedError, HiveMaxAuthorityMembershipExceededError
+from wax.exceptions import AuthorityCannotBeSatisfiedError, HiveMaxAuthorityMembershipExceededError, WaxAssertionError
 from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
 from wax.models.authority import WaxAuthority
 
@@ -374,3 +375,15 @@ async def test_account_authority_update_enforce_owner_role(remote_chain: IHiveCh
     owner_authority = operation["value"]["owner"]
 
     assert len(owner_authority["key_auths"]) > 0
+
+
+@pytest.mark.describe("Expecting WaxAssertionError to be caught")
+async def test_catching_exception_catching_during_account_update_finalization() -> None:
+    remote_chain = create_hive_chain()
+    transaction = remote_chain.create_transaction_with_tapos(tapos_block_id="0")
+
+    wax_account_authority_update_op = await AccountAuthorityUpdateOperation.create_for(remote_chain, "guest4test1")
+    # Incorrect memo key below to trigger WaxAssertionError during finalization
+    wax_account_authority_update_op.roles.memo.set("STM56UB7G2kab5br1eVNVxNfKcwTA1c5pHksZ8WAU52qM8J2538Uw")
+    with pytest.raises(WaxAssertionError):
+        transaction.push_operation(next(iter(list(wax_account_authority_update_op.finalize(remote_chain)))))  # Error
