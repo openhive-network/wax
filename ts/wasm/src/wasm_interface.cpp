@@ -220,6 +220,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_op_impacted_accounts", &foundation_wasm::cpp_op_impacted_accounts)
     .function("cpp_op_to_binary", &foundation_wasm::cpp_op_to_binary)
+    .function("cpp_op_to_json", &foundation_wasm::cpp_op_to_json)
     .function("cpp_op_binary", &foundation_wasm::cpp_op_binary)
     .function("cpp_op_validate", &foundation_wasm::cpp_op_validate)
     .function("cpp_op_required_authorities", &foundation_wasm::cpp_op_required_authorities)

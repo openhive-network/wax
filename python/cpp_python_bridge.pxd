@@ -266,6 +266,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         vector[string]        cpp_op_impacted_accounts(hive_operation_handle op_handle)except +
         string                     cpp_op_to_binary(hive_operation_handle op_handle, bool use_hf26_serialization)except +
         binary_data                     cpp_op_binary(hive_operation_handle op_handle, bool use_hf26_serialization)except +
+        string                     cpp_op_to_json(hive_operation_handle op_handle)except +
         void                            cpp_op_validate(hive_operation_handle op_handle)except +
         required_authority_collection cpp_op_required_authorities(hive_operation_handle op_handle)except +
 

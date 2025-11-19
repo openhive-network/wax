@@ -477,6 +477,11 @@ def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True
     # Call the C++ method to convert the operation to binary format.
     return obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization)
 
+def op_to_json(wax_op: WaxOperationHandle) -> bytes:
+    cdef protocol obj
+    # Call the C++ method to convert the operation to JSON format.
+    return obj.cpp_op_to_json(wax_op.hOp)
+
 def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> python_binary_data:
     cdef protocol obj
     # Call the C++ method to get the binary data of the operation.

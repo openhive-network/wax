@@ -239,6 +239,7 @@ public:
 
   std::vector<std::string>        cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
   std::string                     cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
+  std::string                     cpp_op_to_json(const hive_operation_handle& op_handle)const;
   binary_data                     cpp_op_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
   void                            cpp_op_validate(const hive_operation_handle& op_handle)const;
   required_authority_collection_t cpp_op_required_authorities(const hive_operation_handle& op_handle)const;

@@ -920,6 +920,18 @@ std::string foundation::cpp_op_to_binary(const hive_operation_handle& op_handle,
   });
 }
 
+std::string foundation::cpp_op_to_json(const hive_operation_handle& op_handle)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string {
+    FC_ASSERT(op_handle.op, "Operation handle is not initialized");
+
+    hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::hf26);
+    hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::hf26);
+
+    return fc::json::to_string(*op_handle.op);
+  });
+}
+
 std::string foundation::cpp_tx_to_json(const hive_transaction_handle& tx_handle)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string {

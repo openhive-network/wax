@@ -525,6 +525,7 @@ test.describe('WASM Protocol', () => {
         protocol.cpp_tx_add_signature(txHandle, "1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf");
 
         console.log(
+          protocol.cpp_op_to_json(opHandle),
           protocol.cpp_tx_to_json(txHandle),
           protocol.cpp_tx_id(txHandle, true),
           protocol.cpp_tx_id(txHandle, false)
