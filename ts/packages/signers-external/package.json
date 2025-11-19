@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@hiveio/beekeeper": "1.28.4-rc0",
-    "@hiveio/wax": "workspace:../.."
+    "@hiveio/wax": "workspace:../..",
+    "zod": "^4.1.12"
   },
   "files": [
     "dist/index.d.ts",
