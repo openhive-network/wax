@@ -7,10 +7,16 @@ namespace {
 
 std::string get_assertion_as_json(const fc::assert_exception& e)
 {
-  fc::variant ev;
-  fc::to_variant(*(dynamic_cast<const fc::exception*>(&e)), ev);
-  std::string assertion_as_json = fc::json::to_string(ev);
-  return assertion_as_json;
+  try {
+    fc::variant ev;
+    fc::to_variant(e, ev);
+    std::string assertion_as_json = fc::json::to_string(ev);
+    return assertion_as_json;
+  }
+  catch (const fc::exception& e)
+  {
+    throw std::runtime_error(std::string("Unexpected fc::exception caught while serializing fc::assert_exception: ") + e.to_detail_string());
+  }
 }
 
 }
