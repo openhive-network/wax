@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { WaxExternalSignatureProviderError } from "./errors";
+import { WaxExternalSignatureProviderError } from "./errors.js";
 
 // Define version constants
 const DATA_FORMAT_VERSIONS = {

@@ -1,9 +1,9 @@
 import { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 import { AEncryptionProvider, IHiveChainInterface, ISignatureTransaction, TRole, TSignature } from "@hiveio/wax";
-import { WaxExternalSignatureProviderError } from "./errors";
+import { WaxExternalSignatureProviderError } from "./errors.js";
 
-import type { IWalletData } from "./wallet_zod_versioning";
-import { parseWalletData, updateWalletRole } from "./wallet_zod_versioning";
+import type { IWalletData } from "./wallet_zod_versioning.js";
+import { parseWalletData, updateWalletRole } from "./wallet_zod_versioning.js";
 
 export abstract class AStorageProviderBase {
   abstract get (name: string): Promise<string>;

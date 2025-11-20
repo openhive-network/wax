@@ -25,6 +25,10 @@
     "dist/storage-providers/google-storage-provider.d.ts",
     "dist/external-signature-provider.js",
     "dist/external-signature-provider.d.ts",
+    "dist/wallet_zod_versioning.js",
+    "dist/wallet_zod_versioning.d.ts",
+    "dist/errors.js",
+    "dist/errors.d.ts",
     "README.md",
     "LICENSE.md"
   ],
