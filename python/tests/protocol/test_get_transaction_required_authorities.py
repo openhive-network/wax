@@ -21,11 +21,11 @@ def test_get_transaction_required_autorities():
     assert len(auths.owner_accounts) == 0
     assert other_auth_length == 0
 
-    posting_auths = b','.join(auths.posting_accounts)
-    active_auths = b','.join(auths.active_accounts)
-    owner_auths = b','.join(auths.owner_accounts)
+    posting_auths = ','.join(auths.posting_accounts)
+    active_auths = ','.join(auths.active_accounts)
+    owner_auths = ','.join(auths.owner_accounts)
 
-    assert posting_auths == b'taoteh1221'
+    assert posting_auths == 'taoteh1221'
 
     if( len(posting_auths) != 0 ):
       print(f"Required posting authorities: {posting_auths}")

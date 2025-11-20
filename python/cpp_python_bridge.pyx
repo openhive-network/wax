@@ -98,6 +98,9 @@ def encode_list(source: list[bytes]) -> list[str]:
         encoded.append(encode_str(element))
     return encoded
 
+def decode_list_to_set(source: list[bytes]) -> set[str]:
+    return {decode_bytes(e) for e in source}
+
 def decode_list(source: list[bytes]) -> list[str]:
     decoded: list[str] = []
     for element in source:
@@ -238,12 +241,16 @@ def generate_private_key() -> python_result:
 def generate_password_based_private_key(account: str, role: str, password: str) -> python_private_key_data:
     cdef protocol obj
     pkd = obj.cpp_generate_private_key(encode_str(account), encode_str(role), encode_str(password))
-    return python_private_key_data(pkd.wif_private_key, pkd.associated_public_key)
+    return python_private_key_data(decode_bytes(pkd.wif_private_key), decode_bytes(pkd.associated_public_key))
 
 def suggest_brain_key() -> python_brain_key_data:
     cdef protocol obj
     bki = obj.cpp_suggest_brain_key()
-    return python_brain_key_data(bki.brain_key, bki.wif_private_key, bki.associated_public_key)
+    return python_brain_key_data(
+        decode_bytes(bki.brain_key),
+        decode_bytes(bki.wif_private_key),
+        decode_bytes(bki.associated_public_key)
+    )
 
 @return_python_result
 def calculate_public_key(wif: str) -> python_result:
@@ -537,7 +544,7 @@ def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -
         offsets.append(convert_binary_data_node_to_python(node))
     # Wrap the C++ binary_data in a Python python_binary_data class.
     return python_binary_data(
-        binary=data.binary,
+        binary=decode_bytes(data.binary),
         offsets=offsets
     )
 
@@ -551,9 +558,9 @@ def op_validate(wax_op: WaxOperationHandle) -> None:
     # Call the C++ method to get the required authorities for the operation.
     cdef required_authority_collection collection = obj.cpp_op_required_authorities(wax_op.hOp)
 
-    op = set(collection.posting_accounts)
-    oa = set(collection.active_accounts)
-    oo = set(collection.owner_accounts)
+    op = decode_list_to_set(collection.posting_accounts)
+    oa = decode_list_to_set(collection.active_accounts)
+    oo = decode_list_to_set(collection.owner_accounts)
     other_auths = []
     for auth in collection.other_authorities:
       other_auths.append(python_authority(
@@ -614,11 +621,11 @@ cdef object convert_binary_data_node_to_python(binary_data_node node):
 
     # Create and return the Python object
     return python_binary_data_node(
-        key=node.key,
-        type=node.type,
+        key=decode_bytes(node.key),
+        type=decode_bytes(node.type),
         offset=node.offset,
         size=node.size,
-        value=node.value,
+        value=decode_bytes(node.value),
         length=node.length,
         children=children
     )
@@ -633,7 +640,7 @@ def tx_binary(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True,
         offsets.append(convert_binary_data_node_to_python(node))
     # Wrap the C++ binary_data in a Python python_binary_data class.
     return python_binary_data(
-        binary=data.binary,
+        binary=decode_bytes(data.binary),
         offsets=offsets
     )
 
@@ -642,9 +649,9 @@ def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_aut
     # Call the C++ method to get the required authorities for the transaction.
     cdef required_authority_collection collection = obj.cpp_tx_required_authorities(wax_tx.hTx)
 
-    op = set(collection.posting_accounts)
-    oa = set(collection.active_accounts)
-    oo = set(collection.owner_accounts)
+    op = decode_list_to_set(collection.posting_accounts)
+    oa = decode_list_to_set(collection.active_accounts)
+    oo = decode_list_to_set(collection.owner_accounts)
     other_auths = []
     for auth in collection.other_authorities:
       other_auths.append(python_authority(
@@ -719,9 +726,9 @@ def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
     cdef protocol obj
     decoded = obj.cpp_crypto_memo_from_string(encode_str(encoded_memo))
     return python_encrypted_memo(
-      main_encryption_key=decoded._from,
-      other_encryption_key = decoded.to,
-      encrypted_content = decoded.content
+      main_encryption_key=decode_bytes(decoded._from),
+      other_encryption_key = decode_bytes(decoded.to),
+      encrypted_content = decode_bytes(decoded.content)
     )
 
 def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[str, str]:
