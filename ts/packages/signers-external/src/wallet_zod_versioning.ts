@@ -97,12 +97,63 @@ export const parseWalletData = (data: unknown): IWalletData => {
   throw new Error(`Unknown wallet data version. Got data: ${JSON.stringify(finalResult.data)}`);
 }
 
+/**
+ * Creates an empty wallet data structure in V2 format
+ *
+ * @param accountName - The Hive account name for the wallet
+ * @returns Empty wallet data structure in V2 format
+ */
+export const createEmptyWalletData = (accountName: string): IWalletDataV2 => {
+  return {
+    version: WALLET_DATA_FORMAT_VERSION,
+    hive: {
+      account: accountName,
+      roleDefinitions: {}
+    }
+  };
+};
+
+/**
+ * Updates wallet data with a new role key entry
+ * If the wallet file doesn't exist or is empty, creates a new wallet data structure
+ * If the wallet exists, merges the new role while preserving other roles
+ *
+ * @param existingData - Existing wallet data (undefined if wallet doesn't exist)
+ * @param accountName - The Hive account name
+ * @param role - The role to update (posting, active, owner, memo)
+ * @param privateKey - The private key for this role
+ * @param publicKey - Optional public key (will be stored if provided)
+ * @returns Updated wallet data structure
+ */
+export const updateWalletRole = (
+  existingData: IWalletData | undefined,
+  accountName: string,
+  role: 'posting' | 'active' | 'owner' | 'memo',
+  privateKey: string,
+  publicKey?: string
+): IWalletDataV2 => {
+  const walletData: IWalletDataV2 = existingData
+    ? (existingData.version === WALLET_DATA_FORMAT_VERSION
+        ? existingData as IWalletDataV2
+        : {
+            version: WALLET_DATA_FORMAT_VERSION,
+            hive: existingData.hive
+          })
+    : createEmptyWalletData(accountName);
+
+  // Update the specific role
+  walletData.hive.roleDefinitions[role] = {
+    privateKey,
+    ...(publicKey && { publicKey })
+  };
+
+  return walletData;
+};
+
 // Usage example with type narrowing
 export function processWalletData(rawData: unknown) {
   const result = parseWalletData(rawData);
-  
-  console.log(`Detected wallet version: ${result.version}`);
-  
+
   // TypeScript knows the shape based on discriminated union
   if (result.version === DATA_FORMAT_VERSIONS.V2) {
     // Access V2-specific fields
@@ -112,7 +163,7 @@ export function processWalletData(rawData: unknown) {
     // V1 data
     console.log(`Wallet contains only Hive authority definition: ${result.hive}`);
   }
-  
+
   return result;
 }
 

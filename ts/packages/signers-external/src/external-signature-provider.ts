@@ -3,7 +3,7 @@ import { AEncryptionProvider, IHiveChainInterface, ISignatureTransaction, TRole,
 import { WaxExternalSignatureProviderError } from "./errors";
 
 import type { IWalletData } from "./wallet_zod_versioning";
-import { parseWalletData } from "./wallet_zod_versioning";
+import { parseWalletData, updateWalletRole } from "./wallet_zod_versioning";
 
 export abstract class AStorageProviderBase {
   abstract get (name: string): Promise<string>;
@@ -41,14 +41,47 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
   ): Promise<ExternalSignatureProvider> {
     const rawData = await storage.get(fileName);
 
-    const parsedData: IWalletData = parseWalletData(rawData);
-    
+    const parsedData: IWalletData = parseWalletData(JSON.parse(rawData));
+
     const key = parsedData.hive.roleDefinitions[role];
 
     if (!key)
       throw new WaxExternalSignatureProviderError(`No key found for role: ${role}`, undefined, 'KEY_NOT_FOUND');
 
     const publicKey = await wallet.importKey(key.privateKey);
+    return new ExternalSignatureProvider(publicKey, wallet, chain);
+  }
+
+  public static async createWalletFor (
+    chain: IHiveChainInterface,
+    fileName: string,
+    storage: AStorageProviderBase,
+    wallet: IBeekeeperUnlockedWallet,
+    role: TRole,
+    accountName: string,
+    privateKey: string
+  ): Promise<ExternalSignatureProvider> {
+    if (!chain.isValidAccountName(accountName))
+      throw new WaxExternalSignatureProviderError(`Invalid account name: ${accountName}`, undefined, 'INVALID_ACCOUNT_NAME');
+
+    const publicKey = await wallet.importKey(privateKey);
+
+    let existingData: IWalletData | undefined;
+
+    try {
+      if (await storage.exists(fileName)) {
+        const rawData = await storage.get(fileName);
+
+        existingData = parseWalletData(JSON.parse(rawData));
+      }
+    } catch (error) {
+      existingData = undefined;
+    }
+
+    const walletData = updateWalletRole(existingData, accountName, role, privateKey, publicKey);
+
+    await storage.save(fileName, JSON.stringify(walletData));
+
     return new ExternalSignatureProvider(publicKey, wallet, chain);
   }
 
