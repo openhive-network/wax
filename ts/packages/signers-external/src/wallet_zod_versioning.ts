@@ -150,6 +150,31 @@ export const updateWalletRole = (
   return walletData;
 };
 
+/**
+ * Removes a role key entry from wallet data
+ *
+ * @param existingData - Existing wallet data
+ * @param role - The role to remove (posting, active, owner, memo)
+ * @returns Updated wallet data structure with the role removed
+ */
+export const removeWalletRole = (
+  existingData: IWalletData,
+  role: 'posting' | 'active' | 'owner' | 'memo'
+): IWalletDataV2 => {
+  const walletData: IWalletDataV2 = existingData.version === WALLET_DATA_FORMAT_VERSION
+    ? { ...existingData as IWalletDataV2 }
+    : {
+        version: WALLET_DATA_FORMAT_VERSION,
+        hive: { ...existingData.hive }
+      };
+
+  // Create new roleDefinitions without the specified role
+  const { [role]: _removed, ...remainingRoles } = walletData.hive.roleDefinitions;
+  walletData.hive.roleDefinitions = remainingRoles;
+
+  return walletData;
+};
+
 // Usage example with type narrowing
 export function processWalletData(rawData: unknown) {
   const result = parseWalletData(rawData);

@@ -23,6 +23,8 @@
     "dist/index.js",
     "dist/storage-providers/google-storage-provider.js",
     "dist/storage-providers/google-storage-provider.d.ts",
+    "dist/storage-provider-base.js",
+    "dist/storage-provider-base.d.ts",
     "dist/external-signature-provider.js",
     "dist/external-signature-provider.d.ts",
     "dist/wallet_zod_versioning.js",

@@ -1,4 +1,4 @@
-import { AStorageProviderBase } from "../index.js";
+import { AStorageProviderBase } from "../storage-provider-base.js";
 
 /**
  * Error thrown when Google Drive API operations fail
@@ -84,7 +84,7 @@ export class GoogleStorageProvider extends AStorageProviderBase {
     if (!response.ok) {
       let errorDetails: any;
       const contentType = response.headers.get('content-type');
-      
+
       try {
         if (contentType?.includes('application/json')) {
           errorDetails = await response.json();
