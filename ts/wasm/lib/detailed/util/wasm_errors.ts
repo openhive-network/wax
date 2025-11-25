@@ -32,7 +32,7 @@ export class WasmManager {
       throw error;
 
     if (!this.mainModule)
-      throw new Error("Internal error: Main module not initialized, but exception handling method called");
+      throw new WaxError("Internal error: Main module not initialized, but exception handling method called", error);
 
     let errorMessageList: [string, string] | undefined = undefined;
     try {
@@ -60,7 +60,16 @@ export class WasmManager {
       }
 
     //console.log("Non-typed Error during Wasm call...", e);
-    throw new WaxError(`Non-typed Error during Wasm call: ${error}`, error);
+    let generalMessage = '';
+    if (typeof error === "object" && error && "message" in error) {
+      if (typeof error.message === "string")
+        generalMessage = error.message;
+      else if (typeof error.message === "object" && error.message && error.message[0]) {
+        generalMessage = `${error.message[0]}: ${error.message[1]}`;
+      }
+    }
+
+    throw new WaxError(`Non-typed Error during Wasm call: ${generalMessage}`, error);
   }
 
   public safeWasmCall<T>(wasmFunction: () => T): T {
