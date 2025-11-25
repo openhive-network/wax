@@ -555,19 +555,22 @@ std::string foundation::cpp_get_public_key_from_signature(const std::string& dig
 
 void foundation::cpp_throws(int type) const
 {
-  return cpp::safe_exception_wrapper([&]() -> void {
-      if(type == 0)
-        throw;
-      else if(type == 1)
-        throw "Hello";
-      else if(type == 2)
-        throw std::string{"Hello, world!"};
-      else if(type == 3)
-        throw std::runtime_error{ "Hello, my exception!" };
-      else if(type == 4)
-        FC_ASSERT( false, "Hello fc exception!" );
-      }
-    );
+  return cpp::safe_exception_wrapper([&]() NO_RETURN -> void {
+    if(type == 1)
+      throw "Hello";
+    else if(type == 2)
+      throw std::string{"Hello, world!"};
+    else if(type == 3)
+      throw std::runtime_error{ "Hello, my exception!" };
+    else if(type == 4)
+      FC_ASSERT( false, "Hello fc exception!" );
+    else if(type == 5) // This should throw std exception under the hood
+      throw wax_unknown_assertion( 0xDEADBEEF, fc::assert_exception( FC_LOG_MESSAGE( error, "Simulated assert exception" ) ) );
+    else if(type == 6) // External library unhandled exception object
+      throw boost::bad_lexical_cast{};
+
+    throw; // This should std::terminate()
+  });
 }
 
 transaction_handle_stats foundation::cpp_report_transaction_handle_stats() const
