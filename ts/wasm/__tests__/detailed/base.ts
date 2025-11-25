@@ -65,101 +65,156 @@ test.describe('WASM Base tests', () => {
     expect(moduleType).toBe('object');
   });
 
-  test('Should test throw 0', async () => {
+  test('Should test throw 0 - Abort test - std::terminate called', async () => {
     const { protocol } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(0);
-      } catch(error) {
-        const e: Error = error as Error;
-        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+    try {
+      protocol.cpp_throws(0);
+    } catch(error) {
+      const e: Error = error as Error;
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(e.message).toBe('unreachable');
+      expect(e.name).toBe('RuntimeError');
+      expect(e.stack).toBeDefined();
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
-  test('Should test throw 1', async () => {
+  test('Should test throw 1 - throw const char*', async () => {
     const { protocol } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(1);
-      } catch(error) {
-        const e: Error = error as Error;
-        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+    try {
+      protocol.cpp_throws(1);
+    } catch(error) {
+      const e: Error = error as Error;
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstanard exception']);
+      expect(e.name).toBe(undefined);
+      expect(e.stack).toBeDefined();
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
-  test('Should test throw 2', async () => {
+  test('Should test throw 2 - throw std::string', async () => {
     const { protocol } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(2);
-      } catch(error) {
-        const e: Error = error as Error;
-        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+    try {
+      protocol.cpp_throws(2);
+    } catch(error) {
+      const e: Error = error as Error;
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstanard exception']);
+      expect(e.name).toBe(undefined);
+      expect(e.stack).toBeDefined();
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
-  test('Should test throw 3', async () => {
+  test('Should test throw 3 - throw std::runtime_error', async () => {
     const { protocol } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(3);
-      } catch(error) {
-        const e: Error = error as Error;
-        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+    try {
+      protocol.cpp_throws(3);
+    } catch(error) {
+      const e: Error = error as Error;
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(e.message).toStrictEqual(['std::runtime_error', 'Hello, my exception!']);
+      expect(e.name).toBe(undefined);
+      expect(e.stack).toBeDefined();
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
-  test('Should test throw 4', async () => {
-    const { protocol, provider } = await createWasmTestFor('node');
+  test('Should test throw 4 - fail FC_ASSERT', async () => {
+    const { protocol } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(4);
-      } catch(error) {
-        console.error(provider.getExceptionMessage(error));
-        const e: Error = error as Error;
-        console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+    try {
+      protocol.cpp_throws(4);
+    } catch(error) {
+      const e: Error = error as Error;
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(e.message[0]).toStrictEqual('cpp::wax_protocol_assertion');
+      expect(e.message[1]).toContain('"format":"Hello fc exception!","data":{}');
+      expect(e.message[1]).toContain('"assert_hash":');
+      expect(e.name).toBe(undefined);
+      expect(e.stack).toBeDefined();
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
   test('Should test getExceptionMessage with fc::assert_exception', async () => {
     const { protocol, provider } = await createWasmTestFor('node');
 
-    expect(() => {
-      try {
-        protocol.cpp_throws(4);
-      } catch(error) {
-        const tuple = provider.getExceptionMessage(error);
-        //console.error(`Here you are: ${tuple}`);
-        //console.error(`Here you are: ${tuple[0]}, ${tuple[1]}`);
-        const assertionObject = JSON.parse(tuple[1]);
-        const assertionHash: string = assertionObject.assert_hash;
-        //const hae: WaxAssertionError = new WaxAssertionError(assertionHash, tuple[1]);
-        //console.error(`name: ${hae.name}, assertionHash: ${hae.assertionHash}, sourceJson: ${hae.message}`);
-        console.error(`assertionHash: ${assertionHash}, sourceJson: ${tuple[1]}`);
+    try {
+      protocol.cpp_throws(4);
+    } catch(error) {
+      const exMsg = provider.getExceptionMessage(error);
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-        throw error;
-      }
-    }).toThrow();
+      expect(exMsg[0]).toStrictEqual('cpp::wax_protocol_assertion');
+      expect(exMsg[1]).toContain('"format":"Hello fc exception!","data":{}');
+      expect(exMsg[1]).toContain('"assert_hash":');
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
   });
 
+  test('Should test throw 5 - throw wax_unknown_assertion', async () => {
+    const { protocol, provider } = await createWasmTestFor('node');
+
+    try {
+      protocol.cpp_throws(5);
+    } catch(error) {
+      const exMsg = provider.getExceptionMessage(error);
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+      expect(exMsg[0]).toStrictEqual('cpp::wax_unknown_assertion');
+      expect(exMsg[1]).toContain('"format":"Simulated assert exception","data":{}');
+      expect(exMsg[1]).not.toContain('"assert_hash":'); // wax_unknown_assertion does not contain assert_hash by default
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
+  });
+
+  test('Should test throw 6 - throw external library exception - boost::bad_lexical_cast', async () => {
+    const { protocol, provider } = await createWasmTestFor('node');
+
+    try {
+      protocol.cpp_throws(6);
+    } catch(error) {
+      const exMsg = provider.getExceptionMessage(error);
+      // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
+
+      expect(exMsg[0]).toStrictEqual('boost::bad_lexical_cast');
+      expect(exMsg[1]).toStrictEqual('bad lexical cast: source type value could not be interpreted as target');
+
+      return;
+    }
+
+    throw new Error('Expected exception was not thrown');
+  });
 });

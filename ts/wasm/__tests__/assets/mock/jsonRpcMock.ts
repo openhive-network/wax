@@ -13,6 +13,7 @@ import zero_max_block_age from "./data/zero_max_block_age";
 import alphaManabar1 from "./data/vote.manabar-1";
 import alphaManabar50 from "./data/vote.manabar-50";
 import alphaManabar100 from "./data/vote.manabar-100";
+import largeinput from "./data/largeinput";
 
 export default {
   "condenser_api.get_active_votes": (params: Record<string, any>) => {
@@ -52,6 +53,9 @@ export default {
 
     if (accounts === undefined || !Array.isArray(accounts) || accounts.length === 0)
       return;
+
+    if (accounts.length === 1 && accounts[0] === 'toolargeinputitis')
+      return largeinput;
 
     if (accounts.length === 1 && accounts[0] === 'sunnyvo')
       return sunnyvo;
