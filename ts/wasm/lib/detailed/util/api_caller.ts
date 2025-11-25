@@ -8,7 +8,7 @@ import { structuredClone } from "../shims/structuredclone.js";
 export type TInterceptorRequestOptions = IRequestOptions & { paths: string[]; apiCallerId: string };
 
 export type TRequestInterceptor = (data: TInterceptorRequestOptions) => IRequestOptions;
-export type TResponseInterceptor = (data: IDetailedResponseData<any>) => IDetailedResponseData<any>;
+export type TResponseInterceptor = (data: IDetailedResponseData<any>, requestData: TInterceptorRequestOptions) => IDetailedResponseData<any>;
 
 /**
  * Helper base type to describe common parts of WaxChain API callers
@@ -130,9 +130,9 @@ export class ApiCaller extends RequestHelper {
 
       const url = path + queryString;
 
-      const data = that.staticResponseInterceptor(responseInterceptor(await that.request<object>(requestInterceptor(that.staticRequestInterceptor({
+      const requestData = {
         method,
-        responseType: 'json',
+        responseType: 'json' as const,
         endpoint,
         timeout: that.apiTimeout,
         url,
@@ -140,12 +140,14 @@ export class ApiCaller extends RequestHelper {
         waxApiCaller: that.defaultWaxApiCaller,
         paths: callFn.realPaths,
         apiCallerId: that.id
-      }))))) as IDetailedResponseData<object>;
+      };
+
+      const data = that.staticResponseInterceptor(responseInterceptor(await that.request<object>(requestInterceptor(that.staticRequestInterceptor(requestData))), requestData), requestData) as IDetailedResponseData<object>;
       let result: any = data.response;
 
       if(typeof callFn.config === 'object') {
         if(result === undefined && callFn.config.result !== undefined)
-          throw new WaxChainApiError('No result found in the Hive API response', data);
+          throw new WaxChainApiError('No result found in the Hive API response', requestData, data);
       }
 
       return result;

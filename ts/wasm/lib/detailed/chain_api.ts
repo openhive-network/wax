@@ -75,7 +75,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
       data.url = '';
 
       return data;
-    }, data => { // Rewrite response data to JSON-RPC format
+    }, (data, requestData) => { // Rewrite response data to JSON-RPC format
       if (typeof data.response === "object") {
         if ("result" in data.response) {
           data.response = data.response.result;
@@ -83,12 +83,20 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
         }
 
         if ("error" in data.response && typeof data.response.error === "object" && "data" in data.response.error) {
-          // Possibly an exception that we can recognize & repackage.
-          this.wasmManager.safeWasmCall(() => this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data)));
+          try {
+            // Possibly an exception that we can recognize & repackage.
+            this.wasmManager.safeWasmCall(() => this.protocol.cpp_transform_api_error_response_into_exception(JSON.stringify(data.response.error.data)));
+          } catch (error) {
+            // Rewrite the cause to allow user to extract request/response data for further analysis
+            (error as Error).cause = new WaxChainApiError(`Chain API returned an error`, requestData, data, (error as Error).cause as Error | undefined);
+
+            // Rethrow the exception
+            throw error;
+          }
         }
       }
 
-      throw new WaxChainApiError(`Invalid response from chain API`, data.response);
+      throw new WaxChainApiError(`Invalid response from chain API`, requestData, data);
     });
 
     this.restApiCaller = new ApiCaller(EChainApiType.REST, config.restApiEndpoint, this.apiTimeout, iterate(originator ? structuredClone(originator.restApiCaller.localTypes) : {}, HiveRestApiTypes), 'GET', (path, newValue, found) => {

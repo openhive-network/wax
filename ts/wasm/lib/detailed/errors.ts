@@ -1,4 +1,6 @@
 import type { TAccountName } from "./hive_apps_operations/index.js";
+import type { TInterceptorRequestOptions } from "./util/api_caller.js";
+import type { IDetailedResponseData } from "./util/request_helper.js";
 
 export class WaxError extends Error
  {
@@ -35,11 +37,13 @@ export class WaxChainAssertionError extends WaxAssertionError {
 };
 
 export class WaxChainApiError extends WaxError {
-  apiError: object;
-
-  constructor(message: string, apiError: object) {
-    super(`${message}: "${JSON.stringify(apiError)}"`);
-    this.apiError = apiError;
+  constructor(
+    message: string,
+    public readonly request: TInterceptorRequestOptions,
+    public readonly response: Partial<IDetailedResponseData<any>>,
+    cause?: Error
+  ) {
+    super(message, cause);
   }
 };
 
