@@ -578,27 +578,33 @@ transaction_handle_stats foundation::cpp_report_transaction_handle_stats() const
 void foundation::cpp_transform_api_error_response_into_exception(const std::string& data) const
 {
   fc::exception e;
-  try {
+
+  try
+  {
     fc::variant json = fc::json::from_string(data, fc::json::format_validation_mode::full);
+
+    if (json.get_type() != fc::variant::object_type)
+    {
+      throw std::runtime_error("Got non-object-like error."); // Do not add data here as it will be added in outer catch clause
+    }
+
     fc::from_variant(json, e);
   }
-  catch (...) {
-    // Apparently the error data don't represent a fc::exception.
-    auto ex_ptr = std::current_exception();
-    if(ex_ptr)
-    {
-      try {
-        std::rethrow_exception(ex_ptr);
-      }
-      catch (const std::exception& e) {
-        throw std::runtime_error("fc::exception JSON deserialization caused an exception: " + std::string(e.what()) + ", original data: " + data);
-      }
-    }
+  catch(fc::exception& fc_e)
+  {
+    throw std::runtime_error("Non assert_exception error received: " + fc_e.to_detail_string() + " Original deserialization data: " + data);
+  }
+  catch(std::exception& std_e)
+  {
+    throw std::runtime_error("Non assert_exception error received: " + std::string(std_e.what()) + " Original deserialization data: " + data);
+  }
+  catch (...)
+  {
     throw std::runtime_error("Non-fc::exception error received: " + data + " No additional exception data available.");
   }
 
   /** Since there is predefined set of subclasses of fc::assert_exception
-      which have assigned own exception_code values (exceeding fc::exception_code type) 
+      which have assigned own exception_code values (exceeding fc::exception_code type)
       simple condition to verify exception class according to its code fails for example for `transaction_expiration_exception` - see database_exceptions.hpp
       One of most important data carried by serialized assert_exception is `FC_ASSERT_EXPRESSION_KEY` extension property holding source of assetion hash value.
   */
