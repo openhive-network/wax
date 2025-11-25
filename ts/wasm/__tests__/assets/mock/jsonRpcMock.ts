@@ -15,6 +15,38 @@ import alphaManabar50 from "./data/vote.manabar-50";
 import alphaManabar100 from "./data/vote.manabar-100";
 
 export default {
+  "condenser_api.get_active_votes": (params: Record<string, any>) => {
+    if (params[0] === "malformed")
+      return {
+        error: {
+          code: -32602,
+          data: 12333333,
+          message: 123
+        },
+        id: 1,
+        jsonrpc: '2.0'
+      };
+
+    if (params[0] === "nodata")
+      return {
+        error: undefined,
+        id: 1,
+        jsonrpc: '2.0'
+      };
+
+    if (params[0] === "appspecific" && params[1] === "com.chrome.devtools.json")
+      return {
+        error: {
+          code: -32602,
+          data: 'Post appspecific/com.chrome.devtools.json does not exist',
+          message: 'Invalid parameters'
+        },
+        id: 1,
+        jsonrpc: '2.0'
+      };
+
+    return;
+  },
   "database_api.find_accounts": (params: Record<string, any>) => {
     const { accounts } = params;
 

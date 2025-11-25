@@ -60,6 +60,102 @@ test.describe('Wax base mock tests', () => {
     expect(retVal).toStrictEqual(steem.result);
   });
 
+  test('Should be able to correctly handle no data in hived node error', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const actualChain = chain.extend<{
+        condenser_api: {
+          get_active_votes: {
+            params: string[];
+            result: any;
+          }
+        }
+      }>();
+
+      try {
+        await actualChain.api.condenser_api.get_active_votes(["nodata"]);
+      } catch(error) {
+        // console.error(error);
+
+        return { name: (error as Error).name, message: (error as Error).message };
+      }
+
+      return {};
+    });
+
+    expect(retVal.name).toBe('WaxError');
+    expect(retVal.message).toStrictEqual('Invalid response from chain API');
+  });
+
+  test('Should be able to correctly handle malformed hived node error', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const actualChain = chain.extend<{
+        condenser_api: {
+          get_active_votes: {
+            params: string[];
+            result: any;
+          }
+        }
+      }>();
+
+      try {
+        await actualChain.api.condenser_api.get_active_votes(["malformed"]);
+      } catch(error) {
+        // console.error(error);
+
+        return { name: (error as Error).name, message: (error as Error).message };
+      }
+
+      return {};
+    });
+
+    expect(retVal.name).toBe('WaxError');
+    expect(retVal.message).toStrictEqual('Non-typed Error during Wasm call: std::runtime_error: Non assert_exception error received: Got non-object-like error. Original deserialization data: 12333333');
+  });
+
+  test('Should be able to correctly handle Hivemind string-like error', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const actualChain = chain.extend<{
+        condenser_api: {
+          get_active_votes: {
+            params: string[];
+            result: any;
+          }
+        }
+      }>();
+
+      try {
+        await actualChain.api.condenser_api.get_active_votes(["appspecific", "com.chrome.devtools.json"]);
+      } catch(error) {
+        // console.error(error);
+
+        return { name: (error as Error).name, message: (error as Error).message };
+      }
+
+      return {};
+    });
+
+    expect(retVal.name).toBe('WaxError');
+    expect(retVal.message).toStrictEqual('Non-typed Error during Wasm call: std::runtime_error: Non assert_exception error received: Got non-object-like error. Original deserialization data: "Post appspecific/com.chrome.devtools.json does not exist"');
+  });
+
+  test('Should be able to correctly handle standard Hived errors', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      try {
+        await chain.api.database_api.find_accounts({ accounts: ["toolargeinputitis"] });
+      } catch(error) {
+        // console.error(error);
+
+        return { name: (error as Error).name, message: (error as Error).message };
+      }
+
+      return {};
+    });
+
+    expect(retVal.name).toBe('WaxProtocolAssertionError');
+    expect(retVal.message).toMatch(/"name":"assert_exception","message":"Assert Exception"/);
+    expect(retVal.message).toMatch(/Input too large: `\${in}` \(\${is}\) for fixed size string: \(\${fs}\)","data":{"fs":16,"in":"toolargeinputitis","is":17}}/);
+  });
+
   test('Testing assertion during transaction broadcast', async ({ waxTest }) => {
     const retVal = await waxTest( async ({ chain, wax }) => {
       const testedOp: claim_account = {
