@@ -7,6 +7,17 @@ export const dateFromString = (dateTimeString: string): Date => {
     return new Date(`${dateTimeString}Z`);
 };
 
+export const dateToUnixTimestamp = (dateTimeString: string|Date): number => {
+  const inputDate = (dateTimeString instanceof Date) ? dateTimeString : dateFromString(dateTimeString);
+  return Math.round(inputDate.getTime() / 1000);
+};
+
+export const ensureUnixTimestamp = (dateTime: number | string | Date): number => {
+  if (typeof dateTime === 'number')
+    return dateTime;
+  return dateToUnixTimestamp(dateTime);
+};
+
 export const calculateExpiration = (expirationTime: number | string | Date, referenceTime?: Date): Date => {
   let expiration: Date;
   if(typeof expirationTime === 'string') {
