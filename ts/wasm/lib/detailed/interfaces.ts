@@ -665,6 +665,18 @@ export interface IWaxBaseInterface {
   estimateHiveCollateral(currentMedianHistoryBase: TNaiAssetSource, currentMedianHistoryQuote: TNaiAssetSource, currentMinHistoryBase: TNaiAssetSource, currentMinHistoryQuote: TNaiAssetSource, hbdAmountToGet: TNaiAssetSource): NaiAsset;
 
   /**
+   * Allows to estimate HBD interest value based on given parameters
+   * @param {TNaiAssetConvertible} accountHdbSeconds value representing already accumulated HBD (amount of HBD * number of seconds held in savings). Usually received e.g. from `savings_hbd_seconds` field of database_api.find_accounts call.
+   * @param {TNaiAssetSource} hbdBalance the HBD balance to calculate interest for
+   * @param {TTimestamp} lastCompoundingDate last intererest capitalization date to be taken e.g. from `savings_hbd_seconds_last_update` field of database_api.find_accounts call.
+   * @param {TTimestamp} now current date string or unix timestamp number in seconds. It can be received from `time` field of database_api.get_dynamic_global_properties call.
+   * @param {number} interestRate interest rate in percent basis points (0-10000). It can be received from `hbd_interest_rate` field of database_api.get_dynamic_global_properties call.
+   *
+   * @returns {NaiAsset} estimated interest value in HBD asset
+   */
+  estimateHbdInterest(accountHdbSeconds: TNaiAssetConvertible, hbdBalance: TNaiAssetSource, lastCompoundingDate: TTimestamp, now: TTimestamp, interestRate: number): NaiAsset;
+
+  /**
    * Retrieves HIVE in nai form with given amount
    *
    * Note: This function works with precision and only accepts JS Double-precision floating-point format (IEEE 754),

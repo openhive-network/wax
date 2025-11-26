@@ -18,6 +18,7 @@ import { isNaiAsset } from "./util/asset_util.js";
 import type { AccountAuthorityUpdateOperation } from "./complex_operations"; // only for TypeDoc purposes :-(
 import { ISignatureProvider } from "./extensions/signatures";
 import { WasmManager } from "./util/wasm_errors";
+import { ensureUnixTimestamp } from "./util";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = BigInt(100) * BigInt(PERCENT_VALUE_DOUBLE_PRECISION);
@@ -153,6 +154,19 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const actualHbdAmountToGet = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbdAmountToGet);
 
     return this.wasmManager.safeWasmCall(() => this.protocol.cpp_estimate_hive_collateral(currentMedianHistory, currentMinHistory, actualHbdAmountToGet) as NaiAsset);
+  }
+
+  public estimateHbdInterest(accountHdbSeconds: TNaiAssetConvertible, hbdSavingsBalance: TNaiAssetSource, lastCompoundingDate: TTimestamp, now: TTimestamp, interestRate: number): NaiAsset {
+    const hdbSeconds = BigInt(accountHdbSeconds);
+    const hbdSecondsLo = hdbSeconds & BigInt(0xFFFFFFFFFFFFFFFFn);
+    const hbdSecondsHi = hdbSeconds >> 64n;
+
+    const nowTimestamp = ensureUnixTimestamp(now);
+    const lastCompoundingTimestamp = ensureUnixTimestamp(lastCompoundingDate);
+    const hbdBalance = this.createAssetWithRequiredSymbol(EAssetName.HBD, hbdSavingsBalance);
+
+    return this.wasmManager.safeWasmCall(() => this.protocol.cpp_evaluate_hbd_interest(hbdSecondsLo, hbdSecondsHi, nowTimestamp, hbdBalance,
+       lastCompoundingTimestamp, interestRate) as NaiAsset);
   }
 
   public deserializeWitnessProps(serializedWitnessProps: Array<[string, string]>): witness_set_properties_data {
