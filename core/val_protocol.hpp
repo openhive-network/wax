@@ -24,8 +24,8 @@ class val_to_static_variant
 public:
   using result_type = void;
 
-  val_to_static_variant(ManagedObjectT jsval, bool is_protobuf)
-    : jsval(jsval), is_protobuf(is_protobuf)
+  val_to_static_variant(ManagedObjectT jsval, bool is_protobuf, bool is_legacy)
+    : jsval(jsval), is_protobuf(is_protobuf), is_legacy(is_legacy)
   {}
 
   template<typename T>
@@ -34,12 +34,13 @@ public:
 private:
   ManagedObjectT jsval;
   bool is_protobuf;
+  bool is_legacy;
 };
 }
 
 
 template< typename ManagedObjectT, typename... Ts >
-void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_protobuf )
+void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_protobuf, bool is_legacy = false )
 {
   static std::map< std::string, int64_t > to_tag = []()
   {
@@ -80,7 +81,7 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
     nextval = jsval["value"];
   }
 
-  val_to_static_variant visitor{nextval, is_protobuf};
+  val_to_static_variant visitor{nextval, is_protobuf, is_legacy};
   fc::static_variant<Ts...> tmp{which, visitor};
   v = tmp;
 }
@@ -88,8 +89,8 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
 template< typename ManagedObjectT, typename T >
 class val_protocol_visitor {
 public:
-  val_protocol_visitor( ManagedObjectT jsval, T& val, bool is_protobuf )
-    : jsval( jsval ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), val( val )
+  val_protocol_visitor( ManagedObjectT jsval, T& val, bool is_protobuf, bool is_legacy = false )
+    : jsval( jsval ), val( val ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), is_legacy( is_legacy )
   {}
 
   template< typename Member, class Class, Member( Class::*member ) >
@@ -219,7 +220,7 @@ public:
     if(can_skip_missing_field(name))
       return;
 
-    val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf }.add( "amount", v.amount );
+    val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf, is_legacy }.add( "amount", v.amount );
   }
 
   void add( const char* name, fc::time_point_sec& v ) const
@@ -306,11 +307,11 @@ public:
 
       if constexpr( std::is_same< typename fc::reflector< M >::is_defined, fc::true_type >::value )
       {
-        fc::reflector< M >::visit( val_protocol_visitor< ManagedObjectT, M >{ arr_val[i], item, is_protobuf } );
+        fc::reflector< M >::visit( val_protocol_visitor< ManagedObjectT, M >{ arr_val[i], item, is_protobuf, is_legacy } );
       }
       else
       {
-        val_protocol_visitor< ManagedObjectT, M > visitor{ arr_val, item, is_protobuf };
+        val_protocol_visitor< ManagedObjectT, M > visitor{ arr_val, item, is_protobuf, is_legacy };
         visitor.ignore_missing_fields = false;
         visitor.add( std::to_string( i ).c_str(), item );
       }
@@ -347,11 +348,11 @@ public:
 
       if constexpr( std::is_same< typename fc::reflector< TVal >::is_defined, fc::true_type >::value )
       {
-        fc::reflector< TVal >::visit( val_protocol_visitor< ManagedObjectT, TVal >{ arr_val[i], item, is_protobuf } );
+        fc::reflector< TVal >::visit( val_protocol_visitor< ManagedObjectT, TVal >{ arr_val[i], item, is_protobuf, is_legacy } );
       }
       else
       {
-        val_protocol_visitor< ManagedObjectT, TVal > visitor { arr_val, item, is_protobuf };
+        val_protocol_visitor< ManagedObjectT, TVal > visitor { arr_val, item, is_protobuf, is_legacy };
         visitor.ignore_missing_fields = false;
         visitor.add( std::to_string( i ).c_str(), item );
       }
@@ -413,7 +414,7 @@ public:
   void add_object( const char* name, M& v ) const
   {
     fc::reflector< M >::visit(
-      cpp::val_protocol_visitor< ManagedObjectT, M >{ jsval[name], v, is_protobuf }
+      cpp::val_protocol_visitor< ManagedObjectT, M >{ jsval[name], v, is_protobuf, is_legacy }
     );
   }
 
@@ -504,12 +505,13 @@ public:
   }
 
   ManagedObjectT jsval;
+  T& val;
   bool is_protobuf;
   /** true when missing field in source managedobject should be ignored.
       It must match fc::from_variant object initialization, which allows to skip members and use their C++ defaults.
   */
   bool ignore_missing_fields;
-  T& val;
+  bool is_legacy;
 };
 
 template<typename ManagedObjectT>
@@ -521,7 +523,7 @@ typename val_to_static_variant<ManagedObjectT>::result_type val_to_static_varian
 
   VAL_PROTOCOL_ILOG("Processing SV item: Attempting to load  object from ${jsval}", ("jsval", jsval.operator std::string()));
 
-  fc::reflector< T >::visit( val_protocol_visitor< ManagedObjectT, T >{ jsval, v, is_protobuf } );
+  fc::reflector< T >::visit( val_protocol_visitor< ManagedObjectT, T >{ jsval, v, is_protobuf, is_legacy } );
 }
 
 } // namespac cpp

@@ -51,27 +51,27 @@ hive_transaction_handle protocol::cpp_deserialize_transaction(std::string hex)co
   });
 }
 
-hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf)const
+hive_transaction_handle protocol::cpp_create_transaction_handle(PyObject* ptr, bool is_protobuf, bool is_legacy)const
 {
   return safe_exception_wrapper([&]() -> hive_transaction_handle {
     hive_transaction_handle h;
 
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, h.get(), is_protobuf }
+      val_protocol_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, h.get(), is_protobuf, is_legacy }
     );
 
     return h;
   });
 }
 
-hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf)const
+hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool is_protobuf, bool is_legacy)const
 {
   return safe_exception_wrapper([&]() -> hive_operation_handle {
     hive_operation_handle h;
 
     hive::protocol::operation obj;
 
-    cpp::from_jsval(python_managed_object{ py_object_ptr::share(ptr) }, obj, is_protobuf);
+    cpp::from_jsval(python_managed_object{ py_object_ptr::share(ptr) }, obj, is_protobuf, is_legacy);
 
     h.op.reset(new hive_op(std::move(obj)));
 

@@ -10,27 +10,27 @@ bool foundation_wasm::cpp_get_js_object(emscripten::val obj) const
   return author == "user";
 }
 
-std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf)const
+std::shared_ptr<cpp::hive_transaction_handle> foundation_wasm::cpp_create_transaction_handle(emscripten::val emval, bool is_protobuf, bool is_legacy)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_transaction_handle> {
     auto h = std::make_shared<cpp::hive_transaction_handle>();
 
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      cpp::val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, h->get(), is_protobuf }
+      cpp::val_protocol_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, h->get(), is_protobuf, is_legacy }
     );
 
     return h;
   });
 }
 
-std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_create_operation_handle(emscripten::val emval, bool is_protobuf)const
+std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_create_operation_handle(emscripten::val emval, bool is_protobuf, bool is_legacy)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::shared_ptr<cpp::hive_operation_handle> {
     cpp::hive_operation_handle h;
 
     hive::protocol::operation obj;
 
-    cpp::from_jsval(emscripten_managed_object{ emval }, obj, is_protobuf);
+    cpp::from_jsval(emscripten_managed_object{ emval }, obj, is_protobuf, is_legacy);
 
     h.op.reset(new cpp::hive_op(std::move(obj)));
 
