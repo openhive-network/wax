@@ -346,6 +346,36 @@ class IWaxBaseInterface(ABC):
             CannotCreateAssetError/UnknownAssetTypeError/AssertionError: When passed asset is incorrect.
         """
 
+    @abstractmethod
+    def estimate_hbd_interest(
+        self,
+        account_hbd_seconds: int,
+        hbd_balance: HbdNaiAssetConvertible,
+        last_compounding_date: datetime,
+        now: datetime,
+        interest_rate: int,
+    ) -> NaiAsset:
+        """
+        Allows to estimate HBD interest value based on given parameters.
+
+        Args:
+            account_hbd_seconds: value representing already accumulated HBD (amount of HBD * number of seconds held
+            in savings).
+            Usually received e.g. from `savings_hbd_seconds` field of database_api.find_accounts call.
+            hbd_balance: HBD savings balance to calculate interest for.
+            last_compounding_date: last intererest capitalization date to be taken e.g. from
+            `savings_hbd_seconds_last_update` field of database_api.find_accounts call.
+            now: current date. It can be received from `time` field of database_api.get_dynamic_global_properties call.
+            interest_rate: interest rate in percent basis points (0-10000). It can be received from `hbd_interest_rate`
+            field of database_api.get_dynamic_global_properties call.
+
+        Returns:
+            NaiAsset: Estimated HBD interest.
+
+        Raises:
+            CannotCreateAssetError/UnknownAssetTypeError/AssertionError: When passed asset is incorrect.
+        """
+
     @property
     @abstractmethod
     def hive(self) -> AssetFactory:

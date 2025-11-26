@@ -37,6 +37,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     check_memo_for_private_keys,
     deserialize_witness_set_properties,
     estimate_hive_collateral,
+    evaluate_hbd_interest,
     generate_password_based_private_key,
     get_hive_protocol_config,
     get_public_key_from_signature,
@@ -125,6 +126,26 @@ class WaxBaseApi(IWaxBaseInterface):
             current_median_history=convert_to_python_price(current_median_history_base, current_median_history_quote),
             current_min_history=convert_to_python_price(current_min_history_base, current_min_history_quote),
             hbd_amount_to_get=self._asset_handler.to_python_json_asset(hbd_amount_to_get),
+        )
+
+        return self._asset_handler.from_python_json_asset(result)
+
+    def estimate_hbd_interest(
+        self,
+        account_hbd_seconds: int,
+        hbd_balance: HbdNaiAssetConvertible,
+        last_compounding_date: datetime,
+        now: datetime,
+        interest_rate: int,
+    ) -> NaiAsset:
+        hbd = self._asset_handler.resolve_from_convertible_type(AssetName.Hbd, hbd_balance)
+
+        result = evaluate_hbd_interest(
+            hbd_seconds=account_hbd_seconds,
+            head_block_time=int(now.timestamp()),
+            hbd=hbd,
+            hbd_seconds_last_update=int(last_compounding_date.timestamp()),
+            hbd_interest_rate=interest_rate,
         )
 
         return self._asset_handler.from_python_json_asset(result)
