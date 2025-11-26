@@ -879,4 +879,17 @@ test.describe('Wax object interface foundation tests', () => {
       amount: "1065988"
     });
   });
+
+  test('Should be able to estimate hbd interests', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      return base.estimateHbdInterest("2860100980056", base.hbdSatoshis(46107782), "2025-11-15T20:27:54", "2025-11-26T16:05:33", 1500);
+    });
+
+    expect(retVal).toStrictEqual({
+      nai: "@@000000013",
+      precision: 3,
+      amount: "218584"
+    });
+  });
+
 });
