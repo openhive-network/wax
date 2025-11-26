@@ -32,6 +32,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     tx_signature_keys,
     tx_to_binary,
     tx_to_json,
+    tx_to_legacy_json,
     tx_validate,
 )
 from wax.interfaces import ITransaction
@@ -146,6 +147,10 @@ class Transaction(ITransaction):
     def to_api(self) -> str:
         self._flush_transaction()
         return to_python_string(tx_to_json(self._handle))
+
+    def to_legacy_api(self) -> str:
+        self._flush_transaction()
+        return to_python_string(tx_to_legacy_json(self._handle))
 
     def to_dict(self) -> dict[str, Any]:
         return json.loads(self.to_api())  # type: ignore[no-any-return]
