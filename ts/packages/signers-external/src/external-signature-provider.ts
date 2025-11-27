@@ -1,6 +1,7 @@
-import createBeekeeper, { IBeekeeperInstance, IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
-import { AEncryptionProvider, IHiveChainInterface, ISignatureTransaction, TRole, TSignature } from "@hiveio/wax";
+import createBeekeeper, { IBeekeeperInstance, IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
+import { IHiveChainInterface, TRole } from "@hiveio/wax";
 import { WaxExternalSignatureProviderError } from "./errors.js";
+import { ExternalWalletSigner } from "./external-wallet-signer.js";
 
 import type { IWalletData } from "./wallet_zod_versioning.js";
 import { parseWalletData, updateWalletRole, removeWalletRole } from "./wallet_zod_versioning.js";
@@ -8,6 +9,7 @@ import { GoogleStorageProvider, TokenProvider } from "./storage-providers/google
 
 // Re-export for backwards compatibility
 export { AStorageProviderBase } from "./storage-provider-base.js";
+export { ExternalWalletSigner } from "./external-wallet-signer.js";
 
 export enum EStorageProviders {
   GOOGLE_DRIVE
@@ -31,13 +33,12 @@ export interface IWalletInfo {
 }
 
 /**
- * External signature provider that manages wallet data in external storage (e.g., Google Drive).
+ * External signature provider factory that manages wallet data in external storage (e.g., Google Drive).
  *
  * This class handles:
  * - Wallet creation and key management for different Hive roles (posting, active, owner, memo)
  * - Loading existing wallets from storage
- * - Transaction signing using the currently active role's key
- * - Data encryption/decryption
+ * - Creating ExternalWalletSigner instances for transaction signing and encryption
  *
  * Usage:
  * ```typescript
@@ -46,23 +47,23 @@ export interface IWalletInfo {
  *   return (await response.json()).token;
  * });
  *
- * // Create a new wallet with a key
- * await provider.createWalletFor('posting', 'myaccount', 'private-key');
+ * // Create a new wallet with a key and get a signer
+ * const signer = await provider.createWalletFor('posting', 'myaccount', 'private-key');
+ * await signer.signTransaction(tx);
  *
  * // Or load an existing wallet and switch to a role
  * await provider.loadWallet();
- * await provider.for('active');
+ * const activeSigner = await provider.for('active');
+ * await activeSigner.signTransaction(tx);
  * ```
  */
-export class ExternalSignatureProvider extends AEncryptionProvider {
+export class ExternalSignatureProvider {
   readonly #chain: IHiveChainInterface;
   readonly #fileName: string;
   readonly #storage: GoogleStorageProvider;
 
   #beekeeper: IBeekeeperInstance | undefined;
   #wallet: IBeekeeperUnlockedWallet | undefined;
-  #publicKey: TPublicKey | undefined;
-  #accountName: string | undefined;
 
   /**
    * Creates a new ExternalSignatureProvider instance
@@ -72,8 +73,6 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
    * @param tokenProvider - Callback function that returns a fresh OAuth token for storage access
    */
   public constructor (chain: IHiveChainInterface, fileName: string, tokenProvider: TokenProvider) {
-    super();
-
     this.#chain = chain;
     this.#fileName = fileName;
     this.#storage = new GoogleStorageProvider(tokenProvider);
@@ -90,33 +89,17 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
     this.#wallet = (await session.createWallet('external-signer-wallet')).wallet;
   }
 
-  /**
-   * Returns the public key for the currently active role.
-   * Throws if no role has been activated via `for()` or `createWalletFor()`.
-   */
-  public get publicKey (): TPublicKey {
-    if (!this.#publicKey)
-      throw new WaxExternalSignatureProviderError('No active role. Call for() or createWalletFor() first.', undefined, 'NO_ACTIVE_ROLE');
 
-    return this.#publicKey;
-  }
-
-  /**
-   * Returns the account name from the loaded wallet.
-   * Returns undefined if wallet hasn't been loaded yet.
-   */
-  public get accountName (): string | undefined {
-    return this.#accountName;
-  }
 
   /**
    * Switches to the specified role, loading its key from the wallet file.
-   * The key is imported into Beekeeper and set as the active signing key.
+   * Returns an ExternalWalletSigner instance with the role's key active.
    *
    * @param role - The role to activate (posting, active, owner, or memo)
+   * @returns ExternalWalletSigner instance ready for signing and encryption
    * @throws {WaxExternalSignatureProviderError} If the role's key is not found in the wallet
    */
-  public async for (role: TRole): Promise<void> {
+  public async for (role: TRole): Promise<ExternalWalletSigner> {
     await this.initBeekeeperWallet();
 
     const rawData = await this.#storage.get(this.#fileName);
@@ -130,25 +113,26 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
 
     const publicKey = await this.#wallet!.importKey(key.privateKey);
 
-    this.#publicKey = publicKey;
-    this.#accountName = parsedData.hive.account;
+    return new ExternalWalletSigner(this.#chain, this.#wallet!, publicKey, parsedData.hive.account);
   }
 
   /**
    * Creates or updates a wallet with a key for the specified role.
    * If the wallet file exists, the role is added/updated while preserving other roles.
    * If the wallet file doesn't exist, a new wallet is created.
+   * Returns an ExternalWalletSigner instance with the created role active.
    *
    * @param role - The role to create/update (posting, active, owner, or memo)
    * @param accountName - The Hive account name
    * @param privateKey - The private key for this role
+   * @returns ExternalWalletSigner instance ready for signing and encryption
    * @throws {WaxExternalSignatureProviderError} If the account name is invalid
    */
   public async createWalletFor (
     role: TRole,
     accountName: string,
     privateKey: string
-  ): Promise<void> {
+  ): Promise<ExternalWalletSigner> {
     if (!this.#chain.isValidAccountName(accountName))
       throw new WaxExternalSignatureProviderError(`Invalid account name: ${accountName}`, undefined, 'INVALID_ACCOUNT_NAME');
 
@@ -172,8 +156,7 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
 
     await this.#storage.save(this.#fileName, JSON.stringify(walletData));
 
-    this.#publicKey = publicKey;
-    this.#accountName = accountName;
+    return new ExternalWalletSigner(this.#chain, this.#wallet!, publicKey, accountName);
   }
 
   /**
@@ -208,8 +191,6 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
 
     if (loadedRoles.length === 0)
       throw new WaxExternalSignatureProviderError('Wallet has no keys', undefined, 'WALLET_EMPTY');
-
-    this.#accountName = parsedData.hive.account;
 
     return {
       accountName: parsedData.hive.account,
@@ -265,7 +246,12 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
     if (await this.#storage.exists(this.#fileName))
       await this.#storage.delete(this.#fileName);
 
-    await this.destroy();
+    if (this.#beekeeper) {
+      await this.#beekeeper.delete();
+      this.#beekeeper = undefined;
+    }
+
+    this.#wallet = undefined;
   }
 
   /**
@@ -289,10 +275,6 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
     const updatedData = removeWalletRole(parsedData, role);
 
     await this.#storage.save(this.#fileName, JSON.stringify(updatedData));
-
-    // Clear active key if it was the removed role
-    // We can't easily check which role is active, so we clear it to be safe
-    this.#publicKey = undefined;
   }
 
   /**
@@ -306,36 +288,5 @@ export class ExternalSignatureProvider extends AEncryptionProvider {
     }
 
     this.#wallet = undefined;
-    this.#publicKey = undefined;
-    this.#accountName = undefined;
-  }
-
-  public async encryptData (buffer: string, recipient: TPublicKey): Promise<string> {
-    if (!this.#wallet)
-      throw new WaxExternalSignatureProviderError('Wallet not initialized', undefined, 'WALLET_NOT_INITIALIZED');
-
-    if (!this.#publicKey)
-      throw new WaxExternalSignatureProviderError('No active role. Call for() or createWalletFor() first.', undefined, 'NO_ACTIVE_ROLE');
-
-    return this.#chain.encrypt(this.#wallet, buffer, this.#publicKey, recipient);
-  }
-
-  public async decryptData (content: string): Promise<string> {
-    if (!this.#wallet)
-      throw new WaxExternalSignatureProviderError('Wallet not initialized', undefined, 'WALLET_NOT_INITIALIZED');
-
-    return this.#chain.decrypt(this.#wallet, content);
-  }
-
-  protected async generateSignatures (transaction: ISignatureTransaction): Promise<TSignature[]> {
-    if (!this.#wallet)
-      throw new WaxExternalSignatureProviderError('Wallet not initialized', undefined, 'WALLET_NOT_INITIALIZED');
-
-    if (!this.#publicKey)
-      throw new WaxExternalSignatureProviderError('No active role. Call for() or createWalletFor() first.', undefined, 'NO_ACTIVE_ROLE');
-
-    const signature = this.#wallet.signDigest(this.#publicKey, transaction.sigDigest);
-
-    return [signature];
   }
 }
