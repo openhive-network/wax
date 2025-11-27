@@ -40,8 +40,11 @@ private:
 
 
 template< typename ManagedObjectT, typename... Ts >
-void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_protobuf, bool is_legacy = false )
+void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_protobuf, bool is_legacy )
 {
+  if (is_protobuf)
+    FC_ASSERT( !is_legacy, "Can't use legacy serialization in new protobuf style object definition" );
+
   static std::map< std::string, int64_t > to_tag = []()
   {
      std::map< std::string, int64_t > name_map;
@@ -72,13 +75,48 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
   }
   else
   {
-    std::string type = jsval["type"].template as<std::string>();
+    if (is_legacy)
+    {
+      static std::map< std::string, int64_t > to_legacy_tag = []()
+      {
+          std::map< std::string, int64_t > name_map;
+          for( int i = 0; i < fc::static_variant<Ts...>::count(); ++i )
+          {
+            std::string n;
+            fc::get_legacy_static_variant_name  visitor( n );
+            fc::static_variant<Ts...> tmp( i, visitor );
+            name_map[n] = i;
+          }
+          return name_map;
+      }();
 
-    auto itr = to_tag.find( type );
-    FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
-    which = itr->second;
+      ManagedObjectT type = jsval[0];
+      nextval = jsval[1];
 
-    nextval = jsval["value"];
+      // In legacy form, type can be either number or string
+      if( type.is_string() )
+      {
+        std::string type_str = type.template as<std::string>();
+
+        auto itr = to_legacy_tag.find( type_str );
+        FC_ASSERT( itr != to_legacy_tag.end(), "Invalid object name: ${n}", ("n", type_str) );
+        which = itr->second;
+      }
+      else
+      {
+        which = type.template as<int64_t>();
+      }
+    }
+    else
+    {
+      std::string type = jsval["type"].template as<std::string>();
+
+      auto itr = to_tag.find( type );
+      FC_ASSERT( itr != to_tag.end(), "Invalid object name: ${n}", ("n", type) );
+      which = itr->second;
+
+      nextval = jsval["value"];
+    }
   }
 
   val_to_static_variant visitor{nextval, is_protobuf, is_legacy};
@@ -89,7 +127,7 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
 template< typename ManagedObjectT, typename T >
 class val_protocol_visitor {
 public:
-  val_protocol_visitor( ManagedObjectT jsval, T& val, bool is_protobuf, bool is_legacy = false )
+  val_protocol_visitor( ManagedObjectT jsval, T& val, bool is_protobuf, bool is_legacy )
     : jsval( jsval ), val( val ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), is_legacy( is_legacy )
   {}
 
@@ -123,6 +161,13 @@ public:
       return;
 
     ManagedObjectT amount = jsval[name];
+
+    if (is_legacy)
+    {
+      v = hive::protocol::legacy_asset::from_string( amount.template as<std::string>() ).to_asset();
+
+      return;
+    }
 
     std::string amount_str = amount["amount"].template as<std::string>();
 
@@ -220,7 +265,16 @@ public:
     if(can_skip_missing_field(name))
       return;
 
-    val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf, is_legacy }.add( "amount", v.amount );
+    if (is_legacy)
+    {
+      auto amount_value = hive::protocol::legacy_asset::from_string( jsval[name].template as<std::string>() ).amount;
+
+      v.amount = amount_value;
+    }
+    else
+    {
+      val_protocol_visitor< ManagedObjectT, hive::protocol::legacy_hive_asset >{ jsval[name], v, is_protobuf, is_legacy }.add( "amount", v.amount );
+    }
   }
 
   void add( const char* name, fc::time_point_sec& v ) const
@@ -242,14 +296,25 @@ public:
     if(can_skip_missing_field(name))
       return;
 
-    int64_t amount_value = jsval[name]["amount"].template as<int64_t>();
-    v.amount = amount_value;
+    ManagedObjectT amount = jsval[name];
+
+    if (is_legacy)
+    {
+      auto amount_value = hive::protocol::legacy_asset::from_string( amount.template as<std::string>() ).amount;
+
+      v.amount = amount_value;
+    }
+    else
+    {
+      int64_t amount_value = amount["amount"].template as<int64_t>();
+      v.amount = amount_value;
+    }
   }
 
   template< typename... Ts >
   void add( const char* name, fc::static_variant< Ts... >& v ) const
   {
-    from_jsval( jsval[name], v, is_protobuf );
+    from_jsval( jsval[name], v, is_protobuf, is_legacy );
   }
 
   void add_scalar( const char* name, hive::protocol::asset_symbol_type& v ) const

@@ -97,7 +97,7 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Calculate transaction id', 7_500, () => {
-      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true, false);
 
       for(let i = 0; i < 7_500; ++i)
         noDiscard += protocol.cpp_tx_id(handle, true).length % 10 + i;
@@ -114,7 +114,7 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Serialize transaction', 7_500, () => {
-      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true, false);
 
       for(let i = 0; i < 7_500; ++i)
         noDiscard += protocol.cpp_tx_to_binary(handle, true, true).length % 10 + i;
@@ -131,7 +131,7 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Calculate sig digest', 7_500, () => {
-      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true, false);
 
       for(let i = 0; i < 7_500; ++i)
         noDiscard += protocol.cpp_tx_sig_digest(handle, 'beeab0de00000000000000000000000000000000000000000000000000000000', true).length % 10 + i;
@@ -148,7 +148,7 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Validate operation', 100_000, () => {
-      const handle = protocol.cpp_create_operation_handle(vote_operation, false);
+      const handle = protocol.cpp_create_operation_handle(vote_operation, false, false);
 
       for(let i = 0; i < 100_000; ++i)
         noDiscard += +protocol.cpp_op_validate(handle) + i;
@@ -163,7 +163,7 @@ test.describe('WASM Protocol benchmarks', () => {
     let noDiscard = 0;
 
     utilFunctionTest('Validate transaction', 7_500, () => {
-      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true);
+      const handle = protocol.cpp_create_transaction_handle(JSON.parse(transaction), true, false);
 
       for(let i = 0; i < 7_500; ++i)
         noDiscard += +protocol.cpp_tx_validate(handle) + i;

@@ -431,15 +431,15 @@ def proto_to_api(only_tx: bytes) -> python_result:
     tx_proto_to_api(tx)
     return json.dumps(tx)
 
-def tx_proto_to_api( tx: object ) -> None:
+def tx_proto_to_api( tx: object, is_legacy: bool = False ) -> None:
     cdef protocol obj
     # Call the C++ method to convert the transaction from proto to API format.
-    obj.cpp_tx_proto_to_api( tx )
+    obj.cpp_tx_proto_to_api( tx, is_legacy )
 
-def tx_api_to_proto( object transaction ) -> None:
+def tx_api_to_proto( object transaction, is_legacy: bool = False ) -> None:
     cdef protocol obj
     # Call the C++ method to convert the transaction from API to proto format.
-    obj.cpp_tx_api_to_proto( transaction )
+    obj.cpp_tx_api_to_proto( transaction, is_legacy )
 
 cdef class WaxTransactionHandle:
   cdef hive_transaction_handle hTx
@@ -448,20 +448,20 @@ cdef class WaxOperationHandle:
   cdef hive_operation_handle hOp
 
 @call_with_exception_relay
-def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandle:
+def create_wax_transaction(tx: object, is_protobuf: bool, is_legacy: bool = False) -> WaxTransactionHandle:
     cdef protocol obj
     # Call the C++ method which returns a transaction pointer.
-    cdef hive_transaction_handle hTx = obj.cpp_create_transaction_handle( tx, is_protobuf )
+    cdef hive_transaction_handle hTx = obj.cpp_create_transaction_handle( tx, is_protobuf, is_legacy )
     # Wrap the C++ python_transaction pointer in the Python WaxTransactionHandle class.
     cdef WaxTransactionHandle wax_tx = WaxTransactionHandle.__new__(WaxTransactionHandle)
     wax_tx.hTx = move(hTx)
     return wax_tx
 
 @call_with_exception_relay
-def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
+def create_wax_operation(op: object, is_protobuf: bool, is_legacy: bool = False) -> WaxOperationHandle:
     cdef protocol obj
     # Call the C++ method which returns an operation pointer.
-    cdef hive_operation_handle hOp = obj.cpp_create_operation_handle( op, is_protobuf )
+    cdef hive_operation_handle hOp = obj.cpp_create_operation_handle( op, is_protobuf, is_legacy )
     # Wrap the C++ operation pointer in the Python WaxOperationHandle class.
     cdef WaxOperationHandle wax_op = WaxOperationHandle.__new__(WaxOperationHandle)
     wax_op.hOp = move(hOp)

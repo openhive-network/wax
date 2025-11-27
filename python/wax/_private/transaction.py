@@ -139,7 +139,15 @@ class Transaction(ITransaction):
     @staticmethod
     def from_api(api: IWaxBaseInterface, transaction: JsonTransaction | dict[str, Any]) -> Transaction:
         transaction = json.loads(transaction) if isinstance(transaction, str) else deepcopy(transaction)
-        tx_api_to_proto(transaction)
+        tx_api_to_proto(transaction, is_legacy=False)
+
+        proto_tx = ParseDict(transaction, proto_transaction())
+        return Transaction(api, proto_tx)
+
+    @staticmethod
+    def from_legacy_api(api: IWaxBaseInterface, transaction: JsonTransaction | dict[str, Any]) -> Transaction:
+        transaction = json.loads(transaction) if isinstance(transaction, str) else deepcopy(transaction)
+        tx_api_to_proto(transaction, is_legacy=True)
 
         proto_tx = ParseDict(transaction, proto_transaction())
         return Transaction(api, proto_tx)

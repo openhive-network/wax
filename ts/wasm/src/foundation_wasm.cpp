@@ -57,19 +57,19 @@ std::shared_ptr<cpp::hive_operation_handle> foundation_wasm::cpp_deserialize_ope
   });
 }
 
-void foundation_wasm::cpp_tx_proto_to_api(emscripten::val emval)const
+void foundation_wasm::cpp_tx_proto_to_api(emscripten::val emval, bool is_legacy)const
 {
   cpp::safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      cpp::to_api_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval } }
+      cpp::to_api_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, is_legacy }
     );
   });
 }
-void foundation_wasm::cpp_tx_api_to_proto(emscripten::val emval)const
+void foundation_wasm::cpp_tx_api_to_proto(emscripten::val emval, bool is_legacy)const
 {
   cpp::safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      cpp::to_proto_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval } }
+      cpp::to_proto_visitor< emscripten_managed_object, hive::protocol::signed_transaction >{ emscripten_managed_object{ emval }, is_legacy }
     );
   });
 }

@@ -132,6 +132,25 @@ public:
     FC_ASSERT(item == 0, "Failed to set item in Python object: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
   }
 
+  void set(const char* key, uint32_t data)
+  {
+    FC_ASSERT(PyMapping_Check(pyobj), "PyObject is expected to be a mapping but is an other type: ${pyobj}", (pyobj));
+
+    auto pykey = call_python_function([&] {
+      return PyUnicode_FromString(key);
+    });
+
+    auto pyvalue = call_python_function([&] {
+      return Py_BuildValue("k", data);
+    });
+
+    auto item = call_python_function([&] {
+      return PyObject_SetItem(pyobj, pykey, pyvalue);
+    });
+
+    FC_ASSERT(item == 0, "Failed to set item in Python object: ${pyerr}", ("pyerr", get_pyerr_with_clear()));
+  }
+
   void set(const char* key, const python_managed_object& obj)
   {
     FC_ASSERT(PyMapping_Check(pyobj), "PyObject is expected to be a mapping but is an other type: ${pyobj}", (pyobj));

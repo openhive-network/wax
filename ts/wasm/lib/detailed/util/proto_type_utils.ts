@@ -1,12 +1,12 @@
 import { operation, transaction } from "../protocol";
-import type { ApiOperation, ApiTransaction } from "../api";
+import type { ApiOperation, ApiTransaction, LegacyApiOperation, LegacyApiTransaction } from "../api";
 
 /**
  * Helper function to determine which operation/transaction type is about to be processed
  * @param o the object to be tested
  * @returns true if given operation object matches ApiOperation type, false otherwise.
  */
-export const matchesHiveProtocolType = (o: operation | ApiOperation | transaction | ApiTransaction): boolean => {
+export const matchesHiveProtocolType = (o: operation | ApiOperation | LegacyApiOperation | transaction | ApiTransaction | LegacyApiTransaction): boolean => {
   if ("operations" in o) {
     /// Assume transaction object
     const ops = o.operations
@@ -27,7 +27,7 @@ export const matchesHiveProtocolType = (o: operation | ApiOperation | transactio
    * @param op the operation to be converted
    * @returns stringified JSON representation of the operation
    */
-  export const JSON_stringify_operation = (op: operation | ApiOperation): string => {
+  export const JSON_stringify_operation = (op: operation | ApiOperation | LegacyApiOperation): string => {
     if (matchesHiveProtocolType(op))
       return JSON.stringify(op);
     else
@@ -41,7 +41,7 @@ export const matchesHiveProtocolType = (o: operation | ApiOperation | transactio
    * @param tx the transaction to be converted
    * @returns stringified JSON representation of the transaction
    */
-  export const JSON_stringify_transaction = (tx: transaction | ApiTransaction): string => {
+  export const JSON_stringify_transaction = (tx: transaction | ApiTransaction | LegacyApiTransaction): string => {
     if(tx.operations.length === 0) {
       /** I believe the important difference in JSON serialization appears at operation level, so we can safely convert empty transaction
        * to JSON string without any additional processing.

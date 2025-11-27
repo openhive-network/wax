@@ -287,8 +287,8 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string                     cpp_tx_sig_digest(hive_transaction_handle tx_handle, string chain_id, bool use_hf26_serialization)except +
         void                            cpp_tx_validate(hive_transaction_handle tx_handle)except +
 
-        void cpp_tx_proto_to_api( object transaction ) except +
-        void cpp_tx_api_to_proto( object transaction ) except +
+        void cpp_tx_proto_to_api( object transaction, bool is_legacy ) except +
+        void cpp_tx_api_to_proto( object transaction, bool is_legacy ) except +
 
-        hive_transaction_handle cpp_create_transaction_handle( object transaction, bool is_protobuf ) except +exception_ptr_error_handler
-        hive_operation_handle cpp_create_operation_handle( object operation, bool is_protobuf ) except +exception_ptr_error_handler
+        hive_transaction_handle cpp_create_transaction_handle( object transaction, bool is_protobuf, bool is_legacy ) except +exception_ptr_error_handler
+        hive_operation_handle cpp_create_operation_handle( object operation, bool is_protobuf, bool is_legacy ) except +exception_ptr_error_handler

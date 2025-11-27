@@ -6,7 +6,7 @@ import { calculateExpiration } from "./util/expiration_parser.js";
 import { OperationBase } from "./operation_base";
 import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "./errors.js";
-import type { ApiTransaction } from "./api";
+import type { ApiTransaction, LegacyApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
 import { IOnlineEncryptionProvider, ISignatureProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
@@ -49,7 +49,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     private readonly expirationTime: TTimestamp = "+1m") {
     if(typeof taposBlockId === 'object') {
       this.target = structuredClone(taposBlockId as transaction);
-      this.txHandle = api.wasmManager.safeWasmCall(() => api.protocol.cpp_create_transaction_handle(this.target, true));
+      this.txHandle = api.wasmManager.safeWasmCall(() => api.protocol.cpp_create_transaction_handle(this.target, true, false));
 
       return;
     }
@@ -64,7 +64,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
       operations: [],
       signatures: []
     };
-    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true));
+    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true, false));
   }
 
   public get impactedAccounts(): Set<TAccountName> {
@@ -112,10 +112,10 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     return this.calculateSignerPublicKeys(false);
   }
 
-  public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
+  public static fromApi(api: WaxBaseApi, transactionObject: string | object, isLegacy = false): Transaction {
     const transactionStringified = typeof transactionObject === 'string' ? JSON.parse(transactionObject) : structuredClone(transactionObject);
 
-    api.wasmManager.safeWasmCall(() => api.protocol.cpp_tx_api_to_proto(transactionStringified));
+    api.wasmManager.safeWasmCall(() => api.protocol.cpp_tx_api_to_proto(transactionStringified, isLegacy));
 
     return new Transaction(api, transactionStringified);
   }
@@ -127,7 +127,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   public toApiJson(): ApiTransaction {
     this.flushTransaction();
     const tx = structuredClone(this.target);
-    this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_proto_to_api(tx));
+    this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_proto_to_api(tx, false));
+    return tx;
+  }
+
+  public toLegacyApiJson(): LegacyApiTransaction {
+    this.flushTransaction();
+    const tx = structuredClone(this.target);
+    this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_proto_to_api(tx, true));
     return tx;
   }
 
@@ -192,7 +199,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
       }
 
     // XXX: Optimize this maybe
-    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true));
+    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true, false));
     this.indexKeeper = [];
   }
 
@@ -211,7 +218,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
   private pushOperationWithHandle(op: operation): void {
       this.target.operations.push(op);
-      const opHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_operation_handle(op, true));
+      const opHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_operation_handle(op, true, false));
       this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_add_operation(this.txHandle, opHandle));
   }
 
@@ -333,7 +340,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
       visitor.accept(op);
 
     // XXX: Optimize this maybe
-    this.api.wasmManager.safeWasmCall(() => this.txHandle = this.api.protocol.cpp_create_transaction_handle(this.target, true));
+    this.api.wasmManager.safeWasmCall(() => this.txHandle = this.api.protocol.cpp_create_transaction_handle(this.target, true, false));
 
     return this.target;
   }
@@ -349,7 +356,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
       }
 
     // XXX: Optimize this maybe
-    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true));
+    this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true, false));
     this.indexKeeper = [];
   }
 

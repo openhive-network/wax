@@ -324,6 +324,9 @@ class WaxBaseApi(IWaxBaseInterface):
     def create_transaction_from_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
         return Transaction.from_api(api=self, transaction=transaction)
 
+    def create_transaction_from_legacy_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
+        return Transaction.from_legacy_api(api=self, transaction=transaction)
+
     def serialize_witness_props(self, witness_props: python_witness_set_properties_data) -> dict[str, str]:
         serialized_props = serialize_witness_set_properties(witness_props)
         return {to_python_string(k): to_python_string(v) for k, v in serialized_props.items()}

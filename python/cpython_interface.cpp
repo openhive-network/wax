@@ -79,20 +79,20 @@ hive_operation_handle protocol::cpp_create_operation_handle(PyObject* ptr, bool 
   });
 }
 
-void protocol::cpp_tx_proto_to_api(PyObject* ptr)const
+void protocol::cpp_tx_proto_to_api(PyObject* ptr, bool is_legacy)const
 {
   safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_api_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) } }
+      to_api_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, is_legacy }
     );
   });
 }
 
-void protocol::cpp_tx_api_to_proto(PyObject* ptr)const
+void protocol::cpp_tx_api_to_proto(PyObject* ptr, bool is_legacy)const
 {
   safe_exception_wrapper([&]() -> void {
     fc::reflector< hive::protocol::signed_transaction >::visit(
-      to_proto_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) } }
+      to_proto_visitor< python_managed_object, hive::protocol::signed_transaction >{ python_managed_object{ py_object_ptr::share(ptr) }, is_legacy }
     );
   });
 }

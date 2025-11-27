@@ -47,6 +47,11 @@ public:
     jsval.set(key, obj.jsval);
   }
 
+  void set(const char* key, uint32_t obj)
+  {
+    jsval.set(key, obj);
+  }
+
   void set(const char* key, const std::string& obj)
   {
     jsval.set(key, obj);

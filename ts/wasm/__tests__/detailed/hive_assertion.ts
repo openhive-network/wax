@@ -64,7 +64,7 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
 test.describe('WASM Protocol assertions', () => {
   const validateOperation = async ({ protocol, provider }: { protocol: IWasmGlobals["protocol"]; provider: IWasmGlobals["provider"] }, testedOp: operation) => {
     // Create transaction
-    const handle = protocol.cpp_create_operation_handle(testedOp, false);
+    const handle = protocol.cpp_create_operation_handle(testedOp, false, false);
 
     try {
       protocol.cpp_op_validate(handle);

@@ -4,7 +4,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
 import type { IWaxExtendableFormatter } from "./formatters/types";
-import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, NaiAsset } from ".";
+import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, LegacyApiTransaction, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
 import type { TTransactionRequiredAuthorities } from '.';
 import type { OperationBase } from "./operation_base";
@@ -380,6 +380,27 @@ export interface ITransactionBase extends ISignatureTransaction {
    * @throws {WaxError} on any Wax API-related error
    */
   toApiJson(): ApiTransaction;
+
+  /**
+   * Converts the created transaction into the Legacy Hive API-form JSON.
+   *
+   * Legacy form differs in few aspects to regular (HF26) one:
+   * - for operations type/value dictionary object is replaced by array tuple, where first item points operation type and second operation body
+   * - asset values are encoded in their legacy form having specified token names after amount values, i.e. 1.000 HIVE
+   *
+   * Transaction legacy form (even it has shorter JSON code for the first look) is much more error prone, like also
+   * produces **larger binary serialization output**, what is directly stored in blocks. Binary form is the input for signature generation too.
+   * In general, preferred way of generating transactions is HF-26 form (default in this library).
+   *
+   * This method is added only for convenience and better cooperation to other transaction processing tools accepting only this form.
+   *
+   * @returns {LegacyApiTransaction} transaction in Legacy Hive API-form
+   *
+   * @throws {WaxError} on any Wax API-related error
+   *
+   * @deprecated
+   */
+  toLegacyApiJson(): LegacyApiTransaction;
 
   /**
    * Starts encryption chain
@@ -1023,13 +1044,24 @@ export interface IWaxBaseInterface {
   /**
    * Converts Hive API-form transaction in JSON form to our transaction
    *
-   * @param {string|object|ApiTransaction} transactionObject transaction object to be converted
+   * @param {string|object|ApiTransaction} transactionData transaction data to be converted
    *
    * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  createTransactionFromJson(transactionObject: string | object | ApiTransaction): ITransaction;
+  createTransactionFromJson(transactionData: string | object | ApiTransaction): ITransaction;
+
+  /**
+   * Converts Hive API-form transaction in legacy JSON form to our transaction
+   *
+   * @param {string|object|LegacyApiTransaction} transactionData transaction data to be converted
+   *
+   * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  createTransactionFromLegacyJson(transactionData: string | object | LegacyApiTransaction): ITransaction;
 
   /**
    * Constructs a new Transaction object with given data
