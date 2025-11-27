@@ -29,6 +29,8 @@
     "dist/external-signature-provider.d.ts",
     "dist/wallet_zod_versioning.js",
     "dist/wallet_zod_versioning.d.ts",
+    "dist/external-wallet-signer.js",
+    "dist/external-wallet-signer.d.ts",
     "dist/errors.js",
     "dist/errors.d.ts",
     "README.md",
