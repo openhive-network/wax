@@ -475,6 +475,10 @@ def handle_deserialize_transaction(transaction_data: bytes) -> WaxTransactionHan
     wax_tx.hTx = move(hTx)
     return wax_tx
 
+def legacy_tx_to_json(transaction_data: bytes) -> bytes:
+    cdef protocol obj
+    return obj.cpp_legacy_tx_to_json(transaction_data)
+
 def handle_deserialize_operation(operation_data: bytes) -> WaxOperationHandle:
     cdef protocol obj
     cdef hive_operation_handle hOp = obj.cpp_deserialize_operation(operation_data)
