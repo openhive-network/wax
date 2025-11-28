@@ -11,6 +11,7 @@ import type { TAccountName } from "./hive_apps_operations";
 import { IOnlineEncryptionProvider, ISignatureProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
 import type { transaction_handle } from "../build_wasm/wax.common";
+import { DEFAULT_WAX_OPTIONS } from "./base";
 
 type TIndexBeginEncryption = {
   mainEncryptionKey: TPublicKey;
@@ -32,9 +33,25 @@ export type TTransactionRequiredAuthorities = {
   other: Array<authority>;
 }
 
+interface ICommonTransactionOptions {
+  headBlockTime?: Date;
+  chainId?: string;
+  expirationTime?: TTimestamp;
+}
+
+export type TransactionOptions = (ICommonTransactionOptions & {
+  taposBlockId: TBlockHash;
+}) | (ICommonTransactionOptions & {
+  protoTransaction: transaction;
+});
+
 export class Transaction implements ITransaction, IEncryptingTransaction<ITransaction> {
-  private target: transaction;
-  private txHandle: transaction_handle;
+  protected target: transaction;
+  protected txHandle: transaction_handle;
+
+  private chainHeadBlockTime?: Date;
+  protected chainId: string;
+  private expirationTime: TTimestamp;
 
   private taposRefer(hex: TBlockHash): { ref_block_num: number; ref_block_prefix: number } {
     return this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_get_tapos_data(hex));
@@ -42,19 +59,24 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
   private indexKeeper: Array<TIndexKeeperNode> = [];
 
-  public constructor(
-    public readonly api: WaxBaseApi,
-    taposBlockId: TBlockHash | string | transaction,
-    private chainHeadBlockTime?: Date,
-    private readonly expirationTime: TTimestamp = "+1m") {
-    if(typeof taposBlockId === 'object') {
-      this.target = structuredClone(taposBlockId as transaction);
+  public constructor(public readonly api: WaxBaseApi, transactionOptions: TransactionOptions) {
+    this.expirationTime = transactionOptions.expirationTime ?? "+1m";
+    this.chainId = transactionOptions.chainId ?? this.api.chainId;
+
+    /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
+     *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
+    */
+    if(this.chainId !== DEFAULT_WAX_OPTIONS.chainId)
+      this.chainHeadBlockTime = transactionOptions.headBlockTime;
+
+    if("protoTransaction" in transactionOptions) {
+      this.target = structuredClone(transactionOptions.protoTransaction);
       this.txHandle = api.wasmManager.safeWasmCall(() => api.protocol.cpp_create_transaction_handle(this.target, true));
 
       return;
     }
 
-    const tapos = this.taposRefer(taposBlockId);
+    const tapos = this.taposRefer(transactionOptions.taposBlockId);
 
     this.target = {
       ref_block_num: tapos.ref_block_num,
@@ -77,7 +99,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   private calculateSignerPublicKeys(isHf26: boolean): Array<THexString> {
-    const vector = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_signature_keys(this.txHandle, this.api.chainId, isHf26));
+    const vector = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_signature_keys(this.txHandle, this.chainId, isHf26));
     const result: Array<THexString> = [];
     for(let i = 0; i < vector.size(); ++i)
       result.push(vector.get(i) as TAccountName);
@@ -117,7 +139,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
 
     api.wasmManager.safeWasmCall(() => api.protocol.cpp_tx_api_to_proto(transactionObject));
 
-    return new Transaction(api, transactionObject);
+    return new Transaction(api, { protoTransaction: transactionObject });
   }
 
   public toApi(): string {
@@ -236,13 +258,13 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   public get sigDigest(): string {
     this.flushTransaction();
 
-    return this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_sig_digest(this.txHandle, this.api.chainId, true));
+    return this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_sig_digest(this.txHandle, this.chainId, true));
   }
 
   public get legacy_sigDigest(): string {
     this.flushTransaction();
 
-    return this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_sig_digest(this.txHandle, this.api.chainId, false));
+    return this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_sig_digest(this.txHandle, this.chainId, false));
   }
 
   public get id(): TTransactionId {
@@ -314,7 +336,7 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_validate(this.txHandle));
   }
 
-  private applyExpiration(): void {
+  protected applyExpiration(): void {
     const expiration = calculateExpiration(this.expirationTime, this.chainHeadBlockTime);
 
     this.target.expiration = expiration.toISOString().slice(0, -5);

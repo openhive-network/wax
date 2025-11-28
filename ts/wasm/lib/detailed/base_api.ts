@@ -287,7 +287,7 @@ export class WaxBaseApi implements IWaxBaseInterface {
   }
 
   public createTransactionFromProto(protoTransaction: transaction): ITransaction {
-    return new Transaction(this, protoTransaction);
+    return new Transaction(this, { protoTransaction });
   }
 
   public createTransactionFromJson(transactionData: string | object | ApiTransaction): ITransaction {
@@ -301,12 +301,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.createTransactionFromJson(newTxStr);
   }
 
-  public createTransactionWithChainReferenceData(taposBlockId: TBlockHash, chainHeadBlockTime?: Date, expirationTime?: TTimestamp): ITransaction {
-    return new Transaction(this, taposBlockId, chainHeadBlockTime, expirationTime);
+  public createTransactionWithChainReferenceData(taposBlockId: TBlockHash, headBlockTime?: Date, expirationTime?: TTimestamp): ITransaction {
+    return new Transaction(this, { taposBlockId, headBlockTime, expirationTime });
   }
 
   public createTransactionWithTaPoS(taposBlockId: TBlockHash, expirationTime?: TTimestamp): ITransaction {
-    return new Transaction(this, taposBlockId, undefined, expirationTime);
+    return new Transaction(this, { taposBlockId, expirationTime });
   }
 
   private getNaiAssetForAssetName(assetName: EAssetName, assetSource: TNaiAssetConvertible): NaiAsset {

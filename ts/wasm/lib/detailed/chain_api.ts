@@ -22,8 +22,8 @@ export enum EManabarType {
 }
 
 export type TChainReferenceData = {
-  head_block_id: TBlockHash,
-  head_block_time: Date
+  headBlockId: TBlockHash;
+  headBlockTime: Date;
 };
 
 export enum EChainApiType {
@@ -45,7 +45,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   private jsonRpcApiCaller: ApiCaller;
   private restApiCaller: ApiCaller;
 
-  private taposCache: TChainReferenceData = { head_block_id: '', head_block_time: new Date(Date.now()) };
+  private taposCache: TChainReferenceData = { headBlockId: '', headBlockTime: new Date(Date.now()) };
   private lastTaposCacheUpdate: number = 0; /// last timestamp of taposCache update (in milliseconds)
 
   private readonly apiTimeout: number;
@@ -171,17 +171,16 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
   }
 
   public async createTransaction(expirationTime?: TTimestamp): Promise<IOnlineTransaction> {
-    const chainReferenceData = await this.acquireChainReferenceData(3000);
+    const { headBlockTime, headBlockId } = await this.acquireChainReferenceData(3000);
 
-    const transaction = new OnlineTransaction(this, chainReferenceData, expirationTime); 
-    return transaction;
+    return new OnlineTransaction(this, { headBlockTime, taposBlockId: headBlockId, expirationTime });
   }
 
   private async acquireChainReferenceData(taposLiveness: number): Promise<TChainReferenceData> {
     const now = Date.now();
     if ((now - this.lastTaposCacheUpdate) >= taposLiveness) {
       const { head_block_id, time } = await this.api.database_api.get_dynamic_global_properties({});
-      this.taposCache = { head_block_id: head_block_id, head_block_time: dateFromString(time) };
+      this.taposCache = { headBlockId: head_block_id, headBlockTime: dateFromString(time) };
       this.lastTaposCacheUpdate = now;
     }
 

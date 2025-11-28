@@ -1,10 +1,9 @@
-import { DEFAULT_WAX_OPTIONS } from "./base";
-import { HiveChainApi, TChainReferenceData } from "./chain_api";
-import { Transaction, TTransactionRequiredAuthorities } from "./transaction";
+import { HiveChainApi } from "./chain_api";
+import { Transaction, type TransactionOptions, type TTransactionRequiredAuthorities } from "./transaction";
 import type { authority, account_create, account_create_with_delegation, comment, create_claimed_account, recurrent_transfer, transfer, transfer_from_savings, transfer_to_savings, account_update2, account_update } from "./protocol";
 import { OperationVisitor } from "./visitor";
 
-import type { IOnlineTransaction, ITransaction, TPublicKey, TSignature, TTimestamp } from "./interfaces";
+import type { IOnlineTransaction, ITransaction, TPublicKey, TSignature } from "./interfaces";
 import { operation } from "./protocol";
 import { TAccountName } from "./hive_apps_operations";
 import type { IVerifyAuthorityTrace } from "./verify_authority_trace_interface";
@@ -163,12 +162,8 @@ class OnChainOperationValidator extends OperationVisitor {
  */
 export class OnlineTransaction extends Transaction implements IOnlineTransaction {
 
-  public constructor(private readonly chain: HiveChainApi, chainReferenceData: TChainReferenceData, expirationTime?: TTimestamp) {
-    /** Let's use a head block time as expiration reference time for other chains than mainnet. For mainnet realtime is best to eliminate potential API node time screw
-     *  For other (testing) chains it simplifies APPs rapid prototyping on deployments being mirrornet specific.
-    */
-    const expirationRefTime = chain.chainId != DEFAULT_WAX_OPTIONS.chainId ? chainReferenceData.head_block_time : undefined;
-    super(chain, chainReferenceData.head_block_id, expirationRefTime, expirationTime);
+  public constructor(private readonly chain: HiveChainApi, options: TransactionOptions) {
+    super(chain, options);
   }
 
   public async generateAuthorityVerificationTrace(useLegacySerialization: boolean = false, externalTx?: ITransaction): Promise<IVerifyAuthorityTrace> {
