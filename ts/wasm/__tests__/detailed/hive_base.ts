@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import { naiAsset, transaction, transactionObj, vote_operation } from "../assets/data.protocol";
+import { naiAsset, transaction, transactionObj, vote_operation, legacyApiTransaction } from "../assets/data.protocol";
 import type { ApiTransaction } from '../../dist/bundle';
 
 
@@ -890,6 +890,195 @@ test.describe('Wax object interface foundation tests', () => {
       precision: 3,
       amount: "218584"
     });
+  });
+
+  test('Should be able to create transaction from legacy JSON format', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      // Verify it was parsed correctly
+      return {
+        operations: tx.transaction.operations.length,
+        opType: tx.transaction.operations[0]?.transfer_operation ? 'transfer' : 'unknown',
+        from: tx.transaction.operations[0]?.transfer_operation?.from,
+        to: tx.transaction.operations[0]?.transfer_operation?.to
+      };
+    }, legacyApiTransaction);
+
+    expect(retVal).toStrictEqual({
+      operations: 1,
+      opType: 'transfer',
+      from: 'oneplus7',
+      to: 'kryptogames'
+    });
+  });
+
+  test('Should be able to convert legacy transaction to API JSON', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+      const apiJson = tx.toApi();
+      const parsed = JSON.parse(apiJson);
+
+      return {
+        hasType: 'type' in parsed.operations[0],
+        hasValue: 'value' in parsed.operations[0],
+        operationType: parsed.operations[0].type,
+        hasNaiAsset: 'nai' in parsed.operations[0].value.amount
+      };
+    }, legacyApiTransaction);
+
+    expect(retVal).toStrictEqual({
+      hasType: true,
+      hasValue: true,
+      operationType: 'transfer_operation',
+      hasNaiAsset: true
+    });
+  });
+
+  test('Should be able to validate legacy transaction', async ({ waxTest }) => {
+    await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      // Should not throw
+      tx.validate();
+    }, legacyApiTransaction);
+  });
+
+  test('Should be able to get impacted accounts from legacy transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      return Array.from(tx.impactedAccounts);
+    }, legacyApiTransaction);
+
+    expect(retVal).toContain('oneplus7');
+    expect(retVal).toContain('kryptogames');
+  });
+
+  test('Should be able to calculate transaction ID from legacy transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      return tx.id;
+    }, legacyApiTransaction);
+
+    expect(retVal).toBe("3725c81634f152011e2043eb7119911b953d4267");
+  });
+
+  test('Should be able to push operations to legacy transaction', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }, legacyTx) => {
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      // Add another operation
+      tx.pushOperation({
+        vote_operation: {
+          voter: 'alice',
+          author: 'bob',
+          permlink: 'test-post',
+          weight: 10000
+        }
+      });
+
+      return tx.transaction.operations.length;
+    }, legacyApiTransaction);
+
+    expect(retVal).toBe(2);
+  });
+
+  test('Should handle legacy asset format conversion', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      const legacyTx = {
+        ref_block_num: 1,
+        ref_block_prefix: 1,
+        expiration: '2023-11-09T22:01:24',
+        operations: [
+          ['transfer', {
+            from: 'alice',
+            to: 'bob',
+            amount: '100.500 HIVE',  // Legacy format
+            memo: 'test'
+          }]
+        ],
+        extensions: [],
+        signatures: []
+      };
+
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+      const transferOp = tx.transaction.operations[0]?.transfer_operation;
+
+      return {
+        amount: transferOp?.amount?.amount,
+        nai: transferOp?.amount?.nai,
+        precision: transferOp?.amount?.precision
+      };
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: '100500',
+      nai: '@@000000021',
+      precision: 3
+    });
+  });
+
+  test('Should handle legacy HBD asset format', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      const legacyTx = {
+        ref_block_num: 1,
+        ref_block_prefix: 1,
+        expiration: '2023-11-09T22:01:24',
+        operations: [
+          ['transfer', {
+            from: 'alice',
+            to: 'bob',
+            amount: '50.000 HBD',  // Legacy HBD format
+            memo: ''
+          }]
+        ],
+        extensions: [],
+        signatures: []
+      };
+
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+      const transferOp = tx.transaction.operations[0]?.transfer_operation;
+
+      return {
+        amount: transferOp?.amount?.amount,
+        nai: transferOp?.amount?.nai,
+        precision: transferOp?.amount?.precision
+      };
+    });
+
+    expect(retVal).toStrictEqual({
+      amount: '50000',
+      nai: '@@000000013',
+      precision: 3
+    });
+  });
+
+  test('Should handle legacy operation with numeric type ID', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ base }) => {
+      const legacyTx = {
+        ref_block_num: 1,
+        ref_block_prefix: 1,
+        expiration: '2023-11-09T22:01:24',
+        operations: [
+          [2, {  // Transfer is operation type 2
+            from: 'alice',
+            to: 'bob',
+            amount: '1.000 HIVE',
+            memo: ''
+          }]
+        ],
+        extensions: [],
+        signatures: []
+      };
+
+      const tx = base.createTransactionFromLegacyJson(legacyTx);
+
+      return tx.transaction.operations[0]?.transfer_operation ? 'transfer' : 'unknown';
+    });
+
+    expect(retVal).toBe('transfer');
   });
 
 });
