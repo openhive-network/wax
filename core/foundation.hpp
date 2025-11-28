@@ -256,6 +256,8 @@ public:
   void cpp_deserialize_hive_tx(const std::string& hex, hive_tx* storage)const;
   cpp::hive_operation_handle cpp_deserialize_operation(std::string hex)const;
 
+  std::string cpp_legacy_tx_to_json(const std::string& tx_str) const;
+
   std::vector<std::string>        cpp_op_impacted_accounts(const hive_operation_handle& op_handle)const;
   std::string                     cpp_op_to_binary(const hive_operation_handle& op_handle, bool use_hf26_serialization)const;
   std::string                     cpp_op_to_json(const hive_operation_handle& op_handle)const;

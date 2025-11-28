@@ -926,6 +926,23 @@ void foundation::cpp_tx_set_expiration(hive_transaction_handle& tx_handle, const
   });
 }
 
+std::string foundation::cpp_legacy_tx_to_json(const std::string& tx_str)const
+{
+  return cpp::safe_exception_wrapper([&]() -> std::string {
+    hive::protocol::signed_transaction tx;
+
+    {
+      hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
+      hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
+
+      fc::variant v = fc::json::from_string(tx_str, fc::json::format_validation_mode::full);
+      fc::from_variant(v, tx);
+    }
+
+    return fc::json::to_string(tx);
+  });
+}
+
 std::string foundation::cpp_tx_to_legacy_json(const hive_transaction_handle& tx_handle)const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string {
