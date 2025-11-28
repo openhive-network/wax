@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
@@ -42,6 +43,7 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     get_hive_protocol_config,
     get_public_key_from_signature,
     is_valid_account_name,
+    legacy_tx_to_json,
     operation_get_impacted_accounts,
     proto_operation_get_impacted_accounts,
     python_witness_set_properties_data,
@@ -323,6 +325,12 @@ class WaxBaseApi(IWaxBaseInterface):
 
     def create_transaction_from_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
         return Transaction.from_api(api=self, transaction=transaction)
+
+    def create_transaction_from_legacy_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
+        legacy_tx_str = transaction if isinstance(transaction, str) else json.dumps(transaction)
+        new_tx_str = to_python_string(legacy_tx_to_json(to_cpp_string(legacy_tx_str)))
+
+        return self.create_transaction_from_json(new_tx_str)
 
     def serialize_witness_props(self, witness_props: python_witness_set_properties_data) -> dict[str, str]:
         serialized_props = serialize_witness_set_properties(witness_props)
