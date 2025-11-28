@@ -590,6 +590,13 @@ export interface IWaxBaseInterface {
   readonly waxify: IWaxExtendableFormatter['waxify'];
 
   /**
+   * Retrieves the chain id. Defined in the Wax base / chain creator functions
+   *
+   * @returns {THexString} chain id in hex string format
+   */
+  readonly chainId: THexString;
+
+  /**
    * Retrieves the public key address prefix
    *
    * @returns {string} public key prefix
