@@ -181,6 +181,8 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_serialize_witness_set_properties", &foundation_wasm::cpp_serialize_witness_set_properties)
     .function("cpp_deserialize_witness_set_properties", &foundation_wasm::cpp_deserialize_witness_set_properties)
 
+    .function("cpp_legacy_tx_to_json", &foundation_wasm::cpp_legacy_tx_to_json)
+
     .function("cpp_report_transaction_handle_stats", &foundation_wasm::cpp_report_transaction_handle_stats)
     .function("cpp_deserialize_transaction", &foundation_wasm::cpp_deserialize_transaction, nonnull<ret_val>())
     .function("cpp_deserialize_operation", &foundation_wasm::cpp_deserialize_operation, nonnull<ret_val>())
