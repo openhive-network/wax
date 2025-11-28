@@ -112,12 +112,12 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     return this.calculateSignerPublicKeys(false);
   }
 
-  public static fromApi(api: WaxBaseApi, transactionObject: string | object): Transaction {
-    const transactionStringified = typeof transactionObject === 'string' ? JSON.parse(transactionObject) : structuredClone(transactionObject);
+  public static fromApi(api: WaxBaseApi, transactionData: string | object): Transaction {
+    const transactionObject = typeof transactionData === 'string' ? JSON.parse(transactionData) : structuredClone(transactionData);
 
-    api.wasmManager.safeWasmCall(() => api.protocol.cpp_tx_api_to_proto(transactionStringified));
+    api.wasmManager.safeWasmCall(() => api.protocol.cpp_tx_api_to_proto(transactionObject));
 
-    return new Transaction(api, transactionStringified);
+    return new Transaction(api, transactionObject);
   }
 
   public toApi(): string {

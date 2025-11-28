@@ -4,7 +4,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
 import type { IWaxExtendableFormatter } from "./formatters/types";
-import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, NaiAsset } from ".";
+import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, LegacyApiTransaction, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
 import type { TTransactionRequiredAuthorities } from '.';
 import type { OperationBase } from "./operation_base";
@@ -1023,13 +1023,24 @@ export interface IWaxBaseInterface {
   /**
    * Converts Hive API-form transaction in JSON form to our transaction
    *
-   * @param {string|object|ApiTransaction} transactionObject transaction object to be converted
+   * @param {string|object|ApiTransaction} transactionData transaction data to be converted
    *
    * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  createTransactionFromJson(transactionObject: string | object | ApiTransaction): ITransaction;
+  createTransactionFromJson(transactionData: string | object | ApiTransaction): ITransaction;
+
+  /**
+   * Converts Hive API-form transaction in legacy JSON form to our transaction
+   *
+   * @param {string|object|LegacyApiTransaction} transactionData transaction data to be converted
+   *
+   * @returns {ITransaction} transaction containing ready to sign transaction (or to convert to protobuf structure using {@link ITransaction.transaction} property)
+   *
+   * @throws {WaxError} on any Wax API-related error
+   */
+  createTransactionFromLegacyJson(transactionData: string | object | LegacyApiTransaction): ITransaction;
 
   /**
    * Constructs a new Transaction object with given data
