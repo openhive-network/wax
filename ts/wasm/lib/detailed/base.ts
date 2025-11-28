@@ -4,6 +4,7 @@ import { WasmManager } from "./util/wasm_errors.js";
 import { WaxBaseApi } from "./base_api.js";
 import type waxmodule from "../build_wasm/wax.common.js";
 import type { IOptionalModuleArgs } from "./module_types.js";
+import { assignDefault } from "./util/iterate.js";
 
 export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
   chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
@@ -14,7 +15,7 @@ export const createWaxFoundation = async(wasmFn: typeof waxmodule, ModuleExt: IO
   const wasmManager = new WasmManager(wasmFn, ModuleExt);
   const waxModule = await wasmManager.module;
 
-  const apiOptions: IWaxOptions = { ...DEFAULT_WAX_OPTIONS, ...options };
+  const apiOptions = assignDefault(DEFAULT_WAX_OPTIONS, options);
 
   const api = new WaxBaseApi(wasmManager, waxModule, apiOptions.chainId);
 

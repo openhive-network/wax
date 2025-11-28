@@ -1,5 +1,22 @@
 import { type DeepPartial } from '../formatters/types.js';
 
+export const assignDefault = <T extends Record<string, any>>(defaultsObject: T, target: DeepPartial<T>): T => {
+  if (typeof target !== "object")
+    return defaultsObject;
+
+  for(const itKey in defaultsObject) {
+    if (typeof defaultsObject[itKey] === "object") {
+      target[itKey] = assignDefault(defaultsObject[itKey], target[itKey] as any);
+    }
+    else {
+      if (target[itKey] === undefined)
+        (target as T)[itKey] = defaultsObject[itKey];
+    }
+  }
+
+  return target as T;
+};
+
 export const iterate = <T extends Record<string, any>>(source: DeepPartial<T>, target: T): DeepPartial<T> => {
   if (typeof target !== "object")
     return source;

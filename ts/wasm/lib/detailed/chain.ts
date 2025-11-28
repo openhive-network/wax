@@ -5,6 +5,7 @@ import { HiveChainApi } from "./chain_api.js";
 import type waxmodule from "../build_wasm/wax.common.js";
 import type { IOptionalModuleArgs } from "./module_types.js";
 import { DEFAULT_WAX_OPTIONS } from "./base.js";
+import { assignDefault } from "./util/iterate.js";
 
 const API_CALL_TIMEOUT_MS = 2_000;
 
@@ -21,7 +22,7 @@ export const createHiveChain = async(wasmFn: typeof waxmodule, ModuleExt: IOptio
   const wasmManager = new WasmManager(wasmFn, ModuleExt);
   const waxModule = await wasmManager.module;
 
-  const apiOptions: IWaxOptionsChain = { ...DEFAULT_WAX_OPTIONS_CHAIN, ...options };
+  const apiOptions = assignDefault(DEFAULT_WAX_OPTIONS_CHAIN, options);
 
   const api = new HiveChainApi(wasmManager, waxModule, {
     chainId: apiOptions.chainId,
