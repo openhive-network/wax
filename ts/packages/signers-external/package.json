@@ -33,6 +33,12 @@
     "dist/external-wallet-signer.d.ts",
     "dist/errors.js",
     "dist/errors.d.ts",
+    "dist/detailed/external-wallet.js",
+    "dist/detailed/external-wallet.d.ts",
+    "dist/encryption-key-manager.js",
+    "dist/encryption-key-manager.d.ts",
+    "dist/interfaces.js",
+    "dist/interfaces.d.ts",
     "README.md",
     "LICENSE.md"
   ],

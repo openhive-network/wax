@@ -8,11 +8,21 @@ const DATA_FORMAT_VERSIONS = {
   V2: '2.0.0',
 } as const;
 
+const ENCRYPTED_FORMAT_VERSIONS = {
+  V1: '1.0.0-encrypted',
+} as const;
+
 /**
  * Current version of the wallet data format.
  * All new saved data will use this version
  */
 export const WALLET_DATA_FORMAT_VERSION = DATA_FORMAT_VERSIONS.V2;
+
+/**
+ * Current version of the encrypted wallet wrapper format.
+ * All new encrypted wallets will use this version
+ */
+export const ENCRYPTED_WALLET_FORMAT_VERSION = ENCRYPTED_FORMAT_VERSIONS.V1;
 
 const strictDefinition = <T extends z.ZodRawShape>(shape: T) => {
   return z.object(shape).strict();
@@ -60,6 +70,27 @@ const WalletDataSchema = z.union([
   WalletDataV1Schema,
 ]);
 
+// Encrypted wallet wrapper schema - V1
+const EncryptedWalletV1Schema = strictDefinition({
+  encrypted: z.literal(ENCRYPTED_FORMAT_VERSIONS.V1),
+  encryptionMetadata: strictDefinition({
+    hasAutoKey: z.boolean(), // Whether auto-key layer is present
+    timestamp: z.number() // When the wallet was encrypted
+  }),
+  payload: z.string() // Base64-encoded encrypted wallet data
+});
+
+// Union of all encrypted versions
+const EncryptedWalletSchema = z.union([
+  EncryptedWalletV1Schema
+]);
+
+// Storage format can be either encrypted or plain wallet data
+const StorageDataSchema = z.union([
+  EncryptedWalletSchema,
+  WalletDataSchema
+]);
+
 // TypeScript types inferred from Zod schemas
 export type IWalletKeyEntry = z.infer<typeof KeyEntrySchema>;
 export type IWalletHiveAuthorityCategory = z.infer<typeof HiveAuthorityCategory>;
@@ -72,6 +103,17 @@ export type IWalletDataV2 = z.infer<typeof WalletDataV2Schema>;
  * This defines the format of data saved to storage providers
  */
 export type IWalletData = z.infer<typeof WalletDataSchema>;
+
+/**
+ * Encrypted wallet wrapper format
+ */
+export type IEncryptedWalletV1 = z.infer<typeof EncryptedWalletV1Schema>;
+export type IEncryptedWallet = z.infer<typeof EncryptedWalletSchema>;
+
+/**
+ * Storage format - can be either encrypted or plain wallet data
+ */
+export type IStorageData = z.infer<typeof StorageDataSchema>;
 
 // Automatic version detection and parsing
 export const parseWalletData = (data: unknown): IWalletData => {
@@ -95,6 +137,45 @@ export const parseWalletData = (data: unknown): IWalletData => {
   }
 
   throw new Error(`Unknown wallet data version. Got data: ${JSON.stringify(finalResult.data)}`);
+}
+
+/**
+ * Parses storage data - handles both encrypted and plain formats
+ * Returns an object indicating whether data is encrypted and the parsed content
+ */
+export const parseStorageData = (data: unknown): {
+  isEncrypted: boolean;
+  data: IEncryptedWallet | IWalletData
+} => {
+  // Try encrypted format first
+  const encryptedResult = EncryptedWalletSchema.safeParse(data);
+  if (encryptedResult.success) {
+    return { isEncrypted: true, data: encryptedResult.data };
+  }
+
+  // Try plain wallet data
+  const walletResult = WalletDataSchema.safeParse(data);
+  if (walletResult.success) {
+    return { isEncrypted: false, data: walletResult.data };
+  }
+
+  // If neither matches, throw detailed error
+  const finalResult = StorageDataSchema.safeParse(data);
+  if (!finalResult.success) {
+    throw new WaxExternalSignatureProviderError(
+      `Failed to parse storage data: ${z.prettifyError(finalResult.error)}`
+    );
+  }
+
+  throw new Error(`Unknown storage data format. Got data: ${JSON.stringify(finalResult.data)}`);
+}
+
+/**
+ * Checks if storage data is encrypted
+ */
+export const isEncryptedWallet = (data: unknown): boolean => {
+  const encryptedResult = EncryptedWalletSchema.safeParse(data);
+  return encryptedResult.success;
 }
 
 /**
