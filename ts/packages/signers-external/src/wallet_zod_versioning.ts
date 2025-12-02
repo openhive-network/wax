@@ -139,6 +139,18 @@ export const parseWalletData = (data: unknown): IWalletData => {
   throw new Error(`Unknown wallet data version. Got data: ${JSON.stringify(finalResult.data)}`);
 }
 
+export const migrateWalletData = (data: unknown): IWalletDataV2 => {
+  const parsedData = parseWalletData(data);
+
+  if(parsedData.version == DATA_FORMAT_VERSIONS.V2)
+    return parsedData;
+
+  const migratedData = {...parsedData,
+     version: DATA_FORMAT_VERSIONS.V2,
+     generalPurposeKeys: {}};
+  return migratedData;
+}
+
 /**
  * Parses storage data - handles both encrypted and plain formats
  * Returns an object indicating whether data is encrypted and the parsed content

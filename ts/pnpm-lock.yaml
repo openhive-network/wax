@@ -206,6 +206,9 @@ importers:
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
+      '@hiveio/wax-signers-beekeeper':
+        specifier: workspace:../signers-beekeeper
+        version: link:../signers-beekeeper
       zod:
         specifier: ^4.1.12
         version: 4.1.12
