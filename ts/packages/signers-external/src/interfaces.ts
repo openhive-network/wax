@@ -103,5 +103,13 @@ export interface IExternalWallet extends AsyncDisposable {
    * Allows to explicitly free all resources allocated to store data in memory.
    */
   close(): Promise<void>;
+
+  /**
+   * Gets the encryption key WIF used for wallet data encryption.
+   * This allows the app to store the derived key in localStorage for automatic decryption.
+   *
+   * @returns The WIF encryption key
+   */
+  getEncryptionKeyWif(): string;
 };
 

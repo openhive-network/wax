@@ -8,10 +8,18 @@ import { WaxExternalSignatureProviderError } from "../errors.js";
 import type { IWalletKeyEntry, IWalletDataV2 } from "../wallet_zod_versioning.js";
 import { createEmptyWalletData, migrateWalletData } from "../wallet_zod_versioning.js";
 
-/** Callback function to query for storage password.
+/**
+ * Storage encryption credentials - either a password to derive key from, or the derived WIF key itself
+ */
+export type TStorageEncryptionCredentials =
+  | { password: string }
+  | { encryptionKey: string };
+
+/** Callback function to query for storage password or provide cached encryption key.
  *  @param missingStorageFile if true, it should enforce query for new password
+ *  @returns Either a password (which will be used to derive encryption key) or the encryption key WIF directly
 */
-export type TStoragePasswordProvider = (missingStorageFile: boolean) => Promise<string>;
+export type TStoragePasswordProvider = (missingStorageFile: boolean) => Promise<TStorageEncryptionCredentials>;
 
 export enum EStorageProviders {
   GOOGLE_DRIVE,
@@ -68,7 +76,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     keyInfo: IWalletKeyEntry,
     mainWallet: ExternalWallet
   ): Promise<WalletContent> {
-    return WalletContent.create(wax, keyInfo, mainWallet, accountName, role);
+    return await WalletContent.create(wax, keyInfo, mainWallet, accountName, role);
   }
 
   public static async createForCustomKey (
@@ -77,7 +85,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     keyInfo: IWalletKeyEntry,
     mainWallet: ExternalWallet
   ): Promise<WalletContent> {
-    return WalletContent.create(wax, keyInfo, mainWallet, undefined, undefined, customKeyAlias);
+    return await WalletContent.create(wax, keyInfo, mainWallet, undefined, undefined, customKeyAlias);
   }
 
   public enumStoredHiveKeys (account: TAccountName, role?: TRole): Iterable<IExternalWalletHiveRoleKeyInfo> {
@@ -184,6 +192,7 @@ export class ExternalWallet implements IExternalWallet {
     private readonly storageProvider: AStorageProviderBase,
     private readonly storageEncryptionPublicKey: TPublicKey,
     private readonly storageEncryptor: TBeekeeperInfo,
+    private readonly encryptionKeyWif: string,
     public isDisposed: boolean = false
   ) {}
 
@@ -200,15 +209,24 @@ export class ExternalWallet implements IExternalWallet {
     const storage = new GoogleStorageProvider(authProvider);
     /// Immediately perform access to enforce authentication
     const filePresent = await storage.exists(storageFileName);
-    /// Ask for password or get already saved one at client side
-    const password = await storagePasswordProvider(filePresent === false);
+    /// Ask for password or get already saved encryption key from client side
+    const credentials = await storagePasswordProvider(filePresent === false);
 
-    const encryptionKey = waxBase.getPrivateKeyFromPassword('dummyaccount', 'posting', password);
+    // Get encryption key WIF - either use provided key or derive from password
+    let encryptionKeyWif: string;
+    if ('encryptionKey' in credentials) {
+      // Client provided the encryption key directly - use it
+      encryptionKeyWif = credentials.encryptionKey;
+    } else {
+      // Client provided a password - derive the encryption key
+      const encryptionKey = waxBase.getPrivateKeyFromPassword('dummyaccount', 'posting', credentials.password);
+      encryptionKeyWif = encryptionKey.wifPrivateKey;
+    }
 
     const storageEncryptor = await initInternalBeekeeperWallet('encryption-key-store');
-    const encryptionPublicKey = await storageEncryptor.wallet.importKey(encryptionKey.wifPrivateKey);
+    const encryptionPublicKey = await storageEncryptor.wallet.importKey(encryptionKeyWif);
 
-    const wallet = new ExternalWallet(waxBase, storageFileName, storage, encryptionPublicKey, storageEncryptor);
+    const wallet = new ExternalWallet(waxBase, storageFileName, storage, encryptionPublicKey, storageEncryptor, encryptionKeyWif);
 
     return wallet;
   }
@@ -275,6 +293,16 @@ export class ExternalWallet implements IExternalWallet {
 
   public async [Symbol.asyncDispose](): Promise<void> {
     await this.close();
+  }
+
+  /**
+   * Gets the encryption key WIF used for wallet data encryption.
+   * This allows the app to store the derived key in localStorage for automatic decryption.
+   *
+   * @returns The WIF encryption key
+   */
+  public getEncryptionKeyWif(): string {
+    return this.encryptionKeyWif;
   }
 
   public async reloadStorageFile (allowCreation: boolean): Promise<IWalletDataV2> {
