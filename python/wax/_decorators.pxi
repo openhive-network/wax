@@ -15,6 +15,7 @@ from functools import wraps
 import json
 
 from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
+from wax.exceptions.wax_specialised_errors import wax_error_boundary
 from wax.wax_result import (
     python_result,
     python_error_code,

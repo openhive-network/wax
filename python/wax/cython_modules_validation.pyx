@@ -16,6 +16,7 @@ from wax.wax_result import python_result
 include "_decorators.pxi"
 
 
+@wax_error_boundary
 def operation_get_impacted_accounts(operation: str) -> list[str]:
     """Get list of accounts impacted by an operation."""
     op = json.loads(operation)
@@ -23,6 +24,7 @@ def operation_get_impacted_accounts(operation: str) -> list[str]:
     return decode_list(_op_impacted_accounts(hOp))
 
 
+@wax_error_boundary
 def transaction_get_impacted_accounts(transaction: str) -> list[str]:
     """Get list of accounts impacted by a transaction."""
     tx = json.loads(transaction)
@@ -30,7 +32,7 @@ def transaction_get_impacted_accounts(transaction: str) -> list[str]:
     return decode_list(_tx_impacted_accounts(hTx))
 
 
-@return_python_result
+@wax_error_boundary
 def validate_operation(operation: str) -> python_result:
     """Validate an operation."""
     op = json.loads(operation)
@@ -38,7 +40,7 @@ def validate_operation(operation: str) -> python_result:
     _op_validate(hOp)
 
 
-@return_python_result
+@wax_error_boundary
 def validate_transaction(transaction: str) -> python_result:
     """Validate a transaction."""
     tx = json.loads(transaction)
@@ -46,7 +48,7 @@ def validate_transaction(transaction: str) -> python_result:
     return _tx_validate(hTx)
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using HF26 serialization."""
     tx = json.loads(transaction)
@@ -54,7 +56,7 @@ def calculate_transaction_id(transaction: str) -> python_result:
     return _tx_id(hTx, True)
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using legacy serialization."""
     tx = json.loads(transaction)
@@ -62,7 +64,7 @@ def calculate_legacy_transaction_id(transaction: str) -> python_result:
     return _tx_id(hTx, False)
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using HF26 serialization."""
     tx = json.loads(transaction)
@@ -70,7 +72,7 @@ def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
     return _tx_sig_digest(hTx, encode_str(chain_id), True)
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using legacy serialization."""
     tx = json.loads(transaction)
@@ -78,6 +80,7 @@ def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_resul
     return _tx_sig_digest(hTx, encode_str(chain_id), False)
 
 
+@wax_error_boundary
 def is_valid_account_name(account_name: str) -> bool:
     """Check if account name is valid."""
     cdef protocol obj
@@ -130,31 +133,37 @@ cdef bytes _tx_sig_digest(WaxTransactionHandle wax_tx, bytes chain_id, bint use_
 # These wrap the cdef functions for Python access
 # =============================================================================
 
+@wax_error_boundary
 def op_impacted_accounts(wax_op: WaxOperationHandle) -> list[str]:
     """Get impacted accounts from operation handle."""
     return decode_list(_op_impacted_accounts(wax_op))
 
 
+@wax_error_boundary
 def op_validate(wax_op: WaxOperationHandle) -> None:
     """Validate operation handle."""
     _op_validate(wax_op)
 
 
+@wax_error_boundary
 def tx_impacted_accounts(tx: WaxTransactionHandle) -> list[str]:
     """Get impacted accounts from transaction handle."""
     return decode_list(_tx_impacted_accounts(tx))
 
 
+@wax_error_boundary
 def tx_validate(tx: WaxTransactionHandle) -> None:
     """Validate transaction handle."""
     _tx_validate(tx)
 
 
+@wax_error_boundary
 def tx_id(tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> str:
     """Get transaction ID from handle."""
     return decode_bytes(_tx_id(tx, use_hf26_serialization))
 
 
+@wax_error_boundary
 def tx_sig_digest(tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> str:
     """Get signature digest from transaction handle."""
     return decode_bytes(_tx_sig_digest(tx, encode_str(chain_id), use_hf26_serialization))
