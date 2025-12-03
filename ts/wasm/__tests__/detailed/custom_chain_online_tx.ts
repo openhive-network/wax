@@ -1321,7 +1321,12 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
       tx.sign(wallet, matchingPublicKey);
 
       try {
-        await myCustomChain.broadcast(tx);
+        // Do not perform real broadcast.
+        // To do so, we need to introduce some official mirrornet automatic preconfig, in similar way as it was done here:
+        // https://gitlab.syncad.com/hive/wax/-/blob/develop/examples/ts/signature-extension/common-data.ts?ref_type=heads#L39
+        // At the moment it will be sufficient to call performOnChainVerification only which should pass.
+        // await myCustomChain.broadcast(tx);\
+        await tx.performOnChainVerification();
       }
       catch (error) {
         console.error(error);
