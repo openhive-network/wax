@@ -1283,7 +1283,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 });
 
   test('Should allow to create account and send transfer to it in one transaction', async ({ waxTest, config }) => {
-    const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey, config) => {
+    const retVal = await waxTest.dynamic(async ({ beekeeper, wax }, mirrornetSkeletonKey, config) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
