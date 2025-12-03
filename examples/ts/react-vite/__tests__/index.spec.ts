@@ -42,14 +42,21 @@ test.describe('Proper WASM Wax loading on playwright ', () => {
       console.log('>>', msg.type(), msg.text());
     });
 
-    await waitForServerReady("http://localhost:5173");
+    page.on('pageerror', err => {
+      console.log('PAGE ERROR:', err.message)
+    });
 
-    await page.goto("http://localhost:5173", { waitUntil: "load" });
+    await waitForServerReady("http://127.0.0.1:5173");
+
+    await page.goto("http://127.0.0.1:5173", { waitUntil: "load" });
   });
 
   test('WASM should be properly loaded during development', async ({ page }) => {
+    console.log('Checking whether WASM loading flag is available...');
     // Wait for wax to be loaded
     await page.waitForFunction(() => typeof (window as any).waxLoaded !== "undefined");
+
+    console.log('Resumed - performing actual verification...');
 
     const result = await page.evaluate(async() => {
       return (window as any).waxLoaded; // This value is set by this app in App.vue after successfull wax initialization
