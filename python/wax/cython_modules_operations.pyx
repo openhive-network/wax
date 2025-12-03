@@ -11,20 +11,24 @@ from cython_modules_common cimport protocol, binary_data, binary_data_node, requ
 from cython_modules_common import decode_bytes, decode_dict_bytes_int
 from cython_modules_handles cimport WaxOperationHandle, WaxTransactionHandle, _create_wax_transaction
 from wax.wax_result import python_binary_data, python_required_authority_collection, python_authority
+from wax.exceptions.wax_specialised_errors import wax_error_boundary
 
 
+@wax_error_boundary
 def op_to_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> str:
     """Convert an operation to binary format."""
     cdef protocol obj
     return decode_bytes(obj.cpp_op_to_binary(wax_op.hOp, use_hf26_serialization))
 
 
+@wax_error_boundary
 def op_to_json(wax_op: WaxOperationHandle) -> str:
     """Convert an operation to JSON format."""
     cdef protocol obj
     return decode_bytes(obj.cpp_op_to_json(wax_op.hOp))
 
 
+@wax_error_boundary
 def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -> python_binary_data:
     """Get binary representation of an operation with offset information."""
     cdef protocol obj
@@ -38,6 +42,7 @@ def op_binary(wax_op: WaxOperationHandle, use_hf26_serialization: bool = True) -
     )
 
 
+@wax_error_boundary
 def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_authority_collection:
     """Get required authorities for an operation."""
     cdef protocol obj
@@ -62,6 +67,7 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
     )
 
 
+@wax_error_boundary
 def tx_required_authorities(tx: WaxTransactionHandle) -> python_required_authority_collection:
     """Get required authorities for a transaction."""
     cdef protocol obj
@@ -86,6 +92,7 @@ def tx_required_authorities(tx: WaxTransactionHandle) -> python_required_authori
     )
 
 
+@wax_error_boundary
 def get_transaction_required_authorities(transaction: str) -> python_required_authority_collection:
     """Get required authorities for a transaction from JSON string."""
     tx = json.loads(transaction)

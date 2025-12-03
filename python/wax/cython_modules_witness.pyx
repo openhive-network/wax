@@ -9,8 +9,10 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t
 from cython_modules_common cimport protocol, json_asset, json_price, witness_set_properties_data, witness_set_properties_serialized
 from cython_modules_common import encode_str, decode_bytes
 from wax.wax_result import python_witness_set_properties_data, python_json_asset, python_price
+from wax.exceptions.wax_specialised_errors import wax_error_boundary
 
 
+@wax_error_boundary
 def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[str, str]:
     """Serialize witness set properties to binary format."""
     cdef protocol obj
@@ -89,6 +91,7 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
     return {decode_bytes(k): decode_bytes(v) for k, v in dict(serialized_properties).items()}
 
 
+@wax_error_boundary
 def deserialize_witness_set_properties(serialized_properties: dict[str, str]) -> python_witness_set_properties_data:
     """Deserialize binary witness set properties to structured format."""
     cdef protocol obj

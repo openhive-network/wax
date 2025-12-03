@@ -2,20 +2,20 @@
 # distutils: language = c++
 # Testing-related functions - exception handling verification
 
-from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol
 
 # Include shared decorators (these are def functions, cannot be cimported)
 include "_decorators.pxi"
 
 
-@call_with_exception_relay
+@wax_error_boundary
 def verify_exception_handling(throw_type: int) -> None:
     """Verify exception handling by throwing a specific exception type."""
     cdef protocol obj
     obj.cpp_throws(throw_type)
 
 
-@call_with_exception_relay
+@wax_error_boundary
 def cpp_throws(throw_type: int) -> None:
     """Throw a C++ exception of a specific type for testing."""
     cdef protocol obj

@@ -4,7 +4,7 @@
 
 from libc.stdint cimport uint16_t, uint32_t, uint64_t
 
-from cython_modules_common cimport protocol, json_asset, json_price, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol, json_asset, json_price
 from cython_modules_common import encode_str
 from wax.wax_result import (
     python_result,
@@ -22,6 +22,7 @@ cdef json_asset encode_json_asset(object asset):
     return json_asset(encode_str(asset.amount), asset.precision, encode_str(asset.nai))
 
 
+@wax_error_boundary
 @return_python_json_asset
 def general_asset(asset_num: long, amount: long) -> python_json_asset:
     """Create a general asset with given NAI and amount."""
@@ -30,6 +31,7 @@ def general_asset(asset_num: long, amount: long) -> python_json_asset:
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def hive(amount: int) -> python_json_asset:
     """Create a HIVE asset."""
@@ -38,6 +40,7 @@ def hive(amount: int) -> python_json_asset:
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def hbd(amount: int) -> python_json_asset:
     """Create an HBD asset."""
@@ -46,6 +49,7 @@ def hbd(amount: int) -> python_json_asset:
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def vests(amount: int) -> python_json_asset:
     """Create a VESTS asset."""
@@ -54,6 +58,7 @@ def vests(amount: int) -> python_json_asset:
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_ref_block_data
 def get_tapos_data(block_id: str) -> python_ref_block_data:
     """Get TAPOS (Transaction as Proof of Stake) data from a block ID."""
@@ -62,7 +67,7 @@ def get_tapos_data(block_id: str) -> python_ref_block_data:
     return response.ref_block_num, response.ref_block_prefix
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
     """Calculate when manabar will be fully regenerated."""
     cdef protocol obj
@@ -70,7 +75,7 @@ def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_ma
     return response
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
     """Calculate the current manabar value."""
     cdef protocol obj
@@ -78,7 +83,7 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
     return response
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_hp_apr(
     head_block_num: int,
     vesting_reward_percent: int,
@@ -93,6 +98,7 @@ def calculate_hp_apr(
     return response
 
 
+@wax_error_boundary
 @return_python_json_asset
 def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
     """Convert HBD to HIVE using given price."""
@@ -104,6 +110,7 @@ def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
     """Convert HIVE to HBD using given price."""
@@ -115,6 +122,7 @@ def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, qu
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert VESTS to HP (Hive Power)."""
@@ -126,6 +134,7 @@ def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: pyt
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def calculate_hp_to_vests(hive: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert HP (Hive Power) to VESTS."""
@@ -150,7 +159,7 @@ def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_
     return response
 
 
-@return_python_result
+@wax_error_boundary
 def calculate_inflation_rate_for_block(block_num: int) -> python_result:
     """Calculate inflation rate for a given block number."""
     cdef protocol obj
@@ -158,6 +167,7 @@ def calculate_inflation_rate_for_block(block_num: int) -> python_result:
     return response
 
 
+@wax_error_boundary
 @return_python_json_asset
 def estimate_hive_collateral(current_median_history: python_price, current_min_history: python_price, hbd_amount_to_get: python_json_asset) -> python_json_asset:
     """Estimate HIVE collateral required for HBD conversion."""
@@ -183,6 +193,7 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     return response.amount, response.precision, response.nai
 
 
+@wax_error_boundary
 @return_python_json_asset
 def evaluate_hbd_interest(hbd_seconds: int, head_block_time: int, hbd: python_json_asset, hbd_seconds_last_update: int, hbd_interest_rate: int) -> python_json_asset:
     """Evaluate HBD interest earned."""

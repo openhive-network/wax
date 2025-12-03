@@ -20,6 +20,7 @@ from cython_modules_common cimport (
 from cython_modules_common import encode_str, decode_bytes, encode_list, decode_list, encode_dict_str_int
 from cython_modules_handles cimport WaxTransactionHandle, _create_wax_transaction
 from wax.wax_result import python_authorities, python_minimize_required_signatures_data
+from wax.exceptions.wax_specialised_errors import wax_error_boundary
 
 
 cdef wax_authority python_authority_to_wax_authority(object auth_obj):
@@ -53,12 +54,14 @@ cdef cppmap[cppstring, wax_authorities] retrieve_authorities_cb(vector[cppstring
     return result
 
 
+@wax_error_boundary
 def tx_collect_signing_keys(wax_tx: WaxTransactionHandle, retrieve_authorities: Callable[[list[str]], dict[str, python_authorities]]) -> list[str]:
     """Collect signing keys for a transaction handle."""
     cdef protocol obj
     return decode_list(obj.cpp_collect_signing_keys(wax_tx.hTx, retrieve_authorities_cb, <void*>(retrieve_authorities)))
 
 
+@wax_error_boundary
 def collect_signing_keys(transaction: str, retrieve_authorities: Callable[[list[str]], dict[str, python_authorities]]) -> list[str]:
     """Collect signing keys for a transaction."""
     tx = json.loads(transaction)
@@ -74,6 +77,7 @@ cdef cppstring get_witness_key_cb(cppstring account_name, void* get_witness_key_
     return encode_str(result)
 
 
+@wax_error_boundary
 def tx_minimize_required_signatures(
     wax_tx: WaxTransactionHandle,
     minimize_required_signatures_data: python_minimize_required_signatures_data,
@@ -104,6 +108,7 @@ def tx_minimize_required_signatures(
     return decode_list(obj.cpp_minimize_required_signatures(wax_tx.hTx, wax_minimize_required_signatures_data))
 
 
+@wax_error_boundary
 def minimize_required_signatures(
     transaction: str,
     minimize_required_signatures_data: python_minimize_required_signatures_data,
@@ -115,6 +120,7 @@ def minimize_required_signatures(
     return tx_minimize_required_signatures(tx_handle, minimize_required_signatures_data)
 
 
+@wax_error_boundary
 def check_memo_for_private_keys(memo: str, account: str, auths: python_authorities, memo_key: str, imported_keys: list[str] = []) -> None:
     """Check if a memo contains any private keys."""
     cdef protocol obj
@@ -122,6 +128,7 @@ def check_memo_for_private_keys(memo: str, account: str, auths: python_authoriti
     obj.cpp_check_memo_for_private_keys(encode_str(memo), encode_str(account), wax_auths, encode_str(memo_key), encode_list(imported_keys))
 
 
+@wax_error_boundary
 def get_hive_protocol_config(chain_id: str) -> dict[str, str]:
     """Get the Hive protocol configuration for a given chain ID."""
     cdef protocol obj

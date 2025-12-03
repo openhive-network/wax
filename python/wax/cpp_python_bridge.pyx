@@ -4,8 +4,11 @@
 # Facade module - re-exports all public functions from sub-modules
 # This allows backward compatibility with existing code that imports from cpp_python_bridge
 #
-# NOTE: Decorators (call_with_exception_relay, return_python_*, etc.) are internal
-# and defined in _decorators.pxi - they are not part of the public API.
+# NOTE: Internal decorators (wax_error_boundary, return_python_json_asset, etc.)
+# are defined in _decorators.pxi and wax_specialised_errors.py - they are not part of the public API.
+
+# Re-export from common module (parse_cxx_exception for specialised error handling)
+from wax.cython_modules_common import parse_cxx_exception
 
 # Re-export from handles module (handle classes and creation functions)
 # NOTE: Sub-modules are installed as wax/cython_modules_*.so (hard links to main .so)

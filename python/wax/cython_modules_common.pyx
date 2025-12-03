@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 # distutils: language = c++
 # Common module - exception handling and shared cdef utilities
-#
-# NOTE: Decorators (call_with_exception_relay, return_python_*, etc.) and
-# raise_appropriate_wax_exception are defined in _decorators.pxi and included
-# by each module that needs them. This avoids runtime imports between modules
-# (which would fail since all modules compile to a single .so file).
 
 import json
 
@@ -21,11 +16,7 @@ from cython_modules_common cimport (
     wrapped_exception_ptr_from_exception,
 )
 
-from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
 from wax.wax_result import python_binary_data_node
-
-# Include shared decorators and raise_appropriate_wax_exception
-include "_decorators.pxi"
 
 
 # String conversion helpers for Cython 3.1.3
@@ -59,6 +50,48 @@ def encode_list(source: list) -> list:
 def decode_list(source: list) -> list:
     """Decode list of bytes from C++ to strings."""
     return [decode_bytes(item) for item in source]
+
+
+_EXCEPTION_NAME_TO_CATEGORY = {
+    "WaxProtocolAssertionError": "protocol",
+    "WaxChainAssertionError": "chain",
+}
+
+
+def _ensure_category(data: dict, wax_exception_name: str):
+    """Inject category from wax_exception_name if not present in stack data."""
+    category = _EXCEPTION_NAME_TO_CATEGORY.get(wax_exception_name)
+    if category is None:
+        return
+    stack = data.get("stack")
+    if not stack or not isinstance(stack, list):
+        return
+    for frame in stack:
+        if isinstance(frame, dict) and isinstance(frame.get("data"), dict) and "category" in frame["data"]:
+            return  # Already has category
+    if isinstance(stack[0], dict):
+        if not isinstance(stack[0].get("data"), dict):
+            stack[0]["data"] = {}
+        stack[0]["data"]["category"] = category
+
+
+def parse_cxx_exception(ex: object) -> dict | str | None:
+    """Parse a C++ exception into a dict, string, or None."""
+    cdef protocol obj
+    cdef exception_ptr eptr = wrapped_exception_ptr_from_exception(ex)
+    cdef hive_exception_data raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+    wax_exception_name = raw_data.wax_exception_name.decode()
+    wax_exception_what = raw_data.what.decode()
+    if wax_exception_name == "WaxError":
+        return wax_exception_what
+
+    try:
+        result = json.loads(wax_exception_what)
+        if isinstance(result, dict):
+            _ensure_category(result, wax_exception_name)
+        return result
+    except Exception:
+        return wax_exception_what
 
 
 cdef object convert_binary_data_node_to_python(binary_data_node node):

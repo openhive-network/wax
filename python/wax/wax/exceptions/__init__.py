@@ -29,10 +29,17 @@ from .validation_errors import (
     WaxValidationFailedError,
 )
 from .wax_error import (
-    WaxAssertionError,
-    WaxChainAssertionError,
     WaxError,
     WaxImportProtoBeforeCompileError,
+)
+from .wax_specialised_errors import (
+    CxxBaseError as WaxAssertionError,
+)
+from .wax_specialised_errors import (
+    DetailedCxxError,
+    UnhandledWaxError,
+    WaxBaseAssertionError,
+    WaxChainAssertionError,
     WaxProtocolAssertionError,
 )
 
@@ -41,8 +48,11 @@ __all__ = [
     "WaxError",
     "WaxImportProtoBeforeCompileError",
     "WaxAssertionError",
+    "WaxBaseAssertionError",
     "WaxChainAssertionError",
     "WaxProtocolAssertionError",
+    "DetailedCxxError",
+    "UnhandledWaxError",
     # Asset-related errors.
     "AssetError",
     "InvalidAssetAmountError",
