@@ -76,7 +76,7 @@ export const prepareTestingEnvironemnt = async (): Promise<TTestEnvData> => {
 
     const operationBody: account_create = {
       fee: chain.hiveCoins(3),
-      creator: "blocktrades",
+      creator: "xbtsio",
       new_account_name: testAccountName,
       owner:   {weight_threshold: 1, account_auths: {}, key_auths: ownerAuthorityKeyAuths},
       active:  {weight_threshold: 1, account_auths: {}, key_auths: activeAuthorityKeyAuths},

@@ -1301,7 +1301,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
       tx.pushOperation({
         account_create_operation: {
           fee: account_creation_fee,
-          creator: "blocktrades",
+          creator: "xbtsio",
           json_metadata: "",
           memo_key: matchingPublicKey,
           new_account_name: randomAccountName,
@@ -1311,9 +1311,9 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         }
       }).pushOperation({
         transfer_operation: {
-          from: "blocktrades",
+          from: "xbtsio",
           to: randomAccountName,
-          amount: myCustomChain.hiveCoins(1),
+          amount: myCustomChain.hiveSatoshis(1),
           memo: ""
         }
       });
