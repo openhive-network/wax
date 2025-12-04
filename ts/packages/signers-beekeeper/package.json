@@ -6,6 +6,13 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "private": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "postbuild": "pnpm run test",
