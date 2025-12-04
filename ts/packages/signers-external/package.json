@@ -1,0 +1,52 @@
+{
+  "name": "@hiveio/wax-signers-external",
+  "version": "0.0.0-Run-Prepack",
+  "description": "Wax signer library for external encrypted key storage",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "prepack": "jq --argfile source ../../package.json '.version = $source.version' package.json > package.json.tmp && mv package.json.tmp package.json"
+  },
+  "devDependencies": {
+    "typescript": "catalog:typescript-toolset"
+  },
+  "dependencies": {
+    "@hiveio/beekeeper": "1.28.4-rc0",
+    "@hiveio/wax": "workspace:../..",
+    "@hiveio/wax-signers-beekeeper": "workspace:../signers-beekeeper",
+    "zod": "^4.1.12"
+  },
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "dist/storage-providers/google-storage-provider.js",
+    "dist/storage-providers/google-storage-provider.d.ts",
+    "dist/storage-provider-base.js",
+    "dist/storage-provider-base.d.ts",
+    "dist/wallet_zod_versioning.js",
+    "dist/wallet_zod_versioning.d.ts",
+    "dist/errors.js",
+    "dist/errors.d.ts",
+    "dist/detailed/external-wallet.js",
+    "dist/detailed/external-wallet.d.ts",
+    "dist/interfaces.js",
+    "dist/interfaces.d.ts",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": [
+    "wax",
+    "blockchain",
+    "hive",
+    "google-drive",
+    "encrypted-storage"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.syncad.com/hive/wax.git"
+  }
+}
