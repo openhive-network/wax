@@ -35,13 +35,14 @@ const initInternalBeekeeperWallet = async (beekeeperWalletName: string): Promise
   const beekeeper = await createBeekeeper({ inMemory: true, enableLogs: false, unlockTimeout: 365 * 24 * 60 * 60 * 1000 });
 
   const session = beekeeper.createSession(Math.random().toString());
-  const {wallet} = await session.createWallet(beekeeperWalletName);
+  const { wallet } = await session.createWallet(beekeeperWalletName);
 
   return { beekeeperInstance: beekeeper, wallet };
 };
 
 class WalletContent extends AEncryptionProvider implements IExternalWalletContent {
   private constructor (
+    private readonly wax: IWaxBaseInterface,
     private readonly mainWallet: ExternalWallet,
     private readonly keyStorage: TBeekeeperInfo,
     private readonly beekeeperProvider: BeekeeperProvider,
@@ -66,7 +67,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     const publicKeyToReference = data.publicKey ?? importedPublicKey; /// choose explicit one if provided
     const beekeeperProvider = await BeekeeperProvider.for(wax, beekeeperInfo.wallet, publicKeyToReference);
 
-    return new WalletContent(mainWallet, beekeeperInfo, beekeeperProvider, publicKeyToReference, hiveAccount, hiveRole, customKeyAlias);
+    return new WalletContent(wax, mainWallet, beekeeperInfo, beekeeperProvider, publicKeyToReference, hiveAccount, hiveRole, customKeyAlias);
   }
 
   public static async createForHiveRole (
@@ -113,54 +114,90 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     }];
   }
 
-  public async removeKey (_keyInfo: TPublicKey | IExternalWalletHiveRoleKeyInfo | IExternalWalletCustomKeyInfo): Promise<void> {
-    // const walletData = await this.mainWallet.reloadStorageFile(false);
+  private removeHiveRole (
+    walletData: IWalletDataV2,
+    publicKey: TPublicKey,
+    accountName?: string,
+    role?: TRole
+  ): void {
+    if (role) {
+      if (accountName)
+        if (walletData.hive.account !== accountName)
+          throw new Error(`Provided account name is different than found in storage.`)
 
-    // if(typeof keyInfo === 'string') {
-    //   /// Just look for public key and remove it from all matching entries
+      const roleDef = walletData.hive.roleDefinitions[role];
 
-    //   if(walletData.hive.roleDefinitions !== undefined) {
-    //     for(const role of Object.keys(walletData.hive.roleDefinitions) as TRole[]) {
-    //       const roleDef = walletData.hive.roleDefinitions[role];
-    //       const rolePublicKey = wax.getPublicKeyFromPrivateKey(roleDef.privateKey);
-    //       if(rolePublicKey === keyInfo) {
-    //         delete walletData.hive.roleDefinitions[role];
-    //       }
-    //     }
-    //   }
+      if (!roleDef)
+        throw new Error(`No key found for role ${role} in storgae.`)
 
-    //   if(walletData.generalPurposeKeys !== undefined) {
-    //     for(const alias of Object.keys(walletData.generalPurposeKeys)) {
-    //       const entry = walletData.generalPurposeKeys[alias];
-    //       const entryPublicKey = wax.getPublicKeyFromPrivateKey(entry.privateKey);
-    //       if(entryPublicKey === keyInfo) {
-    //         delete walletData.generalPurposeKeys[alias];
-    //       }
-    //     }
-    //   }
-    // } else if('account' in keyInfo && 'role' in keyInfo) {
-    //   /// Hive Role key info
-    //   if(walletData.hive.account === keyInfo.account && walletData.hive.roleDefinitions !== undefined) {
-    //     const roleDef = walletData.hive.roleDefinitions[keyInfo.role];
-    //     if(roleDef !== undefined) {
-    //       const rolePublicKey = wax.getPublicKeyFromPrivateKey(roleDef.privateKey);
-    //       if(rolePublicKey === keyInfo.publicKey) {
-    //         delete walletData.hive.roleDefinitions[keyInfo.role];
-    //       }
-    //     }
-    //   }
-    // } else if('customAlias' in keyInfo) {
-    //   /// Custom key info
-    //   if(walletData.generalPurposeKeys !== undefined) {
-    //     const entry = walletData.generalPurposeKeys[keyInfo.customAlias];
-    //     if(entry !== undefined) {
-    //       const entryPublicKey = wax.getPublicKeyFromPrivateKey(entry.privateKey);
-    //       if(entryPublicKey === keyInfo.publicKey) {
-    //         delete walletData.generalPurposeKeys[keyInfo.customAlias];
-    //       }
-    //     }
-    //   }
-    // }
+      const rolePublicKey = this.wax.calculatePublicKey(roleDef.privateKey);
+
+      if (rolePublicKey !== publicKey)
+        throw new Error(`Provided public key ${publicKey} is different than found for role ${role}.`);
+
+      delete walletData.hive.roleDefinitions[role];
+    } else {
+      for (const role of Object.keys(walletData.hive.roleDefinitions)) {
+        const roleDef = walletData.hive.roleDefinitions[role];
+
+        const rolePublicKey = this.wax.calculatePublicKey(roleDef.privateKey);
+
+        if (rolePublicKey === publicKey)
+          delete walletData.hive.roleDefinitions[role];
+      }
+    }
+  }
+
+  private removeCustomKey (
+    walletData: IWalletDataV2,
+    publicKey: TPublicKey,
+    customAlias?: string
+  ): void {
+    if (customAlias) {
+      if (!walletData.generalPurposeKeys)
+        throw new Error('No general purpose keys found');
+
+      const entry = walletData.generalPurposeKeys?.[customAlias];
+
+      if (!entry)
+        throw new Error(`No key found for custom alias ${customAlias} in storage.`);
+
+      const entryPublicKey = this.wax.calculatePublicKey(entry.privateKey);
+
+      if (entryPublicKey !== publicKey)
+        throw new Error(`Provided public key ${publicKey} is different than found for alias ${customAlias}.`);
+
+      delete walletData.generalPurposeKeys[customAlias];
+    } else {
+      if (walletData.generalPurposeKeys !== undefined) {
+        for (const alias of Object.keys(walletData.generalPurposeKeys)) {
+          const entry = walletData.generalPurposeKeys[alias];
+          const entryPublicKey = this.wax.calculatePublicKey(entry.privateKey);
+          if (entryPublicKey === publicKey)
+            delete walletData.generalPurposeKeys[alias];
+        }
+      }
+    }
+  }
+
+  public async removeKey (keyInfo: TPublicKey | IExternalWalletHiveRoleKeyInfo | IExternalWalletCustomKeyInfo): Promise<void> {
+    const walletData = await this.mainWallet.reloadStorageFile(false);
+
+    if (typeof keyInfo === 'string') {
+      if (walletData.hive.roleDefinitions !== undefined)
+        this.removeHiveRole(walletData, keyInfo);
+
+      if (walletData.generalPurposeKeys !== undefined)
+        this.removeCustomKey(walletData, keyInfo);
+    } else if ('account' in keyInfo && 'role' in keyInfo) {
+      if (walletData.hive.account === keyInfo.account && walletData.hive.roleDefinitions !== undefined)
+        this.removeHiveRole(walletData, keyInfo.publicKey, keyInfo.account, keyInfo.role)
+    } else if ('customAlias' in keyInfo) {
+      if (walletData.generalPurposeKeys !== undefined)
+        this.removeCustomKey(walletData, keyInfo.publicKey, keyInfo.customAlias);
+    }
+
+    await this.mainWallet.saveStorageFile(walletData);
   }
 
   public async clearContents (removeWalletStorage: boolean): Promise<void> {
