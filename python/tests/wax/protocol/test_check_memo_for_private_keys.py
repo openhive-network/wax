@@ -6,6 +6,8 @@ import pytest
 
 from wax import check_memo_for_private_keys, python_authority, python_authorities
 
+from wax.exceptions import WaxError
+
 
 ACCOUNT: Final[str] = "alice"
 
@@ -74,8 +76,7 @@ def get_error_message(
 def test_check_memo_for_private_keys(memo_type: str, role: str):
     memo = get_memo(memo_type, role)  # type: ignore[arg-type]
     error_message = get_error_message(memo_type, role)  # type: ignore[arg-type]
-    with pytest.raises(RuntimeError) as error:
+    with pytest.raises(WaxError) as error:
         check_memo_for_private_keys(memo, ACCOUNT, AUTHORITIES, PUBLIC_KEYS["memo"], [IMPORTED_PUBLIC_KEY])
 
-    print(error)
     assert error_message in str(error)

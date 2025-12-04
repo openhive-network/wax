@@ -3,7 +3,10 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 
+import pytest
+
 import wax
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 
 from .consts import VALID_PROTO_TRANSACTION
 from .util import get_proto_operation_name
@@ -27,12 +30,9 @@ def test_invalid_proto_transaction_empty_operation() -> None:
     transaction["operations"][0] = {}  # make first operation an empty dict
     transaction_json = json.dumps(transaction)
 
-    # ACT
-    result = wax.validate_proto_transaction(transaction_json)
-
-    # ASSERT
-    assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    # ACT & ASSERT
+    with pytest.raises(DetailedCxxError):
+        wax.validate_proto_transaction(transaction_json)
 
 
 def test_invalid_proto_transaction_operation_without_a_key() -> None:
@@ -47,9 +47,6 @@ def test_invalid_proto_transaction_operation_without_a_key() -> None:
 
     transaction_json = json.dumps(transaction)
 
-    # ACT
-    result = wax.validate_proto_transaction(transaction_json)
-
-    # ASSERT
-    assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    # ACT & ASSERT
+    with pytest.raises(DetailedCxxError):
+        wax.validate_proto_transaction(transaction_json)

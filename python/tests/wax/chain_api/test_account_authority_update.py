@@ -13,9 +13,9 @@ from wax.complex_operations.role_classes.hive_authority.hive_role_authority_defi
 from wax.exceptions import (
     AuthorityCannotBeSatisfiedError,
     HiveMaxAuthorityMembershipExceededError,
-    WaxAssertionError,
 )
 from wax.exceptions.validation_errors import NoAuthorityOperationGeneratedError
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 from wax.models.authority import WaxAuthority
 
 if TYPE_CHECKING:
@@ -486,5 +486,5 @@ async def test_catching_exception_catching_during_account_update_finalization() 
     wax_account_authority_update_op.roles.memo.set(
         "STM56UB7G2kab5br1eVNVxNfKcwTA1c5pHksZ8WAU52qM8J2538Uw"
     )
-    with pytest.raises(WaxAssertionError):
+    with pytest.raises(DetailedCxxError):
         transaction.push_operation(wax_account_authority_update_op)  # Error

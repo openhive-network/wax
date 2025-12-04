@@ -1,5 +1,7 @@
 import json
+import pytest
 
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 from tests.wax.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import serialize_transaction, deserialize_transaction
@@ -52,12 +54,7 @@ def test_serialize_transaction_negative():
     # Arrange
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
 
-    # Act
-    result = serialize_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Proto format transaction should fail API serialization"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Python function call failed" in result.exception_message, "Error should indicate Python call failure"
-    assert "'type'" in result.exception_message, "Error should reference type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as error:
+        serialize_transaction(tx_str)
+    assert error.value.assert_hash == "3191462237188738789"
