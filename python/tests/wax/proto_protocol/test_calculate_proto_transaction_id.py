@@ -1,8 +1,11 @@
 import json
 
+import pytest
+
 from tests.wax.utils.refs import PROTO_REF_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION, API_REF_TRANSACTION
 
 from wax import calculate_proto_transaction_id, calculate_proto_legacy_transaction_id
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 
 
 def test_calculate_proto_transaction_id_positive():
@@ -22,15 +25,10 @@ def test_calculate_proto_transaction_id_negative():
     # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION)
 
-    # Act
-    result = calculate_proto_transaction_id(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "API format transaction should fail for proto function"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
-    assert "'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as excinfo:
+        calculate_proto_transaction_id(tx_str)
+    assert excinfo.value.assert_hash == "10056067403021329111"
 
 
 def test_calculate_proto_serialization_sensitive_transaction_id():

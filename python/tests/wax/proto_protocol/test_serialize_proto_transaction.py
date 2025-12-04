@@ -1,4 +1,5 @@
 import json
+import pytest
 
 from google.protobuf.json_format import ParseDict
 
@@ -7,6 +8,7 @@ from tests.wax.utils.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
 from wax import serialize_proto_transaction, deserialize_proto_transaction
 
 from wax.proto.transaction import transaction
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 
 
 def test_serialize_proto_transaction_positive():
@@ -60,12 +62,7 @@ def test_serialize_proto_transaction_negative():
     # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION)
 
-    # Act
-    result = serialize_proto_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "API format transaction should fail proto serialization"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
-    assert "'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as excinfo:
+        serialize_proto_transaction(tx_str)
+    assert excinfo.value.assert_hash == "10056067403021329111"

@@ -1,8 +1,10 @@
 import json
+import pytest
 
 from tests.wax.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import proto_to_api
+from wax.exceptions.wax_specialised_errors import DetailedCxxError
 
 
 def test_proto_to_api_positive():
@@ -22,15 +24,7 @@ def test_proto_to_api_negative():
     # Arrange
     proto_str = json.dumps(API_REF_TRANSACTION)
 
-    # Act
-    api = proto_to_api(proto_str)
-
-    # Assert
-    assert api.status == api.status.fail, "API format input should fail for proto_to_api conversion"
-    print(api.exception_message)
-    # Check key parts of the error message without depending on exact line numbers which can change
-    assert "'code': 10" in api.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in api.exception_message, "Error should be assert_exception type"
-    assert "'file': 'api_converter.hpp'" in api.exception_message, "Error should reference api_converter source"
-    assert "Could not find the supported property in static variant" in api.exception_message, "Error should indicate format mismatch"
-    assert "'nextkey': 'type'" in api.exception_message, "Error should reference missing type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as excinfo:
+        proto_to_api(proto_str)
+    assert excinfo.value.assert_hash == "10056067403021329111"

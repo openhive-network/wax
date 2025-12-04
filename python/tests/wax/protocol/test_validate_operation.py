@@ -1,5 +1,7 @@
 import json
+import pytest
 
+from wax.exceptions.wax_specialised_errors import DetailedCxxError, WaxProtocolAssertionError
 from tests.wax.utils.refs import API_REF_VOTE_OP, PROTO_REF_VOTE_OP, API_REF_VOTE_OP_EMPTY
 
 from wax import validate_operation
@@ -18,38 +20,27 @@ def test_validate_operation_positive():
 
 
 def test_validate_operation_empty_input():
-    # Act
-    result = validate_operation('{}')
-
-    # Assert
-    assert result.status == result.status.fail, "Empty input should fail validation"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as error:
+        validate_operation('{}')
+    assert error.value.assert_hash == "3191462237188738789"
 
 
 def test_validate_operation_negative_proto_format():
     # Arrange
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP)
 
-    # Act
-    result = validate_operation(vote_op_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Proto format operation should fail API validation"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Python function call failed" in result.exception_message, "Error should indicate Python call failure"
-    assert "'type'" in result.exception_message, "Error should reference type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as error:
+        validate_operation(vote_op_str)
+    assert error.value.assert_hash == "3191462237188738789"
 
 
 def test_validate_operation_negative_empty_account():
     # Arrange
     vote_op_str = json.dumps(API_REF_VOTE_OP_EMPTY)
 
-    # Act
-    result = validate_operation(vote_op_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Operation with empty account should fail validation"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Account name" in result.exception_message, "Error should reference account name"
-    assert "is too short" in result.exception_message, "Error should indicate name too short"
+    # Act & Assert
+    with pytest.raises(WaxProtocolAssertionError) as error:
+        validate_operation(vote_op_str)
+    assert error.value.assert_hash == "17180696541040293791"

@@ -1,5 +1,7 @@
 import json
+import pytest
 
+from wax.exceptions.wax_specialised_errors import WaxProtocolAssertionError, DetailedCxxError
 from tests.wax.utils.refs import (
     API_REF_TRANSACTION,
     PROTO_REF_TRANSACTION,
@@ -23,51 +25,37 @@ def test_validate_transaction_positive():
 
 
 def test_validate_transaction_empty_input():
-    # Act
-    result = validate_transaction('{}')
-
-    # Assert
-    assert result.status == result.status.fail, "Empty input should fail validation"
+    # Act & Assert
+    with pytest.raises(WaxProtocolAssertionError) as error:
+        validate_transaction('{}')
+    assert error.value.assert_hash == "6215446810186363223"
 
 
 def test_validate_transaction_negative_proto_format():
     # Arrange
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
 
-    # Act
-    result = validate_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Proto format transaction should fail API validation"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Python function call failed" in result.exception_message, "Error should indicate Python call failure"
-    assert "'type'" in result.exception_message, "Error should reference type field"
+    # Act & Assert
+    with pytest.raises(DetailedCxxError) as error:
+        validate_transaction(tx_str)
+    assert error.value.assert_hash == "3191462237188738789"
 
 
 def test_validate_transaction_negative_no_operations():
     # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION_NO_OPERATIONS)
 
-    # Act
-    result = validate_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Transaction without operations field should fail"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "A transaction must have at least one operation" in result.exception_message, "Error should indicate missing operations"
+    # Act & Assert
+    with pytest.raises(WaxProtocolAssertionError) as error:
+        validate_transaction(tx_str)
+    assert error.value.assert_hash == "6215446810186363223"
 
 
 def test_validate_transaction_negative_empty_operations():
     # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION_EMPTY_OPERATIONS)
 
-    # Act
-    result = validate_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Transaction with empty operations should fail"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "A transaction must have at least one operation" in result.exception_message, "Error should indicate empty operations"
+    # Act & Assert
+    with pytest.raises(WaxProtocolAssertionError) as error:
+        validate_transaction(tx_str)
+    assert error.value.assert_hash == "6215446810186363223"
