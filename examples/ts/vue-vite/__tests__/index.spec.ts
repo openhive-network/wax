@@ -42,9 +42,9 @@ test.describe('Proper WASM Wax loading on playwright ', () => {
       console.log('>>', msg.type(), msg.text());
     });
 
-    await waitForServerReady("http://localhost:5173");
+    await waitForServerReady("http://127.0.0.1:5173");
 
-    await page.goto("http://localhost:5173", { waitUntil: "load" });
+    await page.goto("http://127.0.0.1:5173", { waitUntil: "load" });
   });
 
   test('WASM should be properly loaded during development', async ({ page }) => {

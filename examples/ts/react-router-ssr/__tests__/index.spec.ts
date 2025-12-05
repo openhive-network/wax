@@ -42,9 +42,9 @@ test.describe('Proper WASM Wax loading on playwright ', () => {
       console.log('>>', msg.type(), msg.text());
     });
 
-    await waitForServerReady("http://localhost:3000");
+    await waitForServerReady("http://127.0.0.1:3000");
 
-    await page.goto("http://localhost:3000", { waitUntil: "load" });
+    await page.goto("http://127.0.0.1:3000", { waitUntil: "load" });
   });
 
   test('WASM should be properly loaded during development', async ({ page }) => {
@@ -71,7 +71,7 @@ test.describe('Proper WASM Wax loading on playwright ', () => {
     // Wait for wax to be loaded
     await page.waitForSelector("#version");
 
-    const data = await fetch('http://localhost:3000');
+    const data = await fetch('http://127.0.0.1:3000');
     const html = await data.text();
 
     const regex = /<div id="version">([0-9]+\.[0-9]+\.[\.a-zA-Z0-9\-]+)<\/div>/g;
