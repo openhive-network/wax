@@ -29,8 +29,8 @@ export default defineConfig({
 
   webServer: {
     command: 'npm run test:manual',
-    "url": "http://localhost:1234",
-    "timeout": 120*1000,
-    "reuseExistingServer": false
+    url: "http://127.0.0.1:1234",
+    timeout: 120 * 1000,
+    reuseExistingServer: false
   }
 });

@@ -104,7 +104,7 @@ test.describe('Signature extension tests', () => {
 
     const testPage: Page = page;//await context.newPage();
 
-    await testPage.goto('localhost:1234', {  waitUntil: 'load' });
+    await testPage.goto('http://127.0.0.1:1234', {  waitUntil: 'load' });
 
     /// uncomment to allow debugging and recording while playwright performs actions
     //await page.pause();
