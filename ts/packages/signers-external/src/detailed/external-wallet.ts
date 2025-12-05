@@ -218,7 +218,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
   }
 };
 
-export class ExternalWallet implements IExternalWallet {
+class ExternalWallet implements IExternalWallet {
   private constructor (
     public readonly wax: IWaxBaseInterface,
     private readonly fileName: string,
@@ -393,6 +393,6 @@ export const createExternalWallet = async (
   storagePasswordProvider: TStoragePasswordProvider,
   storageFileName?: string,
   storage?: EStorageProviders
-): Promise<ExternalWallet> => {
+): Promise<IExternalWallet> => {
   return await ExternalWallet.createWallet(waxBase, authProvider, storagePasswordProvider, storageFileName, storage);
 };
