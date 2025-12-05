@@ -42,7 +42,6 @@ const initInternalBeekeeperWallet = async (beekeeperWalletName: string): Promise
 
 class WalletContent extends AEncryptionProvider implements IExternalWalletContent {
   private constructor (
-    private readonly wax: IWaxBaseInterface,
     private readonly mainWallet: ExternalWallet,
     private readonly keyStorage: TBeekeeperInfo,
     private readonly beekeeperProvider: BeekeeperProvider,
@@ -55,7 +54,6 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
   }
 
   private static async create (
-    wax: IWaxBaseInterface,
     data: IWalletKeyEntry,
     mainWallet: ExternalWallet,
     hiveAccount?: TAccountName,
@@ -65,28 +63,26 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     const beekeeperInfo = await initInternalBeekeeperWallet('wallet-content');
     const importedPublicKey = await beekeeperInfo.wallet.importKey(data.privateKey);
     const publicKeyToReference = data.publicKey ?? importedPublicKey; /// choose explicit one if provided
-    const beekeeperProvider = await BeekeeperProvider.for(wax, beekeeperInfo.wallet, publicKeyToReference);
+    const beekeeperProvider = await BeekeeperProvider.for(mainWallet.wax, beekeeperInfo.wallet, publicKeyToReference);
 
-    return new WalletContent(wax, mainWallet, beekeeperInfo, beekeeperProvider, publicKeyToReference, hiveAccount, hiveRole, customKeyAlias);
+    return new WalletContent(mainWallet, beekeeperInfo, beekeeperProvider, publicKeyToReference, hiveAccount, hiveRole, customKeyAlias);
   }
 
   public static async createForHiveRole (
-    wax: IWaxBaseInterface,
     accountName: TAccountName,
     role: TRole,
     keyInfo: IWalletKeyEntry,
     mainWallet: ExternalWallet
   ): Promise<WalletContent> {
-    return await WalletContent.create(wax, keyInfo, mainWallet, accountName, role);
+    return await WalletContent.create(keyInfo, mainWallet, accountName, role);
   }
 
   public static async createForCustomKey (
-    wax: IWaxBaseInterface,
     customKeyAlias: string,
     keyInfo: IWalletKeyEntry,
     mainWallet: ExternalWallet
   ): Promise<WalletContent> {
-    return await WalletContent.create(wax, keyInfo, mainWallet, undefined, undefined, customKeyAlias);
+    return await WalletContent.create(keyInfo, mainWallet, undefined, undefined, customKeyAlias);
   }
 
   public enumStoredHiveKeys (account: TAccountName, role?: TRole): Iterable<IExternalWalletHiveRoleKeyInfo> {
@@ -130,7 +126,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       if (!roleDef)
         throw new Error(`No key found for role ${role} in storgae.`)
 
-      const rolePublicKey = this.wax.calculatePublicKey(roleDef.privateKey);
+      const rolePublicKey = this.mainWallet.wax.calculatePublicKey(roleDef.privateKey);
 
       if (rolePublicKey !== publicKey)
         throw new Error(`Provided public key ${publicKey} is different than found for role ${role}.`);
@@ -140,7 +136,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       for (const role of Object.keys(walletData.hive.roleDefinitions)) {
         const roleDef = walletData.hive.roleDefinitions[role];
 
-        const rolePublicKey = this.wax.calculatePublicKey(roleDef.privateKey);
+        const rolePublicKey = this.mainWallet.wax.calculatePublicKey(roleDef.privateKey);
 
         if (rolePublicKey === publicKey)
           delete walletData.hive.roleDefinitions[role];
@@ -162,7 +158,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       if (!entry)
         throw new Error(`No key found for custom alias ${customAlias} in storage.`);
 
-      const entryPublicKey = this.wax.calculatePublicKey(entry.privateKey);
+      const entryPublicKey = this.mainWallet.wax.calculatePublicKey(entry.privateKey);
 
       if (entryPublicKey !== publicKey)
         throw new Error(`Provided public key ${publicKey} is different than found for alias ${customAlias}.`);
@@ -172,7 +168,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       if (walletData.generalPurposeKeys !== undefined) {
         for (const alias of Object.keys(walletData.generalPurposeKeys)) {
           const entry = walletData.generalPurposeKeys[alias];
-          const entryPublicKey = this.wax.calculatePublicKey(entry.privateKey);
+          const entryPublicKey = this.mainWallet.wax.calculatePublicKey(entry.privateKey);
           if (entryPublicKey === publicKey)
             delete walletData.generalPurposeKeys[alias];
         }
@@ -224,7 +220,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
 
 export class ExternalWallet implements IExternalWallet {
   private constructor (
-    private readonly wax: IWaxBaseInterface,
+    public readonly wax: IWaxBaseInterface,
     private readonly fileName: string,
     private readonly storageProvider: AStorageProviderBase,
     private readonly storageEncryptionPublicKey: TPublicKey,
@@ -279,7 +275,7 @@ export class ExternalWallet implements IExternalWallet {
 
     const keyEntry = data.hive.roleDefinitions[role];
 
-    return await WalletContent.createForHiveRole(this.wax, accountName, role, keyEntry, this);
+    return await WalletContent.createForHiveRole(accountName, role, keyEntry, this);
   }
 
   public async createForHiveKey(role: TRole, accountName: TAccountName, privateKey: string): Promise<IExternalWalletContent> {
@@ -292,7 +288,7 @@ export class ExternalWallet implements IExternalWallet {
 
     await this.saveStorageFile(data);
 
-    return await WalletContent.createForHiveRole(this.wax, accountName, role, keyEntry, this);
+    return await WalletContent.createForHiveRole(accountName, role, keyEntry, this);
   }
 
   public async loadForCustomKey(customKeyAlias: string): Promise<IExternalWalletContent> {
@@ -303,7 +299,7 @@ export class ExternalWallet implements IExternalWallet {
     if(keyEntry === undefined)
       throw new WaxExternalSignatureProviderError(`No key found for custom key alias: ${customKeyAlias}`, undefined, 'KEY_NOT_FOUND');
 
-    return await WalletContent.createForCustomKey(this.wax, customKeyAlias, keyEntry, this);
+    return await WalletContent.createForCustomKey(customKeyAlias, keyEntry, this);
   }
 
   public async createForCustomKey(customKeyAlias: string, privateKey: string, description?: string): Promise<IExternalWalletContent> {
@@ -317,7 +313,7 @@ export class ExternalWallet implements IExternalWallet {
 
     const keyEntry = data.generalPurposeKeys?.[customKeyAlias];
 
-    return await WalletContent.createForCustomKey(this.wax, customKeyAlias, keyEntry, this);
+    return await WalletContent.createForCustomKey(customKeyAlias, keyEntry, this);
   }
 
   public async close(): Promise<void> {
