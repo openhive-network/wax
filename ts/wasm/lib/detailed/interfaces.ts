@@ -902,6 +902,16 @@ export interface IWaxBaseInterface {
   getPrivateKeyFromPassword(account: string, role: string, password: string): IPrivateKeyData;
 
   /**
+   * Calculates the public key from a given private key in WIF format
+   *
+   * @param {string} wifPrivateKey Private key in WIF format
+   *
+   * @returns {TPublicKey} Public key in WIF format (including prefix)
+   * @throws {WaxError} on any Wax API-related error
+   */
+  calculatePublicKey(wifPrivateKey: string): TPublicKey;
+
+  /**
    * Allows to convert raw private key to WIF format.
    * @param {THexString} rawPrivateKey 32 bytes buffer (64 characters hex string) representing private key secret
    * @returns WIF formatted private key

@@ -471,6 +471,11 @@ export class WaxBaseApi implements IWaxBaseInterface {
     };
   }
 
+  public calculatePublicKey(wifPrivateKey: string): TPublicKey {
+    const publicKey = this.wasmManager.safeWasmCall(() => this.protocol.cpp_calculate_public_key(wifPrivateKey));
+    return publicKey;
+  }
+
   public convertRawPrivateKeyToWif(rawPrivateKey: THexString): string {
     const wif = this.wasmManager.safeWasmCall(() => this.protocol.cpp_convert_raw_private_key_to_wif(rawPrivateKey));
     return wif;

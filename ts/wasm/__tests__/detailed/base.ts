@@ -217,4 +217,32 @@ test.describe('WASM Base tests', () => {
 
     throw new Error('Expected exception was not thrown');
   });
+
+  test('Should calculate public key from private key', async ({ wasmTest }) => {
+    const privateKey = "5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT";
+    const expectedPublicKey = "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
+
+    const publicKey = await wasmTest(({ protocol }, privateKey) => {
+      return protocol.cpp_calculate_public_key(privateKey);
+    }, privateKey);
+
+    expect(publicKey).toBe(expectedPublicKey);
+  });
+
+  test('Should throw error for invalid private key format', async ({ wasmTest }) => {
+    const invalidPrivateKey = "invalid_key";
+
+    try {
+      await wasmTest(({ protocol }, invalidPrivateKey) => {
+        return protocol.cpp_calculate_public_key(invalidPrivateKey);
+      }, invalidPrivateKey);
+
+      throw new Error('Expected exception was not thrown');
+    } catch(error) {
+      const e: Error = error as Error;
+
+      expect(e.message[0]).toBeDefined();
+      expect(e.message[1]).toContain('given string is not valid private key');
+    }
+  });
 });

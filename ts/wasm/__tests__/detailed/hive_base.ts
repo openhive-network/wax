@@ -1081,4 +1081,22 @@ test.describe('Wax object interface foundation tests', () => {
     expect(retVal).toBe('transfer');
   });
 
+  test('Should calculate public key from private key using wax API', async ({ waxTest }) => {
+    const privateKey = "5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT";
+    const expectedPublicKey = "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
+
+    const publicKey = await waxTest(async ({ base }, privateKey) => {
+      return base.calculatePublicKey(privateKey);
+    }, privateKey);
+
+    expect(publicKey).toBe(expectedPublicKey);
+  });
+
+  test('Should throw error for invalid private key format using wax API', async ({ waxTest }) => {
+    const invalidPrivateKey = "invalid_key";
+
+    await expect(waxTest(async ({ base }, invalidPrivateKey) => {
+      return base.calculatePublicKey(invalidPrivateKey);
+    }, invalidPrivateKey)).rejects.toThrow();
+  });
 });
