@@ -43,7 +43,7 @@ const configFor = (name: string): ConstructorParameters<typeof Parcel>[0] => ({
     const bundle = new Parcel(configFor(what));
     await bundle.run();
     console.debug('Bundled');
-    await page.goto(`http://localhost:${port}/${what}.html`);
+    await page.goto(`http://127.0.0.1:${port}/${what}.html`);
     await page.waitForURL(`**/${what}.html`, { waitUntil: 'load' });
     // Set maximum examples execution time to 3 seconds. Fail after that time
     await page.waitForFunction(() => (window as ExamplesWindow).exampleFinished === true, undefined, { timeout: 3000 });

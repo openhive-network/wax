@@ -8,6 +8,10 @@ import { ref, onBeforeMount } from 'vue';
 
 const version = ref();
 
+// Initialize waxLoaded to undefined to signal loading in progress
+// This prevents race conditions where tests check the flag before async code runs
+window.waxLoaded = undefined;
+
 onBeforeMount(async () => {
   try {
     const wax = await createWaxFoundation();

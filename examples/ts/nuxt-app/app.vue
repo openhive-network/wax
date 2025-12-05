@@ -8,20 +8,25 @@ if (process.server) {
   const wax = await createWaxFoundation();
 
   version.value = wax.getVersion();
-} else
-onBeforeMount(async () => {
-  try {
-    const wax = await createWaxFoundation();
+} else {
+  // Initialize waxLoaded to undefined to signal loading in progress
+  // This prevents race conditions where tests check the flag before async code runs
+  window.waxLoaded = undefined;
 
-    version.value = wax.getVersion();
+  onBeforeMount(async () => {
+    try {
+      const wax = await createWaxFoundation();
 
-    window.waxLoaded = true;
-  } catch (error) {
-    console.error(error);
+      version.value = wax.getVersion();
 
-    window.waxLoaded = false;
-  }
-});
+      window.waxLoaded = true;
+    } catch (error) {
+      console.error(error);
+
+      window.waxLoaded = false;
+    }
+  });
+}
 </script>
 
 <template>
