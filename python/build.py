@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -40,9 +41,7 @@ class CustomBuild(build_ext):
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
         configure_args = [
-            "-GNinja",
-            # Avoid caching python path from temporary venv directory (See `PYTHON_EXECUTABLE:FILEPATH` in CMakeCache.txt)
-            "--fresh"
+            "-GNinja"
         ]
         if useDebugBuild():
             configure_args.append("-DCMAKE_BUILD_TYPE=Debug")
@@ -57,6 +56,10 @@ class CustomBuild(build_ext):
 
         if "BUILD_HIVE_TESTNET" in os.environ:
             configure_args.append("-DBUILD_HIVE_TESTNET=ON")
+
+        # Force CMake to use the same Python interpreter that's running this script
+        if sys.executable:
+            configure_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
 
         assert "WAX_BOOST_ROOT" in os.environ, "Invalid build environment - consider using preconfigured wax/ci-base-image"
         configure_args.append("-DBOOST_ROOT={}".format(os.getenv("WAX_BOOST_ROOT")))
