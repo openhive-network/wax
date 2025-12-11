@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>External Wallet (Google Drive) Example</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 { color: #333; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; }
+    h2 { color: #555; margin-top: 30px; }
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-family: monospace;
+    }
+    input[type="checkbox"] { margin-right: 8px; }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+      font-size: 14px;
+    }
+    button:hover { background: #2980b9; }
+    button:disabled { background: #bdc3c7; cursor: not-allowed; }
+    button.success { background: #27ae60; }
+    button.success:hover { background: #219a52; }
+    button.danger { background: #e74c3c; }
+    button.danger:hover { background: #c0392b; }
+    button.warning { background: #f39c12; }
+    button.warning:hover { background: #d68910; }
+    .log-container {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .log-info { color: #6a9955; }
+    .log-error { color: #f14c4c; }
+    .log-warn { color: #cca700; }
+    .log-data { color: #9cdcfe; }
+    .inline-group { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; }
+    .inline-group input { margin-bottom: 0; flex: 1; }
+    .note {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .note a { color: #0056b3; }
+    .button-group { margin-top: 15px; }
+    .status { 
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 12px;
+      margin-left: 10px;
+    }
+    .status.connected { background: #d4edda; color: #155724; }
+    .status.disconnected { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>🔐 External Wallet Example <span id="walletStatus" class="status disconnected">Not Connected</span></h1>
+  
+  <div class="note">
+    <strong>⚠️ Before using this example:</strong><br>
+    1. Go to <a href="https://developers.google.com/oauthplayground/" target="_blank">Google OAuth 2.0 Playground</a><br>
+    2. In Step 1, enter scope: <code>https://www.googleapis.com/auth/drive.appdata</code><br>
+    3. Click "Authorize APIs" and sign in with your Google account<br>
+    4. In Step 2, click "Exchange authorization code for tokens"<br>
+    5. Copy the <strong>Access token</strong> and paste it below
+  </div>
+
+  <!-- OAuth Section -->
+  <div class="section">
+    <h2>🔑 Step 1: Google OAuth Token</h2>
+    <label for="oauthToken">Access Token from OAuth Playground:</label>
+    <textarea id="oauthToken" rows="3" placeholder="Paste your Google OAuth access token here..."></textarea>
+  </div>
+
+  <!-- Wallet Password Section -->
+  <div class="section">
+    <h2>🔒 Step 2: Wallet Password</h2>
+    <label for="walletPassword">Wallet Encryption Password:</label>
+    <input type="password" id="walletPassword" placeholder="Enter password to encrypt/decrypt your wallet" value="demo-password-123">
+    
+    <div class="inline-group">
+      <input type="checkbox" id="useEncryptionKey">
+      <label for="useEncryptionKey" style="margin-bottom: 0;">Use cached encryption key (from previous session)</label>
+    </div>
+    <input type="text" id="encryptionKey" placeholder="Cached encryption key WIF (optional)" style="display: none;">
+    
+    <div class="button-group">
+      <button onclick="initializeWallet()" class="success">Initialize Wallet</button>
+      <button onclick="closeWallet()" class="danger">Close Wallet</button>
+      <button onclick="getEncryptionKey()" class="warning">Get Encryption Key (for caching)</button>
+    </div>
+  </div>
+
+  <!-- Key Management Section -->
+  <div class="section">
+    <h2>🗝️ Step 3: Key Management</h2>
+    
+    <h3>Hive Role Keys</h3>
+    <div class="inline-group">
+      <div style="flex: 1;">
+        <label for="hiveAccount">Account Name:</label>
+        <input type="text" id="hiveAccount" placeholder="e.g., alice" value="initminer">
+      </div>
+      <div style="flex: 1;">
+        <label for="hiveRole">Role:</label>
+        <select id="hiveRole" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+          <option value="posting">posting</option>
+          <option value="active">active</option>
+          <option value="owner">owner</option>
+          <option value="memo">memo</option>
+        </select>
+      </div>
+    </div>
+    
+    <label for="hivePrivateKey">Private Key (for creating new key):</label>
+    <input type="text" id="hivePrivateKey" placeholder="WIF private key" value="5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n">
+    
+    <div class="button-group">
+      <button onclick="createHiveKey()" class="success">Create Hive Key</button>
+      <button onclick="loadHiveKey()">Load Hive Key</button>
+    </div>
+
+    <h3>Custom Keys</h3>
+    <div class="inline-group">
+      <div style="flex: 1;">
+        <label for="customAlias">Custom Key Alias:</label>
+        <input type="text" id="customAlias" placeholder="e.g., my-signing-key" value="demo-key">
+      </div>
+    </div>
+    
+    <label for="customPrivateKey">Private Key:</label>
+    <input type="text" id="customPrivateKey" placeholder="WIF private key" value="5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n">
+    
+    <label for="customDescription">Description (optional):</label>
+    <input type="text" id="customDescription" placeholder="Key description" value="Demo custom key for testing">
+    
+    <div class="button-group">
+      <button onclick="createCustomKey()" class="success">Create Custom Key</button>
+      <button onclick="loadCustomKey()">Load Custom Key</button>
+    </div>
+    
+    <div class="button-group" style="margin-top: 20px;">
+      <button onclick="enumStoredKeys()" class="warning">Enumerate All Stored Keys</button>
+      <button onclick="clearWallet()" class="danger">Clear Wallet Contents</button>
+    </div>
+  </div>
+
+  <!-- Operations Section -->
+  <div class="section">
+    <h2>⚡ Step 4: Operations</h2>
+    
+    <h3>Sign Transaction</h3>
+    <p>Creates a sample vote transaction and signs it with the loaded key.</p>
+    <button onclick="signTransaction()" class="success">Sign Sample Transaction</button>
+    
+    <h3>Encryption / Decryption</h3>
+    <label for="encryptMessage">Message to encrypt:</label>
+    <input type="text" id="encryptMessage" placeholder="Enter message to encrypt" value="Hello, this is a secret message!">
+    
+    <label for="recipientPublicKey">Recipient Public Key (optional, for memo encryption):</label>
+    <input type="text" id="recipientPublicKey" placeholder="STM... public key (leave empty for self-encryption)">
+    
+    <div class="button-group">
+      <button onclick="encryptData()" class="success">Encrypt</button>
+      <button onclick="decryptData()">Decrypt Last Encrypted</button>
+    </div>
+  </div>
+
+  <!-- Log Output -->
+  <div class="section">
+    <h2>📋 Output Log</h2>
+    <button onclick="clearLog()" style="margin-bottom: 10px;">Clear Log</button>
+    <div id="logOutput" class="log-container">Waiting for operations...</div>
+  </div>
+
+  <script type="module">
+    import { createWaxFoundation, transaction } from '@hiveio/wax';
+    import { createExternalWallet } from '@hiveio/wax-signers-external';
+
+    // Global state
+    let wax = null;
+    let wallet = null;
+    let walletContent = null;
+    let lastEncryptedData = null;
+
+    // DOM elements
+    const logOutput = document.getElementById('logOutput');
+    const walletStatus = document.getElementById('walletStatus');
+    const useEncryptionKeyCheckbox = document.getElementById('useEncryptionKey');
+    const encryptionKeyInput = document.getElementById('encryptionKey');
+
+    // Toggle encryption key input visibility
+    useEncryptionKeyCheckbox.addEventListener('change', () => {
+      encryptionKeyInput.style.display = useEncryptionKeyCheckbox.checked ? 'block' : 'none';
+    });
+
+    // Logging utilities
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const colorClass = `log-${type}`;
+      logOutput.innerHTML += `<span class="${colorClass}">[${timestamp}] ${message}</span>\n`;
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    function logData(label, data) {
+      const timestamp = new Date().toLocaleTimeString();
+      const formatted = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+      logOutput.innerHTML += `<span class="log-info">[${timestamp}] ${label}:</span>\n<span class="log-data">${formatted}</span>\n`;
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    window.clearLog = () => {
+      logOutput.innerHTML = '';
+    };
+
+    function updateWalletStatus(connected) {
+      walletStatus.textContent = connected ? 'Connected' : 'Not Connected';
+      walletStatus.className = `status ${connected ? 'connected' : 'disconnected'}`;
+    }
+
+    // Initialize wax on page load
+    (async () => {
+      try {
+        log('Initializing Wax Foundation...');
+        wax = await createWaxFoundation();
+        log('Wax Foundation initialized successfully!', 'info');
+      } catch (error) {
+        log(`Failed to initialize Wax: ${error.message}`, 'error');
+      }
+    })();
+
+    // Wallet initialization
+    window.initializeWallet = async () => {
+      try {
+        const oauthToken = document.getElementById('oauthToken').value.trim();
+        if (!oauthToken) {
+          log('Please enter a Google OAuth access token!', 'error');
+          return;
+        }
+
+        const password = document.getElementById('walletPassword').value;
+        const useEncryptionKey = useEncryptionKeyCheckbox.checked;
+        const encryptionKey = encryptionKeyInput.value.trim();
+
+        log('Initializing external wallet...');
+        log(`Using ${useEncryptionKey && encryptionKey ? 'cached encryption key' : 'password'} for wallet encryption`);
+
+        // Token provider - returns the OAuth token
+        const tokenProvider = () => oauthToken;
+
+        // Storage password provider - called when wallet needs encryption credentials
+        const storagePasswordProvider = async (missingStorageFile) => {
+          log(`Storage file ${missingStorageFile ? 'does not exist (creating new)' : 'exists (loading)'}`, 'info');
+          
+          if (useEncryptionKey && encryptionKey) {
+            return { encryptionKey };
+          }
+          return { password };
+        };
+
+        wallet = await createExternalWallet(
+          wax,
+          tokenProvider,
+          storagePasswordProvider,
+          'wax-example-wallet.json' // Custom storage file name
+        );
+
+        log('External wallet initialized successfully!', 'info');
+        updateWalletStatus(true);
+        
+      } catch (error) {
+        log(`Failed to initialize wallet: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.closeWallet = async () => {
+      try {
+        if (!wallet) {
+          log('No wallet to close', 'warn');
+          return;
+        }
+        
+        await wallet.close();
+        wallet = null;
+        walletContent = null;
+        log('Wallet closed successfully', 'info');
+        updateWalletStatus(false);
+        
+      } catch (error) {
+        log(`Failed to close wallet: ${error.message}`, 'error');
+      }
+    };
+
+    window.getEncryptionKey = () => {
+      try {
+        if (!wallet) {
+          log('Please initialize wallet first!', 'error');
+          return;
+        }
+        
+        const key = wallet.getEncryptionKeyWif();
+        logData('Encryption Key WIF (save this for caching)', key);
+        log('You can use this key in future sessions to skip password entry', 'info');
+        
+      } catch (error) {
+        log(`Failed to get encryption key: ${error.message}`, 'error');
+      }
+    };
+
+    // Hive Key Management
+    window.createHiveKey = async () => {
+      try {
+        if (!wallet) {
+          log('Please initialize wallet first!', 'error');
+          return;
+        }
+
+        const account = document.getElementById('hiveAccount').value.trim();
+        const role = document.getElementById('hiveRole').value;
+        const privateKey = document.getElementById('hivePrivateKey').value.trim();
+
+        if (!account || !privateKey) {
+          log('Please fill in account name and private key!', 'error');
+          return;
+        }
+
+        log(`Creating Hive key for ${account}@${role}...`);
+        walletContent = await wallet.createForHiveKey(role, account, privateKey);
+        
+        log(`Hive key created and stored successfully!`, 'info');
+        logData('Key info', { account, role, type: 'hive' });
+        
+      } catch (error) {
+        log(`Failed to create Hive key: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.loadHiveKey = async () => {
+      try {
+        if (!wallet) {
+          log('Please initialize wallet first!', 'error');
+          return;
+        }
+
+        const account = document.getElementById('hiveAccount').value.trim();
+        const role = document.getElementById('hiveRole').value;
+
+        if (!account) {
+          log('Please enter account name!', 'error');
+          return;
+        }
+
+        log(`Loading Hive key for ${account}@${role}...`);
+        walletContent = await wallet.loadForHiveKey(account, role);
+        
+        log(`Hive key loaded successfully!`, 'info');
+        
+      } catch (error) {
+        log(`Failed to load Hive key: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    // Custom Key Management
+    window.createCustomKey = async () => {
+      try {
+        if (!wallet) {
+          log('Please initialize wallet first!', 'error');
+          return;
+        }
+
+        const alias = document.getElementById('customAlias').value.trim();
+        const privateKey = document.getElementById('customPrivateKey').value.trim();
+        const description = document.getElementById('customDescription').value.trim();
+
+        if (!alias || !privateKey) {
+          log('Please fill in alias and private key!', 'error');
+          return;
+        }
+
+        log(`Creating custom key "${alias}"...`);
+        walletContent = await wallet.createForCustomKey(alias, privateKey, description || undefined);
+        
+        log(`Custom key created and stored successfully!`, 'info');
+        logData('Key info', { alias, description, type: 'custom' });
+        
+      } catch (error) {
+        log(`Failed to create custom key: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.loadCustomKey = async () => {
+      try {
+        if (!wallet) {
+          log('Please initialize wallet first!', 'error');
+          return;
+        }
+
+        const alias = document.getElementById('customAlias').value.trim();
+
+        if (!alias) {
+          log('Please enter custom key alias!', 'error');
+          return;
+        }
+
+        log(`Loading custom key "${alias}"...`);
+        walletContent = await wallet.loadForCustomKey(alias);
+        
+        log(`Custom key loaded successfully!`, 'info');
+        
+      } catch (error) {
+        log(`Failed to load custom key: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.enumStoredKeys = async () => {
+      try {
+        if (!walletContent) {
+          log('Please load or create a key first!', 'error');
+          return;
+        }
+
+        log('Enumerating stored keys...');
+        
+        // Enumerate Hive keys
+        const account = document.getElementById('hiveAccount').value.trim() || 'initminer';
+        const hiveKeys = [];
+        for (const keyInfo of walletContent.enumStoredHiveKeys(account)) {
+          hiveKeys.push(keyInfo);
+        }
+        
+        // Enumerate custom keys
+        const customKeys = [];
+        for (const keyInfo of walletContent.enumStoredCustomKeys()) {
+          customKeys.push(keyInfo);
+        }
+
+        logData(`Hive keys for "${account}"`, hiveKeys);
+        logData('Custom keys', customKeys);
+        
+      } catch (error) {
+        log(`Failed to enumerate keys: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.clearWallet = async () => {
+      try {
+        if (!walletContent) {
+          log('Please load or create a key first!', 'error');
+          return;
+        }
+
+        if (!confirm('Are you sure you want to clear all wallet contents? This cannot be undone!')) {
+          return;
+        }
+
+        log('Clearing wallet contents...');
+        await walletContent.clearContents(false);
+        
+        log('Wallet contents cleared!', 'info');
+        
+      } catch (error) {
+        log(`Failed to clear wallet: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    // Transaction Signing
+    window.signTransaction = async () => {
+      try {
+        if (!walletContent) {
+          log('Please load or create a key first!', 'error');
+          return;
+        }
+
+        log('Creating sample vote transaction...');
+
+        // Create a sample transaction
+        const protoTx = transaction.create({
+          ref_block_num: 19260,
+          ref_block_prefix: 2140466769,
+          expiration: "2016-09-15T19:47:33",
+          operations: [
+            {
+              vote_operation: {
+                voter: "initminer",
+                author: "alice",
+                permlink: "my-first-post",
+                weight: 10000
+              }
+            }
+          ],
+          extensions: []
+        });
+
+        const tx = wax.createTransactionFromProto(protoTx);
+        
+        logData('Transaction before signing', {
+          id: tx.id,
+          operations: tx.transaction.operations.length,
+          signatures: tx.transaction.signatures.length
+        });
+
+        log('Signing transaction with wallet content...');
+        await walletContent.signTransaction(tx);
+
+        log('Transaction signed successfully!', 'info');
+        logData('Signature', tx.transaction.signatures[0]);
+        logData('Transaction ID', tx.id);
+        
+      } catch (error) {
+        log(`Failed to sign transaction: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    // Encryption/Decryption
+    window.encryptData = async () => {
+      try {
+        if (!walletContent) {
+          log('Please load or create a key first!', 'error');
+          return;
+        }
+
+        const message = document.getElementById('encryptMessage').value;
+        const recipientPublicKey = document.getElementById('recipientPublicKey').value.trim();
+
+        if (!message) {
+          log('Please enter a message to encrypt!', 'error');
+          return;
+        }
+
+        log('Encrypting message...');
+
+        // Convert string to Uint8Array
+        const encoder = new TextEncoder();
+        const messageBuffer = encoder.encode(message);
+
+        // Encrypt (if recipient key provided, use it; otherwise self-encrypt)
+        if (recipientPublicKey) {
+          lastEncryptedData = await walletContent.encryptData(messageBuffer, recipientPublicKey);
+        } else {
+          // For self-encryption, we need to get our own public key
+          // This is a simplified example - in production you'd use proper memo encryption
+          lastEncryptedData = await walletContent.encryptData(messageBuffer);
+        }
+
+        log('Message encrypted successfully!', 'info');
+        logData('Encrypted data (hex)', Buffer.from(lastEncryptedData).toString('hex'));
+        
+      } catch (error) {
+        log(`Failed to encrypt: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    window.decryptData = async () => {
+      try {
+        if (!walletContent) {
+          log('Please load or create a key first!', 'error');
+          return;
+        }
+
+        if (!lastEncryptedData) {
+          log('No encrypted data to decrypt! Please encrypt something first.', 'error');
+          return;
+        }
+
+        log('Decrypting message...');
+        
+        const decrypted = await walletContent.decryptData(lastEncryptedData);
+        
+        // Convert Uint8Array back to string
+        const decoder = new TextDecoder();
+        const decryptedMessage = decoder.decode(decrypted);
+
+        log('Message decrypted successfully!', 'info');
+        logData('Decrypted message', decryptedMessage);
+        
+      } catch (error) {
+        log(`Failed to decrypt: ${error.message}`, 'error');
+        console.error(error);
+      }
+    };
+
+    // For test runner compatibility (optional)
+    window.exampleFinished = true;
+  </script>
+</body>
+</html>

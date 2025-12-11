@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "ES2020",
+    "target": "es2017",
+    "allowSyntheticDefaultImports": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "moduleResolution": "Node"
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": [
+    "./*.ts",
+    "./assets/**/*.ts"
+  ]
+}

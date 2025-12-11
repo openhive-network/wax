@@ -1,0 +1,29 @@
+{
+  "name": "signers-external-example",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "serve": "parcel assets/external_wallet.example.html",
+    "build": "parcel build assets/external_wallet.example.html --dist-dir dist"
+  },
+  "dependencies": {
+    "@hiveio/beekeeper": "file:../../../ts/node_modules/@hiveio/beekeeper",
+    "@hiveio/wax": "file:../../../ts",
+    "@hiveio/wax-signers-beekeeper": "file:../../../ts/packages/signers-beekeeper",
+    "@hiveio/wax-signers-external": "file:../../../ts/packages/signers-external"
+  },
+  "devDependencies": {
+    "@parcel/config-default": "2.14.2",
+    "@parcel/transformer-raw": "2.14.2",
+    "buffer": "^6.0.3",
+    "parcel": "^2.14.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@hiveio/wax": "file:../../../ts",
+      "@hiveio/beekeeper": "file:../../../ts/node_modules/@hiveio/beekeeper",
+      "@hiveio/wax-signers-beekeeper": "file:../../../ts/packages/signers-beekeeper"
+    }
+  },
+  "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b"
+}
