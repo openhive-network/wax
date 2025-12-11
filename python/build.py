@@ -141,6 +141,28 @@ class CustomBuild(build_ext):
         assert ninja is not None or make is not None, "cannot find any build program"
         return cmake, ninja, make
 
+    def __should_reconfigure_cmake(self) -> bool:
+        """Check if CMake reconfiguration is needed based on CMakeLists.txt modification times."""
+        cmake_cache = self.cpp_build_dir / "CMakeCache.txt"
+        if not cmake_cache.exists():
+            log("CMake cache miss: CMakeCache.txt does not exist")
+            return True
+
+        cache_mtime = cmake_cache.stat().st_mtime
+        key_files = [
+            self.root_dir / "CMakeLists.txt",
+            self.root_dir.parent / "hive" / "libraries" / "protocol" / "CMakeLists.txt",
+            self.root_dir.parent / "hive" / "libraries" / "fc" / "CMakeLists.txt",
+        ]
+
+        for f in key_files:
+            if f.exists() and f.stat().st_mtime > cache_mtime:
+                log(f"CMake cache miss: {f.relative_to(self.root_dir.parent)} is newer than CMakeCache.txt")
+                return True
+
+        log("CMake cache hit: skipping reconfiguration")
+        return False
+
     @classmethod
     def __git_revision_from_repo_dir(cls, repo: Path) -> str:
         git_directory = repo / ".git"
@@ -185,7 +207,10 @@ class CustomBuild(build_ext):
         super().run()
         if "WAX_SKIP_BUILD" not in os.environ:
             cmake, ninja, make = self.__discover_binaries()
-            build_command = self.__configure_project(cmake, ninja, make)
+            if self.__should_reconfigure_cmake():
+                build_command = self.__configure_project(cmake, ninja, make)
+            else:
+                build_command = ninja if ninja else make
             self.__build_project(build_command)
         self.__copy_binary_to_package_dir()
         self.__remove_corrupted_binary()
