@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import sys
 from datetime import datetime
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +15,14 @@ from setuptools.extension import Extension
 
 
 def log(*args: Any) -> None:
-    print(*args)  # noqa: T201
+    # Write to both stderr and a log file for debugging
+    msg = " ".join(str(a) for a in args)
+    print(msg, file=sys.stderr, flush=True)  # noqa: T201
+    # Also append to a build log file (in .build/logs/ which is included in artifacts)
+    log_file = Path(__file__).parent / ".build" / "logs" / "build_py.log"
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+    with open(log_file, "a") as f:
+        f.write(msg + "\n")
 
 def useDebugBuild() -> bool:
     return os.getenv("WAX_DEBUG") is not None and os.getenv("WAX_DEBUG") != "0"
@@ -24,6 +30,33 @@ def useDebugBuild() -> bool:
 def get_python_abi_tag() -> str:
     """Get the Python ABI tag for the shared library name (e.g., '312' or '314')."""
     return f"{sys.version_info.major}{sys.version_info.minor}"
+
+
+def should_regenerate_cython(root_dir: Path) -> bool:
+    """Check if Cython transpilation is needed based on file modification times."""
+    pyx_file = root_dir / "cpp_python_bridge.pyx"
+    cpp_file = root_dir / "cpp_python_bridge.cpp"
+
+    if not cpp_file.exists():
+        log("Cython cache miss: generated cpp file does not exist")
+        return True
+
+    cpp_mtime = cpp_file.stat().st_mtime
+
+    # Check .pyx and its dependencies
+    deps = [
+        pyx_file,
+        root_dir / "cpython_interface.hpp",
+        root_dir / "py_object_ptr.hpp",
+        root_dir / "python_managed_object.hpp",
+    ]
+    for dep in deps:
+        if dep.exists() and dep.stat().st_mtime > cpp_mtime:
+            log(f"Cython cache miss: {dep.name} is newer than generated cpp file")
+            return True
+
+    log("Cython cache hit: using existing generated cpp file")
+    return False
 
 log("Build file loaded...")
 
@@ -161,19 +194,35 @@ class CustomBuild(build_ext):
 def build(setup_kwargs: dict[str, Any]) -> None:
     log("Build with Cython")
 
+    root_dir = Path(__file__).parent.absolute()
+
+    # There has to be at least one extension, instead CustomBuild.run won't be called
+    if should_regenerate_cython(root_dir):
+        log("Running Cython transpilation...")
+        ext_modules = cythonize(
+            [
+                Extension(
+                    "cpp_python_bridge", ["cpp_python_bridge.pyx"],
+                    include_dirs=['.', './..', './../hive/libraries/protocol/include'],
+                    language="c++",
+                ),
+            ],
+            compiler_directives={'always_allow_keywords': True, 'language_level': "3str", 'c_string_type': "bytes", 'c_string_encoding':"utf-8", 'emit_code_comments': True},
+            gdb_debug=useDebugBuild()
+        )
+    else:
+        log("Skipping Cython transpilation, using cached generated cpp file")
+        ext_modules = [
+            Extension(
+                "cpp_python_bridge", ["cpp_python_bridge.cpp"],
+                include_dirs=['.', './..', './../hive/libraries/protocol/include'],
+                language="c++",
+            ),
+        ]
+
     setup_kwargs.update(
         {
-            "ext_modules": cythonize(
-                [
-                    Extension(
-                        "cpp_python_bridge", ["cpp_python_bridge.pyx"],
-                        include_dirs=['.', './..', './../hive/libraries/protocol/include'],
-                        language="c++",
-                    ),  # There has to be at least one extension, instead CustomBuild.run won't be called
-                ],
-                compiler_directives={'always_allow_keywords': True, 'language_level': "3str", 'c_string_type': "bytes", 'c_string_encoding':"utf-8", 'emit_code_comments': True},
-                gdb_debug=useDebugBuild()
-            ),
+            "ext_modules": ext_modules,
             "cmdclass": {"build_ext": CustomBuild},
         }
     )
