@@ -56,14 +56,28 @@ build_python_api_packages:
   variables:
       API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
       PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
+      API_PACKAGE_NAMES: |
+        beekeepy
+        schemas
+        wax
+        account_by_key_api
+        account_history_api
+        block_api
+        database_api
+        debug_node_api
+        follow_api
+        market_history_api
+        network_broadcast_api
+        rc_api
+        reputation_api
+        search_api
+        transaction_status_api
   script:
     - echo -e "${TXT_BLUE}Building Python API packages...${TXT_CLEAR}"
     - ${CI_PROJECT_DIR}/python/scripts/build_api_packages.sh
   artifacts:
     paths:
-      - "${API_GENERATION_DIR}/database_api"
-      - "${API_GENERATION_DIR}/network_broadcast_api"
-      - "${API_GENERATION_DIR}/rc_api"
+      - "${API_GENERATION_DIR}/*_api"
       - "build_wheel.env"
     reports:
         dotenv: "build_wheel.env"

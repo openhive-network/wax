@@ -20,13 +20,21 @@ poetry -C "${API_GENERATION_DIR}/database_api" build --format wheel
 poetry -C "${API_GENERATION_DIR}/network_broadcast_api" build --format wheel
 poetry -C "${API_GENERATION_DIR}/rc_api" build --format wheel
 
-DATABASE_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/database_api" version -s)
-NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/network_broadcast_api" version -s)
-RC_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/rc_api" version -s)
 
-echo "DATABASE_API_WHEEL_BUILD_VERSION=${DATABASE_API_WHEEL_BUILD_VERSION}" >> "${SCRIPT_DIR}/../../build_wheel.env"
-echo "NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION=${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}" >> "${SCRIPT_DIR}/../../build_wheel.env"
-echo "RC_API_WHEEL_BUILD_VERSION=${RC_API_WHEEL_BUILD_VERSION}" >> "${SCRIPT_DIR}/../../build_wheel.env"
+build_api_package() {
+    local package_name="$1"
+    echo "Building wheel for package ${package_name}"
+
+    local wheel_build_version
+    wheel_build_version=$(poetry -C "${API_GENERATION_DIR}/${package_name}" version -s)
+
+    echo "${package_name^^}_WHEEL_BUILD_VERSION=${wheel_build_version}" >> "${SCRIPT_DIR}/../../build_wheel.env"
+}
+
+
+for package_name in $API_PACKAGE_NAMES; do
+  build_api_package "$package_name"
+done
 
 echo "Clean up generated flattened openapi_flattened.json."
 rm -f "${APIS_DIR}/documentation/openapi_flattened.json"
