@@ -148,17 +148,30 @@ wax_wasm_proto_tsc_generation:
   tags:
     - public-runner-docker
 
+# Hook to resolve PACKAGE_TGZ_PATH dynamically from DIST_DIR
+# This is needed because BUILT_PACKAGE_PATH from dotenv contains absolute path from previous job's runner
+.resolve_package_tgz_path:
+  before_script:
+    - !reference [.npm_based_job_base, before_script]
+    - PACKAGE_TGZ_PATH=$(ls ${DIST_DIR}/*.tgz | head -1)
+    - echo -e "\e[0Ksection_start:$(date +%s):package_tgz_unpack[collapsed=true]\r\e[0KAttempting to unpack ${PACKAGE_TGZ_PATH}"
+    - cd "${CI_PROJECT_DIR}"
+    - tar -xf "${PACKAGE_TGZ_PATH}" -C "${SOURCE_DIR}" --strip-components=1
+    - echo -e "\e[0Ksection_end:$(date +%s):package_tgz_unpack\r\e[0K"
+
 wax_wasm_build_tests:
   extends: .npm_process_built_package_tarball
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
   script:
     - cd "${SOURCE_DIR}"
     - npm run build:test
@@ -297,13 +310,15 @@ test_wax_wasm:
   extends: .npm_test_template
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
     - job: wax_wasm_build_tests
       artifacts: true
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
   tags:
     - public-runner-docker
   parallel:
@@ -326,8 +341,10 @@ test_wax_wasm_proto_pattern:
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
     - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
@@ -350,9 +367,11 @@ test_wax_wasm_examples:
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     GIT_SUBMODULE_STRATEGY: "normal"
 
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
   script:
     - cd "${SOURCE_DIR}"
     - npm run examples
@@ -386,7 +405,7 @@ deploy_wax_wasm_dev_package:
   stage: deploy
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     NPM_PACKAGE_SCOPE: "@hiveio"
     GIT_SUBMODULE_STRATEGY: "normal"
 
@@ -397,6 +416,8 @@ deploy_wax_wasm_dev_package:
     - job: push_to_wiki
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
   tags:
     - public-runner-docker
 
@@ -407,7 +428,7 @@ deploy_wax_wasm_production_public_npm:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     GIT_SUBMODULE_STRATEGY: "normal"
 
   needs:
@@ -417,6 +438,8 @@ deploy_wax_wasm_production_public_npm:
     - job: push_to_wiki
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+  before_script:
+    - !reference [.resolve_package_tgz_path, before_script]
 
   tags:
     - public-runner-docker
