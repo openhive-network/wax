@@ -56,17 +56,13 @@ else
 
   # Check if API packages already exist (from CI artifacts or previous build)
   # Skip cleanup and generation if they exist - this allows Python 3.14 builds to use
-  # pre-built packages from the Python 3.12 api_generation job
+  # pre-built packages from the hiveio_api_package CI job
   if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ] && \
-     [ -d "${API_PACKAGES_GEN_DIR}/database_api" ] && \
-     [ -d "${API_PACKAGES_GEN_DIR}/network_broadcast_api" ] && \
-     [ -d "${API_PACKAGES_GEN_DIR}/rc_api" ]; then
+     [ -d "${API_PACKAGES_GEN_DIR}/hiveio_api" ]; then
     echo "API packages already exist (from artifacts). Skipping cleanup and generation."
   else
     # Clean up old API packages before regenerating
-    cleanup_old_api_package "database_api"
-    cleanup_old_api_package "network_broadcast_api"
-    cleanup_old_api_package "rc_api"
+    cleanup_old_api_package "hiveio_api"
 
     if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ]; then
       echo "Found old build_wheel.env. Removing it."
@@ -91,7 +87,7 @@ else
     local api_package_name=$1
     local api_wheel_version=$2
 
-    local published_name="hiveio-${api_package_name//_/-}"
+    local published_name="${api_package_name//_/-}"
     echo "Published name: ${published_name}"
 
     if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
@@ -103,9 +99,7 @@ else
     fi
   }
 
-  add_api_dependency "database_api" "${DATABASE_API_WHEEL_BUILD_VERSION}"
-  add_api_dependency "network_broadcast_api" "${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}"
-  add_api_dependency "rc_api" "${RC_API_WHEEL_BUILD_VERSION}"
+  add_api_dependency "hiveio_api" "${HIVEIO_API_WHEEL_BUILD_VERSION}"
 
   if [ -d "${PROJECT_DIR}/dist" ]; then
     echo "Found existing dist directory, removing it."
