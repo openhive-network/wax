@@ -15,10 +15,11 @@ cd "${API_GENERATION_DIR}"
 npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1  # Install dependencies for flatten_swagger.js
 node "${API_GENERATION_DIR}/flatten_swagger.js" "${APIS_DIR}/documentation/openapi.json" > "${APIS_DIR}/documentation/openapi_flattened.json"
 
-# Generate the unified hiveio_api package with the required APIs
+# Generate the unified hiveio_api package with all required APIs
 "${API_GENERATION_DIR}/generate_api_packages.sh" database_api network_broadcast_api rc_api
 
-# Build the unified hiveio_api package
+# Build the unified hiveio_api wheel
+HIVEIO_API_DIR="${API_GENERATION_DIR}/hiveio_api"
 poetry -C "${HIVEIO_API_DIR}" build --format wheel
 
 HIVEIO_API_WHEEL_BUILD_VERSION=$(poetry -C "${HIVEIO_API_DIR}" version -s)

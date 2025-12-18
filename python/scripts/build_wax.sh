@@ -54,14 +54,14 @@ else
     fi
   }
 
-  # Check if unified hiveio_api package already exists (from CI artifacts or previous build)
-  # Skip cleanup and generation if it exists - this allows Python 3.14 builds to use
-  # pre-built packages from the Python 3.12 api_generation job
+  # Check if API packages already exist (from CI artifacts or previous build)
+  # Skip cleanup and generation if they exist - this allows Python 3.14 builds to use
+  # pre-built packages from the hiveio_api_package CI job
   if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ] && \
      [ -d "${API_PACKAGES_GEN_DIR}/hiveio_api" ]; then
-    echo "hiveio_api package already exists (from artifacts). Skipping cleanup and generation."
+    echo "API packages already exist (from artifacts). Skipping cleanup and generation."
   else
-    # Clean up old hiveio_api package before regenerating
+    # Clean up old API packages before regenerating
     cleanup_old_api_package "hiveio_api"
 
     if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ]; then
@@ -83,15 +83,23 @@ else
   set +o allexport
 
 
-  # Add the unified hiveio_api package as a dependency
-  # First try from registry, then fall back to local source
-  if poetry add --dry-run "hiveio-api@${HIVEIO_API_WHEEL_BUILD_VERSION}" --source gitlab-api-packages > /dev/null 2>&1; then
-    echo "Using hiveio-api from registry."
-    poetry add "hiveio-api@${HIVEIO_API_WHEEL_BUILD_VERSION}" --source gitlab-api-packages
-  else
-    echo "hiveio-api not found in registry, using local source."
-    poetry add "../hive/libraries/plugins/apis/api_generation/hiveio_api"
-  fi
+  add_api_dependency() {
+    local api_package_name=$1
+    local api_wheel_version=$2
+
+    local published_name="${api_package_name//_/-}"
+    echo "Published name: ${published_name}"
+
+    if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
+      echo "Using ${published_name} from registry."
+      poetry add "${published_name}@${api_wheel_version}" --source gitlab-api-packages
+    else
+      echo "${published_name} not found in registry, using local source."
+      poetry add "../hive/libraries/plugins/apis/api_generation/${api_package_name}"
+    fi
+  }
+
+  add_api_dependency "hiveio_api" "${HIVEIO_API_WHEEL_BUILD_VERSION}"
 
   if [ -d "${PROJECT_DIR}/dist" ]; then
     echo "Found existing dist directory, removing it."

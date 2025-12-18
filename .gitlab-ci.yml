@@ -13,6 +13,10 @@ include:
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
+  - project: 'hive/hive'
+    ref: 83fba8a402b23d3b9af78c109a1ff12e260b4166  # TODO: eliminate need to use this job here. Local was build script must generate such local/retrieve existing at repo packages
+    file:
+      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 
 variables:
@@ -89,51 +93,33 @@ default:
   tags:
     - public-runner-docker
 
-build_python_api_packages:
-  extends: .configuration_template
+generate_hived_flattened_openapi_definition:
+  extends: .node_based_job_base
   stage: build
-  image: "${COMMON_CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
-  variables:
-      API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
-      PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
-  before_script:
-    - !reference [.configuration_template, before_script]
-    # Install Node.js/npm for api_generation (not included in Python 3.12 base image)
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-    - sudo apt-get install -y nodejs
   script:
-    - echo -e "${TXT_BLUE}Building Python API packages...${TXT_CLEAR}"
-    - ${CI_PROJECT_DIR}/python/scripts/build_api_packages.sh
+    - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
+    - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
+    - node "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/flatten_swagger.js" "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi.json" > "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
   artifacts:
     paths:
-      - "${API_GENERATION_DIR}/hiveio_api"
-      - "build_wheel.env"
-    reports:
-        dotenv: "build_wheel.env"
+      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
+  tags:
+    - public-runner-docker
 
-deploy_python_api_packages_to_gitlab:
-  stage: deploy
-  needs:
-    - job: build_python_api_packages
-      artifacts: true
-  extends: .deploy_wheel_to_gitlab_template
+# Unified hiveio-api package: generate, build, test (via examples), and deploy to GitLab
+hiveio_api_package:
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/api_generation"
-    API_PACKAGES_REGISTRY: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi"
-    HIVEIO_API_DIR: "${PYPROJECT_DIR}/../hiveio_api"
-  script: # Overrides the script from the template because we need to hardcode the repository URL as we push it to the hive package registry
-    - echo -e "${TXT_BLUE}Deploying hiveio_api package to the GitLab PyPI registry...${TXT_CLEAR}"
-    - ls -al
-    - poetry -C "${HIVEIO_API_DIR}" version
-    - poetry -C "${HIVEIO_API_DIR}" config repositories.gitlab "${API_PACKAGES_REGISTRY}"
-    - poetry -C "${HIVEIO_API_DIR}" config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
-    - poetry -C "${HIVEIO_API_DIR}" publish --skip-existing --repository gitlab
-  when: on_success
+    HIVE_PROJECT_ROOT: "${CI_PROJECT_DIR}/hive"
+    GIT_SUBMODULE_STRATEGY: recursive
+  needs:
+    - job: generate_hived_flattened_openapi_definition
+      artifacts: true
+  extends: .hiveio_api_package_template
 
 build_wheel:
   extends: .build_wheel_template
   needs:
-    - job: build_python_api_packages
+    - job: hiveio_api_package
       artifacts: true
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
@@ -317,8 +303,6 @@ test_importing_wax:
 
 test_wax_protobuf_python:
   extends: .test_python_env
-  # Allow failure: online test requires api.fake.openhive.network which may be unavailable
-  allow_failure: true
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
     - ${PYPROJECT_DIR}/tests/run_tests.sh
