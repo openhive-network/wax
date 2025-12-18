@@ -54,9 +54,7 @@ else
     fi
   }
 
-  cleanup_old_api_package "database_api"
-  cleanup_old_api_package "network_broadcast_api"
-  cleanup_old_api_package "rc_api"
+  cleanup_old_api_package "hiveio_api"
 
   if [ -d "${SCRIPT_DIR}/../../build_wheel.env}" ]; then
     echo "Found old build_wheel.env Removing it."
@@ -80,7 +78,7 @@ else
     local api_package_name=$1
     local api_wheel_version=$2
 
-    local published_name="hiveio-${api_package_name//_/-}"
+    local published_name="${api_package_name//_/-}"
     echo "Published name: ${published_name}"
 
     if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
@@ -92,9 +90,7 @@ else
     fi
   }
 
-  add_api_dependency "database_api" "${DATABASE_API_WHEEL_BUILD_VERSION}"
-  add_api_dependency "network_broadcast_api" "${NETWORK_BROADCAST_API_WHEEL_BUILD_VERSION}"
-  add_api_dependency "rc_api" "${RC_API_WHEEL_BUILD_VERSION}"
+  add_api_dependency "hiveio_api" "${HIVEIO_API_WHEEL_BUILD_VERSION}"
 
   if [ -d "${PROJECT_DIR}/dist" ]; then
     echo "Found existing dist directory, removing it."
