@@ -6,6 +6,7 @@ module.exports = defineConfig({
       rules: [
         {
           // Handle .wasm?url imports as asset/resource (emit file and return URL)
+          test: /\.wasm$/,
           resourceQuery: /url/,
           type: 'asset/resource'
         }
