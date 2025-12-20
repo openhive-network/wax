@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: 409108966606eba9e8f270c76dfb929cae65dba3
+    ref: fix-cross-runner-artifact-path
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -154,7 +154,7 @@ wax_wasm_build_tests:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
@@ -222,7 +222,7 @@ push_to_wiki:
   extends: .npm_push_doc_template
   stage: deploy
   variables:
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     WIKI_PUSH_TOKEN: "$WIKI_PUSH_TOKEN"
     DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
@@ -297,7 +297,7 @@ test_wax_wasm:
   extends: .npm_test_template
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
 
   needs:
     - job: wax_wasm_proto_tsc_generation
@@ -326,7 +326,7 @@ test_wax_wasm_proto_pattern:
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
 
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
@@ -350,7 +350,7 @@ test_wax_wasm_examples:
 
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
     GIT_SUBMODULE_STRATEGY: "normal"
 
   script:
@@ -386,7 +386,7 @@ deploy_wax_wasm_dev_package:
   stage: deploy
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
     NPM_PACKAGE_SCOPE: "@hiveio"
     GIT_SUBMODULE_STRATEGY: "normal"
 
@@ -407,7 +407,7 @@ deploy_wax_wasm_production_public_npm:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${BUILT_PACKAGE_PATH}"
+    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
     GIT_SUBMODULE_STRATEGY: "normal"
 
   needs:
