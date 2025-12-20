@@ -44,6 +44,10 @@ variables:
   DATA_CACHE_HIVE_PREFIX: "/cache/replay_data_hive"
   BLOCK_LOG_SOURCE_DIR_5M: /blockchain/block_log_5m
 
+  # Common paths for TS package jobs
+  TS_SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
+  TS_DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+
 image: "${CI_BASE_IMAGE}"
 
 # Cross-runner compatible before_script for jobs using built package tarball
@@ -52,10 +56,10 @@ image: "${CI_BASE_IMAGE}"
   before_script:
     - !reference [.npm_based_job_base, before_script]
     # Compute local path from filename (cross-runner compatible)
-    - PACKAGE_TGZ_PATH="${DIST_DIR}/$(basename ${BUILT_PACKAGE_PATH})"
+    - PACKAGE_TGZ_PATH="${TS_DIST_DIR}/$(basename ${BUILT_PACKAGE_PATH})"
     - echo -e "\e[0Ksection_start:$(date +%s):package_tgz_unpack[collapsed=true]\r\e[0KAttempting to unpack ${PACKAGE_TGZ_PATH}"
     - cd "${CI_PROJECT_DIR}"
-    - tar -xf "${PACKAGE_TGZ_PATH}" -C "${SOURCE_DIR}" --strip-components=1
+    - tar -xf "${PACKAGE_TGZ_PATH}" -C "${TS_SOURCE_DIR}" --strip-components=1
     - echo -e "\e[0Ksection_end:$(date +%s):package_tgz_unpack\r\e[0K"
 
 default:
@@ -133,8 +137,8 @@ wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
     NPM_PACKAGE_NAME: "wax"
     GIT_SUBMODULE_STRATEGY: recursive
@@ -167,8 +171,8 @@ wax_wasm_build_tests:
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -192,8 +196,8 @@ generate_docs:
   extends: .npm_based_job_base
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "$CI_PROJECT_DIR/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
 
   script:
     - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
@@ -235,9 +239,9 @@ push_to_wiki:
   extends: .npm_push_doc_template
   stage: deploy
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
     WIKI_PUSH_TOKEN: "$WIKI_PUSH_TOKEN"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    DIST_DIR: "${TS_DIST_DIR}"
 
   needs:
     - job: generate_docs
@@ -310,8 +314,8 @@ test_wax_wasm:
     - .npm_test_template
     - .cross_runner_unpack_tarball
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -339,8 +343,8 @@ test_wax_wasm_proto_pattern:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
     - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
@@ -363,8 +367,8 @@ test_wax_wasm_examples:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
     GIT_SUBMODULE_STRATEGY: "normal"
   script:
     - cd "${SOURCE_DIR}"
@@ -400,8 +404,8 @@ deploy_wax_wasm_dev_package:
     - .cross_runner_unpack_tarball
   stage: deploy
   variables:
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
     GIT_SUBMODULE_STRATEGY: "normal"
   needs:
@@ -422,8 +426,8 @@ deploy_wax_wasm_production_public_npm:
   variables:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
-    SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
     GIT_SUBMODULE_STRATEGY: "normal"
   needs:
     - job: test_wax_wasm_examples
