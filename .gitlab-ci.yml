@@ -6,7 +6,7 @@ stages:
 
 include:
   - project: 'hive/common-ci-configuration'
-    ref: fix-cross-runner-artifact-path
+    ref: 409108966606eba9e8f270c76dfb929cae65dba3
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -45,6 +45,18 @@ variables:
   BLOCK_LOG_SOURCE_DIR_5M: /blockchain/block_log_5m
 
 image: "${CI_BASE_IMAGE}"
+
+# Cross-runner compatible before_script for jobs using built package tarball
+# Computes the local path from the filename instead of using absolute path from dotenv
+.cross_runner_unpack_tarball:
+  before_script:
+    - !reference [.npm_based_job_base, before_script]
+    # Compute local path from filename (cross-runner compatible)
+    - PACKAGE_TGZ_PATH="${DIST_DIR}/$(basename ${BUILT_PACKAGE_PATH})"
+    - echo -e "\e[0Ksection_start:$(date +%s):package_tgz_unpack[collapsed=true]\r\e[0KAttempting to unpack ${PACKAGE_TGZ_PATH}"
+    - cd "${CI_PROJECT_DIR}"
+    - tar -xf "${PACKAGE_TGZ_PATH}" -C "${SOURCE_DIR}" --strip-components=1
+    - echo -e "\e[0Ksection_end:$(date +%s):package_tgz_unpack\r\e[0K"
 
 default:
   tags:
@@ -149,13 +161,14 @@ wax_wasm_proto_tsc_generation:
     - public-runner-docker
 
 wax_wasm_build_tests:
-  extends: .npm_process_built_package_tarball
+  extends:
+    - .npm_process_built_package_tarball
+    - .cross_runner_unpack_tarball
   stage: build
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
-
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -222,7 +235,6 @@ push_to_wiki:
   extends: .npm_push_doc_template
   stage: deploy
   variables:
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
     WIKI_PUSH_TOKEN: "$WIKI_PUSH_TOKEN"
     DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
@@ -294,11 +306,12 @@ test_wax_protobuf_python_examples:
     - ./examples/python/run_example.sh
 
 test_wax_wasm:
-  extends: .npm_test_template
+  extends:
+    - .npm_test_template
+    - .cross_runner_unpack_tarball
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
-
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -319,15 +332,15 @@ test_wax_wasm:
     - npm run test -- $TEST_GROUPS
 
 test_wax_wasm_proto_pattern:
-  extends: .npm_process_built_package_tarball
+  extends:
+    - .npm_process_built_package_tarball
+    - .cross_runner_unpack_tarball
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
-
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
   script:
     - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
     - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
@@ -343,16 +356,16 @@ test_wax_wasm_proto_pattern:
     - public-runner-docker
 
 test_wax_wasm_examples:
-  extends: .npm_process_built_package_tarball
+  extends:
+    - .npm_process_built_package_tarball
+    - .cross_runner_unpack_tarball
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     GIT_SUBMODULE_STRATEGY: "normal"
-
   script:
     - cd "${SOURCE_DIR}"
     - npm run examples
@@ -382,14 +395,15 @@ deploy_wheel_to_pypi:
   <<: *deploy_wheel_needs
 
 deploy_wax_wasm_dev_package:
-  extends: .npm_deploy_package_template
+  extends:
+    - .npm_deploy_package_template
+    - .cross_runner_unpack_tarball
   stage: deploy
   variables:
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     NPM_PACKAGE_SCOPE: "@hiveio"
     GIT_SUBMODULE_STRATEGY: "normal"
-
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
@@ -401,15 +415,16 @@ deploy_wax_wasm_dev_package:
     - public-runner-docker
 
 deploy_wax_wasm_production_public_npm:
-  extends: .registry_npmjs_org_deploy_package_template
+  extends:
+    - .registry_npmjs_org_deploy_package_template
+    - .cross_runner_unpack_tarball
   stage: deploy
   variables:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
-    PACKAGE_TGZ_PATH: "${CI_PROJECT_DIR}/${BUILT_PACKAGE_RELPATH}"
+    DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
     GIT_SUBMODULE_STRATEGY: "normal"
-
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
