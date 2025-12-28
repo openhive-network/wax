@@ -5,8 +5,9 @@ stages:
   - deploy
 
 include:
+  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: 409108966606eba9e8f270c76dfb929cae65dba3
+    ref: 8efd11eebb0cf8d95efef436dd23013d2c594c67
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -19,15 +20,20 @@ variables:
   GIT_STRATEGY: clone
   # only build steps needs to have access to the hive submodule
   GIT_SUBMODULE_STRATEGY: normal
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
-  CI_BASE_IMAGE_TAG: "@sha256:d2bf82e7c8d080f2416c4d738a8bb8f6437b2828587657aaac9f13db77926df9"
+  # Python 3.14 compatibility - allow PyO3-based packages to build
+  PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
+  CI_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # Python 3.12 image for API generation (pydantic-core doesn't support Python 3.14 yet)
+  # TODO: Move to common-ci-configuration when Python 3.12 ci-base-image is added there
+  CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1"
 
   # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
   WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
   WAX_PYTHON_RUNTIME_IMAGE: registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
 
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
+  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
   PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
   PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
@@ -69,9 +75,15 @@ default:
 build_python_api_packages:
   extends: .configuration_template
   stage: build
+  image: "${CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
   variables:
       API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
       PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
+  before_script:
+    - !reference [.configuration_template, before_script]
+    # Install Node.js/npm for api_generation (not included in Python 3.12 base image)
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+    - sudo apt-get install -y nodejs
   script:
     - echo -e "${TXT_BLUE}Building Python API packages...${TXT_CLEAR}"
     - ${CI_PROJECT_DIR}/python/scripts/build_api_packages.sh
@@ -225,6 +237,7 @@ pre_commit_checks:
   before_script:
     - cd "${PYPROJECT_DIR}"
     - !reference [.configuration_template, before_script]
+    - poetry lock --no-update 2>/dev/null || poetry lock  # regenerate lock if needed
     - poetry install --no-root
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/database_api/dist/*.whl
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX ${API_PACKAGES_DIR}/network_broadcast_api/dist/*.whl
@@ -266,6 +279,7 @@ push_to_wiki:
   extends: .runtime_like_python_env
   before_script:
     - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" lock --no-update 2>/dev/null || poetry -C "${PYPROJECT_DIR}" lock  # regenerate lock if needed
     - poetry -C "${PYPROJECT_DIR}" install --no-root  # install dependencies for tests
     - pip list
 
@@ -464,6 +478,7 @@ test_helpy:
   stage: build
   before_script:
     - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" lock --no-update 2>/dev/null || poetry -C "${PYPROJECT_DIR}" lock  # regenerate lock if needed
     - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
     - pip list
 

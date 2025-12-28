@@ -13,6 +13,7 @@ MIRRORNET_NODE_ADDRESS = "https://api.fake.openhive.network/"
 MIRRORNET_CHAIN_ID: Final[str] = "4200000000000000000000000000000000000000000000000000000000000000"
 
 
+@pytest.mark.skip(reason="Skipped due to api.fake.openhive.network infrastructure issues (502 Bad Gateway)")
 async def test_online_transaction_perform_on_chain_verification() -> None:
     # ARRANGE
     remote_chain = create_hive_chain(WaxChainOptions(MIRRORNET_CHAIN_ID, MIRRORNET_NODE_ADDRESS))

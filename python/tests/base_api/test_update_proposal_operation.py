@@ -5,9 +5,9 @@ import json
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
-from google.protobuf.json_format import MessageToDict
 
 from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax._private.proto_utils import message_to_dict_with_defaults
 from wax.complex_operations.update_proposal_operation import UpdateProposalOperation, UpdateProposalOperationData
 from wax.exceptions import WaxError
 from wax.exceptions.asset_errors import UnexpectedAssetTypeError
@@ -151,9 +151,7 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(transaction: ITrans
         },
     ]
 
-    assert [
-        MessageToDict(op, including_default_value_fields=True) for op in transaction.transaction.operations
-    ] == expected_in_legacy_format
+    assert [message_to_dict_with_defaults(op) for op in transaction.transaction.operations] == expected_in_legacy_format
 
 
 @pytest.mark.skip(reason="python version `update_proposal` not implemented")
@@ -237,9 +235,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
     ]
 
     # TODO: repair this assert when transaction.from_proto_to_dict() will be available
-    assert [
-        MessageToDict(op, including_default_value_fields=True) for op in transaction.transaction.operations
-    ] == expected
+    assert [message_to_dict_with_defaults(op) for op in transaction.transaction.operations] == expected
 
 
 @pytest.mark.describe("UpdateProposalOperation.finalize")
@@ -269,7 +265,7 @@ def test_finalize_returns_correct_operation_with_date(wax: IWaxBaseInterface) ->
     # act
     result_iter = op.finalize(wax)
     result = list(result_iter)
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1
@@ -301,7 +297,7 @@ def test_finalize_returns_correct_operation_without_date(wax: IWaxBaseInterface)
     # act
     result_iter = op.finalize(wax)
     result = list(result_iter)
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1

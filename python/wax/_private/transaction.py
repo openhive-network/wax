@@ -4,13 +4,14 @@ import json
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any, TypeAlias
 
-from google.protobuf.json_format import MessageToDict, MessageToJson, ParseDict
+from google.protobuf.json_format import MessageToJson, ParseDict
 from typing_extensions import Self
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
+from wax._private.proto_utils import message_to_dict_with_defaults
 from wax._private.result_tools import (
     to_cpp_string,
     to_python_str_list,
@@ -162,7 +163,7 @@ class Transaction(ITransaction):
         operation_name = operation.__class__.__name__
         # TODO: Note: We could eliminate this step if python used "from" instead of "from_account"
         # And not ignored default empty array values, e.g. extensions=[].
-        dict_default_op = MessageToDict(operation, including_default_value_fields=True)
+        dict_default_op = message_to_dict_with_defaults(operation)
         op_handle = create_wax_operation({operation_name + "_operation": dict_default_op}, is_protobuf=True)
         tx_add_operation(self._handle, op_handle)
         self._target.operations.add(**{operation_name + "_operation": operation})

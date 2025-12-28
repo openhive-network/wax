@@ -4,9 +4,9 @@ import json
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
-from google.protobuf.json_format import MessageToDict
 
 from wax._private.proto.recurrent_transfer_extension_pb2 import recurrent_transfer_extension, recurrent_transfer_pair_id
+from wax._private.proto_utils import message_to_dict_with_defaults
 from wax.complex_operations.recurrent_transfer import (
     DefineRecurrentTransferOperation,
     RecurrentTransferData,
@@ -128,7 +128,7 @@ def test_define_recurrent_transfer_with_pair_id(wax: IWaxBaseInterface) -> None:
 
     # act
     result = list(op.finalize(wax))
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1
@@ -161,7 +161,7 @@ def test_define_recurrent_transfer_without_pair_id(wax: IWaxBaseInterface) -> No
 
     # act
     result = list(op.finalize(wax))
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1
@@ -189,7 +189,7 @@ def test_recurrent_transfer_removal_with_pair_id(wax: IWaxBaseInterface) -> None
 
     # act
     result = list(op.finalize(wax))
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1
@@ -213,7 +213,7 @@ def test_recurrent_transfer_removal_without_pair_id(wax: IWaxBaseInterface) -> N
 
     # act
     result = list(op.finalize(wax))
-    op_dict = MessageToDict(result[0], including_default_value_fields=True)
+    op_dict = message_to_dict_with_defaults(result[0])
 
     # assert
     assert len(result) == 1

@@ -54,17 +54,28 @@ else
     fi
   }
 
-  cleanup_old_api_package "database_api"
-  cleanup_old_api_package "network_broadcast_api"
-  cleanup_old_api_package "rc_api"
+  # Check if API packages already exist (from CI artifacts or previous build)
+  # Skip cleanup and generation if they exist - this allows Python 3.14 builds to use
+  # pre-built packages from the Python 3.12 api_generation job
+  if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ] && \
+     [ -d "${API_PACKAGES_GEN_DIR}/database_api" ] && \
+     [ -d "${API_PACKAGES_GEN_DIR}/network_broadcast_api" ] && \
+     [ -d "${API_PACKAGES_GEN_DIR}/rc_api" ]; then
+    echo "API packages already exist (from artifacts). Skipping cleanup and generation."
+  else
+    # Clean up old API packages before regenerating
+    cleanup_old_api_package "database_api"
+    cleanup_old_api_package "network_broadcast_api"
+    cleanup_old_api_package "rc_api"
 
-  if [ -d "${SCRIPT_DIR}/../../build_wheel.env}" ]; then
-    echo "Found old build_wheel.env Removing it."
-    rm -rf "${SCRIPT_DIR}/../../build_wheel.env"
+    if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ]; then
+      echo "Found old build_wheel.env. Removing it."
+      rm -rf "${SCRIPT_DIR}/../../build_wheel.env"
+    fi
+
+    echo "Build API packages."
+    ${PROJECT_DIR}/scripts/build_api_packages.sh
   fi
-
-  echo "Build API packages."
-  ${PROJECT_DIR}/scripts/build_api_packages.sh
 
 
   mkdir -p ${PROJECT_DIR}/.poetry_backup

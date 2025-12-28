@@ -28,12 +28,13 @@ script = "build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = "^3.12"
-protobuf = "4.24.4"
+python = ">=3.14,<4"
+protobuf = "6.33.0"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
+typing-extensions = ">=4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
@@ -43,12 +44,12 @@ pytest-asyncio = "0.25.3"
 pytest-xdist = "3.6.1"
 types-setuptools = ">=67.8.0"
 ruff = "0.11.5"
-grpcio = "1.59.0"
+grpcio = "1.76.0"
 mypy-protobuf = "3.5.0"
 types-python-dateutil = "2.8.19.14"
-types-protobuf = "4.24.0.3"
+types-protobuf = "5.29.1.20241207"
 grpc-stubs = "1.53.0.2"
-grpcio-tools = "1.59.0"
+grpcio-tools = "1.76.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "1.6.1"

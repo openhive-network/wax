@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -19,11 +20,16 @@ def log(*args: Any) -> None:
 def useDebugBuild() -> bool:
     return os.getenv("WAX_DEBUG") is not None and os.getenv("WAX_DEBUG") != "0"
 
+def get_python_abi_tag() -> str:
+    """Get the Python ABI tag for the shared library name (e.g., '312' or '314')."""
+    return f"{sys.version_info.major}{sys.version_info.minor}"
+
 log("Build file loaded...")
 
 
 class CustomBuild(build_ext):
-    output_binary_name = "cpp_python_bridge.cpython-312d-x86_64-linux-gnu.so" if useDebugBuild() else "cpp_python_bridge.cpython-312-x86_64-linux-gnu.so"
+    _python_abi = get_python_abi_tag()
+    output_binary_name = f"cpp_python_bridge.cpython-{_python_abi}d-x86_64-linux-gnu.so" if useDebugBuild() else f"cpp_python_bridge.cpython-{_python_abi}-x86_64-linux-gnu.so"
     root_dir = Path(__file__).parent.absolute()
     package_dir = root_dir / "wax"
     wax_package_shared_lib = package_dir / output_binary_name
