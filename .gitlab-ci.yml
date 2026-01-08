@@ -361,8 +361,6 @@ test_wax_wasm_examples:
 
 .deploy_wheel_needs: &deploy_wheel_needs
   needs:
-    - job: test_importing_wax
-    - job: test_wax_protobuf_python
     - job: build_wheel
       artifacts: true
 
@@ -372,7 +370,7 @@ deploy_wheel_to_gitlab:
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   <<: *deploy_wheel_needs
-  when: on_success
+  when: manual
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
