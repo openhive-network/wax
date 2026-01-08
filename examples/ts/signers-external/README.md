@@ -1,29 +1,6 @@
-# External Wallet (Google Drive) Example
+# External Wallet Example (Google Drive)
 
-This example demonstrates the usage of `@hiveio/wax-signers-external` package for managing Hive private keys stored securely in Google Drive.
-
-## Features Demonstrated
-
-- **Wallet Initialization** - Connect to Google Drive storage with OAuth authentication
-- **Hive Role Keys** - Create and load keys for Hive accounts (posting, active, owner, memo)
-- **Custom Keys** - Store arbitrary private keys with custom aliases
-- **Transaction Signing** - Sign Hive transactions with stored keys
-- **Encryption/Decryption** - Encrypt and decrypt data using wallet keys
-- **Key Enumeration** - List all stored keys in the wallet
-
-## Prerequisites
-
-### Google OAuth Token
-
-This example requires a Google OAuth 2.0 access token with the `drive.appdata` scope. Follow these steps:
-
-1. Go to [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground/)
-2. In **Step 1**, enter the scope: `https://www.googleapis.com/auth/drive.appdata`
-3. Click **"Authorize APIs"** and sign in with your Google account
-4. In **Step 2**, click **"Exchange authorization code for tokens"**
-5. Copy the **Access token** (it will be valid for ~1 hour)
-
-> ⚠️ **Note**: The OAuth Playground token expires after approximately 1 hour. For production applications, implement proper OAuth 2.0 flow with token refresh.
+Demonstrates `@hiveio/wax-signers-external` with Google Drive storage.
 
 ## Running the Example
 
@@ -37,37 +14,112 @@ pnpm serve
 
 Open the URL shown in the terminal (usually <http://localhost:1234>) in your browser.
 
-## Usage Flow
+## Google Drive OAuth Setup
 
-### 1. Enter OAuth Token
+### Quick Test (OAuth Playground)
 
-Paste your Google OAuth access token from the OAuth Playground.
+For quick testing, use [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground/):
 
-### 2. Set Wallet Password
+1. Enter scope: `https://www.googleapis.com/auth/drive.appdata`
+2. Click **"Authorize APIs"** and sign in
+3. Click **"Exchange authorization code for tokens"**
+4. Copy the access token (valid ~1 hour)
 
-Enter a password that will be used to encrypt your wallet data. This password is required every time you open the wallet (unless you cache the encryption key).
+### Production Setup
 
-### 3. Initialize Wallet
+#### 1. Create Google Cloud Project
 
-Click **"Initialize Wallet"** to connect to Google Drive and create/load your wallet file.
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable the **Google Drive API**:
+   - Navigate to **APIs & Services > Library**
+   - Search for "Google Drive API" and enable it
 
-### 4. Manage Keys
+#### 2. Configure OAuth Consent Screen
 
-- **Create Hive Key**: Store a new Hive account key (posting, active, owner, or memo)
-- **Load Hive Key**: Load an existing key from the wallet
-- **Create Custom Key**: Store any private key with a custom alias
-- **Load Custom Key**: Load a custom key by its alias
+1. Go to **APIs & Services > OAuth consent screen**
+2. Choose **External** user type (or Internal for Google Workspace)
+3. Fill required fields:
+   - App name
+   - User support email
+   - Developer contact email
+4. Add scope: `https://www.googleapis.com/auth/drive.appdata`
+5. Add test users if in testing mode
 
-### 5. Perform Operations
+#### 3. Create OAuth Credentials
 
-- **Sign Transaction**: Signs a sample vote transaction with the loaded key
-- **Encrypt/Decrypt**: Encrypt a message and decrypt it back
+1. Go to **APIs & Services > Credentials**
+2. Click **Create Credentials > OAuth client ID**
+3. Select application type:
+   - **Web application** for browser apps
+   - **Desktop app** for Node.js/Electron
+4. Configure authorized redirect URIs (e.g., `http://localhost:3000/callback`)
+5. Save your **Client ID** and **Client Secret**
 
-## API Reference
+#### 4. Token Provider
 
-### `createExternalWallet(waxBase, authProvider, storagePasswordProvider, storageFileName?, storage?)`
+Your app needs to provide access tokens to the wallet. Here's a minimal Express.js server with complete OAuth flow:
 
-Creates an external wallet instance.
+```typescript
+// server.ts
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import { google } from 'googleapis';
+
+const app = express();
+app.use(cookieParser());
+
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
+const REDIRECT_URI = 'http://localhost:3000/callback';
+
+const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+// Step 1: Redirect user to Google login
+app.get('/auth', (req, res) => {
+  const url = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: ['https://www.googleapis.com/auth/drive.appdata'],
+    prompt: 'consent'
+  });
+  res.redirect(url);
+});
+
+// Step 2: Handle OAuth callback
+app.get('/callback', async (req, res) => {
+  const { tokens } = await oauth2Client.getToken(req.query.code as string);
+
+  if (tokens.refresh_token) {
+    res.cookie('google_refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 30 * 24 * 60 * 60 * 1000  // 30 days
+    });
+  }
+
+  res.redirect('/');
+});
+
+// Step 3: Endpoint for wallet's tokenProvider
+app.get('/api/token', async (req, res) => {
+  const refreshToken = req.cookies.google_refresh_token;
+  if (!refreshToken)
+    return res.status(401).json({ error: 'Not authenticated' });
+
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  const { token } = await oauth2Client.getAccessToken();
+  res.json({ accessToken: token });
+});
+
+app.get('/', (req, res) => {
+  const isAuth = !!req.cookies.google_refresh_token;
+  res.send(isAuth ? '<a href="/api/token">Login with Google</a>' : '<a href="/auth">Login with Google</a>');
+});
+
+app.listen(3000, () => console.log('http://localhost:3000'));
+```
+
+Then in your frontend, use the token provider with the wallet:
 
 ```typescript
 import { createWaxFoundation } from '@hiveio/wax';
@@ -75,70 +127,51 @@ import { createExternalWallet } from '@hiveio/wax-signers-external';
 
 const wax = await createWaxFoundation();
 
+const tokenProvider = async () => {
+  const res = await fetch('http://localhost:3000/api/token', { credentials: 'include' });
+  const { accessToken } = await res.json();
+  return accessToken;
+};
+
 const wallet = await createExternalWallet(
   wax,
-  () => oauthToken,  // TokenProvider - returns OAuth access token
-  async (missingFile) => ({ password: 'my-password' }),  // TStoragePasswordProvider
-  'wallet.json'  // Optional: custom storage file name
+  tokenProvider,
+  async (missingStorageFile) => {
+    const password = prompt(missingStorageFile ? 'Create wallet password:' : 'Enter wallet password:');
+    return { password: password! };
+  }
 );
-```
 
-### `IExternalWallet` Interface
+// Store a key
+const content = await wallet.createForHiveKey('posting', 'myaccount', '5JPrivateKeyWIF...');
 
-```typescript
-// Create/load keys
-await wallet.createForHiveKey('posting', 'accountname', 'privateKeyWif');
-await wallet.loadForHiveKey('accountname', 'posting');
-await wallet.createForCustomKey('my-key', 'privateKeyWif', 'description');
-await wallet.loadForCustomKey('my-key');
+// Sign a transaction
+const tx = await wax.createTransaction();
+tx.pushOperation({
+  vote: { voter: 'myaccount', author: 'author', permlink: 'post', weight: 10000 }
+});
+const signedTx = await tx.sign(content);
 
-// Get encryption key for caching
-const encryptionKeyWif = wallet.getEncryptionKeyWif();
-
-// Close wallet
 await wallet.close();
 ```
 
-### `IExternalWalletContent` Interface
+## Example Usage Flow
 
-```typescript
-// Sign transactions
-await walletContent.signTransaction(transaction);
-
-// Encrypt/decrypt data
-const encrypted = await walletContent.encryptData(buffer, recipientPublicKey);
-const decrypted = await walletContent.decryptData(encrypted);
-
-// Enumerate keys
-for (const key of walletContent.enumStoredHiveKeys('accountname')) {
-  console.log(key.role, key.publicKey);
-}
-
-for (const key of walletContent.enumStoredCustomKeys()) {
-  console.log(key.customAlias, key.publicKey);
-}
-
-// Remove keys
-await walletContent.removeKey(publicKey);
-await walletContent.clearContents(false);
-```
+1. Enter OAuth token (from Playground or your OAuth implementation)
+2. Set wallet encryption password
+3. Click **Initialize Wallet**
+4. Create/load Hive keys or custom keys
+5. Sign transactions or encrypt/decrypt data
 
 ## Security Notes
 
-- The wallet file is encrypted using the password you provide
-- Keys are stored in Google Drive's app-specific data folder (hidden from the user)
-- The encryption key WIF can be cached locally for convenience, but this trades security for usability
-- In production, implement proper OAuth 2.0 flow and secure token storage
+- Wallet data is encrypted with your password before upload
+- Keys are stored in Google Drive's `appDataFolder` (hidden, app-only access)
+- Never expose `client_secret` in frontend code
+- Store refresh tokens securely (encrypted, server-side)
+- Consider caching `wallet.getEncryptionKeyWif()` for better UX
 
-## Limitations
+## Related
 
-- OAuth tokens from the Playground expire after ~1 hour
-- This example does not include token refresh mechanism
-- Google Drive API rate limits may apply
-
-## Related Packages
-
-- `@hiveio/wax` - Core Wax library
-- `@hiveio/wax-signers-beekeeper` - Local wallet signer
-- `@hiveio/wax-signers-keychain` - Hive Keychain browser extension signer
-- `@hiveio/wax-signers-peakvault` - Peak Vault browser extension signer
+- [Package documentation](../../../ts/packages/signers-external/README.md)
+- [@hiveio/wax](https://www.npmjs.com/package/@hiveio/wax)
