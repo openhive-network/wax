@@ -633,7 +633,7 @@ crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) co
       const std::string from = fc::ecc::public_key::to_base58_with_prefix(loaded->from, HIVE_ADDRESS_PREFIX);
       const std::string to = fc::ecc::public_key::to_base58_with_prefix(loaded->to, HIVE_ADDRESS_PREFIX);
 
-      fc::crypto_data::content crypto_obj{ std::move(loaded.value()) };
+      fc::crypto_data::content crypto_obj{ loaded->nonce, loaded->check, std::move(loaded->encrypted) };
 
       return crypto_memo{ from, to, fc::to_base58( fc::raw::pack_to_vector( crypto_obj ) ) };
     }
