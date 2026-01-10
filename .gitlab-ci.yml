@@ -7,7 +7,7 @@ stages:
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: dc184288e7aa73a299000b6965d10d206b022080
+    ref: 296649fb125e2cb3f22686f2c2bd662b19e17c72
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
