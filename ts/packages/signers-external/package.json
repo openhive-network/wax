@@ -14,7 +14,7 @@
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
-    "@hiveio/beekeeper": "1.28.4-rc0",
+    "@hiveio/beekeeper": "1.28.4",
     "@hiveio/wax": "workspace:../..",
     "@hiveio/wax-signers-beekeeper": "workspace:../signers-beekeeper",
     "zod": "^4.1.12"
