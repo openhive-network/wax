@@ -381,8 +381,6 @@ test_wax_wasm_examples:
   extends:
     - .npm_process_built_package_tarball
     - .cross_runner_unpack_tarball
-  # Allow failure: requires api.fake.openhive.network which may be unavailable
-  allow_failure: true
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -393,6 +391,26 @@ test_wax_wasm_examples:
   script:
     - cd "${SOURCE_DIR}"
     - npm run examples
+  tags:
+    - public-runner-docker
+
+test_wax_wasm_signature_extension:
+  extends:
+    - .npm_process_built_package_tarball
+    - .cross_runner_unpack_tarball
+  # Allow failure: browser extension tests are inherently flaky due to
+  # timing issues and UI changes in the Hive Keychain extension
+  allow_failure: true
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  variables:
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
+    GIT_SUBMODULE_STRATEGY: "normal"
+  script:
+    - cd "${SOURCE_DIR}"
+    - npm run examples:signature-extension
   tags:
     - public-runner-docker
 

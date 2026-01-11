@@ -20,7 +20,7 @@
     "examples": "run-p examples:group-a examples:group-b examples:group-c",
     "examples:group-a": "run-s examples:memory-used examples:html examples:node-app examples:vue-webpack",
     "examples:group-b": "run-s examples:vue-vite examples:react-vite examples:nuxt-app",
-    "examples:group-c": "run-s examples:nextjs-app examples:react-ssr examples:signature-extension",
+    "examples:group-c": "run-s examples:nextjs-app examples:react-ssr",
     "examples:memory-used": "cd ../examples/ts/memory-used && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
     "examples:html": "cd ../examples/ts/html && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
     "examples:nextjs-app": "cd ../examples/ts/nextjs-app && rm -rf node_modules && pnpm install && pnpm run build && cd ../../../ts",
