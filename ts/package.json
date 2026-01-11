@@ -17,6 +17,7 @@
     "testserver": "node ./scripts/run-server.js",
     "test": "unset CI && playwright test --workers 4 --max-failures 1",
     "benchmark": "unset CI && playwright test --workers 4 --max-failures 1 --project=wax_testsuite_protocol_benchmarks",
+    "preexamples": "playwright install chromium",
     "examples": "run-p examples:group-a examples:group-b examples:group-c",
     "examples:group-a": "run-s examples:memory-used examples:html examples:node-app examples:vue-webpack",
     "examples:group-b": "run-s examples:vue-vite examples:react-vite examples:nuxt-app",
