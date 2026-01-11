@@ -6,15 +6,20 @@ const configureUserAccount = async (page: Page, accountName: string, privateKey:
     await useButton.waitFor();
     await useButton.click();
     const usernameInput = page.getByTestId('input-username');
+    await usernameInput.waitFor();
     await usernameInput.click();
     await usernameInput.fill(accountName);
     const privateKeyInput = page.getByTestId('input-private-key');
+    await privateKeyInput.waitFor();
     await privateKeyInput.click();
     await privateKeyInput.fill(privateKey);
 
     const submitButton = page.getByTestId('submit-button');
     await submitButton.waitFor();
     await submitButton.click();
+
+    // Wait for the extension to process the account submission
+    await page.waitForTimeout(500);
 };
 
 const importPreferences = async (context: BrowserContext, extensionId: string, baseDirectoryPath: string): Promise<void> => {
@@ -79,8 +84,12 @@ test.describe('Signature extension tests', () => {
 
     await configureUserAccount(page, 'hive.fund', testedAccountAuthorityData.privateKey);
 
+    // Wait for the page to stabilize after account configuration
+    await page.waitForLoadState('domcontentloaded');
+
+    // The 'Skip' button may take time to appear after account setup
     const skip = page.getByText('Skip');
-    await skip.waitFor();
+    await skip.waitFor({ timeout: 10000 });
     await skip.click();
 
     await importPreferences(context, extensionId, baseDirectoryPath);

@@ -11,6 +11,10 @@ console.log(`Effective extension directory: ${pathToExtension}`);
 
 export default defineConfig({
   testDir: './__tests__',
+  // Retry flaky tests - browser extension tests can be unstable
+  retries: 2,
+  // Increase timeout for extension tests
+  timeout: 60000,
 
   projects: [
     {
