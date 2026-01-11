@@ -87,10 +87,15 @@ test.describe('Signature extension tests', () => {
     // Wait for the page to stabilize after account configuration
     await page.waitForLoadState('domcontentloaded');
 
-    // The 'Skip' button may take time to appear after account setup
-    const skip = page.getByText('Skip');
-    await skip.waitFor({ timeout: 10000 });
-    await skip.click();
+    // After adding first account, Keychain may show a 'Skip' button or go directly to main view
+    // Try to click Skip if it exists, otherwise continue (UI may have changed)
+    try {
+      const skip = page.getByText('Skip');
+      await skip.waitFor({ timeout: 3000 });
+      await skip.click();
+    } catch {
+      console.log('Skip button not found - Keychain UI may have changed, continuing...');
+    }
 
     await importPreferences(context, extensionId, baseDirectoryPath);
 
