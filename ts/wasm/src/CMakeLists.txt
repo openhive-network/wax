@@ -54,6 +54,7 @@ DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "web"
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  -sBINARYEN_EXTRA_PASSES="--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
   # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
 )
 
@@ -61,6 +62,7 @@ DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "node"
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  -sBINARYEN_EXTRA_PASSES="--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
   # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
 )
 
