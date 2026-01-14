@@ -17,9 +17,6 @@ const configureUserAccount = async (page: Page, accountName: string, privateKey:
     const submitButton = page.getByTestId('submit-button');
     await submitButton.waitFor();
     await submitButton.click();
-
-    // Wait for the extension to process the account submission
-    await page.waitForTimeout(500);
 };
 
 const importPreferences = async (context: BrowserContext, extensionId: string, baseDirectoryPath: string): Promise<void> => {
@@ -87,26 +84,46 @@ test.describe('Signature extension tests', () => {
     // Wait for the page to stabilize after account configuration
     await page.waitForLoadState('domcontentloaded');
 
-    // After adding first account, Keychain may show a 'Skip' button or go directly to main view
-    // Try to click Skip if it exists, otherwise continue (UI may have changed)
+    /// Perform few retries of whole process, as keychain is unable to update imported settings at once and rejects mirrornet accounts & keys since is verfying them against mainnet mainnet
+    let retries = 0;
+    while(++retries < 5){
+
+    // After adding first account, Keychain show a 'Skip' button or go directly to main view
     try {
       const skip = page.getByText('Skip');
       await skip.waitFor({ timeout: 3000 });
       await skip.click();
+      break;
     } catch {
-      console.log('Skip button not found - Keychain UI may have changed, continuing...');
+      console.log('Skip button not found...');
     }
 
     await importPreferences(context, extensionId, baseDirectoryPath);
 
+    //await page.pause();
+
     await page.goto(`chrome-extension://${extensionId}/popup.html`, { waitUntil: 'load' });
 
-    /// To reach account import page, after initial setup, dedicated option must be selected from menu
-    await page.getByTestId('clickable-settings').locator('path').click();
+    /// To reach account import page, after initial setup, dedicated option must be selected from menu (if appears)
+    try{
+    const settingsCtrl = page.getByTestId('clickable-settings').locator('path');
+    await settingsCtrl.waitFor({ timeout: 1000 });
+    await settingsCtrl.click();
     await page.getByText('Accounts').click();
     await page.getByText('Add account').click();
+  }
+    catch(e){
+      console.log('Settings navigation failed, Keychain UI may have changed, attempting direct account configuration...');
+    }
 
-    await configureUserAccount(page, testedAccountAuthorityData.accountName, testedAccountAuthorityData.privateKey);
+    try {
+      await configureUserAccount(page, testedAccountAuthorityData.accountName, testedAccountAuthorityData.privateKey);
+      console.log('Account config passed... Await skip button');
+    }
+    catch(e){
+      console.log(`Account configuration attempt failed: ${e}, retrying...`);
+    }
+  }
 
     /// select tested account for current use to avoid transaction signing
     await page.getByTestId('selected-account-name').click();
