@@ -28,7 +28,7 @@ script = "build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
-python = ">=3.14,<4"
+python = ">=3.12,<4"
 protobuf = "6.33.0"
 httpx = {extras = ["http2"], version = "0.23.3"}
 loguru = "0.7.2"

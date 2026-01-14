@@ -29,6 +29,10 @@ variables:
   # TODO: Move to common-ci-configuration when Python 3.12 ci-base-image is added there
   CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1"
 
+  # Manylinux images for building wheels (one per Python version), should have glibc 2.39 installed
+  MANYLINUX_PY312: "${CI_BASE_IMAGE_PY312}"
+  MANYLINUX_PY314: "${CI_BASE_IMAGE}"
+
   # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
   WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
   WAX_PYTHON_RUNTIME_IMAGE: registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
@@ -128,8 +132,15 @@ build_wheel:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
+  parallel:
+    matrix:
+      - PYTHON_VERSION: "3.12"
+        BUILD_IMAGE: "${MANYLINUX_PY312}"
+      - PYTHON_VERSION: "3.14"
+        BUILD_IMAGE: "${MANYLINUX_PY314}"
+  image: "${BUILD_IMAGE}"
   script:
-    - ./python/scripts/build_wax.sh 1
+    - ./python/scripts/build_wax_manylinux.sh ${PYTHON_VERSION}
   artifacts:
     when: always
     paths:
@@ -272,7 +283,18 @@ push_to_wiki:
       artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
-    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
+    # Install wheel matching current Python version (e.g., cp314 for Python 3.14)
+    - PYTHON_VERSION_NODOT=$(python3 -c "import sys; print(f'{sys.version_info.major}{sys.version_info.minor}')")
+    - echo "Looking for wheel matching Python cp${PYTHON_VERSION_NODOT}"
+    - WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*cp${PYTHON_VERSION_NODOT}*.whl 2>/dev/null | head -1)
+    - |
+      if [ -n "${WHEEL_FILE}" ]; then
+        echo "Installing ${WHEEL_FILE}"
+        pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX "${WHEEL_FILE}"
+      else
+        echo "No wheel found for Python ${PYTHON_VERSION_NODOT}, trying any available wheel"
+        pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
+      fi
     - pip list
 
 .test_python_env:

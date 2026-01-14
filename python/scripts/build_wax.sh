@@ -37,6 +37,16 @@ docker build \
 docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -e WAX_DEBUG=${WAX_DEBUG:-0} -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
 
 else
+  # Verify Python version matches PYTHON_VERSION environment variable (set by CI matrix)
+  if [ -n "${PYTHON_VERSION}" ]; then
+    ACTUAL_PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+    if [ "${ACTUAL_PYTHON_VERSION}" != "${PYTHON_VERSION}" ]; then
+      echo "ERROR: Python version mismatch! Expected ${PYTHON_VERSION}, but found ${ACTUAL_PYTHON_VERSION}"
+      exit 1
+    fi
+    echo "Python version verified: ${ACTUAL_PYTHON_VERSION}"
+  fi
+
   export POETRY_VIRTUALENVS_PATH="${PROJECT_DIR}/poetry-venv-root"
 
   rm -rf ${PROJECT_DIR}/setup.py
