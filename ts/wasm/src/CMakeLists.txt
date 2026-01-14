@@ -9,6 +9,9 @@ set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
 
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftime-trace" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace" )
+
 set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
@@ -55,7 +58,8 @@ DEFINE_WASM_TARGET_FOR( wax
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
   -sBINARYEN_EXTRA_PASSES="--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
-  # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
+  # show function names:
+  # -O0 -g3 --profiling-funcs
 )
 
 DEFINE_WASM_TARGET_FOR( wax
@@ -63,7 +67,8 @@ DEFINE_WASM_TARGET_FOR( wax
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
   -sBINARYEN_EXTRA_PASSES="--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
-  # show function names: -O0 -g3 --profiling-funcs -sDEMANGLE_SUPPORT=1
+  # show function names:
+  # -O0 -g3 --profiling-funcs
 )
 
 target_link_libraries( protocol_assertion_id_generator PUBLIC nodefs.js )
