@@ -9,7 +9,7 @@
   "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b",
   "scripts": {
     "prebuild": "cd ../ && husky install ts/.husky && cd ./ts && ./scripts/compile_proto_ts.sh && rimraf wasm/dist",
-    "rebuildall": "rimraf wasm/dist && rimraf wasm/build_wasm && wasm/build_wasm_wax.sh && tsc",
+    "rebuildall": "rimraf wasm/dist && rimraf wasm/build_wasm && pnpm run build",
     "build": "wasm/build_wasm_wax.sh && tsc",
     "postbuild": "rollup -c && tsx ./npm-common-config/ts-common/terser.ts && size-limit",
     "build:test": "tsc --project wasm/configs/tsconfig.tests.json",
@@ -90,7 +90,7 @@
       "path": [
         "./wasm/dist/bundle"
       ],
-      "limit": "3850 kB",
+      "limit": "3600 kB",
       "brotli": false
     }
   ],
