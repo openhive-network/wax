@@ -15,6 +15,9 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace" )
 set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
+# Exclude VOPs from wasm build
+add_compile_definitions(HIVE_PROTOCOL_SKIP_VOPS)
+
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/wasm_project.cmake )
 
