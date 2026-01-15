@@ -42,7 +42,9 @@ class CustomBuild(build_ext):
         configure_args = [
             "-GNinja",
             # Avoid caching python path from temporary venv directory (See `PYTHON_EXECUTABLE:FILEPATH` in CMakeCache.txt)
-            "--fresh"
+            "--fresh",
+            # Handle old CMake version requirements in hive submodule (fc library)
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
         ]
         if useDebugBuild():
             configure_args.append("-DCMAKE_BUILD_TYPE=Debug")

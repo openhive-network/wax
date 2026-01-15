@@ -212,6 +212,7 @@ python/tests/report.xml
 python/tests/base_api/generated_*
 python/*.wallet
 python/setup.py
+python/.poetry_backup
 
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope

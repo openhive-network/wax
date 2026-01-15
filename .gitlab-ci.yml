@@ -29,9 +29,10 @@ variables:
   # TODO: Move to common-ci-configuration when Python 3.12 ci-base-image is added there
   CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1"
 
-  # Manylinux images for building wheels (one per Python version), should have glibc 2.39 installed
-  MANYLINUX_PY312: "${CI_BASE_IMAGE_PY312}"
-  MANYLINUX_PY314: "${CI_BASE_IMAGE}"
+  # Manylinux image with Boost for building wheels (supports Python 3.12, 3.13, 3.14)
+  # Built from python/docker/Dockerfile.manylinux based on quay.io/pypa/manylinux_2_34_x86_64
+  # Use :latest tag - the image is built and pushed by build_manylinux_image job
+  MANYLINUX_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-manylinux-builder:latest"
 
   # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
   WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
@@ -75,6 +76,47 @@ image: "${CI_BASE_IMAGE}"
 default:
   tags:
     - public-runner-docker
+
+build_manylinux_image:
+  extends: .docker_image_builder_job_template
+  stage: build
+  variables:
+    DOCKERFILE_PATH: "${CI_PROJECT_DIR}/python/docker/Dockerfile.ci"
+    DOCKER_CONTEXT_PATH: "${CI_PROJECT_DIR}"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - |
+      IMAGE_NAME="registry.gitlab.syncad.com/hive/wax/wax-manylinux-builder"
+      IMAGE_TAG="manylinux_2_34-boost1.83-${CI_COMMIT_SHORT_SHA}"
+
+      echo "Building manylinux image: ${IMAGE_NAME}:${IMAGE_TAG}"
+
+      docker build \
+        -f "${DOCKERFILE_PATH}" \
+        -t "${IMAGE_NAME}:${IMAGE_TAG}" \
+        -t "${IMAGE_NAME}:latest" \
+        "${DOCKER_CONTEXT_PATH}"
+
+      docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+      docker push "${IMAGE_NAME}:latest"
+
+      # Get the digest for use in dependent jobs
+      DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "${IMAGE_NAME}:${IMAGE_TAG}" | cut -d'@' -f2)
+      echo "MANYLINUX_BUILDER_IMAGE=${IMAGE_NAME}@${DIGEST}" >> manylinux_image.env
+      echo "MANYLINUX_BUILDER_IMAGE_TAG=${IMAGE_TAG}" >> manylinux_image.env
+  artifacts:
+    reports:
+      dotenv: manylinux_image.env
+  tags:
+    - public-runner-docker
+  rules:
+    # Build image when Dockerfile.ci changes
+    - changes:
+        - python/docker/Dockerfile.ci
+      when: on_success
+    # Manual trigger for rebuilding
+    - when: manual
+      allow_failure: true
 
 build_python_api_packages:
   extends: .configuration_template
@@ -134,11 +176,8 @@ build_wheel:
   stage: build
   parallel:
     matrix:
-      - PYTHON_VERSION: "3.12"
-        BUILD_IMAGE: "${MANYLINUX_PY312}"
-      - PYTHON_VERSION: "3.14"
-        BUILD_IMAGE: "${MANYLINUX_PY314}"
-  image: "${BUILD_IMAGE}"
+      - PYTHON_VERSION: ["3.12", "3.13", "3.14"]
+  image: "${MANYLINUX_IMAGE}"
   script:
     - ./python/scripts/build_wax_manylinux.sh ${PYTHON_VERSION}
   artifacts:

@@ -1,47 +1,66 @@
-ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.14-1
-FROM $BASE_IMAGE AS base_builder
+# CI base image for building Python wheels using official PyPA manylinux
+# Based on quay.io/pypa/manylinux_2_34_x86_64 with Boost built for wax compilation
+#
+# This image supports Python 3.12, 3.13, and 3.14 via /opt/python/cpXXX-cpXXX/bin/python
+#
+# Build: docker build -f Dockerfile.ci -t wax-ci-base-image .
+# Usage in CI: see .gitlab-ci.yml build_wheel job
 
-USER hived_admin
-WORKDIR /home/hived_admin
-SHELL ["/bin/bash", "-c"]
-
-FROM base_builder AS boost_lib_source
+FROM quay.io/pypa/manylinux_2_34_x86_64 AS boost_builder
 
 ARG BOOST_VERSION_TAG=boost-1.83.0
 ENV BOOST_VERSION_TAG=${BOOST_VERSION_TAG}
+ENV TMP_SRC=/tmp/boost_src
+ENV WAX_BOOST_ROOT=/wax_boost_root
 
-ENV TMP_SRC=/home/hived_admin/tmp_src
+# Clone Boost source
+RUN mkdir -vp "${TMP_SRC}" && \
+    cd "${TMP_SRC}" && \
+    git clone --recurse-submodules --shallow-submodules --single-branch --depth=1 --branch ${BOOST_VERSION_TAG} https://github.com/boostorg/boost.git
 
-RUN <<-EOF
-  set -e
+# Build Boost with static linking
+RUN mkdir -vp "${WAX_BOOST_ROOT}" && \
+    cd "${TMP_SRC}/boost" && \
+    ./bootstrap.sh --without-icu --prefix="${WAX_BOOST_ROOT}" && \
+    ./b2 \
+        --build-dir="${TMP_SRC}/boost_build/" \
+        --prefix="${WAX_BOOST_ROOT}" \
+        -j "$(nproc)" \
+        -q \
+        cxxflags=-fPIC \
+        runtime-link=static \
+        link=static \
+        threading=multi \
+        --with-chrono \
+        --with-context \
+        --with-coroutine \
+        --with-filesystem \
+        --with-system \
+        --with-thread \
+        --with-test \
+        install && \
+    rm -rf "${TMP_SRC}"
 
-  mkdir -vp "${TMP_SRC}"
-  cd "${TMP_SRC}"
+# Final image with Boost installed
+FROM quay.io/pypa/manylinux_2_34_x86_64
 
-  git clone --recurse-submodules --shallow-submodules --single-branch --depth=1 --branch ${BOOST_VERSION_TAG} https://github.com/boostorg/boost.git
-EOF
+ENV WAX_BOOST_ROOT=/wax_boost_root
 
-FROM boost_lib_source AS boost_lib_builder
+# Copy pre-built Boost libraries
+COPY --from=boost_builder ${WAX_BOOST_ROOT} ${WAX_BOOST_ROOT}
 
-ENV WAX_BOOST_ROOT=/wax_boost_root/
+# Install additional build tools
+RUN yum install -y ninja-build && yum clean all
 
-ADD ./python/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
+# Install Node.js (needed for flatten_swagger.js in API package generation)
+RUN curl -fsSL https://rpm.nodesource.com/setup_20.x | bash - && \
+    yum install -y nodejs && \
+    yum clean all && \
+    node --version && npm --version
 
-RUN sudo -n mkdir -vp "${WAX_BOOST_ROOT}" && \
-    sudo -n chmod -R a+w "${WAX_BOOST_ROOT}" && \
-    /home/hived_admin/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}"
+# Python versions available in manylinux_2_34:
+# /opt/python/cp312-cp312/bin/python (Python 3.12)
+# /opt/python/cp313-cp313/bin/python (Python 3.13)
+# /opt/python/cp314-cp314/bin/python (Python 3.14)
 
-FROM base_builder AS ci-base-image
-
-USER hived_admin
-WORKDIR /home/hived_admin
-SHELL ["/bin/bash", "-c"]
-
-ENV WAX_BOOST_ROOT=/wax_boost_root/
-
-RUN sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
-    sudo apt-get install -y nodejs && \
-    sudo npm install -g npm@latest && \
-    sudo npm install -g pnpm typescript tsx
-
-COPY --chown=hived_admin --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
+WORKDIR /wax
