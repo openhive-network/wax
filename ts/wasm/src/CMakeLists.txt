@@ -16,7 +16,7 @@ set(WAX_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
-include( ${HIVE_ROOT_PATH}/programs/beekeeper/beekeeper_wasm/cmake/wasm_project.cmake )
+include( ${CMAKE_CURRENT_SOURCE_DIR}/wasm_project.cmake )
 
 set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/protocol )
 add_subdirectory( ${HIVE_ROOT_PATH}/libraries/schema build_schema_minimal )
