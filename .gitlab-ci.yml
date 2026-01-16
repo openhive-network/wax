@@ -14,7 +14,7 @@ include:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
   - project: 'hive/hive'
-    ref: 83fba8a402b23d3b9af78c109a1ff12e260b4166  # TODO: eliminate need to use this job here. Local was build script must generate such local/retrieve existing at repo packages
+    ref: b4de17f4a22b9e6e299b01b7378b8e67e51af45b  # TODO: eliminate need to use this job here. Local wax build script must generate such local/retrieve existing at repo packages
     file:
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 

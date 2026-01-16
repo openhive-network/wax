@@ -1,6 +1,8 @@
 #include <core/binary_view_helper.hpp>
 #include <core/types.hpp>
 
+#include <type_traits>
+
 #include <core/binary_view/node_types.hpp>
 #include <core/binary_view/stringify.hpp>
 #include <core/binary_view/traits.hpp>

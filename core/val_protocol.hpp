@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include <hive/protocol/transaction.hpp>
 #include <fc/static_variant.hpp>
 #include "binary_view/node_types.hpp"
@@ -53,9 +55,7 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
      }
      return name_map;
   }();
-
   int64_t which = -1;
-
   ManagedObjectT nextval;
 
   if (is_protobuf)
