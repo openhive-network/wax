@@ -1,6 +1,27 @@
 SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hive")
-# this file is generated while performing a cythonize'ing process of the Python extension
+# Main facade module (cpp_python_bridge.pyx → cpp_python_bridge.cpp)
 SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cpp_python_bridge.cpp")
+
+# Directory containing generated .cpp files from Cython sub-modules
+SET(CYTHON_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.cython_build")
+
+# List all sub-module .cpp files explicitly (required for Ninja)
+# Cython generates files in flat structure: .cython_build/cython_modules_<name>.cpp
+SET(CYTHON_MODULE_SOURCES
+  ${WAX_CPP_PATH}
+  "${CYTHON_BUILD_DIR}/cython_modules_common.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_handles.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_validation.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_crypto.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_assets.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_transactions.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_operations.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_proto.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_witness.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_memo.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_authority.cpp"
+  "${CYTHON_BUILD_DIR}/cython_modules_testing.cpp"
+)
 
 LIST(APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
@@ -52,7 +73,7 @@ add_subdirectory("${HIVE_ROOT_PATH}/assertion_id_verifier" ${CMAKE_CURRENT_BINAR
 file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
 
 add_python_library("cpp_python_bridge" MODULE SOURCES
-  ${WAX_CPP_PATH} 
+  ${CYTHON_MODULE_SOURCES}
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/exception.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../core/utils.cpp
@@ -67,6 +88,7 @@ target_include_directories("cpp_python_bridge" PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/../"
   "${CMAKE_CURRENT_SOURCE_DIR}/../core"
+  "${CYTHON_BUILD_DIR}"
   "${HIVE_ROOT_PATH}/libraries/chain/include"
   "${GENERATED_ASSERT_ID_DIR}"
 )

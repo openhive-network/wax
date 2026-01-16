@@ -20,6 +20,7 @@ __pycache__/
 .Python
 python/build/
 python/.build/
+python/.cython_build/
 develop-eggs/
 python/dist/
 python/.poetry_backup/ # Temporary files where original pyproject.toml and poetry.lock are stored

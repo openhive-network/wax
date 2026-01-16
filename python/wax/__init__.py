@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+# =============================================================================
+# Public API imports
+# =============================================================================
+# The wax package compiles multiple Cython sub-modules into a single .so file.
+# Hard links (or copies) of the main .so are created for each sub-module during
+# build, allowing Python's standard import mechanism to find them.
+# =============================================================================
+
 from .cpp_python_bridge import (
     api_to_proto,
     calculate_account_hp,
@@ -83,7 +91,12 @@ from .cpp_python_bridge import (
     verify_exception_handling,
     vests,
 )
-from .interfaces import IHiveChainInterface, IOnlineTransaction, ITransaction, IWaxBaseInterface
+from .interfaces import (
+    IHiveChainInterface,
+    IOnlineTransaction,
+    ITransaction,
+    IWaxBaseInterface,
+)
 from .wax_factory import create_hive_chain, create_wax_foundation
 from .wax_options import WaxChainOptions, WaxOptions
 from .wax_result import (
