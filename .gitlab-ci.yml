@@ -6,17 +6,18 @@ stages:
 
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+  - project: 'hive/hive'
+    ref: 83fba8a402b23d3b9af78c109a1ff12e260b4166  # TODO: eliminate need to use this job here. Local was build script must generate such local/retrieve existing at repo packages
+    file:
+      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
+
   - project: 'hive/common-ci-configuration'
-    ref: 7d82f5d902f354dd2506d7fb38f592eb359a44d4
+    ref: fa363fc8a657c4ec96872491a03fa5dd26e7b714
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
-  - project: 'hive/hive'
-    ref: 83fba8a402b23d3b9af78c109a1ff12e260b4166  # TODO: eliminate need to use this job here. Local was build script must generate such local/retrieve existing at repo packages
-    file:
-      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 
 variables:
