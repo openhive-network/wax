@@ -58,7 +58,7 @@ else
   # Skip cleanup and generation if they exist - this allows Python 3.14 builds to use
   # pre-built packages from the Python 3.12 api_generation job
   if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ] && \
-     [ -d "${API_PACKAGES_GEN_DIR}/hiveio_api" ] && \
+     [ -d "${API_PACKAGES_GEN_DIR}/hiveio_api" ]; then
     echo "API packages already exist (from artifacts). Skipping cleanup and generation."
   else
     # Clean up old API packages before regenerating
