@@ -151,6 +151,7 @@ build_wheel:
     - echo "Building wheel for Python ${PYTHON_VERSION}"
     - python3 --version
     - ./python/scripts/build_wax.sh 1
+  image: quay.io/pypa/manylinux_2_28_x86_64:latest
   artifacts:
     when: always
     paths:

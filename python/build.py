@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import sysconfig
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -42,7 +43,12 @@ class CustomBuild(build_ext):
         configure_args = [
             "-GNinja",
             # Avoid caching python path from temporary venv directory (See `PYTHON_EXECUTABLE:FILEPATH` in CMakeCache.txt)
-            "--fresh"
+            "--fresh",
+            # Allow CMake 3.27+ to work with older cmake_minimum_required versions in hive submodule
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+            # Enable *_ROOT variables for find_package (CMP0074 for lowercase, CMP0144 for uppercase)
+            "-DCMAKE_POLICY_DEFAULT_CMP0074=NEW",
+            "-DCMAKE_POLICY_DEFAULT_CMP0144=NEW",
         ]
         if useDebugBuild():
             configure_args.append("-DCMAKE_BUILD_TYPE=Debug")
@@ -59,7 +65,27 @@ class CustomBuild(build_ext):
             configure_args.append("-DBUILD_HIVE_TESTNET=ON")
 
         assert "WAX_BOOST_ROOT" in os.environ, "Invalid build environment - consider using preconfigured wax/ci-base-image"
-        configure_args.append("-DBOOST_ROOT={}".format(os.getenv("WAX_BOOST_ROOT")))
+        boost_root = os.getenv("WAX_BOOST_ROOT")
+        configure_args.append("-DBOOST_ROOT={}".format(boost_root))
+        configure_args.append("-DBOOST_INCLUDEDIR={}/include".format(boost_root))
+        # Add Boost include to CXX flags for fc_core OBJECT library compilation
+        configure_args.append("-DCMAKE_CXX_FLAGS=-I{}/include".format(boost_root))
+
+        if "WAX_OPENSSL_ROOT" in os.environ:
+            openssl_root = os.getenv("WAX_OPENSSL_ROOT")
+            configure_args.append("-DOPENSSL_ROOT_DIR={}".format(openssl_root))
+            configure_args.append("-DOPENSSL_INCLUDE_DIR={}/include".format(openssl_root))
+
+        if "WAX_ZLIB_ROOT" in os.environ:
+            configure_args.append("-DZLIB_ROOT={}".format(os.getenv("WAX_ZLIB_ROOT")))
+
+        if "WAX_BZIP2_ROOT" in os.environ:
+            configure_args.append("-DBZIP2_ROOT={}".format(os.getenv("WAX_BZIP2_ROOT")))
+
+        # Set Python include directory for manylinux builds
+        python_include = sysconfig.get_path('include')
+        if python_include:
+            configure_args.append("-DPYTHON_INCLUDE_DIR={}".format(python_include))
 
         self.cpp_build_dir.mkdir(exist_ok=True)
         log(f"build will be performed in: {self.cpp_build_dir}")

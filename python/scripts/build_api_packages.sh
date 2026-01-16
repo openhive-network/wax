@@ -9,6 +9,12 @@ API_GENERATION_DIR="${APIS_DIR}/api_generation"
 HIVEIO_API_DIR="${API_GENERATION_DIR}/hiveio_api"
 
 cd "${API_GENERATION_DIR}/api_generation"
+# Use Python 3.12 for api_generation (datamodel_code_generator doesn't support Python 3.14 yet)
+# Create and activate venv with Python 3.12, then tell poetry to use system Python (the active venv)
+rm -rf .venv
+/opt/python/cp312-cp312/bin/python -m venv .venv
+source .venv/bin/activate
+poetry env use system
 poetry install
 
 cd "${API_GENERATION_DIR}"
@@ -27,3 +33,5 @@ echo "HIVEIO_API_WHEEL_BUILD_VERSION=${HIVEIO_API_WHEEL_BUILD_VERSION}" >> "${SC
 
 echo "Clean up generated flattened openapi_flattened.json."
 rm -f "${APIS_DIR}/documentation/openapi_flattened.json"
+
+deactivate

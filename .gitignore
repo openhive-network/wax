@@ -22,7 +22,8 @@ python/build/
 python/.build/
 develop-eggs/
 python/dist/
-python/.poetry_backup/ # Temporary files where original pyproject.toml and poetry.lock are stored
+# Temporary files where original pyproject.toml and poetry.lock are stored
+python/.poetry_backup/
 downloads/
 eggs/
 .eggs/
@@ -144,6 +145,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+poetry-venv-root/
 
 # Spyder project settings
 .spyderproject
@@ -243,3 +245,6 @@ storage_root-node
 /examples/ts/signature-extension/__tests__/extensions
 
 .DS_Store
+
+.claude/settings.local.json
+

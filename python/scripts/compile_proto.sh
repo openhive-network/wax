@@ -23,7 +23,10 @@ poetry -C ${PROJECT_DIR} install --no-root
 
 GLOBIGNORE="${PROTO_DIR}/block.proto"
 
-poetry -C ${PROJECT_DIR} run python3 -m grpc_tools.protoc \
+# Use Python 3.12 for grpc_tools (grpcio-tools doesn't support Python 3.14 yet)
+GRPC_PYTHON_BIN="/opt/python/cp312-cp312/bin"
+
+PATH="${GRPC_PYTHON_BIN}:${PATH}" ${GRPC_PYTHON_BIN}/python -m grpc_tools.protoc \
 --python_out="${OUTPUT_DIR}"  \
 --mypy_out="${OUTPUT_DIR}" \
 --mypy_grpc_out="${OUTPUT_DIR}" \
