@@ -24,8 +24,8 @@ public:
     : jsval( jsval )
   {}
 
-  template< typename Member, class Class, Member( Class::*member ) >
-  void operator()( const char* key ) const
+  template< typename Member >
+  void operator()( Member T::* /*member*/, const char* key ) const
   {
     add< Member >( key );
   }

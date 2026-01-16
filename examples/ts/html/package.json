@@ -2,19 +2,18 @@
   "name": "examples-html",
   "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b",
   "scripts": {
-    "pretest": "playwright install chromium",
     "test": "rm -rf ./.parcel-cache ./dist && pnpx tsx index.ts"
   },
   "devDependencies": {
     "@parcel/config-default": "2.14.2",
     "@parcel/core": "2.14.2",
     "@parcel/transformer-raw": "2.14.2",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.57.0",
     "@types/http-server": "^0.12.4",
     "@types/node": "^20.10.6",
     "buffer": "^6.0.3",
     "http-server": "^14.1.1",
-    "playwright": "^1.56.1",
+    "playwright": "^1.57.0",
     "tsx": "^4.7.0",
     "typescript": "5.7.3"
   },

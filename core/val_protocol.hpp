@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include <hive/protocol/transaction.hpp>
 #include <fc/static_variant.hpp>
 #include "binary_view/node_types.hpp"
@@ -53,9 +55,7 @@ void from_jsval( ManagedObjectT jsval, fc::static_variant< Ts... >& v, bool is_p
      }
      return name_map;
   }();
-
   int64_t which = -1;
-
   ManagedObjectT nextval;
 
   if (is_protobuf)
@@ -92,8 +92,8 @@ public:
     : jsval( jsval ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), val( val )
   {}
 
-  template< typename Member, class Class, Member( Class::*member ) >
-  void operator()( const char* name ) const
+  template< typename Member, typename U = T, std::enable_if_t<std::is_class_v<U>, int> = 0 >
+  void operator()( Member U::* member, const char* name ) const
   {
     VAL_PROTOCOL_ILOG("Attemptng to visit member ${name} from object ${jsval}", (name)("jsval", jsval.operator std::string()));
     this->add( name, val.*member );

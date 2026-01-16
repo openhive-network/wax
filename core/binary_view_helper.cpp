@@ -1,6 +1,8 @@
 #include <core/binary_view_helper.hpp>
 #include <core/types.hpp>
 
+#include <type_traits>
+
 #include <core/binary_view/node_types.hpp>
 #include <core/binary_view/stringify.hpp>
 #include <core/binary_view/traits.hpp>
@@ -48,8 +50,8 @@ public:
     : offset(offset), nodes( nodes ), val( v )
   {}
 
-  template< typename Member, class Class, Member( Class::*member ) >
-  void operator()( const char* name ) const
+  template< typename Member, typename U = T, std::enable_if_t<std::is_class_v<U>, int> = 0 >
+  void operator()( Member U::* member, const char* name ) const
   {
     this->add( name, ( val.*member ) );
   }
