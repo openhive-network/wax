@@ -123,6 +123,8 @@ build_wheel:
     expire_in: 1 week
     reports:
       dotenv: "build_wheel.env"
+  tags:
+    - public-runner-docker
 
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
@@ -203,6 +205,8 @@ generate_docs:
 
     when: always
     expire_in: 1 week
+  tags:
+    - public-runner-docker
 
 pre_commit_checks:
   stage: static_code_analysis
@@ -224,6 +228,8 @@ pre_commit_checks:
     expire_in: 1 week
     paths:
       - python/poetry.lock
+  tags:
+    - public-runner-docker
 
 push_to_wiki:
   extends: .npm_push_doc_template
@@ -238,6 +244,8 @@ push_to_wiki:
       artifacts: true
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
+  tags:
+    - public-runner-docker
 
 .runtime_like_python_env:
   stage: test
@@ -251,6 +259,8 @@ push_to_wiki:
     - !reference [.configuration_template, before_script]
     - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
     - pip list
+  tags:
+    - public-runner-docker
 
 .test_python_env:
   extends: .runtime_like_python_env
@@ -398,6 +408,8 @@ deploy_wheel_to_gitlab:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   <<: *deploy_wheel_needs
   when: on_success
+  tags:
+    - public-runner-docker
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
@@ -405,6 +417,8 @@ deploy_wheel_to_pypi:
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   <<: *deploy_wheel_needs
+  tags:
+    - public-runner-docker
 
 deploy_wax_wasm_dev_package:
   extends:
@@ -460,6 +474,8 @@ test_helpy:
     expire_in: 1 week
     reports:
       junit: $CI_PROJECT_DIR/report.xml
+  tags:
+    - public-runner-docker
 
 .build_python_docs_env:
   extends: .runtime_like_python_env
