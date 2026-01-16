@@ -24,7 +24,7 @@ variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
   # only build steps needs to have access to the hive submodule
-  GIT_SUBMODULE_STRATEGY: normal
+  GIT_SUBMODULE_STRATEGY: recursive
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
@@ -80,15 +80,9 @@ default:
 generate_hived_flattened_openapi_definition:
   extends: .node_based_job_base
   stage: build
-  image: "${CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
   variables:
       API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
       PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
-  before_script:
-    - !reference [.configuration_template, before_script]
-    # Install Node.js/npm for api_generation (not included in Python 3.12 base image)
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-    - sudo apt-get install -y nodejs
   script:
     - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
     - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
