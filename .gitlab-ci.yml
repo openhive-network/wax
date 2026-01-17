@@ -18,7 +18,8 @@ include:
 variables:
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
-  # only build steps needs to have access to the hive submodule
+  # Clone top-level submodules (hive, npm-common-config) but not nested ones.
+  # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
@@ -182,7 +183,6 @@ wax_wasm_build_tests:
     - .cross_runner_unpack_tarball
   stage: build
   variables:
-    GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   needs:
@@ -207,7 +207,6 @@ generate_docs:
   stage: build
   extends: .npm_based_job_base
   variables:
-    GIT_SUBMODULE_STRATEGY: recursive
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
 
@@ -385,7 +384,6 @@ test_wax_wasm_examples:
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
-    GIT_SUBMODULE_STRATEGY: "normal"
   script:
     - cd "${SOURCE_DIR}"
     - npm run examples
@@ -402,7 +400,6 @@ test_wax_wasm_signature_extension:
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
-    GIT_SUBMODULE_STRATEGY: "normal"
   script:
     - cd "${SOURCE_DIR}"
     - npm run examples:signature-extension
@@ -440,7 +437,6 @@ deploy_wax_wasm_dev_package:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
-    GIT_SUBMODULE_STRATEGY: "normal"
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
@@ -461,7 +457,6 @@ deploy_wax_wasm_production_public_npm:
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
-    GIT_SUBMODULE_STRATEGY: "normal"
   needs:
     - job: test_wax_wasm_examples
     - job: test_wax_wasm
