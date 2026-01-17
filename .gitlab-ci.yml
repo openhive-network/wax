@@ -7,7 +7,7 @@ stages:
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: 7d82f5d902f354dd2506d7fb38f592eb359a44d4
+    ref: 0a1e1a9d53d6b1c8ae1bdc652e19740134a359b4
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -21,6 +21,8 @@ variables:
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
+  # Use commit-based tag to force pulling new emsdk image with credential helper fix
+  EMSCRIPTEN_IMAGE_TAG: "0a1e1a9d53d6b1c8ae1bdc652e19740134a359b4"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
   # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
