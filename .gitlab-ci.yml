@@ -25,19 +25,33 @@ variables:
   EMSCRIPTEN_IMAGE_TAG: "0a1e1a9d53d6b1c8ae1bdc652e19740134a359b4"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
-  CI_BASE_IMAGE_TAG: "@sha256:a2f4d9505c64d8c9c7e954de7efb12b5a313e8a839e86ba6000cf84b624608e0"
-  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image${CI_BASE_IMAGE_TAG}"
-  # Python 3.12 image for API generation (pydantic-core doesn't support Python 3.14 yet)
-  # TODO: Move to common-ci-configuration when Python 3.12 ci-base-image is added there
-  CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu24.04-1"
+
+  # =============================================================================
+  # CI Base Images for Python wheel builds
+  # =============================================================================
+  # wax ci-base-images include WAX_BOOST_ROOT with pre-compiled Boost library.
+  # Built from common-ci-configuration/ci-base-image with Boost added.
+
+  # Python 3.14 wax ci-base-image (default for most jobs)
+  CI_BASE_IMAGE_PY314_TAG: "ubuntu24.04-py3.14-1"
+  CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY314_TAG}"
+
+  # Python 3.12 wax ci-base-image (for wheel builds)
+  CI_BASE_IMAGE_PY312_TAG: "ubuntu24.04-py3.12-1"
+  CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY312_TAG}"
+
+  # Default CI image (Python 3.14)
+  CI_BASE_IMAGE: "${CI_BASE_IMAGE_PY314}"
+
+  # Base images from common-ci-configuration (used to build wax ci-base-images)
+  COMMON_CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.12-1"
+  COMMON_CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.14-6"
 
   # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
   WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
   WAX_PYTHON_RUNTIME_IMAGE: registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
 
-  # uses registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-py3.14-1
-  PYTHON_IMAGE_TAG: "${CI_BASE_IMAGE_TAG}"
+  # Python image for jobs that need it (uses default Python 3.14)
   PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
   # PIP INDEX URL's
@@ -78,7 +92,7 @@ default:
 build_python_api_packages:
   extends: .configuration_template
   stage: build
-  image: "${CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
+  image: "${COMMON_CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
   variables:
       API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
       PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
@@ -131,13 +145,17 @@ build_wheel:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
-  # TODO: Add Python 3.12 wheel build when wax ci-base-image:ubuntu24.04-py3.12 is available
-  # Currently only builds Python 3.14 wheels because ci-base-image only has Python 3.14.
-  # To support Python 3.12:
-  # 1. Build common-ci-configuration ci-base-image with Python 3.12 (ubuntu24.04-py3.12-1)
-  # 2. Build wax ci-base-image from that base (adds WAX_BOOST_ROOT)
-  # 3. Add parallel matrix here with both Python versions
+  # Build wheels for both Python 3.12 and 3.14 in parallel
+  parallel:
+    matrix:
+      - PYTHON_VERSION: "3.12"
+        CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY312}"
+      - PYTHON_VERSION: "3.14"
+        CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY314}"
+  image: "${CI_BUILD_IMAGE}"
   script:
+    - echo "Building wheel for Python ${PYTHON_VERSION}"
+    - python3 --version
     - ./python/scripts/build_wax.sh 1
   artifacts:
     when: always
@@ -612,3 +630,53 @@ test_wax_doc_snippets_image:
     - if: '$CI_COMMIT_TAG'
       when: on_success
     - when: never
+
+# =============================================================================
+# WAX CI Base Image Build Jobs
+# =============================================================================
+# These jobs build wax ci-base-images that include WAX_BOOST_ROOT.
+# Built from common-ci-configuration/ci-base-image with Boost added.
+# Manual trigger - only run when Dockerfile.ci changes or manually requested.
+
+.build_wax_ci_base_image:
+  extends: .docker_image_builder_job_template
+  stage: build
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - |
+      echo "Building wax ci-base-image for Python ${PYTHON_VERSION}"
+      echo "Base image: ${BASE_IMAGE}"
+      echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}"
+    - |
+      docker build \
+        --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+        -t "${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}" \
+        -f python/docker/Dockerfile.ci .
+    - docker push "${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}"
+  tags:
+    - public-runner-docker
+  rules:
+    # Run on Dockerfile.ci changes
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - python/docker/Dockerfile.ci
+          - python/scripts/prepare_boost.sh
+      when: on_success
+    # Manual trigger available
+    - when: manual
+      allow_failure: true
+
+build_wax_ci_base_image_py312:
+  extends: .build_wax_ci_base_image
+  variables:
+    PYTHON_VERSION: "3.12"
+    BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY312}"
+    IMAGE_TAG: "${CI_BASE_IMAGE_PY312_TAG}"
+
+build_wax_ci_base_image_py314:
+  extends: .build_wax_ci_base_image
+  variables:
+    PYTHON_VERSION: "3.14"
+    BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY314}"
+    IMAGE_TAG: "${CI_BASE_IMAGE_PY314_TAG}"
