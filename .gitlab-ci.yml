@@ -131,6 +131,12 @@ build_wheel:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
+  # TODO: Add Python 3.12 wheel build when wax ci-base-image:ubuntu24.04-py3.12 is available
+  # Currently only builds Python 3.14 wheels because ci-base-image only has Python 3.14.
+  # To support Python 3.12:
+  # 1. Build common-ci-configuration ci-base-image with Python 3.12 (ubuntu24.04-py3.12-1)
+  # 2. Build wax ci-base-image from that base (adds WAX_BOOST_ROOT)
+  # 3. Add parallel matrix here with both Python versions
   script:
     - ./python/scripts/build_wax.sh 1
   artifacts:
