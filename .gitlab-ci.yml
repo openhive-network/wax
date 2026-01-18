@@ -623,7 +623,10 @@ test_wax_doc_snippets_image:
     - docker:dind
   script:
     - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}"
-    - docker run --rm "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}" python -c 'import wax; print(f"Installed hiveoi-wax version - {wax.__version__}"); assert wax.__version__ == "1.27.12rc1"'
+    - |
+      docker run --rm -e EXPECTED_VERSION="${CI_COMMIT_TAG}" \
+        "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}" \
+        python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION']; print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
   tags:
     - public-runner-docker
   rules:
