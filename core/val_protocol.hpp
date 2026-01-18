@@ -92,8 +92,8 @@ public:
     : jsval( jsval ), is_protobuf( is_protobuf ), ignore_missing_fields( is_protobuf == false ), val( val )
   {}
 
-  template< typename Member, class Class, Member( Class::*member ) >
-  void operator()( const char* name ) const
+  template< typename Member, class Class >
+  void operator()( Member Class::*member, const char* name ) const
   {
     VAL_PROTOCOL_ILOG("Attemptng to visit member ${name} from object ${jsval}", (name)("jsval", jsval.operator std::string()));
     this->add( name, val.*member );

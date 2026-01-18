@@ -24,9 +24,10 @@ public:
     : jsval( jsval )
   {}
 
-  template< typename Member, class Class, Member( Class::*member ) >
-  void operator()( const char* key ) const
+  template< typename Member, class Class >
+  void operator()( Member Class::*member, const char* key ) const
   {
+    (void)member; // unused but required by new fc reflect visitor signature
     add< Member >( key );
   }
 
