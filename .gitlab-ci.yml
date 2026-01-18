@@ -297,7 +297,17 @@ push_to_wiki:
       artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
-    - pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${PYPROJECT_DIR}/dist/*.whl
+    # Install only the wheel matching current Python version (e.g., cp314 for Python 3.14)
+    - |
+      PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+      WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
+      if [ -z "$WHEEL_FILE" ]; then
+        echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
+        ls -la ${PYPROJECT_DIR}/dist/
+        exit 1
+      fi
+      echo "Installing wheel: $WHEEL_FILE"
+      pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX "$WHEEL_FILE"
     - pip list
 
 .test_python_env:
