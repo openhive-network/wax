@@ -44,8 +44,8 @@ variables:
   CI_BASE_IMAGE: "${CI_BASE_IMAGE_PY314}"
 
   # Base images from common-ci-configuration (used to build wax ci-base-images)
-  COMMON_CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.12-1"
-  COMMON_CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.14-6"
+  COMMON_CI_BASE_IMAGE_PY312: "quay.io/pypa/manylinux_2_28:latest"
+  COMMON_CI_BASE_IMAGE_PY314: "quay.io/pypa/manylinux_2_28:latest"
 
   # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
   WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
@@ -92,15 +92,18 @@ default:
 build_python_api_packages:
   extends: .configuration_template
   stage: build
-  image: "${COMMON_CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
+  image: "${CI_BASE_IMAGE_PY312}"  # Use Python 3.12 - pydantic-core doesn't support Python 3.14 yet
   variables:
       API_GENERATION_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
       PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
   before_script:
     - !reference [.configuration_template, before_script]
     # Install Node.js/npm for api_generation (not included in Python 3.12 base image)
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
-    - sudo apt-get install -y nodejs
+    # - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+    # - sudo apt-get install -y nodejs
+    # - sudo dnf install -y nodejs
+    - id
+    - sudo dnf install -y https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm
   script:
     - echo -e "${TXT_BLUE}Building Python API packages...${TXT_CLEAR}"
     - ${CI_PROJECT_DIR}/python/scripts/build_api_packages.sh
@@ -142,16 +145,15 @@ build_wheel:
   # Build wheels for both Python 3.12 and 3.14 in parallel
   parallel:
     matrix:
-      - PYTHON_VERSION: "3.12"
+      - PYTHON_VERSION: "312"
         CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY312}"
-      - PYTHON_VERSION: "3.14"
+      - PYTHON_VERSION: "314"
         CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY314}"
   image: "${CI_BUILD_IMAGE}"
   script:
     - echo "Building wheel for Python ${PYTHON_VERSION}"
     - python3 --version
     - ./python/scripts/build_wax.sh 1
-  image: quay.io/pypa/manylinux_2_28_x86_64:latest
   artifacts:
     when: always
     paths:
@@ -675,13 +677,13 @@ test_wax_doc_snippets_image:
 build_wax_ci_base_image_py312:
   extends: .build_wax_ci_base_image
   variables:
-    PYTHON_VERSION: "3.12"
+    PYTHON_VERSION: "312"
     BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY312}"
     IMAGE_TAG: "${CI_BASE_IMAGE_PY312_TAG}"
 
 build_wax_ci_base_image_py314:
   extends: .build_wax_ci_base_image
   variables:
-    PYTHON_VERSION: "3.14"
+    PYTHON_VERSION: "314"
     BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY314}"
     IMAGE_TAG: "${CI_BASE_IMAGE_PY314_TAG}"

@@ -30,6 +30,21 @@ ARG BZIP2_VERSION=1.0.8
 ENV BZIP2_VERSION=${BZIP2_VERSION}
 ENV WAX_BZIP2_ROOT=/wax_bzip2_root
 
+# readline version and install location (static build)
+ARG READLINE_VERSION=8.2
+ENV READLINE_VERSION=${READLINE_VERSION}
+ENV WAX_READLINE_ROOT=/wax_readline_root
+
+# ncurses version and install location (static build)
+ARG NCURSES_VERSION=6.4
+ENV NCURSES_VERSION=${NCURSES_VERSION}
+ENV WAX_NCURSES_ROOT=/wax_ncurses_root
+
+# ICU version and install location (static build for Boost locale)
+ARG ICU_VERSION=74-2
+ENV ICU_VERSION=${ICU_VERSION}
+ENV WAX_ICU_ROOT=/wax_icu_root
+
 # Validate Python version exists
 RUN if [ ! -x "/opt/python/cp${PYTHON_VERSION}-cp${PYTHON_VERSION}/bin/python" ]; then \
         echo "ERROR: Python interpreter not found at /opt/python/cp${PYTHON_VERSION}-cp${PYTHON_VERSION}/bin/python"; \

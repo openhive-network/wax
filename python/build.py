@@ -82,6 +82,12 @@ class CustomBuild(build_ext):
         if "WAX_BZIP2_ROOT" in os.environ:
             configure_args.append("-DBZIP2_ROOT={}".format(os.getenv("WAX_BZIP2_ROOT")))
 
+        if "WAX_READLINE_ROOT" in os.environ:
+            configure_args.append("-DREADLINE_ROOT={}".format(os.getenv("WAX_READLINE_ROOT")))
+
+        if "WAX_NCURSES_ROOT" in os.environ:
+            configure_args.append("-DNCURSES_ROOT={}".format(os.getenv("WAX_NCURSES_ROOT")))
+
         # Set Python include directory for manylinux builds
         python_include = sysconfig.get_path('include')
         if python_include:

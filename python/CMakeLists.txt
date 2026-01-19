@@ -42,6 +42,21 @@ LIST( APPEND  BOOST_COMPONENTS
       # program_options
       unit_test_framework )
 
+# Configure readline and ncurses to use static libraries from custom roots
+# These are mandatory dependencies - the Docker build image must provide them
+set(Readline_ROOT ${READLINE_ROOT})
+set(READLINE_INCLUDE_DIR "${READLINE_ROOT}/include")
+set(READLINE_LIBRARY "${READLINE_ROOT}/lib/libreadline.a")
+message(STATUS "Using static readline from: ${READLINE_ROOT}")
+
+set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_INCLUDE_PATH "${NCURSES_ROOT}/include")
+# Use wide-character ncurses (ncursesw) with terminfo (tinfow)
+set(CURSES_NCURSES_LIBRARY "${NCURSES_ROOT}/lib/libncursesw.a")
+set(CURSES_LIBRARY "${NCURSES_ROOT}/lib/libncursesw.a")
+set(TINFO_LIBRARY "${NCURSES_ROOT}/lib/libtinfow.a")
+message(STATUS "Using static ncurses from: ${NCURSES_ROOT}")
+
 set( GENERATED_ASSERT_ID_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated_assert_id )
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_DIR}/protocol)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
@@ -78,6 +93,9 @@ python_extension_module("cpp_python_bridge")
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpython_interface.hpp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_options("cpp_python_bridge" PRIVATE -static-libgcc -static-libstdc++)
+
+# Link static ncurses/tinfo (needed by readline) - using plain signature to match python_extension_module
+target_link_libraries("cpp_python_bridge" "${NCURSES_ROOT}/lib/libtinfow.a")
 
 INSTALL(TARGETS
   "cpp_python_bridge"
