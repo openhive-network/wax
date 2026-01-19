@@ -1,6 +1,7 @@
 stages:
   - build
   - static_code_analysis
+  - test_python
   - test
   - deploy
 
@@ -272,7 +273,7 @@ push_to_wiki:
     - public-runner-docker
 
 .runtime_like_python_env:
-  stage: test
+  stage: test_python
   extends: .configuration_template
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
