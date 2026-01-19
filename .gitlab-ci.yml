@@ -33,11 +33,11 @@ variables:
   # Built from common-ci-configuration/ci-base-image with Boost added.
 
   # Python 3.14 wax ci-base-image (default for most jobs)
-  CI_BASE_IMAGE_PY314_TAG: "ubuntu24.04-py3.14-1"
+  CI_BASE_IMAGE_PY314_TAG: "manylinux_2_28-1"
   CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY314_TAG}"
 
   # Python 3.12 wax ci-base-image (for wheel builds)
-  CI_BASE_IMAGE_PY312_TAG: "ubuntu24.04-py3.12-1"
+  CI_BASE_IMAGE_PY312_TAG: "manylinux_2_28-1"
   CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY312_TAG}"
 
   # Default CI image (Python 3.14)
