@@ -137,3 +137,9 @@ Key jobs:
 - Tests use mock server for API calls (see `ts/wasm/__tests__/assets/proxy-mock-server.ts`)
 - Devcontainer available at `.devcontainer/devcontainer.json`
 - once updating common-ci-configuration submodule both: ts/npm-common-config and gitlab-ci.yml include must be adjusted
+- all CI jobs are considered to be passing. Marking them as allow_failure is not allowed
+
+Codebase is splitted into few parts:
+- core subdirectory holding common c++ part for both: python and Typescript implementations. This part is tightly integrated to hive submodule and is mostly using libraries/protocol and libraries/fc. Avoid scanning deeper subdirectories during analysis of wax codebase
+- python subdirectory holding python implementation
+- ts subdirectory holding Typescript implementation. One important principles of TS version is minimal size of finally produced NPM package.
