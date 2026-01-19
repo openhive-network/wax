@@ -99,6 +99,19 @@ python_extension_module("cpp_python_bridge")
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/cpython_interface.hpp DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
+# Export PyInit_* symbols for Python module loading
+# PythonExtensions generates a version script at:
+#   ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cpp_python_bridge-version-script.map
+# that only exports PyInit_cpp_python_bridge and hides everything else.
+#
+# We need to also export PyInit_* for all Cython sub-modules so Python can load them
+# via hard links to the main .so file.
+#
+# Solution: Overwrite the auto-generated version script with one that exports all PyInit_* symbols.
+# Using file(GENERATE ...) ensures this happens at generation time, after PythonExtensions creates its file.
+set(VERSION_SCRIPT_PATH "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cpp_python_bridge-version-script.map")
+file(GENERATE OUTPUT "${VERSION_SCRIPT_PATH}" CONTENT "{global: PyInit_cpp_python_bridge; PyInit_cython_modules_*; local: *;};\n")
+
 target_link_options("cpp_python_bridge" PRIVATE -static-libgcc -static-libstdc++)
 
 INSTALL(TARGETS

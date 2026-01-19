@@ -8,8 +8,8 @@
 # and defined in _decorators.pxi - they are not part of the public API.
 
 # Re-export from handles module (handle classes and creation functions)
-# NOTE: Using absolute imports with wax. prefix because these modules are
-# installed as part of the wax package (wax/cython_modules_*.so)
+# NOTE: Sub-modules are installed as wax/cython_modules_*.so (hard links to main .so)
+# and their PyInit_* symbols are exported with default visibility.
 from wax.cython_modules_handles import (
     WaxTransactionHandle,
     WaxOperationHandle,

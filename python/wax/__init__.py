@@ -1,11 +1,39 @@
 from __future__ import annotations
 
 # =============================================================================
-# Public API imports
+# Cython sub-module aliasing
 # =============================================================================
 # The wax package compiles multiple Cython sub-modules into a single .so file.
-# Hard links (or copies) of the main .so are created for each sub-module during
-# build, allowing Python's standard import mechanism to find them.
+# Sub-modules use cimport statements that generate PyImport_ImportModule() calls
+# with short names (e.g., "cython_modules_common") instead of full package paths.
+#
+# We import sub-modules in dependency order and register them under short names
+# in sys.modules BEFORE importing dependent modules. This ensures that
+# cimport-generated PyImport_ImportModule() calls can find them.
+#
+# Dependency order:
+# 1. cython_modules_common - base module, no dependencies on other cython_modules
+# 2. cython_modules_handles - depends on common
+# 3. cython_modules_validation - depends on common, handles
+# 4. cython_modules_transactions - depends on common, handles
+# 5. cpp_python_bridge - facade, imports from all sub-modules
+# =============================================================================
+import sys
+
+from . import cython_modules_common
+sys.modules["cython_modules_common"] = cython_modules_common
+
+from . import cython_modules_handles
+sys.modules["cython_modules_handles"] = cython_modules_handles
+
+from . import cython_modules_validation
+sys.modules["cython_modules_validation"] = cython_modules_validation
+
+from . import cython_modules_transactions
+sys.modules["cython_modules_transactions"] = cython_modules_transactions
+
+# =============================================================================
+# Public API imports
 # =============================================================================
 
 from .cpp_python_bridge import (
