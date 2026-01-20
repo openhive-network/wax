@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain, TNaiAssetConvertible } from "./interfaces";
+import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain, TNaiAssetConvertible, IWaxChainExtendibleOptions } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
 import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
 
@@ -138,6 +138,18 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
 
   public get endpointUrl(): string {
     return this.jsonRpcApiCaller.defaultEndpointUrl;
+  }
+
+  public extendConfig(config: IWaxChainExtendibleOptions): this {
+    const newApi = new HiveChainApi(this.wasmManager, this.wax, {
+      chainId: config.chainId ?? this.chainId,
+      apiEndpoint: config.apiEndpoint ?? this.jsonRpcApiCaller.defaultEndpointUrl,
+      restApiEndpoint: config.restApiEndpoint ?? this.restApiCaller.defaultEndpointUrl,
+      apiTimeout: config.apiTimeout ?? this.apiTimeout,
+      waxApiCaller: config.waxApiCaller ?? this.jsonRpcApiCaller.defaultWaxApiCaller,
+    }, this);
+
+    return newApi as unknown as this;
   }
 
   public extend<YourApi>(extendedHiveApiData?: YourApi): HiveChainApi & TWaxExtended<YourApi, this> {

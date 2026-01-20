@@ -1,4 +1,4 @@
-import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
+import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, IWaxChainExtendibleOptions, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
 import type { binary_data_node, json_price, MainModule, protocol_foundation, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
 import type { ApiOperation, LegacyApiTransaction, NaiAsset } from "./api";
@@ -56,6 +56,12 @@ export class WaxBaseApi implements IWaxBaseInterface {
       [EAssetName.HIVE]: this.hiveSatoshis(0),
       [EAssetName.VESTS]: this.vestsSatoshis(0)
     };
+  }
+
+  public extendConfig(config: IWaxChainExtendibleOptions): WaxBaseApi {
+    const newApi = new WaxBaseApi(this.wasmManager, this.wax, config.chainId ?? this.chainId);
+
+    return newApi;
   }
 
   public readonly formatter = WaxFormatter.create(this);

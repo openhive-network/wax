@@ -102,30 +102,16 @@ export interface IManabarData {
  */
 export type TTransactionId = string;
 
-export interface IWaxOptions {
-  chainId: string;
-
+export interface IWaxBaseExtendibleOptions {
   /**
-   * The path to the WASM file. It can be a relative path or an absolute URL
-   * If not specified, the default path is used: "./build/beekeeper_wasm.common.wasm" (may change if bundled)
+   * Chain id in hex string format
    *
-   * Note: You can also specify a base64 encoded string of the WASM file to be used directly when inlining
-   *
-   * @type {string}
+   * @type {THexString}
    */
-  wasmLocation?: string;
+  chainId: THexString;
 }
 
-export interface IPrivateKeyData {
-  associatedPublicKey: string;
-  wifPrivateKey: string;
-}
-
-export interface IBrainKeyData extends IPrivateKeyData {
-  brainKey: string;
-}
-
-export interface IWaxOptionsChain extends IWaxOptions {
+export interface IWaxChainExtendibleOptions extends IWaxBaseExtendibleOptions {
   /**
    * Endpoint for all of the API requests
    *
@@ -162,6 +148,38 @@ export interface IWaxOptionsChain extends IWaxOptions {
    */
   apiTimeout: number;
 }
+
+export interface IWaxOptions extends IWaxBaseExtendibleOptions {
+  /**
+   * The path to the WASM file. It can be a relative path or an absolute URL
+   * If not specified, the default path is used: "./build_wasm/wax.common.wasm" (may change if bundled)
+   *
+   * Note: You can also specify a base64 encoded string of the WASM file to be used directly when inlining
+   *
+   * Note: When you don't have your WASM file served from the static directory (such as `/public`),
+   *       or you are bundling / transpiling your code,
+   *       you may need to leverage your bundler's asset importing capabilities, e.g.:
+   *
+   *          - For Vite:    `import wasmUrl from './my_wasm_files/wax.common.wasm?url';`
+   *          - For Webpack: `const wasmUrl = new URL("./my_wasm_files/wax.common.wasm", import.meta.url).href;`
+   *       Then pass the imported `wasmUrl` variable to this option.
+   *       For web workers, replace `import.meta.url` with `self.location.href`.
+   *
+   * @type {string}
+   */
+  wasmLocation?: string;
+}
+
+export interface IPrivateKeyData {
+  associatedPublicKey: string;
+  wifPrivateKey: string;
+}
+
+export interface IBrainKeyData extends IPrivateKeyData {
+  brainKey: string;
+}
+
+export interface IWaxOptionsChain extends IWaxOptions, IWaxChainExtendibleOptions {}
 
 export interface ISignatureTransaction {
   /**
@@ -602,6 +620,13 @@ export interface IWaxBaseInterface {
    * @returns {string} public key prefix
    */
   get addressPrefix (): string;
+
+  /**
+   * Extends the current wax base instance with your custom options, creating a copy of the current instance with altered config.
+   *
+   * @param {IWaxBaseExtendibleOptions} config configuration options to extend
+   */
+  extendConfig(config: IWaxBaseExtendibleOptions): IWaxBaseInterface;
 
   /**
    * Check if given account name is valid, which means it follows given rules:
@@ -1290,6 +1315,13 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @returns Wax Hive chain instance containing extended api
    */
   extend<YourApi>(): TWaxExtended<YourApi>;
+
+  /**
+   * Extends the current wax Chain instance with your custom options, creating a copy of the current instance with altered config.
+   *
+   * @param {IWaxChainExtendibleOptions} config configuration options to extend
+   */
+  extendConfig(config: IWaxChainExtendibleOptions): this;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments
