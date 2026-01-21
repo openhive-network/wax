@@ -42,12 +42,8 @@ else
 
   rm -rf ${PROJECT_DIR}/setup.py
 
-  # Build hived binaries (optional - controlled by BUILD_HIVED_BINARIES env var)
-  # NOTE: Building hived binaries with static linking currently has Boost filesystem
-  # API compatibility issues. The fc library in the hive submodule uses an older
-  # Boost filesystem API that is not compatible with Boost 1.83's changed function
-  # signatures. Set BUILD_HIVED_BINARIES=1 to attempt building (may fail).
-  BUILD_HIVED_BINARIES="${BUILD_HIVED_BINARIES:-0}"
+  # Build hived binaries (enabled by default, set BUILD_HIVED_BINARIES=0 to disable)
+  BUILD_HIVED_BINARIES="${BUILD_HIVED_BINARIES:-1}"
 
   if [ "${BUILD_HIVED_BINARIES}" -eq 1 ]; then
     echo "=== Building hived binaries ==="
@@ -64,14 +60,19 @@ else
     # Use static linking for libstdc++ and libgcc to minimize runtime dependencies
     # Note: -DBOOST_ERROR_CODE_HEADER_ONLY=1 is needed because boost::system is
     # header-only in Boost 1.74+
+    # Set BOOST_LIBRARYDIR to help cmake find the boost libraries
+    export BOOST_LIBRARYDIR="${WAX_BOOST_ROOT}/lib"
+
     cmake -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
           -DCMAKE_CXX_FLAGS="-DBOOST_ERROR_CODE_HEADER_ONLY=1" \
-          -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++" \
+          -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -L${WAX_BOOST_ROOT}/lib -L${WAX_ICU_ROOT}/lib ${WAX_BOOST_ROOT}/lib/libboost_filesystem.a" \
           -DBOOST_ROOT="${WAX_BOOST_ROOT}" \
+          -DBOOST_LIBRARYDIR="${WAX_BOOST_ROOT}/lib" \
           -DBoost_NO_SYSTEM_PATHS=ON \
           -DBoost_USE_STATIC_LIBS=ON \
+          -DBoost_FILESYSTEM_LIBRARY="${WAX_BOOST_ROOT}/lib/libboost_filesystem.a" \
           -DOPENSSL_ROOT_DIR="${WAX_OPENSSL_ROOT}" \
           -DOPENSSL_INCLUDE_DIR="${WAX_OPENSSL_ROOT}/include" \
           -DOPENSSL_CRYPTO_LIBRARY="${WAX_OPENSSL_ROOT}/lib64/libcrypto.a" \
@@ -98,10 +99,10 @@ else
           "${HIVE_SUBMODULE_DIR}"
 
     # Build targets (beekeeper is not in this hive version's programs/CMakeLists.txt)
-    # Limit to 8 threads to avoid memory issues
+    # Limit to 4 threads to avoid memory issues
     HIVE_TARGETS="hived cli_wallet block_log_util get_dev_key"
     echo "Building targets: ${HIVE_TARGETS}"
-    ninja -j8 ${HIVE_TARGETS}
+    ninja -j4 ${HIVE_TARGETS}
 
     popd
 
@@ -118,10 +119,6 @@ else
     echo "=== Skipping hived binaries build (set BUILD_HIVED_BINARIES=1 to enable) ==="
   fi
 
-  cd ${PROJECT_DIR}/wax
-  echo "Create proto files."
-  ${PROJECT_DIR}/scripts/compile_proto.sh
-
   cleanup_old_api_package() {
     local api_package_name=$1
 
@@ -134,6 +131,8 @@ else
   # Check if unified hiveio_api package already exists (from CI artifacts or previous build)
   # Skip cleanup and generation if it exists - this allows Python 3.14 builds to use
   # pre-built packages from the Python 3.12 api_generation job
+  # NOTE: API packages must be generated BEFORE compile_proto.sh because
+  # compile_proto.sh runs poetry install which needs the API package paths to exist
   if [ -f "${SCRIPT_DIR}/../../build_wheel.env" ] && \
      [ -d "${API_PACKAGES_GEN_DIR}/hiveio_api" ]; then
     echo "hiveio_api package already exists (from artifacts). Skipping cleanup and generation."
@@ -149,6 +148,10 @@ else
     echo "Build API packages."
     ${PROJECT_DIR}/scripts/build_api_packages.sh
   fi
+
+  cd ${PROJECT_DIR}/wax
+  echo "Create proto files."
+  ${PROJECT_DIR}/scripts/compile_proto.sh
 
 
   mkdir -p ${PROJECT_DIR}/.poetry_backup

@@ -15,11 +15,9 @@ fi
 
 mkdir -vp "${OUTPUT_DIR}"
 
-echo "Regenerate poetry.lock if needed..."
-poetry -C ${PROJECT_DIR} lock --no-update 2>/dev/null || poetry -C ${PROJECT_DIR} lock
-
-echo "Install poetry dependencies."
-poetry -C ${PROJECT_DIR} install --no-root
+# Skip poetry lock/install here - grpc_tools is already installed in /opt/python/cp312-cp312/bin
+# and poetry install would fail if API packages haven't been generated yet.
+# The main build_wax.sh handles poetry install after API packages are ready.
 
 GLOBIGNORE="${PROTO_DIR}/block.proto"
 
