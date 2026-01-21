@@ -1,0 +1,165 @@
+# Manylinux_2_28-based image for building portable Python wheels
+# Provides glibc 2.28 compatibility (Ubuntu 20.04+, Debian 10+, RHEL 8+)
+#
+# Based on AlmaLinux 8 with modern toolchain:
+# - OpenSSL 1.1.1k (compatible with hive/wax)
+# - gcc 14.2.1
+# - glibc 2.28
+#
+# Build with different Python versions:
+#   docker build --build-arg PYTHON_VERSION=3.12 -t wax-manylinux:py3.12 -f Dockerfile.manylinux ../..
+#   docker build --build-arg PYTHON_VERSION=3.14 -t wax-manylinux:py3.14 -f Dockerfile.manylinux ../..
+#
+# Cache optimization: Boost and static libraries are built in Python-version-independent stages,
+# so they are shared between py3.12 and py3.14 builds.
+
+ARG BASE_IMAGE=quay.io/pypa/manylinux_2_28_x86_64
+
+# === Stage 1: System dependencies (shared, no Python version dependency) ===
+FROM ${BASE_IMAGE} AS system_deps
+
+ENV WAX_BOOST_ROOT=/wax_boost_root/
+ENV BOOST_ROOT=/wax_boost_root/
+ENV OPENSSL_ROOT_DIR=/usr/local
+
+SHELL ["/bin/bash", "-c"]
+
+# Install build dependencies from system (AlmaLinux 8 / dnf)
+# Note: We build static OpenSSL/bzip2 from source - do NOT install openssl-devel
+# as it conflicts with our custom build via pkg-config
+RUN dnf install -y \
+        bzip2-devel \
+        libffi-devel \
+        xz-devel \
+        unzip \
+        zlib-static \
+        vim-common \
+        readline-devel \
+    && dnf clean all
+
+# Install CMake 3.28 from Kitware (manylinux_2_28 has cmake 4.x which breaks hive/fc)
+ARG CMAKE_VERSION=3.28.4
+RUN curl -fsSL "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz" \
+    | tar xz -C /usr/local --strip-components=1
+
+# Install ninja via pip (available for all Python versions via /opt/python)
+RUN /opt/python/cp312-cp312/bin/pip install ninja && \
+    ln -sf /opt/python/cp312-cp312/lib/python3.12/site-packages/ninja/data/bin/ninja /usr/local/bin/ninja
+
+RUN mkdir -vp "${WAX_BOOST_ROOT}"
+
+# Configure git safe directory
+RUN git config --global --add safe.directory '*'
+
+# === Stage 2: Build static libraries (OpenSSL, bzip2, zopfli) ===
+FROM system_deps AS static_libs_builder
+
+# Build static OpenSSL 1.1.1k (fc library requires static linking)
+# Install to /usr/local so cmake FindOpenSSL.cmake finds it automatically
+ARG OPENSSL_VERSION=1.1.1k
+RUN set -e && \
+    cd /tmp && \
+    curl -fsSL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz" | tar xz && \
+    cd openssl-${OPENSSL_VERSION} && \
+    ./config --prefix=/usr/local --openssldir=/usr/local/ssl \
+        no-shared -fPIC && \
+    make -j$(nproc) && \
+    make install_sw && \
+    rm -rf /tmp/openssl-${OPENSSL_VERSION}
+
+# Build static bzip2 (fc library requires static linking)
+# Install to /usr/local so cmake finds it automatically
+ARG BZIP2_VERSION=1.0.8
+RUN set -e && \
+    cd /tmp && \
+    curl -fsSL "https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz" | tar xz && \
+    cd bzip2-${BZIP2_VERSION} && \
+    make CFLAGS="-fPIC -O2" -j$(nproc) && \
+    cp libbz2.a /usr/local/lib/ && \
+    cp bzlib.h /usr/local/include/ && \
+    rm -rf /tmp/bzip2-${BZIP2_VERSION}
+
+# Build zopfli (required for words.deflate generation in protocol library)
+RUN set -e && \
+    cd /tmp && \
+    git clone --depth=1 https://github.com/google/zopfli.git && \
+    cd zopfli && \
+    make && \
+    cp zopfli /usr/local/bin/ && \
+    chmod +x /usr/local/bin/zopfli && \
+    rm -rf /tmp/zopfli
+
+# === Stage 3: Build Boost with -fPIC (shared between all Python versions) ===
+FROM static_libs_builder AS boost_builder
+
+ARG BOOST_VERSION_TAG=boost-1.83.0
+
+ENV TMP_SRC=/tmp/boost_src
+
+ADD ./python/scripts/prepare_boost.sh /tmp/prepare_boost.sh
+
+# Clone and build Boost in one step
+RUN set -e && \
+    mkdir -vp "${TMP_SRC}" && \
+    cd "${TMP_SRC}" && \
+    git clone --recurse-submodules --shallow-submodules --single-branch --depth=1 \
+        --branch ${BOOST_VERSION_TAG} https://github.com/boostorg/boost.git && \
+    /tmp/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}" && \
+    rm -rf "${TMP_SRC}"
+
+# === Stage 4: Final image with Python version specific configuration ===
+FROM static_libs_builder AS wax-manylinux
+
+ARG PYTHON_VERSION=3.14
+ARG POETRY_VERSION=2.1.3
+
+ENV PYTHON_VERSION=${PYTHON_VERSION}
+
+# Install Node.js LTS (manylinux_2_28 supports modern Node.js)
+RUN curl -fsSL https://rpm.nodesource.com/setup_20.x | bash - && \
+    dnf install -y nodejs && \
+    dnf clean all
+
+# Set up Python path based on version argument
+# Also create symlinks for include directories so cmake FindPythonLibs can find them
+RUN PYTHON_TAG="cp${PYTHON_VERSION//./}" && \
+    PYTHON_PATH="/opt/python/${PYTHON_TAG}-${PYTHON_TAG}" && \
+    echo "export PATH=\"${PYTHON_PATH}/bin:\${PATH}\"" >> /etc/profile.d/python.sh && \
+    ln -sf "${PYTHON_PATH}/bin/python" /usr/local/bin/python3 && \
+    ln -sf "${PYTHON_PATH}/bin/pip" /usr/local/bin/pip3 && \
+    ln -sf "${PYTHON_PATH}/include/python${PYTHON_VERSION}" /usr/local/include/python${PYTHON_VERSION} && \
+    ln -sf "${PYTHON_PATH}/include/python${PYTHON_VERSION}" /usr/include/python${PYTHON_VERSION}
+
+# Install setuptools (provides distutils, removed in Python 3.12+)
+RUN PYTHON_TAG="cp${PYTHON_VERSION//./}" && \
+    /opt/python/${PYTHON_TAG}-${PYTHON_TAG}/bin/pip install setuptools
+
+# Create non-root user for security (matching existing ci-base-image conventions)
+RUN useradd -ms /bin/bash -u 2000 -g users -c "Hived admin account" hived_admin && \
+    chown -R hived_admin:users "${WAX_BOOST_ROOT}"
+
+# Copy pre-built Boost libraries (from shared cache)
+COPY --from=boost_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
+RUN chown -R hived_admin:users "${WAX_BOOST_ROOT}"
+
+USER hived_admin
+WORKDIR /home/hived_admin
+
+# Source the profile to get correct Python in PATH
+ENV BASH_ENV=/etc/profile.d/python.sh
+ENV PATH="/home/hived_admin/.local/bin:${PATH}"
+
+# Configure git for hived_admin user
+RUN git config --global --add safe.directory '*'
+
+# Install Poetry for the target Python version
+RUN source /etc/profile.d/python.sh && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    /home/hived_admin/.local/bin/poetry self update ${POETRY_VERSION} && \
+    /home/hived_admin/.local/bin/poetry self add "poetry-dynamic-versioning[plugin]@>=1.0.0,<2.2.0"
+
+# Make poetry available system-wide (for any user)
+USER root
+RUN ln -sf /home/hived_admin/.local/bin/poetry /usr/local/bin/poetry && \
+    chmod 755 /home/hived_admin
+USER hived_admin
