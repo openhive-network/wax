@@ -11,6 +11,9 @@ echo "Entering directory: ${TMP_SRC}/boost/tools/build"
 
 cd "${TMP_SRC}/boost/tools/build"
 
+# Add safe directory to allow git operations when running as different user
+git config --global --add safe.directory "${TMP_SRC}/boost/tools/build"
+
 # Clean local mods if any
 git checkout .
 

@@ -45,6 +45,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 set(CMAKE_VERBOSE_MAKEFILE "ON")
 
+# Set OpenSSL paths from environment variables (set in Docker image)
+# These must be set before including hive_targets which calls find_package(OpenSSL)
+if(DEFINED ENV{OPENSSL_ROOT_DIR})
+  set(OPENSSL_ROOT_DIR "$ENV{OPENSSL_ROOT_DIR}" CACHE PATH "OpenSSL root directory")
+endif()
+if(DEFINED ENV{OPENSSL_INCLUDE_DIR})
+  set(OPENSSL_INCLUDE_DIR "$ENV{OPENSSL_INCLUDE_DIR}" CACHE PATH "OpenSSL include directory")
+endif()
+
 include(hive_targets)
 
 SET( BOOST_COMPONENTS )
@@ -113,6 +122,17 @@ set(VERSION_SCRIPT_PATH "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/cpp_python_bridg
 file(GENERATE OUTPUT "${VERSION_SCRIPT_PATH}" CONTENT "{global: PyInit_cpp_python_bridge; PyInit_cython_modules_*; local: *;};\n")
 
 target_link_options("cpp_python_bridge" PRIVATE -static-libgcc -static-libstdc++)
+
+# Link static versions of OpenSSL, ZLIB, and BZip2 for wheel portability
+# Use --as-needed to avoid recording unused dynamic library dependencies
+# Static libs linked first so their symbols take precedence over dynamic ones from hive_protocol
+target_link_options("cpp_python_bridge" PRIVATE "LINKER:--as-needed")
+target_link_libraries("cpp_python_bridge"
+  /usr/local/lib/libssl.a
+  /usr/local/lib/libcrypto.a
+  /usr/local/lib/libz.a
+  /usr/local/lib/libbz2.a
+)
 
 INSTALL(TARGETS
   "cpp_python_bridge"

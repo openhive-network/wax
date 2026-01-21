@@ -34,10 +34,17 @@ docker build \
      -t ${IMAGE_BASE_NAME}:devcontainer \
      ${PROJECT_DIR}/../
 
-docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -e WAX_DEBUG=${WAX_DEBUG:-0} -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
+docker run --rm -v "${WAX_DIR}":"${WAX_DIR}" -e WAX_DEBUG=${WAX_DEBUG:-0} -e PYTHON_VERSION=${PYTHON_VERSION:-3} -w "${WAX_DIR}" ${IMAGE_NAME} bash -c "${WAX_DIR}/python/scripts/build_wax.sh 1"
 
 else
   export POETRY_VIRTUALENVS_PATH="${PROJECT_DIR}/poetry-venv-root"
+
+  # Tell poetry to use the current Python (from activated virtualenv)
+  # This ensures the wheel is built for the correct Python version
+  # Use "system" to respect the Python from the activated venv set up by CI
+  cd ${PROJECT_DIR}
+  poetry env use system
+  echo "Poetry using Python: $(poetry run python --version)"
 
   rm -rf ${PROJECT_DIR}/setup.py
 
@@ -115,7 +122,11 @@ else
   fi
 
   echo "Build wax wheel package."
-  poetry -C ${PROJECT_DIR} build --format wheel
+  # Use pip wheel --no-build-isolation to build with the active virtualenv's Python.
+  # Poetry's build isolation always uses Python 3.14 (ci-base-image default), ignoring the virtualenv.
+  python3 -m pip install --quiet poetry-core "cython==3.0.12" "setuptools>=67.8.0" "poetry-dynamic-versioning>=0.22.0"
+  cd ${PROJECT_DIR}
+  python3 -m pip wheel --no-deps --no-build-isolation -w dist .
 
   # Deduplicate wheel to reduce size (removes duplicate .so files)
   echo "Deduplicating wheel package..."
