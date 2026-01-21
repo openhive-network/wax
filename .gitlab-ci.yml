@@ -343,8 +343,6 @@ test_wax_protobuf_python:
   extends:
     - .test_python_env
     - .python_test_matrix
-  # Allow failure: online test requires api.fake.openhive.network which may be unavailable
-  allow_failure: true
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
     - ${PYPROJECT_DIR}/tests/run_tests.sh
