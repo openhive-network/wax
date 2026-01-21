@@ -178,11 +178,11 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
 
 
 @return_python_json_asset
-def evaluate_hbd_interest(hbd_seconds: int, head_block_time: int, hbd_asset: python_json_asset, hbd_seconds_last_update: int, hbd_interest_rate: int) -> python_json_asset:
+def evaluate_hbd_interest(hbd_seconds: int, head_block_time: int, hbd: python_json_asset, hbd_seconds_last_update: int, hbd_interest_rate: int) -> python_json_asset:
     """Evaluate HBD interest earned."""
     cdef protocol obj
 
-    cdef json_asset _hbd = json_asset(hbd_asset.amount, hbd_asset.precision, hbd_asset.nai)
+    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
     cdef uint64_t hbd_seconds_low = hbd_seconds & 0xFFFFFFFF_FFFFFFFF
     cdef uint64_t hbd_seconds_high = hbd_seconds >> 64
 

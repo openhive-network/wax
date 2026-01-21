@@ -7,8 +7,8 @@
 # By including this file, each module gets its own copy of the decorators,
 # eliminating the need for runtime imports between modules.
 #
-# IMPORTANT: Modules that include this file must first cimport these types from common:
-#   from common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+# IMPORTANT: Modules that include this file must first cimport these types from cython_modules_common:
+#   from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
 
 from functools import wraps
 
@@ -36,8 +36,8 @@ cdef object raise_appropriate_wax_exception(object ex):
         try:
             aux = json.loads(wax_exception_what)
             assertion_code = aux['assert_hash']
-        except Exception as ex:
-            print("Internal error: Expected JSON document containing assert_hash key, but got " + wax_exception_what)
+        except Exception:
+            # Non-assertion exception or malformed assertion data
             raise WaxError(wax_exception_what)
         assertion_type = eval(wax_exception_name)
         raise assertion_type(assertion_code, wax_exception_what)
@@ -59,6 +59,29 @@ def call_with_exception_relay(foo):
     return wrapper
 
 
+cdef object _convert_exception_to_json_message(object ex):
+    """Convert exception to JSON message string.
+
+    If the exception contains a C++ exception_ptr capsule, convert it to a
+    proper Wax exception first. Otherwise, just return str(ex).
+    """
+    cdef protocol obj
+    cdef exception_ptr eptr
+    cdef hive_exception_data raw_data
+
+    # Try to extract exception_ptr from capsule (C++ exception)
+    try:
+        eptr = wrapped_exception_ptr_from_exception(ex)
+        if eptr:
+            raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+            return raw_data.what.decode()
+    except:
+        pass
+
+    # Not a capsule exception, return string representation
+    return str(ex)
+
+
 def return_python_result(foo):
     """Decorator that wraps function results in python_result dataclass.
 
@@ -77,7 +100,9 @@ def return_python_result(foo):
                     result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
             return python_result(status=python_error_code.ok, result=result, exception_message=b'')
         except Exception as ex:
-            aux = json.loads(str(ex))
+            # Convert capsule exceptions to proper messages
+            ex_message = _convert_exception_to_json_message(ex)
+            aux = json.loads(ex_message)
             if isinstance(aux, dict) and 'stack' in aux and isinstance(aux['stack'], list):
                 for val in aux['stack']:
                     if isinstance(val, dict) and 'context' in val and isinstance(val['context'], dict):

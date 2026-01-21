@@ -140,3 +140,24 @@ from wax.cython_modules_testing import (
     verify_exception_handling,
     cpp_throws,
 )
+
+# Re-export result types from wax_result for backward compatibility
+# (some code imports these from cpp_python_bridge instead of wax_result)
+from wax.wax_result import (
+    python_result,
+    python_error_code,
+    python_json_asset,
+    python_ref_block_data,
+    python_required_authority_collection,
+    python_private_key_data,
+    python_binary_data,
+    python_binary_data_node,
+    python_brain_key_data,
+    python_witness_set_properties_data,
+    python_price,
+    python_authority,
+    python_authorities,
+    python_minimize_required_signatures_data,
+    python_transaction_handle,
+    python_operation_handle,
+)
