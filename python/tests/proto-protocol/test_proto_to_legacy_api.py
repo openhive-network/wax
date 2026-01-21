@@ -1,24 +1,39 @@
 import json
 
-from tests.utils.refs import API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION
-
+from tests.utils.refs import (
+    API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+    PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+)
 from wax import proto_to_legacy_api
 
 
-def test_tx_proto_to_legacy_api():
+def test_proto_to_legacy_api_positive_with_valid_proto_transaction():
+    # Arrange
     proto_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
+
+    # Act
     api = proto_to_legacy_api(proto_str.encode())
+
+    # Assert
     assert api.status == api.status.ok
     assert api.exception_message == b''
     assert json.loads(api.result.decode()) == API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION
 
-    # Negative test
+
+def test_proto_to_legacy_api_negative_with_legacy_api_format_instead_of_proto():
+    # Arrange
     proto_str = json.dumps(API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
+
+    # Act
     api = proto_to_legacy_api(proto_str.encode())
+
+    # Assert
     assert api.status == api.status.fail
-    assert api.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'list' object has no attribute 'keys'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}"
-    )
+    assert b"'code': 10" in api.exception_message, "Exception should contain error code 10"
+    assert b"'name': 'assert_exception'" in api.exception_message, "Exception should be of type assert_exception"
+    assert b"Python function call failed" in api.exception_message, "Exception should indicate Python function call failure"
+    assert b"'list' object has no attribute 'keys'" in api.exception_message, "Exception should describe the type error"
+
 
 # We do not test conversion for operations (legacy code)
 

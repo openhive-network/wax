@@ -68,7 +68,7 @@ async def test_add_entries_to_account_authority_update_operation(
 
     for e in all_entries:
         role.add(account_or_key=e, weight=3)
-    assert account_update.is_effective
+    assert account_update.is_effective, "Account authority update should be effective after adding entries to the role"
 
     transaction = await remote_chain.create_transaction()
     transaction.push_operation(account_update)

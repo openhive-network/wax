@@ -109,7 +109,7 @@ async def test_create_and_sign_transaction() -> None:
         await transaction.sign(wallet, keys.associated_public_key)
     # ASSERT
     assert len(transaction.transaction.operations) == EXPECTED_OPERATIONS_COUNT
-    assert transaction.is_signed
+    assert transaction.is_signed, "Transaction should be signed after adding signature via beekeeper wallet"
 
     impacted_accounts = transaction.impacted_accounts
     assert len(impacted_accounts) == 1

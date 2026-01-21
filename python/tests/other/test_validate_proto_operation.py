@@ -7,7 +7,8 @@ from typing import Any
 import pytest
 
 import wax
-from .consts import VALID_PROTO_OPERATIONS, ENCODING
+
+from .consts import ENCODING, VALID_PROTO_OPERATIONS
 from .util import get_proto_operation_name
 
 
@@ -34,7 +35,7 @@ def test_invalid_empty_proto_operation() -> None:
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    assert result.exception_message, "Empty proto operation validation should return an exception message"
 
 
 @pytest.mark.parametrize("operation", deepcopy(VALID_PROTO_OPERATIONS), ids=get_proto_operation_name)
@@ -53,4 +54,4 @@ def test_invalid_proto_operation_without_a_key(operation: dict[str, Any]) -> Non
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    assert result.exception_message, "Proto operation with missing required key should return an exception message"

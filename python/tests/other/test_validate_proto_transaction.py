@@ -32,7 +32,7 @@ def test_invalid_proto_transaction_empty_operation() -> None:
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    assert result.exception_message, "Invalid proto transaction with empty operation should return an exception message"
 
 
 def test_invalid_proto_transaction_operation_without_a_key() -> None:
@@ -52,4 +52,4 @@ def test_invalid_proto_transaction_operation_without_a_key() -> None:
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    assert result.exception_message, "Invalid proto transaction with missing key should return an exception message"

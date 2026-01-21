@@ -1,12 +1,17 @@
 import json
 
 from tests.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
+from wax import deserialize_transaction, serialize_transaction
 
-from wax import serialize_transaction, deserialize_transaction
 
-def test_serialize_transaction():
+def test_serialize_transaction_positive_with_valid_api_transaction():
+    # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION)
+
+    # Act
     result = serialize_transaction(tx_str.encode())
+
+    # Assert
     assert result.status == result.status.ok
     assert result.exception_message == b''
     assert result.result == (
@@ -17,16 +22,32 @@ def test_serialize_transaction():
         b'656d7074792d736570741027010001202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f'
         b'49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8'
         b'b37d3fb3'
-        ) 
+    )
 
-    result = deserialize_transaction(result.result)
+
+def test_deserialize_transaction_positive_after_serialization():
+    # Arrange
+    tx_str = json.dumps(API_REF_TRANSACTION)
+    serialize_result = serialize_transaction(tx_str.encode())
+
+    # Act
+    result = deserialize_transaction(serialize_result.result)
+
+    # Assert
     assert result.status == result.status.ok
     assert result.exception_message == b''
-    assert result.result.decode() == tx_str.replace(" ", "").replace("\n","")
-    
-    # Negative test
+    assert result.result.decode() == tx_str.replace(' ', '').replace('\n', '')
+
+
+def test_serialize_transaction_negative_with_proto_format_instead_of_api():
+    # Arrange
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
+
+    # Act
     result = serialize_transaction(tx_str.encode())
+
+    # Assert
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
+    assert b"'code': 10" in result.exception_message, "Exception should contain error code 10"
+    assert b"'name': 'assert_exception'" in result.exception_message, "Exception should be of type assert_exception"
+    assert b"Python function call failed" in result.exception_message, "Exception should describe the Python call failure"

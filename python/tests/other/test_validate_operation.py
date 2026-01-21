@@ -19,4 +19,4 @@ def test_invalid_operation() -> None:
     invalid_op = """{"type":"transfer_operation","value":{"from":"initminer","to":"alpha","amount":"123.000 HIVE","memo":"test"}}"""
     result = wax.validate_operation(invalid_op.encode(ENCODING))
     assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    assert result.exception_message, "Invalid operation should return an error message"

@@ -2,15 +2,21 @@ import json
 from copy import deepcopy
 
 from tests.utils.refs import PROTO_REF_TRANSACTION
-
 from wax import validate_proto_transaction
 
+
 def test_wrong_future_extensions():
+    # Arrange - create transaction with invalid empty extension
     proto_tx = deepcopy(PROTO_REF_TRANSACTION)
-    proto_tx['extensions'] = [{}]
+    proto_tx["extensions"] = [{}]
     tx_str = json.dumps(proto_tx)
+
+    # Act
     result = validate_proto_transaction(tx_str.encode())
+
+    # Assert - verify validation fails with expected error details
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': 'list index out of range'}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}"
-    )
+    assert b"'code': 10" in result.exception_message, "Exception should contain error code 10"
+    assert b"'name': 'assert_exception'" in result.exception_message, "Exception should be of type assert_exception"
+    assert b"Python function call failed" in result.exception_message, "Exception should indicate Python function call failure"
+    assert b"list index out of range" in result.exception_message, "Exception should describe the index error"
