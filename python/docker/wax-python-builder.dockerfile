@@ -1,4 +1,4 @@
-FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:ubuntu24.04-3
+FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-4
 
 # User hosts user ids...
 ARG USER_NAME=user
@@ -10,8 +10,8 @@ USER root
 RUN groupadd -g $GROUP_ID usergroup && \
     useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
     usermod -a -G $(id -g hived_admin) ${USER_NAME} && \
-    DEBIAN_FRONTEND=noninteractive apt update && DEBIAN_FRONTEND=noninteractive apt install -y gdb python3.12-dbg && \
-    apt update && apt install -y curl && \
+    dnf install -y gdb python3-debug curl && \
+    dnf clean all && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
     export NVM_DIR="/root/.nvm" && \
     . "$NVM_DIR/nvm.sh" && \

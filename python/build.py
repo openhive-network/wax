@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import sysconfig
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -187,6 +188,11 @@ class CustomBuild(build_ext):
         # Force CMake to use the same Python interpreter that's running this script
         if sys.executable:
             configure_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
+
+        # Help CMake find Python headers (needed for manylinux images where headers are at non-standard paths)
+        python_include = sysconfig.get_config_var("INCLUDEPY")
+        if python_include:
+            configure_args.append(f"-DPYTHON_INCLUDE_DIR={python_include}")
 
         assert "WAX_BOOST_ROOT" in os.environ, (
             "Invalid build environment - consider using preconfigured wax/ci-base-image"

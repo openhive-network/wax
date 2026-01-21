@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.14-1
+ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:2fc9d83726a4fddc681c2b30fbd67701316ba85a
 FROM $BASE_IMAGE AS base_builder
 
 USER hived_admin
@@ -23,25 +23,57 @@ EOF
 
 FROM boost_lib_source AS boost_lib_builder
 
+USER root
+
 ENV WAX_BOOST_ROOT=/wax_boost_root/
 
 ADD ./python/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
 
-RUN sudo -n mkdir -vp "${WAX_BOOST_ROOT}" && \
-    sudo -n chmod -R a+w "${WAX_BOOST_ROOT}" && \
+RUN mkdir -vp "${WAX_BOOST_ROOT}" && \
+    chmod -R a+w "${WAX_BOOST_ROOT}" && \
     /home/hived_admin/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}"
 
 FROM base_builder AS ci-base-image
 
-USER hived_admin
+USER root
 WORKDIR /home/hived_admin
 SHELL ["/bin/bash", "-c"]
 
 ENV WAX_BOOST_ROOT=/wax_boost_root/
+ENV OPENSSL_ROOT_DIR=/usr/local
+ENV OPENSSL_INCLUDE_DIR=/usr/local/include
 
-RUN sudo curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - && \
-    sudo apt-get install -y nodejs && \
-    sudo npm install -g npm@latest && \
-    sudo npm install -g pnpm typescript tsx
+# Build static zlib with -fPIC for wheel portability
+RUN <<-EOF
+  set -e
+  cd /tmp
+  curl -LO https://zlib.net/zlib-1.3.1.tar.gz
+  tar xzf zlib-1.3.1.tar.gz
+  cd zlib-1.3.1
+  CFLAGS="-fPIC" ./configure --static --prefix=/usr/local
+  make -j$(nproc)
+  make install
+  cd /tmp && rm -rf zlib-1.3.1 zlib-1.3.1.tar.gz
+EOF
+
+# Build static bzip2 with -fPIC for wheel portability
+RUN <<-EOF
+  set -e
+  cd /tmp
+  curl -LO https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+  tar xzf bzip2-1.0.8.tar.gz
+  cd bzip2-1.0.8
+  make -j$(nproc) CFLAGS="-fPIC -O2" libbz2.a
+  install -m 644 libbz2.a /usr/local/lib/
+  install -m 644 bzlib.h /usr/local/include/
+  cd /tmp && rm -rf bzip2-1.0.8 bzip2-1.0.8.tar.gz
+EOF
+
+RUN curl -fsSL https://rpm.nodesource.com/setup_20.x | bash - && \
+    yum install -y nodejs && \
+    npm install -g npm@latest && \
+    npm install -g pnpm typescript tsx
+
+USER hived_admin
 
 COPY --chown=hived_admin --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
