@@ -95,6 +95,23 @@ default:
   tags:
     - public-runner-docker
 
+# Verify that hive/hive include ref matches hive submodule commit
+verify_hive_include_ref:
+  stage: static_code_analysis
+  script:
+    - |
+      INCLUDE_REF=$(awk "/project:.*hive\/hive/{getline; print}" .gitlab-ci.yml | awk -F"ref:" '{print $2}' | tr -d ' ')
+      SUBMODULE_COMMIT=$(git -C hive rev-parse HEAD)
+      echo "Include ref:      ${INCLUDE_REF}"
+      echo "Submodule commit: ${SUBMODULE_COMMIT}"
+      if [ "${INCLUDE_REF}" != "${SUBMODULE_COMMIT}" ]; then
+        echo -e "${TXT_RED}ERROR: hive/hive include ref does not match hive submodule commit${TXT_CLEAR}"
+        exit 1
+      fi
+      echo -e "${TXT_GREEN}OK: refs match${TXT_CLEAR}"
+  tags:
+    - public-runner-docker
+
 generate_hived_flattened_openapi_definition:
   extends: .node_based_job_base
   stage: build
@@ -112,6 +129,10 @@ generate_hived_flattened_openapi_definition:
 hiveio_api_package:
   variables:
     HIVE_PROJECT_ROOT: "${CI_PROJECT_DIR}/hive"
+    # Recursive needed for nested submodules in hive-local-tools (test-tools, tests_api)
+    GIT_SUBMODULE_STRATEGY: recursive
+    # Use hive's registry to download existing package instead of building
+    PACKAGE_REGISTRY_PROJECT_ID: 198
   needs:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
