@@ -6,16 +6,26 @@ from wax import proto_to_legacy_api
 
 
 def test_tx_proto_to_legacy_api_positive():
+    # Arrange
     proto_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
+
+    # Act
     api = proto_to_legacy_api(proto_str.encode())
+
+    # Assert
     assert api.status == api.status.ok, "Proto to legacy API conversion should succeed"
     assert api.exception_message == b'', "No exception expected for valid proto transaction"
     assert json.loads(api.result.decode()) == API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, "Converted legacy API should match reference"
 
 
 def test_tx_proto_to_legacy_api_negative():
+    # Arrange
     proto_str = json.dumps(API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
+
+    # Act
     api = proto_to_legacy_api(proto_str.encode())
+
+    # Assert
     assert api.status == api.status.fail, "Legacy API format input should fail for proto_to_legacy_api"
     assert b"'code': 10" in api.exception_message, "Error should contain assert_exception code"
     assert b"'name': 'assert_exception'" in api.exception_message, "Error should be assert_exception type"
