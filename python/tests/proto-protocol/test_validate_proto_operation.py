@@ -4,17 +4,20 @@ from tests.utils.refs import PROTO_REF_VOTE_OP, API_REF_VOTE_OP, PROTO_REF_VOTE_
 
 from wax import validate_proto_operation
 
-def test_validate_proto_operation():
+
+def test_validate_proto_operation_positive():
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP)
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.ok, "Valid proto operation should pass validation"
     assert result.exception_message == b'', "No exception expected for valid operation"
 
-    # Should not crash on empty input
+
+def test_validate_proto_operation_empty_input():
     result = validate_proto_operation(b'{}')
     assert result.status == result.status.fail, "Empty input should fail validation"
 
-    # Negative test - API format should fail for proto validation
+
+def test_validate_proto_operation_negative_api_format():
     vote_op_str = json.dumps(API_REF_VOTE_OP)
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail, "API format operation should fail proto validation"
@@ -23,7 +26,8 @@ def test_validate_proto_operation():
     assert b"Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
     assert b"'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
 
-    # Negative test - empty voter field should fail validation
+
+def test_validate_proto_operation_negative_empty_voter():
     vote_op_str = json.dumps(PROTO_REF_VOTE_OP_EMPTY)
     result = validate_proto_operation(vote_op_str.encode())
     assert result.status == result.status.fail, "Operation with empty voter should fail validation"

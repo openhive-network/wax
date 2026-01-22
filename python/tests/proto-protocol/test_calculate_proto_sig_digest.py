@@ -4,14 +4,16 @@ from tests.utils.refs import PROTO_REF_TRANSACTION, PROTO_REF_SERIALIZATION_SENS
 
 from wax import calculate_proto_sig_digest, calculate_proto_legacy_sig_digest
 
-def test_calculate_proto_sig_digest():
+
+def test_calculate_proto_sig_digest_positive():
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
     result = calculate_proto_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.ok, "Proto sig digest calculation should succeed"
     assert result.exception_message == b'', "No exception expected for valid proto transaction"
     assert result.result == b'b31ff450905ad705ed0d7fd5e270c3685442203e15e1b1e7d5e94b35dcdc1693', "Sig digest should match expected value"
 
-    # Negative test - API format should fail for proto function
+
+def test_calculate_proto_sig_digest_negative():
     tx_str = json.dumps(API_REF_TRANSACTION)
     result = calculate_proto_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.fail, "API format transaction should fail for proto function"
@@ -20,6 +22,7 @@ def test_calculate_proto_sig_digest():
     assert b"Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
     assert b"'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
 
+
 def test_calculate_proto_serialization_sensitive_sig_digest():
     tx_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
     result = calculate_proto_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
@@ -27,6 +30,8 @@ def test_calculate_proto_serialization_sensitive_sig_digest():
     assert result.exception_message == b'', "No exception expected"
     assert result.result == b'8758db23c6aea40564697620ff61625b45c3b538cda21ded9fd6ec229caa1ee9', "Sig digest should match expected value"
 
+
+def test_calculate_proto_legacy_serialization_sensitive_sig_digest():
     tx_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
     result = calculate_proto_legacy_sig_digest(tx_str.encode(), b'beeab0de00000000000000000000000000000000000000000000000000000000')
     assert result.status == result.status.ok, "Legacy sig digest calculation should succeed"

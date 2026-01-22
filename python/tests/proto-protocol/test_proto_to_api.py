@@ -5,14 +5,15 @@ from tests.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 from wax import proto_to_api
 
 
-def test_proto_to_api():
+def test_proto_to_api_positive():
     proto_str = json.dumps(PROTO_REF_TRANSACTION)
     api = proto_to_api(proto_str.encode())
     assert api.status == api.status.ok, "Proto to API conversion should succeed"
     assert api.exception_message == b'', "No exception expected for valid proto transaction"
     assert api.result.decode() == json.dumps(API_REF_TRANSACTION), "Converted API transaction should match reference"
 
-    # Negative test - API format input should fail for proto_to_api
+
+def test_proto_to_api_negative():
     proto_str = json.dumps(API_REF_TRANSACTION)
     api = proto_to_api(proto_str.encode())
     assert api.status == api.status.fail, "API format input should fail for proto_to_api conversion"
