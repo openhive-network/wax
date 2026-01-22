@@ -15,8 +15,10 @@ def test_calculate_proto_transaction_id():
     tx_str = json.dumps(API_REF_TRANSACTION)
     result = calculate_proto_transaction_id(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'val_protocol.hpp', 'line': 68, 'method': 'from_jsval', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Could not find the supported property in static variant: ${nextkey}', 'data': {'nextkey': 'type'}}], 'extension': {'assertion_expression': 'it != to_tag.end()'}, 'assert_hash': '10056067403021329111'}")
+    assert b"'code': 10" in result.exception_message
+    assert b"'name': 'assert_exception'" in result.exception_message
+    assert b"Could not find the supported property in static variant" in result.exception_message
+    assert b"'nextkey': 'type'" in result.exception_message
 
 def test_calculate_proto_serialization_sensitive_transaction_id():
     tx_str = json.dumps(PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION)

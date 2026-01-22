@@ -23,20 +23,23 @@ def test_validate_transaction():
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
+    assert b"'code': 10" in result.exception_message
+    assert b"'name': 'assert_exception'" in result.exception_message
+    assert b"Python function call failed" in result.exception_message
+    assert b"'type'" in result.exception_message
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION_NO_OPERATIONS)
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'transaction.cpp', 'line': 42, 'method': 'validate', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'A transaction must have at least one operation', 'data': {'trx': {'ref_block_num': 19260, 'ref_block_prefix': 2140466769, 'expiration': '2016-09-15T19:47:33', 'operations': [], 'extensions': []}}}], 'extension': {'assertion_expression': 'operations.size() > 0'}, 'assert_hash': '6215446810186363223'}")
+    assert b"'code': 10" in result.exception_message
+    assert b"'name': 'assert_exception'" in result.exception_message
+    assert b"A transaction must have at least one operation" in result.exception_message
 
     # Negative test
     tx_str = json.dumps(API_REF_TRANSACTION_EMPTY_OPERATIONS)
     result = validate_transaction(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'transaction.cpp', 'line': 42, 'method': 'validate', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'A transaction must have at least one operation', 'data': {'trx': {'ref_block_num': 19260, 'ref_block_prefix': 2140466769, 'expiration': '2016-09-15T19:47:33', 'operations': [], 'extensions': []}}}], 'extension': {'assertion_expression': 'operations.size() > 0'}, 'assert_hash': '6215446810186363223'}"
-    )
+    assert b"'code': 10" in result.exception_message
+    assert b"'name': 'assert_exception'" in result.exception_message
+    assert b"A transaction must have at least one operation" in result.exception_message

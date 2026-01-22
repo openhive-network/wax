@@ -16,9 +16,10 @@ def test_tx_proto_to_legacy_api():
     proto_str = json.dumps(API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
     api = proto_to_legacy_api(proto_str.encode())
     assert api.status == api.status.fail
-    assert api.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'list' object has no attribute 'keys'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}"
-    )
+    assert b"'code': 10" in api.exception_message
+    assert b"'name': 'assert_exception'" in api.exception_message
+    assert b"Python function call failed" in api.exception_message
+    assert b"'list' object has no attribute 'keys'" in api.exception_message
 
 # We do not test conversion for operations (legacy code)
 

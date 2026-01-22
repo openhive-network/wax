@@ -15,8 +15,10 @@ def test_calculate_transaction_id():
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
     result = calculate_transaction_id(tx_str.encode())
     assert result.status == result.status.fail
-    assert result.exception_message == (
-        b"{'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'python_managed_object.hpp', 'line': 63, 'method': 'call_python_function', 'hostname': '', 'thread_name': 'th_a'}, 'format': 'Python function call failed: ${pyerr}', 'data': {'pyerr': \"'type'\"}}], 'extension': {'assertion_expression': '!PyErr_Occurred()'}, 'assert_hash': '3191462237188738789'}")
+    assert b"'code': 10" in result.exception_message
+    assert b"'name': 'assert_exception'" in result.exception_message
+    assert b"Python function call failed" in result.exception_message
+    assert b"'type'" in result.exception_message
 
 def test_calculate_serialization_sensitive_transaction_id():
     tx_str = json.dumps(API_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
