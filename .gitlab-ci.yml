@@ -14,6 +14,7 @@ include:
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
+      - '/templates/verify_submodule_ref.gitlab-ci.yml'
   - project: 'hive/hive'
     ref: b11d42825ab4bea78176425de10af2fc4b9278d8
     file:
@@ -95,22 +96,12 @@ default:
   tags:
     - public-runner-docker
 
-# Verify that hive/hive include ref matches hive submodule commit
-verify_hive_include_ref:
-  stage: static_code_analysis
-  script:
-    - |
-      INCLUDE_REF=$(awk "/project:.*hive\/hive/{getline; print}" .gitlab-ci.yml | awk -F"ref:" '{print $2}' | tr -d ' ')
-      SUBMODULE_COMMIT=$(git -C hive rev-parse HEAD)
-      echo "Include ref:      ${INCLUDE_REF}"
-      echo "Submodule commit: ${SUBMODULE_COMMIT}"
-      if [ "${INCLUDE_REF}" != "${SUBMODULE_COMMIT}" ]; then
-        echo -e "${TXT_RED}ERROR: hive/hive include ref does not match hive submodule commit${TXT_CLEAR}"
-        exit 1
-      fi
-      echo -e "${TXT_GREEN}OK: refs match${TXT_CLEAR}"
-  tags:
-    - public-runner-docker
+# Verify that include refs match submodule commits
+verify_include_refs:
+  extends: .verify_multiple_refs_template
+  needs: []
+  variables:
+    VERIFY_REFS: "hive:hive/hive ts/npm-common-config:hive/common-ci-configuration"
 
 generate_hived_flattened_openapi_definition:
   extends: .node_based_job_base
