@@ -8,7 +8,7 @@ stages:
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: 0a1e1a9d53d6b1c8ae1bdc652e19740134a359b4
+    ref: 1fbe7147a58e5938e4dda5ba25953054b428fe62
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -27,7 +27,7 @@ variables:
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
   # Use commit-based tag to force pulling new emsdk image with credential helper fix
-  EMSCRIPTEN_IMAGE_TAG: "0a1e1a9d53d6b1c8ae1bdc652e19740134a359b4"
+  EMSCRIPTEN_IMAGE_TAG: "1fbe7147a58e5938e4dda5ba25953054b428fe62"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
