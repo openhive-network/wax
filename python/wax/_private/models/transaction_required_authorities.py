@@ -45,11 +45,11 @@ class TransactionRequiredAuthorities(ITransactionRequiredAuthorities):
             for authority in other_authorities
         ]
 
-    def _decode_accounts(self, accounts: set[bytes]) -> set[AccountName]:
+    def _decode_accounts(self, accounts: set[str]) -> set[AccountName]:
         return {to_python_string(account) for account in accounts}
 
-    def _create_account_auths(self, auth: dict[bytes, int]) -> AccountAuths:
+    def _create_account_auths(self, auth: dict[str, int]) -> AccountAuths:
         return {to_python_string(account): weight for account, weight in auth.items()}
 
-    def _create_key_auths(self, auth: dict[bytes, int]) -> KeyAuths:
+    def _create_key_auths(self, auth: dict[str, int]) -> KeyAuths:
         return {to_python_string(key): weight for key, weight in auth.items()}
