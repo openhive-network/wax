@@ -5,7 +5,7 @@ from enum import IntEnum
 from typing import TYPE_CHECKING, Callable, TypeAlias
 
 if TYPE_CHECKING:
-    string: TypeAlias = bytes  # noqa: PYI042
+    string: TypeAlias = str  # noqa: PYI042
 
 
 def compare_any_string(s0: bytes | str, s1: bytes | str) -> bool:
@@ -26,15 +26,15 @@ class python_error_code(IntEnum):  # noqa: N801
 @dataclass
 class python_result:  # noqa: N801
     status: python_error_code
-    result: bytes
-    exception_message: bytes
+    result: str
+    exception_message: str
 
 
 @dataclass
 class python_json_asset:  # noqa: N801
-    amount: bytes
+    amount: str
     precision: int
-    nai: bytes
+    nai: str
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, python_json_asset):
@@ -116,13 +116,13 @@ class python_brain_key_data:  # noqa: N801
 @dataclass
 class python_witness_set_properties_data:  # noqa: N801
     # Witness key to match the current witness key. Obligatory
-    key: bytes
+    key: str
     # New witness key to set
-    new_signing_key: bytes | None = None
+    new_signing_key: str | None = None
     # HIVE maximum account creation fee
     account_creation_fee: python_json_asset | None = None
     # New witness URL to set
-    url: bytes | None = None
+    url: str | None = None
     # HBD to HIVE ratio proposed by the witness
     hbd_exchange_rate: python_price | None = None
     # This witnesses vote for the maximum_block_size which is used by the network to tune rate limiting and capacity
@@ -146,8 +146,8 @@ class python_operation_handle:  # noqa: N801
 @dataclass
 class python_authority:  # noqa: N801
     weight_threshold: int
-    account_auths: dict[bytes, int]
-    key_auths: dict[bytes, int]
+    account_auths: dict[str, int]
+    key_auths: dict[str, int]
 
 
 @dataclass
@@ -159,9 +159,9 @@ class python_authorities:  # noqa: N801
 
 @dataclass
 class python_minimize_required_signatures_data:  # noqa: N801
-    chain_id: bytes
-    available_keys: list[bytes]
-    authorities_map: dict[bytes, python_authorities]
+    chain_id: str
+    available_keys: list[str]
+    authorities_map: dict[str, python_authorities]
     get_witness_key: Callable[[bytes], bytes]
     max_recursion: int | None = None
     max_membership: int | None = None
