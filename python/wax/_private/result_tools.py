@@ -9,20 +9,17 @@ if TYPE_CHECKING:
     from wax.models.basic import AccountName
 
 
-def to_python_string(value: bytes | str) -> str:
-    if isinstance(value, str):
-        return value
-    return value.decode()
-
-
-def to_python_str_list(value: list[bytes]) -> list[str]:
-    return [to_python_string(item) for item in value]
-
-
-def to_cpp_string(value: bytes | str) -> bytes:
-    if isinstance(value, str):
-        return value.encode()
+def to_python_string(value: str) -> str:
     return value
+
+
+def to_python_str_list(value: list[str]) -> list[str]:
+    return list(value)
+
+
+def to_cpp_string(value: str) -> bytes:
+    """Convert str to bytes for C++ consumption."""
+    return value.encode('utf-8')
 
 
 def validate_wax_result(result: python_result) -> None:
@@ -34,18 +31,18 @@ def expose_result_as_python_string(result: python_result) -> str:
     return to_python_string(result.result)
 
 
-def expose_result_as_cpp_string(result: python_result) -> bytes:
+def expose_result_as_cpp_string(result: python_result) -> str:
     return result.result
 
 
-def decode_impacted_account_names(account_names: list[bytes]) -> list[AccountName]:
+def decode_impacted_account_names(account_names: list[str]) -> list[AccountName]:
     """
-    Decode account names from bytes to str.
+    Convert account names to the AccountName type.
 
     Args:
-        account_names: List of account names in bytes.
+        account_names: List of account names.
 
     Returns:
         List of account names.
     """
-    return [to_python_string(account_name) for account_name in account_names]
+    return list(account_names)
