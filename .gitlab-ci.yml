@@ -442,6 +442,7 @@ test_wax_wasm_examples:
     DIST_DIR: "${TS_DIST_DIR}"
   script:
     - cd "${SOURCE_DIR}"
+    - echo "Checking Playwright browsers:" && pnpm exec playwright install --dry-run || true
     - npm run examples
   tags:
     - public-runner-docker
