@@ -16,7 +16,7 @@ include:
       - '/templates/docker_image_jobs.gitlab-ci.yml'
       - '/templates/verify_submodule_ref.gitlab-ci.yml'
   - project: 'hive/hive'
-    ref: 611a1726bcbc0f9689fa2c3fb5392795bf2a630f
+    ref: eb929741e479bdd4ba4364fde2e05969cfa25682
     file:
       - '/scripts/ci-helpers/common_includes.yml'
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
