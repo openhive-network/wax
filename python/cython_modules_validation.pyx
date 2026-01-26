@@ -139,21 +139,21 @@ def op_validate(wax_op: WaxOperationHandle) -> None:
     _op_validate(wax_op)
 
 
-def tx_impacted_accounts(wax_tx: WaxTransactionHandle) -> vector[string]:
+def tx_impacted_accounts(tx: WaxTransactionHandle) -> vector[string]:
     """Get impacted accounts from transaction handle."""
-    return _tx_impacted_accounts(wax_tx)
+    return _tx_impacted_accounts(tx)
 
 
-def tx_validate(wax_tx: WaxTransactionHandle) -> None:
+def tx_validate(tx: WaxTransactionHandle) -> None:
     """Validate transaction handle."""
-    _tx_validate(wax_tx)
+    _tx_validate(tx)
 
 
-def tx_id(wax_tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
+def tx_id(tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
     """Get transaction ID from handle."""
-    return _tx_id(wax_tx, use_hf26_serialization)
+    return _tx_id(tx, use_hf26_serialization)
 
 
-def tx_sig_digest(wax_tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
+def tx_sig_digest(tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
     """Get signature digest from transaction handle."""
-    return _tx_sig_digest(wax_tx, chain_id, use_hf26_serialization)
+    return _tx_sig_digest(tx, chain_id, use_hf26_serialization)

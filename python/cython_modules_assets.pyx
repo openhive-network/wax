@@ -88,10 +88,10 @@ def calculate_hp_apr(
 
 
 @return_python_json_asset
-def calculate_hbd_to_hive(hbd_asset: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
+def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
     """Convert HBD to HIVE using given price."""
     cdef protocol obj
-    cdef json_asset _hbd = json_asset(hbd_asset.amount, hbd_asset.precision, hbd_asset.nai)
+    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
     cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
     cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
     response = obj.cpp_hbd_to_hive(_hbd, _base, _quote)
@@ -110,10 +110,10 @@ def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, qu
 
 
 @return_python_json_asset
-def calculate_vests_to_hp(vests_asset: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
+def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert VESTS to HP (Hive Power)."""
     cdef protocol obj
-    cdef json_asset _vests = json_asset(vests_asset.amount, vests_asset.precision, vests_asset.nai)
+    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
     cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
     cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
@@ -121,19 +121,19 @@ def calculate_vests_to_hp(vests_asset: python_json_asset, total_vesting_fund_hiv
 
 
 @return_python_json_asset
-def calculate_hp_to_vests(hive_asset: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
+def calculate_hp_to_vests(hive: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert HP (Hive Power) to VESTS."""
     cdef protocol obj
-    cdef json_asset _hive = json_asset(hive_asset.amount, hive_asset.precision, hive_asset.nai)
+    cdef json_asset _hive = json_asset(hive.amount, hive.precision, hive.nai)
     cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
     cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
     response = obj.cpp_hp_to_vests(_hive, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
 
-def calculate_account_hp(vests_asset: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
+def calculate_account_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Calculate account HP from VESTS."""
-    response = calculate_vests_to_hp(vests_asset, total_vesting_fund_hive, total_vesting_shares)
+    response = calculate_vests_to_hp(vests, total_vesting_fund_hive, total_vesting_shares)
     return response
 
 

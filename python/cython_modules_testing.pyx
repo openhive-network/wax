@@ -16,8 +16,7 @@ def verify_exception_handling(throw_type: int) -> None:
 
 
 @call_with_exception_relay
-def cpp_throws(type: int) -> bytes:
+def cpp_throws(throw_type: int) -> None:
     """Throw a C++ exception of a specific type for testing."""
     cdef protocol obj
-    obj.cpp_throws(type)
-    return b''
+    obj.cpp_throws(throw_type)

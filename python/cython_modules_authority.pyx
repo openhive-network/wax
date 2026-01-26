@@ -100,17 +100,17 @@ def tx_minimize_required_signatures(
 
 
 def minimize_required_signatures(
-    transaction: bytes,
+    signed_transaction: bytes,
     minimize_required_signatures_data: python_minimize_required_signatures_data,
 ) -> list[bytes]:
     """Minimize required signatures for a transaction."""
-    tx = json.loads(transaction)
+    tx = json.loads(signed_transaction)
     tx_handle = _create_wax_transaction(tx, False)
 
     return tx_minimize_required_signatures(tx_handle, minimize_required_signatures_data)
 
 
-def check_memo_for_private_keys(memo: bytes, account: bytes, auths: python_authorities, memo_key: bytes, imported_keys: list[bytes]) -> None:
+def check_memo_for_private_keys(memo: bytes, account: bytes, auths: python_authorities, memo_key: bytes, imported_keys: list[bytes] = []) -> None:
     """Check if a memo contains any private keys."""
     cdef protocol obj
     cdef wax_authorities wax_auths = python_authorities_to_wax_authorities(auths)

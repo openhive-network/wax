@@ -61,10 +61,10 @@ def op_required_authorities(wax_op: WaxOperationHandle) -> python_required_autho
     )
 
 
-def tx_required_authorities(wax_tx: WaxTransactionHandle) -> python_required_authority_collection:
+def tx_required_authorities(tx: WaxTransactionHandle) -> python_required_authority_collection:
     """Get required authorities for a transaction."""
     cdef protocol obj
-    cdef required_authority_collection collection = obj.cpp_tx_required_authorities(wax_tx.hTx)
+    cdef required_authority_collection collection = obj.cpp_tx_required_authorities(tx.hTx)
 
     op = set(collection.posting_accounts)
     oa = set(collection.active_accounts)
