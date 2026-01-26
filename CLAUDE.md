@@ -2,6 +2,26 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow Compliance
+
+All contributions must follow the established workflow rules from the [hive/hive](https://gitlab.syncad.com/hive/hive) repository. Claude Code sessions must adhere to these documents:
+
+| Document | Purpose | Required |
+|----------|---------|----------|
+| [GENERAL_CLAUDE_WORKFLOW.md](/hive/hive/-/blob/develop/GENERAL_CLAUDE_WORKFLOW.md) | Claude-specific workflow rules (GitLab interactions, context management, MR handling, pipeline monitoring) | **Yes** |
+| [doc/git-guidelines.md](/hive/hive/-/blob/develop/doc/git-guidelines.md) | Project git workflow (branching, MRs, code review, local builds) | **Yes** |
+| [CONTRIBUTING.md](/hive/hive/-/blob/develop/CONTRIBUTING.md) | Contribution guidelines (bug reports, enhancements, PR process) | **Yes** |
+
+> **Note:** Documents are from the canonical [hive/hive](https://gitlab.syncad.com/hive/hive) repository. For external access (Claude Code, raw files), prefix paths with `https://gitlab.syncad.com`.
+
+**Key requirements:**
+- Always create MRs as **Draft** until maintainer approval
+- Build and test locally **before pushing** changes
+- Monitor pipeline after push; fix failures promptly
+- Keep commits atomic; use fixup commits for review feedback
+- Follow fast-forward merge strategy (rebase before merge)
+
+
 ## Overview
 
 Wax is a library providing Hive blockchain protocol features to both Python and TypeScript/JavaScript. It wraps C++ hived source code via:
