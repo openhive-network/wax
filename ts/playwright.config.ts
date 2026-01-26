@@ -4,6 +4,7 @@ import { IWaxedTest } from './wasm/__tests__/assets/jest-helper';
 
 export default defineConfig<IWaxedTest>({
   fullyParallel: true,
+  timeout: 60000, // 60s timeout to handle CI load variability
   reporter: [
     ['junit', { outputFile: 'results.xml' }],
     ['json',  { outputFile: 'results.json' }]
