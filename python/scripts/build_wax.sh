@@ -109,6 +109,13 @@ else
   echo "Build wax wheel package."
   poetry -C ${PROJECT_DIR} build --format wheel
 
+  # Deduplicate wheel to reduce size (removes duplicate .so files)
+  echo "Deduplicating wheel package..."
+  WHEEL_FILE=$(ls ${PROJECT_DIR}/dist/*.whl | head -1)
+  python3 ${SCRIPT_DIR}/repack_wheel.py "${WHEEL_FILE}"
+  rm "${WHEEL_FILE}"
+  mv "${WHEEL_FILE%.whl}.dedup.whl" "${WHEEL_FILE}"
+
   echo "List dist directory: ${PROJECT_DIR}/dist"
   ls -lA ${PROJECT_DIR}/dist
 
