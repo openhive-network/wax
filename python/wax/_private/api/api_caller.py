@@ -40,10 +40,10 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
         self.http_endpoint = endpoint_url
 
     @property
-    def api(self) -> ApiCollectionT:
-        return super().api
+    def api(self) -> ApiCollectionT:  # type: ignore[override]
+        return super().api  # type: ignore[return-value]
 
-    async def batch(self, *, delay_error_on_data_access: bool = False) -> AsyncBatchHandle[ApiCollectionT]:
+    async def batch(self, *, delay_error_on_data_access: bool = False) -> AsyncBatchHandle:  # type: ignore[type-arg]
         return AsyncBatchHandle(
             url=self.http_endpoint,
             overseer=self._overseer,
@@ -51,7 +51,7 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
             delay_error_on_data_access=delay_error_on_data_access,
         )
 
-    def _construct_api(self) -> ApiCollectionT:
+    def _construct_api(self) -> ApiCollectionT:  # type: ignore[override]
         return api_collection_factory(self._api_collection, self)
 
     def _target_service(self) -> str:
