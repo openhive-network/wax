@@ -8,7 +8,7 @@ stages:
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: abc34d5832e76025af25de183ee30460ae8a3956
+    ref: cafb362f9b025cf91caebccd91e6275e2d0d6b60
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -16,7 +16,7 @@ include:
       - '/templates/docker_image_jobs.gitlab-ci.yml'
       - '/templates/verify_submodule_ref.gitlab-ci.yml'
   - project: 'hive/hive'
-    ref: 404cf8d35f1534a9349075c8f7702a997994a4da
+    ref: 611a1726bcbc0f9689fa2c3fb5392795bf2a630f
     file:
       - '/scripts/ci-helpers/common_includes.yml'
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
