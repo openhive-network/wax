@@ -8,7 +8,7 @@ stages:
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   - project: 'hive/common-ci-configuration'
-    ref: fa978358400066074d3736a50e4f00648a397f01
+    ref: c6885fa48bff34dad69e57c6ce80e6bce6e20b18
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -23,6 +23,8 @@ include:
 
 
 variables:
+  TEST_WITH_LATEST_DEPENDENCIES: "false"
+  STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
@@ -263,7 +265,7 @@ pre_commit_checks:
   before_script:
     - cd "${PYPROJECT_DIR}"
     - !reference [.configuration_template, before_script]
-    - poetry lock --no-update 2>/dev/null || poetry lock  # regenerate lock if needed
+    - !reference [.update_deps_for_static_analysis, script]
     - poetry install --no-root
   artifacts:
     when: always
@@ -318,7 +320,7 @@ push_to_wiki:
   extends: .runtime_like_python_env
   before_script:
     - !reference [.runtime_like_python_env, before_script]
-    - poetry -C "${PYPROJECT_DIR}" lock --no-update 2>/dev/null || poetry -C "${PYPROJECT_DIR}" lock  # regenerate lock if needed
+    - !reference [.update_deps_for_tests, script]
     - poetry -C "${PYPROJECT_DIR}" install --no-root  # install dependencies for tests
     - pip list
 
