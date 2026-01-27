@@ -9,7 +9,7 @@ class MyCustomError(Exception):
     pass
 
 
-class SyncTestContext(ContextSync):  # type: ignore[type-arg]
+class SyncTestContext(ContextSync):
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
@@ -21,7 +21,7 @@ class SyncTestContext(ContextSync):  # type: ignore[type-arg]
         self.test_variable = "correct"
 
 
-class AsyncTestContext(ContextAsync):  # type: ignore[type-arg]
+class AsyncTestContext(ContextAsync):
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
