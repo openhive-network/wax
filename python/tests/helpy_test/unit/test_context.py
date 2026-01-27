@@ -9,24 +9,24 @@ class MyCustomError(Exception):
     pass
 
 
-class SyncTestContext(ContextSync[None]):
+class SyncTestContext(ContextSync):  # type: ignore[type-arg]
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
 
-    def _enter(self) -> None:
+    def _enter(self) -> None:  # type: ignore[override]
         self.test_variable = "during-test"
 
     def _finally(self) -> None:
         self.test_variable = "correct"
 
 
-class AsyncTestContext(ContextAsync[None]):
+class AsyncTestContext(ContextAsync):  # type: ignore[type-arg]
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
 
-    async def _aenter(self) -> None:
+    async def _aenter(self) -> None:  # type: ignore[override]
         self.test_variable = "during-test"
 
     async def _afinally(self) -> None:

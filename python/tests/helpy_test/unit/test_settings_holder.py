@@ -36,7 +36,7 @@ def test_modify_settings(holder: AnySettingsHolder) -> None:
     new_value = holder.settings.max_retries + 1
 
     # ACT
-    with holder.update_settings() as settings:
+    with holder.update_settings() as settings:  # type: ignore[var-annotated]
         settings.max_retries = new_value
 
     # ASSERT
@@ -63,7 +63,7 @@ def test_shared_settings() -> None:
     new_value = parent.settings.max_retries + 1
 
     # ACT
-    with parent.update_settings() as settings:
+    with parent.update_settings() as settings:  # type: ignore[var-annotated]
         settings.max_retries = new_value
 
     # ASSERT
@@ -78,7 +78,7 @@ def test_unique_settings() -> None:
     new_value = parent.settings.max_retries + 1
 
     # ACT
-    with parent.update_settings() as settings:
+    with parent.update_settings() as settings:  # type: ignore[var-annotated]
         settings.max_retries = new_value
 
     # ASSERT
@@ -118,7 +118,7 @@ def test_is_update_event_not_happens_on_error(holder: AnySettingsHolder) -> None
 
     # ACT
     with pytest.raises(TestError):  # noqa: PT012, SIM117
-        with holder.update_settings() as settings:
+        with holder.update_settings() as settings:  # type: ignore[var-annotated]
             settings.max_retries = 10
             raise TestError
 
@@ -133,7 +133,7 @@ def test_is_update_happens_after_exit_from_with_statement(holder: AnySettingsHol
     new_value = old_value + 1
 
     # ACT & ASSERT
-    with holder.update_settings() as settings:
+    with holder.update_settings() as settings:  # type: ignore[var-annotated]
         settings.max_retries = new_value
         assert holder.settings.max_retries == old_value
     assert holder.settings.max_retries == new_value
