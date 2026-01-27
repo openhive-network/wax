@@ -2,8 +2,8 @@
 """
 repack_wheel.py - Repack wheel with deduplication of identical .so files.
 
-Creates a deduplicated wheel with _hardlinks.json manifest and injects
-a restore hook into the package __init__.py.
+Creates a deduplicated wheel with _symlinks.json manifest and injects
+a restore hook into the package __init__.py that creates symlinks at import time.
 
 Usage:
     python repack_wheel.py <wheel_file> [output_file]
@@ -41,18 +41,18 @@ def record_hash(path: Path) -> str:
     return "sha256=" + base64.urlsafe_b64encode(h.digest()).rstrip(b"=").decode("ascii")
 
 
-# Code to inject into __init__.py for restoring hard links at import time
-HARDLINK_RESTORE_CODE = '''
-# === Auto-generated hardlink restoration code ===
-def _restore_hardlinks():
-    """Restore hard links from _hardlinks.json manifest (runs once at first import)."""
+# Code to inject into __init__.py for restoring symlinks at import time
+SYMLINK_RESTORE_CODE = '''
+# === Auto-generated symlink restoration code ===
+def _restore_symlinks():
+    """Restore symlinks from _symlinks.json manifest (runs once at first import)."""
     import json
     import os
     from pathlib import Path
 
     pkg_dir = Path(__file__).parent
-    manifest = pkg_dir / "_hardlinks.json"
-    marker = pkg_dir / "._hardlinks_restored"
+    manifest = pkg_dir / "_symlinks.json"
+    marker = pkg_dir / "._symlinks_restored"
 
     # Skip if already restored or no manifest
     if marker.exists() or not manifest.exists():
@@ -64,16 +64,18 @@ def _restore_hardlinks():
 
         for target_rel, source_rel in links.items():
             target = pkg_dir / target_rel.split("/", 1)[-1]  # Remove "wax/" prefix
-            source = pkg_dir / source_rel.split("/", 1)[-1]
+            source_name = source_rel.split("/")[-1]  # Just the filename for relative symlink
 
-            if source.exists() and not target.exists():
+            if not target.exists() and not target.is_symlink():
                 try:
-                    os.link(source, target)
+                    os.symlink(source_name, target)
                 except OSError:
-                    # Fall back to copy if hard links not supported
+                    # Fall back to copy if symlinks not supported (e.g., Windows without privileges)
                     import shutil
 
-                    shutil.copy2(source, target)
+                    source = pkg_dir / source_name
+                    if source.exists():
+                        shutil.copy2(source, target)
 
         # Create marker to avoid re-running
         marker.touch()
@@ -81,15 +83,15 @@ def _restore_hardlinks():
         pass  # Silently fail - modules might still work via main .so
 
 
-_restore_hardlinks()
-del _restore_hardlinks
-# === End hardlink restoration code ===
+_restore_symlinks()
+del _restore_symlinks
+# === End symlink restoration code ===
 
 '''
 
 
 def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None) -> Path:
-    """Repack a wheel with deduplication and install-time hardlink restoration."""
+    """Repack a wheel with deduplication and install-time symlink restoration."""
     if output_path is None:
         output_path = wheel_path.with_name(wheel_path.name.replace(".whl", ".dedup.whl"))
 
@@ -138,8 +140,8 @@ def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None)
             shutil.copy2(wheel_path, output_path)
             return output_path
 
-        # Create hardlinks manifest and remove duplicates
-        hardlinks: dict[str, str] = {}  # target_relative -> source_relative
+        # Create symlinks manifest and remove duplicates
+        symlinks: dict[str, str] = {}  # target_relative -> source_relative
         total_saved = 0
 
         for h, paths in hash_to_files.items():
@@ -152,25 +154,25 @@ def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None)
 
                 for dup in paths[1:]:
                     dup_rel = dup.relative_to(extract_dir).as_posix()
-                    hardlinks[dup_rel] = source_rel
+                    symlinks[dup_rel] = source_rel
                     dup.unlink()
                     total_saved += file_size
                     print(f"    Deduplicated: {dup.name} -> {source.name}")
 
-        print(f"  Removed {len(hardlinks)} duplicate files")
+        print(f"  Removed {len(symlinks)} duplicate files")
 
-        # Write hardlinks manifest to package directory
-        manifest_path = pkg_dir / "_hardlinks.json"
+        # Write symlinks manifest to package directory
+        manifest_path = pkg_dir / "_symlinks.json"
         with open(manifest_path, "w") as f:
-            json.dump(hardlinks, f, indent=2)
-        print(f"  Created _hardlinks.json ({len(hardlinks)} entries)")
+            json.dump(symlinks, f, indent=2)
+        print(f"  Created _symlinks.json ({len(symlinks)} entries)")
 
         # Inject restoration code into __init__.py
         init_path = pkg_dir / "__init__.py"
         if init_path.exists():
             init_content = init_path.read_text()
             # Check if already injected
-            if "_restore_hardlinks" not in init_content:
+            if "_restore_symlinks" not in init_content:
                 # Inject after all __future__ imports (they must be at the beginning)
                 lines = init_content.split("\n")
                 insert_pos = 0
@@ -215,13 +217,13 @@ def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None)
                     # Found first non-future import or code - insert here
                     break
 
-                lines.insert(insert_pos, HARDLINK_RESTORE_CODE)
+                lines.insert(insert_pos, SYMLINK_RESTORE_CODE)
                 init_path.write_text("\n".join(lines))
-                print("  Injected restoration hook into __init__.py")
+                print("  Injected symlink restoration hook into __init__.py")
 
         # Update RECORD file
         record_path = dist_info / "RECORD"
-        deleted_files = set(hardlinks.keys())
+        deleted_files = set(symlinks.keys())
         new_records = []
 
         with open(record_path) as f:
@@ -241,7 +243,7 @@ def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None)
                         new_records.append(line)
 
         # Add manifest to RECORD
-        manifest_rel = f"{pkg_name}/_hardlinks.json"
+        manifest_rel = f"{pkg_name}/_symlinks.json"
         h = record_hash(manifest_path)
         size = manifest_path.stat().st_size
         new_records.append(f"{manifest_rel},{h},{size}")
