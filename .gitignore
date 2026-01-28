@@ -225,6 +225,7 @@ python/wax/_private/proto
 python/cpp_python_bridge.cpp
 .parcel-cache
 .pnpm-store
+.pnpm-home
 results.json
 results.xml
 report.xml

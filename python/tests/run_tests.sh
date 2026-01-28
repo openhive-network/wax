@@ -9,6 +9,9 @@ MOCK_SERVER_URL="http://localhost:${MOCK_SERVER_PORT}"
 WAX_DIR="${SCRIPTPATH}/../../"
 PYPROJECT_DIR="${WAX_DIR}python"
 
+# Configure pnpm to use a project-local store to avoid permission issues
+# with the shared /builds/.pnpm-store in CI environments
+export PNPM_HOME="${WAX_DIR}/.pnpm-home"
 
 echo -e "${TXT_BLUE}Install proxy-mock-server.ts dependencies...${TXT_CLEAR}"
 pnpm -C "${WAX_DIR}/ts" --recursive install --frozen-lockfile
