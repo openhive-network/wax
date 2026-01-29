@@ -721,3 +721,59 @@ build_wax_ci_base_image_py314:
     PYTHON_VERSION: "3.14"
     BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY314}"
     IMAGE_TAG: "${CI_BASE_IMAGE_PY314_TAG}"
+
+# =============================================================================
+# GitHub Pages Documentation Deployment
+# =============================================================================
+# Deploys versioned documentation to a dedicated GitHub repository.
+# Triggered on develop branch and version tags.
+# Requires GITHUB_PAGES_TOKEN CI variable with repo write access.
+
+generate_html_docs:
+  stage: build
+  extends: .npm_based_job_base
+  variables:
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
+  script:
+    - scripts/generate_html_docs.sh "https://github.com/openhive-network/wax" "${CI_COMMIT_SHA}" "${CI_PROJECT_DIR}/docs-output/ts"
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/docs-output/ts"
+    when: always
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/'
+  tags:
+    - public-runner-docker
+
+deploy_to_github_pages:
+  stage: deploy
+  image: "${CI_BASE_IMAGE}"
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    GITHUB_REPO: "openhive-network/hive-doc"
+  needs:
+    - job: generate_html_docs
+      artifacts: true
+    - job: build_python_docs
+      artifacts: true
+  before_script:
+    - apt-get update && apt-get install -y jq git
+  script:
+    - |
+      if [[ -n "${CI_COMMIT_TAG}" ]]; then
+        VERSION="${CI_COMMIT_TAG}"
+      else
+        VERSION="develop"
+      fi
+    - scripts/deploy_github_pages.sh "${VERSION}" "${CI_PROJECT_DIR}/docs-output/ts" "${PYPROJECT_DIR}/site" "${GITHUB_REPO}" "${GITHUB_PAGES_TOKEN}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $GITHUB_PAGES_TOKEN'
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/ && $GITHUB_PAGES_TOKEN'
+  tags:
+    - public-runner-docker
