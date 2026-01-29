@@ -8,7 +8,13 @@ from google.protobuf.json_format import MessageToJson, ParseDict
 from typing_extensions import Self
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
-from wax._private.cython_wrappers import get_tapos_data, tx_add_signature, tx_sig_digest, tx_signature_keys
+from wax._private.cython_wrappers import (
+    get_tapos_data,
+    tx_add_signature,
+    tx_set_expiration,
+    tx_sig_digest,
+    tx_signature_keys,
+)
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
@@ -22,7 +28,6 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     tx_id,
     tx_impacted_accounts,
     tx_required_authorities,
-    tx_set_expiration,
     tx_to_binary,
     tx_to_json,
     tx_to_legacy_json,

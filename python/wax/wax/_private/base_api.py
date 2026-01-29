@@ -14,7 +14,18 @@ from wax._private.core.constants import (
     PUBLIC_KEY_ADDRESS_PREFIX,
 )
 from wax._private.core.format_recognizers.operation import is_hive_protocol_format
-from wax._private.cython_wrappers import get_hive_protocol_config
+from wax._private.cython_wrappers import (
+    check_memo_for_private_keys,
+    generate_password_based_private_key,
+    get_hive_protocol_config,
+    get_public_key_from_signature,
+    is_valid_account_name,
+    legacy_tx_to_json,
+    operation_get_impacted_accounts,
+    proto_operation_get_impacted_accounts,
+    validate_operation,
+    validate_proto_operation,
+)
 from wax._private.models.asset import Asset
 from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
@@ -33,21 +44,12 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_manabar_full_regeneration_time,
     calculate_vests_to_hp,
     calculate_witness_votes_hp,
-    check_memo_for_private_keys,
     deserialize_witness_set_properties,
     estimate_hive_collateral,
     evaluate_hbd_interest,
-    generate_password_based_private_key,
-    get_public_key_from_signature,
-    is_valid_account_name,
-    legacy_tx_to_json,
-    operation_get_impacted_accounts,
-    proto_operation_get_impacted_accounts,
     python_witness_set_properties_data,
     serialize_witness_set_properties,
     suggest_brain_key,
-    validate_operation,
-    validate_proto_operation,
 )
 from wax.exceptions.chain_errors import PrivateKeyDetectedInMemoError
 from wax.interfaces import ChainConfig, IWaxBaseInterface, TTimestamp
