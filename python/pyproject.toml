@@ -22,7 +22,7 @@ include = [
 source = [
     { name = "PyPI", priority = "primary" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
-    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-api-packages", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
 
@@ -38,6 +38,7 @@ loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.32.3"
 typing-extensions = ">=4.0.0"
+hiveio-api = "1.28.2.dev497+bda263314"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "1.11.2"
@@ -97,6 +98,21 @@ module = "wax.proto.*"
 ignore_missing_imports = true
 follow_imports = "skip"
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "wax._private.api.api_caller"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.*",
+    "helpy",
+    "helpy.*",
+    "local_tools.*",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
