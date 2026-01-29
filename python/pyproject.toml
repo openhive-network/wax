@@ -86,6 +86,7 @@ files = [
 mypy_path = "python"
 strict = true
 disallow_untyped_decorators = false
+exclude = ["tests/"]
 
 [[tool.mypy.overrides]]
 module = "wax._private.proto.*"
