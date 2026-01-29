@@ -10,6 +10,7 @@ import wax
 import pytest
 from .consts import ENCODING
 
+
 def compare_attributes(a: object, b: object) -> bool:
     if isinstance(a, bytes):
         a = a.decode(ENCODING)
@@ -18,12 +19,11 @@ def compare_attributes(a: object, b: object) -> bool:
 
     return a == b
 
+
 PROPS_TO_SERIALIZE = (
     [
         {
-            "account_creation_fee": python_json_asset(
-                amount=b"28000", precision=3, nai=b"@@000000021"
-            ),
+            "account_creation_fee": python_json_asset(amount=b"28000", precision=3, nai=b"@@000000021"),
             "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
@@ -45,9 +45,7 @@ PROPS_TO_SERIALIZE = (
         {
             "hbd_exchange_rate": python_price(
                 base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
-                quote=python_json_asset(
-                    amount=b"100000", precision=3, nai=b"@@000000021"
-                ),
+                quote=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000021"),
             ),
             "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
@@ -60,16 +58,12 @@ PROPS_TO_SERIALIZE = (
             "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
-            "account_creation_fee": python_json_asset(
-                amount=b"28000", precision=3, nai=b"@@000000021"
-            ),
+            "account_creation_fee": python_json_asset(amount=b"28000", precision=3, nai=b"@@000000021"),
             "maximum_block_size": 131072,
             "hbd_interest_rate": 1000,
             "hbd_exchange_rate": python_price(
                 base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
-                quote=python_json_asset(
-                    amount=b"100000", precision=3, nai=b"@@000000021"
-                ),
+                quote=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000021"),
             ),
             "new_signing_key": b"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
             "url": b"http://new-url.html",
@@ -88,9 +82,9 @@ def test_serialize_witness_set_properties(props_to_serialize: dict[str, object])
     )
 
     for key in props_to_serialize.keys():
-        assert isinstance(
-            serialized_witness_set_properties[key.encode(ENCODING)], bytes
-        ), f"Key {key} was not serialized"
+        assert isinstance(serialized_witness_set_properties[key.encode(ENCODING)], bytes), (
+            f"Key {key} was not serialized"
+        )
 
 
 @pytest.mark.parametrize("props_to_serialize", *PROPS_TO_SERIALIZE)
@@ -98,13 +92,11 @@ def test_deserialize_witness_set_properties(props_to_serialize: dict[str, object
     serialized_witness_set_properties = wax.serialize_witness_set_properties(
         python_witness_set_properties_data(**props_to_serialize)  # type: ignore[arg-type]
     )
-    deserialized_witness_set_properties = wax.deserialize_witness_set_properties(
-        serialized_witness_set_properties
-    )
+    deserialized_witness_set_properties = wax.deserialize_witness_set_properties(serialized_witness_set_properties)
     for key in props_to_serialize.keys():
-        assert compare_attributes(props_to_serialize[key], getattr(
-            deserialized_witness_set_properties, key
-        )), f"Key {key} was not deserialized correctly"
+        assert compare_attributes(props_to_serialize[key], getattr(deserialized_witness_set_properties, key)), (
+            f"Key {key} was not deserialized correctly"
+        )
 
 
 def test_serialize_witness_set_properties_with_missing_argument() -> None:

@@ -155,14 +155,14 @@ async def test_account_authority_update_set_threshold(remote_chain: IHiveChainIn
     role = getattr(account_update.roles, role_type)
 
     assert role.authority.weight_threshold == DEFAULT_ACCOUNT_OR_KEY_WEIGHT, (
-        f"Expected default threshold: {DEFAULT_ACCOUNT_OR_KEY_WEIGHT}, " f"got: {role.authority.weight_threshold}"
+        f"Expected default threshold: {DEFAULT_ACCOUNT_OR_KEY_WEIGHT}, got: {role.authority.weight_threshold}"
     )
 
     new_threshold: Final[int] = random.randint(1, 1000)
     role.set_threshold(threshold=new_threshold)
 
     assert role.authority.weight_threshold == new_threshold, (
-        f"Threshold not updated correctly. Expected: {new_threshold}, " f"got: {role.authority.weight_threshold}"
+        f"Threshold not updated correctly. Expected: {new_threshold}, got: {role.authority.weight_threshold}"
     )
 
 

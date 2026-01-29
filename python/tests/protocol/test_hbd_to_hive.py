@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import Final
@@ -38,11 +37,13 @@ TESTDATA: Final[list[tuple[python_json_asset, python_json_asset, python_json_ass
     (hbd(22), hbd(1000), hive(462), hive(10)),
     (hbd(20), hbd(1000), hive(462), hive(9)),
     (hbd(51), hbd(1000), hive(462), hive(23)),
-    (hbd(2), hbd(1000), hive(462), hive(0))
+    (hbd(2), hbd(1000), hive(462), hive(0)),
 ]
 
 
 @pytest.mark.parametrize(("hbd", "base", "quote", "expected"), TESTDATA)
-def test_calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset, expected: python_json_asset):
+def test_calculate_hbd_to_hive(
+    hbd: python_json_asset, base: python_json_asset, quote: python_json_asset, expected: python_json_asset
+):
     result = calculate_hbd_to_hive(hbd, base, quote)
     assert result == expected

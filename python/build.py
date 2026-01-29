@@ -24,8 +24,10 @@ def log(*args: Any) -> None:
     with open(log_file, "a") as f:
         f.write(msg + "\n")
 
+
 def useDebugBuild() -> bool:
     return os.getenv("WAX_DEBUG") is not None and os.getenv("WAX_DEBUG") != "0"
+
 
 def get_python_abi_tag() -> str:
     """Get the Python ABI tag for the shared library name (e.g., '312' or '314')."""
@@ -59,7 +61,12 @@ MODULE_DEPENDENCIES: dict[str, list[str]] = {
     "assets": ["cython_modules_common.pxd"],
     "transactions": ["cython_modules_common.pxd", "cython_modules_handles.pxd"],
     "operations": ["cython_modules_common.pxd", "cython_modules_handles.pxd"],
-    "proto": ["cython_modules_common.pxd", "cython_modules_handles.pxd", "cython_modules_validation.pxd", "cython_modules_transactions.pxd"],
+    "proto": [
+        "cython_modules_common.pxd",
+        "cython_modules_handles.pxd",
+        "cython_modules_validation.pxd",
+        "cython_modules_transactions.pxd",
+    ],
     "witness": ["cython_modules_common.pxd"],
     "memo": ["cython_modules_common.pxd"],
     "authority": ["cython_modules_common.pxd", "cython_modules_handles.pxd"],
@@ -147,7 +154,11 @@ log("Build file loaded...")
 
 class CustomBuild(build_ext):
     _python_abi = get_python_abi_tag()
-    output_binary_name = f"cpp_python_bridge.cpython-{_python_abi}d-x86_64-linux-gnu.so" if useDebugBuild() else f"cpp_python_bridge.cpython-{_python_abi}-x86_64-linux-gnu.so"
+    output_binary_name = (
+        f"cpp_python_bridge.cpython-{_python_abi}d-x86_64-linux-gnu.so"
+        if useDebugBuild()
+        else f"cpp_python_bridge.cpython-{_python_abi}-x86_64-linux-gnu.so"
+    )
     root_dir = Path(__file__).parent.absolute()
     package_dir = root_dir / "wax"
     wax_package_shared_lib = package_dir / output_binary_name
@@ -158,9 +169,7 @@ class CustomBuild(build_ext):
     cython_build_dir = root_dir / ".cython_build"
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
-        configure_args = [
-            "-GNinja"
-        ]
+        configure_args = ["-GNinja"]
         if useDebugBuild():
             configure_args.append("-DCMAKE_BUILD_TYPE=Debug")
         else:
@@ -179,16 +188,19 @@ class CustomBuild(build_ext):
         if sys.executable:
             configure_args.append(f"-DPYTHON_EXECUTABLE={sys.executable}")
 
-        assert "WAX_BOOST_ROOT" in os.environ, "Invalid build environment - consider using preconfigured wax/ci-base-image"
+        assert "WAX_BOOST_ROOT" in os.environ, (
+            "Invalid build environment - consider using preconfigured wax/ci-base-image"
+        )
         configure_args.append("-DBOOST_ROOT={}".format(os.getenv("WAX_BOOST_ROOT")))
 
         self.cpp_build_dir.mkdir(exist_ok=True)
         log(f"build will be performed in: {self.cpp_build_dir}")
         self.logs_dir.mkdir(exist_ok=True)
         log(f"all build logs will be saved to: {self.logs_dir.as_posix()}")
-        with (self.logs_dir / "cmake_stdout.log").open("w") as stdout, (self.logs_dir / "cmake_stderr.log").open(
-            "w"
-        ) as stderr:
+        with (
+            (self.logs_dir / "cmake_stdout.log").open("w") as stdout,
+            (self.logs_dir / "cmake_stderr.log").open("w") as stderr,
+        ):
             log(f"configuring with {cmake_command}")
             subprocess.run(
                 [
@@ -206,9 +218,10 @@ class CustomBuild(build_ext):
             return build_command
 
     def __build_project(self, build_command: str) -> None:
-        with (self.logs_dir / "build_stdout.log").open("w") as stdout, (self.logs_dir / "build_stderr.log").open(
-            "w"
-        ) as stderr:
+        with (
+            (self.logs_dir / "build_stdout.log").open("w") as stdout,
+            (self.logs_dir / "build_stderr.log").open("w") as stderr,
+        ):
             log(f"building with {build_command}")
             subprocess.run(
                 [build_command, "-j", f"{os.cpu_count()}"],
@@ -389,15 +402,15 @@ def build(setup_kwargs: dict[str, Any]) -> None:
     cython_build_dir.mkdir(exist_ok=True)
 
     # Include directories for all extensions
-    include_dirs = ['.', './..', './../hive/libraries/protocol/include']
+    include_dirs = [".", "./..", "./../hive/libraries/protocol/include"]
 
     # Compiler directives for all extensions
     compiler_directives = {
-        'always_allow_keywords': True,
-        'language_level': "3str",
-        'c_string_type': "bytes",
-        'c_string_encoding': "utf-8",
-        'emit_code_comments': True,
+        "always_allow_keywords": True,
+        "language_level": "3str",
+        "c_string_type": "bytes",
+        "c_string_encoding": "utf-8",
+        "emit_code_comments": True,
     }
 
     # Process main facade module (cpp_python_bridge.pyx)
@@ -408,20 +421,22 @@ def build(setup_kwargs: dict[str, Any]) -> None:
         ext_modules = cythonize(
             [
                 Extension(
-                    "cpp_python_bridge", ["cpp_python_bridge.pyx"],
+                    "cpp_python_bridge",
+                    ["cpp_python_bridge.pyx"],
                     include_dirs=include_dirs,
                     language="c++",
                 ),
             ],
             compiler_directives=compiler_directives,
-            include_path=['.'],
-            gdb_debug=useDebugBuild()
+            include_path=["."],
+            gdb_debug=useDebugBuild(),
         )
     else:
         log("Skipping Cython transpilation for cpp_python_bridge, using cached cpp file")
         ext_modules = [
             Extension(
-                "cpp_python_bridge", ["cpp_python_bridge.cpp"],
+                "cpp_python_bridge",
+                ["cpp_python_bridge.cpp"],
                 include_dirs=include_dirs,
                 language="c++",
             )
@@ -452,7 +467,7 @@ def build(setup_kwargs: dict[str, Any]) -> None:
                     ),
                 ],
                 compiler_directives=compiler_directives,
-                include_path=['.'],
+                include_path=["."],
                 gdb_debug=useDebugBuild(),
                 build_dir=str(cython_build_dir),
             )

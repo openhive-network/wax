@@ -32,20 +32,24 @@ PUBLIC_KEYS: Final[dict[str, bytes]] = {
 
 OTHER_ACCOUNT: Final[str] = "bob"
 
-IMPORTED_PRIVATE_KEY: Final[bytes] = b"5JZhZRpYjWYm3jKsz5JEpPDG38Dn9JzhXTFg7gwrpgiLVKuH13B"  # tt.PrivateKey(OTHER_ACCOUNT, secret="active").encode()
+IMPORTED_PRIVATE_KEY: Final[bytes] = (
+    b"5JZhZRpYjWYm3jKsz5JEpPDG38Dn9JzhXTFg7gwrpgiLVKuH13B"  # tt.PrivateKey(OTHER_ACCOUNT, secret="active").encode()
+)
 
-IMPORTED_PUBLIC_KEY: Final[bytes] = b"STM8fZEprWbZPauKhypTWsaZunyzhVpauB6xkUJZJXVEvkNzpS2ue"  # tt.PublicKey(OTHER_ACCOUNT, secret="active").encode()
+IMPORTED_PUBLIC_KEY: Final[bytes] = (
+    b"STM8fZEprWbZPauKhypTWsaZunyzhVpauB6xkUJZJXVEvkNzpS2ue"  # tt.PublicKey(OTHER_ACCOUNT, secret="active").encode()
+)
 
 AUTHORITIES: Final[python_authorities] = python_authorities(
-    active = python_authority(weight_threshold = 1, account_auths = {}, key_auths = { PUBLIC_KEYS["active"]: 1 }),
-    owner = python_authority(weight_threshold = 1, account_auths = {}, key_auths = { PUBLIC_KEYS["owner"]: 1 }),
-    posting = python_authority(weight_threshold = 1, account_auths = {}, key_auths = { PUBLIC_KEYS["posting"]: 1 }),
+    active=python_authority(weight_threshold=1, account_auths={}, key_auths={PUBLIC_KEYS["active"]: 1}),
+    owner=python_authority(weight_threshold=1, account_auths={}, key_auths={PUBLIC_KEYS["owner"]: 1}),
+    posting=python_authority(weight_threshold=1, account_auths={}, key_auths={PUBLIC_KEYS["posting"]: 1}),
 )
 
 
 def get_memo(
     memo_type: Literal["private_key", "extended_private_key", "imported_key"],
-    role: Literal["owner", "active", "posting", "memo"]
+    role: Literal["owner", "active", "posting", "memo"],
 ) -> bytes:
     match memo_type:
         case "private_key":
@@ -58,7 +62,7 @@ def get_memo(
 
 def get_error_message(
     memo_type: Literal["private_key", "extended_private_key", "imported_key"],
-    role: Literal["owner", "active", "posting", "memo"]
+    role: Literal["owner", "active", "posting", "memo"],
 ) -> str:
     match memo_type:
         case "private_key":

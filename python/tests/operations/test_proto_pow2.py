@@ -5,12 +5,11 @@ from wax.proto.operations import operation, pow2
 from wax.proto.asset import asset
 from wax.proto.transaction import transaction
 
+
 def test_pow2_1():
     # tx #e4cc9d33f441f5a65cdab60472f1ff3fd6055fa4
     pow2_input: pow2_pb2.pow2_input = pow2_pb2.pow2_input(
-        worker_account="kartoffel19",
-        prev_block="00a231448a2018f4fccec2c9f1e1196a2fd7985b",
-        nonce=9003093069788329103
+        worker_account="kartoffel19", prev_block="00a231448a2018f4fccec2c9f1e1196a2fd7985b", nonce=9003093069788329103
     )
     equihash_proof: pow2_pb2.equihash_proof = pow2_pb2.equihash_proof(
         n=140,
@@ -80,79 +79,53 @@ def test_pow2_1():
             9885009,
             6449363,
             2141293,
-            2141293
-        ]
+            2141293,
+        ],
     )
     equihash_pow: pow2_pb2.equihash_pow = pow2_pb2.equihash_pow(
         input=pow2_input,
         proof=equihash_proof,
         prev_block="00a231448a2018f4fccec2c9f1e1196a2fd7985b",
-        pow_summary=3542335882
+        pow_summary=3542335882,
     )
-    pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(
-        equihash_pow=equihash_pow
-    )
-    amount: asset = asset(
-        nai="@@000000021", precision=3, amount="1"
-    )
-    legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = legacy_chain_properties_pb2.legacy_chain_properties(
-        account_creation_fee=amount,
-        maximum_block_size=131072,
-        hbd_interest_rate=1000
+    pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(equihash_pow=equihash_pow)
+    amount: asset = asset(nai="@@000000021", precision=3, amount="1")
+    legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = (
+        legacy_chain_properties_pb2.legacy_chain_properties(
+            account_creation_fee=amount, maximum_block_size=131072, hbd_interest_rate=1000
+        )
     )
 
-    pow2_proto: pow2 = pow2(
-        work=pow2_work,
-        props=legacy_chain_properties
-    )
+    pow2_proto: pow2 = pow2(work=pow2_work, props=legacy_chain_properties)
 
-    pow2_operation: operation = operation(
-        pow2_operation=pow2_proto
-    )
+    pow2_operation: operation = operation(pow2_operation=pow2_proto)
 
     check_operations(pow2_operation)
 
-    transaction_proto: transaction = transaction(
-        operations=[pow2_operation]
-    )
+    transaction_proto: transaction = transaction(operations=[pow2_operation])
 
     check_transaction(transaction_proto)
 
+
 def test_pow2_2():
     pow2_input: pow2_pb2.pow2_input = pow2_pb2.pow2_input(
-        worker_account="aizen06",
-        prev_block="003ea604345523c344fbadab605073ea712dd76f",
-        nonce=1052853013628665497
+        worker_account="aizen06", prev_block="003ea604345523c344fbadab605073ea712dd76f", nonce=1052853013628665497
     )
-    pow2_pow: pow2_pb2.pow2_pow = pow2_pb2.pow2_pow(
-        input=pow2_input,
-        pow_summary=3817904373
-    )
-    pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(
-        pow2=pow2_pow
-    )
-    amount: asset = asset(
-        nai="@@000000021", precision=3, amount="1"
-    )
-    legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = legacy_chain_properties_pb2.legacy_chain_properties(
-        account_creation_fee=amount,
-        maximum_block_size=131072,
-        hbd_interest_rate=1000
+    pow2_pow: pow2_pb2.pow2_pow = pow2_pb2.pow2_pow(input=pow2_input, pow_summary=3817904373)
+    pow2_work: pow2_pb2.pow2_work = pow2_pb2.pow2_work(pow2=pow2_pow)
+    amount: asset = asset(nai="@@000000021", precision=3, amount="1")
+    legacy_chain_properties: legacy_chain_properties_pb2.legacy_chain_properties = (
+        legacy_chain_properties_pb2.legacy_chain_properties(
+            account_creation_fee=amount, maximum_block_size=131072, hbd_interest_rate=1000
+        )
     )
 
-    pow2_proto: pow2 = pow2(
-        work=pow2_work,
-        props=legacy_chain_properties
-    )
+    pow2_proto: pow2 = pow2(work=pow2_work, props=legacy_chain_properties)
 
-    pow2_operation: operation = operation(
-        pow2_operation=pow2_proto
-    )
+    pow2_operation: operation = operation(pow2_operation=pow2_proto)
 
     check_operations(pow2_operation)
 
-    transaction_proto: transaction = transaction(
-        operations=[pow2_operation]
-    )
+    transaction_proto: transaction = transaction(operations=[pow2_operation])
 
     check_transaction(transaction_proto)

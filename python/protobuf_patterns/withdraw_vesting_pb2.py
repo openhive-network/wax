@@ -4,19 +4,14 @@
 # source: withdraw_vesting.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-_runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC,
-    6,
-    31,
-    1,
-    '',
-    'withdraw_vesting.proto'
-)
+
+_runtime_version.ValidateProtobufRuntimeVersion(_runtime_version.Domain.PUBLIC, 6, 31, 1, "", "withdraw_vesting.proto")
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -25,13 +20,15 @@ _sym_db = _symbol_database.Default()
 import asset_pb2 as asset__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16withdraw_vesting.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\"i\n\x10withdraw_vesting\x12\x0f\n\x07\x61\x63\x63ount\x18\x01 \x02(\t\x12\x44\n\x0evesting_shares\x18\x02 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x0evesting_shares')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n\x16withdraw_vesting.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto"i\n\x10withdraw_vesting\x12\x0f\n\x07\x61\x63\x63ount\x18\x01 \x02(\t\x12\x44\n\x0evesting_shares\x18\x02 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x0evesting_shares'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'withdraw_vesting_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "withdraw_vesting_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_WITHDRAW_VESTING']._serialized_start=62
-  _globals['_WITHDRAW_VESTING']._serialized_end=167
+    DESCRIPTOR._loaded_options = None
+    _globals["_WITHDRAW_VESTING"]._serialized_start = 62
+    _globals["_WITHDRAW_VESTING"]._serialized_end = 167
 # @@protoc_insertion_point(module_scope)

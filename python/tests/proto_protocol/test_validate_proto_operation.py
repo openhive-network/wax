@@ -14,12 +14,12 @@ def test_validate_proto_operation_positive():
 
     # Assert
     assert result.status == result.status.ok, "Valid proto operation should pass validation"
-    assert result.exception_message == b'', "No exception expected for valid operation"
+    assert result.exception_message == b"", "No exception expected for valid operation"
 
 
 def test_validate_proto_operation_empty_input():
     # Act
-    result = validate_proto_operation(b'{}')
+    result = validate_proto_operation(b"{}")
 
     # Assert
     assert result.status == result.status.fail, "Empty input should fail validation"
@@ -36,7 +36,9 @@ def test_validate_proto_operation_negative_api_format():
     assert result.status == result.status.fail, "API format operation should fail proto validation"
     assert b"'code': 10" in result.exception_message, "Error should contain assert_exception code"
     assert b"'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert b"Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
+    assert b"Could not find the supported property in static variant" in result.exception_message, (
+        "Error should indicate format mismatch"
+    )
     assert b"'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
 
 

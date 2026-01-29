@@ -132,9 +132,9 @@ def assert_wallet_opened(bk: Beekeeper, wallet_name: str) -> None:
 def assert_number_of_wallets_opened(bk: Beekeeper, number_of_available_wallets: int) -> None:
     """Assert function checking if bk has required number of opened wallets in current session."""
     bk_wallets = (bk.api.list_wallets()).wallets
-    assert number_of_available_wallets == len(
-        bk_wallets
-    ), f"There should be {number_of_available_wallets} opened wallets, but there are {len(bk_wallets)}."
+    assert number_of_available_wallets == len(bk_wallets), (
+        f"There should be {number_of_available_wallets} opened wallets, but there are {len(bk_wallets)}."
+    )
 
 
 def assert_same_keys(bk: Beekeeper, wallet: WalletInfoWithKeysToImport) -> None:

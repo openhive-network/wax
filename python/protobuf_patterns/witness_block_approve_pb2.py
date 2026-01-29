@@ -4,33 +4,30 @@
 # source: witness_block_approve.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
+
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC,
-    6,
-    31,
-    1,
-    '',
-    'witness_block_approve.proto'
+    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "witness_block_approve.proto"
 )
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1bwitness_block_approve.proto\x12\x15hive.protocol.buffers\"D\n\x15witness_block_approve\x12\x0f\n\x07witness\x18\x01 \x02(\t\x12\x1a\n\x08\x62lock_id\x18\x02 \x02(\tR\x08\x62lock_id')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
+    b'\n\x1bwitness_block_approve.proto\x12\x15hive.protocol.buffers"D\n\x15witness_block_approve\x12\x0f\n\x07witness\x18\x01 \x02(\t\x12\x1a\n\x08\x62lock_id\x18\x02 \x02(\tR\x08\x62lock_id'
+)
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'witness_block_approve_pb2', _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "witness_block_approve_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
-  _globals['_WITNESS_BLOCK_APPROVE']._serialized_start=54
-  _globals['_WITNESS_BLOCK_APPROVE']._serialized_end=122
+    DESCRIPTOR._loaded_options = None
+    _globals["_WITNESS_BLOCK_APPROVE"]._serialized_start = 54
+    _globals["_WITNESS_BLOCK_APPROVE"]._serialized_end = 122
 # @@protoc_insertion_point(module_scope)

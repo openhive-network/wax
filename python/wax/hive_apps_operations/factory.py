@@ -11,7 +11,6 @@ from wax.proto.operations import custom_json
 
 if TYPE_CHECKING:
     from wax import IWaxBaseInterface
-    from wax.proto.operations import operation
 
 
 HiveAppsOperationDataT = TypeVar("HiveAppsOperationDataT", bound="HiveAppsOperationBaseData")
@@ -37,7 +36,7 @@ class HiveAppsOperation(OperationBase, ABC, Generic[HiveAppsOperationDataT]):
 
     def __init__(self) -> None:
         self._body: list[HiveAppsOperationDataT] = []
-        self.ops: list[operation] = []
+        self.ops: list[custom_json] = []
 
     @property
     @abstractmethod

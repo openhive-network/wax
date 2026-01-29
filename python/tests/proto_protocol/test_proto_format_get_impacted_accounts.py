@@ -18,6 +18,7 @@ EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS: Final[list[str]] = [
     _tx_vote_op["voter"],
 ]
 
+
 def test_proto_operation_get_impacted_accounts():
     # ARRANGE
     vote_operation = PROTO_REF_VOTE_OP
@@ -39,8 +40,6 @@ def test_proto_transaction_get_impacted_accounts():
     impacted_accounts = proto_transaction_get_impacted_accounts(json.dumps(transaction).encode())
 
     # ASSERT
-    assert [ 
+    assert [
         impacted_account.decode() for impacted_account in impacted_accounts
     ] == EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS, "Returned account should be one of the ones used in transaction."
-
-

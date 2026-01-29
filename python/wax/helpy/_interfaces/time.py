@@ -38,7 +38,7 @@ class TimeControl:
 
     def as_string(self) -> str:
         if self.speed_up_rate:
-            return f"+0 x{self.speed_up_rate :.1f}"
+            return f"+0 x{self.speed_up_rate:.1f}"
         return "+0"
 
     def apply_head_block_time(self, head_block_time: datetime) -> None:

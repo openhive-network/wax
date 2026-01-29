@@ -33,39 +33,27 @@ from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properti
 
 
 def test_witness_update():
-    account_creation_fee: asset = asset(
-        amount="100000", precision=3, nai="@@000000021"
-    )
-    fee: asset = asset(
-        amount="100000", precision=3, nai="@@000000021"
+    account_creation_fee: asset = asset(amount="100000", precision=3, nai="@@000000021")
+    fee: asset = asset(amount="100000", precision=3, nai="@@000000021")
+
+    legacy_chain_properties_proto: legacy_chain_properties = legacy_chain_properties(
+        account_creation_fee=account_creation_fee,
+        maximum_block_size=131072,
+        hbd_interest_rate=1000,
     )
 
-    legacy_chain_properties_proto: legacy_chain_properties = (
-        legacy_chain_properties(
-            account_creation_fee=account_creation_fee,
-            maximum_block_size=131072,
-            hbd_interest_rate=1000,
-        )
+    witness_update_proto: witness_update = witness_update(
+        owner="steempty",
+        url="fmooo/steemd-docker",
+        block_signing_key="STM8LoQjQqJHvotqBo7HjnqmUbFW9oJ2theyqonzUd9DdJ7YYHsvD",
+        props=legacy_chain_properties_proto,
+        fee=fee,
     )
 
-    witness_update_proto: witness_update = (
-        witness_update(
-            owner="steempty",
-            url="fmooo/steemd-docker",
-            block_signing_key="STM8LoQjQqJHvotqBo7HjnqmUbFW9oJ2theyqonzUd9DdJ7YYHsvD",
-            props=legacy_chain_properties_proto,
-            fee=fee,
-        )
-    )
-
-    witness_update_operation: operation = operation(
-        witness_update_operation=witness_update_proto
-    )
+    witness_update_operation: operation = operation(witness_update_operation=witness_update_proto)
 
     check_operations(witness_update_operation)
 
-    proto_transaction: transaction = transaction(
-        operations=[witness_update_operation]
-    )
+    proto_transaction: transaction = transaction(operations=[witness_update_operation])
 
     check_transaction(proto_transaction)

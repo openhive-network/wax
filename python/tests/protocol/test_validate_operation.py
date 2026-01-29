@@ -14,12 +14,12 @@ def test_validate_operation_positive():
 
     # Assert
     assert result.status == result.status.ok, "Valid API operation should pass validation"
-    assert result.exception_message == b'', "No exception expected for valid operation"
+    assert result.exception_message == b"", "No exception expected for valid operation"
 
 
 def test_validate_operation_empty_input():
     # Act
-    result = validate_operation(b'{}')
+    result = validate_operation(b"{}")
 
     # Assert
     assert result.status == result.status.fail, "Empty input should fail validation"

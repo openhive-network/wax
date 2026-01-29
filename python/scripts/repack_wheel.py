@@ -111,9 +111,7 @@ def repack_wheel_deduplicated(wheel_path: Path, output_path: Path | None = None)
             pkg_name = top_level_file.read_text().strip().split()[0]
         else:
             # Guess from directory structure
-            pkg_name = next(
-                d.name for d in extract_dir.iterdir() if d.is_dir() and not d.name.endswith(".dist-info")
-            )
+            pkg_name = next(d.name for d in extract_dir.iterdir() if d.is_dir() and not d.name.endswith(".dist-info"))
 
         pkg_dir = extract_dir / pkg_name
         print(f"  Package directory: {pkg_name}")
