@@ -25,7 +25,7 @@ GITHUB_TOKEN="${5:?Missing GitHub token}"
 
 PROJECT_SUBDIR="${PROJECT_SUBDIR:-wax}"
 WORK_DIR=$(mktemp -d)
-GITHUB_PAGES_BRANCH="gh-pages"
+GITHUB_PAGES_BRANCH="main"
 
 cleanup() {
   rm -rf "${WORK_DIR}"
