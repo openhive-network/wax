@@ -63,7 +63,7 @@ variables:
 
   # PIP INDEX URL's
   FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
-  SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+  SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple"
   THIRD_INDEX: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
 
   # colors:
@@ -128,6 +128,12 @@ hiveio_api_package:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
   extends: .hiveio_api_package_template
+  # Override after_script to export HIVEIO_API_WHEEL_BUILD_VERSION instead of WHEEL_BUILD_VERSION
+  # The parent template's after_script would overwrite build_wheel.env with wrong version
+  after_script:
+    - HIVEIO_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/hiveio_api" version -s)
+    - echo "HIVEIO_API_WHEEL_BUILD_VERSION is ${HIVEIO_API_WHEEL_BUILD_VERSION}"
+    - echo "HIVEIO_API_WHEEL_BUILD_VERSION=${HIVEIO_API_WHEEL_BUILD_VERSION}" >> build_wheel.env
 
 build_wheel:
   extends: .build_wheel_template

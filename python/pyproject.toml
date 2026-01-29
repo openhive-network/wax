@@ -98,6 +98,10 @@ ignore_missing_imports = true
 follow_imports = "skip"
 ignore_errors = true
 
+[[tool.mypy.overrides]]
+module = "wax._private.api.api_caller"
+ignore_errors = true
+
 [tool.ruff]
 line-length = 120
 
