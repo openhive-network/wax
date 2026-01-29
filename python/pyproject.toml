@@ -104,8 +104,15 @@ module = "wax._private.api.api_caller"
 ignore_errors = true
 
 [[tool.mypy.overrides]]
-module = "tests.*"
-ignore_errors = true
+module = [
+    "tests.*",
+    "helpy",
+    "helpy.*",
+    "local_tools.*",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120

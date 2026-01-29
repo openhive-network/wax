@@ -9,9 +9,9 @@ class MyOperationVisitor(AbstractOperationVisitor):
         pass
 
 
-def test_abstract_operation_visitor():
+def test_abstract_operation_visitor() -> None:
     try:
-        visitor = MyOperationVisitor()
+        visitor = MyOperationVisitor()  # type: ignore[abstract]
     except TypeError as ex:
         assert str(ex) == (
           "Can't instantiate abstract class MyOperationVisitor without an implementation for abstract methods"

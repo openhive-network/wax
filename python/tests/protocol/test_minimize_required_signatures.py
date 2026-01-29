@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
-
 import json
+from typing import Any, Final
 
 import pytest
 
@@ -58,13 +57,19 @@ SIGNING_KEYS: Final[dict[str, list[bytes]]] = {
 }
 
 def get_witness_key(account_name: bytes) -> bytes:
-    print(f"get_witness_key: {account_name}")
+    print(f"get_witness_key: {account_name!r}")
     return b""
+
+# Convert str keys to bytes keys for the authorities map
+# ACCOUNT_AUTHS is redefined from list to dict in refs.py
+_authorities_map: dict[bytes, python_authorities] = {
+    k.encode(): v for k, v in ACCOUNT_AUTHS.items()  # type: ignore[attr-defined]
+}
 
 MINIMIZE_REQUIRED_SIGNATURES_DATA = python_minimize_required_signatures_data(
     chain_id=b"beeab0de00000000000000000000000000000000000000000000000000000000",
     available_keys=AVAILABLE_KEYS,
-    authorities_map=ACCOUNT_AUTHS,
+    authorities_map=_authorities_map,
     get_witness_key=get_witness_key,
 )
 
@@ -78,11 +83,11 @@ MINIMIZE_REQUIRED_SIGNATURES_DATA = python_minimize_required_signatures_data(
         (API_TRX_SIG5_v2, SIGNING_KEYS["API_TRX_SIG5_v2"]),
     ],
 )
-def test_minimize_required_signatures(transaction: dict, signing_keys: list) -> None:
+def test_minimize_required_signatures(transaction: dict[str, Any], signing_keys: list[bytes]) -> None:
     tx_str = json.dumps(transaction)
     keys = minimize_required_signatures(tx_str.encode(), MINIMIZE_REQUIRED_SIGNATURES_DATA)
 
     for key in keys:
-        print(f"key: {key}")
+        print(f"key: {key!r}")
 
     assert keys == signing_keys, "Signing keys are incorrect"

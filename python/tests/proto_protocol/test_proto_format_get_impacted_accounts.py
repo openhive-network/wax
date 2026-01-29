@@ -1,18 +1,21 @@
 import json
-from typing import Final
+from typing import Any, Final, cast
 
 from tests.utils.refs import PROTO_REF_VOTE_OP, PROTO_REF_TRANSACTION
 
 from wax import proto_transaction_get_impacted_accounts, proto_operation_get_impacted_accounts
 
+_vote_op = cast(dict[str, str], PROTO_REF_VOTE_OP["vote_operation"])
 EXPECTED_OPERATION_IMPACTED_ACCOUNTS: Final[list[str]] = [
-    PROTO_REF_VOTE_OP["vote_operation"]["author"],
-    PROTO_REF_VOTE_OP["vote_operation"]["voter"],
+    _vote_op["author"],
+    _vote_op["voter"],
 ]
 
+_tx_ops = cast(list[dict[str, Any]], PROTO_REF_TRANSACTION["operations"])
+_tx_vote_op = cast(dict[str, str], _tx_ops[0]["vote_operation"])
 EXPECTED_TRANSACTION_IMPACTED_ACCOUNTS: Final[list[str]] = [
-    PROTO_REF_TRANSACTION["operations"][0]["vote_operation"]["author"],
-    PROTO_REF_TRANSACTION["operations"][0]["vote_operation"]["voter"],
+    _tx_vote_op["author"],
+    _tx_vote_op["voter"],
 ]
 
 def test_proto_operation_get_impacted_accounts():

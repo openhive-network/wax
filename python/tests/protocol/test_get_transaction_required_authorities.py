@@ -6,7 +6,7 @@ from tests.utils.refs import API_REF_TRANSACTION
 from wax import get_transaction_required_authorities, python_authority
 
 
-def test_get_transaction_required_autorities():
+def test_get_transaction_required_autorities() -> None:
     tx_str = json.dumps(API_REF_TRANSACTION)
     #print(f"tx: {tx_str}")
 
@@ -28,13 +28,13 @@ def test_get_transaction_required_autorities():
     assert posting_auths == b'taoteh1221'
 
     if( len(posting_auths) != 0 ):
-      print(f"Required posting authorities: {posting_auths}")
+      print(f"Required posting authorities: {posting_auths!r}")
 
     if( len(active_auths) != 0 ):
-      print(f"Required active authorities: {active_auths}")
+      print(f"Required active authorities: {active_auths!r}")
 
     if( len(owner_auths) != 0 ):
-      print(f"Required owner authorities: {owner_auths}")
+      print(f"Required owner authorities: {owner_auths!r}")
 
     if (other_auth_length != 0):
       print(f"Required other authorities: {other_auth_length}")

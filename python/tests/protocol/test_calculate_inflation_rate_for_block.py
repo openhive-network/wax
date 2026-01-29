@@ -18,7 +18,7 @@ TESTDATA: Final[list[tuple[int, str]]] = [
 @pytest.mark.parametrize(("block_num", "expected"), TESTDATA)
 def test_calculate_inflation_rate_for_block(
     block_num: int,
-    expected: bytes
+    expected: str
 ) -> None:
     result = calculate_inflation_rate_for_block(block_num)
     assert result.status == result.status.ok

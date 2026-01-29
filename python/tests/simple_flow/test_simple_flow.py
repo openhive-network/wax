@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class WalletInfoWithKeysToImport(WalletInfo):
+class WalletInfoWithKeysToImport(WalletInfo):  # type: ignore[misc]
     keys: list[KeyPair]
 
     @classmethod

@@ -51,14 +51,14 @@ def test_api_to_proto():
     assert proto.status == proto.status.ok, "HF block conversion should succeed"
     assert proto.exception_message == b'', "No exception expected for HF block"
     assert proto.result.decode() == json.dumps(PROTO_REF_HF_BLOCK, separators=(',', ':')), "Converted HF block should match reference"
-    block: block_pb2.block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
+    block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
 
     api_str = json.dumps(API_REF_BLOCK_EMPTY_TRANSACTIONS)
     proto = api_to_proto(api_str.encode())
     assert proto.status == proto.status.ok, "Block with empty transactions conversion should succeed"
     assert proto.exception_message == b'', "No exception expected for block with empty transactions"
     assert proto.result.decode() == json.dumps(PROTO_REF_BLOCK_EMPTY_TRANSACTION, separators=(',', ':')), "Converted block should match reference"
-    block: block_pb2.block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
+    block = ParseDict(json.loads(proto.result.decode()), block_pb2.block())
 
     # Negative test - block without transactions field should fail
     api_str = json.dumps(API_REF_BLOCK_NO_TRANSACTIONS)

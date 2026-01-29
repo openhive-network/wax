@@ -101,8 +101,7 @@ async def test_create_and_sign_transaction() -> None:
     )
 
     async with (
-        await AsyncBeekeeper.factory() as beekeeper,  # type: ignore[var-annotated]
-        await beekeeper.create_session() as session,
+        await AsyncBeekeeper.factory() as beekeeper,          await beekeeper.create_session() as session,
         (
             await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
             if WALLET_NAME not in [w.name for w in await session.wallets_created]
@@ -165,8 +164,7 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
     public_key, private_key = brain_key_data.associated_public_key, brain_key_data.wif_private_key
 
     async with (
-        await AsyncBeekeeper.factory() as beekeeper,  # type: ignore[var-annotated]
-        await beekeeper.create_session() as session,
+        await AsyncBeekeeper.factory() as beekeeper,          await beekeeper.create_session() as session,
         (
             await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
             if WALLET_NAME not in [w.name for w in await session.wallets_created]

@@ -10,7 +10,7 @@ import wax
 import pytest
 from .consts import ENCODING
 
-def compare_attributes(a, b) -> bool:
+def compare_attributes(a: object, b: object) -> bool:
     if isinstance(a, bytes):
         a = a.decode(ENCODING)
     if isinstance(b, bytes):
@@ -22,21 +22,21 @@ PROPS_TO_SERIALIZE = (
     [
         {
             "account_creation_fee": python_json_asset(
-                amount="28000", precision=3, nai="@@000000021"
+                amount=b"28000", precision=3, nai=b"@@000000021"
             ),
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_subsidy_budget": 797,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_subsidy_decay": 347321,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "maximum_block_size": 131072,
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "hbd_interest_rate": 1000,
@@ -44,36 +44,36 @@ PROPS_TO_SERIALIZE = (
         },
         {
             "hbd_exchange_rate": python_price(
-                base=python_json_asset(amount="100000", precision=3, nai="@@000000013"),
+                base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
                 quote=python_json_asset(
-                    amount="100000", precision=3, nai="@@000000021"
+                    amount=b"100000", precision=3, nai=b"@@000000021"
                 ),
             ),
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "url": b"http://new-url.html",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
-            "new_signing_key": "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "new_signing_key": b"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
         },
         {
             "account_creation_fee": python_json_asset(
-                amount="28000", precision=3, nai="@@000000021"
+                amount=b"28000", precision=3, nai=b"@@000000021"
             ),
             "maximum_block_size": 131072,
             "hbd_interest_rate": 1000,
             "hbd_exchange_rate": python_price(
-                base=python_json_asset(amount="100000", precision=3, nai="@@000000013"),
+                base=python_json_asset(amount=b"100000", precision=3, nai=b"@@000000013"),
                 quote=python_json_asset(
-                    amount="100000", precision=3, nai="@@000000021"
+                    amount=b"100000", precision=3, nai=b"@@000000021"
                 ),
             ),
             "new_signing_key": b"STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW",
-            "url": "http://new-url.html",
-            "key": "STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+            "url": b"http://new-url.html",
+            "key": b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
             "account_subsidy_budget": 797,
             "account_subsidy_decay": 347321,
         },
@@ -82,9 +82,9 @@ PROPS_TO_SERIALIZE = (
 
 
 @pytest.mark.parametrize("props_to_serialize", *PROPS_TO_SERIALIZE)
-def test_serialize_witness_set_properties(props_to_serialize: dict) -> None:
+def test_serialize_witness_set_properties(props_to_serialize: dict[str, object]) -> None:
     serialized_witness_set_properties = wax.serialize_witness_set_properties(
-        python_witness_set_properties_data(**props_to_serialize)
+        python_witness_set_properties_data(**props_to_serialize)  # type: ignore[arg-type]
     )
 
     for key in props_to_serialize.keys():
@@ -94,9 +94,9 @@ def test_serialize_witness_set_properties(props_to_serialize: dict) -> None:
 
 
 @pytest.mark.parametrize("props_to_serialize", *PROPS_TO_SERIALIZE)
-def test_deserialize_witness_set_properties(props_to_serialize: dict) -> None:
+def test_deserialize_witness_set_properties(props_to_serialize: dict[str, object]) -> None:
     serialized_witness_set_properties = wax.serialize_witness_set_properties(
-        python_witness_set_properties_data(**props_to_serialize)
+        python_witness_set_properties_data(**props_to_serialize)  # type: ignore[arg-type]
     )
     deserialized_witness_set_properties = wax.deserialize_witness_set_properties(
         serialized_witness_set_properties
@@ -109,7 +109,7 @@ def test_deserialize_witness_set_properties(props_to_serialize: dict) -> None:
 
 def test_serialize_witness_set_properties_with_missing_argument() -> None:
     with pytest.raises(TypeError):
-        wax.serialize_witness_set_properties()
+        wax.serialize_witness_set_properties()  # type: ignore[call-arg]
 
 
 def test_serialize_witness_set_properties_with_additional_argument() -> None:
@@ -117,15 +117,15 @@ def test_serialize_witness_set_properties_with_additional_argument() -> None:
         wax.serialize_witness_set_properties(
             python_witness_set_properties_data(
                 account_subsidy_budget=123,
-                key="STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
+                key=b"STM57gC3aqyDvu2fPPdfpY2iDtLU6PDb8qD8RGmfxLf1q43PhJYYQ",
             ),
-            "addtional_argument",
+            "addtional_argument",  # type: ignore[call-arg]
         )
 
 
 def test_deserialize_witness_set_properties_with_missing_argument() -> None:
     with pytest.raises(TypeError):
-        wax.deserialize_witness_set_properties()
+        wax.deserialize_witness_set_properties()  # type: ignore[call-arg]
 
 
 def test_deserialize_witness_set_properties_with_additional_argument() -> None:
@@ -135,5 +135,5 @@ def test_deserialize_witness_set_properties_with_additional_argument() -> None:
                 b"account_creation_fee": b"606d00000000000003535445454d0000",
                 b"key": b"021df13f04fc422c703043db939c2f98a600fafd0f719a0ff351b8e36c5cad2eff",
             },
-            "addtional_argument",
+            "addtional_argument",  # type: ignore[call-arg]
         )

@@ -71,7 +71,10 @@ def get_error_message(
 
 @pytest.mark.parametrize("memo_type", ["private_key", "extended_private_key", "imported_key"])
 @pytest.mark.parametrize("role", ["owner", "active", "posting", "memo"])
-def test_check_memo_for_private_keys(memo_type: str, role: str):
+def test_check_memo_for_private_keys(
+    memo_type: Literal["private_key", "extended_private_key", "imported_key"],
+    role: Literal["owner", "active", "posting", "memo"],
+) -> None:
     memo = get_memo(memo_type, role)
     error_message = get_error_message(memo_type, role)
     with pytest.raises(RuntimeError) as error:
