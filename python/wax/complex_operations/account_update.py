@@ -52,9 +52,9 @@ class AccountAuthorityUpdateOperation(OperationBase):
         *,
         _private: bool = False,
     ) -> None:
-        assert _private, (
-            "AccountAuthorityUpdateOperation should be created only by AccountAuthorityUpdateOperation.create_for"
-        )
+        assert (
+            _private
+        ), "AccountAuthorityUpdateOperation should be created only by AccountAuthorityUpdateOperation.create_for"
         super().__init__()
         self._possible_categories: PossibleCategoriesByCategoryName = possible_categories
         self._possible_roles: PossibleRoles = possible_roles
