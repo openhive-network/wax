@@ -140,4 +140,4 @@ class OnlineTransaction(Transaction, IOnlineTransaction):
         final_transaction = self.transaction
 
         validator = OnChainOperationValidator(self._chain_api)
-        await validator.validate(final_transaction.operations)
+        await validator.validate(final_transaction.operations)  # type: ignore[arg-type, unused-ignore]

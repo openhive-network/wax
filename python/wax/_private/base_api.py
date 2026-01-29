@@ -145,7 +145,7 @@ class WaxBaseApi(IWaxBaseInterface):
         result = evaluate_hbd_interest(
             hbd_seconds=account_hbd_seconds,
             head_block_time=int(now.timestamp()),
-            hbd=hbd,
+            hbd=hbd,  # type: ignore[arg-type, unused-ignore]
             hbd_seconds_last_update=int(last_compounding_date.timestamp()),
             hbd_interest_rate=interest_rate,
         )

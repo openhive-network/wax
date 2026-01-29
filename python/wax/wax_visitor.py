@@ -56,7 +56,9 @@ class AbstractOperationVisitor(ABC):
     """User must overrides all the abstract methods in derived visitor class."""
 
     def accept(self, op: operation) -> None:
-        target_operation_name: str = op.WhichOneof("value")
+        target_operation_name: str | None = op.WhichOneof("value")
+        if target_operation_name is None:
+            return
         pure_operation_name = target_operation_name.replace("_operation", "")
 
         # Accept both forms: overridden method of full compliant operation type name,

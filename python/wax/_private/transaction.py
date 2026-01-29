@@ -71,7 +71,7 @@ class Transaction(ITransaction):
             tapos = (
                 get_tapos_data(to_cpp_string(tapos_block_id))
                 if isinstance(tapos_block_id, str)
-                else self._resolve_tapos_from_transaction(tapos_block_id)
+                else self._resolve_tapos_from_transaction(tapos_block_id)  # type: ignore[arg-type, unused-ignore]
             )
             self._target = proto_transaction(ref_block_num=tapos.ref_block_num, ref_block_prefix=tapos.ref_block_prefix)
             # Create dict with all default fields included
@@ -171,11 +171,11 @@ class Transaction(ITransaction):
     def push_operation(self, operation: WaxMetaOperation) -> Self:
         if isinstance(operation, OperationBase):
             for op in operation.finalize(self._api):
-                self._push_operation(op)
+                self._push_operation(op)  # type: ignore[arg-type, unused-ignore]
         else:
             # OneOf type specifier must have _operation suffix, e.g.: <class_name>_operation
             # to match Hive Protocol type name.
-            self._push_operation(operation)
+            self._push_operation(operation)  # type: ignore[arg-type, unused-ignore]
         return self
 
     def _flush_transaction(self) -> None:

@@ -1,7 +1,7 @@
 from wax.exceptions import WaxImportProtoBeforeCompileError
 
 try:
-    from wax._private.proto.transfer_pb2 import  transfer
+    from wax._private.proto.transfer_pb2 import transfer
     from wax._private.proto.recurrent_transfer_pb2 import recurrent_transfer
     from wax._private.proto.transfer_to_savings_pb2 import transfer_to_savings
     from wax._private.proto.transfer_from_savings_pb2 import transfer_from_savings
@@ -23,7 +23,9 @@ try:
     from wax._private.proto.custom_json_pb2 import custom_json
     from wax._private.proto.convert_pb2 import convert
     from wax._private.proto.collateralized_convert_pb2 import collateralized_convert
-    from wax._private.proto.collateralized_convert_immediate_conversion_pb2 import collateralized_convert_immediate_conversion
+    from wax._private.proto.collateralized_convert_immediate_conversion_pb2 import (
+        collateralized_convert_immediate_conversion,
+    )
     from wax._private.proto.comment_pb2 import comment
     from wax._private.proto.comment_options_pb2 import comment_options
     from wax._private.proto.delete_comment_pb2 import delete_comment

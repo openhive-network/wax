@@ -114,7 +114,7 @@ class Asset:
 
         try:
             if isinstance(asset, dict):
-                asset = proto_asset(**asset)
+                asset = proto_asset(**asset)  # type: ignore[arg-type, unused-ignore]
                 self._assert_asset_nai_valid(proper_asset, asset)
                 return asset
 
