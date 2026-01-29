@@ -69,7 +69,7 @@ DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "node"
   LINK_LIBRARIES hive_protocol
   LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
-  -sBINARYEN_EXTRA_PASSES="--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
+  -sBINARYEN_EXTRA_PASSES="--converge,--all-features,-Oz,--strip-debug,--strip-dwarf,--strip-producers,--remove-unused-names,--remove-unused-module-elements,--vacuum,--duplicate-function-elimination,--merge-similar-functions"
   # show function names:
   # -O0 -g3 --profiling-funcs
 )
