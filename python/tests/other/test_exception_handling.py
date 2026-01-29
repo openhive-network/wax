@@ -8,8 +8,8 @@ from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, Wa
 
 
 def test_exception_handling() -> None:
-    ex_type = None
-    ex_args = ()
+    ex_type: type[Exception] | None = None
+    ex_args: tuple[str, ...] = ()
     ex_what = ""
     try:
         # 0 - pure throw crashes
@@ -32,8 +32,8 @@ def test_exception_handling() -> None:
 
 
 def test_exception_relay() -> None:
-    ex_type = None
-    ex_args = ()
+    ex_type: type[Exception] | None = None
+    ex_args: str | tuple[object, ...] = ()
     ex_source = "Unknown"
     try:
         wax.cpp_throws(4)
@@ -56,6 +56,6 @@ def test_exception_relay() -> None:
     print(ex_args)
     print(ex_source)
 
-    assert ex_type == WaxProtocolAssertionError
+    assert ex_type is WaxProtocolAssertionError
     assert ex_args == "3372626016653902757"
     assert ex_source == "Protocol"

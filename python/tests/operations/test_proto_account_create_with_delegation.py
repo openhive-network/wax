@@ -6,14 +6,11 @@ from wax.proto.transaction import transaction
 from wax.proto.authority import authority
 from wax._private.proto.future_extensions_pb2 import future_extensions
 
+
 def test_account_create_with_delegation():
     extension: future_extensions = future_extensions()
-    vests: asset = asset(
-        nai="@@000000037", precision=6, amount="10"
-    )
-    hive: asset = asset(
-        nai="@@000000021", precision=3, amount="10"
-    )
+    vests: asset = asset(nai="@@000000037", precision=6, amount="10")
+    hive: asset = asset(nai="@@000000021", precision=3, amount="10")
     proto_authority: authority = authority(
         weight_threshold=1,
         account_auths={"account": 1, "account1": 2},
@@ -29,7 +26,7 @@ def test_account_create_with_delegation():
         posting=proto_authority,
         memo_key="STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo",
         json_metadata="{}",
-        extensions=[]
+        extensions=[],
     )
 
     account_create_with_delegation_operation: operation = operation(
@@ -38,8 +35,6 @@ def test_account_create_with_delegation():
 
     check_operations(account_create_with_delegation_operation)
 
-    proto_transaction: transaction = transaction(
-        operations=[account_create_with_delegation_operation]
-    )
+    proto_transaction: transaction = transaction(operations=[account_create_with_delegation_operation])
 
     check_transaction(proto_transaction)

@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Any
-
 import json
+from typing import Any, Final
 
 import pytest
 
-from wax import minimize_required_signatures, python_authority, python_authorities, python_minimize_required_signatures_data
+from wax import (
+    minimize_required_signatures,
+    python_authority,
+    python_authorities,
+    python_minimize_required_signatures_data,
+)
 from tests.utils.refs import (
     ACCOUNT_AUTHS,
     API_TRX_SIG1,
@@ -35,36 +39,45 @@ AVAILABLE_KEYS: Final[list[bytes]] = [
 SIGNING_KEYS: Final[dict[str, list[bytes]]] = {
     "API_TRX_SIG1": [b"STM5zw6KDtQiiJMhkdkFm8CXxPUEa2QyitHBhkCE1iMJEGmEfd5aE"],
     "API_TRX_SIG5_v0": [
-        b'STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR',
-        b'STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK',
-        b'STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP',
-        b'STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43',
-        b'STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd',
+        b"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR",
+        b"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+        b"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+        b"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+        b"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
     ],
     "API_TRX_SIG5_v1": [
-        b'STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR',
-        b'STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK',
-        b'STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP',
-        b'STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43',
-        b'STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd',
+        b"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR",
+        b"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+        b"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+        b"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+        b"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
     ],
     "API_TRX_SIG5_v2": [
-        b'STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR',
-        b'STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK',
-        b'STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP',
-        b'STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43',
-        b'STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd',
+        b"STM5dhkPS223F9d3TCXKttuWpdWgqS2Fx8KNRQve6BMGmAvJ5GnJR",
+        b"STM64Bb5TXsiEbjjLsgVrvVttEDsLNSot9p8zJd41D5zEr5opxcHK",
+        b"STM7S3wsVtQotgKLN8wFLPNBALe6YHt8MPLEHuTH5CxfxdhpGPBUP",
+        b"STM8AZuk2ja5vSFySFL2zpB9bNew8wJAg8r4QFtbnoamEX8Jvvq43",
+        b"STM8jviUDRAefxmTQ9m8wNdiQV5dmCPSMDjSnztPYZpHf1yfaD6Rd",
     ],
 }
 
+
 def get_witness_key(account_name: bytes) -> bytes:
-    print(f"get_witness_key: {account_name}")
+    print(f"get_witness_key: {account_name!r}")
     return b""
+
+
+# Convert str keys to bytes keys for the authorities map
+# ACCOUNT_AUTHS is redefined from list to dict in refs.py
+_authorities_map: dict[bytes, python_authorities] = {
+    k.encode(): v
+    for k, v in ACCOUNT_AUTHS.items()  # type: ignore[attr-defined]
+}
 
 MINIMIZE_REQUIRED_SIGNATURES_DATA = python_minimize_required_signatures_data(
     chain_id=b"beeab0de00000000000000000000000000000000000000000000000000000000",
     available_keys=AVAILABLE_KEYS,
-    authorities_map=ACCOUNT_AUTHS,
+    authorities_map=_authorities_map,
     get_witness_key=get_witness_key,
 )
 
@@ -78,11 +91,11 @@ MINIMIZE_REQUIRED_SIGNATURES_DATA = python_minimize_required_signatures_data(
         (API_TRX_SIG5_v2, SIGNING_KEYS["API_TRX_SIG5_v2"]),
     ],
 )
-def test_minimize_required_signatures(transaction: dict, signing_keys: list) -> None:
+def test_minimize_required_signatures(transaction: dict[str, Any], signing_keys: list[bytes]) -> None:
     tx_str = json.dumps(transaction)
     keys = minimize_required_signatures(tx_str.encode(), MINIMIZE_REQUIRED_SIGNATURES_DATA)
 
     for key in keys:
-        print(f"key: {key}")
+        print(f"key: {key!r}")
 
     assert keys == signing_keys, "Signing keys are incorrect"

@@ -14,8 +14,8 @@ def test_calculate_transaction_id_positive():
 
     # Assert
     assert result.status == result.status.ok, "API transaction ID calculation should succeed"
-    assert result.exception_message == b'', "No exception expected for valid API transaction"
-    assert result.result == b'4491c7a6362e71cca31e256f69af503e0abc5d3d', "Transaction ID should match expected value"
+    assert result.exception_message == b"", "No exception expected for valid API transaction"
+    assert result.result == b"4491c7a6362e71cca31e256f69af503e0abc5d3d", "Transaction ID should match expected value"
 
 
 def test_calculate_transaction_id_negative():
@@ -42,8 +42,8 @@ def test_calculate_serialization_sensitive_transaction_id():
 
     # Assert
     assert result.status == result.status.ok, "Serialization sensitive transaction ID calculation should succeed"
-    assert result.exception_message == b'', "No exception expected"
-    assert result.result == b'3725c81634f152011e2043eb7119911b953d4267', "Transaction ID should match expected value"
+    assert result.exception_message == b"", "No exception expected"
+    assert result.result == b"3725c81634f152011e2043eb7119911b953d4267", "Transaction ID should match expected value"
 
 
 def test_calculate_legacy_serialization_sensitive_transaction_id():
@@ -55,5 +55,7 @@ def test_calculate_legacy_serialization_sensitive_transaction_id():
 
     # Assert
     assert legacy_result.status == legacy_result.status.ok, "Legacy transaction ID calculation should succeed"
-    assert legacy_result.exception_message == b'', "No exception expected for legacy calculation"
-    assert legacy_result.result == b'7f34699e9eea49d1bcc10c88f96e38897839ece3', "Legacy transaction ID should differ from standard"
+    assert legacy_result.exception_message == b"", "No exception expected for legacy calculation"
+    assert legacy_result.result == b"7f34699e9eea49d1bcc10c88f96e38897839ece3", (
+        "Legacy transaction ID should differ from standard"
+    )

@@ -1,6 +1,9 @@
 import json
 
-from tests.utils.refs import API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION
+from tests.utils.refs import (
+    API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+    PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+)
 
 from wax import proto_to_legacy_api
 
@@ -14,8 +17,10 @@ def test_tx_proto_to_legacy_api_positive():
 
     # Assert
     assert api.status == api.status.ok, "Proto to legacy API conversion should succeed"
-    assert api.exception_message == b'', "No exception expected for valid proto transaction"
-    assert json.loads(api.result.decode()) == API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, "Converted legacy API should match reference"
+    assert api.exception_message == b"", "No exception expected for valid proto transaction"
+    assert json.loads(api.result.decode()) == API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, (
+        "Converted legacy API should match reference"
+    )
 
 
 def test_tx_proto_to_legacy_api_negative():

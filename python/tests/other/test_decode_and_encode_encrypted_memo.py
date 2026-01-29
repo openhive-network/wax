@@ -24,9 +24,5 @@ def test_encode_and_decode_encrypted_memo() -> None:
     decoded_encrypted_memo = wax.decode_encrypted_memo(encoded_encrypted_memo)
 
     assert decoded_encrypted_memo.encrypted_content == ENCRYPTED_MEMO.encode(ENCODING)
-    assert decoded_encrypted_memo.main_encryption_key == MAIN_ENCRYPTION_KEY.encode(
-        ENCODING
-    )
-    assert decoded_encrypted_memo.other_encryption_key == OTHER_ENCRYPTION_KEY.encode(
-        ENCODING
-    )
+    assert decoded_encrypted_memo.main_encryption_key == MAIN_ENCRYPTION_KEY.encode(ENCODING)
+    assert decoded_encrypted_memo.other_encryption_key == OTHER_ENCRYPTION_KEY.encode(ENCODING)

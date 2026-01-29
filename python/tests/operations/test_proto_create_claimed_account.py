@@ -9,15 +9,14 @@ from wax.proto.transaction import transaction
 from wax.proto.authority import authority
 from wax._private.proto import future_extensions_pb2
 
+
 def test_create_claimed_account():
     extension: future_extensions_pb2.future_extensions = future_extensions_pb2.future_extensions()
-    asset_proto: asset = asset(
-        nai="@@000000021", precision=3, amount="10"
-    )
+    asset_proto: asset = asset(nai="@@000000021", precision=3, amount="10")
     authority_proto: authority = authority(
         weight_threshold=1,
         account_auths={"account": 1, "account1": 2},
-        key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1}
+        key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1},
     )
     create_claimed_account_proto: create_claimed_account = create_claimed_account(
         creator="creator",
@@ -27,7 +26,7 @@ def test_create_claimed_account():
         posting=authority_proto,
         memo_key="STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo",
         json_metadata="{}",
-        extensions=[]
+        extensions=[],
     )
 
     create_claimed_account_operation: operation = operation(
@@ -36,8 +35,6 @@ def test_create_claimed_account():
 
     check_operations(create_claimed_account_operation)
 
-    transaction_proto: transaction = transaction(
-        operations=[create_claimed_account_operation]
-    )
+    transaction_proto: transaction = transaction(operations=[create_claimed_account_operation])
 
     check_transaction(transaction_proto)

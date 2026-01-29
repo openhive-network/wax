@@ -28,7 +28,7 @@ def beekeeper_output_dir(request: pytest.FixtureRequest) -> Generator[Path, None
 
 @pytest.fixture
 async def beekeeper(beekeeper_output_dir: Path) -> AsyncGenerator[AsyncBeekeeper, None]:
-    async with await AsyncBeekeeper.factory(  # type: ignore[var-annotated]
+    async with await AsyncBeekeeper.factory(
         settings=InterfaceSettings(working_directory=beekeeper_output_dir)
     ) as beekeeper:
         yield beekeeper

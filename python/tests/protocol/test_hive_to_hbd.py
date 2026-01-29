@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from typing import Final
@@ -15,6 +14,8 @@ TESTDATA: Final[list[tuple[python_json_asset, python_json_asset, python_json_ass
 
 
 @pytest.mark.parametrize(("amount", "base", "quote", "expected"), TESTDATA)
-def test_calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, quote: python_json_asset, expected: python_json_asset):
+def test_calculate_hive_to_hbd(
+    amount: python_json_asset, base: python_json_asset, quote: python_json_asset, expected: python_json_asset
+):
     result = calculate_hive_to_hbd(amount, base, quote)
     assert result == expected

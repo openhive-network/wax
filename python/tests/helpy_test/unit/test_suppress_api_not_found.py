@@ -18,7 +18,7 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
         "jsonrpc": "2.0",
         "error": {
             "code": -32003,
-            "message": ("Assert Exception:api_itr != " "data._registered_apis.end(): Could not find API " + api),
+            "message": ("Assert Exception:api_itr != data._registered_apis.end(): Could not find API " + api),
         },
         "id": 1,
     }

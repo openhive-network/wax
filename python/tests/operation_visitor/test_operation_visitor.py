@@ -7,13 +7,14 @@ from wax.wax_visitor import OperationVisitor
 tx_json = {
     "operations": [
         {"vote_operation": {"voter": "Alice", "author": "Bob", "permlink": "/", "weight": 11}},
-        {"limit_order_cancel_operation": {"owner": "orderabc", "orderid": 5}}
+        {"limit_order_cancel_operation": {"owner": "orderabc", "orderid": 5}},
     ]
 }
 
+
 class MyOperationVisitor(OperationVisitor):
-    vote_obj: vote = None
-    
+    vote_obj: vote | None = None
+
     def vote(self, op: vote) -> None:
         print("Processing 'vote' operation")
         self.vote_obj = op

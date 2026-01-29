@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from beekeepy.interfaces import ContextAsync, ContextSync
@@ -9,24 +11,24 @@ class MyCustomError(Exception):
     pass
 
 
-class SyncTestContext(ContextSync):
+class SyncTestContext(ContextSync[Any]):
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
 
-    def _enter(self) -> None:  # type: ignore[override]
+    def _enter(self) -> None:
         self.test_variable = "during-test"
 
     def _finally(self) -> None:
         self.test_variable = "correct"
 
 
-class AsyncTestContext(ContextAsync):
+class AsyncTestContext(ContextAsync[Any]):
     def __init__(self) -> None:
         super().__init__()
         self.test_variable = "invalid"
 
-    async def _aenter(self) -> None:  # type: ignore[override]
+    async def _aenter(self) -> None:
         self.test_variable = "during-test"
 
     async def _afinally(self) -> None:

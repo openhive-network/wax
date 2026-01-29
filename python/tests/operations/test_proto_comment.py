@@ -18,14 +18,10 @@ def test_comment():
         json_metadata="{}",
     )
 
-    comment_operation: operation = operation(
-        comment_operation=comment_proto
-    )
+    comment_operation: operation = operation(comment_operation=comment_proto)
 
     check_operations(comment_operation)
 
-    transaction_proto: transaction = transaction(
-        operations=[comment_operation]
-    )
+    transaction_proto: transaction = transaction(operations=[comment_operation])
 
     check_transaction(transaction_proto)
