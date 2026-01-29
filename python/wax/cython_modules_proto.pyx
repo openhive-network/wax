@@ -8,6 +8,7 @@ from libcpp.vector cimport vector
 import json
 
 from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common import encode_str, decode_bytes, decode_list
 from cython_modules_handles cimport WaxTransactionHandle, WaxOperationHandle, _create_wax_transaction, _create_wax_operation, _handle_deserialize_transaction
 from cython_modules_validation cimport _op_impacted_accounts, _op_validate, _tx_impacted_accounts, _tx_validate, _tx_id, _tx_sig_digest
 from cython_modules_transactions cimport _tx_to_binary, _tx_to_json, _tx_to_legacy_json
@@ -21,22 +22,22 @@ include "_decorators.pxi"
 # Forward declaration is not needed for def functions in the same compilation unit.
 
 
-def proto_operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+def proto_operation_get_impacted_accounts(operation: str) -> list[str]:
     """Get impacted accounts from a protobuf operation."""
     op = json.loads(operation)
     hOp = _create_wax_operation(op, True)
-    return _op_impacted_accounts(hOp)
+    return decode_list(_op_impacted_accounts(hOp))
 
 
-def proto_transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+def proto_transaction_get_impacted_accounts(transaction: str) -> list[str]:
     """Get impacted accounts from a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
-    return _tx_impacted_accounts(hTx)
+    return decode_list(_tx_impacted_accounts(hTx))
 
 
 @return_python_result
-def validate_proto_operation(operation: bytes) -> python_result:
+def validate_proto_operation(operation: str) -> python_result:
     """Validate a protobuf operation."""
     op = json.loads(operation)
     hOp = _create_wax_operation(op, True)
@@ -44,7 +45,7 @@ def validate_proto_operation(operation: bytes) -> python_result:
 
 
 @return_python_result
-def validate_proto_transaction(transaction: bytes) -> python_result:
+def validate_proto_transaction(transaction: str) -> python_result:
     """Validate a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
@@ -52,7 +53,7 @@ def validate_proto_transaction(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_proto_transaction_id(transaction: bytes) -> python_result:
+def calculate_proto_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID from a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
@@ -60,7 +61,7 @@ def calculate_proto_transaction_id(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_proto_legacy_transaction_id(transaction: bytes) -> python_result:
+def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate legacy transaction ID from a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
@@ -68,23 +69,23 @@ def calculate_proto_legacy_transaction_id(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_proto_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest from a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
-    return _tx_sig_digest(hTx, chain_id, True)
+    return _tx_sig_digest(hTx, encode_str(chain_id), True)
 
 
 @return_python_result
-def calculate_proto_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate legacy signature digest from a protobuf transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
-    return _tx_sig_digest(hTx, chain_id, False)
+    return _tx_sig_digest(hTx, encode_str(chain_id), False)
 
 
 @return_python_result
-def serialize_proto_transaction(transaction: bytes) -> python_result:
+def serialize_proto_transaction(transaction: str) -> python_result:
     """Serialize a protobuf transaction to binary."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, True)
@@ -92,9 +93,9 @@ def serialize_proto_transaction(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def deserialize_proto_transaction(transaction: bytes) -> python_result:
+def deserialize_proto_transaction(transaction: str) -> python_result:
     """Deserialize a binary transaction to protobuf format."""
-    hTx = _handle_deserialize_transaction(transaction)
+    hTx = _handle_deserialize_transaction(encode_str(transaction))
     # Convert from api to proto:
     tx = json.loads(_tx_to_json(hTx))
     tx_api_to_proto(tx)
@@ -102,7 +103,7 @@ def deserialize_proto_transaction(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def proto_to_api(only_tx: bytes) -> python_result:
+def proto_to_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to API format."""
     tx = json.loads(only_tx)
     if "ref_block_num" not in tx:
@@ -113,7 +114,7 @@ def proto_to_api(only_tx: bytes) -> python_result:
 
 
 @return_python_result
-def proto_to_legacy_api(only_tx: bytes) -> python_result:
+def proto_to_legacy_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to legacy API format."""
     tx = json.loads(only_tx)
     if "ref_block_num" not in tx:
@@ -124,7 +125,7 @@ def proto_to_legacy_api(only_tx: bytes) -> python_result:
 
 
 @return_python_result
-def api_to_proto(only_tx: bytes) -> python_result:
+def api_to_proto(only_tx: str) -> python_result:
     """Convert an API transaction to protobuf format."""
     tx = json.loads(only_tx)
     if "ref_block_num" not in tx:

@@ -7,14 +7,15 @@ from libcpp.optional cimport optional
 from libc.stdint cimport uint16_t, uint32_t, int32_t
 
 from cython_modules_common cimport protocol, json_asset, json_price, witness_set_properties_data, witness_set_properties_serialized
+from cython_modules_common import encode_str, decode_bytes
 from wax.wax_result import python_witness_set_properties_data, python_json_asset, python_price
 
 
-def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[bytes, bytes]:
+def serialize_witness_set_properties(input_props: python_witness_set_properties_data) -> dict[str, str]:
     """Serialize witness set properties to binary format."""
     cdef protocol obj
     cdef witness_set_properties_data _props_to_serialize
-    _props_to_serialize.key = input_props.key
+    _props_to_serialize.key = encode_str(input_props.key)
     cdef optional[cppstring] str_opt
     cdef cppstring c_str
 
@@ -32,40 +33,30 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
     cdef optional[json_price] _price_opt
 
     if input_props.new_signing_key is not None:
-        if isinstance(input_props.new_signing_key, str):
-            byte_string = input_props.new_signing_key.encode('utf-8')
-        else:
-            byte_string = input_props.new_signing_key
-
-        c_str = byte_string
+        c_str = encode_str(input_props.new_signing_key)
         str_opt = c_str
         _props_to_serialize.new_signing_key = str_opt
 
     if input_props.account_creation_fee is not None:
-        _base = json_asset(input_props.account_creation_fee.amount,
+        _base = json_asset(encode_str(input_props.account_creation_fee.amount),
             input_props.account_creation_fee.precision,
-            input_props.account_creation_fee.nai
+            encode_str(input_props.account_creation_fee.nai)
         )
         _props_to_serialize.account_creation_fee = _base
 
     if input_props.url is not None:
-        if isinstance(input_props.url, str):
-            byte_string = input_props.url.encode('utf-8')
-        else:
-            byte_string = input_props.url
-
-        c_str = byte_string
+        c_str = encode_str(input_props.url)
         str_opt = c_str
         _props_to_serialize.url = str_opt
 
     if input_props.hbd_exchange_rate is not None:
-        _base = json_asset(input_props.hbd_exchange_rate.base.amount,
+        _base = json_asset(encode_str(input_props.hbd_exchange_rate.base.amount),
             input_props.hbd_exchange_rate.base.precision,
-            input_props.hbd_exchange_rate.base.nai)
+            encode_str(input_props.hbd_exchange_rate.base.nai))
 
-        _quote = json_asset(input_props.hbd_exchange_rate.quote.amount,
+        _quote = json_asset(encode_str(input_props.hbd_exchange_rate.quote.amount),
             input_props.hbd_exchange_rate.quote.precision,
-            input_props.hbd_exchange_rate.quote.nai)
+            encode_str(input_props.hbd_exchange_rate.quote.nai))
 
         _price_helper.base = _base
         _price_helper.quote = _quote
@@ -94,42 +85,44 @@ def serialize_witness_set_properties(input_props: python_witness_set_properties_
         _props_to_serialize.account_subsidy_decay = _uint_opt
 
     serialized_properties = obj.cpp_serialize_witness_set_properties(_props_to_serialize)
-    return serialized_properties
+    # Convert C++ map to Python dict, then decode keys and values from bytes to str
+    return {decode_bytes(k): decode_bytes(v) for k, v in dict(serialized_properties).items()}
 
 
-def deserialize_witness_set_properties(serialized_properties: dict[bytes, bytes]) -> python_witness_set_properties_data:
+def deserialize_witness_set_properties(serialized_properties: dict[str, str]) -> python_witness_set_properties_data:
     """Deserialize binary witness set properties to structured format."""
     cdef protocol obj
     cdef witness_set_properties_serialized _serialized_props
 
     for prop, value in serialized_properties.items():
-        _serialized_props[prop] = value
+        _serialized_props[encode_str(prop)] = encode_str(value)
 
     deserialized_props = obj.cpp_deserialize_witness_set_properties(_serialized_props)
 
-    ret_val = python_witness_set_properties_data(key=deserialized_props.key)
+    ret_val = python_witness_set_properties_data(key=decode_bytes(deserialized_props.key))
 
     if deserialized_props.new_signing_key.has_value():
-        ret_val.new_signing_key = bytes(deserialized_props.new_signing_key.value())
+        ret_val.new_signing_key = decode_bytes(deserialized_props.new_signing_key.value())
 
     if deserialized_props.account_creation_fee.has_value():
-        ret_val.account_creation_fee = python_json_asset(deserialized_props.account_creation_fee.value().amount,
+        ret_val.account_creation_fee = python_json_asset(
+            decode_bytes(deserialized_props.account_creation_fee.value().amount),
             deserialized_props.account_creation_fee.value().precision,
-            deserialized_props.account_creation_fee.value().nai
+            decode_bytes(deserialized_props.account_creation_fee.value().nai)
         )
 
     if deserialized_props.url.has_value():
-        ret_val.url = bytes(deserialized_props.url.value())
+        ret_val.url = decode_bytes(deserialized_props.url.value())
 
     if deserialized_props.hbd_exchange_rate.has_value():
         _source = deserialized_props.hbd_exchange_rate.value()
-        _base = python_json_asset(_source.base.amount,
+        _base = python_json_asset(decode_bytes(_source.base.amount),
             _source.base.precision,
-            _source.base.nai)
+            decode_bytes(_source.base.nai))
 
-        _quote = python_json_asset(_source.quote.amount,
+        _quote = python_json_asset(decode_bytes(_source.quote.amount),
             _source.quote.precision,
-            _source.quote.nai)
+            decode_bytes(_source.quote.nai))
 
         ret_val.hbd_exchange_rate = python_price(base=_base, quote=_quote)
 

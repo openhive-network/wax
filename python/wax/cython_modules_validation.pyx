@@ -8,6 +8,7 @@ from libcpp.vector cimport vector
 import json
 
 from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common import encode_str, decode_bytes, decode_list
 from cython_modules_handles cimport WaxTransactionHandle, WaxOperationHandle, _create_wax_transaction, _create_wax_operation
 from wax.wax_result import python_result
 
@@ -15,22 +16,22 @@ from wax.wax_result import python_result
 include "_decorators.pxi"
 
 
-def operation_get_impacted_accounts(operation: bytes) -> vector[string]:
+def operation_get_impacted_accounts(operation: str) -> list[str]:
     """Get list of accounts impacted by an operation."""
     op = json.loads(operation)
     hOp = _create_wax_operation(op, False)
-    return _op_impacted_accounts(hOp)
+    return decode_list(_op_impacted_accounts(hOp))
 
 
-def transaction_get_impacted_accounts(transaction: bytes) -> vector[string]:
+def transaction_get_impacted_accounts(transaction: str) -> list[str]:
     """Get list of accounts impacted by a transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
-    return _tx_impacted_accounts(hTx)
+    return decode_list(_tx_impacted_accounts(hTx))
 
 
 @return_python_result
-def validate_operation(operation: bytes) -> python_result:
+def validate_operation(operation: str) -> python_result:
     """Validate an operation."""
     op = json.loads(operation)
     hOp = _create_wax_operation(op, False)
@@ -38,7 +39,7 @@ def validate_operation(operation: bytes) -> python_result:
 
 
 @return_python_result
-def validate_transaction(transaction: bytes) -> python_result:
+def validate_transaction(transaction: str) -> python_result:
     """Validate a transaction."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
@@ -46,7 +47,7 @@ def validate_transaction(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_transaction_id(transaction: bytes) -> python_result:
+def calculate_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using HF26 serialization."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
@@ -54,7 +55,7 @@ def calculate_transaction_id(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_legacy_transaction_id(transaction: bytes) -> python_result:
+def calculate_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using legacy serialization."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
@@ -62,25 +63,25 @@ def calculate_legacy_transaction_id(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def calculate_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using HF26 serialization."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
-    return _tx_sig_digest(hTx, chain_id, True)
+    return _tx_sig_digest(hTx, encode_str(chain_id), True)
 
 
 @return_python_result
-def calculate_legacy_sig_digest(transaction: bytes, chain_id: bytes) -> python_result:
+def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using legacy serialization."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
-    return _tx_sig_digest(hTx, chain_id, False)
+    return _tx_sig_digest(hTx, encode_str(chain_id), False)
 
 
-def is_valid_account_name(account_name: bytes) -> bool:
+def is_valid_account_name(account_name: str) -> bool:
     """Check if account name is valid."""
     cdef protocol obj
-    return obj.cpp_is_valid_account_name(account_name)
+    return obj.cpp_is_valid_account_name(encode_str(account_name))
 
 
 # =============================================================================
@@ -129,9 +130,9 @@ cdef bytes _tx_sig_digest(WaxTransactionHandle wax_tx, bytes chain_id, bint use_
 # These wrap the cdef functions for Python access
 # =============================================================================
 
-def op_impacted_accounts(wax_op: WaxOperationHandle) -> vector[string]:
+def op_impacted_accounts(wax_op: WaxOperationHandle) -> list[str]:
     """Get impacted accounts from operation handle."""
-    return _op_impacted_accounts(wax_op)
+    return decode_list(_op_impacted_accounts(wax_op))
 
 
 def op_validate(wax_op: WaxOperationHandle) -> None:
@@ -139,9 +140,9 @@ def op_validate(wax_op: WaxOperationHandle) -> None:
     _op_validate(wax_op)
 
 
-def tx_impacted_accounts(tx: WaxTransactionHandle) -> vector[string]:
+def tx_impacted_accounts(tx: WaxTransactionHandle) -> list[str]:
     """Get impacted accounts from transaction handle."""
-    return _tx_impacted_accounts(tx)
+    return decode_list(_tx_impacted_accounts(tx))
 
 
 def tx_validate(tx: WaxTransactionHandle) -> None:
@@ -149,11 +150,11 @@ def tx_validate(tx: WaxTransactionHandle) -> None:
     _tx_validate(tx)
 
 
-def tx_id(tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> bytes:
+def tx_id(tx: WaxTransactionHandle, use_hf26_serialization: bool = True) -> str:
     """Get transaction ID from handle."""
-    return _tx_id(tx, use_hf26_serialization)
+    return decode_bytes(_tx_id(tx, use_hf26_serialization))
 
 
-def tx_sig_digest(tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> bytes:
+def tx_sig_digest(tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> str:
     """Get signature digest from transaction handle."""
-    return _tx_sig_digest(tx, chain_id, use_hf26_serialization)
+    return decode_bytes(_tx_sig_digest(tx, encode_str(chain_id), use_hf26_serialization))

@@ -92,13 +92,13 @@ def return_python_result(foo):
         try:
             result = foo(*args, **kwargs)
             if result is None:
-                result = b''  # Ensure result is bytes
+                result = ''  # Ensure result is str
             else:
-                if isinstance(result, str):
-                    result = result.encode('utf-8')
-                elif not isinstance(result, bytes):
-                    result = json.dumps(result).encode('utf-8')  # Convert to bytes if not already
-            return python_result(status=python_error_code.ok, result=result, exception_message=b'')
+                if isinstance(result, bytes):
+                    result = result.decode('utf-8')
+                elif not isinstance(result, str):
+                    result = json.dumps(result)  # Convert to str if not already
+            return python_result(status=python_error_code.ok, result=result, exception_message='')
         except Exception as ex:
             # Convert capsule exceptions to proper messages
             ex_message = _convert_exception_to_json_message(ex)
@@ -107,7 +107,7 @@ def return_python_result(foo):
                 for val in aux['stack']:
                     if isinstance(val, dict) and 'context' in val and isinstance(val['context'], dict):
                         val['context'].pop('timestamp', None)
-            return python_result(status=python_error_code.fail, result=b'', exception_message=str(aux).encode('utf-8'))
+            return python_result(status=python_error_code.fail, result='', exception_message=str(aux))
     return wrapper
 
 
@@ -116,6 +116,11 @@ def return_python_json_asset(foo):
     @wraps(foo)
     def wrapper(*args, **kwargs):
         amount, precision, nai = foo(*args, **kwargs)
+        # Decode bytes to str if needed
+        if isinstance(amount, bytes):
+            amount = amount.decode('utf-8')
+        if isinstance(nai, bytes):
+            nai = nai.decode('utf-8')
         return python_json_asset(
             amount=amount,
             precision=precision,

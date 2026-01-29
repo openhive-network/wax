@@ -5,6 +5,7 @@
 from libc.stdint cimport uint16_t, uint32_t, uint64_t
 
 from cython_modules_common cimport protocol, json_asset, json_price, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common import encode_str
 from wax.wax_result import (
     python_result,
     python_json_asset,
@@ -14,6 +15,11 @@ from wax.wax_result import (
 
 # Include shared decorators (these are def functions, cannot be cimported)
 include "_decorators.pxi"
+
+
+cdef json_asset encode_json_asset(object asset):
+    """Convert python_json_asset to C++ json_asset, encoding strings as bytes for C++."""
+    return json_asset(encode_str(asset.amount), asset.precision, encode_str(asset.nai))
 
 
 @return_python_json_asset
@@ -49,10 +55,10 @@ def vests(amount: int) -> python_json_asset:
 
 
 @return_python_ref_block_data
-def get_tapos_data(block_id: bytes) -> python_ref_block_data:
+def get_tapos_data(block_id: str) -> python_ref_block_data:
     """Get TAPOS (Transaction as Proof of Stake) data from a block ID."""
     cdef protocol obj
-    response = obj.cpp_get_tapos_data(block_id)
+    response = obj.cpp_get_tapos_data(encode_str(block_id))
     return response.ref_block_num, response.ref_block_prefix
 
 
@@ -81,8 +87,8 @@ def calculate_hp_apr(
 ) -> python_result:
     """Calculate HP APR (Annual Percentage Rate)."""
     cdef protocol obj
-    cdef json_asset _virtual_supply = json_asset(virtual_supply.amount, virtual_supply.precision, virtual_supply.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
+    cdef json_asset _virtual_supply = encode_json_asset(virtual_supply)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
     response = obj.cpp_calculate_hp_apr(head_block_num, vesting_reward_percent, _virtual_supply, _total_vesting_fund_hive)
     return response
 
@@ -91,9 +97,9 @@ def calculate_hp_apr(
 def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
     """Convert HBD to HIVE using given price."""
     cdef protocol obj
-    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
-    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
-    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
+    cdef json_asset _hbd = encode_json_asset(hbd)
+    cdef json_asset _base = encode_json_asset(base)
+    cdef json_asset _quote = encode_json_asset(quote)
     response = obj.cpp_hbd_to_hive(_hbd, _base, _quote)
     return response.amount, response.precision, response.nai
 
@@ -102,9 +108,9 @@ def calculate_hbd_to_hive(hbd: python_json_asset, base: python_json_asset, quote
 def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, quote: python_json_asset) -> python_json_asset:
     """Convert HIVE to HBD using given price."""
     cdef protocol obj
-    cdef json_asset _amount = json_asset(amount.amount, amount.precision, amount.nai)
-    cdef json_asset _base = json_asset(base.amount, base.precision, base.nai)
-    cdef json_asset _quote = json_asset(quote.amount, quote.precision, quote.nai)
+    cdef json_asset _amount = encode_json_asset(amount)
+    cdef json_asset _base = encode_json_asset(base)
+    cdef json_asset _quote = encode_json_asset(quote)
     response = obj.cpp_hive_to_hbd(_amount, _base, _quote)
     return response.amount, response.precision, response.nai
 
@@ -113,9 +119,9 @@ def calculate_hive_to_hbd(amount: python_json_asset, base: python_json_asset, qu
 def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert VESTS to HP (Hive Power)."""
     cdef protocol obj
-    cdef json_asset _vests = json_asset(vests.amount, vests.precision, vests.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    cdef json_asset _vests = encode_json_asset(vests)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
+    cdef json_asset _total_vesting_shares = encode_json_asset(total_vesting_shares)
     response = obj.cpp_vests_to_hp(_vests, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
@@ -124,9 +130,9 @@ def calculate_vests_to_hp(vests: python_json_asset, total_vesting_fund_hive: pyt
 def calculate_hp_to_vests(hive: python_json_asset, total_vesting_fund_hive: python_json_asset, total_vesting_shares: python_json_asset) -> python_json_asset:
     """Convert HP (Hive Power) to VESTS."""
     cdef protocol obj
-    cdef json_asset _hive = json_asset(hive.amount, hive.precision, hive.nai)
-    cdef json_asset _total_vesting_fund_hive = json_asset(total_vesting_fund_hive.amount, total_vesting_fund_hive.precision, total_vesting_fund_hive.nai)
-    cdef json_asset _total_vesting_shares = json_asset(total_vesting_shares.amount, total_vesting_shares.precision, total_vesting_shares.nai)
+    cdef json_asset _hive = encode_json_asset(hive)
+    cdef json_asset _total_vesting_fund_hive = encode_json_asset(total_vesting_fund_hive)
+    cdef json_asset _total_vesting_shares = encode_json_asset(total_vesting_shares)
     response = obj.cpp_hp_to_vests(_hive, _total_vesting_fund_hive, _total_vesting_shares)
     return response.amount, response.precision, response.nai
 
@@ -157,11 +163,11 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     """Estimate HIVE collateral required for HBD conversion."""
     cdef protocol obj
 
-    cdef json_asset _current_median_history_base = json_asset(current_median_history.base.amount, current_median_history.base.precision, current_median_history.base.nai)
-    cdef json_asset _current_median_history_quote = json_asset(current_median_history.quote.amount, current_median_history.quote.precision, current_median_history.quote.nai)
+    cdef json_asset _current_median_history_base = encode_json_asset(current_median_history.base)
+    cdef json_asset _current_median_history_quote = encode_json_asset(current_median_history.quote)
 
-    cdef json_asset _current_min_history_base = json_asset(current_min_history.base.amount, current_min_history.base.precision, current_min_history.base.nai)
-    cdef json_asset _current_min_history_quote = json_asset(current_min_history.quote.amount, current_min_history.quote.precision, current_min_history.quote.nai)
+    cdef json_asset _current_min_history_base = encode_json_asset(current_min_history.base)
+    cdef json_asset _current_min_history_quote = encode_json_asset(current_min_history.quote)
 
     cdef json_price _current_median_history
     _current_median_history.base = _current_median_history_base
@@ -171,7 +177,7 @@ def estimate_hive_collateral(current_median_history: python_price, current_min_h
     _current_min_history.base = _current_min_history_base
     _current_min_history.quote = _current_min_history_quote
 
-    cdef json_asset _hbd_amount_to_get = json_asset(hbd_amount_to_get.amount, hbd_amount_to_get.precision, hbd_amount_to_get.nai)
+    cdef json_asset _hbd_amount_to_get = encode_json_asset(hbd_amount_to_get)
 
     response = obj.cpp_estimate_hive_collateral(_current_median_history, _current_min_history, _hbd_amount_to_get)
     return response.amount, response.precision, response.nai
@@ -182,7 +188,7 @@ def evaluate_hbd_interest(hbd_seconds: int, head_block_time: int, hbd: python_js
     """Evaluate HBD interest earned."""
     cdef protocol obj
 
-    cdef json_asset _hbd = json_asset(hbd.amount, hbd.precision, hbd.nai)
+    cdef json_asset _hbd = encode_json_asset(hbd)
     cdef uint64_t hbd_seconds_low = hbd_seconds & 0xFFFFFFFF_FFFFFFFF
     cdef uint64_t hbd_seconds_high = hbd_seconds >> 64
 

@@ -5,6 +5,7 @@
 from libcpp.utility cimport move
 
 from cython_modules_common cimport protocol, hive_transaction_handle, hive_operation_handle, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common import encode_str
 
 # Include shared decorators (these are def functions, cannot be cimported)
 include "_decorators.pxi"
@@ -73,11 +74,11 @@ def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
     return _create_wax_operation(op, is_protobuf)
 
 
-def handle_deserialize_transaction(transaction_data: bytes) -> WaxTransactionHandle:
+def handle_deserialize_transaction(transaction_data: str) -> WaxTransactionHandle:
     """Deserialize binary transaction data into a WaxTransactionHandle."""
-    return _handle_deserialize_transaction(transaction_data)
+    return _handle_deserialize_transaction(encode_str(transaction_data))
 
 
-def handle_deserialize_operation(operation_data: bytes) -> WaxOperationHandle:
+def handle_deserialize_operation(operation_data: str) -> WaxOperationHandle:
     """Deserialize binary operation data into a WaxOperationHandle."""
-    return _handle_deserialize_operation(operation_data)
+    return _handle_deserialize_operation(encode_str(operation_data))

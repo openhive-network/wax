@@ -8,6 +8,7 @@ from libcpp.vector cimport vector
 import json
 
 from cython_modules_common cimport protocol, binary_data, binary_data_node, convert_binary_data_node_to_python, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common import encode_str, decode_bytes, decode_list
 from cython_modules_handles cimport WaxTransactionHandle, WaxOperationHandle, _create_wax_transaction, _handle_deserialize_transaction
 from wax.wax_result import python_result, python_binary_data
 
@@ -16,7 +17,7 @@ include "_decorators.pxi"
 
 
 @return_python_result
-def serialize_transaction(transaction: bytes) -> python_result:
+def serialize_transaction(transaction: str) -> python_result:
     """Serialize a transaction to binary format."""
     tx = json.loads(transaction)
     hTx = _create_wax_transaction(tx, False)
@@ -24,16 +25,16 @@ def serialize_transaction(transaction: bytes) -> python_result:
 
 
 @return_python_result
-def deserialize_transaction(transaction: bytes) -> python_result:
+def deserialize_transaction(transaction: str) -> python_result:
     """Deserialize a binary transaction to JSON."""
-    hTx = _handle_deserialize_transaction(transaction)
+    hTx = _handle_deserialize_transaction(encode_str(transaction))
     return tx_to_json(hTx)
 
 
-def legacy_tx_to_json(transaction_data: bytes) -> bytes:
+def legacy_tx_to_json(transaction_data: str) -> str:
     """Convert legacy transaction format to JSON."""
     cdef protocol obj
-    return obj.cpp_legacy_tx_to_json(transaction_data)
+    return decode_bytes(obj.cpp_legacy_tx_to_json(encode_str(transaction_data)))
 
 
 def tx_add_operation(tx: WaxTransactionHandle, operation: WaxOperationHandle) -> None:
@@ -42,16 +43,16 @@ def tx_add_operation(tx: WaxTransactionHandle, operation: WaxOperationHandle) ->
     obj.cpp_tx_add_operation(tx.hTx, operation.hOp)
 
 
-def tx_add_signature(tx: WaxTransactionHandle, signature: bytes) -> None:
+def tx_add_signature(tx: WaxTransactionHandle, signature: str) -> None:
     """Add a signature to a transaction."""
     cdef protocol obj
-    obj.cpp_tx_add_signature(tx.hTx, signature)
+    obj.cpp_tx_add_signature(tx.hTx, encode_str(signature))
 
 
-def tx_set_expiration(tx: WaxTransactionHandle, expiration: bytes) -> None:
+def tx_set_expiration(tx: WaxTransactionHandle, expiration: str) -> None:
     """Set the expiration time for a transaction."""
     cdef protocol obj
-    obj.cpp_tx_set_expiration(tx.hTx, expiration)
+    obj.cpp_tx_set_expiration(tx.hTx, encode_str(expiration))
 
 
 # =============================================================================
@@ -81,19 +82,19 @@ cdef bytes _tx_to_json(WaxTransactionHandle wax_tx):
 # def functions - public Python API (exported to wax package)
 # =============================================================================
 
-def tx_to_legacy_json(tx: WaxTransactionHandle) -> bytes:
+def tx_to_legacy_json(tx: WaxTransactionHandle) -> str:
     """Convert a transaction to legacy JSON format."""
-    return _tx_to_legacy_json(tx)
+    return decode_bytes(_tx_to_legacy_json(tx))
 
 
-def tx_to_binary(tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> bytes:
+def tx_to_binary(tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> str:
     """Convert a transaction to binary format."""
-    return _tx_to_binary(tx, use_hf26_serialization, strip_to_unsigned_transaction)
+    return decode_bytes(_tx_to_binary(tx, use_hf26_serialization, strip_to_unsigned_transaction))
 
 
-def tx_to_json(tx: WaxTransactionHandle) -> bytes:
+def tx_to_json(tx: WaxTransactionHandle) -> str:
     """Convert a transaction to JSON format."""
-    return _tx_to_json(tx)
+    return decode_bytes(_tx_to_json(tx))
 
 
 def tx_binary(tx: WaxTransactionHandle, use_hf26_serialization: bool = True, strip_to_unsigned_transaction: bool = False) -> python_binary_data:
@@ -104,12 +105,12 @@ def tx_binary(tx: WaxTransactionHandle, use_hf26_serialization: bool = True, str
     for node in data.offsets:
         offsets.append(convert_binary_data_node_to_python(node))
     return python_binary_data(
-        binary=data.binary,
+        binary=decode_bytes(data.binary),
         offsets=offsets
     )
 
 
-def tx_signature_keys(tx: WaxTransactionHandle, chain_id: bytes, use_hf26_serialization: bool = True) -> vector[string]:
+def tx_signature_keys(tx: WaxTransactionHandle, chain_id: str, use_hf26_serialization: bool = True) -> list[str]:
     """Get signature keys from a transaction."""
     cdef protocol obj
-    return obj.cpp_tx_signature_keys(tx.hTx, chain_id, use_hf26_serialization)
+    return decode_list(obj.cpp_tx_signature_keys(tx.hTx, encode_str(chain_id), use_hf26_serialization))
