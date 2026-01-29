@@ -94,8 +94,16 @@ else
       echo "Using ${published_name} from registry."
       poetry add "${published_name}@${api_wheel_version}" --source gitlab-api-packages
     else
-      echo "${published_name} not found in registry, using local source."
-      poetry add "../hive/libraries/plugins/apis/api_generation/${api_package_name}"
+      # Try to use pre-built wheel from artifacts first (preserves correct version)
+      local wheel_dir="../hive/libraries/plugins/apis/api_generation/${api_package_name}/dist"
+      local wheel_file=$(ls "${wheel_dir}/"*.whl 2>/dev/null | head -1)
+      if [ -n "${wheel_file}" ]; then
+        echo "${published_name} not found in registry, installing from local wheel."
+        poetry add "${wheel_file}"
+      else
+        echo "${published_name} not found in registry, installing from source."
+        poetry add "../hive/libraries/plugins/apis/api_generation/${api_package_name}"
+      fi
     fi
   }
 
