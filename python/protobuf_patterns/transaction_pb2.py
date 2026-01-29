@@ -4,14 +4,19 @@
 # source: transaction.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
-_runtime_version.ValidateProtobufRuntimeVersion(_runtime_version.Domain.PUBLIC, 6, 31, 1, "", "transaction.proto")
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'transaction.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
@@ -21,15 +26,13 @@ import operation_pb2 as operation__pb2
 import future_extensions_pb2 as future__extensions__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\x0foperation.proto\x1a\x17\x66uture_extensions.proto"\xfb\x01\n\x0btransaction\x12$\n\rref_block_num\x18\x01 \x02(\rR\rref_block_num\x12*\n\x10ref_block_prefix\x18\x02 \x02(\rR\x10ref_block_prefix\x12\x12\n\nexpiration\x18\x03 \x02(\t\x12\x34\n\noperations\x18\x04 \x03(\x0b\x32 .hive.protocol.buffers.operation\x12<\n\nextensions\x18\x05 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions\x12\x12\n\nsignatures\x18\x06 \x03(\t'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11transaction.proto\x12\x15hive.protocol.buffers\x1a\x0foperation.proto\x1a\x17\x66uture_extensions.proto\"\xfb\x01\n\x0btransaction\x12$\n\rref_block_num\x18\x01 \x02(\rR\rref_block_num\x12*\n\x10ref_block_prefix\x18\x02 \x02(\rR\x10ref_block_prefix\x12\x12\n\nexpiration\x18\x03 \x02(\t\x12\x34\n\noperations\x18\x04 \x03(\x0b\x32 .hive.protocol.buffers.operation\x12<\n\nextensions\x18\x05 \x03(\x0b\x32(.hive.protocol.buffers.future_extensions\x12\x12\n\nsignatures\x18\x06 \x03(\t')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "transaction_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'transaction_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_TRANSACTION"]._serialized_start = 87
-    _globals["_TRANSACTION"]._serialized_end = 338
+  DESCRIPTOR._loaded_options = None
+  _globals['_TRANSACTION']._serialized_start=87
+  _globals['_TRANSACTION']._serialized_end=338
 # @@protoc_insertion_point(module_scope)

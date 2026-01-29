@@ -4,15 +4,18 @@
 # source: vesting_shares_split.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "vesting_shares_split.proto"
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'vesting_shares_split.proto'
 )
 # @@protoc_insertion_point(imports)
 
@@ -22,15 +25,13 @@ _sym_db = _symbol_database.Default()
 import asset_pb2 as asset__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x1avesting_shares_split.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto"\xe3\x01\n\x14vesting_shares_split\x12\r\n\x05owner\x18\x01 \x02(\t\x12^\n\x1bvesting_shares_before_split\x18\x02 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x1bvesting_shares_before_split\x12\\\n\x1avesting_shares_after_split\x18\x03 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x1avesting_shares_after_split'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1avesting_shares_split.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\"\xe3\x01\n\x14vesting_shares_split\x12\r\n\x05owner\x18\x01 \x02(\t\x12^\n\x1bvesting_shares_before_split\x18\x02 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x1bvesting_shares_before_split\x12\\\n\x1avesting_shares_after_split\x18\x03 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x1avesting_shares_after_split')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "vesting_shares_split_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'vesting_shares_split_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_VESTING_SHARES_SPLIT"]._serialized_start = 67
-    _globals["_VESTING_SHARES_SPLIT"]._serialized_end = 294
+  DESCRIPTOR._loaded_options = None
+  _globals['_VESTING_SHARES_SPLIT']._serialized_start=67
+  _globals['_VESTING_SHARES_SPLIT']._serialized_end=294
 # @@protoc_insertion_point(module_scope)

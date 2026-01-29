@@ -4,30 +4,35 @@
 # source: future_extensions.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
-_runtime_version.ValidateProtobufRuntimeVersion(_runtime_version.Domain.PUBLIC, 6, 31, 1, "", "future_extensions.proto")
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'future_extensions.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x17\x66uture_extensions.proto\x12\x15hive.protocol.buffers"\x08\n\x06void_t"U\n\x11\x66uture_extensions\x12\x37\n\x06void_t\x18\x01 \x01(\x0b\x32\x1d.hive.protocol.buffers.void_tH\x00R\x06void_tB\x07\n\x05value'
-)
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x17\x66uture_extensions.proto\x12\x15hive.protocol.buffers\"\x08\n\x06void_t\"U\n\x11\x66uture_extensions\x12\x37\n\x06void_t\x18\x01 \x01(\x0b\x32\x1d.hive.protocol.buffers.void_tH\x00R\x06void_tB\x07\n\x05value')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "future_extensions_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'future_extensions_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_VOID_T"]._serialized_start = 50
-    _globals["_VOID_T"]._serialized_end = 58
-    _globals["_FUTURE_EXTENSIONS"]._serialized_start = 60
-    _globals["_FUTURE_EXTENSIONS"]._serialized_end = 145
+  DESCRIPTOR._loaded_options = None
+  _globals['_VOID_T']._serialized_start=50
+  _globals['_VOID_T']._serialized_end=58
+  _globals['_FUTURE_EXTENSIONS']._serialized_start=60
+  _globals['_FUTURE_EXTENSIONS']._serialized_end=145
 # @@protoc_insertion_point(module_scope)

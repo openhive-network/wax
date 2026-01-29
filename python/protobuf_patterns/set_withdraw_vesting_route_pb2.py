@@ -4,30 +4,33 @@
 # source: set_withdraw_vesting_route.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "set_withdraw_vesting_route.proto"
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'set_withdraw_vesting_route.proto'
 )
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n set_withdraw_vesting_route.proto\x12\x15hive.protocol.buffers"\x8f\x01\n\x1aset_withdraw_vesting_route\x12"\n\x0c\x66rom_account\x18\x01 \x02(\tR\x0c\x66rom_account\x12\x1e\n\nto_account\x18\x02 \x02(\tR\nto_account\x12\x0f\n\x07percent\x18\x03 \x02(\r\x12\x1c\n\tauto_vest\x18\x04 \x02(\x08R\tauto_vest'
-)
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n set_withdraw_vesting_route.proto\x12\x15hive.protocol.buffers\"\x8f\x01\n\x1aset_withdraw_vesting_route\x12\"\n\x0c\x66rom_account\x18\x01 \x02(\tR\x0c\x66rom_account\x12\x1e\n\nto_account\x18\x02 \x02(\tR\nto_account\x12\x0f\n\x07percent\x18\x03 \x02(\r\x12\x1c\n\tauto_vest\x18\x04 \x02(\x08R\tauto_vest')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "set_withdraw_vesting_route_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'set_withdraw_vesting_route_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_SET_WITHDRAW_VESTING_ROUTE"]._serialized_start = 60
-    _globals["_SET_WITHDRAW_VESTING_ROUTE"]._serialized_end = 203
+  DESCRIPTOR._loaded_options = None
+  _globals['_SET_WITHDRAW_VESTING_ROUTE']._serialized_start=60
+  _globals['_SET_WITHDRAW_VESTING_ROUTE']._serialized_end=203
 # @@protoc_insertion_point(module_scope)

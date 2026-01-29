@@ -4,15 +4,18 @@
 # source: limit_order_create2.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
 _runtime_version.ValidateProtobufRuntimeVersion(
-    _runtime_version.Domain.PUBLIC, 6, 31, 1, "", "limit_order_create2.proto"
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'limit_order_create2.proto'
 )
 # @@protoc_insertion_point(imports)
 
@@ -23,15 +26,13 @@ import asset_pb2 as asset__pb2
 import price_pb2 as price__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x19limit_order_create2.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\x1a\x0bprice.proto"\xf7\x01\n\x13limit_order_create2\x12\r\n\x05owner\x18\x01 \x02(\t\x12\x0f\n\x07orderid\x18\x02 \x02(\r\x12\x44\n\x0e\x61mount_to_sell\x18\x03 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x0e\x61mount_to_sell\x12"\n\x0c\x66ill_or_kill\x18\x04 \x02(\x08R\x0c\x66ill_or_kill\x12\x42\n\rexchange_rate\x18\x05 \x02(\x0b\x32\x1c.hive.protocol.buffers.priceR\rexchange_rate\x12\x12\n\nexpiration\x18\x06 \x02(\t'
-)
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x19limit_order_create2.proto\x12\x15hive.protocol.buffers\x1a\x0b\x61sset.proto\x1a\x0bprice.proto\"\xf7\x01\n\x13limit_order_create2\x12\r\n\x05owner\x18\x01 \x02(\t\x12\x0f\n\x07orderid\x18\x02 \x02(\r\x12\x44\n\x0e\x61mount_to_sell\x18\x03 \x02(\x0b\x32\x1c.hive.protocol.buffers.assetR\x0e\x61mount_to_sell\x12\"\n\x0c\x66ill_or_kill\x18\x04 \x02(\x08R\x0c\x66ill_or_kill\x12\x42\n\rexchange_rate\x18\x05 \x02(\x0b\x32\x1c.hive.protocol.buffers.priceR\rexchange_rate\x12\x12\n\nexpiration\x18\x06 \x02(\t')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "limit_order_create2_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'limit_order_create2_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_LIMIT_ORDER_CREATE2"]._serialized_start = 79
-    _globals["_LIMIT_ORDER_CREATE2"]._serialized_end = 326
+  DESCRIPTOR._loaded_options = None
+  _globals['_LIMIT_ORDER_CREATE2']._serialized_start=79
+  _globals['_LIMIT_ORDER_CREATE2']._serialized_end=326
 # @@protoc_insertion_point(module_scope)

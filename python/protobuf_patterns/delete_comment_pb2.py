@@ -4,28 +4,33 @@
 # source: delete_comment.proto
 # Protobuf Python Version: 6.31.1
 """Generated protocol buffer code."""
-
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
-
-_runtime_version.ValidateProtobufRuntimeVersion(_runtime_version.Domain.PUBLIC, 6, 31, 1, "", "delete_comment.proto")
+_runtime_version.ValidateProtobufRuntimeVersion(
+    _runtime_version.Domain.PUBLIC,
+    6,
+    31,
+    1,
+    '',
+    'delete_comment.proto'
+)
 # @@protoc_insertion_point(imports)
 
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x14\x64\x65lete_comment.proto\x12\x15hive.protocol.buffers"2\n\x0e\x64\x65lete_comment\x12\x0e\n\x06\x61uthor\x18\x01 \x02(\t\x12\x10\n\x08permlink\x18\x02 \x02(\t'
-)
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x64\x65lete_comment.proto\x12\x15hive.protocol.buffers\"2\n\x0e\x64\x65lete_comment\x12\x0e\n\x06\x61uthor\x18\x01 \x02(\t\x12\x10\n\x08permlink\x18\x02 \x02(\t')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "delete_comment_pb2", _globals)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'delete_comment_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-    DESCRIPTOR._loaded_options = None
-    _globals["_DELETE_COMMENT"]._serialized_start = 47
-    _globals["_DELETE_COMMENT"]._serialized_end = 97
+  DESCRIPTOR._loaded_options = None
+  _globals['_DELETE_COMMENT']._serialized_start=47
+  _globals['_DELETE_COMMENT']._serialized_end=97
 # @@protoc_insertion_point(module_scope)
