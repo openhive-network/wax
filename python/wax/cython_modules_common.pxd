@@ -29,8 +29,8 @@ from cpp_python_bridge cimport (
     get_witness_key_t,
 )
 
-# Re-export exception handling from exception.pxd
-from exception cimport exception_ptr, wrapped_exception_ptr_from_exception
+# Re-export exception handling from Cython's standard libcpp.exception
+from libcpp.exception cimport exception_ptr, wrapped_exception_ptr_from_exception
 
 # Declare cdef functions that other modules need to cimport
 # NOTE: raise_appropriate_wax_exception is now in _decorators.pxi (included by each module)

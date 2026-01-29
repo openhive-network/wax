@@ -12,7 +12,7 @@ from libc.stdint cimport uint16_t, uint32_t, int32_t, uint64_t
 from libcpp cimport bool
 from libcpp.memory cimport unique_ptr
 from libcpp.optional cimport optional
-from exception cimport exception_ptr, exception_ptr_error_handler
+from libcpp.exception cimport exception_ptr, exception_ptr_error_handler
 
 cdef extern from "cpython_interface.hpp" namespace "cpp":
     cdef cppclass wax_tx_ptr_deleter:
