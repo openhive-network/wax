@@ -28,6 +28,39 @@ from wax.wax_result import python_binary_data_node
 include "_decorators.pxi"
 
 
+# String conversion helpers for Cython 3.1.3
+# These functions handle the bytes <-> str conversion at the C++ boundary
+
+def encode_str(value) -> bytes:
+    """Python str -> bytes (for passing to C++)."""
+    return value.encode("utf-8") if isinstance(value, str) else value
+
+
+def decode_bytes(value) -> str:
+    """C++ bytes -> Python str."""
+    return value.decode() if isinstance(value, bytes) else value
+
+
+def encode_dict_str_int(source: dict) -> dict:
+    """Encode string keys in dict[str, int] to bytes for C++."""
+    return {encode_str(k): v for k, v in source.items()}
+
+
+def decode_dict_bytes_int(source: dict) -> dict:
+    """Decode bytes keys in dict[bytes, int] from C++ to str."""
+    return {decode_bytes(k): v for k, v in source.items()}
+
+
+def encode_list(source: list) -> list:
+    """Encode list of strings to bytes for C++."""
+    return [encode_str(item) for item in source]
+
+
+def decode_list(source: list) -> list:
+    """Decode list of bytes from C++ to strings."""
+    return [decode_bytes(item) for item in source]
+
+
 cdef object convert_binary_data_node_to_python(binary_data_node node):
     """Recursively convert C++ binary_data_node to Python python_binary_data_node."""
     cdef list children = []
@@ -38,11 +71,11 @@ cdef object convert_binary_data_node_to_python(binary_data_node node):
 
     # Create and return the Python object
     return python_binary_data_node(
-        key=node.key,
-        type=node.type,
+        key=decode_bytes(node.key),
+        type=decode_bytes(node.type),
         offset=node.offset,
         size=node.size,
-        value=node.value,
+        value=decode_bytes(node.value),
         length=node.length,
         children=children
     )
