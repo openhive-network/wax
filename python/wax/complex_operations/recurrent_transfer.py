@@ -56,6 +56,8 @@ class RecurrentTransferOperationBase(OperationBase):
         self.recurrent_transfer = self.get_recurrent_transfer_proto_operation() if data.amount is not None else None
 
     def finalize(self, api: IWaxBaseInterface) -> Iterable[ConvertedToProtoOperation]:
+        if self.recurrent_transfer is None:
+            return []
         if not cast(WaxBaseApi, api).check_is_proper_asset(
             [AssetName.Hive, AssetName.Hbd], self.recurrent_transfer.amount
         ):

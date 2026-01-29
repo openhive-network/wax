@@ -52,7 +52,7 @@ class UpdateProposalOperation(OperationBase):
         if cast(WaxBaseApi, api).check_is_proper_asset(AssetName.Hbd, self.data.daily_pay):
             return [
                 update_proposal(
-                    proposal_id=self.data.proposal_id,
+                    proposal_id=self.data.proposal_id,  # type: ignore[arg-type, unused-ignore]
                     creator=self.data.creator,
                     daily_pay=self.data.daily_pay,
                     subject=self.data.subject,

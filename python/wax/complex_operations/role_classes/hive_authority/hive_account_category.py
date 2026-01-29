@@ -155,19 +155,19 @@ class HiveAccountCategory(RoleCategoryBase[HiveRoles]):
         self._authorities.active.init(
             max_account_name_length,
             address_prefix,
-            active,
+            active,  # type: ignore[arg-type, unused-ignore]
         )
 
         self._authorities.owner.init(
             max_account_name_length,
             address_prefix,
-            owner,
+            owner,  # type: ignore[arg-type, unused-ignore]
         )
 
         self._authorities.posting.init(
             max_account_name_length,
             address_prefix,
-            posting,
+            posting,  # type: ignore[arg-type, unused-ignore]
         )
 
         self._authorities.memo.init(

@@ -77,7 +77,7 @@ class HiveAppsOperation(OperationBase, ABC, Generic[HiveAppsOperationDataT]):
                 default=lambda v: str(v) if isinstance(v, int) and abs(v) > (1 << 53) else v,
             )
             self.ops.append(
-                custom_json(id=self.id, json=json_str, required_auths=auths, required_posting_auths=posting_auths)
+                custom_json(id=self.id, json=json_str, required_auths=auths, required_posting_auths=posting_auths)  # type: ignore[arg-type, unused-ignore]
             )
 
         self._body.clear()
