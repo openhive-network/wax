@@ -8,21 +8,20 @@ REPO_URL="${1:?Missing repository url}"
 REVISION_INFO="${2:?Missing argument pointing git revision}"
 OUTPUT_DIR="${3:-${PROJECT_DIR}/docs-output/ts}"
 
-INPUT_FILE=ts/wasm/lib/index.ts
-
 pushd "${PROJECT_DIR}"
 
 mkdir -vp "${OUTPUT_DIR}"
 
 # Generate HTML documentation (default theme, no markdown plugins)
+# Note: pnpm --dir ts sets working directory to ts/, so paths are relative to ts/
 pnpm --dir ts exec typedoc \
   --includeVersion \
   --sourceLinkTemplate "${REPO_URL}/blob/{gitRevision}/{path}#L{line}" \
   --gitRevision "${REVISION_INFO}" \
-  --readme ts/README.md \
-  --tsconfig ts/tsconfig.json \
+  --readme README.md \
+  --tsconfig tsconfig.json \
   --name "@hiveio/wax" \
   --out "${OUTPUT_DIR}" \
-  "${INPUT_FILE}"
+  wasm/lib/index.ts
 
 popd
