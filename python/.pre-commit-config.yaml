@@ -45,7 +45,7 @@ repos:
       - id: mypy
         name: type check with mypy
         entry: mypy
-        args: ["--config-file", "python/pyproject.toml", "python/wax"]
+        args: ["--config-file", "python/pyproject.toml", "python/wax", "python/tests"]
         language: system
         types: [python]
         pass_filenames: false

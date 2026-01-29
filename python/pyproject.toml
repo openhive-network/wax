@@ -86,7 +86,6 @@ files = [
 mypy_path = "python"
 strict = true
 disallow_untyped_decorators = false
-exclude = ["tests/"]
 
 [[tool.mypy.overrides]]
 module = "wax._private.proto.*"
@@ -102,6 +101,10 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = "wax._private.api.api_caller"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
 ignore_errors = true
 
 [tool.ruff]
