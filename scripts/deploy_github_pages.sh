@@ -3,17 +3,15 @@ set -e
 
 # Deploy documentation to GitHub Pages repository
 #
-# Usage: deploy_github_pages.sh <version> <ts_docs_dir> <py_docs_dir> <github_repo> <github_token>
+# Usage: deploy_github_pages.sh <version> <ts_docs_dir> <py_docs_dir> <github_repo> <github_token> <project_subdir>
 #
 # Arguments:
-#   version       - Version name (e.g., "develop", "v1.0.0")
-#   ts_docs_dir   - Directory containing TypeScript HTML docs
-#   py_docs_dir   - Directory containing Python mkdocs output
-#   github_repo   - GitHub repository (e.g., "openhive-network/hive-doc")
-#   github_token  - GitHub token with repo write access
-#
-# Environment:
-#   PROJECT_SUBDIR - Subdirectory in hive-doc for this project (default: "wax")
+#   version        - Version name (e.g., "develop", "v1.0.0")
+#   ts_docs_dir    - Directory containing TypeScript HTML docs
+#   py_docs_dir    - Directory containing Python mkdocs output
+#   github_repo    - GitHub repository (e.g., "openhive-network/hive-doc")
+#   github_token   - GitHub token with repo write access
+#   project_subdir - Subdirectory in hive-doc for this project (e.g., "wax")
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
@@ -22,8 +20,7 @@ TS_DOCS_DIR="${2:?Missing TypeScript docs directory}"
 PY_DOCS_DIR="${3:?Missing Python docs directory}"
 GITHUB_REPO="${4:?Missing GitHub repository}"
 GITHUB_TOKEN="${5:?Missing GitHub token}"
-
-PROJECT_SUBDIR="${PROJECT_SUBDIR:-wax}"
+PROJECT_SUBDIR="${6:?Missing project subdirectory}"
 WORK_DIR=$(mktemp -d)
 GITHUB_PAGES_BRANCH="main"
 

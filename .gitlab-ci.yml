@@ -762,7 +762,7 @@ deploy_to_github_pages:
     - job: build_python_docs
       artifacts: true
   script:
-    - ${CI_PROJECT_DIR}/scripts/deploy_github_pages.sh "${CI_COMMIT_REF_SLUG}" "${CI_PROJECT_DIR}/docs-output/ts" "${PYPROJECT_DIR}/site" "${GITHUB_REPO}" "${GITHUB_PAGES_TOKEN}"
+    - ${CI_PROJECT_DIR}/scripts/deploy_github_pages.sh "${CI_COMMIT_REF_SLUG}" "${CI_PROJECT_DIR}/docs-output/ts" "${PYPROJECT_DIR}/site" "${GITHUB_REPO}" "${GITHUB_PAGES_TOKEN}" "wax"
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "true" && $GITHUB_PAGES_TOKEN'
   tags:
