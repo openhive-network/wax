@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 import asyncio
 
-from beekeepy import AsyncUnlockedWallet
-from beekeepy.service.asynchronous import create_beekeeper_service
+from beekeepy import AsyncBeekeeper, AsyncUnlockedWallet
 from wax import IOnlineTransaction, WaxChainOptions, create_hive_chain
 from wax.proto.operations import transfer
 
@@ -44,9 +43,11 @@ async def sign_tx(unlocked_wallet: AsyncUnlockedWallet, tx: IOnlineTransaction) 
 async def main() -> None:
     tx = await create_tx()
 
-    # Create beekeepy set (beekeeper instance, wallet and session) and sign the transaction
-    async with create_beekeeper_service(wallet_name=WALLET_NAME, password=PASSWORD) as beekeepy:
-        await sign_tx(beekeepy.wallet, tx)
+    # Create beekeeper instance, wallet and session, then sign the transaction
+    async with await AsyncBeekeeper.factory() as beekeeper:
+        session = await beekeeper.create_session(salt="")
+        wallet = await session.create_wallet(name=WALLET_NAME, password=PASSWORD)
+        await sign_tx(wallet, tx)
         await wax.broadcast(tx)
 
 asyncio.run(main())
