@@ -1,5 +1,4 @@
 stages:
-  - prepare
   - build
   - static_code_analysis
   - test_python
@@ -8,22 +7,19 @@ stages:
 
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
-  # hive/hive's common_includes.yml includes common-ci-configuration templates at an older commit.
-  # We include hive/hive FIRST, then override with our submodule ref AFTER, so common-ci-configuration version wins.
-  - project: 'hive/hive'
-    ref: e5b38e2ab6274a1d8e84dc5da3a22f7c3689958d
-    file:
-      - '/scripts/ci-helpers/common_includes.yml'
-      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
-  # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 2fc9d83726a4fddc681c2b30fbd67701316ba85a
+    ref: 07fdf2c2bf8155477e7e1229e0bcc77852c9aa84
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
       - '/templates/verify_submodule_ref.gitlab-ci.yml'
+  - project: 'hive/hive'
+    ref: bda2633143116d3dd4d5f0d6980175439889666c
+    file:
+      - '/scripts/ci-helpers/common_includes.yml'
+      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 
 variables:
@@ -42,17 +38,30 @@ variables:
   # =============================================================================
   # CI Base Images for Python wheel builds
   # =============================================================================
-  # wax ci-base-image includes WAX_BOOST_ROOT with pre-compiled Boost library.
-  # Built from common-ci-configuration/ci-base-image (pypa manylinux) with Boost added.
-  # Single image supports multiple Python versions via PYTHON_VERSION variable.
+  # wax ci-base-images include WAX_BOOST_ROOT with pre-compiled Boost library.
+  # Built from common-ci-configuration/ci-base-image with Boost added.
 
-  # Base image from common-ci-configuration (used to build wax ci-base-image)
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-1, in future update tag to smth like :pypa_2_28-1
-  COMMON_CI_BASE_IMAGE_TAG: "2fc9d83726a4fddc681c2b30fbd67701316ba85a"
-  COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
+  # Python 3.14 wax ci-base-image (default for most jobs)
+  CI_BASE_IMAGE_PY314_TAG: "ubuntu24.04-py3.14-1"
+  CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY314_TAG}"
 
-  CI_BASE_IMAGE_TAG: "pypa_2_28-12"
-  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
+  # Python 3.12 wax ci-base-image (for wheel builds)
+  CI_BASE_IMAGE_PY312_TAG: "ubuntu24.04-py3.12-1"
+  CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_PY312_TAG}"
+
+  # Default CI image (Python 3.14)
+  CI_BASE_IMAGE: "${CI_BASE_IMAGE_PY314}"
+
+  # Base images from common-ci-configuration (used to build wax ci-base-images)
+  COMMON_CI_BASE_IMAGE_PY312: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.12-1"
+  COMMON_CI_BASE_IMAGE_PY314: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:ubuntu24.04-py3.14-6"
+
+  # uses registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
+  WAX_PYTHON_RUNTIME_IMAGE_TAG: sha256:d40e70aa29c2b9c407735c0ae2a2e52f1cd85f1ce0a0a58cbe69eb62ab5ce758
+  WAX_PYTHON_RUNTIME_IMAGE: registry.gitlab.syncad.com/hive/wax/wax-python-runtime:ubuntu24.04-1
+
+  # Python image for jobs that need it (uses default Python 3.14)
+  PYTHON_IMAGE: "${CI_BASE_IMAGE}"
 
   # PIP INDEX URL's
   FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
@@ -109,15 +118,14 @@ generate_hived_flattened_openapi_definition:
   tags:
     - public-runner-docker
 
-# Build hiveio-api package (build only, test and deploy in later stages)
+# Unified hiveio-api package: generate, build, test (via examples), and deploy to GitLab
 hiveio_api_package:
-  extends: .build_wheel_template
-  stage: build
   variables:
     HIVE_PROJECT_ROOT: "${CI_PROJECT_DIR}/hive"
-    API_GENERATION_DIR: "${HIVE_PROJECT_ROOT}/libraries/plugins/apis/api_generation"
-    PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
+    # Recursive needed for nested submodules in hive-local-tools (test-tools, tests_api)
     GIT_SUBMODULE_STRATEGY: recursive
+    # Use hive's registry to download existing package instead of building
+    PACKAGE_REGISTRY_PROJECT_ID: 198
   needs:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
@@ -138,14 +146,18 @@ build_wheel:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
-  image: "${CI_BASE_IMAGE}"
+  # Build wheels for both Python 3.12 and 3.14 in parallel
+  parallel:
+    matrix:
+      - PYTHON_VERSION: "3.12"
+        CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY312}"
+      - PYTHON_VERSION: "3.14"
+        CI_BUILD_IMAGE: "${CI_BASE_IMAGE_PY314}"
+  image: "${CI_BUILD_IMAGE}"
   script:
     - echo "Building wheel for Python ${PYTHON_VERSION}"
     - python3 --version
     - ./python/scripts/build_wax.sh 1
-  parallel:
-    matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
   artifacts:
     when: always
     paths:
@@ -291,7 +303,6 @@ push_to_wiki:
     - !reference [.configuration_template, before_script]
     # Install only the wheel matching current Python version (e.g., cp314 for Python 3.14)
     - |
-      set -x
       PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
       WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
       if [ -z "$WHEEL_FILE" ]; then
@@ -318,49 +329,22 @@ push_to_wiki:
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
+  rules:
+    - if: $PYTHON_VERSION == "3.12"
+      variables:
+        CI_BASE_IMAGE: "${CI_BASE_IMAGE_PY312}"
+    - if: $PYTHON_VERSION == "3.14"
+      variables:
+        CI_BASE_IMAGE: "${CI_BASE_IMAGE_PY314}"
 
 test_importing_wax:
-  stage: test_python
-  image: quay.io/pypa/manylinux_2_28:2026.01.16-1
-  parallel:
-    matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
-  variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
-  needs:
-    - job: build_wheel
-      artifacts: true
-  before_script:
-    # Set up PATH for the correct Python version from PyPA image
-    - export PATH="/opt/python/cp${PYTHON_VERSION//./}-cp${PYTHON_VERSION//./}/bin:$PATH"
-    - python3 --version
-    # Verify Python version matches PYTHON_VERSION env var
-    - |
-      ACTUAL_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-      if [ "$ACTUAL_VERSION" != "$PYTHON_VERSION" ]; then
-        echo "ERROR: Python version mismatch! Expected $PYTHON_VERSION but got $ACTUAL_VERSION"
-        exit 1
-      fi
-      echo "Python version verified: $ACTUAL_VERSION matches PYTHON_VERSION=$PYTHON_VERSION"
-    # Install only the wheel matching current Python version
-    - |
-      set -x
-      PYTHON_TAG="cp${PYTHON_VERSION//./}"
-      WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
-      if [ -z "$WHEEL_FILE" ]; then
-        echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
-        ls -la ${PYPROJECT_DIR}/dist/
-        exit 1
-      fi
-      echo "Installing wheel: $WHEEL_FILE"
+  extends:
+    - .runtime_like_python_env
+    - .python_test_matrix
   script:
-    - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
-    - python3 --version
-    - pip3 install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX $WHEEL_FILE
-    - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
+    - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
+    - cd ..  # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
-  tags:
-    - public-runner-docker
 
 test_wax_protobuf_python:
   extends:
@@ -696,28 +680,27 @@ test_wax_doc_snippets_image:
     - when: never
 
 # =============================================================================
-# WAX CI Base Image Build Job
+# WAX CI Base Image Build Jobs
 # =============================================================================
-# Builds wax ci-base-image that includes WAX_BOOST_ROOT with pre-compiled Boost.
-# Built from common-ci-configuration/ci-base-image (pypa manylinux) with Boost added.
-# Single image supports multiple Python versions via PYTHON_VERSION variable.
+# These jobs build wax ci-base-images that include WAX_BOOST_ROOT.
+# Built from common-ci-configuration/ci-base-image with Boost added.
 # Manual trigger - only run when Dockerfile.ci changes or manually requested.
 
-build_wax_ci_base_image:
+.build_wax_ci_base_image:
   extends: .docker_image_builder_job_template
-  stage: prepare
+  stage: build
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     - |
-      echo "Building wax ci-base-image"
-      echo "Base image: ${COMMON_CI_BASE_IMAGE}"
-      echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
+      echo "Building wax ci-base-image for Python ${PYTHON_VERSION}"
+      echo "Base image: ${BASE_IMAGE}"
+      echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}"
     - |
       docker build \
-        --build-arg BASE_IMAGE="${COMMON_CI_BASE_IMAGE}" \
-        -t "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}" \
+        --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+        -t "${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}" \
         -f python/docker/Dockerfile.ci .
-    - docker push "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
+    - docker push "${CI_REGISTRY_IMAGE}/ci-base-image:${IMAGE_TAG}"
   tags:
     - public-runner-docker
   rules:
@@ -731,3 +714,66 @@ build_wax_ci_base_image:
     # Manual trigger available
     - when: manual
       allow_failure: true
+
+build_wax_ci_base_image_py312:
+  extends: .build_wax_ci_base_image
+  variables:
+    PYTHON_VERSION: "3.12"
+    BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY312}"
+    IMAGE_TAG: "${CI_BASE_IMAGE_PY312_TAG}"
+
+build_wax_ci_base_image_py314:
+  extends: .build_wax_ci_base_image
+  variables:
+    PYTHON_VERSION: "3.14"
+    BASE_IMAGE: "${COMMON_CI_BASE_IMAGE_PY314}"
+    IMAGE_TAG: "${CI_BASE_IMAGE_PY314_TAG}"
+
+# =============================================================================
+# GitHub Pages Documentation Deployment
+# =============================================================================
+# Deploys versioned documentation to a dedicated GitHub repository.
+# Triggered on develop branch and version tags.
+# Requires GITHUB_PAGES_TOKEN CI variable with repo write access.
+
+generate_html_docs:
+  stage: build
+  extends: .npm_based_job_base
+  variables:
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
+  script:
+    # BUILT_PACKAGE_VERSION is automatically available from wax_wasm_proto_tsc_generation's dotenv artifact
+    - ${CI_PROJECT_DIR}/scripts/generate_html_docs.sh "https://github.com/openhive-network/wax" "${CI_COMMIT_SHA}" "${CI_PROJECT_DIR}/docs-output/ts" "${BUILT_PACKAGE_VERSION}"
+  needs:
+    - job: wax_wasm_proto_tsc_generation
+      artifacts: true
+  artifacts:
+    paths:
+      - "${CI_PROJECT_DIR}/docs-output/ts"
+    when: always
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+  tags:
+    - public-runner-docker
+
+deploy_to_github_pages:
+  stage: deploy
+  image: "${CI_BASE_IMAGE}"
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    GITHUB_REPO: "openhive-network/hive-doc"
+  needs:
+    - job: generate_html_docs
+      artifacts: true
+    - job: build_python_docs
+      artifacts: true
+    - job: generate_docs
+      artifacts: true
+  script:
+    - ${CI_PROJECT_DIR}/scripts/deploy_github_pages.sh "${CI_COMMIT_REF_SLUG}" "${CI_PROJECT_DIR}/docs-output/ts" "${PYPROJECT_DIR}/site" "${TS_DIST_DIR}/docs" "wiki" "${GITHUB_REPO}" "${GITHUB_PAGES_TOKEN}" "wax"
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true" && $GITHUB_PAGES_TOKEN'
+  tags:
+    - public-runner-docker
