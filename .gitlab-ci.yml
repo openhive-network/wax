@@ -736,7 +736,7 @@ generate_html_docs:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   script:
-    - source "${SOURCE_DIR}/built_package_version_info.env"
+    # BUILT_PACKAGE_VERSION is automatically available from wax_wasm_proto_tsc_generation's dotenv artifact
     - ${CI_PROJECT_DIR}/scripts/generate_html_docs.sh "https://github.com/openhive-network/wax" "${CI_COMMIT_SHA}" "${CI_PROJECT_DIR}/docs-output/ts" "${BUILT_PACKAGE_VERSION}"
   needs:
     - job: wax_wasm_proto_tsc_generation
