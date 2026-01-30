@@ -3,12 +3,13 @@ set -e
 
 # Deploy documentation to GitHub Pages repository
 #
-# Usage: deploy_github_pages.sh <version> <ts_docs_dir> <py_docs_dir> <github_repo> <github_token> <project_subdir>
+# Usage: deploy_github_pages.sh <version> <ts_docs_dir> <py_docs_dir> <wiki_docs_dir> <github_repo> <github_token> <project_subdir>
 #
 # Arguments:
 #   version        - Version name (e.g., "develop", "v1.0.0")
 #   ts_docs_dir    - Directory containing TypeScript HTML docs
 #   py_docs_dir    - Directory containing Python mkdocs output
+#   wiki_docs_dir  - Directory containing wiki documentation
 #   github_repo    - GitHub repository (e.g., "openhive-network/hive-doc")
 #   github_token   - GitHub token with repo write access
 #   project_subdir - Subdirectory in hive-doc for this project (e.g., "wax")
@@ -18,9 +19,10 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 VERSION="${1:?Missing version argument}"
 TS_DOCS_DIR="${2:?Missing TypeScript docs directory}"
 PY_DOCS_DIR="${3:?Missing Python docs directory}"
-GITHUB_REPO="${4:?Missing GitHub repository}"
-GITHUB_TOKEN="${5:?Missing GitHub token}"
-PROJECT_SUBDIR="${6:?Missing project subdirectory}"
+WIKI_DOCS_DIR="${4:?Missing wiki docs directory}"
+GITHUB_REPO="${5:?Missing GitHub repository}"
+GITHUB_TOKEN="${6:?Missing GitHub token}"
+PROJECT_SUBDIR="${7:?Missing project subdirectory}"
 WORK_DIR=$(mktemp -d)
 GITHUB_PAGES_BRANCH="main"
 
@@ -54,6 +56,9 @@ cp -r "${TS_DOCS_DIR}" "${PROJECT_SUBDIR}/${VERSION}/ts"
 
 echo "Copying Python docs from ${PY_DOCS_DIR}"
 cp -r "${PY_DOCS_DIR}" "${PROJECT_SUBDIR}/${VERSION}/py"
+
+echo "Copying wiki docs from ${WIKI_DOCS_DIR}"
+cp -r "${WIKI_DOCS_DIR}" "${PROJECT_SUBDIR}/${VERSION}/wiki"
 
 # Update versions.json for this project
 VERSIONS_FILE="${PROJECT_SUBDIR}/versions.json"
