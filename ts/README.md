@@ -21,7 +21,7 @@ Provides Hive Protocol features to JavaScript
 
 ## 📖 High-level Documentation
 
-You can find the high-level documentation with snippets for this library at [https://hive.pages.syncad.com/workerbee-doc](https://hive.pages.syncad.com/workerbee-doc)
+You can find the high-level documentation with snippets for this library at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
 
 ## 🚀 Getting Started
 
