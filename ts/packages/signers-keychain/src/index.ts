@@ -1,4 +1,4 @@
-import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature, TBinaryBuffer } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
@@ -71,29 +71,70 @@ class KeychainProvider extends AEncryptionProvider {
   /**
    * Encrypts data using the Keychain extrension.
    *
-   * @param buffer The string to encrypt.
-   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @param buffer The buffer to encrypt. Can be binary, if encrypting for yourself.
+   *               Keychain does not support encrypting binary buffer for others.
+   *               The string should start with the `#` prefix.
+   * @param recipient The public key of the recipient to encrypt the data for or the account name.
    * @returns A string containing the encrypted data. The string starts with the `#` prefix.
    *
    * @throws on any error from the Keychain invocation.
    */
-  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
     KeychainProvider.ensureKeychainInstalled();
 
-    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestEncodeWithKeys(
-      this.accountName,
-      [recipient],
-      buffer.startsWith("#") ? buffer : `#${buffer}`,
-      "memo",
-      (response: any) => {
-        if (response.error)
-          reject(response);
-        else
-          resolve(response);
-      }
-    )) as any;
+    const msg = typeof buffer === "string" ? buffer : JSON.stringify({type:"Buffer", data: Array.from(new Uint8Array(buffer as ArrayBuffer))});
 
-    return Object.values(response.result)[0] as string;
+    let response: string;
+
+    try {
+      if (recipient === this.accountName) {
+        response = await new Promise<string>((resolve, reject) => (window as any).hive_keychain.requestSignBuffer(
+          this.accountName,
+          msg,
+          this.role,
+          (response: { error?: any; result: string}) => {
+            if (response.error)
+              reject(response);
+            else
+              resolve(response.result);
+          }
+        ));
+      } else if (recipient.startsWith("STM")) {
+        response = await new Promise<string>((resolve, reject) => (window as any).hive_keychain.requestEncodeWithKeys(
+          this.accountName,
+          [recipient],
+          msg[0] === '#' ? msg : `#${msg}`,
+          this.role,
+          (response: { error?: any; result: Record<string, string>}) => {
+            if (response.error)
+              reject(response);
+            else
+              resolve(response.result[recipient]);
+          }
+        )) as string;
+      } else {
+        response = await new Promise<string>((resolve, reject) => (window as any).hive_keychain.requestEncodeMessage(
+          this.accountName,
+          recipient,
+          msg[0] === '#' ? msg : `#${msg}`,
+          this.role,
+          (response: { error?: any; result: string}) => {
+            if (response.error)
+              reject(response);
+            else
+              resolve(response.result);
+          }
+        )) as string;
+      }
+
+      return response;
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "error" in error) {
+        throw new WaxKeychainProviderError(`Keychain error: ${(error as any).message}`, { cause: error });
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -106,19 +147,27 @@ class KeychainProvider extends AEncryptionProvider {
   public async decryptData(buffer: string): Promise<string> {
     KeychainProvider.ensureKeychainInstalled();
 
-    const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestVerifyKey(
-      this.accountName,
-      buffer,
-      "memo",
-      (response: any) => {
-        if (response.error)
-          reject(response);
-        else
-          resolve(response);
-      }
-    )) as any;
+    try {
+      const response = await new Promise((resolve, reject) => (window as any).hive_keychain.requestVerifyKey(
+        this.accountName,
+        buffer,
+        this.role,
+        (response: { error?: any; result: string}) => {
+          if (response.error)
+            reject(response);
+          else
+            resolve(response);
+        }
+      )) as any;
 
-    return response.result;
+      return response.result;
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "error" in error) {
+        throw new WaxKeychainProviderError(`Keychain error: ${(error as any).message}`, { cause: error });
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -130,19 +179,27 @@ class KeychainProvider extends AEncryptionProvider {
   protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
     KeychainProvider.ensureKeychainInstalled();
 
-    const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
-      this.accountName,
-      JSON.parse(transaction.toLegacyApi()),
-      this.role,
-      (response: any) => {
-        if (response.error)
-          reject(response);
-        else
-          resolve(response);
-      }
-    )) as any;
+    try {
+      const data = await new Promise((resolve, reject) => (window as any).hive_keychain.requestSignTx(
+        this.accountName,
+        JSON.parse(transaction.toLegacyApi()),
+        this.role,
+        (response: any) => {
+          if (response.error)
+            reject(response);
+          else
+            resolve(response);
+        }
+      )) as any;
 
-    return data.result.signatures;
+      return data.result.signatures;
+    } catch (error) {
+      if (typeof error === "object" && error !== null && "error" in error) {
+        throw new WaxKeychainProviderError(`Keychain error: ${(error as any).message}`, { cause: error });
+      }
+
+      throw error;
+    }
   }
 }
 
