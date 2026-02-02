@@ -1,4 +1,5 @@
-import type { TPublicKey, TSignature, THexString, ITransaction } from "../../interfaces";
+import type { TPublicKey, TSignature, THexString, ITransaction, TAccountName } from "../../interfaces";
+import type { TBinaryBuffer } from "./extension_helpers";
 
 export interface ISignatureProvider {
   /**
@@ -37,11 +38,11 @@ export interface IOnlineEncryptionProvider {
   /**
    * Encrypts data
    *
-   * @param buffer The string to encrypt.
-   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @param buffer The string or binary buffer to encrypt.
+   * @param recipient The public key of the recipient to encrypt the data for, or its account name - if supported by the signer.
    * @returns A string containing the encrypted data.
    */
-  encryptData(buffer: string, recipient: TPublicKey): Promise<string>
+  encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string>
 
   /**
    * Decrypts data

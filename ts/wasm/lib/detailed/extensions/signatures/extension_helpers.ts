@@ -1,5 +1,5 @@
 import type { IOnlineEncryptionProvider, IOnlineSignatureProvider } from './index';
-import type { ISignatureTransaction, TPublicKey, TSignature } from '../../interfaces';
+import type { ISignatureTransaction, TAccountName, TPublicKey, TSignature } from '../../interfaces';
 
 /**
  * Helper class encapsulating transaction signing flow. Derived class must implement signature generation logic.
@@ -17,6 +17,8 @@ export abstract class ASignatureProvider implements IOnlineSignatureProvider {
   protected abstract generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]>;
 };
 
+export type TBinaryBuffer = ArrayBufferLike | ArrayBufferView | Uint8Array;
+
 /**
  * Helper class encapsulating transaction signing and encryption flow. Derived class must implement signature
  * generation logic like also methods related to data encryption.
@@ -30,7 +32,7 @@ export abstract class AEncryptionProvider extends ASignatureProvider
   }
 
   /// Provider specific implementation of data encryption
-  public abstract encryptData(buffer: string, recipient: TPublicKey): Promise<string>;
+  public abstract encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string>;
 
   /// Provider specific implementation of data decryption
   public abstract decryptData(buffer: string): Promise<string>;
