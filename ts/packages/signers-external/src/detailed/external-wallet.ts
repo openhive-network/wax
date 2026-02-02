@@ -1,4 +1,4 @@
-import { AEncryptionProvider, ISignatureTransaction, type IWaxBaseInterface, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider, ISignatureTransaction, type IWaxBaseInterface, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { BeekeeperProvider  } from "@hiveio/wax-signers-beekeeper";
 import createBeekeeper, { IBeekeeperInstance, IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import { TokenProvider as AuthTokenProvider, GoogleStorageProvider } from "../storage-providers/google-storage-provider.js";
@@ -203,7 +203,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       await this.mainWallet.createStorageFile();
   }
 
-  public async encryptData (buffer: string, recipient: TPublicKey): Promise<string> {
+  public async encryptData (buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
     return await this.beekeeperProvider.encryptData(buffer, recipient);
   }
 
