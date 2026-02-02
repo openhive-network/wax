@@ -1,4 +1,4 @@
-import type { IHiveChainInterface, IWaxBaseInterface, ISignatureTransaction, TAccountName, TRole, TSignature } from "@hiveio/wax";
+import type { IHiveChainInterface, IWaxBaseInterface, ISignatureTransaction, TAccountName, TRole, TSignature, TBinaryBuffer } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
@@ -50,19 +50,25 @@ export class BeekeeperProvider extends AEncryptionProvider {
   /**
    * Encrypts data using the Beekeeper.
    *
-   * @param content The string to encrypt.
+   * @param buffer The string or binary buffer to encrypt.
    * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
-   * @returns A string containing the encrypted data. The string starts with the `#` prefix.
+   * @returns A string containing the encrypted data. If the input was a string, the output will start with the `#` prefix.
+   *          If the input was binary, the output will be a raw, hexadecimal signature string.
    * @throws on any error from the Beekeeper invocation.
    */
-  public async encryptData(content: string, recipient: TPublicKey): Promise<string> {
-    return this.base.encrypt(this.wallet, content, this.publicKey, recipient);
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey): Promise<string> {
+    if (typeof buffer === "string")
+      return this.base.encrypt(this.wallet, buffer, this.publicKey, recipient);
+
+    return this.wallet.signDigest(this.publicKey, Array.from(new Uint8Array(buffer as ArrayBuffer))
+      .map(byte => byte.toString(16).padStart(2, '0'))
+      .join(''));
   }
 
   /**
    * Decrypts data using the Beekeeper.
    *
-   * @param content The string to decrypt. The string should start with the `#` prefix.
+   * @param content The string to decrypt.
    * @returns The decrypted data as a string.
    * @throws on any error from the Beekeeper invocation.
    */
