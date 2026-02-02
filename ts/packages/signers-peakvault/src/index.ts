@@ -1,4 +1,4 @@
-import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 type KeyRole = string;
@@ -69,23 +69,47 @@ class PeakVaultProvider extends AEncryptionProvider {
   }
 
   /**
-   * Encrypts data using the Peak Vault extension.
+   * Encrypts data using the Peak Vault extension. Uses currently selected role for decryption.
    *
-   * @param buffer The string to encrypt. The string should start with the `#` prefix.
-   * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * Note: If a recipient is a user account name, the encryption is done using your memo key!
+   * PeakVault does not allow encrypting for other users using your active/posting keys.
+   * If you need such functionality, use the public key as recipient.
+   *
+   * @param buffer The buffer to encrypt. Cannot be binary, as PeakVault does not suport such feature.
+   *               PeakVault also does not support encrypting binary buffer for others.
+   *               The string should start with the `#` prefix.
+   * @param recipient The public key of the recipient to encrypt the data for or the account name.
    * @returns A string containing the encrypted data. The string starts with the `#` prefix.
    * @throws on any error from the Peak Vault invocation.
    */
-  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
     PeakVaultProvider.ensurePeakVaultInstalled();
 
-    const response = await (window as any).peakvault.requestEncodeWithKeys(this.accountName, "memo", [recipient], buffer.startsWith("#") ? buffer : `#${buffer}`);
+    if (typeof buffer !== "string") {
+      throw new WaxPeakVaultProviderError(`Only string buffers are supported for Peak Vault encryption`);
+    }
 
-    return response.result[0];
+    let result: string;
+
+    if (recipient === this.accountName) {
+      const response = await (window as any).peakvault.requestSignBuffer(this.accountName, this.role, buffer);
+
+      result = response.result;
+    } else if (recipient.startsWith("STM")) {
+      const response = await (window as any).peakvault.requestEncodeWithKeys(this.accountName, this.role, [recipient], buffer.startsWith("#") ? buffer : `#${buffer}`);
+
+      result = response.result[0];
+    } else {
+      const response = await (window as any).peakvault.requestEncode(this.accountName, recipient, buffer.startsWith("#") ? buffer : `#${buffer}`);
+
+      result = response.result;
+    }
+
+    return result;
   }
 
   /**
-   * Decrypts data using the Peak Vault extension.
+   * Decrypts data using the Peak Vault extension. Uses currently selected role for decryption.
    *
    * @param buffer The string to decrypt. The string should start with the `#` prefix.
    * @returns The decrypted data as a string.
@@ -94,7 +118,7 @@ class PeakVaultProvider extends AEncryptionProvider {
   public async decryptData(buffer: string): Promise<string> {
     PeakVaultProvider.ensurePeakVaultInstalled();
 
-    const response = await (window as any).peakvault.requestDecode(this.accountName, buffer, "memo");
+    const response = await (window as any).peakvault.requestDecode(this.accountName, buffer, this.role);
 
     return response.result;
   }
