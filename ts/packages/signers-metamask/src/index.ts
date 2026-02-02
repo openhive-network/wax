@@ -1,4 +1,4 @@
-import type { ISignatureTransaction, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { MetaMaskInpageProvider, RequestArguments } from "@metamask/providers";
@@ -78,6 +78,20 @@ export class MetaMaskProvider extends AEncryptionProvider {
     return isLocalSnap(MetaMaskProvider.#snapOrigin);
   }
 
+  get #selectedKeyIndex() {
+    if (this.#addressIndex !== undefined) {
+      return {
+        accountIndex: this.#accountIndex,
+        addressIndex: this.#addressIndex,
+      };
+    }
+
+    return {
+      role: this.#role,
+      accountIndex: this.#accountIndex,
+    };
+  }
+
   /**
    * @internal The MetaMask provider instance. This is usually obtained from `window.ethereum` in the browser.
    */
@@ -98,18 +112,31 @@ export class MetaMaskProvider extends AEncryptionProvider {
    */
   static #snapOrigin: string;
 
+  readonly #accountIndex: number;
+  readonly #role?: TRole;
+  readonly #addressIndex?: number;
+
   /**
    * @param accountIndex The index of the account to use for signing transactions. Defaults to 0.
    * @param role The role to use for signing transactions. If not provided, it will be implicitly determined from the transaction.
    */
   private constructor(
-    private readonly accountIndex: number,
-    private readonly role: TRole
+    accountIndex: number,
+    role: TRole | number
   ) {
     super();
+
+    this.#accountIndex = accountIndex;
+    if (typeof role === "number") {
+      this.#role = undefined;
+      this.#addressIndex = role;
+    } else {
+      this.#role = role;
+      this.#addressIndex = undefined;
+    }
   }
 
-  private readonly publicKeyCache = new Map<TRole, TPublicKey>();
+  readonly #publicKeyCache = new Map<TRole | number, TPublicKey>();
 
   /**
    * @internal method to make requests to the MetaMask provider.
@@ -127,7 +154,7 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @throws on any error from the Hive Wallet invocation.
    */
   protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
-    const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [{ role: this.role, accountIndex: this.accountIndex }] }) as any;
+    const response = await this.invokeSnap('hive_signTransaction', { transaction: transaction.toApi(), keys: [this.#selectedKeyIndex] }) as any;
 
     return response.signatures;
   }
@@ -141,12 +168,12 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @note For security reasons, when you call this method multiple times with different snap origin it will fail, so users wouldn't silently switch to a different inpage provider or snap.
    *
    * @param accountIndex The index of the account to use for signing transactions. Should be 0 if you want to use the default account.
-   * @param role The role to use for signing transactions.
+   * @param role The role to use for signing transactions (Can be a custom address index - number).
    * @param snapOrigin The origin of the snap to use. Defaults to the npm audit-approved snap. Can be changed in order to test local snap development.
    *
    * @throws on any error from the Hive Wallet invocation.
    */
-  public static async for(accountIndex: number, role: TRole, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
+  public static async for(accountIndex: number, role: TRole | number, snapOrigin: string = defaultSnapOrigin): Promise<MetaMaskProvider> {
     if (!MetaMaskProvider.#snapOrigin) {
       // Get the provider - this will be the MetaMask provider if it is installed
       const provider = await getSnapsProvider();
@@ -183,14 +210,16 @@ export class MetaMaskProvider extends AEncryptionProvider {
   /**
    * Encrypts the given buffer using the Hive Wallet.
    *
-   * @param buffer The buffer to encrypt. Should be a string.
+   * @param buffer The buffer to encrypt. Can be binary.
    * @param recipient The public key of the recipient to encrypt the buffer for.
    * The recipient should be a valid public key in the format expected by the Hive Wallet - Starting with "STM".
    * @returns The encrypted buffer as a string, starting with the `#` prefix.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async encryptData(buffer: string, recipient: TPublicKey): Promise<string> {
-    const response = await this.invokeSnap('hive_encrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex }, secondKey: recipient }) as any;
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey): Promise<string> {
+    const encryptBuffer = typeof buffer === "string" ? buffer : Array.from(new Uint8Array(buffer as ArrayBuffer));
+
+    const response = await this.invokeSnap('hive_encrypt', { buffer: encryptBuffer, firstKey: this.#selectedKeyIndex, secondKey: recipient }) as any;
 
     return response.buffer;
   }
@@ -202,28 +231,40 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @returns A record of {@link TRole} to {@link TPublicKey}, where each role is mapped to its corresponding public key.
    * @throws on any error from the Hive Wallet invocation or unsupported role.
    */
-  public async getPublicKeys<Roles extends TRole[]>(...roles: Roles): Promise<{ [Role in Roles[number]]: TPublicKey }> {
-    const keysRecord = Object.fromEntries(([...(new Set(roles))]).map(role => [role, undefined])) as unknown as { [Role in Roles[number]]: TPublicKey };
+  public async getPublicKeys<R extends Array<TRole | number>>(...roles: R): Promise<{ [key in R[number]]: TPublicKey }> {
+    const keysRecord = Object.fromEntries(([...(new Set(roles))]).map(role => [role, undefined])) as unknown as Record<R[number], TPublicKey>;
 
     for(const role in keysRecord) {
-      const cachedKey = this.publicKeyCache.get(role as TRole);
+      const cachedKey = this.#publicKeyCache.get(role as R[number]);
       if (cachedKey)
-        keysRecord[role as TRole] = cachedKey;
+        keysRecord[role as R[number]] = cachedKey;
     }
 
-    const missingRoles = Object.entries(keysRecord).filter(([, key]) => !key).map(([role]) => role as TRole);
+    const missingRoles = Object.entries(keysRecord).filter(([, key]) => !key).map(([role]) => role as R[number]);
 
     // All keys are already cached so return the cached keys
     if (missingRoles.length === 0)
       return keysRecord;
 
     // This will fail if any of the requested roles is not supported
-    const response = await this.invokeSnap('hive_getPublicKeys', { keys: missingRoles.map(role => ({ role, accountIndex: this.accountIndex })) }) as any;
+    const response = await this.invokeSnap('hive_getPublicKeys', { keys: missingRoles.map(role => {
+      if (typeof role === "number") {
+        return {
+          accountIndex: this.#accountIndex,
+          addressIndex: role,
+        };
+      } else {
+        return {
+          role: role,
+          accountIndex: this.#accountIndex,
+        };
+      }
+    }) }) as any;
 
     // Update the cache with the new keys
     for(const key of response.publicKeys) {
       keysRecord[key.role] = key.publicKey;
-      this.publicKeyCache.set(key.role, key.publicKey);
+      this.#publicKeyCache.set(key.role, key.publicKey);
     }
 
     return keysRecord;
@@ -232,22 +273,16 @@ export class MetaMaskProvider extends AEncryptionProvider {
   /**
    * Gets the public key for the given role from the Hive Wallet.
    *
-   * @param role The role to get the public key for. Should be a valid role.
+   * @param role The role or custom address index to get the public key for. Should be a valid role.
    * @returns The public key for the given role.
    */
-  public async getPublicKey(role: TRole): Promise<TPublicKey> {
+  public async getPublicKey(role: TRole | number): Promise<TPublicKey> {
     // Check if the key is already cached
-    const key = this.publicKeyCache.get(role);
+    const key = this.#publicKeyCache.get(role);
     if (key)
       return key;
 
-    // This will fail if the requested role is not supported
-    const response = await this.invokeSnap('hive_getPublicKey', { keys: [{ role, accountIndex: this.accountIndex }] }) as any;
-
-    const publicKey = response.publicKeys[0].publicKey;
-
-    // Update the cache with the new key
-    this.publicKeyCache.set(role, publicKey);
+    const { [role]: publicKey } = await this.getPublicKeys(role);
 
     return publicKey;
   }
@@ -260,7 +295,7 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @throws on any error from the Hive Wallet invocation.
    */
   public async decryptData(buffer: string): Promise<string> {
-    const response = await this.invokeSnap('hive_decrypt', { buffer, firstKey: { role: "memo" as TRole, accountIndex: this.accountIndex } }) as any;
+    const response = await this.invokeSnap('hive_decrypt', { buffer, firstKey: this.#selectedKeyIndex }) as any;
 
     return response.buffer;
   }
@@ -290,7 +325,7 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @param params The parameters to pass to the snap method. Should be compatible with the snap's API.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async invokeSnap(method: RequestArguments['method'], params?: RequestArguments['params']) {
+  public async invokeSnap(method: RequestArguments['method'], params?: RequestArguments['params']): Promise<unknown> {
     if (!this.isSnapInstalled)
       throw new WaxMetaMaskProviderError('The snap is not installed');
 
