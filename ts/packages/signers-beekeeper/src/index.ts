@@ -3,7 +3,6 @@ import { AEncryptionProvider } from "@hiveio/wax";
 
 import type { IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
 
-// We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
 export class WaxBeekeeperProviderError extends Error {}
 
 /**

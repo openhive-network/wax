@@ -12,7 +12,6 @@ type MetamaskSnapData = {
 };
 type MetamaskSnapsResponse = Record<string, MetamaskSnapData>;
 
-// We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
 export class WaxMetaMaskProviderError extends Error {}
 
 /**

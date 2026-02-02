@@ -10,7 +10,6 @@ const mapRoles: Record<TRole, KeychainKeyTypes | undefined> = {
   memo: "memo"
 };
 
-// We do not extend from WaxError to avoid runtime dependencies, such as: /vite or /web - without it we can import only types
 export class WaxKeychainProviderError extends Error {}
 
 /**
