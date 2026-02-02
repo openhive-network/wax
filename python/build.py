@@ -301,18 +301,22 @@ class CustomBuild(build_ext):
                 __copy_file(output_binary, destination / self.output_binary_name)
 
     def __create_module_aliases(self) -> None:
-        """Create hard links (or copies) for all sub-modules in the same directory as the main .so.
+        """Create symlinks for module aliases and generate _symlinks.json manifest.
 
-        Hard links are used because:
-        1. They are included in wheel packages (unlike symlinks which are skipped)
-        2. They share the same inode, so no extra disk space is used
-        3. They work across all platforms
+        Symlinks are created for local development. The wheel builder will skip
+        symlinks (not dereference them when using poetry), so only the main .so
+        and the manifest are included in the wheel.
+
+        At install time, _restore_symlinks() in __init__.py recreates the symlinks
+        from the manifest.
         """
-        log("Creating module aliases (hard links)...")
+        log("Creating module aliases (symlinks) and manifest...")
         log(f"  Main .so location: {self.wax_package_shared_lib}")
         log(f"  Main .so exists: {self.wax_package_shared_lib.exists()}")
         log(f"  Package dir: {self.package_dir}")
-        log(f"  Build dir: {self.build_dir}")
+
+        symlinks_manifest: dict[str, str] = {}
+        main_so_name = self.output_binary_name
 
         for module_name in CYTHON_MODULE_NAMES:
             # Alias name: cython_modules_<name>.cpython-<abi>-x86_64-linux-gnu.so
@@ -323,59 +327,30 @@ class CustomBuild(build_ext):
 
             alias_path = self.package_dir / alias_name
 
-            # Remove existing file if it exists
+            # Remove existing file/symlink if it exists (cleanup from previous builds)
             if alias_path.exists() or alias_path.is_symlink():
                 alias_path.unlink()
 
-            # Create hard link (preferred) or fall back to copy
-            try:
-                os.link(self.wax_package_shared_lib, alias_path)
-                log(f"  Created hard link: {alias_name}")
-            except OSError as e:
-                # Fall back to file copy if hard links don't work (e.g., cross-filesystem)
-                log(f"  Hard link failed for {alias_name}, falling back to copy: {e}")
-                shutil.copyfile(self.wax_package_shared_lib, alias_path)
+            # Create symlink for local development
+            os.symlink(main_so_name, alias_path)
+            log(f"  Created symlink: {alias_name} -> {main_so_name}")
 
-        # Also create aliases in build/lib* directories if they exist (for wheel packaging)
-        log(f"  Looking for build/lib* directories in: {self.build_dir}")
-        build_lib_dirs = list(self.build_dir.glob("lib*"))
-        log(f"  Found build/lib* directories: {build_lib_dirs}")
-        for sub_build_dir in build_lib_dirs:
-            destination_dir = sub_build_dir / "wax"
-            log(f"  Checking destination_dir: {destination_dir}, exists: {destination_dir.exists()}")
-            if destination_dir.exists():
-                main_so = destination_dir / self.output_binary_name
-                log(f"  Main .so in build/lib: {main_so}, exists: {main_so.exists()}")
-                if not main_so.exists():
-                    continue
-                for module_name in CYTHON_MODULE_NAMES:
-                    alias_name = f"cython_modules_{module_name}.cpython-{self._python_abi}"
-                    if useDebugBuild():
-                        alias_name += "d"
-                    alias_name += "-x86_64-linux-gnu.so"
+            # Add to manifest (paths relative to package dir)
+            symlinks_manifest[f"wax/{alias_name}"] = f"wax/{main_so_name}"
 
-                    alias_path = destination_dir / alias_name
+        # Write symlinks manifest (used by _restore_symlinks() after wheel install)
+        manifest_path = self.package_dir / "_symlinks.json"
+        with open(manifest_path, "w") as f:
+            json.dump(symlinks_manifest, f, indent=2)
+        log(f"  Created _symlinks.json with {len(symlinks_manifest)} entries")
 
-                    if alias_path.exists() or alias_path.is_symlink():
-                        alias_path.unlink()
-
-                    try:
-                        os.link(main_so, alias_path)
-                        log(f"    Created hard link in build/lib: {alias_name}")
-                    except OSError:
-                        shutil.copyfile(main_so, alias_path)
-                        log(f"    Created copy in build/lib: {alias_name}")
-
-        # List all .so files in package_dir and build/lib* for verification
+        # List all .so files in package_dir for verification
         log(f"  Final .so files in {self.package_dir}:")
         for so_file in self.package_dir.glob("*.so"):
-            log(f"    {so_file.name}")
-        for sub_build_dir in self.build_dir.glob("lib*"):
-            destination_dir = sub_build_dir / "wax"
-            if destination_dir.exists():
-                log(f"  Final .so files in {destination_dir}:")
-                for so_file in destination_dir.glob("*.so"):
-                    log(f"    {so_file.name}")
+            if so_file.is_symlink():
+                log(f"    {so_file.name} -> {os.readlink(so_file)}")
+            else:
+                log(f"    {so_file.name}")
 
     def __remove_corrupted_binary(self) -> None:
         corrupted_in_build = self.build_dir.glob("lib*/*.so")
@@ -402,10 +377,32 @@ def build(setup_kwargs: dict[str, Any]) -> None:
     log("Build with Cython")
 
     root_dir = Path(__file__).parent.absolute()
+    package_dir = root_dir / "wax"
     cython_build_dir = root_dir / ".cython_build"
 
     # Ensure .cython_build directory exists
     cython_build_dir.mkdir(exist_ok=True)
+
+    # Generate _symlinks.json manifest BEFORE setuptools collects files
+    # This ensures the manifest is included in the wheel
+    python_abi = get_python_abi_tag()
+    main_so_name = f"cpp_python_bridge.cpython-{python_abi}"
+    if useDebugBuild():
+        main_so_name += "d"
+    main_so_name += "-x86_64-linux-gnu.so"
+
+    symlinks_manifest: dict[str, str] = {}
+    for module_name in CYTHON_MODULE_NAMES:
+        alias_name = f"cython_modules_{module_name}.cpython-{python_abi}"
+        if useDebugBuild():
+            alias_name += "d"
+        alias_name += "-x86_64-linux-gnu.so"
+        symlinks_manifest[f"wax/{alias_name}"] = f"wax/{main_so_name}"
+
+    manifest_path = package_dir / "_symlinks.json"
+    with open(manifest_path, "w") as f:
+        json.dump(symlinks_manifest, f, indent=2)
+    log(f"Created _symlinks.json with {len(symlinks_manifest)} entries")
 
     # Include directories for all extensions
     include_dirs = [".", "./..", "./../hive/libraries/protocol/include"]

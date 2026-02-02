@@ -3,6 +3,54 @@ from __future__ import annotations
 import sys
 
 # =============================================================================
+# Symlink restoration (must happen before Cython imports)
+# =============================================================================
+# When installed from a wheel, symlinks to the main .so are not included
+# (wheel builder skips symlinks). We restore them from _symlinks.json manifest.
+
+
+def _restore_symlinks() -> None:
+    """Restore symlinks from _symlinks.json manifest (runs once at first import)."""
+    import json
+    import os
+    from pathlib import Path
+
+    pkg_dir = Path(__file__).parent
+    manifest = pkg_dir / "_symlinks.json"
+
+    # Skip if no manifest (shouldn't happen, but be safe)
+    if not manifest.exists():
+        return
+
+    try:
+        with manifest.open() as f:
+            links: dict[str, str] = json.load(f)
+
+        for target_rel, source_rel in links.items():
+            target = pkg_dir / target_rel.split("/", 1)[-1]  # Remove "wax/" prefix
+            source_name = source_rel.split("/")[-1]  # Just the filename for relative symlink
+
+            # Skip if target already exists (symlink or file)
+            if target.exists() or target.is_symlink():
+                continue
+
+            try:
+                os.symlink(source_name, target)
+            except OSError:
+                # Fall back to copy if symlinks not supported (e.g., Windows without privileges)
+                import shutil
+
+                source = pkg_dir / source_name
+                if source.exists():
+                    shutil.copy2(source, target)
+    except (OSError, json.JSONDecodeError):
+        pass  # Silently fail - will error on import if modules missing
+
+
+_restore_symlinks()
+del _restore_symlinks
+
+# =============================================================================
 # Cython sub-module aliasing (must happen before other imports)
 # =============================================================================
 # The wax package compiles multiple Cython sub-modules into a single .so file.
@@ -24,7 +72,7 @@ import sys
 # before importing the next module that depends on it. This interleaved pattern
 # is required and cannot be reorganized.
 # =============================================================================
-from . import cython_modules_common  # type: ignore[attr-defined]
+from . import cython_modules_common  # type: ignore[attr-defined]  # noqa: E402
 
 sys.modules["cython_modules_common"] = cython_modules_common
 

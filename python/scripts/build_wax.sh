@@ -128,12 +128,8 @@ else
   cd ${PROJECT_DIR}
   python3 -m pip wheel --no-deps --no-build-isolation -w dist .
 
-  # Deduplicate wheel to reduce size (removes duplicate .so files)
-  echo "Deduplicating wheel package..."
-  WHEEL_FILE=$(ls ${PROJECT_DIR}/dist/*.whl | head -1)
-  python3 ${SCRIPT_DIR}/repack_wheel.py "${WHEEL_FILE}"
-  rm "${WHEEL_FILE}"
-  mv "${WHEEL_FILE%.whl}.dedup.whl" "${WHEEL_FILE}"
+  # Note: Wheel is already small because symlinks are skipped by the wheel builder.
+  # The _symlinks.json manifest is included and symlinks are restored at import time.
 
   echo "List dist directory: ${PROJECT_DIR}/dist"
   ls -lA ${PROJECT_DIR}/dist

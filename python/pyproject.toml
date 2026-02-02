@@ -19,6 +19,7 @@ packages = [{ include = "wax"}]
 include = [
     "wax/_private/proto/*",
     "wax/*.so",
+    "wax/_symlinks.json",
 ]
 source = [
     { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple", priority = "primary" },
