@@ -60,7 +60,7 @@ class KeychainProvider extends AEncryptionProvider {
    * @returns Either True or False if the supported extension (Keychain) is installed, false otherwise.
    */
   public static isExtensionInstalled(): boolean {
-    return typeof window === "object" || typeof (window as any).hive_keychain === "object";
+    return typeof window === "object" && typeof (window as any).hive_keychain === "object";
   }
 
   private static ensureKeychainInstalled(): void {
