@@ -1,5 +1,5 @@
 import type { ISignatureTransaction, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
-import { AEncryptionProvider } from "@hiveio/wax";
+import { AEncryptionProvider, isPublicKey } from "@hiveio/wax";
 
 type KeyRole = string;
 
@@ -95,7 +95,7 @@ class PeakVaultProvider extends AEncryptionProvider {
       const response = await (window as any).peakvault.requestSignBuffer(this.accountName, this.role, buffer);
 
       result = response.result;
-    } else if (recipient.startsWith("STM")) {
+    } else if (isPublicKey(recipient)) {
       const response = await (window as any).peakvault.requestEncodeWithKeys(this.accountName, this.role, [recipient], buffer.startsWith("#") ? buffer : `#${buffer}`);
 
       result = response.result[0];

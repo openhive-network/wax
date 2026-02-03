@@ -1,5 +1,5 @@
 import type { ISignatureTransaction, TAccountName, TPublicKey, TRole, TSignature, TBinaryBuffer } from "@hiveio/wax";
-import { AEncryptionProvider } from "@hiveio/wax";
+import { AEncryptionProvider, isPublicKey } from "@hiveio/wax";
 
 type KeychainKeyTypes = string;
 
@@ -99,7 +99,7 @@ class KeychainProvider extends AEncryptionProvider {
               resolve(response.result);
           }
         ));
-      } else if (recipient.startsWith("STM")) {
+      } else if (isPublicKey(recipient)) {
         response = await new Promise<string>((resolve, reject) => (window as any).hive_keychain.requestEncodeWithKeys(
           this.accountName,
           [recipient],
