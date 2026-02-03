@@ -180,9 +180,19 @@ ITEM
 FOOTER
 }
 
-# Generate index.html for version directory (lists wiki subdir)
+# Generate index.html for version directory (lists all existing subdirs)
 echo "Generating index page for ${PROJECT_SUBDIR}/${VERSION}/"
-generate_index_page "${PROJECT_SUBDIR}/${VERSION}" "${PROJECT_SUBDIR} ${VERSION}" "${GITHUB_DOCS_SUBDIR}"
+# Find all subdirectories in the version directory
+VERSION_DIR="${PROJECT_SUBDIR}/${VERSION}"
+EXISTING_SUBDIRS=()
+for d in "${VERSION_DIR}"/*/; do
+  if [ -d "$d" ]; then
+    subdir_name=$(basename "$d")
+    EXISTING_SUBDIRS+=("$subdir_name")
+  fi
+done
+echo "Found subdirectories: ${EXISTING_SUBDIRS[*]}"
+generate_index_page "${VERSION_DIR}" "${PROJECT_SUBDIR} ${VERSION}" "${EXISTING_SUBDIRS[@]}"
 
 # Generate index.html for docs subdir (lists ts and python)
 echo "Generating index page for ${DOCS_BASE}/"
