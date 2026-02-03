@@ -64,6 +64,18 @@ cp -r "${TS_DOCS_DIR}/." "${DOCS_BASE}/ts/"
 echo "Copying Python docs from ${PY_DOCS_DIR} to ${DOCS_BASE}/python/"
 cp -r "${PY_DOCS_DIR}/." "${DOCS_BASE}/python/"
 
+# Clean up any unexpected directories in version folder (only keep manual and wiki)
+VERSION_PATH="${PROJECT_SUBDIR}/${VERSION}"
+for d in "${VERSION_PATH}"/*/; do
+  if [ -d "$d" ]; then
+    dir_name=$(basename "$d")
+    if [ "$dir_name" != "manual" ] && [ "$dir_name" != "wiki" ]; then
+      echo "Removing unexpected directory: ${d}"
+      rm -rf "$d"
+    fi
+  fi
+done
+
 # Generate directory listing index pages
 generate_index_page() {
   local dir="$1"
@@ -233,8 +245,8 @@ EOF
 echo "Updated versions.json:"
 cat "${VERSIONS_FILE}"
 
-# Copy project landing page from template and replace placeholder with actual docs subdir
-sed "s/__DOCS_SUBDIR__/${GITHUB_DOCS_SUBDIR}/g" "${SCRIPTPATH}/doc-index-template.html" > "${PROJECT_SUBDIR}/index.html"
+# Copy project landing page from template
+cp "${SCRIPTPATH}/doc-index-template.html" "${PROJECT_SUBDIR}/index.html"
 
 # Add .nojekyll to prevent Jekyll processing
 touch .nojekyll
