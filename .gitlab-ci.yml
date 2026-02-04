@@ -320,13 +320,47 @@ push_to_wiki:
       - PYTHON_VERSION: ["3.12", "3.14"]
 
 test_importing_wax:
-  extends:
-    - .runtime_like_python_env
-    - .python_test_matrix
+  stage: test_python
+  image: quay.io/pypa/manylinux_2_28:2026.01.16-1
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.12", "3.14"]
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+  needs:
+    - job: build_wheel
+      artifacts: true
+  before_script:
+    # Set up PATH for the correct Python version from PyPA image
+    - export PATH="/opt/python/cp${PYTHON_VERSION//./}-cp${PYTHON_VERSION//./}/bin:$PATH"
+    - python3 --version
+    # Verify Python version matches PYTHON_VERSION env var
+    - |
+      ACTUAL_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+      if [ "$ACTUAL_VERSION" != "$PYTHON_VERSION" ]; then
+        echo "ERROR: Python version mismatch! Expected $PYTHON_VERSION but got $ACTUAL_VERSION"
+        exit 1
+      fi
+      echo "Python version verified: $ACTUAL_VERSION matches PYTHON_VERSION=$PYTHON_VERSION"
+    # Install only the wheel matching current Python version
+    - |
+      set -x
+      PYTHON_TAG="cp${PYTHON_VERSION//./}"
+      WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
+      if [ -z "$WHEEL_FILE" ]; then
+        echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
+        ls -la ${PYPROJECT_DIR}/dist/
+        exit 1
+      fi
+      echo "Installing wheel: $WHEEL_FILE"
   script:
-    - echo -e "${TXT_BLUE}Testing...${TXT_CLEAR}"
-    - cd ..  # needed to import installed package instead of local one
+    - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
+    - python3 --version
+    - pip3 install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX $WHEEL_FILE
+    - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
+  tags:
+    - public-runner-docker
 
 test_wax_protobuf_python:
   extends:
