@@ -92,7 +92,7 @@ pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>
 #   - distance=0         -> exact tag version
 #   - distance>0, stable -> tag + .post{timestamp}
 #   - distance>0, unstable -> tag + .post{timestamp}.dev0+unstable (pre-release, ignored by default)
-#   - dirty              -> + 'dirty' marker
+#   - dirty (local only) -> + 'dirty' marker (disabled in CI)
 #   - unstable           -> + 'unstable' marker
 #
 # Stability detection:
@@ -112,6 +112,7 @@ format-jinja = """
     {%- set STABLE_BRANCHES = ['develop', 'master', 'main'] -%}
 
     {%- set effective_branch = branch or env.get('CI_COMMIT_REF_NAME') -%}
+    {%- set is_ci = env.get('CI') == 'true' -%}
     {%- set is_on_tag = distance == 0 -%}
     {%- set is_after_tag = distance > 0 -%}
     {%- set is_tag_checkout = branch is none and is_on_tag -%}
@@ -121,7 +122,7 @@ format-jinja = """
     {%- set post = timestamp|int if is_after_tag else none -%}
     {%- set dev = 0 if is_feature_branch else none -%}
     {%- set local_parts = ['unstable'] if is_feature_branch else [] -%}
-    {%- set local_parts = local_parts + ['dirty'] if dirty else local_parts -%}
+    {%- set local_parts = local_parts + ['dirty'] if dirty and not is_ci else local_parts -%}
 
     {{ serialize_pep440(base, stage, revision, post=post, dev=dev, metadata=local_parts) }}
 """
