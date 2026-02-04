@@ -15,6 +15,10 @@ include:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
       - '/templates/verify_submodule_ref.gitlab-ci.yml'
+  - project: 'hive/common-ci-configuration'
+    ref: 37bc739200d61f9c50fe7a4d8728d205bd4c6dbe
+    file:
+      - '/templates/github_pages.gitlab-ci.yml'
   - project: 'hive/hive'
     ref: bda2633143116d3dd4d5f0d6980175439889666c
     file:
@@ -23,6 +27,8 @@ include:
 
 
 variables:
+  # Reference for GitHub Pages scripts from common-ci-configuration
+  COMMON_CI_GITHUB_PAGES_REF: "37bc739200d61f9c50fe7a4d8728d205bd4c6dbe"
   TEST_WITH_LATEST_DEPENDENCIES: "false"
   STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
   GIT_DEPTH: 0
@@ -737,33 +743,24 @@ build_wax_ci_base_image_py314:
 # Requires GITHUB_PAGES_TOKEN CI variable with repo write access.
 
 generate_html_docs:
-  stage: build
-  extends: .npm_based_job_base
+  extends: .generate_html_docs_template
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
-    DIST_DIR: "${TS_DIST_DIR}"
-  script:
-    # BUILT_PACKAGE_VERSION is automatically available from wax_wasm_proto_tsc_generation's dotenv artifact
-    - ${CI_PROJECT_DIR}/scripts/generate_html_docs.sh "https://github.com/openhive-network/wax" "${CI_COMMIT_SHA}" "${CI_PROJECT_DIR}/docs-output/ts" "${BUILT_PACKAGE_VERSION}"
+    PACKAGE_NAME: "@hiveio/wax"
+    ENTRY_POINT: "wasm/lib/index.ts"
+    PNPM_DIR: "ts"
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
-  artifacts:
-    paths:
-      - "${CI_PROJECT_DIR}/docs-output/ts"
-    when: always
-    expire_in: 1 week
-  rules:
-    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
-  tags:
-    - public-runner-docker
 
 deploy_to_github_pages:
-  stage: deploy
+  extends: .deploy_github_pages_full_template
   image: "${CI_BASE_IMAGE}"
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
-    GITHUB_REPO: "openhive-network/hive-doc"
+    PROJECT_NAME: "wax"
+    TS_DOCS_DIR: "${CI_PROJECT_DIR}/docs-output/ts"
+    PY_DOCS_DIR: "${CI_PROJECT_DIR}/python/site"
+    EXTRA_DOCS_DIR: "${TS_DIST_DIR}/docs"
   needs:
     - job: generate_html_docs
       artifacts: true
@@ -771,9 +768,3 @@ deploy_to_github_pages:
       artifacts: true
     - job: generate_docs
       artifacts: true
-  script:
-    - ${CI_PROJECT_DIR}/scripts/deploy_github_pages.sh "${CI_COMMIT_REF_SLUG}" "${CI_PROJECT_DIR}/docs-output/ts" "${PYPROJECT_DIR}/site" "${TS_DIST_DIR}/docs" "wiki" "${GITHUB_REPO}" "${GITHUB_PAGES_TOKEN}" "wax"
-  rules:
-    - if: '$CI_COMMIT_REF_PROTECTED == "true" && $GITHUB_PAGES_TOKEN'
-  tags:
-    - public-runner-docker
