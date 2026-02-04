@@ -97,9 +97,9 @@ else
     local published_name="${api_package_name//_/-}"
     echo "Published name: ${published_name}"
 
-    if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-api-packages > /dev/null 2>&1; then
+    if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-hive > /dev/null 2>&1; then
       echo "Using ${published_name} from registry."
-      poetry add "${published_name}@${api_wheel_version}" --source gitlab-api-packages
+      poetry add "${published_name}@${api_wheel_version}" --source gitlab-hive
     else
       # Try to use pre-built wheel from artifacts first (preserves correct version)
       local wheel_dir="../hive/libraries/plugins/apis/api_generation/${api_package_name}/dist"
