@@ -67,7 +67,7 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.poetry-dynamic-versioning]
 enable = true
-pattern = '''beekeeper-v(?P<base>\d+\.\d+\.\d+)(-?(?P<stage>[a-zA-Z]+)\.?(?P<revision>\d+)?)?$'''
+pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>\d+))?$'''
 # PEP 440 compliant versioning with .post{timestamp}
 # https://peps.python.org/pep-0440/
 #

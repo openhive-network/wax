@@ -2806,4 +2806,4 @@ reference = "gitlab-hive"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "2afbd2a7241e0c031b3fcbb4ff4827c95074df612f9907bbe218b8ef2215c54c"
+content-hash = "26c506b3ef4624f50b0dcc99449aeb9eb1053cd9202de7b267d61b106ded861c"
