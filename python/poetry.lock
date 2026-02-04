@@ -768,18 +768,17 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.2.dev505+5ea29b99a"
+version = "1.28.6a9.post20260204134524"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.2.dev505+5ea29b99a-py3-none-any.whl", hash = "sha256:7a6d9a9523a5ee90d04cfe3160007471419a44aa7ea4d5365134df5a89356b65"},
-    {file = "hiveio_api-1.28.2.dev505+5ea29b99a-py3-none-any.whl", hash = "sha256:3e427f32b187daba131cbccf570c71112728d91e5fe5266c7ce2f4c0e311346a"},
+    {file = "hiveio_api-1.28.6a9.post20260204134524-py3-none-any.whl", hash = "sha256:b8249ecb57ae3907c29971b2b0b991ad4bbb3b7d9dbf1105df4289de92ce1fb3"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = "1.28.5.post20260202151849"
+hiveio-beekeepy = ">=1.28.5"
 
 [package.source]
 type = "legacy"
@@ -788,18 +787,18 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-beekeepy"
-version = "1.28.5.post20260202151849+unstable"
+version = "1.28.5.post20260203124649"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_beekeepy-1.28.5.post20260202151849+unstable-py3-none-any.whl", hash = "sha256:94cee087674a54141067b727c5da488af9dc09efb61ab4175176781d1cd3c4cd"},
+    {file = "hiveio_beekeepy-1.28.5.post20260203124649-py3-none-any.whl", hash = "sha256:fef120215df612fd0df8f5dc169f4845605440f3e4fdbbe8085761224e73887a"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.11.15"
-hiveio-schemas = ">=1.28.0"
+hiveio-schemas = ">=1.28.1"
 loguru = ">=0.7.2"
 psutil = ">=7.0.0"
 python-dateutil = ">=2.8.2"
@@ -812,17 +811,17 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-schemas"
-version = "1.28.1.dev14+16dc964"
+version = "1.28.1.post20260203120623"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_schemas-1.28.1.dev14+16dc964-py3-none-any.whl", hash = "sha256:6c7625b2b6a626f9a4b056c81748b2f2546d721a5f88db2491f663c85f69a9f4"},
+    {file = "hiveio_schemas-1.28.1.post20260203120623-py3-none-any.whl", hash = "sha256:3e0cedb683096cb789c88c46666cf5fca36063986d8e24f2d742c6aabfd1dcb8"},
 ]
 
 [package.dependencies]
-msgspec = "0.20.0"
+msgspec = ">=0.20.0"
 
 [package.source]
 type = "legacy"
@@ -2407,4 +2406,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "4b2cffc951aa0d60e26034dad2c717dce33032a7cd72b30581047c37fdf18c7a"
+content-hash = "d4f4cf0e889629267ab957bb7495b961d49fe9649ab5bc8c32c006b041acb6eb"
