@@ -254,11 +254,21 @@ pre_commit_checks:
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
     API_PACKAGES_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
+    PRE_COMMIT_CONFIG: "${CI_PROJECT_DIR}/python/.pre-commit-config.yaml"
   before_script:
-    - cd "${PYPROJECT_DIR}"
+    - cd "${CI_PROJECT_DIR}"  # pre-commit config paths are relative to repo root
     - !reference [.configuration_template, before_script]
     - !reference [.update_deps_for_static_analysis, script]
-    - poetry install --no-root
+    - poetry -C "${PYPROJECT_DIR}" install --no-root
+    # Install wax wheel so mypy-test-tools can resolve wax imports
+    - PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+    - pip install --extra-index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${WAX_DIR}/dist/*-${PYTHON_TAG}-*.whl
+    # Install test-tools (--no-deps to avoid rebuilding wax from path dependency)
+    - pip install --no-deps "${TEST_TOOLS_DIR}"
+    # Remove wax path dependency from lock and install remaining test-tools dependencies
+    # (wax is already installed from wheel above, no need to fetch from registry)
+    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+    - poetry -C "${TEST_TOOLS_DIR}" install --no-root
   artifacts:
     when: always
     expire_in: 1 week
@@ -330,7 +340,7 @@ test_importing_wax:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
   needs:
     - job: build_wheel
       artifacts: true
@@ -558,6 +568,8 @@ test_helpy:
   extends:
     - .test_python_env
     - .python_test_matrix
+  variables:
+    PYTHONPATH: "${CI_PROJECT_DIR}/python"
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
     - cd ${TESTS_DIR}/wax/helpy_test
@@ -793,7 +805,7 @@ build_test_tools_wheel:
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
     - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s)
     - echo "Using wax version ${WAX_VERSION} from registry"
-    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-wax || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
   script:
     - poetry -C "${TEST_TOOLS_DIR}" build --format wheel
   artifacts:

@@ -1,4 +1,4 @@
-SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hive")
+SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../hive")
 # Main facade module (cpp_python_bridge.pyx → cpp_python_bridge.cpp)
 SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cpp_python_bridge.cpp")
 
@@ -79,24 +79,24 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/chain" ${CMAKE_CURRENT_BINARY_DIR}/chain EXCLUDE_FROM_ALL)
 add_subdirectory("${HIVE_ROOT_PATH}/assertion_id_verifier" ${CMAKE_CURRENT_BINARY_DIR}/assertion_id_verifier)
 
-file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../core/*.hpp" "cpython_interface.hpp")
+file(GLOB HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../../core/*.hpp" "cpython_interface.hpp")
 
 add_python_library("cpp_python_bridge" MODULE SOURCES
   ${CYTHON_MODULE_SOURCES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/exception.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/foundation.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/utils.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/binary_view_helper.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/signing_keys_collector.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/../core/minimize_required_signatures_helper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/exception.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/foundation.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/utils.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/binary_view_helper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/signing_keys_collector.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../core/minimize_required_signatures_helper.cpp
   cpython_interface.cpp
   ${HEADERS}
   LINK_LIBRARIES hive_protocol)
 
 target_include_directories("cpp_python_bridge" PRIVATE
   "${CMAKE_CURRENT_SOURCE_DIR}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../core"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../core"
   "${CYTHON_BUILD_DIR}"
   "${HIVE_ROOT_PATH}/libraries/chain/include"
   "${GENERATED_ASSERT_ID_DIR}"

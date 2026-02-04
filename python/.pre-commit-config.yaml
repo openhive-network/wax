@@ -8,7 +8,7 @@ files: |
 exclude: |
     (?x)(
             ^python/wax/wax/cpp_python_bridge.pyi|
-            ^python/wax/wax/proto/.*$
+            ^python/wax/wax/_private/proto/.*$
     )
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -47,7 +47,7 @@ repos:
       - id: mypy-wax
         name: type check wax with mypy
         entry: mypy
-        args: ["--config-file", "python/wax/pyproject.toml", "python/wax/wax", "python/tests/wax"]
+        args: ["--config-file", "python/wax/pyproject.toml", "python/wax/wax", "python/tests/wax/base_api", "python/tests/wax/chain_api", "python/tests/wax/transactions", "python/tests/wax/helpy_test", "python/tests/wax/apps_operations"]
         language: system
         types: [python]
         pass_filenames: false

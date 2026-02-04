@@ -61,13 +61,13 @@ pnpm run benchmark
 
 ```bash
 # Build wheel (from repo root, requires CI base image or prepared environment)
-./python/scripts/build_wax.sh
+./python/wax/scripts/build_wax.sh
 
 # Install for development
-./python/scripts/install_wax.sh
+./python/wax/scripts/install_wax.sh
 
 # Run tests (starts mock server, runs pytest)
-./python/tests/run_tests.sh
+./python/tests/wax/run_tests.sh
 
 # Run examples
 ./examples/python/run_example.sh

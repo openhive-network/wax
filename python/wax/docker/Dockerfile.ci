@@ -27,7 +27,7 @@ USER root
 
 ENV WAX_BOOST_ROOT=/wax_boost_root/
 
-ADD ./python/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
+ADD ./python/wax/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
 
 RUN mkdir -vp "${WAX_BOOST_ROOT}" && \
     chmod -R a+w "${WAX_BOOST_ROOT}" && \

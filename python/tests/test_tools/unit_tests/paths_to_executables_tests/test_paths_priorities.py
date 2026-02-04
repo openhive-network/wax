@@ -8,7 +8,7 @@ import pytest
 if TYPE_CHECKING:
     from test_tools.__private.paths_to_executables import _PathsToExecutables
 
-    from tests.unit_tests.paths_to_executables_tests.executable_init_params import ExecutableInitParams
+    from unit_tests.paths_to_executables_tests.executable_init_params import ExecutableInitParams
 
 
 @pytest.fixture(autouse=True, scope="module")

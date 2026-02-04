@@ -26,7 +26,7 @@ Prebuilt image can be also retrieved from Gitlab container registry: https://git
 In order to build wax python package, one need to simply type from root project directory:
 
 ```bash
-./python/scripts/build_wax.sh
+./python/wax/scripts/build_wax.sh
 ```
 
 This script will generate wheel file using virtual environment of poetry  which will be saved in ./dist directory.
@@ -65,7 +65,7 @@ export WAX_SKIP_BUILD=true
 Then, you can install the package using dedicated script. 
 Please remember about creating a virtual environment first, as described above.
 ```bash
-./python/scripts/install_wax.sh
+./python/wax/scripts/install_wax.sh
 ```
 
 

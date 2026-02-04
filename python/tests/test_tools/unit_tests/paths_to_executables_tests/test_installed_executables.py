@@ -9,7 +9,7 @@ from test_tools.__private.paths_to_executables import Priority
 if TYPE_CHECKING:
     from test_tools.__private.paths_to_executables import _PathsToExecutables
 
-    from tests.unit_tests.paths_to_executables_tests.executable_init_params import ExecutableInitParams
+    from unit_tests.paths_to_executables_tests.executable_init_params import ExecutableInitParams
 
 
 def test_paths_of_installed_executables(paths: _PathsToExecutables, executables: list[ExecutableInitParams]) -> None:

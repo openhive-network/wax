@@ -405,7 +405,7 @@ def build(setup_kwargs: dict[str, Any]) -> None:
     log(f"Created _symlinks.json with {len(symlinks_manifest)} entries")
 
     # Include directories for all extensions
-    include_dirs = [".", "./..", "./../hive/libraries/protocol/include"]
+    include_dirs = [".", "./..", "./../..", "./../../hive/libraries/protocol/include"]
 
     # Compiler directives for all extensions
     compiler_directives = {
