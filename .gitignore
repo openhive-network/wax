@@ -18,12 +18,13 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-python/build/
-python/.build/
-python/.cython_build/
+python/wax/build/
+python/wax/.build/
+python/wax/.cython_build/
 develop-eggs/
-python/dist/
-python/.poetry_backup/ # Temporary files where original pyproject.toml and poetry.lock are stored
+python/wax/dist/
+python/wax/.poetry_backup/ # Temporary files where original pyproject.toml and poetry.lock are stored
+python/test_tools/dist/
 downloads/
 eggs/
 .eggs/
@@ -208,11 +209,11 @@ pyrightconfig.json
 build_wasm
 tmp_doc
 built_package_info.json
-python/config.ini
-python/tests/report.xml
-python/tests/base_api/generated_*
-python/*.wallet
-python/setup.py
+python/wax/config.ini
+python/tests/wax/report.xml
+python/tests/wax/base_api/generated_*
+python/wax/*.wallet
+python/wax/setup.py
 
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope
@@ -221,8 +222,8 @@ python/setup.py
 ts/wasm/lib/proto
 dist
 node_modules
-python/wax/_private/proto
-python/cpp_python_bridge.cpp
+python/wax/wax/_private/proto
+python/wax/cpp_python_bridge.cpp
 .parcel-cache
 .pnpm-store
 .pnpm-home

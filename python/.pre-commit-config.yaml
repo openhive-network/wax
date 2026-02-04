@@ -1,16 +1,14 @@
 files: |
     (?x)(
-            ^python/wax/.*$|
-            ^python/tests/base_api/.*$|
-            ^python/tests/chain_api/.*$|
-            ^python/tests/transactions/.*$|
-            ^python/tests/helpy_test/.*$|
-            ^python/tests/apps_operations/.*$
+            ^python/wax/wax/.*$|
+            ^python/test_tools/test_tools/.*$|
+            ^python/tests/wax/.*$|
+            ^python/tests/test_tools/.*$
     )
 exclude: |
     (?x)(
-            ^python/wax/cpp_python_bridge.pyi|
-            ^python/wax/proto/.*$
+            ^python/wax/wax/cpp_python_bridge.pyi|
+            ^python/wax/wax/proto/.*$
     )
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -29,8 +27,12 @@ repos:
     rev: 2.1.3
     hooks:
       - id: poetry-lock
-        name: checking if poetry.lock is consistent with pyproject.toml
-        args: [ "-C", "./python"]
+        name: checking if wax poetry.lock is consistent with pyproject.toml
+        args: [ "-C", "./python/wax"]
+        language_version: python3.14
+      - id: poetry-lock
+        name: checking if test-tools poetry.lock is consistent with pyproject.toml
+        args: [ "-C", "./python/test_tools"]
         language_version: python3.14
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.6.5'
@@ -42,10 +44,17 @@ repos:
         name: format code using Ruff formatter
   - repo: local
     hooks:
-      - id: mypy
-        name: type check with mypy
+      - id: mypy-wax
+        name: type check wax with mypy
         entry: mypy
-        args: ["--config-file", "python/pyproject.toml", "python/wax", "python/tests"]
+        args: ["--config-file", "python/wax/pyproject.toml", "python/wax/wax", "python/tests/wax"]
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: mypy-test-tools
+        name: type check test-tools with mypy
+        entry: mypy
+        args: ["--config-file", "python/test_tools/pyproject.toml", "python/test_tools/test_tools"]
         language: system
         types: [python]
         pass_filenames: false
@@ -61,5 +70,6 @@ repos:
           - "--create"
           - "--python-folders"
           - "\
-            wax,
+            python/wax/wax,
+            python/test_tools/test_tools,
             "

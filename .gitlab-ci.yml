@@ -5,6 +5,7 @@ stages:
   - test_python
   - test
   - deploy
+  - test-tools
 
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
@@ -67,6 +68,12 @@ variables:
   # Common paths for TS package jobs
   TS_SOURCE_DIR: "${CI_PROJECT_DIR}/ts"
   TS_DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
+
+  # Python package paths (monorepo structure)
+  WAX_DIR: "${CI_PROJECT_DIR}/python/wax"
+  TEST_TOOLS_DIR: "${CI_PROJECT_DIR}/python/test_tools"
+  TESTS_DIR: "${CI_PROJECT_DIR}/python/tests"
+  LOCAL_TOOLS_DIR: "${CI_PROJECT_DIR}/python/tests/local-tools"
 
 image: "${CI_BASE_IMAGE}"
 
@@ -132,14 +139,14 @@ build_wheel:
     - job: hiveio_api_package
       artifacts: true
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
   image: "${CI_BASE_IMAGE}"
   script:
     - echo "Building wheel for Python ${PYTHON_VERSION}"
     - python3 --version
-    - ./python/scripts/build_wax.sh 1
+    - ./python/wax/scripts/build_wax.sh 1
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
@@ -245,7 +252,7 @@ pre_commit_checks:
     - job: build_wheel
       artifacts: true
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
     API_PACKAGES_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
   before_script:
     - cd "${PYPROJECT_DIR}"
@@ -256,7 +263,7 @@ pre_commit_checks:
     when: always
     expire_in: 1 week
     paths:
-      - python/poetry.lock
+      - python/wax/poetry.lock
   tags:
     - public-runner-docker
 
@@ -280,7 +287,7 @@ push_to_wiki:
   stage: test_python
   extends: .configuration_template
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
   needs:
     - job: build_wheel
       artifacts: true
@@ -365,10 +372,10 @@ test_wax_protobuf_python:
     - .python_test_matrix
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - ${PYPROJECT_DIR}/tests/run_tests.sh
+    - ${TESTS_DIR}/wax/run_tests.sh
   artifacts:
     reports:
-      junit: python/tests/report.xml
+      junit: python/tests/wax/report.xml
     paths:
       - $PYPROJECT_DIR/mock-server.log
 
@@ -381,10 +388,10 @@ test_wax_protobuf_python_pattern:
       artifacts: true
   script:
     - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $CI_PROJECT_DIR/python/protobuf_patterns/ $CI_PROJECT_DIR/python/wax/_private/proto/
+    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $WAX_DIR/protobuf_patterns/ $WAX_DIR/wax/_private/proto/
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/python/wax/_private/proto/
+      - $WAX_DIR/wax/_private/proto/
 
     when: always
     expire_in: 1 week
@@ -492,7 +499,7 @@ deploy_wheel_to_gitlab:
   stage: deploy
   extends: .deploy_wheel_to_gitlab_template
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
   <<: *deploy_wheel_needs
   when: on_success
   tags:
@@ -502,7 +509,7 @@ deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
   <<: *deploy_wheel_needs
   tags:
     - public-runner-docker
@@ -553,9 +560,9 @@ test_helpy:
     - .python_test_matrix
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
-    - cd ${PYPROJECT_DIR}/tests/helpy_test
+    - cd ${TESTS_DIR}/wax/helpy_test
     - python3 -m pytest -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml
-    - echo -e "${TXT_BLUE}Tests succesfully...${TXT_CLEAR}"
+    - echo -e "${TXT_BLUE}Tests successfully...${TXT_CLEAR}"
   artifacts:
     when: always
     expire_in: 1 week
@@ -587,7 +594,7 @@ test_helpy:
   variables:
     GITLAB_PAGES_DEFAULT_BRANCH_PATH: "default/"
     CURRENT_URL: $CURRENT_CONTENT_PATH
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
     PAGES_ENV_NAME: "pages/${CI_COMMIT_REF_SLUG}"
     PAGES_BASE_DIR: "${CI_PROJECT_DIR}/public"
     PAGES_CONTENT_PATH: "${PAGES_BASE_DIR}/${CURRENT_CONTENT_PATH}"
@@ -658,7 +665,7 @@ build_and_publish_wax_doc_snippets_image:
     - job: build_wheel
   stage: build
   variables:
-    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+    PYPROJECT_DIR: "${WAX_DIR}"
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${CI_COMMIT_SHA}" "${CI_COMMIT_TAG}"
@@ -708,7 +715,7 @@ build_wax_ci_base_image:
       docker build \
         --build-arg BASE_IMAGE="${COMMON_CI_BASE_IMAGE}" \
         -t "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}" \
-        -f python/docker/Dockerfile.ci .
+        -f python/wax/docker/Dockerfile.ci .
     - docker push "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
   tags:
     - public-runner-docker
@@ -717,8 +724,8 @@ build_wax_ci_base_image:
     - if: $CI_COMMIT_BRANCH
       changes:
         paths:
-          - python/docker/Dockerfile.ci
-          - python/scripts/prepare_boost.sh
+          - python/wax/docker/Dockerfile.ci
+          - python/wax/scripts/prepare_boost.sh
       when: on_success
     # Manual trigger available
     - when: manual
@@ -756,3 +763,106 @@ deploy_to_github_pages:
       artifacts: true
     - job: generate_docs
       artifacts: true
+
+# =============================================================================
+# TEST-TOOLS Package Build and Deploy Jobs
+# =============================================================================
+# test-tools depends on wax via path locally, but CI builds require wax from registry.
+# Build flow: wax wheel -> deploy to registry -> test-tools replaces path with registry dep -> build
+
+.test_tools_base:
+  stage: test-tools
+  image: ${CI_BASE_IMAGE}
+  variables:
+    PYPROJECT_DIR: "${TEST_TOOLS_DIR}"
+  tags:
+    - public-runner-docker
+
+build_test_tools_wheel:
+  extends:
+    - .build_wheel_template
+    - .test_tools_base
+  needs:
+    - job: build_wheel
+      artifacts: true
+    - job: deploy_wheel_to_gitlab
+  before_script:
+    - !reference [.configuration_template, before_script]
+    # Replace path dependency with registry version (same version from git tag)
+    - echo "Replacing wax path dependency with registry version..."
+    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+    - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s)
+    - echo "Using wax version ${WAX_VERSION} from registry"
+    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-wax || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+  script:
+    - poetry -C "${TEST_TOOLS_DIR}" build --format wheel
+  artifacts:
+    when: always
+    paths:
+      - "${TEST_TOOLS_DIR}/dist/"
+    expire_in: 1 week
+
+deploy_test_tools_wheel_to_gitlab:
+  extends:
+    - .deploy_wheel_to_gitlab_template
+    - .test_tools_base
+  needs:
+    - job: build_test_tools_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_template, before_script]
+    - rm -f build_wheel.env
+
+deploy_test_tools_wheel_to_pypi:
+  extends:
+    - .deploy_wheel_to_pypi_template
+    - .test_tools_base
+  needs:
+    - job: build_test_tools_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_template, before_script]
+    - rm -f build_wheel.env
+
+# test-tools tests only need test-tools + wax (from registry) + dev deps (pytest, etc.)
+.test_tools_test_env:
+  extends: .test_tools_base
+  needs:
+    - job: deploy_wheel_to_gitlab
+  before_script:
+    - !reference [.configuration_template, before_script]
+    # Replace wax path dependency with registry version
+    - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s | sed 's/+.*//')
+    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+    - poetry -C "${TEST_TOOLS_DIR}" install
+    - pip list
+
+test_tools_unit_tests:
+  extends:
+    - .test_tools_test_env
+    - .python_test_matrix
+  script:
+    - echo -e "${TXT_BLUE}Running test-tools unit tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto -m "not requires_hived_executables" "${TESTS_DIR}/test_tools/unit_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_unit_report.xml"
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $CI_PROJECT_DIR/test_tools_unit_report.xml
+
+test_tools_hived_handle:
+  extends: .test_tools_test_env
+  needs:
+    - job: test_tools_unit_tests
+    - job: deploy_wheel_to_gitlab
+  variables:
+    HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
+  script:
+    - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto -m "requires_hived_executables" --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TESTS_DIR}/test_tools/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
+  artifacts:
+    when: always
+    expire_in: 1 week
+    reports:
+      junit: $CI_PROJECT_DIR/test_tools_hived_report.xml
