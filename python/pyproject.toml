@@ -68,15 +68,63 @@ asyncio_default_fixture_loop_scope = "function"
 
 [tool.poetry-dynamic-versioning]
 enable = true
-pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>\d+))?$'''
+pattern = '''beekeeper-v(?P<base>\d+\.\d+\.\d+)(-?(?P<stage>[a-zA-Z]+)\.?(?P<revision>\d+)?)?$'''
+# PEP 440 compliant versioning with .post{timestamp}
+# https://peps.python.org/pep-0440/
+#
+# Pattern matches only `beekeeper-v` prefixed tags (e.g. beekeeper-v1.0.0),
+# ignoring native C++ tags like `1.28.6-alpha`.
+#
+# Version examples (assuming last tag is beekeeper-v1.28.5):
+#   Tag (distance=0, clean):       1.28.5
+#   Tag (distance=0, dirty):       1.28.5+dirty
+#   master (distance>0):           1.28.5.post20260130132734
+#   master (dirty):                1.28.5.post20260130132734+dirty
+#   feature branch (distance>0):   1.28.5.post20260130132734.dev0+unstable
+#   feature branch (dirty):        1.28.5.post20260130132734.dev0+unstable.dirty
+#   feature branch (distance=0):   1.28.5  (same as tag)
+#
+# Pre-release tag (e.g. beekeeper-v1.28.5rc1):
+#   Tag (distance=0):              1.28.5rc1
+#   master (distance>0):           1.28.5rc1.post20260130132734
+#   feature branch (distance>0):   1.28.5rc1.post20260130132734.dev0+unstable
+#
+# Logic:
+#   - distance=0         -> exact tag version
+#   - distance>0, stable -> tag + .post{timestamp}
+#   - distance>0, unstable -> tag + .post{timestamp}.dev0+unstable (pre-release, ignored by default)
+#   - dirty              -> + 'dirty' marker
+#   - unstable           -> + 'unstable' marker
+#
+# Stability detection:
+#   - stable: develop/master/main branches OR tag checkout (detached HEAD with distance=0)
+#   - unstable: feature branches OR detached HEAD with distance>0
+#   - CI: GitLab checks out as detached HEAD, so branch is None;
+#     use CI_COMMIT_REF_NAME env var as fallback for branch detection
+#
+# Version ordering (newest last):
+#   1.28.5 < 1.28.5.post20260130132734 < 1.28.5.post20260130133000.dev0+unstable < 1.28.5.post20260130133000
+#   (tag)    (master)                    (feature, newer timestamp)                (master, same timestamp)
+#
+# pip/poetry behavior:
+#   - `poetry update` / `pip install pkg>=1.0` -> selects stable only (ignores .dev0)
+#   - `pip install --pre` / `allow-prereleases = true` -> includes feature branches
 format-jinja = """
-    {%- if distance == 0 -%}
-        {{ serialize_pep440(base, stage, revision) }}
-    {%- elif revision is not none -%}
-        {{ serialize_pep440(base, stage, revision + 1, dev=distance, metadata=[commit]) }}
-    {%- else -%}
-        {{ serialize_pep440(bump_version(base), stage, revision, dev=distance, metadata=[commit]) }}
-    {%- endif -%}
+    {%- set STABLE_BRANCHES = ['develop', 'master', 'main'] -%}
+
+    {%- set effective_branch = branch or env.get('CI_COMMIT_REF_NAME') -%}
+    {%- set is_on_tag = distance == 0 -%}
+    {%- set is_after_tag = distance > 0 -%}
+    {%- set is_tag_checkout = branch is none and is_on_tag -%}
+    {%- set is_stable = effective_branch in STABLE_BRANCHES or is_tag_checkout -%}
+    {%- set is_feature_branch = is_after_tag and not is_stable -%}
+
+    {%- set post = timestamp|int if is_after_tag else none -%}
+    {%- set dev = 0 if is_feature_branch else none -%}
+    {%- set local_parts = ['unstable'] if is_feature_branch else [] -%}
+    {%- set local_parts = local_parts + ['dirty'] if dirty else local_parts -%}
+
+    {{ serialize_pep440(base, stage, revision, post=post, dev=dev, metadata=local_parts) }}
 """
 
 [tool.poetry-dynamic-versioning.substitution]
