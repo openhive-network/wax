@@ -37,7 +37,9 @@ def assert_witness_set_properties_operation_structure(
     assert tx.to_dict()["operations"][0] == expected_op
 
 
-def test_witness_set_properties_basic(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
+def test_witness_set_properties_basic(
+    wax: IWaxBaseInterface, transaction: ITransaction
+) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -47,7 +49,9 @@ def test_witness_set_properties_basic(wax: IWaxBaseInterface, transaction: ITran
         account_creation_fee={"amount": "5000", "precision": 3, "nai": "@@000000021"},
         account_subsidy_budget=1000,
         account_subsidy_decay=1000,
-        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(1000), quote=wax.hive.satoshis(1000)),
+        hbd_exchange_rate=HbdExchangeRate(
+            base=wax.hbd.satoshis(1000), quote=wax.hive.satoshis(1000)
+        ),
         hbd_interest_rate=1000,
         maximum_block_size=1000,
         url="https://hive.io",
@@ -138,7 +142,9 @@ def test_witness_set_properties_with_url(transaction: ITransaction) -> None:
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_budget_and_account_fee(transaction: ITransaction) -> None:
+def test_witness_set_properties_with_budget_and_account_fee(
+    transaction: ITransaction,
+) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -166,14 +172,19 @@ def test_witness_set_properties_with_budget_and_account_fee(transaction: ITransa
                     "account_subsidy_budget",
                     "bc020000",
                 ],
-                ["key", "03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56"],
+                [
+                    "key",
+                    "03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56",
+                ],
             ],
         },
     }
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_decay_and_budget(transaction: ITransaction) -> None:
+def test_witness_set_properties_with_decay_and_budget(
+    transaction: ITransaction,
+) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -201,20 +212,27 @@ def test_witness_set_properties_with_decay_and_budget(transaction: ITransaction)
                     "account_subsidy_decay",
                     "40000000",
                 ],
-                ["key", "0249202c30b95aec7506ab719fd602256922b9ca86cc31e01499c4c6339c7292a3"],
+                [
+                    "key",
+                    "0249202c30b95aec7506ab719fd602256922b9ca86cc31e01499c4c6339c7292a3",
+                ],
             ],
         },
     }
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_exchange_rate(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
+def test_witness_set_properties_with_exchange_rate(
+    wax: IWaxBaseInterface, transaction: ITransaction
+) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
         owner="ctrpch",
         witness_signing_key=WitnessesSigningKeys.ctrpch,
-        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(424), quote=wax.hive.satoshis(1000)),
+        hbd_exchange_rate=HbdExchangeRate(
+            base=wax.hbd.satoshis(424), quote=wax.hive.satoshis(1000)
+        ),
     )
 
     # ACT
@@ -231,14 +249,19 @@ def test_witness_set_properties_with_exchange_rate(wax: IWaxBaseInterface, trans
                     "hbd_exchange_rate",
                     "a8010000000000000320bcbee8030000000000002320bcbe",
                 ],
-                ["key", "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b"],
+                [
+                    "key",
+                    "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b",
+                ],
             ],
         },
     }
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_all_parameters(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
+def test_witness_set_properties_with_all_parameters(
+    wax: IWaxBaseInterface, transaction: ITransaction
+) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -248,7 +271,9 @@ def test_witness_set_properties_with_all_parameters(wax: IWaxBaseInterface, tran
         account_creation_fee={"amount": "3000", "precision": 3, "nai": "@@000000021"},
         account_subsidy_budget=10000,
         account_subsidy_decay=3307750,
-        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(867), quote=wax.hive.satoshis(1000)),
+        hbd_exchange_rate=HbdExchangeRate(
+            base=wax.hbd.satoshis(867), quote=wax.hive.satoshis(1000)
+        ),
         hbd_interest_rate=0,
         maximum_block_size=65536,
         url="https://guiltyparties.com",
@@ -270,11 +295,20 @@ def test_witness_set_properties_with_all_parameters(wax: IWaxBaseInterface, tran
                 ],
                 ["account_subsidy_budget", "10270000"],
                 ["account_subsidy_decay", "e6783200"],
-                ["hbd_exchange_rate", "63030000000000000320bcbee8030000000000002320bcbe"],
+                [
+                    "hbd_exchange_rate",
+                    "63030000000000000320bcbee8030000000000002320bcbe",
+                ],
                 ["hbd_interest_rate", "0000"],
-                ["key", "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b"],
+                [
+                    "key",
+                    "0279687479456e2f03ca19adab071ba333acb765f83402357e71f5cd8c49bee21b",
+                ],
                 ["maximum_block_size", "00000100"],
-                ["new_signing_key", "033695262a25cd5646f7875db0536db3f1b3439d7c86274ec56cce01d91ab6611b"],
+                [
+                    "new_signing_key",
+                    "033695262a25cd5646f7875db0536db3f1b3439d7c86274ec56cce01d91ab6611b",
+                ],
                 ["url", "1968747470733a2f2f6775696c7479706172746965732e636f6d"],
             ],
         },

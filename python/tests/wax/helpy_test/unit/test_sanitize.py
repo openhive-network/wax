@@ -30,5 +30,7 @@ def test_sanitize(data: Json | list[Json] | str) -> None:
     sanitized_data = str(sanitize(data=data))
 
     # ASSERT
-    assert text_to_remove not in sanitized_data, f"`{text_to_remove}` not removed from: `{sanitized_data}`"
+    assert (
+        text_to_remove not in sanitized_data
+    ), f"`{text_to_remove}` not removed from: `{sanitized_data}`"
     assert mask in sanitized_data, f"`{mask}` not found in: `{sanitized_data}`"

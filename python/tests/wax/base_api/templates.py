@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from wax.wax_result import python_json_asset, python_price, python_witness_set_properties_data
+from wax.wax_result import (
+    python_json_asset,
+    python_price,
+    python_witness_set_properties_data,
+)
 
 SIGNATURE_TRANSACTION: Final[dict[str, Any]] = {
     "expiration": "2024-02-21T06:55:40",
@@ -35,7 +39,12 @@ REQUIRED_ACTIVE_AUTHORITY_TRANSACTION: Final[dict[str, Any]] = {
     "ref_block_prefix": 1319397834,
     "extensions": [],
     "expiration": "2024-09-12T07:15:15",
-    "operations": [{"type": "limit_order_cancel_operation", "value": {"owner": "droida", "orderid": 877434673}}],
+    "operations": [
+        {
+            "type": "limit_order_cancel_operation",
+            "value": {"owner": "droida", "orderid": 877434673},
+        }
+    ],
     "signatures": [
         "20470dc8de917827ea55328774123c93b4670cfe72133981072e2821e7fa20bfaf04f5dcec762ebc89a64232bc2c5d5d0de98a61ab670647cfb4c5ff5c438e865e"
     ],
@@ -78,9 +87,17 @@ REQUIRED_OWNER_AUTHORITY_TRANSACTION: Final[dict[str, Any]] = {
                     "account_auths": [["vsc.network", 11]],
                     "weight_threshold": 11,
                 },
-                "active": {"key_auths": [], "account_auths": [], "weight_threshold": 11},
+                "active": {
+                    "key_auths": [],
+                    "account_auths": [],
+                    "weight_threshold": 11,
+                },
                 "account": "vsc.gateway",
-                "posting": {"key_auths": [], "account_auths": [["vsc.network", 11]], "weight_threshold": 11},
+                "posting": {
+                    "key_auths": [],
+                    "account_auths": [["vsc.network", 11]],
+                    "weight_threshold": 11,
+                },
                 "memo_key": "STM8buQNWovTcX7H8yLdYNx82xDddQE9R5MzQDNg4mocScnXTGSkE",
                 "json_metadata": '{"message":"VSC Multsig Account","epoch":378}',
             },
@@ -116,12 +133,16 @@ RECOVER_ACCOUNT_TRANSACTION: Final[dict[str, Any]] = {
                 "new_owner_authority": {
                     "weight_threshold": 1,
                     "account_auths": [],
-                    "key_auths": [["STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW", 1]],
+                    "key_auths": [
+                        ["STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW", 1]
+                    ],
                 },
                 "recent_owner_authority": {
                     "weight_threshold": 1,
                     "account_auths": [],
-                    "key_auths": [["STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s", 1]],
+                    "key_auths": [
+                        ["STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s", 1]
+                    ],
                 },
                 "extensions": [],
             },
@@ -130,34 +151,42 @@ RECOVER_ACCOUNT_TRANSACTION: Final[dict[str, Any]] = {
 }
 
 
-INPUT_WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = python_witness_set_properties_data(
-    key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
-    new_signing_key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
-    hbd_exchange_rate=python_price(
-        base=python_json_asset(amount=b"273", precision=3, nai=b"@@000000013"),
-        quote=python_json_asset(amount=b"1000", precision=3, nai=b"@@000000021"),
-    ),
-    account_creation_fee=python_json_asset(amount=b"5000", precision=3, nai=b"@@000000021"),
-    url=b"https://hive.io",
-    maximum_block_size=131072,
-    hbd_interest_rate=1000,
-    account_subsidy_budget=797,
-    account_subsidy_decay=347321,
+INPUT_WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = (
+    python_witness_set_properties_data(
+        key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
+        new_signing_key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
+        hbd_exchange_rate=python_price(
+            base=python_json_asset(amount=b"273", precision=3, nai=b"@@000000013"),
+            quote=python_json_asset(amount=b"1000", precision=3, nai=b"@@000000021"),
+        ),
+        account_creation_fee=python_json_asset(
+            amount=b"5000", precision=3, nai=b"@@000000021"
+        ),
+        url=b"https://hive.io",
+        maximum_block_size=131072,
+        hbd_interest_rate=1000,
+        account_subsidy_budget=797,
+        account_subsidy_decay=347321,
+    )
 )
 
-WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = python_witness_set_properties_data(
-    key=b"STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
-    new_signing_key=b"STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW",
-    account_creation_fee=python_json_asset(amount=b"5000", precision=3, nai=b"@@000000021"),
-    url=b"https://hive.io",
-    hbd_exchange_rate=python_price(
-        base=python_json_asset(amount=b"100", precision=3, nai=b"@@000000013"),
-        quote=python_json_asset(amount=b"100", precision=3, nai=b"@@000000021"),
-    ),
-    maximum_block_size=131072,
-    hbd_interest_rate=1000,
-    account_subsidy_budget=797,
-    account_subsidy_decay=347321,
+WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = (
+    python_witness_set_properties_data(
+        key=b"STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
+        new_signing_key=b"STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW",
+        account_creation_fee=python_json_asset(
+            amount=b"5000", precision=3, nai=b"@@000000021"
+        ),
+        url=b"https://hive.io",
+        hbd_exchange_rate=python_price(
+            base=python_json_asset(amount=b"100", precision=3, nai=b"@@000000013"),
+            quote=python_json_asset(amount=b"100", precision=3, nai=b"@@000000021"),
+        ),
+        maximum_block_size=131072,
+        hbd_interest_rate=1000,
+        account_subsidy_budget=797,
+        account_subsidy_decay=347321,
+    )
 )
 
 

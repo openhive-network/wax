@@ -55,7 +55,9 @@ def test_create_transaction_with_already_created_transaction() -> None:
     wax = create_wax_foundation()
 
     # ACT
-    transaction = wax.create_transaction_from_proto(proto_transaction(**PROTO_REF_TRANSACTION))  # type: ignore[arg-type, unused-ignore]
+    transaction = wax.create_transaction_from_proto(
+        proto_transaction(**PROTO_REF_TRANSACTION)  # type: ignore[arg-type]
+    )
     transaction.push_operation(
         comment(
             parent_permlink="/",
@@ -106,7 +108,9 @@ async def test_create_and_sign_transaction() -> None:
         (
             await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
             if WALLET_NAME not in [w.name for w in await session.wallets_created]
-            else await (await session.open_wallet(name=WALLET_NAME)).unlock(WALLET_PASSWORD)
+            else await (await session.open_wallet(name=WALLET_NAME)).unlock(
+                WALLET_PASSWORD
+            )
         ) as wallet,
     ):
         await wallet.import_key(private_key=keys.wif_private_key)
@@ -119,7 +123,10 @@ async def test_create_and_sign_transaction() -> None:
     assert len(impacted_accounts) == 1
     assert impacted_accounts[0] == EXPECTED_IMPACTED_ACCOUNT
 
-    assert transaction.required_authorities.posting_accounts == EXPECTED_REQUIRED_AUTHORITIES
+    assert (
+        transaction.required_authorities.posting_accounts
+        == EXPECTED_REQUIRED_AUTHORITIES
+    )
 
 
 def test_create_transaction_and_convert_to_api_format() -> None:
@@ -159,10 +166,17 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
 
     # ACT
     transaction = wax.create_transaction_with_tapos(TAPOS)
-    transaction.push_operation(transfer(from_account="alice", to_account="bob", amount=wax.hive.coins(1), memo=""))
+    transaction.push_operation(
+        transfer(
+            from_account="alice", to_account="bob", amount=wax.hive.coins(1), memo=""
+        )
+    )
 
     brain_key_data = wax.suggest_brain_key()
-    public_key, private_key = brain_key_data.associated_public_key, brain_key_data.wif_private_key
+    public_key, private_key = (
+        brain_key_data.associated_public_key,
+        brain_key_data.wif_private_key,
+    )
 
     async with (
         await AsyncBeekeeper.factory() as beekeeper,
@@ -170,7 +184,9 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
         (
             await session.create_wallet(name=WALLET_NAME, password=WALLET_PASSWORD)
             if WALLET_NAME not in [w.name for w in await session.wallets_created]
-            else await (await session.open_wallet(name=WALLET_NAME)).unlock(WALLET_PASSWORD)
+            else await (await session.open_wallet(name=WALLET_NAME)).unlock(
+                WALLET_PASSWORD
+            )
         ) as wallet,
     ):
         await wallet.import_key(private_key=private_key)
@@ -180,7 +196,9 @@ async def test_signature_key_the_same_as_key_used_to_sign() -> None:
     assert transaction.signature_keys[0] == public_key
 
 
-def test_impacted_operation_accounts_the_same_as_impacted_transaction_accounts() -> None:
+def test_impacted_operation_accounts_the_same_as_impacted_transaction_accounts() -> (
+    None
+):
     # ARRANGE
     wax = create_wax_foundation()
 
@@ -194,7 +212,9 @@ def test_impacted_operation_accounts_the_same_as_impacted_transaction_accounts()
     )
     transaction.push_operation(transfer_operation)
 
-    operation_impacted_accounts = wax.get_operation_impacted_accounts(operation(transfer_operation=transfer_operation))
+    operation_impacted_accounts = wax.get_operation_impacted_accounts(
+        operation(transfer_operation=transfer_operation)
+    )
     transaction_impacted_accounts = transaction.impacted_accounts
 
     # ASSERT

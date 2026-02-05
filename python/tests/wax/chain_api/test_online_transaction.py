@@ -8,15 +8,23 @@ from wax import WaxChainOptions, create_hive_chain
 from wax.exceptions.chain_errors import PrivateKeyDetectedInMemoError
 from wax.proto.operations import transfer
 
-MIRRORNET_SKELETON_KEY: Final[str] = "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
+MIRRORNET_SKELETON_KEY: Final[str] = (
+    "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
+)
 MIRRORNET_NODE_ADDRESS = "https://api.fake.openhive.network/"
-MIRRORNET_CHAIN_ID: Final[str] = "4200000000000000000000000000000000000000000000000000000000000000"
+MIRRORNET_CHAIN_ID: Final[str] = (
+    "4200000000000000000000000000000000000000000000000000000000000000"
+)
 
 
-@pytest.mark.skip(reason="Skipped due to api.fake.openhive.network infrastructure issues (502 Bad Gateway)")
+@pytest.mark.skip(
+    reason="Skipped due to api.fake.openhive.network infrastructure issues (502 Bad Gateway)"
+)
 async def test_online_transaction_perform_on_chain_verification() -> None:
     # ARRANGE
-    remote_chain = create_hive_chain(WaxChainOptions(MIRRORNET_CHAIN_ID, MIRRORNET_NODE_ADDRESS))
+    remote_chain = create_hive_chain(
+        WaxChainOptions(MIRRORNET_CHAIN_ID, MIRRORNET_NODE_ADDRESS)
+    )
     transaction = await remote_chain.create_transaction()
     transfer_op = transfer(
         from_account="otom",

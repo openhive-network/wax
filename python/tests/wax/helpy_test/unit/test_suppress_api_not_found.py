@@ -18,7 +18,10 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
         "jsonrpc": "2.0",
         "error": {
             "code": -32003,
-            "message": ("Assert Exception:api_itr != data._registered_apis.end(): Could not find API " + api),
+            "message": (
+                "Assert Exception:api_itr != data._registered_apis.end(): Could not find API "
+                + api
+            ),
         },
         "id": 1,
     }
@@ -63,7 +66,9 @@ def test_suppress_api_not_found_rethrow(error: Exception) -> None:
     # ARRANGE
 
     # ACT & ASSERT
-    with pytest.raises(type(error)), SuppressApiNotFound("rc_api", "database_api") as suppressed:
+    with pytest.raises(type(error)), SuppressApiNotFound(
+        "rc_api", "database_api"
+    ) as suppressed:
         raise error from GroupedErrorsError([error])
 
     assert len(suppressed.errors) == 0, "No errors should be suppressed"

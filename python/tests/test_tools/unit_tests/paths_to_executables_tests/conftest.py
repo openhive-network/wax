@@ -30,9 +30,21 @@ def paths() -> _PathsToExecutables:
 
 def __executables() -> list[ExecutableInitParams]:
     return [
-        ExecutableInitParams("hived", "--hived-path", "HIVED_PATH", "programs/hived/hived"),
-        ExecutableInitParams("cli_wallet", "--cli-wallet-path", "CLI_WALLET_PATH", "programs/cli_wallet/cli_wallet"),
-        ExecutableInitParams("get_dev_key", "--get-dev-key-path", "GET_DEV_KEY_PATH", "programs/util/get_dev_key"),
+        ExecutableInitParams(
+            "hived", "--hived-path", "HIVED_PATH", "programs/hived/hived"
+        ),
+        ExecutableInitParams(
+            "cli_wallet",
+            "--cli-wallet-path",
+            "CLI_WALLET_PATH",
+            "programs/cli_wallet/cli_wallet",
+        ),
+        ExecutableInitParams(
+            "get_dev_key",
+            "--get-dev-key-path",
+            "GET_DEV_KEY_PATH",
+            "programs/util/get_dev_key",
+        ),
         ExecutableInitParams(
             "compress_block_log",
             "--compress-block-log-path",

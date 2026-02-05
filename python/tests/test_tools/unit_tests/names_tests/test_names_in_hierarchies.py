@@ -21,7 +21,10 @@ def test_name_registration_in_parent_when_child_already_exists() -> None:
     child.register_numbered_name("Numbered")
 
     assert parent.get_names_in_use() == {"Numbered0"}
-    assert child.get_names_in_use() == {"Numbered0", "Numbered1"}  # Child knows about name registered in parent
+    assert child.get_names_in_use() == {
+        "Numbered0",
+        "Numbered1",
+    }  # Child knows about name registered in parent
 
 
 def test_if_names_registered_in_first_child_do_not_affect_second_child() -> None:

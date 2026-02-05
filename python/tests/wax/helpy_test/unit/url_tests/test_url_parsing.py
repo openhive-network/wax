@@ -16,7 +16,9 @@ from tests.wax.helpy_test.unit.constants import DEFAULT_ADDRESS, DEFAULT_PORT, U
         (f"ws://{DEFAULT_ADDRESS}:{DEFAULT_PORT}", "ws", WsUrl),
     ],
 )
-def test_url_parsing_without_expected_protocol(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
+def test_url_parsing_without_expected_protocol(
+    input_url: str, expected_protocol: str, url_type: URL_TYPES
+) -> None:
     url = url_type(input_url)
 
     assert url.protocol == expected_protocol
@@ -31,7 +33,9 @@ def test_url_parsing_without_expected_protocol(input_url: str, expected_protocol
         (f"{DEFAULT_ADDRESS}:{DEFAULT_PORT}", "ws", WsUrl),
     ],
 )
-def test_url_parsing_with_expected_protocol(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
+def test_url_parsing_with_expected_protocol(
+    input_url: str, expected_protocol: str, url_type: URL_TYPES
+) -> None:
     url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
 
     assert url.protocol == expected_protocol
@@ -46,7 +50,9 @@ def test_url_parsing_with_expected_protocol(input_url: str, expected_protocol: s
         (DEFAULT_ADDRESS, "ws", WsUrl),
     ],
 )
-def test_url_parsing_without_port_given(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
+def test_url_parsing_without_port_given(
+    input_url: str, expected_protocol: str, url_type: URL_TYPES
+) -> None:
     url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
 
     assert url.protocol == expected_protocol
@@ -63,9 +69,12 @@ def test_url_parsing_without_address_given(url_type: URL_TYPES) -> None:
 
 
 @pytest.mark.parametrize("url_cls", [HttpUrl, WsUrl, P2PUrl])
-@pytest.mark.parametrize("schema_input", [lambda x: x._allowed_protocols()[0], lambda _: None])
+@pytest.mark.parametrize(
+    "schema_input", [lambda x: x._allowed_protocols()[0], lambda _: None]
+)
 def test_schema_auto_apply_in_url(
-    schema_input: Callable[[URL_TYPES | type[P2PUrl]], str | None], url_cls: URL_TYPES | type[P2PUrl]
+    schema_input: Callable[[URL_TYPES | type[P2PUrl]], str | None],
+    url_cls: URL_TYPES | type[P2PUrl],
 ) -> None:
     # ARRANGE
     address = "some-address"
@@ -87,6 +96,9 @@ def test_url_schema_validation(url_cls: URL_TYPES | type[P2PUrl]) -> None:
 
     # ACT & ASSERT
     with pytest.raises(
-        ValueError, match=re.escape(f"Unknown protocol: `{invalid_proto}`, allowed: {url_cls._allowed_protocols()}")
+        ValueError,
+        match=re.escape(
+            f"Unknown protocol: `{invalid_proto}`, allowed: {url_cls._allowed_protocols()}"
+        ),
     ):
         url_cls("some-address", protocol=invalid_proto)  # type: ignore[call-overload]

@@ -37,9 +37,13 @@ async def beekeeper(beekeeper_output_dir: Path) -> AsyncGenerator[AsyncBeekeeper
 @pytest.fixture
 async def wallet(beekeeper: AsyncBeekeeper) -> AsyncUnlockedWallet:
     session = await beekeeper.create_session()
-    await session.create_wallet(name="beekeeper_wallet_name", password="beekeeper_wallet_password")  # noqa: S106
+    await session.create_wallet(
+        name="beekeeper_wallet_name", password="beekeeper_wallet_password"
+    )  # noqa: S106
 
-    return await (await session.open_wallet(name="beekeeper_wallet_name")).unlock("beekeeper_wallet_password")
+    return await (await session.open_wallet(name="beekeeper_wallet_name")).unlock(
+        "beekeeper_wallet_password"
+    )
 
 
 @pytest.fixture
@@ -67,7 +71,9 @@ def __convert_test_name_to_directory_name(test_name: str) -> str:
 
     parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
     if parametrized_test_match:
-        test_name = f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
+        test_name = (
+            f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
+        )
 
     for character in test_name:
         character_to_append = character

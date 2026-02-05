@@ -127,7 +127,9 @@ def test_is_update_event_not_happens_on_error(holder: AnySettingsHolder) -> None
 
 
 @pytest.mark.parametrize("holder", [get_shared_settings(), get_unique_settings()])
-def test_is_update_happens_after_exit_from_with_statement(holder: AnySettingsHolder) -> None:
+def test_is_update_happens_after_exit_from_with_statement(
+    holder: AnySettingsHolder,
+) -> None:
     # ARRANGE
     old_value = holder.settings.max_retries
     new_value = old_value + 1
@@ -140,7 +142,9 @@ def test_is_update_happens_after_exit_from_with_statement(holder: AnySettingsHol
 
 
 @pytest.mark.parametrize("holder", [get_shared_settings(), get_unique_settings()])
-def test_is_update_settings_does_not_affect_settings_accessor(holder: AnySettingsHolder) -> None:
+def test_is_update_settings_does_not_affect_settings_accessor(
+    holder: AnySettingsHolder,
+) -> None:
     # ARRANGE
     old_value = holder.settings.max_retries
     new_value = old_value + 1

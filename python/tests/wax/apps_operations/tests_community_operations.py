@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from tests.wax.apps_operations.extract_operation_from_custom_json import extract_operation_from_custom_json
+from tests.wax.apps_operations.extract_operation_from_custom_json import (
+    extract_operation_from_custom_json,
+)
 from wax.hive_apps_operations.community import (
     CommunityOperation,
     CommunityProps,
@@ -19,12 +21,21 @@ def test_flag_post() -> None:
     expected = [
         [
             ECommunityOperationActions.FLAG_POST.value,
-            {"community": community, "account": account, "permlink": permlink, "notes": notes},
+            {
+                "community": community,
+                "account": account,
+                "permlink": permlink,
+                "notes": notes,
+            },
         ]
     ]
 
     # Act
-    op = CommunityOperation().flag_post(community, account, permlink, notes).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .flag_post(community, account, permlink, notes)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected
@@ -36,7 +47,10 @@ def test_set_role() -> None:
     account = "mod-user"
 
     expected = [
-        [ECommunityOperationActions.SET_ROLE.value, {"community": community, "account": account, "role": "mod"}]
+        [
+            ECommunityOperationActions.SET_ROLE.value,
+            {"community": community, "account": account, "role": "mod"},
+        ]
     ]
 
     # Act
@@ -53,11 +67,18 @@ def test_set_user_title() -> None:
     title = "Expert"
 
     expected = [
-        [ECommunityOperationActions.SET_USER_TITLE.value, {"community": community, "account": account, "title": title}]
+        [
+            ECommunityOperationActions.SET_USER_TITLE.value,
+            {"community": community, "account": account, "title": title},
+        ]
     ]
 
     # Act
-    op = CommunityOperation().set_user_title(community, account, title).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .set_user_title(community, account, title)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected
@@ -80,7 +101,9 @@ def test_unsubscribe() -> None:
     # Arrange
     community = "boring-community"
 
-    expected = [[ECommunityOperationActions.UNSUBSCRIBE.value, {"community": community}]]
+    expected = [
+        [ECommunityOperationActions.UNSUBSCRIBE.value, {"community": community}]
+    ]
 
     # Act
     op = CommunityOperation().unsubscribe(community).authorize("test_auth")
@@ -96,11 +119,18 @@ def test_pin_post() -> None:
     permlink = "top-post"
 
     expected = [
-        [ECommunityOperationActions.PIN_POST.value, {"community": community, "account": account, "permlink": permlink}]
+        [
+            ECommunityOperationActions.PIN_POST.value,
+            {"community": community, "account": account, "permlink": permlink},
+        ]
     ]
 
     # Act
-    op = CommunityOperation().pin_post(community, account, permlink).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .pin_post(community, account, permlink)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected
@@ -120,7 +150,11 @@ def test_unpin_post() -> None:
     ]
 
     # Act
-    op = CommunityOperation().unpin_post(community, account, permlink).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .unpin_post(community, account, permlink)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected
@@ -136,12 +170,21 @@ def test_mute_post() -> None:
     expected = [
         [
             ECommunityOperationActions.MUTE_POST.value,
-            {"community": community, "account": account, "permlink": permlink, "notes": notes},
+            {
+                "community": community,
+                "account": account,
+                "permlink": permlink,
+                "notes": notes,
+            },
         ]
     ]
 
     # Act
-    op = CommunityOperation().mute_post(community, account, permlink, notes).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .mute_post(community, account, permlink, notes)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected
@@ -157,12 +200,21 @@ def test_unmute_post() -> None:
     expected = [
         [
             ECommunityOperationActions.UNMUTE_POST.value,
-            {"community": community, "account": account, "permlink": permlink, "notes": notes},
+            {
+                "community": community,
+                "account": account,
+                "permlink": permlink,
+                "notes": notes,
+            },
         ]
     ]
 
     # Act
-    op = CommunityOperation().unmute_post(community, account, permlink, notes).authorize("test_auth")
+    op = (
+        CommunityOperation()
+        .unmute_post(community, account, permlink, notes)
+        .authorize("test_auth")
+    )
 
     # Assert
     assert extract_operation_from_custom_json(op) == expected

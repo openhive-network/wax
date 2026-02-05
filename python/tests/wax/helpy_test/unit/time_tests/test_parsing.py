@@ -12,7 +12,10 @@ from wax.helpy.exceptions import ParseError
     ("time", "expected"),
     [
         ("1970-01-01T00:00:00", datetime(1970, 1, 1, tzinfo=timezone.utc)),
-        ("1970-01-01T00:00:00.250", datetime(1970, 1, 1, microsecond=250000, tzinfo=timezone.utc)),
+        (
+            "1970-01-01T00:00:00.250",
+            datetime(1970, 1, 1, microsecond=250000, tzinfo=timezone.utc),
+        ),
     ],
     ids=("default_format", "default_format_including_millis"),
 )

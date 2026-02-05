@@ -18,7 +18,9 @@ def test_transaction() -> None:
     )
     comment_operation: operation = operation(comment_operation=comment_proto)
 
-    transaction_proto: transaction = transaction(operations=[vote_operation, comment_operation])
+    transaction_proto: transaction = transaction(
+        operations=[vote_operation, comment_operation]
+    )
 
     check_transaction(transaction_proto)
     check_transaction(transaction_proto)

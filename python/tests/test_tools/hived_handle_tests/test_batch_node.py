@@ -3,9 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
-from beekeepy.exceptions import CommunicationError, NothingToSendError, ResponseNotReadyError
+from beekeepy.exceptions import (
+    CommunicationError,
+    NothingToSendError,
+    ResponseNotReadyError,
+)
 from beekeepy.interfaces import SuppressApiNotFound
-from msgspec import ValidationError  # TODO: new msgspec refactor should encapsulate schemas !!!
+from msgspec import (
+    ValidationError,
+)  # TODO: new msgspec refactor should encapsulate schemas !!!
 
 if TYPE_CHECKING:
     from test_tools.__private.hived.sync_handle import Hived
@@ -18,7 +24,9 @@ def test_batch_node(sync_node: Hived) -> None:
             dynamic_properties = node.api.database.get_dynamic_global_properties()
             config = node.api.database.get_config()
 
-        assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
+        assert (
+            len(dynamic_properties.dict()) != 0
+        ), "Dynamic global properties should not be empty"
         assert len(config.dict()) != 0, "Config should not be empty"
 
     except ValidationError as ex:
@@ -48,7 +56,9 @@ def test_batch_node_error_response_delayed(sync_node: Hived) -> None:
 
 
 @pytest.mark.parametrize("order", ["first_good", "first_bad"])
-def test_batch_node_mixed_request_delayed(sync_node: Hived, order: Literal["first_good", "first_bad"]) -> None:
+def test_batch_node_mixed_request_delayed(
+    sync_node: Hived, order: Literal["first_good", "first_bad"]
+) -> None:
     with sync_node.batch(delay_error_on_data_access=True) as node:
         if order == "first_good":
             good_response = node.api.database.get_dynamic_global_properties()
@@ -78,5 +88,9 @@ def test_batch_node_with_suppress_api_not_found(sync_node: Hived) -> None:
             bnode.api.debug_node.debug_get_head_block()
 
     # ASSERT
-    assert len(suppress.errors) == amount_of_requests, "there should be exactly 2 suppressed errors"
-    assert all(item.api == missing_api for item in suppress.errors), f"suppressed for: {suppress.errors}"
+    assert (
+        len(suppress.errors) == amount_of_requests
+    ), "there should be exactly 2 suppressed errors"
+    assert all(
+        item.api == missing_api for item in suppress.errors
+    ), f"suppressed for: {suppress.errors}"

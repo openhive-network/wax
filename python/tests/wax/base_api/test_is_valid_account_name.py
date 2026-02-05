@@ -28,7 +28,9 @@ if TYPE_CHECKING:
     ],
 )
 @pytest.mark.describe("Should be able to validate valid account names")
-def test_is_valid_account_name_0(wax: IWaxBaseInterface, valid_account_name: str) -> None:
+def test_is_valid_account_name_0(
+    wax: IWaxBaseInterface, valid_account_name: str
+) -> None:
     assert wax.is_valid_account_name(account_name=valid_account_name)
 
 
@@ -68,5 +70,7 @@ def test_is_valid_account_name_0(wax: IWaxBaseInterface, valid_account_name: str
     ],
 )
 @pytest.mark.describe("Should be able to validate invalid account names")
-def test_is_valid_account_name_1(wax: IWaxBaseInterface, invalid_account_name: str) -> None:
+def test_is_valid_account_name_1(
+    wax: IWaxBaseInterface, invalid_account_name: str
+) -> None:
     assert not wax.is_valid_account_name(account_name=invalid_account_name)

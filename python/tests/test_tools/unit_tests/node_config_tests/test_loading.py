@@ -24,14 +24,19 @@ def test_double_quoted_string_loading() -> None:
     )
 
     # Output should not contain double quotes inside string
-    assert str(config.account_history_rocksdb_path) == "blockchain/account-history-rocksdb-storage"
+    assert (
+        str(config.account_history_rocksdb_path)
+        == "blockchain/account-history-rocksdb-storage"
+    )
     assert str(config.shared_file_dir) == "blockchain"
     assert str(config.snapshot_root_dir) == "snapshot"
 
 
 def test_correct_plugins() -> None:
     config = NodeConfig.from_lines(["plugin = witness p2p account_by_key"])
-    assert all(plugin in config.plugin for plugin in ["witness", "p2p", "account_by_key"])
+    assert all(
+        plugin in config.plugin for plugin in ["witness", "p2p", "account_by_key"]
+    )
 
 
 def test_single_line_entry_loading() -> None:
@@ -88,4 +93,7 @@ def test_unknown_entry_loading() -> None:
     with pytest.raises(KeyError) as exception:
         NodeConfig.from_lines([f"{unknown_entry_name} = 1"])
 
-    assert str(exception.value.args[0]) == f"Unknown config entry name: `{unknown_entry_name}`."
+    assert (
+        str(exception.value.args[0])
+        == f"Unknown config entry name: `{unknown_entry_name}`."
+    )

@@ -8,22 +8,30 @@ from wax.helpy import Time, TimeFormats
 
 
 @pytest.mark.parametrize(
-    "interval", ["milliseconds", "seconds", "minutes", "hours", "days", "weeks", "months", "years"]
+    "interval",
+    ["milliseconds", "seconds", "minutes", "hours", "days", "weeks", "months", "years"],
 )
 def test_from_now_with_parameters(interval: str) -> None:
     # ARRANGE
     value = 0
     while value == 0:
-        value = random.randint(-1000, 1000)  # that's tests, not implementation of cryptographic lib
+        value = random.randint(
+            -1000, 1000
+        )  # that's tests, not implementation of cryptographic lib
     interval_container = {interval: value}
     delta = getattr(Time, interval)(value)
 
     # ACT
-    shifted_time = Time.from_now(**interval_container, serialize_format=TimeFormats.DEFAULT_FORMAT_WITH_MILLIS)  # type: ignore[arg-type]
+    shifted_time = Time.from_now(
+        **interval_container,  # type: ignore[arg-type]
+        serialize_format=TimeFormats.DEFAULT_FORMAT_WITH_MILLIS,
+    )
 
     # ASSERT
     assert isinstance(shifted_time, str)
-    reference_time_in_from_now = Time.parse(shifted_time, format_=TimeFormats.DEFAULT_FORMAT_WITH_MILLIS) - delta
+    reference_time_in_from_now = (
+        Time.parse(shifted_time, format_=TimeFormats.DEFAULT_FORMAT_WITH_MILLIS) - delta
+    )
     assert reference_time_in_from_now < Time.now(serialize=False)
 
 

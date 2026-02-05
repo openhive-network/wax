@@ -25,7 +25,10 @@ AUTHORITY_2: Final[authority] = authority(
     key_auths={"STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76": 1},
 )
 RECOVER_ACCOUNT: Final[recover_account] = recover_account(
-    account_to_recover="account", new_owner_authority=AUTHORITY_1, recent_owner_authority=AUTHORITY_2, extensions=[]
+    account_to_recover="account",
+    new_owner_authority=AUTHORITY_1,
+    recent_owner_authority=AUTHORITY_2,
+    extensions=[],
 )
 
 PROTO_OPERATION: Final[dict[str, Any]] = message_to_dict_with_defaults(
@@ -46,8 +49,12 @@ EXPECTED_IMPACTED_ACCOUNT: Final[str] = "account"
 EXPECTED_AMOUNT_OF_IMPACTED_ACCOUNTS: Final[int] = 1
 
 
-@pytest.mark.parametrize("operation", [PROTO_OPERATION, API_OPERATION_DICT, API_OPERATION_JSON])
-def test_operation_get_impacted_accounts(wax: IWaxBaseInterface, operation: Operation) -> None:
+@pytest.mark.parametrize(
+    "operation", [PROTO_OPERATION, API_OPERATION_DICT, API_OPERATION_JSON]
+)
+def test_operation_get_impacted_accounts(
+    wax: IWaxBaseInterface, operation: Operation
+) -> None:
     # ACT
     result = wax.get_operation_impacted_accounts(operation)
 
@@ -56,19 +63,28 @@ def test_operation_get_impacted_accounts(wax: IWaxBaseInterface, operation: Oper
     assert result[0] == EXPECTED_IMPACTED_ACCOUNT
 
 
-@pytest.mark.describe("Should be able to get impacted accounts from example api operation")
+@pytest.mark.describe(
+    "Should be able to get impacted accounts from example api operation"
+)
 def test_get_operation_impacted_accounts_0(wax: IWaxBaseInterface) -> None:
     result = wax.get_operation_impacted_accounts(
         operation={
             "type": "vote_operation",
-            "value": {"voter": "otom", "author": "c0ff33a", "permlink": "ewxhnjbj", "weight": 2200},
+            "value": {
+                "voter": "otom",
+                "author": "c0ff33a",
+                "permlink": "ewxhnjbj",
+                "weight": 2200,
+            },
         }
     )
 
     assert result == ["c0ff33a", "otom"]
 
 
-@pytest.mark.describe("Should be able to get impacted accounts from example proto operation")
+@pytest.mark.describe(
+    "Should be able to get impacted accounts from example proto operation"
+)
 def test_get_operation_impacted_accounts_1(wax: IWaxBaseInterface) -> None:
     result = wax.get_operation_impacted_accounts(
         operation=operation(

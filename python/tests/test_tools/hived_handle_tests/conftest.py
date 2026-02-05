@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Iterator
 
 import pytest
-from beekeepy.handle.remote import AbstractSyncApi, RegisteredApisT, RemoteHandleSettings
+from beekeepy.handle.remote import (
+    AbstractSyncApi,
+    RegisteredApisT,
+    RemoteHandleSettings,
+)
 from beekeepy.interfaces import HttpUrl
 from test_tools.__private.hived.sync_handle import Hived
 
@@ -16,7 +20,9 @@ def _convert_test_name_to_directory_name(test_name: str) -> str:
 
     parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
     if parametrized_test_match:
-        test_name = f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
+        test_name = (
+            f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
+        )
 
     for character in test_name:
         character_to_append = character
@@ -41,7 +47,10 @@ def working_directory(request: pytest.FixtureRequest) -> Path:
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     parser.addoption(
-        "--hived-http-endpoint", action="store", type=str, help="specifies http_endpoint of reference node"
+        "--hived-http-endpoint",
+        action="store",
+        type=str,
+        help="specifies http_endpoint of reference node",
     )
 
 
@@ -61,5 +70,7 @@ def hived_http_endpoint(request: pytest.FixtureRequest) -> HttpUrl:
 
 @pytest.fixture
 def sync_node(hived_http_endpoint: HttpUrl) -> Iterator[Hived]:
-    with Hived(settings=RemoteHandleSettings(http_endpoint=hived_http_endpoint)) as hived:
+    with Hived(
+        settings=RemoteHandleSettings(http_endpoint=hived_http_endpoint)
+    ) as hived:
         yield hived

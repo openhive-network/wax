@@ -32,4 +32,10 @@ def test_multiple_numbered_names_registration(names: Names) -> None:
     for name in ["ApiNode", "ApiNode", "ApiNode", "WitnessNode", "WitnessNode"]:
         names.register_numbered_name(name)
 
-    assert names.get_names_in_use() == {"ApiNode0", "ApiNode1", "ApiNode2", "WitnessNode0", "WitnessNode1"}
+    assert names.get_names_in_use() == {
+        "ApiNode0",
+        "ApiNode1",
+        "ApiNode2",
+        "WitnessNode0",
+        "WitnessNode1",
+    }
