@@ -667,7 +667,7 @@ build_and_publish_wax_doc_snippets_image:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${PYPROJECT_DIR}" "${CI_COMMIT_SHA}"
+    - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${CI_COMMIT_SHA}"
   tags:
   - public-runner-docker
   rules:
