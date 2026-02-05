@@ -366,6 +366,19 @@ test_importing_wax:
   tags:
     - public-runner-docker
 
+check_wheel_static_linking:
+  stage: test_python
+  needs:
+    - job: build_wheel
+      artifacts: true
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python"
+  script:
+    - chmod +x ${PYPROJECT_DIR}/wax/*.so
+    - ${CI_PROJECT_DIR}/hive/scripts/check-static-linking.sh --verbose ${PYPROJECT_DIR}/wax/*.so
+  tags:
+    - public-runner-docker
+
 test_wax_protobuf_python:
   extends:
     - .test_python_env
