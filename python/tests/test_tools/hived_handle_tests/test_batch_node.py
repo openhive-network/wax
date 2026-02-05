@@ -72,7 +72,7 @@ def test_batch_node_mixed_request_delayed(
         _ = bad_response.accounts[0].name
 
 
-async def test_batch_node_nothing_to_send(sync_node: Hived) -> None:
+def test_batch_node_nothing_to_send(sync_node: Hived) -> None:
     with pytest.raises(NothingToSendError):  # noqa: SIM117
         with sync_node.batch():
             pass
