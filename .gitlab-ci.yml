@@ -676,20 +676,15 @@ build_and_publish_wax_doc_snippets_image:
     - when: never
 
 test_wax_doc_snippets_image:
-  image: docker:24.0.2
+  extends: .docker_image_builder_job_template
   stage: test
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
   needs:
     - job: build_and_publish_wax_doc_snippets_image
-  services:
-    - docker:dind
   script:
-    - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}"
+    - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}"
     - |
       docker run --rm -e EXPECTED_VERSION="${CI_COMMIT_TAG}" \
-        "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_SHA}" \
+        "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}" \
         python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION']; print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
   tags:
     - public-runner-docker
