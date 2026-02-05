@@ -25,7 +25,7 @@ You can find the high-level documentation with snippets for this library at [htt
 
 where you can choose a version matching to this package.
 
-Latest, usualy not yet relased/developer version of documenatation can be found at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
+Latest, usualy not yet released/developer version of documenatation can be found at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
 
 ## 🚀 Getting Started
 
