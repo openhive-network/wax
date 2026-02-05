@@ -125,6 +125,7 @@ hiveio_api_package:
     API_GENERATION_DIR: "${HIVE_PROJECT_ROOT}/libraries/plugins/apis/api_generation"
     PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
     GIT_SUBMODULE_STRATEGY: recursive
+    PACKAGE_REGISTRY_PROJECT_ID: "198"  # Push to hive/hive registry, not wax
   needs:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
