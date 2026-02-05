@@ -21,7 +21,11 @@ Provides Hive Protocol features to JavaScript
 
 ## 📖 High-level Documentation
 
-You can find the high-level documentation with snippets for this library at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
+You can find the high-level documentation with snippets for this library at [https://doc.openhive.network/wax/](https://doc.openhive.network/wax/)
+
+where you can choose a version matching to this package.
+
+Latest, usualy not yet relased/developer version of documenatation can be found at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
 
 ## 🚀 Getting Started
 
