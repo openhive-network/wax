@@ -338,7 +338,9 @@ console.info(result); // URL response from "https://api.syncad.com/hafah-api/tra
 
 ## 📖 API Reference
 
-See API documentation at [project WIKI](${GEN_DOC_URL})
+See official API documentation at [official WIKI](https://doc.openhive.network/wax/) where you can choose a version and next wiki documentation to browse.
+
+See latest, not yet released API documentation at [project WIKI](${GEN_DOC_URL})
 
 ## 🛠️ Development and Testing
 
