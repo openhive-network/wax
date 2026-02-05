@@ -46,7 +46,7 @@ variables:
 
   # Base image from common-ci-configuration (used to build wax ci-base-image)
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-1, in future update tag to smth like :pypa_2_28-1
-  COMMON_CI_BASE_IMAGE_TAG: "2fc9d83726a4fddc681c2b30fbd67701316ba85a"
+  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-2"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
   CI_BASE_IMAGE_TAG: "pypa_2_28-12"
