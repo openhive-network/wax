@@ -17,7 +17,7 @@ include:
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 8668a730c5a9ff78ee9597ba430e7e95088fa9b0
+    ref: a89137b24e90517f5dbc1fdbc7136f097493074e
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -29,7 +29,7 @@ include:
 
 variables:
   # Reference for GitHub Pages scripts from common-ci-configuration
-  COMMON_CI_GITHUB_PAGES_REF: "8668a730c5a9ff78ee9597ba430e7e95088fa9b0"
+  COMMON_CI_GITHUB_PAGES_REF: "a89137b24e90517f5dbc1fdbc7136f097493074e"
   TEST_WITH_LATEST_DEPENDENCIES: "false"
   STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
   GIT_DEPTH: 0
