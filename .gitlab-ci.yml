@@ -685,7 +685,7 @@ test_wax_doc_snippets_image:
     - |
       docker run --rm -e EXPECTED_VERSION="${CI_COMMIT_TAG}" \
         "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}" \
-        python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION']; print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
+        python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION'].replace('-rc', 'rc'); print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
   tags:
     - public-runner-docker
   rules:
