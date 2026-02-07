@@ -8,13 +8,6 @@ stages:
 
 include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
-  # hive/hive's common_includes.yml includes common-ci-configuration templates at an older commit.
-  # We include hive/hive FIRST, then override with our submodule ref AFTER, so common-ci-configuration version wins.
-  - project: 'hive/hive'
-    ref: 6b5d725a3768bcd535a59bd690939f6af3c20ee8
-    file:
-      - '/scripts/ci-helpers/common_includes.yml'
-      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
     ref: 13581fecea817f76e96644880f4fb7490c315777
@@ -26,6 +19,11 @@ include:
       - '/templates/verify_submodule_ref.gitlab-ci.yml'
       - '/templates/github_pages.gitlab-ci.yml'
 
+  # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
+  - project: 'hive/hive'
+    ref: 6b5d725a3768bcd535a59bd690939f6af3c20ee8
+    file:
+      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 variables:
   TEST_WITH_LATEST_DEPENDENCIES: "false"
