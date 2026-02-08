@@ -42,10 +42,18 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
     WAX_EXCEPTION_WLOG("Caught fc::exception: ${details}", ("details", e.to_detail_string()));
     throw std::runtime_error(e.to_detail_string());
   }
+  catch (const wax_private_key_leak& e)
+  {
+    /// warning until emscripten/wasm bug will be fixed do not rethrow: https://gitlab.syncad.com/hive/wax/-/issues/161#note_252570
+    /// since this exception class is quite important to propagate to client side it shoud be not erased below
+    /// during std::exception handling
+    throw e;
+  }
   catch (const std::exception& e)
   {
     WAX_EXCEPTION_WLOG("Caught std::exception: ${details}", ("details", e.what()));
     /// warning until emscripten/wasm bug will be fixed do not rethrow: https://gitlab.syncad.com/hive/wax/-/issues/161#note_252570
+    /// bad consequence: type erasure mostly not strictly needed at client side.
     throw std::runtime_error(e.what());/// 
   }
   catch (...)
