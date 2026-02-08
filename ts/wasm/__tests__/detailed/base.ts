@@ -93,7 +93,7 @@ test.describe('WASM Base tests', () => {
       const e: Error = error as Error;
       // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstanard exception']);
+      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstandard exception']);
       expect(e.name).toBe(undefined);
       expect(e.stack).toBeDefined();
 
@@ -112,7 +112,7 @@ test.describe('WASM Base tests', () => {
       const e: Error = error as Error;
       // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstanard exception']);
+      expect(e.message).toStrictEqual(['std::runtime_error', 'Nonstandard exception']);
       expect(e.name).toBe(undefined);
       expect(e.stack).toBeDefined();
 

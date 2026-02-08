@@ -45,7 +45,8 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
   catch (const std::exception& e)
   {
     WAX_EXCEPTION_WLOG("Caught std::exception: ${details}", ("details", e.what()));
-    throw;
+    /// warning until emscripten/wasm bug will be fixed do not rethrow: https://gitlab.syncad.com/hive/wax/-/issues/161#note_252570
+    throw std::runtime_error(e.what());/// 
   }
   catch (...)
   {
@@ -57,11 +58,7 @@ static decltype(auto) safe_exception_wrapper(ProcessorFn fn, Args&&... args)
         /// give it last chance to be recognized
         std::rethrow_exception(e);
       }
-      catch (const std::exception& ex)
-      {
-        WAX_EXCEPTION_WLOG("Caught std::exception: ${details}", ("details", ex.what()));
-        throw;
-      }
+      /// No need to process std::exception here as it was handled above.
       catch (...)
       {
         WAX_EXCEPTION_WLOG("Caught nonstandard exception");

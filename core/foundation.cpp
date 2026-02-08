@@ -566,7 +566,7 @@ void foundation::cpp_throws(int type) const
     else if(type == 4)
       FC_ASSERT( false, "Hello fc exception!" );
     else if(type == 5) // This should throw std exception under the hood
-      throw wax_unknown_assertion( 0xDEADBEEF, fc::assert_exception( FC_LOG_MESSAGE( error, "Simulated assert exception" ) ) );
+      throw fc::assert_exception( FC_LOG_MESSAGE( error, "Simulated assert exception" ) );
     else if(type == 6) // External library unhandled exception object
       throw boost::bad_lexical_cast{};
 
@@ -892,6 +892,7 @@ json_asset foundation::cpp_evaluate_hbd_interest( const uint64_t hbd_seconds_low
 
 bool foundation::cpp_is_valid_account_name( const std::string& name )const
 {
+  /// no cpp::safe_exception_wrapper as function does not throw.
   return hive::protocol::is_valid_account_name(name);
 }
 
