@@ -89,6 +89,7 @@ Their exact usage examples and documentation can be found in their respective pa
 - [`@hiveio/signers-metamask`](https://npmjs.com/package/@hiveio/wax-signers-metamask) - MetaMask Hive Wallet integration
 - [`@hiveio/signers-keychain`](https://npmjs.com/package/@hiveio/wax-signers-keychain) - Keychain Web3 wallet browser extension integration
 - [`@hiveio/signers-peakvault`](https://npmjs.com/package/@hiveio/wax-signers-peakvault) - PeakVault Web3 wallet browser extension integration
+- [`@hiveio/signers-external`](https://www.npmjs.com/package/@hiveio/wax-signers-external) - Google drive wallet signer integration
 
 ### API definitions
 
