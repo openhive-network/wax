@@ -3,9 +3,8 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import type { IWaxGlobals } from '../assets/globals';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import type { IWaxOptionsChain, WaxPrivateKeyLeakDetectedException } from '../../dist/bundle';
-
-import type { IOnlineTransaction, operation, transfer } from '../../dist/bundle';
+import type { IOnlineTransaction, operation, transfer, IWaxOptionsChain, WaxPrivateKeyLeakDetectedException, IHiveChainInterface, ApiAccount } from '../../dist/bundle';
+import { IBeekeeperUnlockedWallet } from '@hiveio/beekeeper';
 
 test.describe('Wax chain tests to cover Online Transaction flow', () => {
   const txSecurityLeakBody = async ({ beekeeper, wax }: { beekeeper: IWaxGlobals["beekeeper"]; wax: IWaxGlobals["wax"] }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
@@ -61,7 +60,140 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
   const mirrornetSkeletonKey = '5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n';
   const mirrornetSkeletonPublicKey = 'STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4';
+  const authtracetst1OwnerPublicKey = 'STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX';
 
+  /**
+   * Self-contained preconfiguration function that creates test accounts on demand.
+   *
+   * Authority graph created:
+   *
+   *   authtracetst1  active  (threshold = 2)
+   *     +-- account_auth: authtracetst2  weight 1  -->  active  (threshold = 1)
+   *     |     +-- key_auth: STM6LLeg...  weight 1   ** matches signature **
+   *     +-- account_auth: authtracetst3  weight 1  -->  active  (threshold = 1)
+   *           +-- account_auth: authtracetst1  weight 1   ** CYCLE **
+   *
+   *   Accumulated weight = 1 < threshold 2  -->  INSUFFICIENT WEIGHT
+   *   Owner fallback also fails (different key).
+   *
+   * All parameters are passed explicitly (no closures) for web context serialization.
+   * 
+   * See ts/wasm/__tests__/assets/authority_trace_test_accounts.md for more details.
+   */
+  const ensureTestAccountsExist = async (
+    chain: IHiveChainInterface,
+    wallet: IBeekeeperUnlockedWallet,
+    skeletonPublicKey: string,
+    ownerPublicKey: string
+  ) => {
+    const accountNames = ['authtracetst1', 'authtracetst2', 'authtracetst3'];
+    const { accounts } = await chain.api.database_api.find_accounts({
+      accounts: accountNames,
+      delayed_votes_active: true
+    });
+
+    const existingNames = new Set(accounts.map((a: any) => a.name));
+
+    if (existingNames.size === 3) {
+      console.log('All test accounts already exist - assuming correct authority structure');
+      return;
+    }
+
+    console.log('Creating test accounts (' + existingNames.size + '/3 exist)...');
+
+    const { median_props: { account_creation_fee } } =
+      await chain.api.database_api.get_witness_schedule({});
+
+    const accountCreator = 'xbtsio';
+
+    // Step 1: Create authtracetst2 — holds the signing key, no account_auth dependencies
+    if (!existingNames.has('authtracetst2')) {
+      const tx = await chain.createTransaction();
+      tx.pushOperation({
+        account_create_operation: {
+          fee: account_creation_fee,
+          creator: accountCreator,
+          new_account_name: 'authtracetst2',
+          owner:   { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          active:  { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          posting: { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          memo_key: skeletonPublicKey,
+          json_metadata: '{}'
+        }
+      });
+      tx.sign(wallet, skeletonPublicKey);
+      await chain.broadcast(tx);
+      console.log('Created account: authtracetst2');
+    }
+
+    // Step 2: Create authtracetst3 — initially with simple key-based auth (cycle added in step 4)
+    if (!existingNames.has('authtracetst3')) {
+      const tx = await chain.createTransaction();
+      tx.pushOperation({
+        account_create_operation: {
+          fee: account_creation_fee,
+          creator: accountCreator,
+          new_account_name: 'authtracetst3',
+          owner:   { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          active:  { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          posting: { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          memo_key: skeletonPublicKey,
+          json_metadata: '{}'
+        }
+      });
+      tx.sign(wallet, skeletonPublicKey);
+      await chain.broadcast(tx);
+      console.log('Created account: authtracetst3');
+    }
+
+    // Step 3: Create authtracetst1 — active delegates to authtracetst2 + authtracetst3, owner uses a different key
+    if (!existingNames.has('authtracetst1')) {
+      const tx = await chain.createTransaction();
+      tx.pushOperation({
+        account_create_operation: {
+          fee: account_creation_fee,
+          creator: accountCreator,
+          new_account_name: 'authtracetst1',
+          owner:   { weight_threshold: 1, account_auths: {}, key_auths: { [ownerPublicKey]: 1 } },
+          active:  { weight_threshold: 2, account_auths: { 'authtracetst2': 1, 'authtracetst3': 1 }, key_auths: {} },
+          posting: { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          memo_key: skeletonPublicKey,
+          json_metadata: '{}'
+        }
+      });
+      tx.sign(wallet, skeletonPublicKey);
+      await chain.broadcast(tx);
+      console.log('Created account: authtracetst1');
+    }
+
+    // Step 4: Update authtracetst3 active authority to create the cycle back to authtracetst1
+    const { accounts: refreshed } = await chain.api.database_api.find_accounts({
+      accounts: ['authtracetst3'],
+      delayed_votes_active: true
+    });
+    const acct3: ApiAccount = refreshed[0];
+    const needsUpdate = !acct3.active.account_auths.some(
+      (entry) => entry[0] === 'authtracetst1'
+    );
+
+    if (needsUpdate) {
+      const tx = await chain.createTransaction();
+      tx.pushOperation({
+        account_update_operation: {
+          account: 'authtracetst3',
+          active:  { weight_threshold: 1, account_auths: { 'authtracetst1': 1 }, key_auths: {} },
+          posting: { weight_threshold: 1, account_auths: {}, key_auths: { [skeletonPublicKey]: 1 } },
+          memo_key: skeletonPublicKey,
+          json_metadata: '{}'
+        }
+      });
+      tx.sign(wallet, skeletonPublicKey);
+      await chain.broadcast(tx);
+      console.log('Updated authtracetst3 active authority: cycle to authtracetst1');
+    }
+  };
+
+  type TEnsureTestAccountsExistFn = typeof ensureTestAccountsExist;
 
   test('Should be able to get authority trace for direct multi-sig from already existing transaction', async ({ waxTest }) => {
     const retVal = await waxTest(async({ wax }) => {
@@ -598,49 +730,51 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
     ]);
   });
 
-  test('Should be able to get authority trace for insufficient weight transaction', async ({ waxTest }) => {
-    const retVal = await waxTest(async ({ wax }) => {
-      const chain = await wax.createHiveChain();
+  test('Should be able to get authority trace for insufficient weight transaction', async ({ waxTest, config }) => {
+    /// See ts/wasm/__tests__/assets/authority_trace_test_accounts.md for more details.
+    const retVal = await waxTest(
+      async ({ beekeeper, wax },
+      ensureTestAccountsExist: TEnsureTestAccountsExistFn,
+      skeletonKey: string,
+      skeletonPublicKey: string,
+      ownerPublicKey: string,
+      chainConfig: IWaxOptionsChain
+    ) => {
+      const session = beekeeper.createSession("salt");
+      const { wallet } = await session.createWallet("w0");
+      await wallet.importKey(skeletonKey);
 
-      const sourceTx = chain.createTransactionFromJson({
-        "ref_block_num": 18628,
-        "ref_block_prefix": 1429804722,
-        "expiration": "2025-03-14T12:37:20",
-        "operations": [
-          {
-            "type": "transfer_operation",
-            "value": {
-              "from": "guest4test4",
-              "to": "alice",
-              "amount": {
-                "amount": "1",
-                "precision": 3,
-                "nai": "@@000000021"
-              },
-              "memo": "This is a test transfer"
-            }
-          }
-        ],
-        "extensions": [],
-        "signatures": [
-          "1fd37b180bb46ed8fa6139d5f18521800ab19b7725d7fe337673c1033047371c4019fbabc0798b60d1cb0354439e5d67af5b82d1b4f262303fec0aa4905ddc5835"
-        ]
+      const chain = await wax.createHiveChain(chainConfig);
+
+      // Ensure test accounts exist with correct authority structure
+      await ensureTestAccountsExist(chain, wallet, skeletonPublicKey, ownerPublicKey);
+
+      // Build and sign a transfer from authtracetst1 (requires active authority, threshold=2)
+      const sourceTx: IOnlineTransaction = await chain.createTransaction();
+      sourceTx.pushOperation({
+        transfer_operation: {
+          from: 'authtracetst1',
+          to: 'authtracetst2',
+          amount: chain.hiveSatoshis(1),
+          memo: 'Authority trace test'
+        }
       });
+      sourceTx.sign(wallet, skeletonPublicKey);
 
-      const tx = await chain.createTransaction();
-
+      // Generate authority verification trace using a separate online transaction
+      const tx: IOnlineTransaction = await chain.createTransaction();
       const trace = await tx.generateAuthorityVerificationTrace(false, sourceTx);
 
       console.log(JSON.stringify(trace));
 
       return trace;
-    });
+    }, ensureTestAccountsExist, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, authtracetst1OwnerPublicKey, config!);
 
     expect(retVal).toStrictEqual({
       "collectedData": [
         {
           "finalAuthorityPath": {
-            "processedEntry": "guest4test4",
+            "processedEntry": "authtracetst1",
             "processedRole": "owner",
             "processingStatus": {
               "accountAuthorityCountExceeded": false,
@@ -661,7 +795,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
       ],
       "finalAuthorityPath": [
         {
-          "processedEntry": "guest4test4",
+          "processedEntry": "authtracetst1",
           "processedRole": "owner",
           "processingStatus": {
             "accountAuthorityCountExceeded": false,
@@ -680,7 +814,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
       ],
       "rootEntries": [
         {
-          "processedEntry": "guest4test4",
+          "processedEntry": "authtracetst1",
           "processedRole": "active",
           "processingStatus": {
             "accountAuthorityCountExceeded": false,
@@ -695,7 +829,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           "threshold": 2,
           "visitedEntries": [
             {
-              "processedEntry": "guest4test1",
+              "processedEntry": "authtracetst2",
               "processedRole": "active",
               "processingStatus": {
                 "entryAccepted": true,
@@ -705,7 +839,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
               "threshold": 1,
               "visitedEntries": [
                 {
-                  "processedEntry": "STM8gQN2KodMgmVqTEY372XzZyEUpceKpLWU6igr39MF3D7Qv3Rqo",
+                  "processedEntry": "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4",
                   "processedRole": "active",
                   "processingStatus": {
                     "entryAccepted": true,
@@ -720,7 +854,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
               "weight": 1
             },
             {
-              "processedEntry": "guest4test8",
+              "processedEntry": "authtracetst3",
               "processedRole": "active",
               "processingStatus": {
                 "accountAuthorityCountExceeded": false,
@@ -735,7 +869,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
               "threshold": 1,
               "visitedEntries": [
                 {
-                  "processedEntry": "guest4test4",
+                  "processedEntry": "authtracetst1",
                   "processedRole": "active",
                   "processingStatus": {
                     "accountAuthorityCountExceeded": false,
@@ -750,7 +884,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
                   "threshold": 2,
                   "visitedEntries": [
                     {
-                      "processedEntry": "guest4test1",
+                      "processedEntry": "authtracetst2",
                       "processedRole": "active",
                       "processingStatus": {
                         "entryAccepted": true,
@@ -771,7 +905,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           "weight": 1
         },
         {
-          "processedEntry": "guest4test4",
+          "processedEntry": "authtracetst1",
           "processedRole": "owner",
           "processingStatus": {
             "accountAuthorityCountExceeded": false,
@@ -789,7 +923,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         }
       ],
       "rootEntry": {
-        "processedEntry": "guest4test4",
+        "processedEntry": "authtracetst1",
         "processedRole": "owner",
         "processingStatus": {
           "accountAuthorityCountExceeded": false,
