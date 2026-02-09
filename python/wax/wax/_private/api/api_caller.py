@@ -14,9 +14,14 @@ if TYPE_CHECKING:
 
 def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable) -> ApiCollectionT:
     """Initializes the API collection with the owner."""
-    for api_name, api_definition in api_collection.__dict__.items():
-        if callable(api_definition) and not api_name.startswith("_"):  # Check for magic methods
-            setattr(api_collection, api_name, api_definition(owner=owner))
+    api_map = getattr(type(api_collection), "_API_MAP", None)
+    if api_map is not None:
+        items = api_map.items()
+    else:
+        items = ((k, v) for k, v in api_collection.__dict__.items() if callable(v) and not k.startswith("_"))
+
+    for api_name, api_definition in items:
+        setattr(api_collection, api_name, api_definition(owner=owner))
 
     return api_collection
 

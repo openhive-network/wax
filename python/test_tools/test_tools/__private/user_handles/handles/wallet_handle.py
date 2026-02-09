@@ -39,12 +39,13 @@ class WalletHandle(Handle):
         :param chain_id: If set to "default", wallet use chain_id from node, else use typed chain_id.
         :param transaction_serialization: Set type of transaction serialization- hf26 or legacy. Default: hf26. Legacy serialization may not work correctly with the testnet.
         """
+        node: Node | RemoteNode | None = None
         if isinstance(attach_to, NodeHandleBase | RemoteNodeHandle):
-            attach_to = get_implementation(attach_to, Node | RemoteNode)  # type: ignore[arg-type]
+            node = get_implementation(attach_to, Node | RemoteNode)  # type: ignore[arg-type]
 
         super().__init__(
             implementation=Wallet(
-                attach_to=attach_to,
+                attach_to=node,
                 preconfigure=preconfigure,
                 chain_id=chain_id,
                 transaction_serialization=transaction_serialization,

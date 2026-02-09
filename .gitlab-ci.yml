@@ -872,7 +872,7 @@ test_tools_hived_handle:
     HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
     - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto -m "requires_hived_executables" --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TESTS_DIR}/test_tools/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
+    - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TESTS_DIR}/test_tools/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
   artifacts:
     when: always
     expire_in: 1 week
