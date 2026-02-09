@@ -56,6 +56,9 @@ variables:
   FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
   SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple"
   THIRD_INDEX: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+  # first party libraries gitlab index (group-level registry aggregating all hive packages):
+  FIRST_PARTY_EXTRA_INDEX_ARGS: |
+    --extra-index-url https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple
 
   # colors:
   TXT_BLUE: "\e[1;34m"
@@ -333,8 +336,8 @@ push_to_wiki:
     matrix:
       - PYTHON_VERSION: ["3.12", "3.14"]
 
-test_importing_wax:
-  stage: test_python
+test_installing_wax_from_registry:
+  stage: .post
   image: quay.io/pypa/manylinux_2_28:2026.01.16-1
   parallel:
     matrix:
@@ -342,7 +345,7 @@ test_importing_wax:
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   needs:
-    - job: build_wheel
+    - job: deploy_wheel_to_gitlab
       artifacts: true
   before_script:
     # Set up PATH for the correct Python version from PyPA image
@@ -356,21 +359,11 @@ test_importing_wax:
         exit 1
       fi
       echo "Python version verified: $ACTUAL_VERSION matches PYTHON_VERSION=$PYTHON_VERSION"
-    # Install only the wheel matching current Python version
-    - |
-      set -x
-      PYTHON_TAG="cp${PYTHON_VERSION//./}"
-      WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
-      if [ -z "$WHEEL_FILE" ]; then
-        echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
-        ls -la ${PYPROJECT_DIR}/dist/
-        exit 1
-      fi
-      echo "Installing wheel: $WHEEL_FILE"
   script:
     - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
     - python3 --version
-    - pip3 install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX $WHEEL_FILE
+    - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
+    - pip3 install $FIRST_PARTY_EXTRA_INDEX_ARGS "hiveio-wax==${WHEEL_BUILD_VERSION}"
     - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
   tags:
@@ -500,7 +493,6 @@ test_wax_wasm_signature_extension:
 
 .deploy_wheel_needs: &deploy_wheel_needs
   needs:
-    - job: test_importing_wax
     - job: test_wax_protobuf_python
     - job: build_wheel
       artifacts: true
