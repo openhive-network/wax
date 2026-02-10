@@ -10,7 +10,7 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 13581fecea817f76e96644880f4fb7490c315777
+    ref: 7b42a5584d854c2aee4b7e02cfd3de2bc4e8d77e
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -69,18 +69,6 @@ variables:
   TS_DIST_DIR: "${CI_PROJECT_DIR}/ts/wasm/dist"
 
 image: "${CI_BASE_IMAGE}"
-
-# Cross-runner compatible before_script for jobs using built package tarball
-# Computes the local path from the filename instead of using absolute path from dotenv
-.cross_runner_unpack_tarball:
-  before_script:
-    - !reference [.npm_based_job_base, before_script]
-    # Compute local path from filename (cross-runner compatible)
-    - PACKAGE_TGZ_PATH="${TS_DIST_DIR}/$(basename ${BUILT_PACKAGE_PATH})"
-    - echo -e "\e[0Ksection_start:$(date +%s):package_tgz_unpack[collapsed=true]\r\e[0KAttempting to unpack ${PACKAGE_TGZ_PATH}"
-    - cd "${CI_PROJECT_DIR}"
-    - tar -xf "${PACKAGE_TGZ_PATH}" -C "${TS_SOURCE_DIR}" --strip-components=1
-    - echo -e "\e[0Ksection_end:$(date +%s):package_tgz_unpack\r\e[0K"
 
 default:
   tags:
@@ -190,9 +178,7 @@ wax_wasm_proto_tsc_generation:
     - public-runner-docker
 
 wax_wasm_build_tests:
-  extends:
-    - .npm_process_built_package_tarball
-    - .cross_runner_unpack_tarball
+  extends: .npm_process_built_package_tarball
   stage: build
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
@@ -399,9 +385,7 @@ test_wax_protobuf_python_examples:
     - ./examples/python/run_example.sh
 
 test_wax_wasm:
-  extends:
-    - .npm_test_template
-    - .cross_runner_unpack_tarball
+  extends: .npm_test_template
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
@@ -425,9 +409,7 @@ test_wax_wasm:
     - npm run test -- $TEST_GROUPS
 
 test_wax_wasm_proto_pattern:
-  extends:
-    - .npm_process_built_package_tarball
-    - .cross_runner_unpack_tarball
+  extends: .npm_process_built_package_tarball
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -449,9 +431,7 @@ test_wax_wasm_proto_pattern:
     - public-runner-docker
 
 test_wax_wasm_examples:
-  extends:
-    - .npm_process_built_package_tarball
-    - .cross_runner_unpack_tarball
+  extends: .npm_process_built_package_tarball
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -466,9 +446,7 @@ test_wax_wasm_examples:
     - public-runner-docker
 
 test_wax_wasm_signature_extension:
-  extends:
-    - .npm_process_built_package_tarball
-    - .cross_runner_unpack_tarball
+  extends: .npm_process_built_package_tarball
   needs:
     - job: wax_wasm_proto_tsc_generation
       artifacts: true
@@ -508,9 +486,7 @@ deploy_wheel_to_pypi:
     - public-runner-docker
 
 deploy_wax_wasm_dev_package:
-  extends:
-    - .npm_deploy_package_template
-    - .cross_runner_unpack_tarball
+  extends: .npm_deploy_package_template
   stage: deploy
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
@@ -527,9 +503,7 @@ deploy_wax_wasm_dev_package:
     - public-runner-docker
 
 deploy_wax_wasm_production_public_npm:
-  extends:
-    - .registry_npmjs_org_deploy_package_template
-    - .cross_runner_unpack_tarball
+  extends: .registry_npmjs_org_deploy_package_template
   stage: deploy
   variables:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
