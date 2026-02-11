@@ -818,6 +818,7 @@ deploy_test_tools_wheel_to_gitlab:
   extends:
     - .deploy_wheel_to_gitlab_template
     - .test_tools_base
+  when: on_success
   needs:
     - job: build_test_tools_wheel
       artifacts: true
