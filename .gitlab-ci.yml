@@ -766,7 +766,7 @@ deploy_to_github_pages:
   variables:
     PROJECT_NAME: "wax"
     TS_DOCS_DIR: "${CI_PROJECT_DIR}/docs-output/ts"
-    PY_DOCS_DIR: "${CI_PROJECT_DIR}/python/site"
+    PY_DOCS_DIR: "${WAX_DIR}/site"
     EXTRA_DOCS_DIR: "${TS_DIST_DIR}/docs"
   needs:
     - job: generate_html_docs
