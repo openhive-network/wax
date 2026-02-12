@@ -161,7 +161,7 @@ ignore = [
 quote-style = "preserve"
 
 [tool.ruff.lint.isort]
-known-first-party = ["helpy", "hiveio_api", "schemas", "wax", "test_tools"]
+known-first-party = ["hiveio_api", "schemas", "wax", "test_tools"]
 required-imports = ["from __future__ import annotations"]
 
 
