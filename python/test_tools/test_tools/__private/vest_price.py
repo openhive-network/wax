@@ -1,14 +1,22 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from schemas.fields.compound import Price
 
 if TYPE_CHECKING:
-    from schemas.apis.database_api import GetDynamicGlobalProperties
     from schemas.fields.assets._base import AssetNaiAmount
     from wax.helpy import Hf26Asset
+
+
+def _nai_to_asset(nai_struct: Any) -> Hf26Asset.VestsT | Hf26Asset.HiveT | Hf26Asset.HbdT:
+    """Convert a NAI-format object (hiveio_api Struct or schemas Asset) to Hf26Asset."""
+    from wax.helpy import Hf26Asset
+
+    if isinstance(nai_struct, (Hf26Asset.VestsT, Hf26Asset.HiveT, Hf26Asset.HbdT)):
+        return nai_struct
+    return Hf26Asset.from_nai({"amount": nai_struct.amount, "nai": nai_struct.nai, "precision": nai_struct.precision})
 
 
 @dataclass
@@ -24,8 +32,8 @@ class VestPrice:
         return f"{self.__class__.__name__}({self.as_nai()})"
 
     @classmethod
-    def from_dgpo(cls, dgpo: GetDynamicGlobalProperties) -> VestPrice:
-        return cls(quote=dgpo.total_vesting_shares, base=dgpo.total_vesting_fund_hive)
+    def from_dgpo(cls, dgpo: Any) -> VestPrice:
+        return cls(quote=_nai_to_asset(dgpo.total_vesting_shares), base=_nai_to_asset(dgpo.total_vesting_fund_hive))
 
     def as_nai(self) -> dict[str, dict[str, AssetNaiAmount | str]]:
         return {"quote": self.quote.as_nai(), "base": self.base.as_nai()}
