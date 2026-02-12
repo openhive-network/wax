@@ -29,6 +29,7 @@ abstractcp = ">=0.9.9"
 msgspec = ">=0.20.0"
 loguru = ">=0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
+hiveio-api = ">=1.28.6rc3"
 hiveio-beekeepy = ">=1.28.5"
 hiveio-schemas = ">=1.28.1"
 
@@ -161,7 +162,7 @@ ignore = [
 quote-style = "preserve"
 
 [tool.ruff.lint.isort]
-known-first-party = ["helpy", "schemas", "wax", "test_tools"]
+known-first-party = ["helpy", "hiveio_api", "schemas", "wax", "test_tools"]
 required-imports = ["from __future__ import annotations"]
 
 

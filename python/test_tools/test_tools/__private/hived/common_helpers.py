@@ -1,15 +1,14 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from schemas.apis.database_api import GetDynamicGlobalProperties
+from hiveio_api.database_api import GetDynamicGlobalPropertiesResponse as GetDynamicGlobalProperties
 
 if TYPE_CHECKING:
-    from datetime import datetime
     from typing import TypeAlias
 
-    from schemas.apis.database_api import GetVersion
-    from schemas.fields.basic import AccountName
+    from hiveio_api.database_api import GetVersionResponse as GetVersion
 
 
 class HiveHandleCommonHelpers:
@@ -22,9 +21,9 @@ class HiveHandleCommonHelpers:
         return dynamic_global_properties.last_irreversible_block_num
 
     def _get_head_block_time(self, dynamic_global_properties: GetDynamicGlobalPropertiesT) -> datetime:
-        return dynamic_global_properties.time
+        return datetime.fromisoformat(dynamic_global_properties.time)
 
-    def _get_current_witness(self, dynamic_global_properties: GetDynamicGlobalPropertiesT) -> AccountName:
+    def _get_current_witness(self, dynamic_global_properties: GetDynamicGlobalPropertiesT) -> str:
         return dynamic_global_properties.current_witness
 
     def _hived_target_service_name(self) -> str:

@@ -13,8 +13,6 @@ from wax.helpy.exceptions import BlockWaitTimeoutError
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from schemas.fields.basic import AccountName
-
 
 class HivedTemplate(
     AbstractSyncHandle[RemoteSettingsT, HivedSyncApiCollection], HiveHandleCommonHelpers, Generic[RemoteSettingsT]
@@ -37,7 +35,7 @@ class HivedTemplate(
     def get_head_block_time(self) -> datetime:
         return self._get_head_block_time(self.get_dynamic_global_properties())
 
-    def get_current_witness(self) -> AccountName:
+    def get_current_witness(self) -> str:
         return self._get_current_witness(self.get_dynamic_global_properties())
 
     def wait_number_of_blocks(self, blocks_to_wait: int, *, timeout: float = math.inf) -> None:
