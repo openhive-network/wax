@@ -5,8 +5,8 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any
 
 from wax._private.converters.decimal_converter import DecimalConverter
-from wax._private.converters.operation_converters.from_proto_to_cpp_string import from_proto_to_cpp_string
-from wax._private.converters.operation_converters.from_protocol_to_cpp_string import from_protocol_to_cpp_string
+from wax._private.converters.operation_converters.from_proto_to_str import from_proto_to_str
+from wax._private.converters.operation_converters.from_protocol_to_str import from_protocol_to_str
 from wax._private.converters.python_price_converter import convert_to_python_price
 from wax._private.core.constants import (
     DEFAULT_TRANSACTION_EXPIRATION_TIME,
@@ -14,15 +14,13 @@ from wax._private.core.constants import (
     PUBLIC_KEY_ADDRESS_PREFIX,
 )
 from wax._private.core.format_recognizers.operation import is_hive_protocol_format
+from wax._private.cython_wrappers import get_hive_protocol_config
 from wax._private.models.asset import Asset
 from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
 from wax._private.result_tools import (
-    decode_impacted_account_names,
     expose_result_as_python_string,
-    to_cpp_string,
-    to_python_string,
     validate_wax_result,
 )
 from wax._private.transaction import Transaction
@@ -40,7 +38,6 @@ from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     estimate_hive_collateral,
     evaluate_hbd_interest,
     generate_password_based_private_key,
-    get_hive_protocol_config,
     get_public_key_from_signature,
     is_valid_account_name,
     legacy_tx_to_json,
@@ -87,10 +84,7 @@ class WaxBaseApi(IWaxBaseInterface):
     @property
     def config(self) -> ChainConfig:
         if self._cached_config is None:
-            self._cached_config = {
-                to_python_string(key): to_python_string(value)
-                for key, value in get_hive_protocol_config(to_cpp_string(self.chain_id)).items()
-            }
+            self._cached_config = get_hive_protocol_config(self.chain_id)
         return self._cached_config
 
     @property
@@ -99,20 +93,17 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def is_valid_account_name(account_name: AccountName) -> bool:
-        return is_valid_account_name(to_cpp_string(account_name))
+        return is_valid_account_name(account_name)
 
     @staticmethod
     def get_operation_impacted_accounts(operation: Operation) -> list[AccountName]:
         if is_hive_protocol_format(operation):
-            converted = from_protocol_to_cpp_string(operation)
+            converted = from_protocol_to_str(operation)
             validate_wax_result(validate_operation(converted))
-            impacted_accounts = operation_get_impacted_accounts(converted)
-        else:
-            converted = from_proto_to_cpp_string(operation)
-            validate_wax_result(validate_proto_operation(converted))
-            impacted_accounts = proto_operation_get_impacted_accounts(converted)
-
-        return decode_impacted_account_names(impacted_accounts)
+            return operation_get_impacted_accounts(converted)
+        converted = from_proto_to_str(operation)
+        validate_wax_result(validate_proto_operation(converted))
+        return proto_operation_get_impacted_accounts(converted)
 
     def estimate_hive_collateral(
         self,
@@ -214,7 +205,7 @@ class WaxBaseApi(IWaxBaseInterface):
 
     @staticmethod
     def get_public_key_from_signature(sig_digest: SigDigest, signature: Signature) -> PublicKey:
-        public_key = get_public_key_from_signature(to_cpp_string(sig_digest), to_cpp_string(signature))
+        public_key = get_public_key_from_signature(sig_digest, signature)
         validate_wax_result(public_key)
 
         return expose_result_as_python_string(public_key)
@@ -328,17 +319,15 @@ class WaxBaseApi(IWaxBaseInterface):
 
     def create_transaction_from_legacy_json(self, transaction: JsonTransaction | dict[str, Any]) -> ITransaction:
         legacy_tx_str = transaction if isinstance(transaction, str) else json.dumps(transaction)
-        new_tx_str = to_python_string(legacy_tx_to_json(to_cpp_string(legacy_tx_str)))
+        new_tx_str = legacy_tx_to_json(legacy_tx_str)
 
         return self.create_transaction_from_json(new_tx_str)
 
     def serialize_witness_props(self, witness_props: python_witness_set_properties_data) -> dict[str, str]:
-        serialized_props = serialize_witness_set_properties(witness_props)
-        return {to_python_string(k): to_python_string(v) for k, v in serialized_props.items()}
+        return serialize_witness_set_properties(witness_props)
 
     def deserialize_witness_props(self, serialized_props: dict[str, str]) -> python_witness_set_properties_data:
-        cpp_serialized_props = {to_cpp_string(k): to_cpp_string(v) for k, v in serialized_props.items()}
-        return deserialize_witness_set_properties(cpp_serialized_props)
+        return deserialize_witness_set_properties(serialized_props)
 
     def scan_text_for_matching_private_keys(
         self,
@@ -352,11 +341,11 @@ class WaxBaseApi(IWaxBaseInterface):
             other_keys = []
         try:
             check_memo_for_private_keys(
-                to_cpp_string(content),
-                to_cpp_string(account),
+                content,
+                account,
                 WaxAuthorities.to_python_authorities(account_authorities),
-                to_cpp_string(memo_key),
-                [to_cpp_string(key) for key in other_keys],
+                memo_key,
+                other_keys,
             )
         except Exception as error:
             raise PrivateKeyDetectedInMemoError from error
@@ -375,10 +364,7 @@ class WaxBaseApi(IWaxBaseInterface):
             return asset_name == expected
 
         return (
-            asset.nai == self._asset_handler.get_asset_info(AssetName.Hive).nai
-            and contains(AssetName.Hive)
-            or asset.nai == self._asset_handler.get_asset_info(AssetName.Hbd).nai
-            and contains(AssetName.Hbd)
-            or asset.nai == self._asset_handler.get_asset_info(AssetName.Vests).nai
-            and contains(AssetName.Vests)
+            (asset.nai == self._asset_handler.get_asset_info(AssetName.Hive).nai and contains(AssetName.Hive))
+            or (asset.nai == self._asset_handler.get_asset_info(AssetName.Hbd).nai and contains(AssetName.Hbd))
+            or (asset.nai == self._asset_handler.get_asset_info(AssetName.Vests).nai and contains(AssetName.Vests))
         )

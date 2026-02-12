@@ -4,7 +4,6 @@ import json
 from typing import TYPE_CHECKING, Final
 
 from wax._private.converters.decimal_converter import DecimalConverter
-from wax._private.result_tools import to_python_string
 from wax.cpp_python_bridge import hbd, hive, vests
 from wax.exceptions.asset_errors import (
     CannotCreateAssetError,
@@ -45,7 +44,7 @@ class Asset:
         if asset_info is None:
             raise UnknownAssetTypeError(asset_name.value)
 
-        return AssetInfo(to_python_string(asset_info.nai), asset_info.precision)
+        return AssetInfo(asset_info.nai, asset_info.precision)
 
     def create_wax_asset(self, asset_name: AssetName, amount: AssetAmount, *, use_precision: bool = True) -> NaiAsset:
         """
@@ -68,7 +67,7 @@ class Asset:
             raise UnknownAssetTypeError(asset_name.value)
 
         precision = asset_info.precision
-        nai = to_python_string(asset_info.nai)
+        nai = asset_info.nai
 
         if not use_precision:
             return proto_asset(amount=str(amount), precision=precision, nai=nai)
@@ -130,7 +129,7 @@ class Asset:
         symbol = ""
 
         for asset_symbol, cpp_asset in self.ASSETS.items():
-            if asset.nai == to_python_string(cpp_asset.nai):
+            if asset.nai == cpp_asset.nai:
                 symbol = asset_symbol.value
 
         match symbol:
@@ -145,9 +144,9 @@ class Asset:
 
     def from_python_json_asset(self, asset: python_json_asset) -> NaiAsset:
         return proto_asset(
-            amount=to_python_string(asset.amount),
+            amount=asset.amount,
             precision=asset.precision,
-            nai=to_python_string(asset.nai),
+            nai=asset.nai,
         )
 
     def _create_asset_satoshis(self, asset_name: AssetName, amount: int) -> NaiAsset:
@@ -163,4 +162,4 @@ class Asset:
         return self.create_wax_asset(asset_name, amount, use_precision=False)
 
     def _assert_asset_nai_valid(self, valid_asset: python_json_asset, asset_to_check: NaiAsset) -> None:
-        assert to_python_string(valid_asset.nai) == asset_to_check.nai, "Nai is not the same as expected."
+        assert valid_asset.nai == asset_to_check.nai, "Nai is not the same as expected."

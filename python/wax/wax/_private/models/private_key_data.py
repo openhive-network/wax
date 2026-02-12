@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.result_tools import to_python_string
 from wax.models.key_data import IPrivateKeyData
 
 if TYPE_CHECKING:
@@ -25,8 +24,8 @@ class PrivateKeyData(IPrivateKeyData):
         Args:
             data: private key data.
         """
-        self._wif_private_key = to_python_string(data.wif_private_key)
-        self._associated_public_key = to_python_string(data.associated_public_key)
+        self._wif_private_key = data.wif_private_key
+        self._associated_public_key = data.associated_public_key
 
     @property
     def wif_private_key(self) -> str:

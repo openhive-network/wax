@@ -8,29 +8,21 @@ from google.protobuf.json_format import MessageToJson, ParseDict
 from typing_extensions import Self
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
+from wax._private.cython_wrappers import get_tapos_data, tx_add_signature, tx_sig_digest, tx_signature_keys
 from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
 from wax._private.proto_utils import message_to_dict_with_defaults
-from wax._private.result_tools import (
-    to_cpp_string,
-    to_python_str_list,
-    to_python_string,
-)
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     create_wax_operation,
     create_wax_transaction,
-    get_tapos_data,
     python_ref_block_data,
     tx_add_operation,
-    tx_add_signature,
     tx_api_to_proto,
     tx_id,
     tx_impacted_accounts,
     tx_required_authorities,
     tx_set_expiration,
-    tx_sig_digest,
-    tx_signature_keys,
     tx_to_binary,
     tx_to_json,
     tx_to_legacy_json,
@@ -69,7 +61,7 @@ class Transaction(ITransaction):
             self._handle = create_wax_transaction(self._target, is_protobuf=True)
         else:
             tapos = (
-                get_tapos_data(to_cpp_string(tapos_block_id))
+                get_tapos_data(tapos_block_id)
                 if isinstance(tapos_block_id, str)
                 else self._resolve_tapos_from_transaction(tapos_block_id)  # type: ignore[arg-type, unused-ignore]
             )
@@ -89,24 +81,20 @@ class Transaction(ITransaction):
     @property
     def sig_digest(self) -> SigDigest:
         self._flush_transaction()
-        return to_python_string(
-            tx_sig_digest(self._handle, chain_id=to_cpp_string(self._api.chain_id), use_hf26_serialization=True)
-        )
+        return tx_sig_digest(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
 
     @property
     def impacted_accounts(self) -> list[AccountName]:
-        return to_python_str_list(tx_impacted_accounts(self._handle))
+        return tx_impacted_accounts(self._handle)
 
     @property
     def id(self) -> TransactionId:
         self._flush_transaction()
-        return to_python_string(tx_id(self._handle, use_hf26_serialization=True))
+        return tx_id(self._handle, use_hf26_serialization=True)
 
     @property
     def signature_keys(self) -> list[PublicKey]:
-        return to_python_str_list(
-            tx_signature_keys(self._handle, chain_id=to_cpp_string(self._api.chain_id), use_hf26_serialization=True)
-        )
+        return tx_signature_keys(self._handle, chain_id=self._api.chain_id, use_hf26_serialization=True)
 
     @property
     def required_authorities(self) -> TransactionRequiredAuthorities:
@@ -124,7 +112,7 @@ class Transaction(ITransaction):
 
     def add_signature(self, signature: Signature) -> Signature:
         self._target.signatures.append(signature)
-        tx_add_signature(self._handle, to_cpp_string(signature))
+        tx_add_signature(self._handle, signature)
         return signature
 
     def to_string(self) -> str:
@@ -133,9 +121,7 @@ class Transaction(ITransaction):
 
     def to_binary_form(self) -> Hex:
         self._flush_transaction()
-        return to_python_string(
-            tx_to_binary(self._handle, use_hf26_serialization=True, strip_to_unsigned_transaction=False)
-        )
+        return tx_to_binary(self._handle, use_hf26_serialization=True, strip_to_unsigned_transaction=False)
 
     @staticmethod
     def from_api(api: IWaxBaseInterface, transaction: JsonTransaction | dict[str, Any]) -> Transaction:
@@ -147,11 +133,11 @@ class Transaction(ITransaction):
 
     def to_api(self) -> str:
         self._flush_transaction()
-        return to_python_string(tx_to_json(self._handle))
+        return tx_to_json(self._handle)
 
     def to_legacy_api(self) -> str:
         self._flush_transaction()
-        return to_python_string(tx_to_legacy_json(self._handle))
+        return tx_to_legacy_json(self._handle)
 
     def to_dict(self) -> dict[str, Any]:
         return json.loads(self.to_api())  # type: ignore[no-any-return]
@@ -190,7 +176,7 @@ class Transaction(ITransaction):
             expiration = HiveDateTime.now() + self._expiration_time
 
         self._target.expiration = expiration.replace(microsecond=0).serialize()
-        tx_set_expiration(self._handle, to_cpp_string(self._target.expiration))
+        tx_set_expiration(self._handle, self._target.expiration)
 
     def _calculate_signer_public_keys(self) -> list[PublicKey]:
         """Calculate public keys of signers."""

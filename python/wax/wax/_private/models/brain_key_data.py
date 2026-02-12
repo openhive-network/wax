@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wax._private.result_tools import to_python_string
 from wax.models.key_data import IBrainKeyData
 
 if TYPE_CHECKING:
@@ -26,9 +25,9 @@ class BrainKeyData(IBrainKeyData):
         Args:
             data: brain key data.
         """
-        self._brain_key = to_python_string(data.brain_key)
-        self._wif_private_key = to_python_string(data.wif_private_key)
-        self._associated_public_key = to_python_string(data.associated_public_key)
+        self._brain_key = data.brain_key
+        self._wif_private_key = data.wif_private_key
+        self._associated_public_key = data.associated_public_key
 
     @property
     def brain_key(self) -> str:
