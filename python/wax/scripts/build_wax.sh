@@ -124,7 +124,7 @@ else
   echo "Build wax wheel package."
   # Use pip wheel --no-build-isolation to build with the active virtualenv's Python.
   # Poetry's build isolation always uses Python 3.14 (ci-base-image default), ignoring the virtualenv.
-  python3 -m pip install --quiet poetry-core "cython==3.0.12" "setuptools>=67.8.0" "poetry-dynamic-versioning>=0.22.0"
+  python3 -m pip install --quiet poetry-core "cython==3.1.3" "setuptools>=67.8.0" "poetry-dynamic-versioning>=0.22.0"
   cd ${PROJECT_DIR}
   python3 -m pip wheel --no-deps --no-build-isolation -w dist .
 

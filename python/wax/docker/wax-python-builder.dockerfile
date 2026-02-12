@@ -1,4 +1,4 @@
-FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-4
+FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-12
 
 # User hosts user ids...
 ARG USER_NAME=user
