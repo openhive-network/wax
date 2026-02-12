@@ -770,7 +770,7 @@ class Api:
                 amount_to_sell=amount_to_sell,
                 min_to_receive=min_to_receive,
                 fill_or_kill=fill_or_kill,
-                expiration=datetime.fromisoformat(
+                expiration=HiveDateTime(
                     self.__wallet._force_connected_node.api.database.get_dynamic_global_properties().time
                 )
                 + timedelta(seconds=expiration),
