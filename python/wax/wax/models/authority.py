@@ -42,8 +42,8 @@ class WaxAuthorities:
 
         return python_authority(
             weight_threshold=auth.weight_threshold,
-            account_auths={account.encode(): weight for account, weight in auth.account_auths.items()},
-            key_auths={key.encode(): weight for key, weight in auth.key_auths.items()},
+            account_auths=dict(auth.account_auths),
+            key_auths=dict(auth.key_auths),
         )
 
 

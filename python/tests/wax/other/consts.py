@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Final
 
-MAINNET_CHAIN_ID: Final[bytes] = b"beeab0de00000000000000000000000000000000000000000000000000000000"
+MAINNET_CHAIN_ID: Final[str] = "beeab0de00000000000000000000000000000000000000000000000000000000"
 
 ENCODING = "utf-8"
 
@@ -14,7 +14,7 @@ PUBLIC_KEY_PATTERN = rf"^(?:STM)[{BASE_58_REGEX}]{{7,51}}$"
 PRIVATE_KEY_PATTERN = rf"^[{BASE_58_REGEX}]{{51}}$"
 
 
-def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
+def load_transaction(name: str) -> dict[str, dict[str, Any]]:
     """
     Load a transaction from the data directory with the given name.
 
@@ -34,12 +34,12 @@ def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
         json_content = json.load(json_file)
 
     with (data_directory / f"{name}.bin").open("rb") as bin_file:
-        bin_content = bin_file.read().strip()
+        bin_content = bin_file.read().strip().decode("utf-8")
 
     return {bin_content: json_content}
 
 
-VALID_TRXS: Final[dict[bytes, dict[str, Any]]] = {
+VALID_TRXS: Final[dict[str, dict[str, Any]]] = {
     **load_transaction("trx_1"),
     **load_transaction("trx_2_sig"),
     **load_transaction("trx_3_multisig"),

@@ -14,7 +14,7 @@ TESTDATA: Final[list[tuple[int, int, python_json_asset, int, int, python_json_as
         hbd(100_000_000_000),
         3_000_333,
         15,
-        python_json_asset(amount=b"877412042", precision=3, nai=b"@@000000013"),
+        python_json_asset(amount="877412042", precision=3, nai="@@000000013"),
     ),
     (
         0xFF_FFFF_FFFF_FFFF_FFFF,
@@ -22,7 +22,7 @@ TESTDATA: Final[list[tuple[int, int, python_json_asset, int, int, python_json_as
         hbd(100_000_000),
         3_003_000,
         15,
-        python_json_asset(amount=b"224617888250", precision=3, nai=b"@@000000013"),
+        python_json_asset(amount="224617888250", precision=3, nai="@@000000013"),
     ),
 ]
 

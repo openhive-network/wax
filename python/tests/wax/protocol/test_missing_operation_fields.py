@@ -6,41 +6,47 @@ import json
 
 from wax import validate_transaction
 
-
 def test_another_bad_serialization():
     trx = json.dumps(
-        {
-            "ref_block_num": 10,
-            "ref_block_prefix": 1549820395,
-            "expiration": "2025-08-06T08:27:33",
-            "extensions": [],
-            "signatures": [
-                "203e4bbd2d08fcfe484f36492406fe97d07018cf17226e2fa065948986be336499575e1c1206b21d80a33dbfbb93f790ca5204e36b83ec3f5498c8d049f879fbc0"
-            ],
-            "operations": [
-                {
-                    "type": "account_update_operation",
-                    "value": {
-                        "account": "bob",
-                        "owner": {
-                            "weight_threshold": 1,
-                            "account_auths": [],
-                            "key_auths": [
-                                ["STM613c9viKXrSGASsJj3yKogatPHCzDhZzASJgM33FjM3ThDLyG6", 1],
-                                ["STM613c9viKXrSGASsJj3yKogatPHCzDhZzASJgM33FjM3ThDLyG6", 3],
-                            ],
-                        },
-                        "memo_key": "STM7HGgvzxAsNFxMB1h5pMVqBpixPp2iA4nkZD9YnuDvvdfzAwCVn",
-                        "json_metadata": "{}",
-                    },
-                }
-            ],
-        }
+      {
+         "ref_block_num":10,
+         "ref_block_prefix":1549820395,
+         "expiration":"2025-08-06T08:27:33",
+         "extensions":[
+         ],
+         "signatures":[
+            "203e4bbd2d08fcfe484f36492406fe97d07018cf17226e2fa065948986be336499575e1c1206b21d80a33dbfbb93f790ca5204e36b83ec3f5498c8d049f879fbc0"
+         ],
+         "operations":[
+            {
+               "type":"account_update_operation",
+               "value":{
+                  "account":"bob",
+                  "owner":{
+                     "weight_threshold":1,
+                     "account_auths":[
+                     ],
+                     "key_auths":[
+                        [
+                           "STM613c9viKXrSGASsJj3yKogatPHCzDhZzASJgM33FjM3ThDLyG6",
+                           1
+                        ],
+                        [
+                           "STM613c9viKXrSGASsJj3yKogatPHCzDhZzASJgM33FjM3ThDLyG6",
+                           3
+                        ]
+                     ]
+                  },
+                  "memo_key":"STM7HGgvzxAsNFxMB1h5pMVqBpixPp2iA4nkZD9YnuDvvdfzAwCVn",
+                  "json_metadata":"{}"
+               }
+            }
+         ]
+      }
     )
-    result = calculate_transaction_id(trx.encode())
+    result = calculate_transaction_id(trx)
     assert result.status == result.status.ok
-    assert result.result == b"f022d1cab57d8e53e5cc15c833496c800f391e0a"
-
+    assert result.result == 'f022d1cab57d8e53e5cc15c833496c800f391e0a'
 
 def test_missing_allow_votes_and_allow_curation_rewards_members_in_comment_options_operation():
     """
@@ -77,7 +83,7 @@ def test_missing_allow_votes_and_allow_curation_rewards_members_in_comment_optio
         }
     )
 
-    result = validate_transaction(trx.encode())
+    result = validate_transaction(trx)
     assert result.status == result.status.ok
 
 
@@ -105,7 +111,7 @@ def test_missing_decline_field_in_decline_voting_rights_operation():
         }
     )
 
-    result = validate_transaction(trx.encode())
+    result = validate_transaction(trx)
     assert result.status == result.status.ok
 
 
@@ -136,7 +142,7 @@ def test_missing_fill_or_kill_in_limit_order_create_operation():
             ],
         }
     )
-    result = validate_transaction(trx.encode())
+    result = validate_transaction(trx)
     assert result.status == result.status.ok
 
 
@@ -164,7 +170,7 @@ def test_missing_approve_field_in_account_witness_vote_operation():
             ],
         }
     )
-    result = validate_transaction(trx.encode())
+    result = validate_transaction(trx)
     assert result.status == result.status.ok
 
 
@@ -212,60 +218,65 @@ def test_missing_max_accepted_payout_field_in_comment_options_operation():
             ],
         }
     )
-    result = validate_transaction(trx.encode())
+    result = validate_transaction(trx)
     assert result.status == result.status.ok
-
 
 def test_bad_array_deserialization():
-    trx = json.dumps(
-        {
-            "ref_block_num": 4,
-            "ref_block_prefix": 1920864452,
-            "expiration": "2025-08-04T23:16:12",
-            "operations": [
-                {
-                    "type": "update_proposal_votes_operation",
-                    "value": {"voter": "initminer", "proposal_ids": [0], "approve": True, "extensions": []},
-                }
-            ],
-            "extensions": [],
-            "signatures": [
-                "20e388a54d7de4c3990f57e8bbe1271c8d47678f571570f7123f32ea805f382a8b3ffd3ce112069ac9a3f07a54d3d9e25ef139e68f7596576e3c42ae33d46239c7"
-            ],
-        }
-    )
-
-    result = calculate_transaction_id(trx.encode())
-    assert result.status == result.status.ok
-    assert result.result == b"2c5cdf6bb4bc5a62eb0e81fa52a8e5598a92c075"
 
     trx = json.dumps(
+      {
+      "ref_block_num": 4,
+      "ref_block_prefix": 1920864452,
+      "expiration": "2025-08-04T23:16:12",
+      "operations": [
         {
-            "ref_block_num": 9,
-            "ref_block_prefix": 1621488055,
-            "expiration": "2025-08-04T23:10:30",
-            "operations": [
-                {
-                    "type": "account_update_operation",
-                    "value": {
-                        "account": "bob",
-                        "owner": {
-                            "weight_threshold": 1,
-                            "account_auths": [],
-                            "key_auths": [["STM61T5ngsX8DmRxQKBaDTJ1ov6gphGwX9ewCJN8ffKFFwjGd5pxF", 1]],
-                        },
-                        "memo_key": "STM72Ujsx5KJz8S2PGcqavrNPcTzzVd2nXs2GMEuiYondN2MMj6vU",
-                        "json_metadata": "{}",
-                    },
-                }
-            ],
-            "extensions": [],
-            "signatures": [
-                "2040599ca1e3c4f89463e95dce08cd0498a3125ec3b2a593de41b736689d50581c49ee84561ad99afda32607372feb7f52d76e871f1c03459e669aca817d75a6f1"
-            ],
+          "type": "update_proposal_votes_operation",
+          "value": 
+            {
+              "voter": "initminer",
+              "proposal_ids": [0],
+              "approve": True,
+              "extensions": []
+            }
         }
+        ],
+      "extensions": [],
+      "signatures": ["20e388a54d7de4c3990f57e8bbe1271c8d47678f571570f7123f32ea805f382a8b3ffd3ce112069ac9a3f07a54d3d9e25ef139e68f7596576e3c42ae33d46239c7"]
+      }
     )
 
-    result = calculate_transaction_id(trx.encode())
+    result = calculate_transaction_id(trx)
     assert result.status == result.status.ok
-    assert result.result == b"9a970e05ccf2ef77a7149f32ed46228b96908b98"
+    assert result.result == '2c5cdf6bb4bc5a62eb0e81fa52a8e5598a92c075'
+
+    trx = json.dumps(
+      {
+      "ref_block_num": 9,
+      "ref_block_prefix": 1621488055,
+      "expiration": "2025-08-04T23:10:30",
+      "operations": [
+          {
+              "type": "account_update_operation",
+              "value": {
+                  "account": "bob",
+                  "owner": {
+                      "weight_threshold": 1,
+                      "account_auths": [],
+                      "key_auths": [
+                          ["STM61T5ngsX8DmRxQKBaDTJ1ov6gphGwX9ewCJN8ffKFFwjGd5pxF", 1]
+                      ]
+                  },
+                  "memo_key": "STM72Ujsx5KJz8S2PGcqavrNPcTzzVd2nXs2GMEuiYondN2MMj6vU",
+                  "json_metadata": "{}"
+              }
+          }
+      ],
+      "extensions": [],
+      "signatures": ["2040599ca1e3c4f89463e95dce08cd0498a3125ec3b2a593de41b736689d50581c49ee84561ad99afda32607372feb7f52d76e871f1c03459e669aca817d75a6f1"]
+      }
+    )
+
+    result = calculate_transaction_id(trx)
+    assert result.status == result.status.ok
+    assert result.result == '9a970e05ccf2ef77a7149f32ed46228b96908b98'
+

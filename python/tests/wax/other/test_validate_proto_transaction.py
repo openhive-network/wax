@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import wax
 
-from .consts import ENCODING, VALID_PROTO_TRANSACTION
+from .consts import VALID_PROTO_TRANSACTION
 from .util import get_proto_operation_name
 
 
@@ -14,7 +14,7 @@ def test_valid_proto_transaction() -> None:
     transaction_json = json.dumps(VALID_PROTO_TRANSACTION)
 
     # ACT
-    result = wax.validate_proto_transaction(transaction_json.encode(ENCODING))
+    result = wax.validate_proto_transaction(transaction_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.ok
@@ -28,7 +28,7 @@ def test_invalid_proto_transaction_empty_operation() -> None:
     transaction_json = json.dumps(transaction)
 
     # ACT
-    result = wax.validate_proto_transaction(transaction_json.encode(ENCODING))
+    result = wax.validate_proto_transaction(transaction_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.fail
@@ -48,7 +48,7 @@ def test_invalid_proto_transaction_operation_without_a_key() -> None:
     transaction_json = json.dumps(transaction)
 
     # ACT
-    result = wax.validate_proto_transaction(transaction_json.encode(ENCODING))
+    result = wax.validate_proto_transaction(transaction_json)
 
     # ASSERT
     assert result.status == wax.python_error_code.fail

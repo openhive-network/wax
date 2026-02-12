@@ -153,16 +153,16 @@ RECOVER_ACCOUNT_TRANSACTION: Final[dict[str, Any]] = {
 
 INPUT_WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = (
     python_witness_set_properties_data(
-        key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
-        new_signing_key=b"STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
+        key="STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
+        new_signing_key="STM5z76mjZJnTZHHZjgnFxFadTb1ztc6R7EuDgCzd6dNiv6ETB2tj",
         hbd_exchange_rate=python_price(
-            base=python_json_asset(amount=b"273", precision=3, nai=b"@@000000013"),
-            quote=python_json_asset(amount=b"1000", precision=3, nai=b"@@000000021"),
+            base=python_json_asset(amount="273", precision=3, nai="@@000000013"),
+            quote=python_json_asset(amount="1000", precision=3, nai="@@000000021"),
         ),
         account_creation_fee=python_json_asset(
-            amount=b"5000", precision=3, nai=b"@@000000021"
+            amount="5000", precision=3, nai="@@000000021"
         ),
-        url=b"https://hive.io",
+        url="https://hive.io",
         maximum_block_size=131072,
         hbd_interest_rate=1000,
         account_subsidy_budget=797,
@@ -172,15 +172,15 @@ INPUT_WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = (
 
 WITNESS_PROPERTIES: Final[python_witness_set_properties_data] = (
     python_witness_set_properties_data(
-        key=b"STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
-        new_signing_key=b"STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW",
+        key="STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh",
+        new_signing_key="STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW",
         account_creation_fee=python_json_asset(
-            amount=b"5000", precision=3, nai=b"@@000000021"
+            amount="5000", precision=3, nai="@@000000021"
         ),
-        url=b"https://hive.io",
+        url="https://hive.io",
         hbd_exchange_rate=python_price(
-            base=python_json_asset(amount=b"100", precision=3, nai=b"@@000000013"),
-            quote=python_json_asset(amount=b"100", precision=3, nai=b"@@000000021"),
+            base=python_json_asset(amount="100", precision=3, nai="@@000000013"),
+            quote=python_json_asset(amount="100", precision=3, nai="@@000000021"),
         ),
         maximum_block_size=131072,
         hbd_interest_rate=1000,

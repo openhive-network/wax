@@ -17,12 +17,11 @@ from tests.wax.utils.refs import (
 )
 
 
-def retrieve_authorities(account_names: list[bytes]) -> dict[bytes, python_authorities]:
-    authorities_map: dict[bytes, python_authorities] = {}
+def retrieve_authorities(account_names: list[str]) -> dict[str, python_authorities]:
+    authorities_map: dict[str, python_authorities] = {}
     for account_name in account_names:
-        print(f"python retrieve_authorities:account_name = '{account_name.decode()}'")
-        # ACCOUNT_AUTHS is redefined from list to dict in refs.py
-        auths = ACCOUNT_AUTHS[account_name.decode()]  # type: ignore[call-overload]
+        print(f"python retrieve_authorities:account_name = '{account_name}'")
+        auths = ACCOUNT_AUTHS[account_name]
         authorities_map[account_name] = auths
     print(f"python retrieve_authorities:authorities_map = {authorities_map}")
     return authorities_map
@@ -37,11 +36,11 @@ def retrieve_authorities(account_names: list[bytes]) -> dict[bytes, python_autho
         (API_TRX_SIG5_v2, SIGNING_KEYS["API_TRX_SIG5_v2"]),
     ],
 )
-def test_collect_signing_keys(transaction: dict[str, Any], signing_keys: list[bytes]) -> None:
+def test_collect_signing_keys(transaction: dict[str, Any], signing_keys: list[str]) -> None:
     tx_str = json.dumps(transaction)
-    keys = collect_signing_keys(tx_str.encode(), retrieve_authorities)
+    keys = collect_signing_keys(tx_str, retrieve_authorities)
 
     for key in keys:
-        print(f"key: {key!r}")
+        print(f"key: {key}")
 
     assert keys == signing_keys, "Signing keys are incorrect"
