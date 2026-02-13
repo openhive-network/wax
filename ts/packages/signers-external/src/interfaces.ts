@@ -100,6 +100,28 @@ export interface IExternalWallet extends AsyncDisposable {
   createForCustomKey(customKeyAlias: string, privateKey: string, description?: string): Promise<IExternalWalletContent>;
 
   /**
+   * Returns the names of all Hive accounts stored in the wallet.
+   *
+   * @returns Array of account names found in the wallet
+   */
+  enumStoredAccounts(): Promise<TAccountName[]>;
+
+  /**
+   * Returns all configured roles for a specific Hive account in the wallet.
+   *
+   * @param accountName - The Hive account name to check
+   * @returns Array of roles configured for this account (posting, active, owner, memo)
+   */
+  enumStoredRolesForAccount(accountName: TAccountName): Promise<TRole[]>;
+
+  /**
+   * Returns all custom (general-purpose) keys stored in the wallet.
+   *
+   * @returns Array of custom key info (alias, publicKey, description)
+   */
+  enumStoredCustomKeys(): Promise<Array<{ customAlias: string; publicKey: TPublicKey; description?: string }>>;
+
+  /**
    * Allows to explicitly free all resources allocated to store data in memory.
    */
   close(): Promise<void>;

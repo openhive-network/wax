@@ -1,12 +1,15 @@
-import { AEncryptionProvider, ISignatureTransaction, type IWaxBaseInterface, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import { AEncryptionProvider, ISignatureTransaction, type IWaxBaseInterface, TAccountName, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { BeekeeperProvider  } from "@hiveio/wax-signers-beekeeper";
 import createBeekeeper, { IBeekeeperInstance, IBeekeeperUnlockedWallet } from "@hiveio/beekeeper";
 import { TokenProvider as AuthTokenProvider, GoogleStorageProvider } from "../storage-providers/google-storage-provider.js";
 import { AStorageProviderBase } from "../storage-provider-base.js";
 import type { IExternalWallet, IExternalWalletContent, IExternalWalletHiveRoleKeyInfo, IExternalWalletCustomKeyInfo } from "../interfaces.js";
 import { WaxExternalSignatureProviderError } from "../errors.js";
-import type { IWalletKeyEntry, IWalletDataV2 } from "../wallet_zod_versioning.js";
+import type { IWalletKeyEntry, IWalletDataV3 } from "../wallet_zod_versioning.js";
 import { createEmptyWalletData, migrateWalletData } from "../wallet_zod_versioning.js";
+
+// Local type alias — TBinaryBuffer is not exported from @hiveio/wax
+type TBinaryBuffer = ArrayBufferLike | ArrayBufferView | Uint8Array;
 
 /**
  * Storage encryption credentials - either a password to derive key from, or the derived WIF key itself
@@ -111,41 +114,51 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
   }
 
   private removeHiveRole (
-    walletData: IWalletDataV2,
+    walletData: IWalletDataV3,
     publicKey: TPublicKey,
     accountName?: string,
     role?: TRole
   ): void {
-    if (role) {
-      if (accountName)
-        if (walletData.hive.account !== accountName)
-          throw new Error(`Provided account name is different than found in storage.`)
+    if (accountName && role) {
+      // Remove specific role from specific account
+      const accountData = walletData.hive.accounts[accountName];
+      if (!accountData)
+        throw new Error(`No account ${accountName} found in storage.`);
 
-      const roleDef = walletData.hive.roleDefinitions[role];
-
+      const roleDef = accountData.roleDefinitions[role];
       if (!roleDef)
-        throw new Error(`No key found for role ${role} in storgae.`)
+        throw new Error(`No key found for role ${role} in storage.`)
 
       const rolePublicKey = this.mainWallet.wax.calculatePublicKey(roleDef.privateKey);
-
       if (rolePublicKey !== publicKey)
         throw new Error(`Provided public key ${publicKey} is different than found for role ${role}.`);
 
-      delete walletData.hive.roleDefinitions[role];
+      delete accountData.roleDefinitions[role];
+
+      // Remove account entry if no roles remain
+      if (Object.keys(accountData.roleDefinitions).length === 0)
+        delete walletData.hive.accounts[accountName];
     } else {
-      for (const role of Object.keys(walletData.hive.roleDefinitions)) {
-        const roleDef = walletData.hive.roleDefinitions[role];
+      // Search all accounts for matching public key
+      for (const [acct, acctData] of Object.entries(walletData.hive.accounts)) {
+        for (const r of Object.keys(acctData.roleDefinitions)) {
+          const roleDef = acctData.roleDefinitions[r as TRole];
+          if (!roleDef) continue;
 
-        const rolePublicKey = this.mainWallet.wax.calculatePublicKey(roleDef.privateKey);
+          const rolePublicKey = this.mainWallet.wax.calculatePublicKey(roleDef.privateKey);
+          if (rolePublicKey === publicKey)
+            delete acctData.roleDefinitions[r as TRole];
+        }
 
-        if (rolePublicKey === publicKey)
-          delete walletData.hive.roleDefinitions[role];
+        // Remove account entry if no roles remain
+        if (Object.keys(acctData.roleDefinitions).length === 0)
+          delete walletData.hive.accounts[acct];
       }
     }
   }
 
   private removeCustomKey (
-    walletData: IWalletDataV2,
+    walletData: IWalletDataV3,
     publicKey: TPublicKey,
     customAlias?: string
   ): void {
@@ -180,14 +193,14 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
     const walletData = await this.mainWallet.reloadStorageFile(false);
 
     if (typeof keyInfo === 'string') {
-      if (walletData.hive.roleDefinitions !== undefined)
-        this.removeHiveRole(walletData, keyInfo);
+      this.removeHiveRole(walletData, keyInfo);
 
       if (walletData.generalPurposeKeys !== undefined)
         this.removeCustomKey(walletData, keyInfo);
     } else if ('account' in keyInfo && 'role' in keyInfo) {
-      if (walletData.hive.account === keyInfo.account && walletData.hive.roleDefinitions !== undefined)
-        this.removeHiveRole(walletData, keyInfo.publicKey, keyInfo.account, keyInfo.role)
+      const accountData = walletData.hive.accounts[keyInfo.account];
+      if (accountData)
+        this.removeHiveRole(walletData, keyInfo.publicKey, keyInfo.account, keyInfo.role);
     } else if ('customAlias' in keyInfo) {
       if (walletData.generalPurposeKeys !== undefined)
         this.removeCustomKey(walletData, keyInfo.publicKey, keyInfo.customAlias);
@@ -204,7 +217,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
   }
 
   public async encryptData (buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
-    return await this.beekeeperProvider.encryptData(buffer, recipient);
+    return await this.beekeeperProvider.encryptData(buffer as string, recipient as TPublicKey);
   }
 
   public async decryptData (buffer: string): Promise<string> {
@@ -264,27 +277,40 @@ class ExternalWallet implements IExternalWallet {
     return wallet;
   }
 
-  public async loadForHiveKey(accountName: TAccountName, role: TRole): Promise<IExternalWalletContent> {
+  public async loadForHiveKey(accountName: TAccountName, role?: TRole): Promise<IExternalWalletContent> {
     const data = await this.reloadStorageFile(false);
 
-    if(data.hive.account !== accountName)
+    const accountData = data.hive.accounts[accountName];
+    if (!accountData)
       throw new WaxExternalSignatureProviderError(`No key found for account: ${accountName}`, undefined, 'KEY_NOT_FOUND');
 
-    if(data.hive.roleDefinitions[role] === undefined)
-      throw new WaxExternalSignatureProviderError(`No key found for account role: ${accountName}@${role}`, undefined, 'KEY_NOT_FOUND');
+    if (role !== undefined) {
+      if (accountData.roleDefinitions[role] === undefined)
+        throw new WaxExternalSignatureProviderError(`No key found for account role: ${accountName}@${role}`, undefined, 'KEY_NOT_FOUND');
 
-    const keyEntry = data.hive.roleDefinitions[role];
+      const keyEntry = accountData.roleDefinitions[role];
+      return await WalletContent.createForHiveRole(accountName, role, keyEntry, this);
+    }
 
-    return await WalletContent.createForHiveRole(accountName, role, keyEntry, this);
+    // No role specified — load first available role
+    const availableRoles = Object.keys(accountData.roleDefinitions) as TRole[];
+    if (availableRoles.length === 0)
+      throw new WaxExternalSignatureProviderError(`Account ${accountName} has no stored keys`, undefined, 'KEY_NOT_FOUND');
+
+    const firstRole = availableRoles[0];
+    const keyEntry = accountData.roleDefinitions[firstRole]!;
+    return await WalletContent.createForHiveRole(accountName, firstRole, keyEntry, this);
   }
 
   public async createForHiveKey(role: TRole, accountName: TAccountName, privateKey: string): Promise<IExternalWalletContent> {
     const data = await this.reloadStorageFile(true);
 
-    data.hive.account = accountName;
-    data.hive.roleDefinitions[role] = {privateKey};
+    if (!data.hive.accounts[accountName])
+      data.hive.accounts[accountName] = { roleDefinitions: {} };
 
-    const keyEntry = data.hive.roleDefinitions[role];
+    data.hive.accounts[accountName].roleDefinitions[role] = { privateKey };
+
+    const keyEntry = data.hive.accounts[accountName].roleDefinitions[role]!;
 
     await this.saveStorageFile(data);
 
@@ -316,6 +342,33 @@ class ExternalWallet implements IExternalWallet {
     return await WalletContent.createForCustomKey(customKeyAlias, keyEntry, this);
   }
 
+  public async enumStoredAccounts(): Promise<TAccountName[]> {
+    const data = await this.reloadStorageFile(false);
+    return Object.keys(data.hive.accounts);
+  }
+
+  public async enumStoredCustomKeys(): Promise<Array<{ customAlias: string; publicKey: TPublicKey; description?: string }>> {
+    const data = await this.reloadStorageFile(false);
+    const keys = data.generalPurposeKeys;
+    if (!keys)
+      return [];
+
+    const result: Array<{ customAlias: string; publicKey: TPublicKey; description?: string }> = [];
+    for (const [alias, entry] of Object.entries(keys)) {
+      const publicKey = entry.publicKey ?? this.wax.calculatePublicKey(entry.privateKey);
+      result.push({ customAlias: alias, publicKey, description: entry.description });
+    }
+    return result;
+  }
+
+  public async enumStoredRolesForAccount(accountName: TAccountName): Promise<TRole[]> {
+    const data = await this.reloadStorageFile(false);
+    const accountData = data.hive.accounts[accountName];
+    if (!accountData)
+      return [];
+    return Object.keys(accountData.roleDefinitions) as TRole[];
+  }
+
   public async close(): Promise<void> {
     if (this.isDisposed)
       return;
@@ -338,7 +391,7 @@ class ExternalWallet implements IExternalWallet {
     return this.encryptionKeyWif;
   }
 
-  public async reloadStorageFile (allowCreation: boolean): Promise<IWalletDataV2> {
+  public async reloadStorageFile (allowCreation: boolean): Promise<IWalletDataV3> {
     if (allowCreation) {
       if (await this.storageProvider.exists(this.fileName) === false)
         return await this.createStorageFile();
@@ -357,7 +410,7 @@ class ExternalWallet implements IExternalWallet {
     }
   }
 
-  public async saveStorageFile (data: IWalletDataV2): Promise<void> {
+  public async saveStorageFile (data: IWalletDataV3): Promise<void> {
     const rawData = JSON.stringify(data);
     const encrypted = this.storageEncryptor!.wallet.encryptData(rawData, this.storageEncryptionPublicKey);
     await this.storageProvider.save(this.fileName, encrypted);
@@ -367,8 +420,8 @@ class ExternalWallet implements IExternalWallet {
     await this.storageProvider.delete(this.fileName);
   }
 
-  public async createStorageFile (): Promise<IWalletDataV2> {
-    const newData = createEmptyWalletData('');
+  public async createStorageFile (): Promise<IWalletDataV3> {
+    const newData = createEmptyWalletData();
     await this.saveStorageFile(newData);
     return newData;
   }

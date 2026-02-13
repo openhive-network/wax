@@ -6,6 +6,7 @@ import { WaxExternalSignatureProviderError } from "./errors.js";
 export const DATA_FORMAT_VERSIONS = {
   V1: '1.0.0',
   V2: '2.0.0',
+  V3: '3.0.0',
 } as const;
 
 const ENCRYPTED_FORMAT_VERSIONS = {
@@ -16,7 +17,7 @@ const ENCRYPTED_FORMAT_VERSIONS = {
  * Current version of the wallet data format.
  * All new saved data will use this version
  */
-export const WALLET_DATA_FORMAT_VERSION = DATA_FORMAT_VERSIONS.V2;
+export const WALLET_DATA_FORMAT_VERSION = DATA_FORMAT_VERSIONS.V3;
 
 /**
  * Current version of the encrypted wallet wrapper format.
@@ -47,9 +48,20 @@ const HiveRoleAssociativeArray = strictDefinition({
     memo: KeyEntrySchema.optional(),
   });
 
+// V1/V2: Single-account hive authority
 const HiveAuthorityCategory = strictDefinition({
   account: z.string(),
   roleDefinitions: HiveRoleAssociativeArray
+});
+
+// V3: Per-account data (roleDefinitions only, account name is the map key)
+const HiveAccountData = strictDefinition({
+  roleDefinitions: HiveRoleAssociativeArray
+});
+
+// V3: Multi-account hive authority (accounts keyed by name)
+const HiveMultiAccountCategory = strictDefinition({
+  accounts: z.record(z.string(), HiveAccountData)
 });
 
 // Version 1.0.0 schema - involves basic Hive roles and their data
@@ -58,15 +70,23 @@ const WalletDataV1Schema = strictDefinition({
   hive: HiveAuthorityCategory
 });
 
-// Future version example - Version 2.0.0 (with key storage for general purpose application/chain)
+// Version 2.0.0 (with key storage for general purpose application/chain)
 const WalletDataV2Schema = WalletDataV1Schema.extend({
   version: z.literal(DATA_FORMAT_VERSIONS.V2),
   generalPurposeKeys: z.record(z.string(), KeyEntrySchema).optional()
 }).strict();
 
+// Version 3.0.0 - multi-account support (accounts keyed by name)
+const WalletDataV3Schema = strictDefinition({
+  version: z.literal(DATA_FORMAT_VERSIONS.V3),
+  hive: HiveMultiAccountCategory,
+  generalPurposeKeys: z.record(z.string(), KeyEntrySchema).optional()
+});
+
 // Union of all versions
 const WalletDataSchema = z.union([
-  WalletDataV2Schema, // Try newest first
+  WalletDataV3Schema, // Try newest first
+  WalletDataV2Schema,
   WalletDataV1Schema,
 ]);
 
@@ -94,9 +114,11 @@ const StorageDataSchema = z.union([
 // TypeScript types inferred from Zod schemas
 export type IWalletKeyEntry = z.infer<typeof KeyEntrySchema>;
 export type IWalletHiveAuthorityCategory = z.infer<typeof HiveAuthorityCategory>;
+export type IWalletHiveAccountData = z.infer<typeof HiveAccountData>;
 
 export type IWalletDataV1 = z.infer<typeof WalletDataV1Schema>;
 export type IWalletDataV2 = z.infer<typeof WalletDataV2Schema>;
+export type IWalletDataV3 = z.infer<typeof WalletDataV3Schema>;
 
 /**
  * Wallet data structure stored by ExternalSignatureProvider
@@ -117,7 +139,12 @@ export type IStorageData = z.infer<typeof StorageDataSchema>;
 
 // Automatic version detection and parsing
 export const parseWalletData = (data: unknown): IWalletData => {
-  // Try V2 first (newest)
+  // Try V3 first (newest)
+  const v3Result = WalletDataV3Schema.safeParse(data);
+  if (v3Result.success)
+    return v3Result.data;
+
+  // Try V2
   const v2Result = WalletDataV2Schema.safeParse(data);
   if (v2Result.success)
     return v2Result.data;
@@ -125,13 +152,12 @@ export const parseWalletData = (data: unknown): IWalletData => {
   // Try V1
   const v1Result = WalletDataV1Schema.safeParse(data);
   if (v1Result.success)
-    return v1Result.data; /// TODO maybe try to do immediate migration to V2 format?
+    return v1Result.data;
 
   // If no version matches, throw detailed error
   const finalResult = WalletDataSchema.safeParse(data);
   if (!finalResult.success) {
     throw new WaxExternalSignatureProviderError(
-      /// TODO error msg seems to be broken somehow
       `Failed to parse wallet data: ${z.prettifyError(finalResult.error)}`
     );
   }
@@ -139,15 +165,36 @@ export const parseWalletData = (data: unknown): IWalletData => {
   throw new Error(`Unknown wallet data version. Got data: ${JSON.stringify(finalResult.data)}`);
 }
 
-export const migrateWalletData = (data: unknown): IWalletDataV2 => {
+/**
+ * Migrates wallet data from any older version to V3 format.
+ * V1 → V3: Converts single-account hive structure to multi-account map, adds empty generalPurposeKeys.
+ * V2 → V3: Converts single-account hive structure to multi-account map, preserves generalPurposeKeys.
+ */
+export const migrateWalletData = (data: unknown): IWalletDataV3 => {
   const parsedData = parseWalletData(data);
 
-  if(parsedData.version == DATA_FORMAT_VERSIONS.V2)
+  if (parsedData.version === DATA_FORMAT_VERSIONS.V3)
     return parsedData;
 
-  const migratedData = {...parsedData,
-     version: DATA_FORMAT_VERSIONS.V2,
-     generalPurposeKeys: {}};
+  // V1 or V2 — both have single-account hive structure
+  const singleAccountData = parsedData as IWalletDataV1 | IWalletDataV2;
+  const accounts: Record<string, IWalletHiveAccountData> = {};
+
+  // Only add account entry if account name is non-empty
+  if (singleAccountData.hive.account) {
+    accounts[singleAccountData.hive.account] = {
+      roleDefinitions: singleAccountData.hive.roleDefinitions
+    };
+  }
+
+  const migratedData: IWalletDataV3 = {
+    version: DATA_FORMAT_VERSIONS.V3,
+    hive: { accounts },
+    generalPurposeKeys: ('generalPurposeKeys' in singleAccountData
+      ? singleAccountData.generalPurposeKeys
+      : undefined) ?? {}
+  };
+
   return migratedData;
 }
 
@@ -191,25 +238,23 @@ export const isEncryptedWallet = (data: unknown): boolean => {
 }
 
 /**
- * Creates an empty wallet data structure in V2 format
+ * Creates an empty wallet data structure in V3 format
  *
- * @param accountName - The Hive account name for the wallet
- * @returns Empty wallet data structure in V2 format
+ * @returns Empty wallet data structure in V3 format
  */
-export const createEmptyWalletData = (accountName: string): IWalletDataV2 => {
+export const createEmptyWalletData = (): IWalletDataV3 => {
   return {
     version: WALLET_DATA_FORMAT_VERSION,
     hive: {
-      account: accountName,
-      roleDefinitions: {}
+      accounts: {}
     }
   };
 };
 
 /**
- * Updates wallet data with a new role key entry
+ * Updates wallet data with a new role key entry for a specific account
  * If the wallet file doesn't exist or is empty, creates a new wallet data structure
- * If the wallet exists, merges the new role while preserving other roles
+ * If the wallet exists, merges the new role while preserving other accounts and roles
  *
  * @param existingData - Existing wallet data (undefined if wallet doesn't exist)
  * @param accountName - The Hive account name
@@ -224,18 +269,17 @@ export const updateWalletRole = (
   role: 'posting' | 'active' | 'owner' | 'memo',
   privateKey: string,
   publicKey?: string
-): IWalletDataV2 => {
-  const walletData: IWalletDataV2 = existingData
-    ? (existingData.version === WALLET_DATA_FORMAT_VERSION
-        ? existingData as IWalletDataV2
-        : {
-            version: WALLET_DATA_FORMAT_VERSION,
-            hive: existingData.hive
-          })
-    : createEmptyWalletData(accountName);
+): IWalletDataV3 => {
+  const walletData: IWalletDataV3 = existingData
+    ? migrateWalletData(existingData)
+    : createEmptyWalletData();
+
+  // Ensure account entry exists
+  if (!walletData.hive.accounts[accountName])
+    walletData.hive.accounts[accountName] = { roleDefinitions: {} };
 
   // Update the specific role
-  walletData.hive.roleDefinitions[role] = {
+  walletData.hive.accounts[accountName].roleDefinitions[role] = {
     privateKey,
     ...(publicKey && { publicKey })
   };
@@ -244,26 +288,31 @@ export const updateWalletRole = (
 };
 
 /**
- * Removes a role key entry from wallet data
+ * Removes a role key entry from wallet data for a specific account
  *
  * @param existingData - Existing wallet data
+ * @param accountName - The Hive account name
  * @param role - The role to remove (posting, active, owner, memo)
  * @returns Updated wallet data structure with the role removed
  */
 export const removeWalletRole = (
   existingData: IWalletData,
+  accountName: string,
   role: 'posting' | 'active' | 'owner' | 'memo'
-): IWalletDataV2 => {
-  const walletData: IWalletDataV2 = existingData.version === WALLET_DATA_FORMAT_VERSION
-    ? { ...existingData as IWalletDataV2 }
-    : {
-        version: WALLET_DATA_FORMAT_VERSION,
-        hive: { ...existingData.hive }
-      };
+): IWalletDataV3 => {
+  const walletData = migrateWalletData(existingData);
+
+  const accountData = walletData.hive.accounts[accountName];
+  if (!accountData)
+    return walletData;
 
   // Create new roleDefinitions without the specified role
-  const { [role]: _removed, ...remainingRoles } = walletData.hive.roleDefinitions;
-  walletData.hive.roleDefinitions = remainingRoles;
+  const { [role]: _removed, ...remainingRoles } = accountData.roleDefinitions;
+  accountData.roleDefinitions = remainingRoles;
+
+  // Remove account entry if no roles remain
+  if (Object.keys(accountData.roleDefinitions).length === 0)
+    delete walletData.hive.accounts[accountName];
 
   return walletData;
 };
