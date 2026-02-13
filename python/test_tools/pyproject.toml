@@ -15,7 +15,7 @@ authors = ["Piotr Batko <pbatko@syncad.com>"]
 readme = "readme.md"
 repository = "https://gitlab.syncad.com/hive/wax"
 source = [
-    { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple", priority = "primary" },
+    { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple", priority = "supplemental" },
 ]
 packages = [
     { include = "test_tools" },
