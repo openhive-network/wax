@@ -724,7 +724,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "1.28.4rc0.post20260206092310.dev0+unstable.dirty"
+version = "0.0.0"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
