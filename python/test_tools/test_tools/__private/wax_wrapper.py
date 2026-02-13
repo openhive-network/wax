@@ -6,22 +6,26 @@ from typing import TYPE_CHECKING, Any
 from schemas.fields.assets import AssetHive
 from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.hive_int import HiveInt
+
+# Import wrapped functions from wax public API (handles subclass conversions internally)
+from wax import calculate_legacy_sig_digest as wax_calculate_legacy_sig_digest
+from wax import calculate_public_key as wax_calculate_public_key
+from wax import calculate_sig_digest as wax_calculate_sig_digest
 from wax import create_wax_foundation
+from wax import encode_encrypted_memo as wax_encode_encrypted_memo
+from wax import get_hive_protocol_config as wax_get_hive_protocol_config
+from wax import get_tapos_data as wax_get_tapos_data
 from wax._private.result_tools import (
     expose_result_as_python_string,
     validate_wax_result,
 )
-from wax.cpp_python_bridge import calculate_legacy_sig_digest as wax_calculate_legacy_sig_digest
+
+# Import raw functions from cpp_python_bridge (no subclass handling needed for these)
 from wax.cpp_python_bridge import calculate_legacy_transaction_id as wax_calculate_legacy_transaction_id
-from wax.cpp_python_bridge import calculate_public_key as wax_calculate_public_key
-from wax.cpp_python_bridge import calculate_sig_digest as wax_calculate_sig_digest
 from wax.cpp_python_bridge import calculate_transaction_id as wax_calculate_transaction_id
 from wax.cpp_python_bridge import collect_signing_keys as wax_collect_signing_keys
 from wax.cpp_python_bridge import decode_encrypted_memo as wax_decode_encrypted_memo
-from wax.cpp_python_bridge import encode_encrypted_memo as wax_encode_encrypted_memo
 from wax.cpp_python_bridge import generate_password_based_private_key as wax_generate_password_based_private_key
-from wax.cpp_python_bridge import get_hive_protocol_config as wax_get_hive_protocol_config
-from wax.cpp_python_bridge import get_tapos_data as wax_get_tapos_data
 from wax.cpp_python_bridge import minimize_required_signatures as wax_minimize_required_signatures
 from wax.cpp_python_bridge import validate_transaction as wax_validate_transaction
 from wax.wax_result import (
@@ -221,7 +225,7 @@ def calculate_legacy_sig_digest(transaction: Transaction, chain_id: str) -> str:
 
 
 def get_hive_protocol_config(chain_id: str) -> dict[str, str]:
-    return dict(wax_get_hive_protocol_config(chain_id).items())
+    return wax_get_hive_protocol_config(chain_id)
 
 
 def minimize_required_signatures(
@@ -251,7 +255,7 @@ def minimize_required_signatures(
         transaction.json(),
         minimize_required_signatures_data=python_minimize_required_signatures_data(
             chain_id=chain_id,
-            available_keys=list(available_keys),
+            available_keys=[str(key) for key in available_keys],
             authorities_map=retrived_authorities,
             get_witness_key=get_witness_key,
         ),

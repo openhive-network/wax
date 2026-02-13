@@ -421,7 +421,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         retrived_authorities: dict[str, wax_authorities] = {}
 
         def retrieve_authorities(account_names: list[str]) -> dict[str, wax_authorities]:
-            accounts = self._force_connected_node.api.wallet_bridge.get_accounts(list(account_names))
+            accounts = self._force_connected_node.api.wallet_bridge.get_accounts(account_names)
             retrived_authoritity = {acc.name: to_wax_authorities(acc) for acc in accounts}
             retrived_authorities.update(retrived_authoritity)
             return retrived_authoritity
