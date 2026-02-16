@@ -768,13 +768,13 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.6rc6.post20260216120144"
+version = "1.28.6rc6.post20260216224753"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.6rc6.post20260216120144-py3-none-any.whl", hash = "sha256:6b28759aef3a996a737549e00da2894f0428e6535dd3e8b4abf934146331d6bf"},
+    {file = "hiveio_api-1.28.6rc6.post20260216224753-py3-none-any.whl", hash = "sha256:e4a14fcf782d8040fd8c7ba88b2581b6fe42b36fd37447ce2a414e0fa84e2669"},
 ]
 
 [package.dependencies]
