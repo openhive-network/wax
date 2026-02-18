@@ -580,7 +580,6 @@ test_helpy:
   stage: build
   before_script:
     - !reference [.runtime_like_python_env, before_script]
-    - poetry -C "${PYPROJECT_DIR}" lock --no-update 2>/dev/null || poetry -C "${PYPROJECT_DIR}" lock  # regenerate lock if needed
     - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
     - pip list
 
