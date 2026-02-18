@@ -29,7 +29,7 @@ abstractcp = ">=0.9.9"
 msgspec = ">=0.20.0"
 loguru = ">=0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = ">=1.28.5"
+hiveio-beekeepy = {version = ">=1.28.5", allow-prereleases = true, source = "gitlab-hive"}
 hiveio-schemas = ">=1.28.1"
 
 
