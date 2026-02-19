@@ -4,7 +4,7 @@
 
 from libcpp.string cimport string
 
-from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol
 from cython_modules_common import encode_str, decode_bytes
 from wax.wax_result import python_result, python_private_key_data, python_brain_key_data
 

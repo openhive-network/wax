@@ -7,7 +7,7 @@ from libcpp.vector cimport vector
 
 import json
 
-from cython_modules_common cimport protocol, binary_data, binary_data_node, convert_binary_data_node_to_python, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol, binary_data, binary_data_node, convert_binary_data_node_to_python
 from cython_modules_common import encode_str, decode_bytes, decode_list
 from cython_modules_handles cimport WaxTransactionHandle, WaxOperationHandle, _create_wax_transaction, _handle_deserialize_transaction
 from wax.wax_result import python_result, python_binary_data

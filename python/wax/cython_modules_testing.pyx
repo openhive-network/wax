@@ -2,7 +2,7 @@
 # distutils: language = c++
 # Testing-related functions - exception handling verification
 
-from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol
 
 # Include shared decorators (these are def functions, cannot be cimported)
 include "_decorators.pxi"

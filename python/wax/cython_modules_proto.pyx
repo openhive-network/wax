@@ -7,7 +7,7 @@ from libcpp.vector cimport vector
 
 import json
 
-from cython_modules_common cimport protocol, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol
 from cython_modules_common import encode_str, decode_bytes, decode_list
 from cython_modules_handles cimport WaxTransactionHandle, WaxOperationHandle, _create_wax_transaction, _create_wax_operation, _handle_deserialize_transaction
 from cython_modules_validation cimport _op_impacted_accounts, _op_validate, _tx_impacted_accounts, _tx_validate, _tx_id, _tx_sig_digest

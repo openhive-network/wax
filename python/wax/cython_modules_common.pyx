@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 # distutils: language = c++
 # Common module - exception handling and shared cdef utilities
-#
-# NOTE: Decorators (call_with_exception_relay, return_python_*, etc.) and
-# raise_appropriate_wax_exception are defined in _decorators.pxi and included
-# by each module that needs them. This avoids runtime imports between modules
-# (which would fail since all modules compile to a single .so file).
 
 import json
 
@@ -21,11 +16,7 @@ from cython_modules_common cimport (
     wrapped_exception_ptr_from_exception,
 )
 
-from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
 from wax.wax_result import python_binary_data_node
-
-# Include shared decorators and raise_appropriate_wax_exception
-include "_decorators.pxi"
 
 
 # String conversion helpers for Cython 3.1.3

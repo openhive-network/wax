@@ -4,7 +4,7 @@
 
 from libc.stdint cimport uint16_t, uint32_t, uint64_t
 
-from cython_modules_common cimport protocol, json_asset, json_price, hive_exception_data, exception_ptr, wrapped_exception_ptr_from_exception
+from cython_modules_common cimport protocol, json_asset, json_price
 from cython_modules_common import encode_str
 from wax.wax_result import (
     python_result,
