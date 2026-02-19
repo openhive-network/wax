@@ -34,6 +34,8 @@ from .wax_error import (
 )
 from .wax_specialised_errors import (
     WaxBaseAssertionError as WaxAssertionError,
+)
+from .wax_specialised_errors import (
     WaxChainAssertionError,
     WaxProtocolAssertionError,
 )

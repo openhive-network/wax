@@ -189,14 +189,6 @@ class WaxProtocolAssertionError(WaxBaseAssertionError):
     """
 
 
-def ensure_bytes(input_data: Any) -> bytes:  # noqa: ANN401
-    if isinstance(input_data, bytes):
-        return input_data
-    if isinstance(input_data, str):
-        return input_data.encode("utf-8")
-    return ensure_bytes(str(input_data))
-
-
 def is_python_result_return(func: Callable[..., Any]) -> bool:
     """Check if the function return type is python_result."""
     with contextlib.suppress(NameError):
