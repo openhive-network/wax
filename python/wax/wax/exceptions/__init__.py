@@ -29,10 +29,12 @@ from .validation_errors import (
     WaxValidationFailedError,
 )
 from .wax_error import (
-    WaxAssertionError,
-    WaxChainAssertionError,
     WaxError,
     WaxImportProtoBeforeCompileError,
+)
+from .wax_specialised_errors import (
+    WaxBaseAssertionError as WaxAssertionError,
+    WaxChainAssertionError,
     WaxProtocolAssertionError,
 )
 
