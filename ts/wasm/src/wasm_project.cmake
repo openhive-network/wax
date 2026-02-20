@@ -26,10 +26,12 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
   # Override common options specific to exception handling for **WHOLE SET OF HIVE SPECIFIC MODULES**
   TARGET_COMPILE_OPTIONS( CommonBuildOptions INTERFACE
     -Oz
+    -flto
     -fwasm-exceptions
   )
   TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE
     -Oz
+    -flto
     -fwasm-exceptions
     -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
     -sEXCEPTION_STACK_TRACES=1
