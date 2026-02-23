@@ -47,6 +47,8 @@ variables:
   # Base image from common-ci-configuration (used to build wax ci-base-image)
   # uses registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-1, in future update tag to smth like :pypa_2_28-1
   COMMON_CI_BASE_IMAGE_TAG: "394fc42bc7bf7deefa89792959de34f16c9e681b"
+  # Temporary: use commit hash to bypass stale runner cache (pypa_2_28-2 was overwritten by feature branch)
+  PYTHON_IMAGE_TAG: ":394fc42bc7bf7deefa89792959de34f16c9e681b"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
   CI_BASE_IMAGE_TAG: "pypa_2_28-12"
