@@ -286,6 +286,24 @@ verify_test_tools_poetry_lock_stability:
   tags:
     - public-runner-docker
 
+verify_local_tools_poetry_lock_stability:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_stability_template
+  needs: []
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/python/tests/local-tools"
+  tags:
+    - public-runner-docker
+
+verify_examples_poetry_lock_stability:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_stability_template
+  needs: []
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/examples/python"
+  tags:
+    - public-runner-docker
+
 push_to_wiki:
   extends: .npm_push_doc_template
   stage: deploy
