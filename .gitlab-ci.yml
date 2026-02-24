@@ -106,7 +106,7 @@ generate_hived_flattened_openapi_definition:
 
 # Build hiveio-api package (build only, test and deploy in later stages)
 hiveio_api_package:
-  extends: .build_wheel_template
+  extends: .hiveio_api_package_template
   stage: build
   variables:
     HIVE_PROJECT_ROOT: "${CI_PROJECT_DIR}/hive"
@@ -117,7 +117,6 @@ hiveio_api_package:
   needs:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
-  extends: .hiveio_api_package_template
   # Override after_script to export HIVEIO_API_WHEEL_BUILD_VERSION instead of WHEEL_BUILD_VERSION
   # The parent template's after_script would overwrite build_wheel.env with wrong version
   after_script:
