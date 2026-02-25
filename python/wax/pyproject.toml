@@ -32,36 +32,36 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4"
-protobuf = ">=6.33.0"
-httpx = {extras = ["http2"], version = ">=0.23.3"}
-loguru = ">=0.7.2"
-python-dateutil = ">=2.8.2"
-requests = ">=2.32.3"
-typing-extensions = ">=4.0.0"
-hiveio-api = ">=1.28.5"
-hiveio-beekeepy = ">=1.28.5"
+protobuf = "^6.33.0"
+httpx = {extras = ["http2"], version = "^0.23.3"}
+loguru = "^0.7.2"
+python-dateutil = "^2.8.2"
+requests = "^2.32.3"
+typing-extensions = "^4.0.0"
+hiveio-api = "^1.28.5"
+hiveio-beekeepy = "^1.28.5"
 
 [tool.poetry.group.static-analysis.dependencies]
-mypy = ">=1.11.2"
-mypy-protobuf = ">=3.5.0"
-pre-commit = ">=2.21.0"
-ruff = ">=0.11.5"
-types-setuptools = ">=67.8.0"
-types-python-dateutil = ">=2.8.19.14"
-types-protobuf = ">=5.29.1.20241207"
-grpc-stubs = ">=1.53.0.2"
+mypy = "^1.11.2"
+mypy-protobuf = "^3.5.0"
+pre-commit = "^2.21.0"
+ruff = "^0.11.5"
+types-setuptools = "^76.0.0"
+types-python-dateutil = "^2.8.19"
+types-protobuf = "^5.29.1"
+grpc-stubs = "^1.53.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=8.3.5"
-pytest-asyncio = ">=0.25.3"
-pytest-xdist = ">=3.6.1"
-grpcio = ">=1.76.0"
-grpcio-tools = ">=1.76.0"
+pytest = "^8.3.5"
+pytest-asyncio = "^0.25.3"
+pytest-xdist = "^3.6.1"
+grpcio = "^1.76.0"
+grpcio-tools = "^1.76.0"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs = ">=1.6.1"
-mkdocstrings-python = ">=1.16.11"
-mkdocs-material = ">=9.6.14"
+mkdocs = "^1.6.1"
+mkdocstrings-python = "^1.16.11"
+mkdocs-material = "^9.6.14"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
