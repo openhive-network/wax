@@ -44,7 +44,7 @@ hiveio-beekeepy = "^1.28.5"
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"
 mypy-protobuf = "^3.5.0"
-pre-commit = "^2.21.0"
+pre-commit = "^4.0.0"
 ruff = "^0.11.5"
 types-setuptools = "^76.0.0"
 types-python-dateutil = "^2.8.19"
