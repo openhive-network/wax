@@ -52,13 +52,8 @@ variables:
   CI_BASE_IMAGE_TAG: "pypa_2_28-12"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
-  # PIP INDEX URL's
-  FIRST_INDEX: "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
-  SECOND_INDEX: "https://gitlab.syncad.com/api/v4/projects/558/packages/pypi/simple"
-  THIRD_INDEX: "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
-  FIRST_PARTY_EXTRA_INDEX_ARGS: |
-    --extra-index-url https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple
+  HIVE_PYPI_INDEX: "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 
   # colors:
   TXT_BLUE: "\e[1;34m"
@@ -253,7 +248,7 @@ pre_commit_checks:
     - poetry -C "${PYPROJECT_DIR}" install --no-root
     # Install wax wheel so mypy-test-tools can resolve wax imports
     - PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
-    - pip install --extra-index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX ${WAX_DIR}/dist/*-${PYTHON_TAG}-*.whl
+    - pip install --extra-index-url $HIVE_PYPI_INDEX ${WAX_DIR}/dist/*-${PYTHON_TAG}-*.whl
     # Install test-tools (--no-deps to avoid rebuilding wax from path dependency)
     - pip install --no-deps "${TEST_TOOLS_DIR}"
     # Remove wax path dependency from lock and install remaining test-tools dependencies
@@ -323,7 +318,7 @@ push_to_wiki:
         exit 1
       fi
       echo "Installing wheel: $WHEEL_FILE"
-      pip install --index-url $FIRST_INDEX --extra-index-url $SECOND_INDEX --extra-index-url $THIRD_INDEX "$WHEEL_FILE"
+      pip install --extra-index-url $HIVE_PYPI_INDEX "$WHEEL_FILE"
     - pip list
   tags:
     - public-runner-docker
@@ -369,7 +364,7 @@ test_installing_wax_from_registry:
     - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
     - python3 --version
     - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
-    - pip3 install $FIRST_PARTY_EXTRA_INDEX_ARGS "hiveio-wax==${WHEEL_BUILD_VERSION}"
+    - pip3 install --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
     - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
   tags:
