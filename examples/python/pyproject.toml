@@ -19,4 +19,4 @@ source = [
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4"
-hiveio-wax = ">=2.0.1"
+hiveio-wax = "^2.0.1"
