@@ -856,7 +856,9 @@ test_tools_unit_tests:
       junit: $CI_PROJECT_DIR/test_tools_unit_report.xml
 
 test_tools_hived_handle:
-  extends: .test_tools_test_env
+  extends:
+    - .test_tools_test_env
+    - .python_test_matrix
   needs:
     - job: test_tools_unit_tests
     - job: deploy_wheel_to_gitlab
