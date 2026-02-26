@@ -39,7 +39,6 @@ python-dateutil = "^2.8.2"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"
 hiveio-api = "^1.28.5"
-hiveio-beekeepy = "^1.28.5"
 
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"
