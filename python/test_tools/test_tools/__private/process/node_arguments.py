@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import Any, Literal, Self, overload
 
 from beekeepy.handle.runnable import Arguments
 from beekeepy.interfaces import HttpUrl, P2PUrl, Url, WsUrl
 
 from schemas.base import field
 from test_tools.__private.process.node_commons import PathQuoted, QuotedMarker, StringQuoted, UniqueList
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 BacktraceAllowedValues = Literal["yes", "no"]
 SinkAllowedValues = Literal["STDERR", "STDOUT", "WLOG", "ELOG", "DLOG", "ILOG"]

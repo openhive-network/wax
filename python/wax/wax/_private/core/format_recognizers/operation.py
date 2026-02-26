@@ -5,11 +5,12 @@ from functools import singledispatch
 from typing import TYPE_CHECKING, Any
 
 from google.protobuf.message import Message
-from typing_extensions import TypeIs
 
 from wax.exceptions.validation_errors import InvalidOperationFormatError
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeIs
+
     from wax.models.operations import Operation, ProtocolOperation
 
 

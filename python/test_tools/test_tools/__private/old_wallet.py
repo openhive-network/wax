@@ -13,8 +13,7 @@ import signal
 import subprocess
 import warnings
 from argparse import ArgumentParser
-from typing import TYPE_CHECKING, Final, Literal, Any
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Final, Literal, Self
 from loguru import logger
 
 from test_tools.__private import communication, paths_to_executables

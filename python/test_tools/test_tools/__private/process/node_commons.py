@@ -2,13 +2,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, get_args
+from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, get_args
 
 from schemas.base import convert
 from schemas.fields.resolvables import Resolvable
-
-if TYPE_CHECKING:
-    from typing_extensions import Self
 
 if TYPE_CHECKING:
     BacktraceAllowedValues = Literal["yes", "no"]

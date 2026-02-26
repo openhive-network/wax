@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING, Callable, Final
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Callable, Final, Self
 
 from wax._private.core.not_yet_initialized import NotYetInitialized
 from wax.complex_operations.role_classes.level_base import LevelBase, TRole
