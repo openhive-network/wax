@@ -25,9 +25,11 @@ hiveio-wax = { path = "../../wax", develop = true }
 hiveio-test-tools = { path = "../../test_tools", develop = true }
 
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"
+ruff = "^0.15.0"
+
+[tool.poetry.group.dev.dependencies]
 pytest = "^9.0.2"
 pytest-asyncio = "^1.3.0"
 pytest-xdist = "^3.6.1"
-ruff = "^0.15.0"
