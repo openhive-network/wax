@@ -44,16 +44,18 @@ ENV OPENSSL_ROOT_DIR=/usr/local
 ENV OPENSSL_INCLUDE_DIR=/usr/local/include
 
 # Build static zlib with -fPIC for wheel portability
+# Using GitHub releases instead of zlib.net - zlib.net removes old versions causing 404s
+ARG ZLIB_VERSION=1.3.1
 RUN <<-EOF
   set -e
   cd /tmp
-  curl -fLO https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz
-  tar xzf zlib-1.3.1.tar.gz
-  cd zlib-1.3.1
+  curl -fLO https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz
+  tar xzf zlib-${ZLIB_VERSION}.tar.gz
+  cd zlib-${ZLIB_VERSION}
   CFLAGS="-fPIC" ./configure --static --prefix=/usr/local
   make -j$(nproc)
   make install
-  cd /tmp && rm -rf zlib-1.3.1 zlib-1.3.1.tar.gz
+  cd /tmp && rm -rf zlib-${ZLIB_VERSION} zlib-${ZLIB_VERSION}.tar.gz
 EOF
 
 # Build static bzip2 with -fPIC for wheel portability
