@@ -33,11 +33,11 @@ repos:
       - id: poetry-lock
         name: checking if wax poetry.lock is consistent with pyproject.toml
         args: [ "-C", "./python/wax"]
-        language_version: python3.14
+        language_version: python3.12
       - id: poetry-lock
         name: checking if test-tools poetry.lock is consistent with pyproject.toml
         args: [ "-C", "./python/test_tools"]
-        language_version: python3.14
+        language_version: python3.12
   - repo: local
     hooks:
       - id: ruff
