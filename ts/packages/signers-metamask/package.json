@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hiveio/wax": "workspace:../..",
-    "@metamask/providers": "^21.0.0"
+    "@metamask/providers": "^22.0.0"
   },
   "files": [
     "dist/index.d.ts",
