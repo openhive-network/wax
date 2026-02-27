@@ -2,8 +2,8 @@
 requires = [
     "poetry-core==2.1.3",
     "cython==3.1.3",
-    "setuptools>=67.8.0",
-    "poetry-dynamic-versioning>=0.22.0"
+    "setuptools==77.0.3",
+    "poetry-dynamic-versioning==1.9.1",
 ]
 build-backend = "poetry_dynamic_versioning.backend"
 
@@ -25,6 +25,9 @@ source = [
     { name = "PyPI", priority = "primary" },
     { name = "gitlab-hive", url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple", priority = "primary" },
 ]
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = "1.9.1", extras = ["plugin"] }
 
 [tool.poetry.build]
 script = "build.py"
