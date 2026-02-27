@@ -22,6 +22,9 @@ node "${API_GENERATION_DIR}/flatten_swagger.js" "${APIS_DIR}/documentation/opena
 HIVEIO_API_DIR="${API_GENERATION_DIR}/hiveio_api"
 poetry -C "${HIVEIO_API_DIR}" build --format wheel
 
+# Workaround: installs plugins from [tool.poetry.requires-plugins] without installing project dependencies.
+# See: https://github.com/python-poetry/poetry/issues/9990#issuecomment-2737176168
+poetry -C "${HIVEIO_API_DIR}" install --dry-run
 HIVEIO_API_WHEEL_BUILD_VERSION=$(poetry -C "${HIVEIO_API_DIR}" version -s)
 
 echo "HIVEIO_API_WHEEL_BUILD_VERSION=${HIVEIO_API_WHEEL_BUILD_VERSION}" >> "${WAX_PROJECT_DIR}/build_wheel.env"
