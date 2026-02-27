@@ -11,7 +11,7 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 37aa0a0337ac9de4dcaaf90f9bf69685c9797226
+    ref: 4c97da098a4ceb7b343a708bb3b7b4e6474f3e26
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -45,11 +45,10 @@ variables:
   # Single image supports multiple Python versions via PYTHON_VERSION variable.
 
   # Base image from common-ci-configuration (used to build wax ci-base-image)
-  # uses registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-1, in future update tag to smth like :pypa_2_28-1
-  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-2"
+  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-4"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
-  CI_BASE_IMAGE_TAG: "pypa_2_28-12"
+  CI_BASE_IMAGE_TAG: "pypa_2_28-13"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
