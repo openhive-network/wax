@@ -114,17 +114,17 @@ json_asset foundation::cpp_general_asset(const uint32_t asset_num, const int64_t
 
 json_asset foundation::cpp_hive(const int64_t amount)const
 {
-  return to_json_asset(hive::protocol::HIVE_asset{ amount });
+  return to_json_asset(hive::protocol::HIVE_asset( amount ).to_asset());
 }
 
 json_asset foundation::cpp_hbd(const int64_t amount)const
 {
-  return to_json_asset(hive::protocol::HBD_asset{ amount });
+  return to_json_asset(hive::protocol::HBD_asset( amount ).to_asset());
 }
 
 json_asset foundation::cpp_vests(const int64_t amount)const
 {
-  return to_json_asset(hive::protocol::VEST_asset{ amount });
+  return to_json_asset(hive::protocol::VEST_asset( amount ).to_asset());
 }
 
 
@@ -881,7 +881,7 @@ json_asset foundation::cpp_evaluate_hbd_interest( const uint64_t hbd_seconds_low
 {
   return cpp::safe_exception_wrapper([&]() -> json_asset {
     fc::uint128_t hbd_seconds = fc::to_uint128(hbd_seconds_high, hbd_seconds_low);
-    hive::protocol::asset _hbd = to_asset(hbd);
+    hive::protocol::HBD_asset _hbd( to_asset(hbd) );
     fc::time_point_sec _head_block_time = fc::time_point_sec(head_block_time);
     fc::time_point_sec _hbd_seconds_last_update = fc::time_point_sec(hbd_seconds_last_update);
     fc::uint128_t interest = hive::protocol::hbd_interest::evaluate_hbd_interest(&hbd_seconds, _head_block_time, _hbd, _hbd_seconds_last_update, hbd_interest_rate, true);
