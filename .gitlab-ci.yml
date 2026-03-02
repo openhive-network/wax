@@ -11,7 +11,7 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 4c97da098a4ceb7b343a708bb3b7b4e6474f3e26
+    ref: 115144d4fd516f84c292266079c7dbb2abb4d04b
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
@@ -34,6 +34,8 @@ variables:
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
+  # Use commit-based tag for emsdk image with Playwright 1.58.2 (will become 4.0.22-7 after merge to develop)
+  EMSCRIPTEN_IMAGE_TAG: "115144d4fd516f84c292266079c7dbb2abb4d04b"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
