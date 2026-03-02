@@ -15,12 +15,12 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@playwright/test": "1.57.0",
+    "@playwright/test": "1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "playwright": "1.57.0",
+    "playwright": "1.58.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
