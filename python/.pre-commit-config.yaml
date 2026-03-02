@@ -38,16 +38,18 @@ repos:
         name: checking if test-tools poetry.lock is consistent with pyproject.toml
         args: [ "-C", "./python/test_tools"]
         language_version: python3.14
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.6.5'
+  - repo: local
     hooks:
       - id: ruff
         name: linting code with Ruff
-        args: [ "--fix" ]
+        entry: ruff check --force-exclude --fix
+        language: system
+        types: [python]
       - id: ruff-format
         name: format code using Ruff formatter
-  - repo: local
-    hooks:
+        entry: ruff format --force-exclude
+        language: system
+        types: [python]
       - id: mypy-wax
         name: type check wax with mypy
         entry: mypy
