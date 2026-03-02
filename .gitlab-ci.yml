@@ -317,7 +317,7 @@ push_to_wiki:
         exit 1
       fi
       echo "Installing wheel: $WHEEL_FILE"
-      pip install --extra-index-url $HIVE_PYPI_INDEX "$WHEEL_FILE"
+      pip install --no-deps "$WHEEL_FILE"
     - pip list
   tags:
     - public-runner-docker
@@ -363,7 +363,8 @@ test_installing_wax_from_registry:
     - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
     - python3 --version
     - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
-    - pip3 install --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
+    # --pre is needed because hiveio-api (a dependency) only has pre-release versions on the registry
+    - pip3 install --pre --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
     - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
   tags:
@@ -403,6 +404,10 @@ test_wax_protobuf_python_examples:
   extends:
     - .runtime_like_python_env
     - .python_test_matrix
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root  # install dependencies for tests
+    - pip list
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - cd $CI_PROJECT_DIR
