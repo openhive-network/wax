@@ -89,33 +89,6 @@ else
   source "${WAX_DIR}/build_wheel.env"
   set +o allexport
 
-
-  add_api_dependency() {
-    local api_package_name=$1
-    local api_wheel_version=$2
-
-    local published_name="${api_package_name//_/-}"
-    echo "Published name: ${published_name}"
-
-    if poetry add --dry-run "${published_name}@${api_wheel_version}" --source gitlab-hive > /dev/null 2>&1; then
-      echo "Using ${published_name} from registry."
-      poetry add "${published_name}@${api_wheel_version}" --source gitlab-hive
-    else
-      # Try to use pre-built wheel from artifacts first (preserves correct version)
-      local wheel_dir="${HIVE_SUBMODULE_DIR}/libraries/plugins/apis/api_generation/${api_package_name}/dist"
-      local wheel_file=$(ls "${wheel_dir}/"*.whl 2>/dev/null | head -1)
-      if [ -n "${wheel_file}" ]; then
-        echo "${published_name} not found in registry, installing from local wheel."
-        poetry add "${wheel_file}"
-      else
-        echo "${published_name} not found in registry, installing from source."
-        poetry add "${HIVE_SUBMODULE_DIR}/libraries/plugins/apis/api_generation/${api_package_name}"
-      fi
-    fi
-  }
-
-  add_api_dependency "hiveio_api" "${HIVEIO_API_WHEEL_BUILD_VERSION}"
-
   if [ -d "${PROJECT_DIR}/dist" ]; then
     echo "Found existing dist directory, removing it."
     rm -rf "${PROJECT_DIR}/dist"

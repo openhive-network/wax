@@ -310,6 +310,13 @@ push_to_wiki:
     # Install only the wheel matching current Python version (e.g., cp314 for Python 3.14)
     - |
       set -x
+      # Pre-install hiveio-api from build artifacts to avoid pip pre-release resolution issues
+      # (all hiveio-api versions on the registry are pre-releases, which pip ignores by default)
+      API_WHEEL=$(ls ${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/hiveio_api/dist/*.whl 2>/dev/null | head -1)
+      if [ -n "$API_WHEEL" ]; then
+        echo "Installing hiveio-api from artifacts: $API_WHEEL"
+        pip install --extra-index-url $HIVE_PYPI_INDEX "$API_WHEEL"
+      fi
       PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
       WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
       if [ -z "$WHEEL_FILE" ]; then
@@ -364,7 +371,8 @@ test_installing_wax_from_registry:
     - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
     - python3 --version
     - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
-    - pip3 install --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
+    # --pre is needed because hiveio-api (a dependency) only has pre-release versions on the registry
+    - pip3 install --pre --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
     - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
     - python3 -c "import wax; print(wax.__version__); exit()"
   tags:
