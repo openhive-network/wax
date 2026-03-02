@@ -310,13 +310,6 @@ push_to_wiki:
     # Install only the wheel matching current Python version (e.g., cp314 for Python 3.14)
     - |
       set -x
-      # Pre-install hiveio-api from build artifacts to avoid pip pre-release resolution issues
-      # (all hiveio-api versions on the registry are pre-releases, which pip ignores by default)
-      API_WHEEL=$(ls ${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/hiveio_api/dist/*.whl 2>/dev/null | head -1)
-      if [ -n "$API_WHEEL" ]; then
-        echo "Installing hiveio-api from artifacts: $API_WHEEL"
-        pip install --extra-index-url $HIVE_PYPI_INDEX "$API_WHEEL"
-      fi
       PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
       WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
       if [ -z "$WHEEL_FILE" ]; then
@@ -325,7 +318,7 @@ push_to_wiki:
         exit 1
       fi
       echo "Installing wheel: $WHEEL_FILE"
-      pip install --extra-index-url $HIVE_PYPI_INDEX "$WHEEL_FILE"
+      pip install --no-deps "$WHEEL_FILE"
     - pip list
   tags:
     - public-runner-docker
@@ -412,6 +405,10 @@ test_wax_protobuf_python_examples:
   extends:
     - .runtime_like_python_env
     - .python_test_matrix
+  before_script:
+    - !reference [.runtime_like_python_env, before_script]
+    - poetry -C "${PYPROJECT_DIR}" install --no-root  # install dependencies for tests
+    - pip list
   script:
     - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
     - cd $CI_PROJECT_DIR
