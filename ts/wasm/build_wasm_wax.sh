@@ -38,16 +38,22 @@ build() {
   cmake --install "${BUILD_DIR}" --component wasm_runtime_components --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
   # Emscripten still uses redundant createRequire for legacy CJS support - remove it so we have proper bundlers support
+  # Emscripten 5.x uses "node:module" prefix, 4.x used "module"
   sed -i "s#var require = createRequire(import.meta.url);##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#const {createRequire} = await import(\"module\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#const {createRequire} = await import(\"node:module\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 
-  # Replace requires with our await import-s
+  # Replace requires with our await import-s (Emscripten 5.x uses node: prefix)
   sed -i "s#require(\"fs\");#(await import(\"fs\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"node:fs\");#(await import(\"node:fs\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#require(\"path\")#(await import(\"path\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"node:path\")#(await import(\"node:path\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#require(\"url\")#(await import(\"url\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#require(\"node:url\")#(await import(\"node:url\"))#g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 
   # Remove Node.js "crypto" module import, as we already have crypto API support in Node.js 19+
   sed -i "s#var nodeCrypto = require(\"crypto\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
+  sed -i "s#var nodeCrypto = require(\"node:crypto\");##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
   sed -i "s#return view => nodeCrypto.randomFillSync(view);##g" "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/wax.node.js"
 }
 
