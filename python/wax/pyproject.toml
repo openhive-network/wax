@@ -55,7 +55,7 @@ grpc-stubs = "^1.53.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
-pytest-asyncio = "^0.25.3"
+pytest-asyncio = "^1.0.0"
 pytest-xdist = "^3.6.1"
 grpcio = "^1.76.0"
 grpcio-tools = "^1.76.0"
