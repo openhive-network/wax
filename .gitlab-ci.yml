@@ -11,7 +11,7 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 115144d4fd516f84c292266079c7dbb2abb4d04b
+    ref: de95661b1be71e968f623945609dc384aefecfe2
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
