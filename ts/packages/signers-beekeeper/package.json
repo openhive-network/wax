@@ -17,7 +17,7 @@
     "build": "tsc",
     "postbuild": "pnpm run test",
     "test": "tsx ./__tests__/index.ts",
-    "prepack": "jq --argfile source ../../package.json '.version = $source.version' package.json > package.json.tmp && mv package.json.tmp package.json"
+    "prepack": "jq --slurpfile source ../../package.json '.version = $source[0].version' package.json > package.json.tmp && mv package.json.tmp package.json"
   },
   "devDependencies": {
     "@types/node": "22",
