@@ -54,6 +54,10 @@ class NetworkHandle(Handle):
         """Returns all nodes within network."""
         return [get_handle(node, Node) for node in self.__implementation.nodes]
 
+    def get_last_block_number(self) -> int:
+        """Returns the last block number known to the first node in the network."""
+        return self.__implementation.get_last_block_number()
+
     def run(self, environment_variables: dict[str, str] | None = None) -> None:
         """
         Runs all nodes within network with default startup parameters. Blocks execution until all nodes enter live mode.

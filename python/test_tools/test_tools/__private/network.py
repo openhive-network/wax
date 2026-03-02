@@ -143,6 +143,9 @@ class Network(UserHandleImplementation):
         for node in self.nodes:
             node.set_allowed_nodes(self.nodes)
 
+    def get_last_block_number(self) -> int:
+        return self.nodes[0].get_last_block_number()
+
     def allow_for_connections_with_anyone(self) -> None:
         self.logger.info("Allowing connections with anyone")
         for node in self.nodes:
