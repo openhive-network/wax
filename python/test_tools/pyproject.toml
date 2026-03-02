@@ -32,8 +32,8 @@ abstractcp = "^1.0.0"
 msgspec = "^0.20.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = "^1.28.5"
-hiveio-schemas = "^1.28.1"
+hiveio-beekeepy = "^1.28.6-post"
+hiveio-schemas = "^1.28.2-post"
 
 
 [tool.poetry.group.static-analysis.dependencies]
