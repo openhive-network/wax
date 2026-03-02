@@ -65,7 +65,7 @@ repos:
         types: [python]
         pass_filenames: false
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.4.1
     hooks:
     - id: codespell
   - repo: https://github.com/lk16/detect-missing-init
