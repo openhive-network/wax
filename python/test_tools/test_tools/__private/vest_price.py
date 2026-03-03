@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from schemas.fields.compound import Price
 
 if TYPE_CHECKING:
-    from schemas.apis.database_api import GetDynamicGlobalProperties
+    from typing import Any
+
     from schemas.fields.assets._base import AssetNaiAmount
     from wax.helpy import Hf26Asset
 
@@ -24,7 +25,7 @@ class VestPrice:
         return f"{self.__class__.__name__}({self.as_nai()})"
 
     @classmethod
-    def from_dgpo(cls, dgpo: GetDynamicGlobalProperties) -> VestPrice:
+    def from_dgpo(cls, dgpo: Any) -> VestPrice:
         return cls(quote=dgpo.total_vesting_shares, base=dgpo.total_vesting_fund_hive)
 
     def as_nai(self) -> dict[str, dict[str, AssetNaiAmount | str]]:
