@@ -1,4 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["local>hive/common-ci-configuration//renovate/python.json5"]
+  "extends": ["local>hive/common-ci-configuration//renovate/python.json5"],
+
+  "packageRules": [
+    {
+      // hiveio-api is built from the hived submodule — its version must match.
+      // Renovate must not bump it automatically; update manually when bumping the submodule.
+      "description": "Disable hiveio-api updates — version is tied to the hived submodule",
+      "matchManagers": ["poetry"],
+      "matchPackageNames": ["hiveio-api"],
+      "enabled": false
+    }
+  ]
 }
