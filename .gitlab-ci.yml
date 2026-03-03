@@ -27,6 +27,8 @@ include:
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 variables:
+  # DO NOT MERGE: Override emscripten image with patched version (no createRequire/require in EXPORT_ES6 output)
+  EMSCRIPTEN_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/vogel76-emsdk:5.0.2-1"
   TEST_WITH_LATEST_DEPENDENCIES: "false"
   STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
   GIT_DEPTH: 0
