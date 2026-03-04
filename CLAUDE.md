@@ -67,7 +67,7 @@ pnpm run benchmark
 ./python/wax/scripts/install_wax.sh
 
 # Run tests (starts mock server, runs pytest)
-./python/tests/wax/run_tests.sh
+./python/wax/tests/run_tests.sh
 
 # Run examples
 ./examples/python/run_example.sh

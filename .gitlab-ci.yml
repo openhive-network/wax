@@ -69,8 +69,6 @@ variables:
   # Python package paths (monorepo structure)
   WAX_DIR: "${CI_PROJECT_DIR}/python/wax"
   TEST_TOOLS_DIR: "${CI_PROJECT_DIR}/python/test_tools"
-  TESTS_DIR: "${CI_PROJECT_DIR}/python/tests"
-  LOCAL_TOOLS_DIR: "${CI_PROJECT_DIR}/python/tests/local-tools"
 
 image: "${CI_BASE_IMAGE}"
 
@@ -375,10 +373,10 @@ test_wax_protobuf_python:
     - .python_test_matrix
   script:
     - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - ${TESTS_DIR}/wax/run_tests.sh
+    - ${WAX_DIR}/tests/run_tests.sh
   artifacts:
     reports:
-      junit: python/tests/wax/report.xml
+      junit: python/wax/tests/report.xml
     paths:
       - $PYPROJECT_DIR/mock-server.log
 
@@ -555,10 +553,10 @@ test_helpy:
     - .test_python_env
     - .python_test_matrix
   variables:
-    PYTHONPATH: "${CI_PROJECT_DIR}/python"
+    PYTHONPATH: "${WAX_DIR}/tests"
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
-    - cd ${TESTS_DIR}/wax/helpy_test
+    - cd ${WAX_DIR}/tests/helpy_test
     - python3 -m pytest -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml
     - echo -e "${TXT_BLUE}Tests successfully...${TXT_CLEAR}"
   artifacts:
@@ -842,7 +840,7 @@ test_tools_unit_tests:
     - .python_test_matrix
   script:
     - echo -e "${TXT_BLUE}Running test-tools unit tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto -m "not requires_hived_executables" "${TESTS_DIR}/test_tools/unit_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_unit_report.xml"
+    - python3 -m pytest -n auto -m "not requires_hived_executables" "${TEST_TOOLS_DIR}/tests/unit_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_unit_report.xml"
   artifacts:
     when: always
     expire_in: 1 week
@@ -860,7 +858,7 @@ test_tools_hived_handle:
     HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
     - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TESTS_DIR}/test_tools/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
+    - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TEST_TOOLS_DIR}/tests/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
   artifacts:
     when: always
     expire_in: 1 week

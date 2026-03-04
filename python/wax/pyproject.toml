@@ -68,7 +68,9 @@ mkdocs-material = "^9.6.14"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-pythonpath = ["..", "."]
+pythonpath = ["tests"]
+testpaths = ["tests"]
+markers = ["describe"]
 
 [tool.poetry-dynamic-versioning]
 enable = true
@@ -156,7 +158,6 @@ module = [
     "tests.*",
     "helpy",
     "helpy.*",
-    "local_tools.*",
 ]
 disallow_untyped_defs = false
 disallow_incomplete_defs = false

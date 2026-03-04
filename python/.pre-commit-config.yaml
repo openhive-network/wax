@@ -2,12 +2,12 @@ files: |
     (?x)(
             ^python/wax/wax/.*$|
             ^python/test_tools/test_tools/.*$|
-            ^python/tests/wax/base_api/.*$|
-            ^python/tests/wax/chain_api/.*$|
-            ^python/tests/wax/transactions/.*$|
-            ^python/tests/wax/helpy_test/.*$|
-            ^python/tests/wax/apps_operations/.*$|
-            ^python/tests/test_tools/.*$
+            ^python/wax/tests/base_api/.*$|
+            ^python/wax/tests/chain_api/.*$|
+            ^python/wax/tests/transactions/.*$|
+            ^python/wax/tests/helpy_test/.*$|
+            ^python/wax/tests/apps_operations/.*$|
+            ^python/test_tools/tests/.*$
     )
 exclude: |
     (?x)(
@@ -53,7 +53,7 @@ repos:
       - id: mypy-wax
         name: type check wax with mypy
         entry: mypy
-        args: ["--config-file", "python/wax/pyproject.toml", "python/wax/wax", "python/tests/wax/base_api", "python/tests/wax/chain_api", "python/tests/wax/transactions", "python/tests/wax/helpy_test", "python/tests/wax/apps_operations"]
+        args: ["--config-file", "python/wax/pyproject.toml", "python/wax/wax", "python/wax/tests/base_api", "python/wax/tests/chain_api", "python/wax/tests/transactions", "python/wax/tests/helpy_test", "python/wax/tests/apps_operations"]
         language: system
         types: [python]
         pass_filenames: false
