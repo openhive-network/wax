@@ -67,6 +67,14 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
       .field("other_authorities", &required_authority_collection::other_authorities)
       ;
 
+  value_object<has_authorization_data_t>("has_authorization_data_t")
+      .field("required_authorities", &has_authorization_data_t::required_authorities)
+      .field("signature_public_keys", &has_authorization_data_t::signature_public_keys)
+      .field("authorities_map", &has_authorization_data_t::authorities_map)
+      .field("allow_strict_and_mixed_authorities", &has_authorization_data_t::allow_strict_and_mixed_authorities)
+      .field("allow_redundant_signatures", &has_authorization_data_t::allow_redundant_signatures)
+      ;
+
   value_object<ref_block_data>("ref_block_data")
       .field("ref_block_num", &ref_block_data::ref_block_num)
       .field("ref_block_prefix", &ref_block_data::ref_block_prefix)
@@ -110,6 +118,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   register_vector<authority_verification_trace::path_entry>("VectorPathEntry");
   register_map<std::string, std::string>("MapStringString");
   register_map<std::string, uint16_t>("MapStringUInt16");
+  register_map<std::string, wax_authorities>("MapStringWaxAuthorities");
 
   value_object<witness_set_properties_data>("witness_set_properties_data")
       .field("key",                     &witness_set_properties_data::key)
@@ -219,6 +228,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
 
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
     .function("cpp_trace_authority_verification", &foundation_wasm::cpp_trace_authority_verification)
+    .function("cpp_has_authorization", &foundation_wasm::cpp_has_authorization)
 
     .function("cpp_get_default_comment_options_operation", &foundation_wasm::cpp_get_default_comment_options_operation)
 

@@ -13,13 +13,15 @@ import json
 
 from cython_modules_common cimport (
     protocol,
+    required_authority_collection,
     wax_authority,
     wax_authorities,
     minimize_required_signatures_data_t,
+    has_authorization_data_t,
 )
 from cython_modules_common import encode_str, decode_bytes, encode_list, decode_list, encode_dict_str_int
 from cython_modules_handles cimport WaxTransactionHandle, _create_wax_transaction
-from wax.wax_result import python_authorities, python_minimize_required_signatures_data
+from wax.wax_result import python_authorities, python_minimize_required_signatures_data, python_required_authority_collection
 
 
 cdef wax_authority python_authority_to_wax_authority(object auth_obj):
@@ -127,3 +129,37 @@ def get_hive_protocol_config(chain_id: str) -> dict[str, str]:
     cdef protocol obj
     result = obj.cpp_get_hive_protocol_config(encode_str(chain_id))
     return {decode_bytes(k): decode_bytes(v) for k, v in dict(result).items()}
+
+
+def has_authorization(
+    required_authorities: python_required_authority_collection,
+    signature_public_keys: list[str],
+    authorities_map: dict[str, python_authorities],
+    get_witness_key: Callable[[str], str] | None = None,
+    allow_strict_and_mixed_authorities: bool = False,
+    allow_redundant_signatures: bool = False,
+) -> bool:
+    """Check if signature public keys satisfy the required authorities."""
+    cdef protocol obj
+    cdef has_authorization_data_t wax_data
+
+    # Convert required authorities
+    wax_data.required_authorities.active_accounts = encode_list(list(required_authorities.active_accounts))
+    wax_data.required_authorities.owner_accounts = encode_list(list(required_authorities.owner_accounts))
+    wax_data.required_authorities.posting_accounts = encode_list(list(required_authorities.posting_accounts))
+    for other_auth in required_authorities.other_authorities:
+        wax_data.required_authorities.other_authorities.push_back(python_authority_to_wax_authority(other_auth))
+
+    wax_data.signature_public_keys = encode_list(signature_public_keys)
+
+    for k, v in authorities_map.items():
+        wax_data.authorities_map[encode_str(k)] = python_authorities_to_wax_authorities(v)
+
+    if get_witness_key is not None:
+        wax_data.get_witness_key_cb = get_witness_key_cb
+        wax_data.get_witness_key_fn = <void*>get_witness_key
+
+    wax_data.allow_strict_and_mixed_authorities = allow_strict_and_mixed_authorities
+    wax_data.allow_redundant_signatures = allow_redundant_signatures
+
+    return obj.cpp_has_authorization(wax_data)

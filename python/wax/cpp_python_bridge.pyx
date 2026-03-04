@@ -133,6 +133,7 @@ from wax.cython_modules_authority import (
     minimize_required_signatures,
     check_memo_for_private_keys,
     get_hive_protocol_config,
+    has_authorization,
 )
 
 # Re-export from testing module

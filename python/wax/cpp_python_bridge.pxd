@@ -162,6 +162,16 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         cpp_optional[uint32_t] max_account_auths
         bool allow_strict_and_mixed_authorities
 
+    cdef cppclass has_authorization_data_t:
+        has_authorization_data_t() except +
+        required_authority_collection required_authorities
+        vector[string] signature_public_keys
+        wax_authorities_map_t authorities_map
+        get_witness_key_t get_witness_key_cb
+        void* get_witness_key_fn
+        bool allow_strict_and_mixed_authorities
+        bool allow_redundant_signatures
+
     cdef cppclass binary_data_node:
         string key
         string type
@@ -221,6 +231,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
 
         vector[string] cpp_collect_signing_keys( hive_transaction_handle tx_handle, retrieve_authorities_t retrieve_authorities, void* retrieve_authorities_fn ) except +
         vector[string] cpp_minimize_required_signatures( hive_transaction_handle tx_handle, minimize_required_signatures_data_t minimize_required_signatures_data ) except +
+        bool cpp_has_authorization(has_authorization_data_t data) except +
 
         string cpp_asset_value(json_asset value) except +
         string cpp_asset_symbol(json_asset value) except +

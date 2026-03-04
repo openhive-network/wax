@@ -20,6 +20,7 @@ from cpp_python_bridge cimport (
     witness_set_properties_data,
     witness_set_properties_serialized,
     minimize_required_signatures_data_t,
+    has_authorization_data_t,
     crypto_memo,
     private_key_data,
     brain_key_data,

@@ -135,6 +135,7 @@ from ._private.cython_wrappers import (  # noqa: E402
     validate_proto_operation,
     validate_proto_transaction,
     validate_transaction,
+    has_authorization,
 )
 
 # Functions without str parameters - no wrapping needed
@@ -321,6 +322,7 @@ __all__ = [
     "validate_proto_operation",
     "validate_proto_transaction",
     "validate_transaction",
+    "has_authorization",
     "verify_exception_handling",
     "vests",
 ]

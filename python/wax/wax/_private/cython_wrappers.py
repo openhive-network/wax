@@ -141,6 +141,9 @@ from wax.cpp_python_bridge import (
 from wax.cpp_python_bridge import (
     validate_transaction as _validate_transaction,
 )
+from wax.cpp_python_bridge import (
+    has_authorization as _has_authorization,
+)
 
 if TYPE_CHECKING:
     from wax.wax_result import (
@@ -397,3 +400,21 @@ def minimize_required_signatures(
     minimize_required_signatures_data: python_minimize_required_signatures_data,
 ) -> list[str]:
     return _minimize_required_signatures(_ensure_str(signed_transaction), minimize_required_signatures_data)
+
+
+def has_authorization(
+    required_authorities: python_required_authority_collection,
+    signature_public_keys: list[str],
+    authorities_map: dict[str, python_authorities],
+    get_witness_key: Callable[[str], str] | None = None,
+    allow_strict_and_mixed_authorities: bool = False,
+    allow_redundant_signatures: bool = False,
+) -> bool:
+    return _has_authorization(
+        required_authorities,
+        [_ensure_str(k) for k in signature_public_keys],
+        authorities_map,
+        get_witness_key,
+        allow_strict_and_mixed_authorities,
+        allow_redundant_signatures,
+    )

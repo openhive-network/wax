@@ -174,4 +174,15 @@ struct minimize_required_signatures_data_t
   bool allow_strict_and_mixed_authorities = false;
 };
 
+struct has_authorization_data_t
+{
+  required_authority_collection required_authorities;
+  std::vector<std::string> signature_public_keys;
+  wax_authorities_map_t authorities_map;
+  witness_public_key_getter_cb_t get_witness_key_cb = nullptr;
+  void* get_witness_key_fn = nullptr;
+  bool allow_strict_and_mixed_authorities = false;
+  bool allow_redundant_signatures = false;
+};
+
 } /// namespace cpp

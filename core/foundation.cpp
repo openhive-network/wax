@@ -493,6 +493,76 @@ hive::protocol::authority_verification_trace foundation::cpp_trace_authority_ver
   return trace;
   });
 }
+bool foundation::cpp_has_authorization(const has_authorization_data_t& data) const
+{
+  return cpp::safe_exception_wrapper([&]() -> bool {
+    // Convert wax_authorities_map_t to hive::protocol::authorities_map_t
+    hive::protocol::authorities_map_t authorities_map;
+    for (const auto& [account_name, wax_auths] : data.authorities_map)
+      authorities_map.emplace(account_name, convert_wax_authorities_to_authorities(wax_auths));
+
+    // Build authority getters from the map; return unsatisfiable authority for missing accounts
+    using authority = hive::protocol::authority;
+    static const authority unsatisfiable_authority(1, authority::key_authority_map{}, authority::account_authority_map{});
+
+    auto get_authorities = [&](const std::string& account_name) -> const hive::protocol::authorities_t& {
+      auto it = authorities_map.find(account_name);
+      if (it != authorities_map.end())
+        return it->second;
+      static const hive::protocol::authorities_t unsatisfiable{unsatisfiable_authority, unsatisfiable_authority, unsatisfiable_authority};
+      return unsatisfiable;
+    };
+
+    hive::protocol::authority_getter get_active = [&](const std::string& account_name) {
+      return get_authorities(account_name).active;
+    };
+    hive::protocol::authority_getter get_owner = [&](const std::string& account_name) {
+      return get_authorities(account_name).owner;
+    };
+    hive::protocol::authority_getter get_posting = [&](const std::string& account_name) {
+      return get_authorities(account_name).posting;
+    };
+
+    // Build witness key getter
+    hive::protocol::witness_public_key_getter get_witness_key;
+    if (data.get_witness_key_cb && data.get_witness_key_fn)
+    {
+      get_witness_key = [&](const std::string& witness_name) {
+        return hive::protocol::public_key_type(data.get_witness_key_cb(witness_name, data.get_witness_key_fn));
+      };
+    }
+    else
+    {
+      get_witness_key = [](const std::string&) {
+        return hive::protocol::public_key_type();
+      };
+    }
+
+    // Convert signature public keys
+    flat_set<hive::protocol::public_key_type> signature_keys;
+    for (const auto& key_str : data.signature_public_keys)
+      signature_keys.insert(fc::ecc::public_key::from_base58_with_prefix(key_str, HIVE_ADDRESS_PREFIX));
+
+    // Build required authorities
+    hive::protocol::required_authorities_type required_auths;
+    required_auths.required_active.insert(data.required_authorities.active_accounts.cbegin(), data.required_authorities.active_accounts.cend());
+    required_auths.required_owner.insert(data.required_authorities.owner_accounts.cbegin(), data.required_authorities.owner_accounts.cend());
+    required_auths.required_posting.insert(data.required_authorities.posting_accounts.cbegin(), data.required_authorities.posting_accounts.cend());
+    for (const auto& o : data.required_authorities.other_authorities)
+      required_auths.other.emplace_back(convert_wax_authority_to_protocol_authority(o));
+
+    return hive::protocol::has_authorization(
+      data.allow_strict_and_mixed_authorities,
+      data.allow_redundant_signatures,
+      required_auths,
+      signature_keys,
+      get_active,
+      get_owner,
+      get_posting,
+      get_witness_key);
+  });
+}
+
 std::string foundation::cpp_get_default_comment_options_operation() const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string

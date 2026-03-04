@@ -251,6 +251,8 @@ public:
     const std::vector<std::string>& decodedSignaturePublicKeys,
     IAccountAuthorityProvider& authorityProvider) const;
 
+  bool cpp_has_authorization(const has_authorization_data_t& data) const;
+
   std::string cpp_get_default_comment_options_operation() const;
 
   void cpp_deserialize_hive_tx(const std::string& hex, hive_tx* storage)const;
