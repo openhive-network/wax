@@ -104,8 +104,10 @@ wax/
 │   │   │   ├── proto/           # Generated protobuf files
 │   │   │   └── api/             # API caller implementation
 │   │   ├── helpy/               # Helper utilities
-│   │   └── complex_operations/  # High-level operation builders
-│   ├── tests/                   # pytest tests
+│   │   ├── complex_operations/  # High-level operation builders
+│   │   └── tests/               # wax pytest tests
+│   ├── test_tools/
+│   │   └── tests/               # test-tools pytest tests
 │   └── scripts/                 # Build scripts
 ├── hive/                        # Git submodule - Hive blockchain source
 │   └── libraries/protocol/proto/  # Protocol buffer definitions
