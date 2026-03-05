@@ -8,7 +8,7 @@ class Jsonrpc(AbstractSyncApi):
     api = AbstractSyncApi.endpoint_jsonrpc
 
     @api
-    def get_methods(self) -> list[list]:
+    def get_methods(self) -> list[str]:
         raise NotImplementedError
 
     @api

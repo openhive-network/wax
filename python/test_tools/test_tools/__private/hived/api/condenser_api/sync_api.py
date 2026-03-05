@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime  # noqa: TCH003
-from typing import Literal
+from typing import Any, Literal
 
 from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
 from hiveio_api.condenser_api import (
@@ -65,7 +65,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def get_active_witnesses(self, include_future: bool = False, /) -> list[list]:
+    def get_active_witnesses(self, include_future: bool = False, /) -> list[str]:
         raise NotImplementedError
 
     @api
@@ -117,7 +117,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def get_key_references(self, key: str, /) -> list[list]:
+    def get_key_references(self, key: str, /) -> list[list[str]]:
         raise NotImplementedError
 
     @api
@@ -133,7 +133,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def lookup_accounts(self, lower_bound_name: str, limit: int, /) -> list[list]:
+    def lookup_accounts(self, lower_bound_name: str, limit: int, /) -> list[str]:
         raise NotImplementedError
 
     @api
@@ -203,7 +203,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def lookup_witness_accounts(self, start: str, limit: int, /) -> list[list]:
+    def lookup_witness_accounts(self, start: str, limit: int, /) -> list[str]:
         raise NotImplementedError
 
     @api
@@ -223,7 +223,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def get_required_signatures(self, transaction: TransactionLegacy, public_key: str, /) -> list[list]:
+    def get_required_signatures(self, transaction: TransactionLegacy, public_key: str, /) -> list[Any]:
         raise NotImplementedError
 
     @api
@@ -292,7 +292,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def get_market_history_buckets(self) -> list[list]:
+    def get_market_history_buckets(self) -> list[int]:
         raise NotImplementedError
 
     @api
