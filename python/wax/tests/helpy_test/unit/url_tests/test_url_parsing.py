@@ -6,7 +6,7 @@ from typing import Callable
 import pytest
 
 from beekeepy.interfaces import HttpUrl, P2PUrl, WsUrl
-from tests.wax.helpy_test.unit.constants import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
+from wax_local_tools.consts import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
 
 
 @pytest.mark.parametrize(

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from tests.wax.utils.refs import API_REF_TRANSACTION
+from wax_local_tools.refs import API_REF_TRANSACTION
 from wax import get_transaction_required_authorities, python_authority
 
 

@@ -552,8 +552,6 @@ test_helpy:
   extends:
     - .test_python_env
     - .python_test_matrix
-  variables:
-    PYTHONPATH: "${WAX_DIR}/tests"
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
     - cd ${WAX_DIR}/tests/helpy_test

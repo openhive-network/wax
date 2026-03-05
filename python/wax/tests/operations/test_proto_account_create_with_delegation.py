@@ -1,4 +1,4 @@
-from tests.wax.utils.checkers import check_operations, check_transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 from wax.proto.operations import account_create_with_delegation, operation
 from wax.proto.asset import asset

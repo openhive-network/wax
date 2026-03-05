@@ -2374,6 +2374,20 @@ files = [
 watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
+name = "wax-local-tools"
+version = "0.0.0"
+description = ""
+optional = false
+python-versions = ">=3.12,<4"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "tests/wax-local-tools"
+
+[[package]]
 name = "win32-setctime"
 version = "1.2.0"
 description = "A small Python utility to set file creation time on Windows"
@@ -2537,4 +2551,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "5cf8a273636c3569e2a04f3bc9b9db6980a37eb91c859798b2a3abbad91a750b"
+content-hash = "a00ca74b020a0af3027df097b6d6d20e1969dd67dcc0eedb65bfc0f49e6df0b0"

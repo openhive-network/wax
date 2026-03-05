@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 
-from tests.wax.base_api.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
+from wax_local_tools.templates import INPUT_WITNESS_PROPERTIES, WITNESS_PROPERTIES
 from wax import cpp_python_bridge
 
 

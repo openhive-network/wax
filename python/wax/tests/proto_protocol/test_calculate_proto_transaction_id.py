@@ -1,6 +1,6 @@
 import json
 
-from tests.wax.utils.refs import PROTO_REF_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION, API_REF_TRANSACTION
+from wax_local_tools.refs import PROTO_REF_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION, API_REF_TRANSACTION
 
 from wax import calculate_proto_transaction_id, calculate_proto_legacy_transaction_id
 

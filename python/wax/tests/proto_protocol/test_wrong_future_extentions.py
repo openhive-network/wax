@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 
-from tests.wax.utils.refs import PROTO_REF_TRANSACTION
+from wax_local_tools.refs import PROTO_REF_TRANSACTION
 
 from wax import validate_proto_transaction
 

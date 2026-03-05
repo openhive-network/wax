@@ -6,7 +6,7 @@ from copy import deepcopy
 import wax
 
 from .consts import VALID_PROTO_TRANSACTION
-from .util import get_proto_operation_name
+from wax_local_tools.util import get_proto_operation_name
 
 
 def test_valid_proto_transaction() -> None:

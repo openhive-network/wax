@@ -9,7 +9,7 @@ import pytest
 import wax
 
 from .consts import VALID_PROTO_OPERATIONS
-from .util import get_proto_operation_name
+from wax_local_tools.util import get_proto_operation_name
 
 
 @pytest.mark.parametrize("operation", VALID_PROTO_OPERATIONS, ids=get_proto_operation_name)

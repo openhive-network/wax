@@ -11,7 +11,7 @@
 #   }
 # }
 
-from tests.wax.utils.checkers import check_operations, check_transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 from wax.proto.operations import operation, transfer_to_vesting
 from wax.proto.transaction import transaction

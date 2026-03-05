@@ -5,7 +5,7 @@ import test_tools as tt
 from test_tools.__private.exceptions import MissingPathToExecutableError
 
 # Imported fixture is automatically used, so it's false positive.
-from unit_tests.key_generation_tests.local_tools import (
+from tests.unit_tests.key_generation_tests.local_tools import (
     ensure_that_key_generator_executable_is_missing,  # noqa: F401
 )
 

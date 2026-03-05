@@ -4,7 +4,7 @@ import json
 from typing import Final
 
 from beekeepy import AsyncBeekeeper
-from tests.wax.utils.refs import PROTO_REF_TRANSACTION
+from wax_local_tools.refs import PROTO_REF_TRANSACTION
 from wax import create_wax_foundation
 from wax.proto.operations import comment, operation, transfer, vote
 from wax.proto.transaction import transaction as proto_transaction

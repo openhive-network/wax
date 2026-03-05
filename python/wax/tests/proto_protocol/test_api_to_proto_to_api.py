@@ -1,6 +1,6 @@
 import json
 
-from tests.wax.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
+from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import api_to_proto, proto_to_api
 

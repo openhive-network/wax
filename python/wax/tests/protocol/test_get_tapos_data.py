@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 from wax import get_tapos_data
-from tests.wax.utils.refs import API_REF_HF_BLOCK
+from wax_local_tools.refs import API_REF_HF_BLOCK
 
 def test_get_tapos_data():
     block_id = cast(str, API_REF_HF_BLOCK["previous"])

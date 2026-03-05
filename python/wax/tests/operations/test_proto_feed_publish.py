@@ -1,4 +1,4 @@
-from tests.wax.utils.checkers import check_operations, check_transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 from wax.proto.operations import feed_publish, operation
 from wax.proto.asset import asset

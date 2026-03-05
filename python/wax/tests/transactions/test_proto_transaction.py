@@ -1,4 +1,4 @@
-from tests.wax.utils.checkers import check_transaction
+from wax_local_tools.checkers import check_transaction
 from wax.proto.operations import comment, operation, vote
 from wax.proto.transaction import transaction
 

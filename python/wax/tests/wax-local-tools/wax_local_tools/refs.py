@@ -1,7 +1,6 @@
 from typing import Any
 
-from wax.wax_result import python_authority, python_authorities
-
+from wax.wax_result import python_authorities, python_authority
 
 MAINNET_CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 

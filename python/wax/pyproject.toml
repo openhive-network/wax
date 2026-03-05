@@ -59,6 +59,7 @@ pytest-asyncio = "^1.0.0"
 pytest-xdist = "^3.6.1"
 grpcio = "^1.76.0"
 grpcio-tools = "^1.76.0"
+wax-local-tools = { path = "tests/wax-local-tools", develop = true }
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.1"
@@ -68,7 +69,6 @@ mkdocs-material = "^9.6.14"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-pythonpath = ["tests"]
 testpaths = ["tests"]
 markers = ["describe"]
 
@@ -217,4 +217,4 @@ ignore = [
 allow-star-arg-any = true
 
 [tool.ruff.lint.isort]
-known-first-party = ["wax", "beekeepy"]
+known-first-party = ["wax", "beekeepy", "wax_local_tools"]

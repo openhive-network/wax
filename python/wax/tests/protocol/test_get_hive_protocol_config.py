@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from wax import get_hive_protocol_config
-from tests.wax.utils.refs import MAINNET_CHAIN_ID
+from wax_local_tools.refs import MAINNET_CHAIN_ID
 
 
 def test_get_hive_constants() -> None:

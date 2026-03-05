@@ -20,7 +20,7 @@
 #   }
 # }
 
-from tests.wax.utils.checkers import check_operations, check_transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 from wax.proto.operations import (
     claim_reward_balance,

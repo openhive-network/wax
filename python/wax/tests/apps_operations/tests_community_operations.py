@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tests.wax.apps_operations.extract_operation_from_custom_json import (
+from wax_local_tools.extract_operation_from_custom_json import (
     extract_operation_from_custom_json,
 )
 from wax.hive_apps_operations.community import (

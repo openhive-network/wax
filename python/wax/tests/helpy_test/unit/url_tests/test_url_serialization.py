@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from beekeepy.interfaces import HttpUrl, WsUrl
-from tests.wax.helpy_test.unit.constants import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
+from wax_local_tools.consts import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
 
 
 @pytest.mark.parametrize(

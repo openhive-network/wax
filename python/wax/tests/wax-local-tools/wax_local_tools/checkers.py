@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from wax._private.proto_utils import message_to_json_with_defaults
 from wax import validate_proto_operation, validate_proto_transaction
+from wax._private.proto_utils import message_to_json_with_defaults
 from wax.proto.operations import operation
 from wax.proto.transaction import transaction
 

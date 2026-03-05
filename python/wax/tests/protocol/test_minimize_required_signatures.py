@@ -7,7 +7,7 @@ import json
 import pytest
 
 from wax import minimize_required_signatures, python_authority, python_authorities, python_minimize_required_signatures_data
-from tests.wax.utils.refs import (
+from wax_local_tools.refs import (
     ACCOUNT_AUTHS,
     API_TRX_SIG1,
     API_TRX_SIG5_v0,

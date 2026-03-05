@@ -1,7 +1,7 @@
 import json
 from google.protobuf.json_format import MessageToJson
 
-from tests.wax.utils.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
+from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 from wax import api_to_proto, proto_to_api
 from wax.proto.operations import operation, pow2, recover_account, witness_set_properties

@@ -1,7 +1,7 @@
 import json
 from typing import Final
 
-from tests.wax.utils.refs import PROTO_REF_VOTE_OP, PROTO_REF_TRANSACTION
+from wax_local_tools.refs import PROTO_REF_VOTE_OP, PROTO_REF_TRANSACTION
 
 from wax import proto_transaction_get_impacted_accounts, proto_operation_get_impacted_accounts
 

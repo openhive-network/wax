@@ -4,6 +4,13 @@ import json
 from pathlib import Path
 from typing import Any, Final
 
+from beekeepy.interfaces import HttpUrl, WsUrl
+
+URL_TYPES = type[HttpUrl] | type[WsUrl]
+
+DEFAULT_ADDRESS: Final[str] = "127.0.0.1"
+DEFAULT_PORT: Final[int] = 8080
+
 MAINNET_CHAIN_ID: Final[str] = "beeab0de00000000000000000000000000000000000000000000000000000000"
 
 ENCODING = "utf-8"
