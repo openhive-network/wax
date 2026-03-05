@@ -260,7 +260,7 @@ pre_commit_checks:
   tags:
     - public-runner-docker
 
-verify_wax_poetry_lock_stability:
+.verify_wax_poetry_lock_stability:
   stage: static_code_analysis
   extends: .verify_poetry_lock_stability_template
   needs: []
@@ -269,12 +269,21 @@ verify_wax_poetry_lock_stability:
   tags:
     - public-runner-docker
 
-verify_test_tools_poetry_lock_stability:
+.verify_test_tools_poetry_lock_stability:
   stage: static_code_analysis
   extends: .verify_poetry_lock_stability_template
   needs: []
   variables:
     PYPROJECT_DIR: "${TEST_TOOLS_DIR}"
+  tags:
+    - public-runner-docker
+
+.verify_examples_poetry_lock_stability:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_stability_template
+  needs: []
+  variables:
+    PYPROJECT_DIR: "${CI_PROJECT_DIR}/examples/python"
   tags:
     - public-runner-docker
 
@@ -829,6 +838,7 @@ deploy_test_tools_wheel_to_pypi:
     - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s | sed 's/+.*//')
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
     - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+    - !reference [.update_deps_for_tests, script]
     - poetry -C "${TEST_TOOLS_DIR}" install
     - pip list
 
