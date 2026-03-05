@@ -14,15 +14,14 @@
 #   }
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax.proto.asset import asset
 from wax.proto.operations import (
     operation,
     update_proposal,
 )
 from wax.proto.transaction import transaction
-from wax.proto.asset import asset
-from wax._private.proto.update_proposal_pb2 import update_proposal_end_date, update_proposal_extension
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_update_proposal():

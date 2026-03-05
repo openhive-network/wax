@@ -1,6 +1,6 @@
-from wax_local_tools.checkers import check_transaction
 from wax.proto.operations import comment, operation, vote
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_transaction
 
 
 def test_transaction() -> None:
@@ -18,9 +18,7 @@ def test_transaction() -> None:
     )
     comment_operation: operation = operation(comment_operation=comment_proto)
 
-    transaction_proto: transaction = transaction(
-        operations=[vote_operation, comment_operation]
-    )
+    transaction_proto: transaction = transaction(operations=[vote_operation, comment_operation])
 
     check_transaction(transaction_proto)
     check_transaction(transaction_proto)

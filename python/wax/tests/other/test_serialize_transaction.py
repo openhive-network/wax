@@ -7,7 +7,7 @@ import pytest
 
 import wax
 
-from .consts import VALID_TRXS
+from wax_local_tools.consts import VALID_TRXS
 
 TRX_BINARY_ALL_DEFAULTS: Final[str] = "00000000000000000000000000"
 

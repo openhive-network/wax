@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Final, Literal
 
 import pytest
 
-from wax import check_memo_for_private_keys, python_authority, python_authorities
-
+from wax import check_memo_for_private_keys, python_authorities, python_authority
 
 ACCOUNT: Final[str] = "alice"
 

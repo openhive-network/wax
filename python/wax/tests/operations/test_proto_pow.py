@@ -1,12 +1,11 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
-from wax._private.proto import pow_pb2, legacy_chain_properties_pb2
+from wax._private.proto import legacy_chain_properties_pb2, pow_pb2
+from wax.proto.asset import asset
 from wax.proto.operations import (
     operation,
     pow,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_pow():

@@ -4,7 +4,7 @@ import pytest
 
 import wax
 
-from .consts import VALID_OPERATIONS
+from wax_local_tools.consts import VALID_OPERATIONS
 
 
 @pytest.mark.parametrize("operation_name", list(VALID_OPERATIONS.keys()))

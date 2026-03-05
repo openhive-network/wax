@@ -21,15 +21,14 @@
 #   }
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properties
+from wax.proto.asset import asset
 from wax.proto.operations import (
     operation,
     witness_update,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
-from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properties
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_witness_update():

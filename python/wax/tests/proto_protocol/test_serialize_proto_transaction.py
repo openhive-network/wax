@@ -2,11 +2,9 @@ import json
 
 from google.protobuf.json_format import ParseDict
 
-from wax_local_tools.refs import PROTO_REF_TRANSACTION, API_REF_TRANSACTION
-
-from wax import serialize_proto_transaction, deserialize_proto_transaction
-
+from wax import deserialize_proto_transaction, serialize_proto_transaction
 from wax.proto.transaction import transaction
+from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
 def test_serialize_proto_transaction_positive():

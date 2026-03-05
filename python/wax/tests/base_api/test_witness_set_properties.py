@@ -37,9 +37,7 @@ def assert_witness_set_properties_operation_structure(
     assert tx.to_dict()["operations"][0] == expected_op
 
 
-def test_witness_set_properties_basic(
-    wax: IWaxBaseInterface, transaction: ITransaction
-) -> None:
+def test_witness_set_properties_basic(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -49,9 +47,7 @@ def test_witness_set_properties_basic(
         account_creation_fee={"amount": "5000", "precision": 3, "nai": "@@000000021"},
         account_subsidy_budget=1000,
         account_subsidy_decay=1000,
-        hbd_exchange_rate=HbdExchangeRate(
-            base=wax.hbd.satoshis(1000), quote=wax.hive.satoshis(1000)
-        ),
+        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(1000), quote=wax.hive.satoshis(1000)),
         hbd_interest_rate=1000,
         maximum_block_size=1000,
         url="https://hive.io",
@@ -222,17 +218,13 @@ def test_witness_set_properties_with_decay_and_budget(
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_exchange_rate(
-    wax: IWaxBaseInterface, transaction: ITransaction
-) -> None:
+def test_witness_set_properties_with_exchange_rate(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
         owner="ctrpch",
         witness_signing_key=WitnessesSigningKeys.ctrpch,
-        hbd_exchange_rate=HbdExchangeRate(
-            base=wax.hbd.satoshis(424), quote=wax.hive.satoshis(1000)
-        ),
+        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(424), quote=wax.hive.satoshis(1000)),
     )
 
     # ACT
@@ -259,9 +251,7 @@ def test_witness_set_properties_with_exchange_rate(
     assert_witness_set_properties_operation_structure(transaction, expected_op)
 
 
-def test_witness_set_properties_with_all_parameters(
-    wax: IWaxBaseInterface, transaction: ITransaction
-) -> None:
+def test_witness_set_properties_with_all_parameters(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
     # ARRANGE
     transaction.transaction.expiration = TX_EXPIRATION
     witness_set_properties_data = WitnessSetPropertiesData(
@@ -271,9 +261,7 @@ def test_witness_set_properties_with_all_parameters(
         account_creation_fee={"amount": "3000", "precision": 3, "nai": "@@000000021"},
         account_subsidy_budget=10000,
         account_subsidy_decay=3307750,
-        hbd_exchange_rate=HbdExchangeRate(
-            base=wax.hbd.satoshis(867), quote=wax.hive.satoshis(1000)
-        ),
+        hbd_exchange_rate=HbdExchangeRate(base=wax.hbd.satoshis(867), quote=wax.hive.satoshis(1000)),
         hbd_interest_rate=0,
         maximum_block_size=65536,
         url="https://guiltyparties.com",

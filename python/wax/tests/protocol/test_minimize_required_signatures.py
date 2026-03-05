@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Any, Final
-
 import json
+from typing import Any, Final
 
 import pytest
 
-from wax import minimize_required_signatures, python_authority, python_authorities, python_minimize_required_signatures_data
+from wax import (
+    minimize_required_signatures,
+    python_authorities,
+    python_authority,
+    python_minimize_required_signatures_data,
+)
 from wax_local_tools.refs import (
     ACCOUNT_AUTHS,
     API_TRX_SIG1,
@@ -14,7 +18,6 @@ from wax_local_tools.refs import (
     API_TRX_SIG5_v1,
     API_TRX_SIG5_v2,
 )
-
 
 AVAILABLE_KEYS: Final[list[str]] = [
     "STM5zw6KDtQiiJMhkdkFm8CXxPUEa2QyitHBhkCE1iMJEGmEfd5aE",

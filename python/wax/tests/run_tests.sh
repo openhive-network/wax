@@ -9,9 +9,6 @@ MOCK_SERVER_URL="http://localhost:${MOCK_SERVER_PORT}"
 WAX_DIR="${SCRIPTPATH}/../../../"
 PYPROJECT_DIR="${WAX_DIR}python/wax"
 
-# Set PYTHONPATH to allow absolute imports like "from tests.wax..."
-export PYTHONPATH="${WAX_DIR}python:${PYTHONPATH}"
-
 # Configure pnpm to use a project-local store to avoid permission issues
 # with the shared /builds/.pnpm-store in CI environments
 export PNPM_HOME="${WAX_DIR}/.pnpm-home"

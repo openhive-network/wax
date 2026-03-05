@@ -4,7 +4,7 @@ import pytest
 
 import wax
 
-from .consts import VALID_SIG_DIGEST_WITH_TRANSACTIONS
+from wax_local_tools.consts import VALID_SIG_DIGEST_WITH_TRANSACTIONS
 
 
 @pytest.mark.parametrize(

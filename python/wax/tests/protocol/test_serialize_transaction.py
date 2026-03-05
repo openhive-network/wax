@@ -1,8 +1,7 @@
 import json
 
+from wax import deserialize_transaction, serialize_transaction
 from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
-
-from wax import serialize_transaction, deserialize_transaction
 
 
 def test_serialize_transaction_positive():

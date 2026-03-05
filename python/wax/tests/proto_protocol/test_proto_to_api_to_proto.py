@@ -1,15 +1,15 @@
 import json
+
 from google.protobuf.json_format import MessageToJson
 
-from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
-
 from wax import api_to_proto, proto_to_api
-from wax.proto.operations import operation, pow2, recover_account, witness_set_properties
+from wax._private.proto.future_extensions_pb2 import future_extensions
+from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properties
+from wax._private.proto.pow2_pb2 import pow2_input, pow2_pow, pow2_work
 from wax.proto.asset import asset
 from wax.proto.authority import authority
-from wax._private.proto.pow2_pb2 import pow2_input, pow2_pow, pow2_work
-from wax._private.proto.legacy_chain_properties_pb2 import legacy_chain_properties
-from wax._private.proto.future_extensions_pb2 import future_extensions
+from wax.proto.operations import operation, pow2, recover_account, witness_set_properties
+from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
 def test_proto_to_api_to_proto():

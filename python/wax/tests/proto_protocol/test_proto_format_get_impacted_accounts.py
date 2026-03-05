@@ -1,9 +1,8 @@
 import json
 from typing import Final
 
-from wax_local_tools.refs import PROTO_REF_VOTE_OP, PROTO_REF_TRANSACTION
-
-from wax import proto_transaction_get_impacted_accounts, proto_operation_get_impacted_accounts
+from wax import proto_operation_get_impacted_accounts, proto_transaction_get_impacted_accounts
+from wax_local_tools.refs import PROTO_REF_TRANSACTION, PROTO_REF_VOTE_OP
 
 EXPECTED_OPERATION_IMPACTED_ACCOUNTS: Final[list[str]] = [
     PROTO_REF_VOTE_OP["vote_operation"]["author"],  # type: ignore[list-item]

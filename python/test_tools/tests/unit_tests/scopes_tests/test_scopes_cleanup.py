@@ -42,10 +42,6 @@ def test_objects_cleanup_in_multiple_scopes() -> None:
     expected_state(live=[object_outside], dead=[object_in_first, object_in_second])
 
 
-def expected_state(
-    *, live: Iterable[ScopedObjectMock] = (), dead: Iterable[ScopedObjectMock] = ()
-) -> None:
-    assert all(
-        not scoped_object.at_exit_from_scope_was_called for scoped_object in live
-    )
+def expected_state(*, live: Iterable[ScopedObjectMock] = (), dead: Iterable[ScopedObjectMock] = ()) -> None:
+    assert all(not scoped_object.at_exit_from_scope_was_called for scoped_object in live)
     assert all(scoped_object.at_exit_from_scope_was_called for scoped_object in dead)

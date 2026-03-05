@@ -1,23 +1,22 @@
 import json
-import pytest
 
+import pytest
 from google.protobuf.json_format import ParseDict
 
+from wax import api_to_proto
+from wax.proto.transaction import transaction
 from wax_local_tools.refs import (
-    API_REF_TRANSACTION,
-    PROTO_REF_TRANSACTION,
-    API_REF_RELEASE_BLOCK,
-    API_REF_HF_BLOCK,
     API_REF_BLOCK_EMPTY_TRANSACTIONS,
     API_REF_BLOCK_NO_TRANSACTIONS,
-    PROTO_REF_RELEASE_BLOCK,
+    API_REF_HF_BLOCK,
+    API_REF_RELEASE_BLOCK,
+    API_REF_TRANSACTION,
+    PROTO_REF_BLOCK_EMPTY_TRANSACTION,
     PROTO_REF_HF_BLOCK,
-    PROTO_REF_BLOCK_EMPTY_TRANSACTION
+    PROTO_REF_RELEASE_BLOCK,
+    PROTO_REF_TRANSACTION,
 )
 
-from wax import api_to_proto
-
-from wax.proto.transaction import transaction
 
 @pytest.mark.skip(reason="block.proto definition is ignored")
 def test_api_to_proto():

@@ -1,7 +1,6 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
 from wax.proto.operations import operation, witness_block_approve
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_witness_block_approve():

@@ -11,14 +11,13 @@
 #     },
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax.proto.asset import asset
 from wax.proto.operations import (
     delegate_vesting_shares,
     operation,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_delegate_vesting_shares():

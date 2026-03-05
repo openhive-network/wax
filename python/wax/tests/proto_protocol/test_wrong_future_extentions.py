@@ -1,9 +1,8 @@
 import json
 from copy import deepcopy
 
-from wax_local_tools.refs import PROTO_REF_TRANSACTION
-
 from wax import validate_proto_transaction
+from wax_local_tools.refs import PROTO_REF_TRANSACTION
 
 
 def test_wrong_future_extensions():

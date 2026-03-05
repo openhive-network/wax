@@ -25,12 +25,8 @@ TX_EXPIRATION: Final[str] = "2023-11-09T21:51:27"
 
 
 @pytest.mark.parametrize("asset_type", ["hbd", "hive"])
-@pytest.mark.describe(
-    "Should initialize push_operation with recurrent_transfer_operation via base interface"
-)
-def test_basic_recurrent_transfer_operation(
-    wax: IWaxBaseInterface, transaction: ITransaction, asset_type: str
-) -> None:
+@pytest.mark.describe("Should initialize push_operation with recurrent_transfer_operation via base interface")
+def test_basic_recurrent_transfer_operation(wax: IWaxBaseInterface, transaction: ITransaction, asset_type: str) -> None:
     transfer_amount = getattr(wax, asset_type).satoshis(100)
 
     transaction.push_operation(
@@ -83,9 +79,7 @@ def test_recurrent_transfer_with_pair_id_extension(
             recurrence=24,
             to_account="bob",
             extensions=[
-                recurrent_transfer_extension(
-                    recurrent_transfer_pair_id=recurrent_transfer_pair_id(pair_id=id_)
-                )
+                recurrent_transfer_extension(recurrent_transfer_pair_id=recurrent_transfer_pair_id(pair_id=id_))
             ],
         )
     )
@@ -99,9 +93,7 @@ def test_recurrent_transfer_with_pair_id_extension(
                 "precision": transfer_amount.precision,
             },
             "executions": 2,
-            "extensions": [
-                {"type": "recurrent_transfer_pair_id", "value": {"pair_id": id_}}
-            ],
+            "extensions": [{"type": "recurrent_transfer_pair_id", "value": {"pair_id": id_}}],
             "from": "alice",
             "memo": "monthly subscription",
             "recurrence": 24,
@@ -252,9 +244,7 @@ def test_define_recurrent_transfer_raises_unexpected_asset_type_error(
 
 
 @pytest.mark.describe("DefineRecurrentTransferOperation.transaction")
-def test_define_recurrent_transfer_add_to_transaction(
-    transaction: ITransaction, wax: IWaxBaseInterface
-) -> None:
+def test_define_recurrent_transfer_add_to_transaction(transaction: ITransaction, wax: IWaxBaseInterface) -> None:
     # arrange
     transaction.transaction.expiration = TX_EXPIRATION
     op = DefineRecurrentTransferOperation(

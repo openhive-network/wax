@@ -5,6 +5,7 @@ from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
 import pytest
+
 from test_tools.__private.paths_to_executables import _PathsToExecutables
 
 from .executable_init_params import ExecutableInitParams
@@ -30,9 +31,7 @@ def paths() -> _PathsToExecutables:
 
 def __executables() -> list[ExecutableInitParams]:
     return [
-        ExecutableInitParams(
-            "hived", "--hived-path", "HIVED_PATH", "programs/hived/hived"
-        ),
+        ExecutableInitParams("hived", "--hived-path", "HIVED_PATH", "programs/hived/hived"),
         ExecutableInitParams(
             "cli_wallet",
             "--cli-wallet-path",

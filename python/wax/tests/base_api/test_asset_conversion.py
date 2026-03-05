@@ -118,9 +118,7 @@ def test_asset_conversion_7(wax: IWaxBaseInterface) -> None:
 
 @pytest.mark.describe("Should be able to convert HBD to HIVE using satoshis")
 def test_asset_conversion_8(wax: IWaxBaseInterface) -> None:
-    result = wax.hbd_to_hive(
-        hbd=wax.hbd.satoshis(10), base=wax.hbd.satoshis(1), quote=wax.hive.satoshis(10)
-    )
+    result = wax.hbd_to_hive(hbd=wax.hbd.satoshis(10), base=wax.hbd.satoshis(1), quote=wax.hive.satoshis(10))
 
     assert result == wax.hive.satoshis(100)
 
@@ -130,9 +128,7 @@ def test_asset_conversion_8(wax: IWaxBaseInterface) -> None:
     ("value_to_convert", "base", "quote"),
     [(2, 1, 1), (5, 1, 2), (10, 1, 10), (1000, 1, 20)],
 )
-def test_asset_conversion_9(
-    wax: IWaxBaseInterface, value_to_convert: int, base: int, quote: int
-) -> None:
+def test_asset_conversion_9(wax: IWaxBaseInterface, value_to_convert: int, base: int, quote: int) -> None:
     result = wax.hbd_to_hive(
         hbd=wax.hbd.coins(value_to_convert),
         base=wax.hbd.coins(base),
@@ -144,8 +140,6 @@ def test_asset_conversion_9(
 
 @pytest.mark.describe("Should be able to convert HBD to HIVE using mixed params")
 def test_asset_conversion_10(wax: IWaxBaseInterface) -> None:
-    result = wax.hbd_to_hive(
-        hbd=wax.hbd.coins(10), base=wax.hbd.satoshis(1), quote=wax.hive.satoshis(10)
-    )
+    result = wax.hbd_to_hive(hbd=wax.hbd.coins(10), base=wax.hbd.satoshis(1), quote=wax.hive.satoshis(10))
 
     assert result == wax.hive.coins(100)

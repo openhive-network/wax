@@ -1,9 +1,8 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
-from wax.proto.operations import feed_publish, operation
-from wax.proto.asset import asset
-from wax.proto.transaction import transaction
 from wax._private.proto.price_pb2 import price
+from wax.proto.asset import asset
+from wax.proto.operations import feed_publish, operation
+from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_feed_publish():

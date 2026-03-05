@@ -6,7 +6,6 @@ import pytest
 
 from wax import calculate_hp_apr, hive, python_json_asset
 
-
 TESTDATA: Final[list[tuple[int, int, python_json_asset, python_json_asset, str]]] = [
     (1_000_000, 1_500, hive(530_656_835_180), hive(173_009_633_181), '4.48'),
     (82_779_364, 1_500, hive(530_656_835_180), hive(173_009_633_181), '2.97')

@@ -7,13 +7,12 @@
 #   }
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
 from wax.proto.operations import (
     account_witness_vote,
     operation,
 )
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_account_witness_vote():

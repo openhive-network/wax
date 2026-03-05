@@ -1,12 +1,11 @@
-from wax_local_tools.checkers import check_operations, check_transaction
 from wax._private.proto import comment_options_pb2
-
+from wax.proto.asset import asset
 from wax.proto.operations import (
     comment_options,
     operation,
 )
 from wax.proto.transaction import transaction
-from wax.proto.asset import asset
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_comment_options():

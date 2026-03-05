@@ -17,7 +17,9 @@ def test_delegate_single_account() -> None:
     op.delegate(working_account, max_rc, delegatee).authorize("testAuthority")
 
     # Assert
-    expected_json = "\"[delegate_rc, {'from_account': 'alice', 'max_rc': 1000, 'delegatees': ['bob'], 'extensions': []}]\""
+    expected_json = (
+        "\"[delegate_rc, {'from_account': 'alice', 'max_rc': 1000, 'delegatees': ['bob'], 'extensions': []}]\""
+    )
 
     assert op.ops[0].required_posting_auths == ["testAuthority"]
     assert op.ops[0].id == "rc"
@@ -34,9 +36,7 @@ def test_delegate_multiple_accounts() -> None:
     other_delegatees = ["carol", "dave"]
 
     # Act
-    op.delegate(working_account, max_rc, delegatee, *other_delegatees).authorize(
-        "testAuthority"
-    )
+    op.delegate(working_account, max_rc, delegatee, *other_delegatees).authorize("testAuthority")
 
     # Assert
     expected_json = (
@@ -76,9 +76,7 @@ def test_remove_delegation_multiple() -> None:
     other_delegatees = ["carol", "dan"]
 
     # Act
-    op.remove_delegation(working_account, delegatee, *other_delegatees).authorize(
-        "testAuthority"
-    )
+    op.remove_delegation(working_account, delegatee, *other_delegatees).authorize("testAuthority")
 
     # Assert
     expected_json = (

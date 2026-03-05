@@ -3,6 +3,7 @@ import sys
 
 from wax import hbd
 
+
 def test_hbd():
     asset = hbd(sys.maxsize)
     assert asset.nai == '@@000000013'

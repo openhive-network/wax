@@ -4,7 +4,7 @@ import pytest
 
 import wax
 
-from .consts import VALID_TRX_ID_WITH_TRANSACTIONS
+from wax_local_tools.consts import VALID_TRX_ID_WITH_TRANSACTIONS
 
 
 @pytest.mark.parametrize("trx_id", list(VALID_TRX_ID_WITH_TRANSACTIONS))

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 import test_tools as tt
 from test_tools.__private.exceptions import MissingPathToExecutableError
 
@@ -24,6 +25,4 @@ def test_if_serialization_fails_due_to_missing_key_generator_executable() -> Non
 
     for key in ["private_key", "public_key"]:
         with pytest.raises(MissingPathToExecutableError):
-            str(
-                getattr(account, key)
-            )  # Run serialization, but it requires key generator, so should fail
+            str(getattr(account, key))  # Run serialization, but it requires key generator, so should fail

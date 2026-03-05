@@ -3,8 +3,7 @@ from __future__ import annotations
 import pytest
 
 import wax
-
-from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
+from wax.exceptions import WaxAssertionError, WaxChainAssertionError, WaxError, WaxProtocolAssertionError
 
 
 def test_exception_handling() -> None:

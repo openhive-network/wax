@@ -1,10 +1,7 @@
 import json
 
-from wax import validate_transaction, calculate_transaction_id
+from wax import calculate_transaction_id, validate_transaction
 
-import json
-
-from wax import validate_transaction
 
 def test_another_bad_serialization():
     trx = json.dumps(

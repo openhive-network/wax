@@ -1,8 +1,10 @@
 import json
 
-from wax_local_tools.refs import API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION
-
 from wax import proto_to_legacy_api
+from wax_local_tools.refs import (
+    API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+    PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
+)
 
 
 def test_tx_proto_to_legacy_api_positive():

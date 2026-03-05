@@ -4,7 +4,7 @@ import pytest
 
 import wax
 
-from .consts import MAINNET_CHAIN_ID, VALID_SIG_DIGEST_WITH_TRANSACTIONS
+from wax_local_tools.consts import MAINNET_CHAIN_ID, VALID_SIG_DIGEST_WITH_TRANSACTIONS
 
 
 @pytest.mark.parametrize("sig_digest", list(VALID_SIG_DIGEST_WITH_TRANSACTIONS))

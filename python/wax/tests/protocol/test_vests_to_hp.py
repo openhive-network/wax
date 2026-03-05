@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from wax import calculate_account_hp, calculate_witness_votes_hp, hive, vests, python_json_asset
-
+from wax import calculate_account_hp, calculate_witness_votes_hp, hive, python_json_asset, vests
 
 TESTDATA1: Final[list[tuple[python_json_asset, python_json_asset, python_json_asset, python_json_asset]]] = [
     (vests(1_100_000_000), hive(100_000), vests(100_000_000_000), hive(1100)),

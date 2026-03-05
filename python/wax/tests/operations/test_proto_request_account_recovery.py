@@ -1,12 +1,11 @@
-from wax_local_tools.checkers import check_operations, check_transaction
 from wax._private.proto import future_extensions_pb2
-
-from wax.proto.operations import (
-    request_account_recovery,
-    operation,
-)
 from wax.proto.authority import authority
+from wax.proto.operations import (
+    operation,
+    request_account_recovery,
+)
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_request_account_recovery():

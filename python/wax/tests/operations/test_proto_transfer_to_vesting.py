@@ -11,11 +11,10 @@
 #   }
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax.proto.asset import asset
 from wax.proto.operations import operation, transfer_to_vesting
 from wax.proto.transaction import transaction
-from wax.proto.asset import asset
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_transfer_to_vesting():

@@ -1,5 +1,7 @@
 import re
-from wax import generate_private_key, calculate_public_key
+
+from wax import calculate_public_key, generate_private_key
+
 
 def test_key_methods():
     result = generate_private_key()

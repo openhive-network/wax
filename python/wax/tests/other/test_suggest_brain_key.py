@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import re
+
 import wax
 
-from .consts import PRIVATE_KEY_PATTERN, PUBLIC_KEY_PATTERN
-
-import re
+from wax_local_tools.consts import PRIVATE_KEY_PATTERN, PUBLIC_KEY_PATTERN
 
 
 def test_suggest_brain_key() -> None:

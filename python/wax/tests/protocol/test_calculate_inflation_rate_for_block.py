@@ -5,8 +5,7 @@ from typing import Final
 
 import pytest
 
-from wax import calculate_inflation_rate_for_block 
-
+from wax import calculate_inflation_rate_for_block
 
 TESTDATA: Final[list[tuple[int, str]]] = [
     (1_000_000, '974'),

@@ -18,14 +18,13 @@
 #   }
 # }
 
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax.proto.asset import asset
 from wax.proto.operations import (
     limit_order_create,
     operation,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_limit_order_create():

@@ -6,7 +6,6 @@ import pytest
 
 from wax import evaluate_hbd_interest, hbd, python_json_asset
 
-
 TESTDATA: Final[list[tuple[int, int, python_json_asset, int, int, python_json_asset]]] = [
     (
         0xFFFF_FFFF_FFFF_FFFF,

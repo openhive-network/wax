@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import re
-from typing import Callable
+from typing import TYPE_CHECKING
 
 import pytest
 
 from beekeepy.interfaces import HttpUrl, P2PUrl, WsUrl
 from wax_local_tools.consts import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.mark.parametrize(
@@ -16,9 +19,7 @@ from wax_local_tools.consts import DEFAULT_ADDRESS, DEFAULT_PORT, URL_TYPES
         (f"ws://{DEFAULT_ADDRESS}:{DEFAULT_PORT}", "ws", WsUrl),
     ],
 )
-def test_url_parsing_without_expected_protocol(
-    input_url: str, expected_protocol: str, url_type: URL_TYPES
-) -> None:
+def test_url_parsing_without_expected_protocol(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
     url = url_type(input_url)
 
     assert url.protocol == expected_protocol
@@ -33,11 +34,8 @@ def test_url_parsing_without_expected_protocol(
         (f"{DEFAULT_ADDRESS}:{DEFAULT_PORT}", "ws", WsUrl),
     ],
 )
-def test_url_parsing_with_expected_protocol(
-    input_url: str, expected_protocol: str, url_type: URL_TYPES
-) -> None:
+def test_url_parsing_with_expected_protocol(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
     url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
-
     assert url.protocol == expected_protocol
     assert url.address == DEFAULT_ADDRESS
     assert url.port == DEFAULT_PORT
@@ -50,11 +48,8 @@ def test_url_parsing_with_expected_protocol(
         (DEFAULT_ADDRESS, "ws", WsUrl),
     ],
 )
-def test_url_parsing_without_port_given(
-    input_url: str, expected_protocol: str, url_type: URL_TYPES
-) -> None:
+def test_url_parsing_without_port_given(input_url: str, expected_protocol: str, url_type: URL_TYPES) -> None:
     url = url_type(input_url, protocol=expected_protocol)  # type: ignore[call-overload]
-
     assert url.protocol == expected_protocol
     assert url.address == DEFAULT_ADDRESS
     assert url.port is None
@@ -69,9 +64,7 @@ def test_url_parsing_without_address_given(url_type: URL_TYPES) -> None:
 
 
 @pytest.mark.parametrize("url_cls", [HttpUrl, WsUrl, P2PUrl])
-@pytest.mark.parametrize(
-    "schema_input", [lambda x: x._allowed_protocols()[0], lambda _: None]
-)
+@pytest.mark.parametrize("schema_input", [lambda x: x._allowed_protocols()[0], lambda _: None])
 def test_schema_auto_apply_in_url(
     schema_input: Callable[[URL_TYPES | type[P2PUrl]], str | None],
     url_cls: URL_TYPES | type[P2PUrl],
@@ -97,8 +90,6 @@ def test_url_schema_validation(url_cls: URL_TYPES | type[P2PUrl]) -> None:
     # ACT & ASSERT
     with pytest.raises(
         ValueError,
-        match=re.escape(
-            f"Unknown protocol: `{invalid_proto}`, allowed: {url_cls._allowed_protocols()}"
-        ),
+        match=re.escape(f"Unknown protocol: `{invalid_proto}`, allowed: {url_cls._allowed_protocols()}"),
     ):
         url_cls("some-address", protocol=invalid_proto)  # type: ignore[call-overload]

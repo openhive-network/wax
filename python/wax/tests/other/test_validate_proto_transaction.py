@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import wax
 
-from .consts import VALID_PROTO_TRANSACTION
+from wax_local_tools.consts import VALID_PROTO_TRANSACTION
 from wax_local_tools.util import get_proto_operation_name
 
 

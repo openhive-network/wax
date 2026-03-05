@@ -3,6 +3,7 @@ import sys
 
 from wax import vests
 
+
 def test_vests():
     asset = vests(-sys.maxsize - 1)
     assert asset.nai == '@@000000037'

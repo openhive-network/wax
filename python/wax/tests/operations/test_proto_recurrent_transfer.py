@@ -1,13 +1,12 @@
-from wax_local_tools.checkers import check_operations, check_transaction
 from wax._private.proto import recurrent_transfer_pb2
-
-from wax.proto.operations import (
-    recurrent_transfer,
-    operation,
-)
-from wax.proto.asset import asset
-from wax.proto.transaction import transaction
 from wax._private.proto.recurrent_transfer_extension_pb2 import recurrent_transfer_extension, recurrent_transfer_pair_id
+from wax.proto.asset import asset
+from wax.proto.operations import (
+    operation,
+    recurrent_transfer,
+)
+from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_recurrent_transfer():

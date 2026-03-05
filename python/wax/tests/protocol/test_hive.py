@@ -2,6 +2,7 @@ import json
 
 from wax import hive
 
+
 def test_hive():
     asset = hive(10)
     assert asset.nai == '@@000000021'

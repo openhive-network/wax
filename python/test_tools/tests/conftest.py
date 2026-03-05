@@ -3,12 +3,12 @@ from __future__ import annotations
 import logging
 
 import pytest
-import test_tools as tt
 from loguru import logger
-from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
+import test_tools as tt
 from schemas.policies.policy import set_policies
 from schemas.policies.testnet_assets import TestnetAssetsPolicy
+from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 
 @pytest.fixture(autouse=True)

@@ -1,6 +1,6 @@
 from google.protobuf.json_format import ParseDict
 
-from wax.proto.operations import vote, operation
+from wax.proto.operations import operation, vote
 from wax.proto.transaction import transaction
 from wax.wax_visitor import OperationVisitor
 

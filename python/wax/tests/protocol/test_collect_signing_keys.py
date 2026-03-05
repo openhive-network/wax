@@ -1,16 +1,15 @@
 from __future__ import annotations
 
-from typing import Any
-
 import json
+from typing import Any
 
 import pytest
 
-from wax import collect_signing_keys, python_authority, python_authorities
+from wax import collect_signing_keys, python_authorities, python_authority
 from wax_local_tools.refs import (
     ACCOUNT_AUTHS,
-    SIGNING_KEYS,
     API_TRX_SIG1,
+    SIGNING_KEYS,
     API_TRX_SIG5_v0,
     API_TRX_SIG5_v1,
     API_TRX_SIG5_v2,

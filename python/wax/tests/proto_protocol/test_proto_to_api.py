@@ -1,8 +1,7 @@
 import json
 
-from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
-
 from wax import proto_to_api
+from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
 def test_proto_to_api_positive():

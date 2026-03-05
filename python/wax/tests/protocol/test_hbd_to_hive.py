@@ -4,7 +4,7 @@ from typing import Final
 
 import pytest
 
-from wax import calculate_hbd_to_hive, hive, hbd, python_json_asset
+from wax import calculate_hbd_to_hive, hbd, hive, python_json_asset
 
 # Results validated manually
 

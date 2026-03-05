@@ -1,7 +1,6 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
-from wax.proto.operations import operation, escrow_dispute
+from wax.proto.operations import escrow_dispute, operation
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_escrow_dispute():

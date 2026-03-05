@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-from wax_local_tools.refs import API_REF_TRANSACTION
 from wax import get_transaction_required_authorities, python_authority
+from wax_local_tools.refs import API_REF_TRANSACTION
 
 
 def test_get_transaction_required_autorities():

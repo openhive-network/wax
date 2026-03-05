@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from wax.wax_result import (
-    python_json_asset,
-    python_witness_set_properties_data,
-    python_price,
-)
-import wax
-
 import pytest
 
+import wax
+from wax.wax_result import (
+    python_json_asset,
+    python_price,
+    python_witness_set_properties_data,
+)
 
 PROPS_TO_SERIALIZE = (
     [

@@ -1,7 +1,6 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
 from wax.proto.operations import operation, vote
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_vote():

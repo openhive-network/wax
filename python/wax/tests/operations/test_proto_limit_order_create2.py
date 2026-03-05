@@ -1,12 +1,11 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax._private.proto.price_pb2 import price
+from wax.proto.asset import asset
 from wax.proto.operations import (
     limit_order_create2,
     operation,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
-from wax._private.proto.price_pb2 import price
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_limit_order_create2():

@@ -1,10 +1,9 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
 from wax.proto.operations import (
-    operation,
     cancel_transfer_from_savings,
+    operation,
 )
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_cancel_transfer_from_savings():

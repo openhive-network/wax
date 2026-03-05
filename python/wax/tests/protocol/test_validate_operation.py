@@ -1,8 +1,7 @@
 import json
 
-from wax_local_tools.refs import API_REF_VOTE_OP, PROTO_REF_VOTE_OP, API_REF_VOTE_OP_EMPTY
-
 from wax import validate_operation
+from wax_local_tools.refs import API_REF_VOTE_OP, API_REF_VOTE_OP_EMPTY, PROTO_REF_VOTE_OP
 
 
 def test_validate_operation_positive():

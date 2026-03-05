@@ -1,13 +1,12 @@
 import json
 
-from wax_local_tools.refs import (
-    PROTO_REF_TRANSACTION,
-    API_REF_TRANSACTION,
-    PROTO_REF_TRANSACTION_NO_OPERATIONS,
-    PROTO_REF_TRANSACTION_EMPTY_OPERATIONS
-)
-
 from wax import validate_proto_transaction
+from wax_local_tools.refs import (
+    API_REF_TRANSACTION,
+    PROTO_REF_TRANSACTION,
+    PROTO_REF_TRANSACTION_EMPTY_OPERATIONS,
+    PROTO_REF_TRANSACTION_NO_OPERATIONS,
+)
 
 
 def test_validate_proto_transaction_positive():

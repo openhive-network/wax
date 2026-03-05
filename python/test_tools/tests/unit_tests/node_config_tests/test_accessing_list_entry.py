@@ -39,10 +39,6 @@ def test_adding_second_string_instead_of_list(config: NodeConfig) -> None:
 
 def test_remove_item_from_list(config: NodeConfig) -> None:
     config.plugin.clear()
-    config.plugin.extend(
-        ["witness", "account_by_key", "account_by_key_api", "condenser_api"]
-    )
+    config.plugin.extend(["witness", "account_by_key", "account_by_key_api", "condenser_api"])
     config.plugin.remove("witness")
-    assert sorted(config.plugin) == sorted(
-        ["account_by_key", "account_by_key_api", "condenser_api"]
-    )
+    assert sorted(config.plugin) == sorted(["account_by_key", "account_by_key_api", "condenser_api"])

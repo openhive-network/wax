@@ -1,10 +1,9 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
-from wax.proto.operations import account_create_with_delegation, operation
-from wax.proto.asset import asset
-from wax.proto.transaction import transaction
-from wax.proto.authority import authority
 from wax._private.proto.future_extensions_pb2 import future_extensions
+from wax.proto.asset import asset
+from wax.proto.authority import authority
+from wax.proto.operations import account_create_with_delegation, operation
+from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_account_create_with_delegation():

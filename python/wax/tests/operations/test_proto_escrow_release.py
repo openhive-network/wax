@@ -1,8 +1,7 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
-from wax.proto.operations import operation, escrow_release
 from wax.proto.asset import asset
+from wax.proto.operations import escrow_release, operation
 from wax.proto.transaction import transaction
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_escrow_release():

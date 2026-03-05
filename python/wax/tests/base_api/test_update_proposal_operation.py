@@ -67,11 +67,7 @@ def test_adds_end_date_to_update_proposal_when_provided(
             subject="Improve UI Design",
             permlink="improve-ui",
             extensions=[
-                update_proposal_extension(
-                    update_proposal_end_date=update_proposal_end_date(
-                        end_date="2023-03-14"
-                    )
-                )
+                update_proposal_extension(update_proposal_end_date=update_proposal_end_date(end_date="2023-03-14"))
             ],
         )
     )
@@ -101,9 +97,7 @@ def test_adds_end_date_to_update_proposal_when_provided(
 
 
 @pytest.mark.skip(reason="python version `update_proposal` not implemented")
-@pytest.mark.describe(
-    "Should handle edge case in update proposal where end_date is given as timestamp"
-)
+@pytest.mark.describe("Should handle edge case in update proposal where end_date is given as timestamp")
 def test_handles_update_proposal_with_timestamp_end_date(
     transaction: ITransaction,
 ) -> None:
@@ -117,11 +111,7 @@ def test_handles_update_proposal_with_timestamp_end_date(
             extensions=[
                 # TODO: TypeError: bad argument type for built-in operation
                 #  in TS test end_date is provided as int                                             ↓ ↓ ↓ ↓ ↓ ↓ ↓
-                update_proposal_extension(
-                    update_proposal_end_date=update_proposal_end_date(
-                        end_date="1678917600000"
-                    )
-                )
+                update_proposal_extension(update_proposal_end_date=update_proposal_end_date(end_date="1678917600000"))
             ],
         )
     )
@@ -154,12 +144,8 @@ def test_handles_update_proposal_with_timestamp_end_date(
     assert json.loads(transaction.to_api())["operations"][0] == expected
 
 
-@pytest.mark.skip(
-    reason="can't convert wax operation to legacy format, missing method `tx.toLegacyApi()"
-)
-@pytest.mark.describe(
-    "Should be able to convert transaction to legacy api with end_date property"
-)
+@pytest.mark.skip(reason="can't convert wax operation to legacy format, missing method `tx.toLegacyApi()")
+@pytest.mark.describe("Should be able to convert transaction to legacy api with end_date property")
 def test_convert_update_proposal_to_legacy_api_with_end_date(
     transaction: ITransaction,
 ) -> None:
@@ -171,11 +157,7 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(
             subject="Improve UI Design",
             permlink="improve-ui",
             extensions=[
-                update_proposal_extension(
-                    update_proposal_end_date=update_proposal_end_date(
-                        end_date="2023-03-14"
-                    )
-                )
+                update_proposal_extension(update_proposal_end_date=update_proposal_end_date(end_date="2023-03-14"))
             ],
         )
     )
@@ -193,25 +175,19 @@ def test_convert_update_proposal_to_legacy_api_with_end_date(
         },
     ]
 
-    assert [
-        message_to_dict_with_defaults(op) for op in transaction.transaction.operations
-    ] == expected_in_legacy_format
+    assert [message_to_dict_with_defaults(op) for op in transaction.transaction.operations] == expected_in_legacy_format
 
 
 @pytest.mark.skip(reason="python version `update_proposal` not implemented")
 @pytest.mark.describe("Should fail when invalid asset is provided")
-def test_reject_invalid_asset_in_update_proposal_operation(
-    wax: IWaxBaseInterface, transaction: ITransaction
-) -> None:
+def test_reject_invalid_asset_in_update_proposal_operation(wax: IWaxBaseInterface, transaction: ITransaction) -> None:
     # TODO: shouldn't by possible to create update_proposal object with wrong type of asset in daily_pay field
     with pytest.raises(WaxError) as error:
         transaction.push_operation(
             update_proposal(
                 proposal_id=100,
                 creator="initminer",
-                daily_pay=wax.hive.satoshis(
-                    0
-                ),  # proposals daily pay should be give in HBD
+                daily_pay=wax.hive.satoshis(0),  # proposals daily pay should be give in HBD
                 subject="subject",
                 permlink="permlink",
                 extensions=[],
@@ -242,9 +218,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
             permlink="permlink",
             extensions=[
                 update_proposal_extension(
-                    update_proposal_end_date=update_proposal_end_date(
-                        end_date="2023-08-01T15:38:48"
-                    )
+                    update_proposal_end_date=update_proposal_end_date(end_date="2023-08-01T15:38:48")
                 )
             ],
         )
@@ -269,9 +243,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
                 "permlink": "permlink",
                 "subject": "subject",
                 "proposal_id": "100",
-                "extensions": [
-                    {"update_proposal_end_date": {"end_date": "2023-08-01T15:38:48"}}
-                ],
+                "extensions": [{"update_proposal_end_date": {"end_date": "2023-08-01T15:38:48"}}],
             }
         },
         {
@@ -287,9 +259,7 @@ def test_transaction_interface_handles_update_proposal_with_extensions(
     ]
 
     # TODO: repair this assert when transaction.from_proto_to_dict() will be available
-    assert [
-        message_to_dict_with_defaults(op) for op in transaction.transaction.operations
-    ] == expected
+    assert [message_to_dict_with_defaults(op) for op in transaction.transaction.operations] == expected
 
 
 @pytest.mark.describe("UpdateProposalOperation.finalize")
@@ -313,9 +283,7 @@ def test_finalize_returns_correct_operation_with_date(wax: IWaxBaseInterface) ->
         "daily_pay": {"amount": "1000", "precision": 3, "nai": "@@000000013"},
         "subject": "subject",
         "permlink": "permlink",
-        "extensions": [
-            {"update_proposal_end_date": {"end_date": "2025-10-09T12:00:00"}}
-        ],
+        "extensions": [{"update_proposal_end_date": {"end_date": "2025-10-09T12:00:00"}}],
     }
 
     # act
@@ -380,9 +348,7 @@ def test_operation_raises_unexpected_asset_type_error(wax: IWaxBaseInterface) ->
 
 
 @pytest.mark.describe("UpdateProposalOperation.transaction")
-def test_operation_add_to_transaction(
-    transaction: ITransaction, wax: IWaxBaseInterface
-) -> None:
+def test_operation_add_to_transaction(transaction: ITransaction, wax: IWaxBaseInterface) -> None:
     # arrange
     transaction.transaction.expiration = TX_EXPIRATION
     op = UpdateProposalOperation(

@@ -10,9 +10,7 @@ if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
 
 
-@pytest.mark.describe(
-    "Should be able to calculate current manabar value using hive chain interface"
-)
+@pytest.mark.describe("Should be able to calculate current manabar value using hive chain interface")
 def test_current_manabar_calculation(wax: IWaxBaseInterface) -> None:
     manabar = wax.calculate_current_manabar_value(
         head_block_time=datetime.fromtimestamp(1702548351, tz=timezone.utc),

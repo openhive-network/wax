@@ -1,8 +1,7 @@
 import json
 
-from wax_local_tools.refs import API_REF_TRANSACTION, API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_TRANSACTION
-
-from wax import calculate_sig_digest, calculate_legacy_sig_digest
+from wax import calculate_legacy_sig_digest, calculate_sig_digest
+from wax_local_tools.refs import API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
 def test_calculate_sig_digest_positive():

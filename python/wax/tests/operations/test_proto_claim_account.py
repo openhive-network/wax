@@ -1,9 +1,8 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax._private.proto.future_extensions_pb2 import future_extensions, void_t
+from wax.proto.asset import asset
 from wax.proto.operations import claim_account, operation
 from wax.proto.transaction import transaction
-from wax.proto.asset import asset
-from wax._private.proto.future_extensions_pb2 import future_extensions, void_t
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_claim_account():

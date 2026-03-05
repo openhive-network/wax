@@ -1,8 +1,7 @@
 import json
 
-from wax_local_tools.refs import API_REF_TRANSACTION, API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, PROTO_REF_TRANSACTION
-
-from wax import calculate_transaction_id, calculate_legacy_transaction_id
+from wax import calculate_legacy_transaction_id, calculate_transaction_id
+from wax_local_tools.refs import API_REF_SERIALIZATION_SENSITIVE_TRANSACTION, API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
 def test_calculate_transaction_id_positive():

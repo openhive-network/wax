@@ -1,13 +1,12 @@
-from wax_local_tools.checkers import check_operations, check_transaction
-
+from wax._private.proto import future_extensions_pb2
+from wax.proto.asset import asset
+from wax.proto.authority import authority
 from wax.proto.operations import (
     create_claimed_account,
     operation,
 )
-from wax.proto.asset import asset
 from wax.proto.transaction import transaction
-from wax.proto.authority import authority
-from wax._private.proto import future_extensions_pb2
+from wax_local_tools.checkers import check_operations, check_transaction
 
 
 def test_create_claimed_account():
