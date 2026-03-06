@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import datetime
 import os
 import re
 import socket
@@ -8,14 +9,15 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from test_tools.__private.complex_networks import networks_architecture as networks
+from beekeepy.interfaces import P2PUrl
+
 import test_tools as tt
 from schemas.jsonrpc import get_response_model
-from wax.helpy import OffsetTimeControl, StartTimeControl
-
+from test_tools.__private.complex_networks import networks_architecture as networks
 from test_tools.__private.complex_networks.helper_functions import connect_sub_networks
+from wax.helpy import OffsetTimeControl, StartTimeControl, TimeControl
 
 
 def _warmup_msgspec_decoders() -> None:
@@ -41,13 +43,10 @@ def _warmup_msgspec_decoders() -> None:
 
         # Warm up the decoder cache by parsing sample responses
         get_response_model(str, '{"jsonrpc":"2.0","id":0,"result":"warmup"}', "hf26")
-        get_response_model(dict, '{"jsonrpc":"2.0","id":0,"result":{}}', "hf26")
-        get_response_model(list, '{"jsonrpc":"2.0","id":0,"result":[]}', "hf26")
 
 
 if TYPE_CHECKING:
-    import datetime
-    from collections.abc import Iterable
+    from collections.abc import Sequence
 
 last_used_port_number = 0
 
@@ -57,14 +56,16 @@ class NodesPreparer:
         pass
 
 
-def get_relative_time_offset_from_timestamp(timestamp: datetime.datatime) -> OffsetTimeControl:
-    delta = tt.Time.now(serialize=False) - timestamp
+def get_relative_time_offset_from_timestamp(timestamp: datetime.datetime) -> OffsetTimeControl:
+    now = tt.Time.now(serialize=False)
+    assert isinstance(now, datetime.datetime)
+    delta = now - timestamp
     delta += tt.Time.seconds(5)  # Node starting and entering live mode takes some time to complete
     return OffsetTimeControl(offset=f"-{delta.total_seconds():.3f}s")
 
 
 def init_network(  # noqa: C901
-    init_node,
+    init_node: tt.InitNode,
     all_witness_names: list[str],
     key: str | None = None,
     block_log_directory_name: Path | None = None,
@@ -150,7 +151,7 @@ def init_network(  # noqa: C901
         init_node.block_log.copy_to(block_log_directory_name)
 
 
-def modify_time_offset(old_iso_date: datetime, offset_in_seconds: int) -> OffsetTimeControl:
+def modify_time_offset(old_iso_date: datetime.datetime, offset_in_seconds: int) -> OffsetTimeControl:
     new_iso_date = old_iso_date - tt.Time.seconds(offset_in_seconds)
     tt.logger.info(f"old date: {old_iso_date} new date(after time offset): {new_iso_date}")
 
@@ -158,10 +159,11 @@ def modify_time_offset(old_iso_date: datetime, offset_in_seconds: int) -> Offset
 
 
 def run_networks(
-    networks: Iterable[tt.Network], blocklog_directory: Path, time_offsets: Iterable[str] | None = None
+    networks: list[tt.Network], blocklog_directory: Path | None, time_offsets: Sequence[int] | None = None
 ) -> None:
-    arguments = []
+    arguments: tt.NodeArguments | None = None
     alternate_chain_spec: tt.AlternateChainSpecs | None = None
+    timestamp: datetime.datetime | None = None
     if blocklog_directory is not None:
         block_log = tt.BlockLog(blocklog_directory, "auto")
         timestamp = block_log.get_head_block_time()
@@ -174,7 +176,7 @@ def run_networks(
 
     tt.logger.info("Running nodes...")
 
-    connect_sub_networks(networks)
+    connect_sub_networks(list(networks))
 
     nodes = [node for network in networks for node in network.nodes]
 
@@ -187,12 +189,10 @@ def run_networks(
     assigned_addresses = generate_free_addresses(number_of_nodes=len(nodes))
     cnt_node = 1
     for iteration, node in enumerate(nodes):
-        node.config.p2p_endpoint = assigned_addresses[iteration]
-        [
-            node.config.p2p_seed_node.append(address)
-            for address in assigned_addresses
-            if address != assigned_addresses[iteration]
-        ]
+        node.config.p2p_endpoint = P2PUrl(assigned_addresses[iteration])
+        for address in assigned_addresses:
+            if address != assigned_addresses[iteration]:
+                node.config.p2p_seed_node.append(P2PUrl(address))
 
         if blocklog_directory is not None:
             node.config.shared_file_size = "1G"
@@ -204,29 +204,40 @@ def run_networks(
             )
         cnt_node += 1
 
-    for network in networks:
-        network.is_running = True
-
     # Warm up msgspec decoders before spawning threads to avoid race conditions
     _warmup_msgspec_decoders()
 
+    _run_nodes_in_parallel(nodes, blocklog_directory, arguments, allow_external_time_offsets, time_offsets, timestamp)
+
+
+def _run_nodes_in_parallel(
+    nodes: Sequence[tt.AnyNode],
+    blocklog_directory: Path | None,
+    arguments: tt.NodeArguments | None,
+    allow_external_time_offsets: bool,
+    time_offsets: Sequence[int] | None,
+    timestamp: datetime.datetime | None,
+) -> None:
     with ThreadPoolExecutor() as executor:
         tasks = []
         for node_num, node in enumerate(nodes):
             if blocklog_directory:
+                assert timestamp is not None
+                time_control: TimeControl
+                if allow_external_time_offsets:
+                    assert time_offsets is not None
+                    time_control = modify_time_offset(timestamp, time_offsets[node_num])
+                else:
+                    time_control = StartTimeControl(start_time=timestamp)
                 tasks.append(
                     executor.submit(
                         partial(
-                            lambda _node, _node_num: _node.run(
-                                time_control=(
-                                    modify_time_offset(timestamp, time_offsets[_node_num])
-                                    if allow_external_time_offsets
-                                    else StartTimeControl(start_time=timestamp)
-                                ),
+                            lambda _node, _tc: _node.run(
+                                time_control=_tc,
                                 arguments=arguments,
                             ),
                             node,
-                            node_num,
+                            time_control,
                         )
                     )
                 )
@@ -246,11 +257,10 @@ def display_info(node: tt.AnyNode) -> None:
     tt.logger.info(f"Network prepared, irreversible block: {irreversible}, head block: {head}")
 
 
-def prepare_nodes(sub_networks_sizes: list) -> list:
+def prepare_nodes(sub_networks_sizes: list[int]) -> tuple[list[tt.Network], tt.InitNode | None, list[str]]:
     assert len(sub_networks_sizes) > 0, "At least 1 sub-network is required"
 
-    cnt = 0
-    all_witness_names = []
+    all_witness_names: list[str] = []
     sub_networks = []
     init_node = None
 
@@ -273,10 +283,10 @@ def prepare_nodes(sub_networks_sizes: list) -> list:
 def generate_networks(
     architecture: networks.NetworksArchitecture,
     block_log_directory_name: Path | None = None,
-    preparer: NodesPreparer = None,
+    preparer: NodesPreparer | None = None,
     desired_blocklog_length: int | None = None,
     terminate_nodes: bool | None = None,
-) -> dict:
+) -> None:
     builder = networks.NetworksBuilder()
     builder.build(architecture)
 
@@ -286,6 +296,7 @@ def generate_networks(
 
         run_networks(builder.networks, None)
 
+        assert builder.init_node is not None, "InitNode is required for network generation"
         initminer_public_key = "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
         init_network(
             builder.init_node,
@@ -298,17 +309,16 @@ def generate_networks(
     finally:
         if terminate_nodes:
             for node in builder.nodes:
-                node.close()
-
-    return None
+                if hasattr(node, "close"):
+                    node.close()
 
 
 def launch_networks(
     architecture: networks.NetworksArchitecture,
     block_log_directory_name: Path | None = None,
-    time_offsets: Iterable[int] | None = None,
-    preparer: NodesPreparer = None,
-) -> dict:
+    time_offsets: Sequence[int] | None = None,
+    preparer: NodesPreparer | None = None,
+) -> networks.NetworksBuilder:
     builder = networks.NetworksBuilder()
     builder.build(architecture)
 
@@ -319,6 +329,7 @@ def launch_networks(
 
     builder.init_wallet = tt.Wallet(attach_to=builder.init_node)
 
+    assert builder.init_node is not None, "InitNode is required"
     display_info(builder.init_node)
 
     return builder
@@ -327,13 +338,14 @@ def launch_networks(
 def generate_or_launch(
     architecture: networks.NetworksArchitecture,
     block_log_directory_name: Path | None = None,
-    time_offsets: Iterable[int] | None = None,
-    preparer: NodesPreparer = None,
-) -> dict:
+    time_offsets: Sequence[int] | None = None,
+    preparer: NodesPreparer | None = None,
+) -> networks.NetworksBuilder | None:
     if allow_generate_block_log():
         assert block_log_directory_name is not None, "Name of directory with block_log file must be given"
         tt.logger.info(f"New `block_log` generation: {block_log_directory_name}")
-        return generate_networks(architecture, block_log_directory_name, preparer)
+        generate_networks(architecture, block_log_directory_name, preparer)
+        return None
 
     return launch_networks(architecture, block_log_directory_name, time_offsets, preparer)
 
@@ -348,9 +360,9 @@ def allow_generate_block_log() -> bool:
 def run_whole_network(
     architecture: networks.NetworksArchitecture,
     block_log_directory_name: Path | None = None,
-    time_offsets: Iterable[int] | None = None,
-    preparer: NodesPreparer = None,
-) -> tuple[networks.NetworksBuilder, Any]:
+    time_offsets: Sequence[int] | None = None,
+    preparer: NodesPreparer | None = None,
+) -> networks.NetworksBuilder:
     builder = generate_or_launch(architecture, block_log_directory_name, time_offsets, preparer)
 
     if builder is None:
@@ -363,13 +375,13 @@ def run_whole_network(
 def prepare_network(
     architecture: networks.NetworksArchitecture,
     block_log_directory_name: Path | None = None,
-    time_offsets: Iterable[int] | None = None,
+    time_offsets: Sequence[int] | None = None,
 ) -> networks.NetworksBuilder:
     return run_whole_network(architecture, block_log_directory_name, time_offsets)
 
 
-def prepare_time_offsets(limit: int):
-    time_offsets: int = []
+def prepare_time_offsets(limit: int) -> list[int]:
+    time_offsets: list[int] = []
 
     for cnt, _ in enumerate(range(limit)):
         time_offsets.append(cnt % 3 + 1)
@@ -380,18 +392,18 @@ def prepare_time_offsets(limit: int):
     return time_offsets
 
 
-def create_block_log_directory_name(block_log_directory_name: str):
+def create_block_log_directory_name(block_log_directory_name: str) -> Path:
     return Path(__file__).parent.absolute() / "block_logs" / block_log_directory_name
 
 
 def generate_port_ranges(number_of_nodes: int) -> list[int]:
-    global last_used_port_number
+    global last_used_port_number  # noqa: PLW0603
 
     worker_id = get_worker_id()
     start = last_used_port_number + 1 if last_used_port_number else 2000 + worker_id * 1000
 
     port = start
-    ports = []
+    ports: list[int] = []
     while len(ports) < number_of_nodes:
         if is_port_open(port):
             ports.append(port)
@@ -401,7 +413,8 @@ def generate_port_ranges(number_of_nodes: int) -> list[int]:
     assert (
         last_used_port_number < 3000 + worker_id * 1000
     ), f"The pool of available ports for worker {worker_id} has been depleted."
-    assert last_used_port_number <= 65535, "The maximum value of available ports has been depleted."
+    max_port = 65535
+    assert last_used_port_number <= max_port, "The maximum value of available ports has been depleted."
     return ports
 
 

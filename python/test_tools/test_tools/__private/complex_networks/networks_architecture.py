@@ -1,5 +1,7 @@
 """
-***Example***
+Network architecture configuration and builder classes.
+
+Example::
 
 config = {
     "networks": [
@@ -56,32 +58,32 @@ class NodeWrapper:
 
 @dataclass
 class InitNodeWrapper(NodeWrapper):
-    def show(self) -> str:
-        return NodeWrapper.show(self, " ")
+    def show(self, offset: str = " ") -> str:
+        return NodeWrapper.show(self, offset)
 
 
 @dataclass
 class ApiWrapper(NodeWrapper):
-    def show(self) -> str:
-        return NodeWrapper.show(self, " ")
+    def show(self, offset: str = " ") -> str:
+        return NodeWrapper.show(self, offset)
 
 
 @dataclass
 class FullApiWrapper(NodeWrapper):
-    def show(self) -> str:
-        return NodeWrapper.show(self, " ")
+    def show(self, offset: str = " ") -> str:
+        return NodeWrapper.show(self, offset)
 
 
 @dataclass
 class WitnessWrapper(NodeWrapper):
-    witnesses: list = field(default_factory=list)
+    witnesses: list[str] = field(default_factory=list)
 
     def create_witnesses(
         self,
         cnt_witness_start: int,
         witnesses_number: int,
         network_number: int,
-        processor: Callable[[str], int],
+        processor: Callable[[int], str],
         legacy_witness_name: bool,
     ) -> None:
         for i in range(cnt_witness_start, witnesses_number):
@@ -94,13 +96,13 @@ class WitnessWrapper(NodeWrapper):
                     f"witness{i}-{processor(network_number)}"
                 )  # "witness0-alpha", "witness1-alpha", "witness2-alpha"
 
-    def show(self) -> str:
+    def show(self, offset: str = " ") -> str:
         details = list(self.witnesses)
-        return NodeWrapper.show(self, " ") + " (" + ", ".join(detail for detail in details) + ")"
+        return NodeWrapper.show(self, offset) + " (" + ", ".join(detail for detail in details) + ")"
 
 
 class NetworkWrapper:
-    def __init__(self, name) -> None:
+    def __init__(self, name: str) -> None:
         self.name = name
 
         self.init_node: InitNodeWrapper | None = None
@@ -114,11 +116,11 @@ class NetworkWrapper:
         if self.init_node is not None:
             details.append(self.init_node.show())
 
-        if self.api_node is not None:
-            details.append(self.api_node.show())
+        for api_node in self.api_node:
+            details.append(api_node.show())
 
-        if self.full_api_node is not None:
-            details.append(self.full_api_node.show())
+        for full_api_node in self.full_api_node:
+            details.append(full_api_node.show())
 
         for witness_node in self.witness_nodes:
             details.append(witness_node.show())
@@ -129,7 +131,7 @@ class NetworkWrapper:
 @dataclass
 class NetworksArchitecture:
     legacy_witness_name: bool = False
-    networks: list = field(default_factory=list)
+    networks: list[NetworkWrapper] = field(default_factory=list)
     nodes_number: int = 0
 
     def greek(self, idx: int) -> str:

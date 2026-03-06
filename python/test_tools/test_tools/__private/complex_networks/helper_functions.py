@@ -1,15 +1,24 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
-def count_ops_by_type(node, op_type: str, start: int, limit: int = 50):
+
+def count_ops_by_type(node: tt.AnyNode, op_type: str, start: int, limit: int = 50) -> dict[int, int]:
     """
-    :param op_type: type of operation (ex. "producer_reward_operation")
-    :param start: start queries with this block number
-    :param limit: limit queries until start-limit+1
+    Count operations of given type in recent blocks.
+
+    Args:
+        node: Node to query.
+        op_type: Type of operation (ex. "producer_reward_operation").
+        start: Start queries with this block number.
+        limit: Limit queries until start-limit+1.
+
     """
     count = {}
     for i in range(start, start - limit, -1):
@@ -23,13 +32,14 @@ def count_ops_by_type(node, op_type: str, start: int, limit: int = 50):
     return count
 
 
-def check_account_history_duplicates(node: tt.AnyNode):
+def check_account_history_duplicates(node: tt.AnyNode) -> None:
     last_irreversible_block = node.api.wallet_bridge.get_dynamic_global_properties().last_irreversible_block_num
     node_reward_operations = count_ops_by_type(node, "producer_reward_operation", last_irreversible_block, limit=50)
-    assert sum(i == 1 for i in node_reward_operations.values()) == 50
+    expected_unique_rewards = 50
+    assert sum(i == 1 for i in node_reward_operations.values()) == expected_unique_rewards
 
 
-def assert_no_duplicates(node, *nodes):
+def assert_no_duplicates(node: tt.AnyNode, *nodes: tt.AnyNode) -> None:
     _nodes = [node, *nodes]
     for _node in _nodes:
         check_account_history_duplicates(_node)
@@ -39,7 +49,7 @@ def assert_no_duplicates(node, *nodes):
     tt.logger.info("No there are no duplicates in account_history.get_ops_in_block...")
 
 
-def connect_sub_networks(sub_networks: list) -> None:
+def connect_sub_networks(sub_networks: list[tt.Network]) -> None:
     if len(sub_networks) == 1:
         return
     assert len(sub_networks) > 1
@@ -58,7 +68,7 @@ def connect_sub_networks(sub_networks: list) -> None:
     # wait_for_final_block() function handles synchronization with a timeout.
 
 
-def disconnect_sub_networks(sub_networks: list):
+def disconnect_sub_networks(sub_networks: list[tt.Network]) -> None:
     if len(sub_networks) == 1:
         return
     assert len(sub_networks) > 1
@@ -73,7 +83,7 @@ def disconnect_sub_networks(sub_networks: list):
         current_idx += 1
 
 
-def enable_witnesses(wallet: tt.Wallet, witness_details: list):
+def enable_witnesses(wallet: tt.Wallet, witness_details: list[str]) -> None:
     with wallet.in_single_transaction():
         for name in witness_details:
             wallet.api.update_witness(
@@ -84,7 +94,7 @@ def enable_witnesses(wallet: tt.Wallet, witness_details: list):
             )
 
 
-def disable_witnesses(wallet: tt.Wallet, witness_details: list):
+def disable_witnesses(wallet: tt.Wallet, witness_details: list[str]) -> None:
     key = "STM5NUU7M7pmqMpMHUwscgUBMuwLQE56MYwCLF7q9ZGB6po1DMNoG"
     with wallet.in_single_transaction():
         for name in witness_details:
@@ -96,20 +106,20 @@ def disable_witnesses(wallet: tt.Wallet, witness_details: list):
             )
 
 
-def get_last_head_block_number(blocks: list):
+def get_last_head_block_number(blocks: list[list[int]]) -> int:
     return blocks[len(blocks) - 1][0]
 
 
-def get_last_irreversible_block_num(blocks: list):
+def get_last_irreversible_block_num(blocks: list[list[int]]) -> int:
     return blocks[len(blocks) - 1][1]
 
 
-def get_blocks_history(blocks: list[list]):
+def get_blocks_history(blocks: list[list[int]]) -> None:
     for item in blocks:
         tt.logger.info(item)
 
 
-def get_part_of_witness_details(witness_details: list, start, length: int):
+def get_part_of_witness_details(witness_details: list[str], start: int, length: int) -> list[str]:
     assert start >= 0
     assert start + length <= len(witness_details)
     new_witness_details = []
@@ -118,13 +128,14 @@ def get_part_of_witness_details(witness_details: list, start, length: int):
     return new_witness_details
 
 
-def info(msg: str, wallet: tt.OldWallet | tt.Wallet):
+def info(msg: str, wallet: tt.OldWallet | tt.Wallet) -> tuple[int, int]:
     if isinstance(wallet, tt.OldWallet):
         info = wallet.api.info()
         hb = info["head_block_number"]
         lib = info["last_irreversible_block_num"]
         current_witness = info["current_witness"]
     else:
+        assert wallet.connected_node is not None, "Wallet must be connected to a node"
         gdpo = wallet.connected_node.api.wallet_bridge.get_dynamic_global_properties()
         hb = gdpo.head_block_number
         lib = gdpo.last_irreversible_block_num
@@ -134,16 +145,16 @@ def info(msg: str, wallet: tt.OldWallet | tt.Wallet):
 
 
 class NodeLog:
-    def __init__(self, name, wallet):
+    def __init__(self, name: str, wallet: tt.OldWallet | tt.Wallet) -> None:
         self.name = name
-        self.collector = []
+        self.collector: list[tuple[int, int]] = []
         self.wallet = wallet
 
-    def append(self):
+    def append(self) -> None:
         self.collector.append(info(self.name, self.wallet))
 
 
-def wait(blocks, log: list[NodeLog], api_node, allow_wait: bool = True):
+def wait(blocks: int, log: list[NodeLog], api_node: tt.AnyNode, allow_wait: bool = True) -> None:
     for i in range(blocks):
         tt.logger.info(f"{i + 1}/{blocks} blocks")
 
@@ -154,28 +165,33 @@ def wait(blocks, log: list[NodeLog], api_node, allow_wait: bool = True):
             api_node.wait_number_of_blocks(1)
 
 
-def final_block_the_same(method, data: list):
+def final_block_the_same(method: Callable[[list[list[int]]], int], data: list[list[list[int]]]) -> bool:
     current = None
     for item in data:
         if current is None:
             current = item
-        else:
-            if method(current) != method(item):
-                return False
+        elif method(current) != method(item):
+            return False
     return True
 
 
-def lib_true_condition():
+def lib_true_condition() -> bool:
     return True
 
 
-def lib_custom_condition(compared_item1, compared_item2):
+def lib_custom_condition(compared_item1: list[list[int]], compared_item2: int) -> bool:
     return get_last_irreversible_block_num(compared_item1) > compared_item2
 
 
 def wait_for_final_block(
-    witness_node, logs, data: list, allow_lib=True, lib_cond=lib_true_condition, allow_last_head=True, max_blocks=100
-):
+    witness_node: tt.AnyNode,
+    logs: list[NodeLog],
+    data: list[list[list[int]]],
+    allow_lib: bool = True,
+    lib_cond: Callable[[], bool] = lib_true_condition,
+    allow_last_head: bool = True,
+    max_blocks: int = 100,
+) -> None:
     assert allow_lib or allow_last_head
 
     # Wait until all nodes have synchronized HEAD/LIB values. Nodes reconnecting after a fork
@@ -189,12 +205,12 @@ def wait_for_final_block(
         # Verifying if all nodes have the same last irreversible block number
         if allow_lib and lib_cond() and final_block_the_same(get_last_irreversible_block_num, data):
             tt.logger.info(f"Networks synchronized after {blocks_waited} blocks (LIB match)")
-            return False
+            return
 
         # Verifying if all nodes have the same last head block number
         if allow_last_head and final_block_the_same(get_last_head_block_number, data):
             tt.logger.info(f"Networks synchronized after {blocks_waited} blocks (HEAD match)")
-            return False
+            return
 
     # Timeout reached - collect diagnostic info
     lib_values = [get_last_irreversible_block_num(d) for d in data]
@@ -210,12 +226,12 @@ def wait_for_final_block(
     )
 
 
-def calculate_transformed_witnesses(wallet, node):
+def calculate_transformed_witnesses(wallet: tt.Wallet, node: tt.AnyNode) -> list[str]:
     witnesses = wallet.api.get_active_witnesses(False)["witnesses"]
     current_witness = node.get_current_witness()
     tt.logger.info(f"current witness: {current_witness} active witnesses: {witnesses}")
 
-    transformed_witnesses = []
+    transformed_witnesses: list[str] = []
     start = False
     pos = 0
     for witness in witnesses:
@@ -232,17 +248,17 @@ def calculate_transformed_witnesses(wallet, node):
     return transformed_witnesses
 
 
-def is_witness_in_given_patterns(witness, witness_name_patterns):
+def is_witness_in_given_patterns(witness: str, witness_name_patterns: list[str]) -> bool:
     return any(re.match(pattern, witness) is not None for pattern in witness_name_patterns)
 
 
-def are_witnesses_match_patterns(witnesses, witness_name_patterns):
+def are_witnesses_match_patterns(witnesses: list[str], witness_name_patterns: list[list[str]]) -> bool:
     return all(
         is_witness_in_given_patterns(witness, pattern) for pattern, witness in zip(witness_name_patterns, witnesses)
     )
 
 
-def wait_for_specific_witnesses(node, logs, witness_name_patterns):
+def wait_for_specific_witnesses(node: tt.AnyNode, logs: list[NodeLog], witness_name_patterns: list[list[str]]) -> None:
     wallet = tt.Wallet(attach_to=node)
     witnesses_interval = 21
     while True:
@@ -261,7 +277,7 @@ def wait_for_specific_witnesses(node, logs, witness_name_patterns):
             tt.logger.info("Witnesses patterns can't be processed in the same schedule. Still waiting...")
 
 
-def display_info(node):
+def display_info(node: tt.AnyNode) -> None:
     # Network should be set up at this time, with 21 active witnesses, enough participation rate
     # and irreversible block number lagging behind around 15-20 blocks head block number
     gdpo = node.api.wallet_bridge.get_dynamic_global_properties()
@@ -270,7 +286,7 @@ def display_info(node):
     tt.logger.info(f"Network prepared, irreversible block: {irreversible}, head block: {head}")
 
 
-def prepare_nodes(sub_networks_sizes: list) -> list:
+def prepare_nodes(sub_networks_sizes: list[int]) -> tuple[list[tt.Network], tt.InitNode | None, list[str]]:
     assert len(sub_networks_sizes) > 0, "At least 1 sub-network is required"
 
     all_witness_names = []

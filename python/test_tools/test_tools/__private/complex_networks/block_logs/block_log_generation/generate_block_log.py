@@ -7,9 +7,10 @@ from test_tools.__private.complex_networks import networks_architecture as netwo
 from test_tools.__private.complex_networks.orchestration import generate_networks
 
 
-def prepare_blocklog():
+def prepare_blocklog() -> None:
+    """Prepare block log with default configuration."""
     # Before creating `config` take a look at `README.md`
-    config = {}
+    config: dict[str, list[dict[str, object]]] = {}
 
     architecture = networks.NetworksArchitecture()
     architecture.load(config)
