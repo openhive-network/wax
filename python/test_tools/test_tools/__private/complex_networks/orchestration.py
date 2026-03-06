@@ -16,7 +16,7 @@ from beekeepy.interfaces import P2PUrl
 import test_tools as tt
 from schemas.jsonrpc import get_response_model
 from test_tools.__private.complex_networks import networks_architecture as networks
-from test_tools.__private.complex_networks.helper_functions import connect_sub_networks
+from test_tools.__private.complex_networks.helper_functions import connect_sub_networks, display_info
 from wax.helpy import OffsetTimeControl, StartTimeControl, TimeControl
 
 
@@ -246,38 +246,6 @@ def _run_nodes_in_parallel(
 
         for thread_number in tasks:
             thread_number.result()
-
-
-def display_info(node: tt.AnyNode) -> None:
-    # Network should be set up at this time, with 21 active witnesses, enough participation rate
-    # and irreversible block number lagging behind around 15-20 blocks head block number
-    gdpo = node.api.wallet_bridge.get_dynamic_global_properties()
-    irreversible = gdpo.last_irreversible_block_num
-    head = gdpo.head_block_number
-    tt.logger.info(f"Network prepared, irreversible block: {irreversible}, head block: {head}")
-
-
-def prepare_nodes(sub_networks_sizes: list[int]) -> tuple[list[tt.Network], tt.InitNode | None, list[str]]:
-    assert len(sub_networks_sizes) > 0, "At least 1 sub-network is required"
-
-    all_witness_names: list[str] = []
-    sub_networks = []
-    init_node = None
-
-    for cnt, sub_networks_size in enumerate(sub_networks_sizes):
-        tt.logger.info(f"Preparing sub-network nr: {cnt} that consists of {sub_networks_size} witnesses")
-
-        witness_names = [f"witness-{cnt}-{i}" for i in range(sub_networks_size)]
-        all_witness_names += witness_names
-
-        sub_network = tt.Network()
-        if cnt == 0:
-            init_node = tt.InitNode(network=sub_network)
-        sub_networks.append(sub_network)
-        tt.WitnessNode(witnesses=witness_names, network=sub_network)
-        tt.ApiNode(network=sub_network)
-
-    return sub_networks, init_node, all_witness_names
 
 
 def generate_networks(
