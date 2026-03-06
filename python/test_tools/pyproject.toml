@@ -33,7 +33,6 @@ msgspec = "^0.20.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
 hiveio-beekeepy = "^1.28.6-post.0"
-hiveio-schemas = "^1.28.2-post.0"
 hiveio-api = "^1.28.5"
 
 
