@@ -6,6 +6,7 @@ from loguru import logger
 
 from test_tools.__private import (
     cleanup_policy,
+    complex_networks,
     constants,
     exceptions,
     paths_to_executables,
@@ -61,6 +62,7 @@ __all__ = [
     "NodeConfig",
     "WitnessNode",
     "cleanup_policy",
+    "complex_networks",
     "constants",
     "context",
     "exceptions",
