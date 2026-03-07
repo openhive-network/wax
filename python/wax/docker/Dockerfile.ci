@@ -18,7 +18,10 @@ RUN <<-EOF
   mkdir -vp "${TMP_SRC}"
   cd "${TMP_SRC}"
 
-  git clone --recurse-submodules --shallow-submodules --single-branch --depth=1 --branch ${BOOST_VERSION_TAG} https://github.com/boostorg/boost.git
+  # Download release tarball instead of cloning ~180 submodules
+  curl -fSL "https://github.com/boostorg/boost/releases/download/${BOOST_VERSION_TAG}/${BOOST_VERSION_TAG}.tar.gz" \
+    | tar xz
+  mv "${BOOST_VERSION_TAG}" boost
 EOF
 
 FROM boost_lib_source AS boost_lib_builder

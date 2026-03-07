@@ -7,16 +7,6 @@ set -xeuo pipefail
 TMP_SRC=${1:?"Missing arg #1 to specify source temp directory"}
 INSTALL_PREFIX=${2:?"Missing arg #2 to specify prebuilt libraries install prefix"}
 
-echo "Entering directory: ${TMP_SRC}/boost/tools/build"
-
-cd "${TMP_SRC}/boost/tools/build"
-
-# Add safe directory to allow git operations when running as different user
-git config --global --add safe.directory "${TMP_SRC}/boost/tools/build"
-
-# Clean local mods if any
-git checkout .
-
 rm -vrf "${TMP_SRC}/boost_build/"
 
 mkdir -vp "${TMP_SRC}/boost_build/"
