@@ -10,8 +10,9 @@ set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
 
 # Use sccache or ccache for distributed compiler caching when available
-find_program(SCCACHE_PROGRAM sccache)
-find_program(CCACHE_PROGRAM ccache)
+# NO_CMAKE_FIND_ROOT_PATH needed because Emscripten toolchain restricts find_program to sysroot
+find_program(SCCACHE_PROGRAM sccache NO_CMAKE_FIND_ROOT_PATH)
+find_program(CCACHE_PROGRAM ccache NO_CMAKE_FIND_ROOT_PATH)
 if(SCCACHE_PROGRAM)
   message(STATUS "Found sccache: ${SCCACHE_PROGRAM}")
   set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
