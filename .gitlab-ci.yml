@@ -162,9 +162,6 @@ wax_wasm_proto_tsc_generation:
     GIT_SUBMODULE_STRATEGY: recursive
     REPLACE_DOC_URL_ENV: "GEN_DOC_URL"
     REPLACE_FILE_PATH: "${SOURCE_DIR}/README.md"
-    SCCACHE_LOG: "info"
-  after_script:
-    - sccache --show-stats || true
 
   artifacts:
     when: always
