@@ -9,6 +9,19 @@ set( CMAKE_C_STANDARD 99 )
 set( CMAKE_C_STANDARD_REQUIRED ON )
 set( CMAKE_EXECUTABLE_SUFFIX "" )
 
+# Use sccache or ccache for distributed compiler caching when available
+find_program(SCCACHE_PROGRAM sccache)
+find_program(CCACHE_PROGRAM ccache)
+if(SCCACHE_PROGRAM)
+  message(STATUS "Found sccache: ${SCCACHE_PROGRAM}")
+  set(CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+  set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_PROGRAM}")
+elseif(CCACHE_PROGRAM)
+  message(STATUS "Found ccache: ${CCACHE_PROGRAM}")
+  set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+  set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
+
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftime-trace" )
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace" )
 

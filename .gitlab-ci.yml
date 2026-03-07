@@ -34,6 +34,8 @@ variables:
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
+  # Distributed compiler cache for WASM builds (sccache with Redis backend)
+  SCCACHE_REDIS: "redis://192.168.50.109:6379"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
