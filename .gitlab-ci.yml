@@ -716,11 +716,13 @@ build_wax_ci_base_image:
       echo "Base image: ${COMMON_CI_BASE_IMAGE}"
       echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
     - |
-      docker build \
+      docker buildx build \
         --build-arg BASE_IMAGE="${COMMON_CI_BASE_IMAGE}" \
+        --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
+        --cache-to type=registry,mode=max,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
         -t "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}" \
-        -f python/wax/docker/Dockerfile.ci .
-    - docker push "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
+        -f python/wax/docker/Dockerfile.ci \
+        --push .
   tags:
     - public-runner-docker
   rules:
