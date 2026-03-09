@@ -25,5 +25,7 @@ class RcApi(AbstractSyncApi):
         raise NotImplementedError
 
     @api
-    def list_rc_direct_delegations(self, *, start: tuple[str, str], limit: int) -> rc_api.ListRcDirectDelegationsResponse:
+    def list_rc_direct_delegations(
+        self, *, start: tuple[str, str], limit: int
+    ) -> rc_api.ListRcDirectDelegationsResponse:
         raise NotImplementedError

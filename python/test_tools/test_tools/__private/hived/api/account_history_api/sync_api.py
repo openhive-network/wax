@@ -22,7 +22,9 @@ class AccountHistoryApi(AbstractSyncApi):
         raise NotImplementedError
 
     @api
-    def get_transaction(self, *, id_: str, include_reversible: bool = True) -> account_history_api.GetTransactionResponse:
+    def get_transaction(
+        self, *, id_: str, include_reversible: bool = True
+    ) -> account_history_api.GetTransactionResponse:
         raise NotImplementedError
 
     @api
