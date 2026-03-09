@@ -32,7 +32,7 @@ abstractcp = "^1.0.0"
 msgspec = "^0.20.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = "^1.28.6-post.0"
+hiveio-beekeepy = "1.28.6.dev20260306104924+unstable"
 hiveio-schemas = "^1.28.2-post.0"
 
 
