@@ -26,13 +26,13 @@ export type TBinaryBuffer = ArrayBufferLike | ArrayBufferView | Uint8Array;
 export abstract class AEncryptionProvider extends ASignatureProvider
                                           implements IOnlineEncryptionProvider {
   public async signTransaction(transaction: ISignatureTransaction): Promise<void> {
-    transaction.performOperationEncryption?.(this);
+    await transaction.performOperationEncryption?.(this);
     /// Call the base implementation to complete transaction signing flow
     await super.signTransaction(transaction);
   }
 
   /// Provider specific implementation of data encryption
-  public abstract encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string>;
+  public abstract encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName, nonce?: number): Promise<string>;
 
   /// Provider specific implementation of data decryption
   public abstract decryptData(buffer: string): Promise<string>;

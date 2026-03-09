@@ -6,7 +6,7 @@ import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
 import type { IWaxExtendableFormatter } from "./formatters/types";
 import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, LegacyApiTransaction, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
-import type { TTransactionRequiredAuthorities } from '.';
+import type { TTransactionRequiredAuthorities } from './transaction';
 import type { OperationBase } from "./operation_base";
 import type { BlogPostOperation, AccountAuthorityUpdateOperation, ReplyOperation, DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation, UpdateProposalOperation, WitnessSetPropertiesOperation } from "./complex_operations";
 import type { ResourceCreditsOperation, CommunityOperation, FollowOperation, TAccountName } from './hive_apps_operations';
@@ -344,14 +344,13 @@ export interface ITransactionBase extends ISignatureTransaction {
   /**
    * Decrypts all underlying encrypted operations
    *
-   * @param {ISignatureProvider} wallet unlocked wallet to be used for decryption
+   * @param {IOnlineEncryptionProvider} provider unlocked wallet to be used for decryption
    *
-   * @returns {transaction} protobuf transaction object
+   * @returns {Promise<transaction>} protobuf transaction object
    *
    * @throws {WaxError} on any Wax API-related error including validation error
    */
-  decrypt(wallet: ISignatureProvider): transaction;
-
+  decrypt(provider: IOnlineEncryptionProvider): Promise<transaction>;
   /**
    * Returns required authority accounts from the transaction
    *
@@ -469,27 +468,6 @@ export interface ITransactionBase extends ISignatureTransaction {
    * @throws {WaxError} on any Wax API-related error
    */
   pushOperation(op: operation | OperationBase): this;
-
-  /**
-   * Signs the transaction using given public key. Applies the transaction expiration time
-   *
-   * Encrypts operations if any were created using {@link IEncryptingTransaction} interface
-   *
-   * @param {ISignatureProvider} wallet unlocked wallet to be used for signing
-   * @param {TPublicKey} publicKey publicKey for signing (should be available in the wallet)
-   *
-   * @returns {THexString} transaction signature signed using given key
-   *
-   * @throws {WaxError} on any Wax API-related error or no public key found in the unlocked wallet or wallet is locked
-   *
-   * @deprecated Use dedicated signature providers, such as:
-   *   - `@hiveio/wax-signers-beekeeper`
-   *   - `@hiveio/wax-signers-hb-auth`
-   *   - `@hiveio/wax-signers-metamask`
-   *   - `@hiveio/wax-signers-keychain`
-   *   - `@hiveio/wax-signers-peakvault`
-   */
-  sign(wallet: ISignatureProvider, publicKey: TPublicKey): THexString;
 }
 
 /**
@@ -969,7 +947,7 @@ export interface IWaxBaseInterface {
    *   - `@hiveio/wax-signers-keychain`
    *   - `@hiveio/wax-signers-peakvault`
    */
-  encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string;
+  encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): Promise<string>;
 
   /**
    * Decrypts given data from the encrypted string in `#encrypted` format
@@ -985,7 +963,7 @@ export interface IWaxBaseInterface {
    *   - `@hiveio/wax-signers-keychain`
    *   - `@hiveio/wax-signers-peakvault`
    */
-  decrypt(wallet: ISignatureProvider, encrypted: string): string;
+  decrypt(wallet: ISignatureProvider, encrypted: string): Promise<string>;
 
   /**
    * Calculates current manabar value for Hive account based on given arguments

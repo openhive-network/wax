@@ -312,7 +312,7 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     if(to === undefined)
       to = from;
 
-    const encrypted = wallet.encryptData(content, from, to);
+    const encrypted = await wallet.encryptData(content, from, to);
 
     return this.wasmManager.safeWasmCall(() => this.protocol.cpp_crypto_memo_dump_string({
       content: encrypted,

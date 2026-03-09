@@ -8,7 +8,7 @@ import { EEncryptionType, EncryptionVisitor } from "./encryption_visitor.js";
 import { WaxError } from "./errors.js";
 import type { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
-import { IOnlineEncryptionProvider, ISignatureProvider } from "./extensions/signatures";
+import { IOnlineEncryptionProvider } from "./extensions/signatures";
 import { structuredClone } from "./shims/structuredclone.js";
 import type { transaction_handle } from "../build_wasm/wax.common";
 import { DEFAULT_WAX_OPTIONS } from "./base";
@@ -184,19 +184,21 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
   }
 
   public async performOperationEncryption(provider: IOnlineEncryptionProvider): Promise<void> {
-    // As a part of migration from old beekeeper #sign API to new encryption providers API,
-    // instead of modifying the encryption visitor, we will iterate over the operations
-    // to collect data to encrypt, and then iterate over the operations again to apply the encryption
+    // Collect plaintext data from operations that need encryption, then encrypt sequentially
+    // (concurrent WASM calls cause memory errors in beekeeper), and finally apply encrypted values
 
-    // Note: After migration is done, we should optimize this to only iterate once with awaits and remove legacy data
+    // Save only operations within indexKeeper ranges before the collect pass mutates them
+    const savedOperations = new Map<number, string>();
+    for(const index of this.indexKeeper)
+      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i)
+        if(!savedOperations.has(i))
+          savedOperations.set(i, JSON.stringify(this.target.operations[i]));
 
-    const encryptionPromises: Array<Promise<string>> = [];
+    const encryptionRequests: Array<{ data: string; recipient: TPublicKey }> = [];
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
         const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
-          encryptionPromises.push(
-            provider.encryptData(data, index.mainEncryptionKey)
-          );
+          encryptionRequests.push({ data, recipient: index.mainEncryptionKey });
 
           return "";
         });
@@ -204,7 +206,14 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
         visitor.accept(this.target.operations[i]);
       }
 
-    const encryptedData = await Promise.all(encryptionPromises);
+    // Encrypt sequentially to avoid concurrent WASM calls which can cause memory errors
+    const encryptedData: string[] = [];
+    for(const request of encryptionRequests)
+      encryptedData.push(await provider.encryptData(request.data, request.recipient, this.target.ref_block_prefix));
+
+    // Restore only the saved operations before applying encrypted data
+    for(const [i, saved] of savedOperations)
+      Object.assign(this.target.operations[i], JSON.parse(saved));
 
     for(const index of this.indexKeeper)
       for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
@@ -213,7 +222,6 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
         visitor.accept(this.target.operations[i]);
       }
 
-    // XXX: Optimize this maybe
     this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true));
     this.indexKeeper = [];
   }
@@ -343,36 +351,41 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_set_expiration(this.txHandle, this.target.expiration));
   }
 
-  public decrypt(wallet: ISignatureProvider): transaction {
-    const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
-      if(data.startsWith('#'))
-        return this.api.decrypt(wallet, data)
+  public async decrypt(provider: IOnlineEncryptionProvider): Promise<transaction> {
+    // Save original operations before the collect pass mutates them (decrypt visits all ops)
+    const savedOperations = this.target.operations.map(op => JSON.stringify(op));
 
-      return data;
-    });
+    const decryptionRequests: Array<{ data: string; encrypted: boolean }> = [];
 
-    for(const op of this.target.operations)
+    for(const op of this.target.operations) {
+      const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, (data: string) => {
+        decryptionRequests.push({ data, encrypted: data.startsWith('#') });
+
+        return "";
+      });
+
       visitor.accept(op);
+    }
 
-    // XXX: Optimize this maybe
-    this.api.wasmManager.safeWasmCall(() => this.txHandle = this.api.protocol.cpp_create_transaction_handle(this.target, true));
+    // Decrypt sequentially to avoid concurrent WASM calls which can cause memory errors
+    const decryptedData: string[] = [];
+    for(const request of decryptionRequests)
+      decryptedData.push(request.encrypted ? await provider.decryptData(request.data) : request.data);
 
-    return this.target;
-  }
+    // Restore original operations before applying decrypted data
+    for(let i = 0; i < this.target.operations.length; ++i)
+      Object.assign(this.target.operations[i], JSON.parse(savedOperations[i]));
 
-  private encryptOperations(wallet: ISignatureProvider): void {
-    for(const index of this.indexKeeper)
-      for(let i = index.begin; i < (index.end ?? this.target.operations.length); ++i) {
-        const visitor = new EncryptionVisitor(EEncryptionType.ENCRYPT, (data: string) => {
-          return this.api.encrypt(wallet, data, index.mainEncryptionKey, index.otherEncryptionKey, this.target.ref_block_prefix);
-        });
+    for(const op of this.target.operations) {
+      const visitor = new EncryptionVisitor(EEncryptionType.DECRYPT, () => decryptedData.shift()!);
 
-        visitor.accept(this.target.operations[i]);
-      }
+      visitor.accept(op);
+    }
 
     // XXX: Optimize this maybe
     this.txHandle = this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_create_transaction_handle(this.target, true));
-    this.indexKeeper = [];
+
+    return this.target;
   }
 
   private signWithHandle(signature: THexString): void {
@@ -380,24 +393,10 @@ export class Transaction implements ITransaction, IEncryptingTransaction<ITransa
     this.api.wasmManager.safeWasmCall(() => this.api.protocol.cpp_tx_add_signature(this.txHandle, signature));
   }
 
-  /**
-   * @deprecated
-   */
-  public sign(provider: ISignatureProvider, publicKey: TPublicKey): THexString {
+  public addSignature(signature: THexString): this {
     this.validate();
 
     this.flushTransaction();
-    this.encryptOperations(provider);
-
-    const sig = provider.signDigest(publicKey as TPublicKey, this.sigDigest);
-
-    this.signWithHandle(sig);
-
-    return sig;
-  }
-
-  public addSignature(signature: THexString): this {
-    this.validate();
 
     this.signWithHandle(signature);
 

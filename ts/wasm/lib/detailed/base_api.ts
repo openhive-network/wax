@@ -352,8 +352,8 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return publicKey;
   }
 
-  public encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): string {
-    const encrypted = wallet.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
+  public async encrypt(wallet: ISignatureProvider, content: string, mainEncryptionKey: TPublicKey, otherEncryptionKey?: TPublicKey, nonce?: number): Promise<string> {
+    const encrypted = await wallet.encryptData(content, mainEncryptionKey, otherEncryptionKey, nonce);
 
     return this.wasmManager.safeWasmCall(() => this.protocol.cpp_crypto_memo_dump_string({
       content: encrypted,
@@ -382,10 +382,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return this.cachedConfig;
   }
 
-  public decrypt(wallet: ISignatureProvider, encrypted: string): string {
+  public async decrypt(wallet: ISignatureProvider, encrypted: string): Promise<string> {
     const data = this.wasmManager.safeWasmCall(() => this.protocol.cpp_crypto_memo_from_string(encrypted));
 
-    return wallet.decryptData(data.content as string, data.from as string, data.to as string);
+    return await wallet.decryptData(data.content as string, data.from as string, data.to as string);
   }
 
 /**
