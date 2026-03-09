@@ -83,8 +83,8 @@ importers:
         version: 3.3.0
     devDependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.7-rc0
-        version: 1.28.7-rc0
+        specifier: 1.28.6-rc10-260313092747
+        version: 1.28.6-rc10-260313092747
       '@playwright/test':
         specifier: catalog:playwright-toolset
         version: 1.58.2
@@ -182,8 +182,8 @@ importers:
   packages/signers-beekeeper:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.7-rc0
-        version: 1.28.7-rc0
+        specifier: 1.28.6-rc10-260313092747
+        version: 1.28.6-rc10-260313092747
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -201,8 +201,8 @@ importers:
   packages/signers-external:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.7-rc0
-        version: 1.28.7-rc0
+        specifier: 1.28.6-rc10-260313092747
+        version: 1.28.6-rc10-260313092747
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -429,8 +429,8 @@ packages:
   '@gerrit0/mini-shiki@1.24.4':
     resolution: {integrity: sha512-YEHW1QeAg6UmxEmswiQbOVEg1CW22b1XUD/lNTliOsu0LD0wqoyleFMnmbTp697QE0pcadQiR5cVtbbAPncvpw==}
 
-  '@hiveio/beekeeper@1.28.7-rc0':
-    resolution: {integrity: sha1-0pywM0DVGcHO6mrEB0nKZ9BjSDo=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.7-rc0.tgz}
+  '@hiveio/beekeeper@1.28.6-rc10-260313092747':
+    resolution: {integrity: sha1-CC1Id7BQXXQ/BN/wI/dSNMlMiF0=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.6-rc10-260313092747.tgz}
     engines: {node: ^20.11 || >= 21.2}
 
   '@isaacs/cliui@8.0.2':
@@ -2190,7 +2190,7 @@ snapshots:
       '@shikijs/types': 1.24.2
       '@shikijs/vscode-textmate': 9.3.1
 
-  '@hiveio/beekeeper@1.28.7-rc0': {}
+  '@hiveio/beekeeper@1.28.6-rc10-260313092747': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
