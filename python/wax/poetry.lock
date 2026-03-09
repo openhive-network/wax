@@ -1651,7 +1651,7 @@ version = "0.0.0"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
-groups = ["dev"]
+groups = ["dev", "static-analysis"]
 files = []
 develop = true
 
@@ -1678,4 +1678,4 @@ dev = ["black (>=19.3b0) ; python_version >= \"3.6\"", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "4062cc1688c0373617f0416615cc1522986a7d3a717a58b142b0b55d892cef16"
+content-hash = "84a504995143f1d0eda5c3be4c57e148591f0d5ce53ce6f76e1ef4fefff58176"
