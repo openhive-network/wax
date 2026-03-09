@@ -812,8 +812,6 @@ build_test_tools_wheel:
     - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s)
     - echo "Using wax version ${WAX_VERSION} from registry"
     - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
-  script:
-    - poetry -C "${TEST_TOOLS_DIR}" build --format wheel
   artifacts:
     when: always
     paths:
