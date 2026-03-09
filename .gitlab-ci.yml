@@ -11,7 +11,7 @@ include:
   - template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
   - project: 'hive/common-ci-configuration'
-    ref: 89e7817b463ec2c48c4bb76da2df63d9749d7b2a
+    ref: b87335f38a2be5c69ae13e6e985f6a42d6820652  # bw/remove-unstable-version-suffix
     file:
       - '/templates/npm_projects.gitlab-ci.yml'
       - '/templates/wasm_build.gitlab-ci.yml'
