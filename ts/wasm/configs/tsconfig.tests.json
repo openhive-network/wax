@@ -5,7 +5,8 @@
     "baseUrl": ".",
     "outDir": "../dist",
     "paths": {
-      "wasm/build_wasm/*": ["../lib/build_wasm/*"]
+      "wasm/build_wasm/*": ["../lib/build_wasm/*"],
+      "@hiveio/wax-signers-beekeeper": ["../../packages/signers-beekeeper/dist/index.d.ts"]
     },
     "target": "ES2022",
     "lib": [

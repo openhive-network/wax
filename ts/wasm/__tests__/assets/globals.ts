@@ -3,7 +3,8 @@
 // When this file is ran in Node environment, JS-imports of "@hiveio/beekeeper" make no sense as we are testing Node.js
 // Also when testing in Web environment, we would have to import only fully-bundled packages here as we lack any import resolution in the browser except explicitly defined importmap
 // for imports defined in functions "createWaxTestFor" and "createWasmTestFor"
-import type { IBeekeeperInstance } from "@hiveio/beekeeper";
+import type { IBeekeeperInstance, IBeekeeperUnlockedWallet, TPublicKey } from "@hiveio/beekeeper";
+import type { BeekeeperProvider } from "@hiveio/wax-signers-beekeeper";
 import type Wax from "../../dist/bundle";
 import type { IWaxBaseInterface, IHiveChainInterface, IWaxOptionsChain } from "../../dist/bundle";
 import type { MainModule, protocol_foundation } from "../../dist/lib/build_wasm/wax.common.js";
@@ -19,6 +20,11 @@ export interface IWaxGlobals {
   chain: IHiveChainInterface;
   wax: typeof Wax;
   outputPath: string;
+  /**
+   * Creates a BeekeeperProvider signer for the given wallet and public key.
+   * This is the common signing interface that should be used in tests instead of direct beekeeper wallet calls.
+   */
+  createSigner(baseOrChain: IWaxBaseInterface | IHiveChainInterface, wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): BeekeeperProvider;
 }
 
 interface MainModuleEmscriptenExtended extends MainModule {
@@ -44,11 +50,12 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
   // Import required libraries env-dependent
   const wax = await import(locWax) as typeof import("../../dist/bundle") as unknown as typeof Wax;
   const beekeeper = await import("@hiveio/beekeeper");
+  const signersBeekeeper = await import("@hiveio/wax-signers-beekeeper");
 
   try {
     // Initialize data
     //console.log('creating beekeeper using storage root', beekeeperRoot);
-    const bk = await beekeeper.default({ enableLogs: false, storageRoot: outputPath }) as IBeekeeperInstance;
+    const bk = await beekeeper.default({ storageRoot: outputPath }) as IBeekeeperInstance;
     const wx = await wax.createWaxFoundation();
 
     //console.log('beekeeper instance created.');
@@ -69,7 +76,9 @@ globalThis.createWaxTestFor = async function createWaxTestFor(env: TEnvType, out
       base: wx,
       chain,
       wax,
-      outputPath
+      outputPath,
+      createSigner: (baseOrChain: IWaxBaseInterface | IHiveChainInterface, wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey) =>
+        signersBeekeeper.BeekeeperProvider.for(baseOrChain, wallet, publicKey) as BeekeeperProvider
     };
   } catch(e) {
     console.log("Error caught at createWaxTestFor call: ", JSON.stringify(e));

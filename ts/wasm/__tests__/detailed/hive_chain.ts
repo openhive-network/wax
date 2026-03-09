@@ -8,7 +8,7 @@ const HIVE_BLOCK_INTERVAL = 3 * 1000; // 3 seconds
 
 test.describe('Wax object interface chain tests', () => {
   test('Should be able to detect wax assertion error when assert exceptin subclass is thrown (having own exception code)', async ({ waxTest }) => {
-    await expect(waxTest(async({ beekeeper, chain }, protoVoteOp) => {
+    await expect(waxTest(async({ beekeeper, chain, createSigner }, protoVoteOp) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -20,7 +20,8 @@ test.describe('Wax object interface chain tests', () => {
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
 
-      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const signer = createSigner(chain, wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      await signer.signTransaction(tx);
 
       await chain.broadcast(tx); /// just to force tx expiration failure
     }, protoVoteOp)).rejects.toThrowError(WaxAssertionError);
@@ -42,7 +43,7 @@ test.describe('Wax object interface chain tests', () => {
     });
 
     test('Should be able to create and sign transaction using hive chain dynamic data', async ({ waxTest }) => {
-      const retVal = await waxTest.dynamic(async({ beekeeper, chain }, protoVoteOp) => {
+      const retVal = await waxTest.dynamic(async({ beekeeper, chain, createSigner }, protoVoteOp) => {
         // Create wallet:
         const session = beekeeper.createSession("salt");
         const { wallet } = await session.createWallet("w0");
@@ -53,8 +54,9 @@ test.describe('Wax object interface chain tests', () => {
 
         // Add operation and validate underlying Hive transaction
         tx.pushOperation(protoVoteOp).validate();
-        // Generate transaction signature using provided wallet containing private key matching to specified public one.
-        tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        // Sign transaction using BeekeeperProvider
+        const signer = createSigner(chain, wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+        await signer.signTransaction(tx);
         // get built transaction structure for further analysis
         const stx = tx.transaction;
 
@@ -264,7 +266,7 @@ test.describe('Wax object interface chain tests', () => {
     });
 
     test('Should be able to sign the transaction twice', async ({ waxTest }) => {
-      const retVal = await waxTest(async({ chain, beekeeper }, protoVoteOp) => {
+      const retVal = await waxTest(async({ chain, beekeeper, createSigner }, protoVoteOp) => {
         const session = beekeeper.createSession("salt");
         const { wallet } = await session.createWallet("w0");
 
@@ -275,8 +277,10 @@ test.describe('Wax object interface chain tests', () => {
 
         tx.pushOperation(protoVoteOp);
 
-        tx.sign(wallet, key);
-        tx.sign(wallet, otherKey);
+        const signer1 = createSigner(chain, wallet, key);
+        await signer1.signTransaction(tx);
+        const signer2 = createSigner(chain, wallet, otherKey);
+        await signer2.signTransaction(tx);
         return tx.transaction;
       }, protoVoteOp);
 
@@ -287,7 +291,7 @@ test.describe('Wax object interface chain tests', () => {
     });
 
     test('Should be able to sign the transaction twice on different transaction instances', async ({ waxTest }) => {
-      const retVal = await waxTest.dynamic(async({ chain, beekeeper }, protoVoteOp) => {
+      const retVal = await waxTest.dynamic(async({ chain, beekeeper, createSigner }, protoVoteOp) => {
         const session = beekeeper.createSession("salt");
         const { wallet } = await session.createWallet("w0");
 
@@ -298,10 +302,12 @@ test.describe('Wax object interface chain tests', () => {
 
         txBuilder.pushOperation(protoVoteOp);
 
-        txBuilder.sign(wallet, key);
+        const signer1 = createSigner(chain, wallet, key);
+        await signer1.signTransaction(txBuilder);
 
         const otherTxBuilder = chain.createTransactionFromJson(txBuilder.toApi());
-        otherTxBuilder.sign(wallet, otherKey);
+        const signer2 = createSigner(chain, wallet, otherKey);
+        await signer2.signTransaction(otherTxBuilder);
         return otherTxBuilder.transaction;
       }, protoVoteOp);
 

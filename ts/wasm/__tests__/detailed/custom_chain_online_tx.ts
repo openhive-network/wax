@@ -3,11 +3,10 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import type { IWaxGlobals } from '../assets/globals';
 import { protoVoteOp } from "../assets/data.proto-protocol";
-import type { IOnlineTransaction, operation, transfer, IWaxOptionsChain, WaxPrivateKeyLeakDetectedException, IHiveChainInterface, ApiAccount } from '../../dist/bundle';
-import { IBeekeeperUnlockedWallet } from '@hiveio/beekeeper';
+import type { IOnlineTransaction, IOnlineSignatureProvider, operation, transfer, IWaxOptionsChain, WaxPrivateKeyLeakDetectedException, IHiveChainInterface, ApiAccount } from '../../dist/bundle';
 
 test.describe('Wax chain tests to cover Online Transaction flow', () => {
-  const txSecurityLeakBody = async ({ beekeeper, wax }: { beekeeper: IWaxGlobals["beekeeper"]; wax: IWaxGlobals["wax"] }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
+  const txSecurityLeakBody = async ({ beekeeper, wax, createSigner }: { beekeeper: IWaxGlobals["beekeeper"]; wax: IWaxGlobals["wax"]; createSigner: IWaxGlobals["createSigner"] }, mirrornetSkeletonKey: string, config: IWaxOptionsChain, directBroadcast: boolean) => {
     // Create wallet:
     const session = beekeeper.createSession("salt");
     const { wallet } = await session.createWallet("w0");
@@ -53,7 +52,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         throw new Error("Invalid error instance");
     }
 
-    tx.sign(wallet, matchingPublicKey);
+    const signer = createSigner(myCustomChain, wallet, matchingPublicKey);
+    await signer.signTransaction(tx);
 
     throw new Error("No error detected");
   };
@@ -82,7 +82,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
    */
   const ensureTestAccountsExist = async (
     chain: IHiveChainInterface,
-    wallet: IBeekeeperUnlockedWallet,
+    signer: IOnlineSignatureProvider,
     skeletonPublicKey: string,
     ownerPublicKey: string
   ) => {
@@ -121,7 +121,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           json_metadata: '{}'
         }
       });
-      tx.sign(wallet, skeletonPublicKey);
+      await signer.signTransaction(tx);
       await chain.broadcast(tx);
       console.log('Created account: authtracetst2');
     }
@@ -141,7 +141,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           json_metadata: '{}'
         }
       });
-      tx.sign(wallet, skeletonPublicKey);
+      await signer.signTransaction(tx);
       await chain.broadcast(tx);
       console.log('Created account: authtracetst3');
     }
@@ -161,7 +161,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           json_metadata: '{}'
         }
       });
-      tx.sign(wallet, skeletonPublicKey);
+      await signer.signTransaction(tx);
       await chain.broadcast(tx);
       console.log('Created account: authtracetst1');
     }
@@ -187,7 +187,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           json_metadata: '{}'
         }
       });
-      tx.sign(wallet, skeletonPublicKey);
+      await signer.signTransaction(tx);
       await chain.broadcast(tx);
       console.log('Updated authtracetst3 active authority: cycle to authtracetst1');
     }
@@ -376,7 +376,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
   test('Should be able to get authority trace for direct sign', async ({ waxTest, config }) => {
     /// similar tx to https://testexplore.openhive.network/transaction/da9602787693edccdafa1e7325502e0bb14453d1
-    const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey: string, config: IWaxOptionsChain) => {
+    const retVal = await waxTest(async ({ beekeeper, wax, createSigner }, mirrornetSkeletonKey: string, config: IWaxOptionsChain) => {
 
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -397,7 +397,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       const op: operation = { transfer_operation: transferOp };
       tx.pushOperation(op);
-      tx.sign(wallet, matchingPublicKey);
+      const signer = createSigner(myCustomChain, wallet, matchingPublicKey);
+      await signer.signTransaction(tx);
 
       const authTrace = await tx.generateAuthorityVerificationTrace();
 
@@ -733,7 +734,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   test('Should be able to get authority trace for insufficient weight transaction', async ({ waxTest, config }) => {
     /// See ts/wasm/__tests__/assets/authority_trace_test_accounts.md for more details.
     const retVal = await waxTest(
-      async ({ beekeeper, wax },
+      async ({ beekeeper, wax, createSigner },
       ensureTestAccountsExist: TEnsureTestAccountsExistFn,
       skeletonKey: string,
       skeletonPublicKey: string,
@@ -746,8 +747,10 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       const chain = await wax.createHiveChain(chainConfig);
 
+      const signer = createSigner(chain, wallet, skeletonPublicKey);
+
       // Ensure test accounts exist with correct authority structure
-      await ensureTestAccountsExist(chain, wallet, skeletonPublicKey, ownerPublicKey);
+      await ensureTestAccountsExist(chain, signer, skeletonPublicKey, ownerPublicKey);
 
       // Build and sign a transfer from authtracetst1 (requires active authority, threshold=2)
       const sourceTx: IOnlineTransaction = await chain.createTransaction();
@@ -759,7 +762,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
           memo: 'Authority trace test'
         }
       });
-      sourceTx.sign(wallet, skeletonPublicKey);
+      await signer.signTransaction(sourceTx);
 
       // Generate authority verification trace using a separate online transaction
       const tx: IOnlineTransaction = await chain.createTransaction();
@@ -1417,7 +1420,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 });
 
   test('Should allow to create account and send transfer to it in one transaction', async ({ waxTest, config }) => {
-    const retVal = await waxTest(async ({ beekeeper, wax }, mirrornetSkeletonKey, config) => {
+    const retVal = await waxTest(async ({ beekeeper, wax, createSigner }, mirrornetSkeletonKey, config) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -1452,7 +1455,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
         }
       });
 
-      tx.sign(wallet, matchingPublicKey);
+      const signer = createSigner(myCustomChain, wallet, matchingPublicKey);
+      await signer.signTransaction(tx);
 
       try {
         // Do not perform real broadcast.
@@ -1475,7 +1479,7 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
   });
 
   test('Should be able to create and sign transaction using online transaction interface', async ({ waxTest, config }) => {
-    const retVal = await waxTest(async({ beekeeper, wax }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, config) => {
+    const retVal = await waxTest(async({ beekeeper, wax, createSigner }, protoVoteOp, mirrornetSkeletonKey, mirrornetSkeletonPublicKey, config) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -1493,7 +1497,8 @@ test.describe('Wax chain tests to cover Online Transaction flow', () => {
 
       await tx.performOnChainVerification();
 
-      tx.sign(wallet, matchingPublicKey);
+      const signer = createSigner(myCustomChain, wallet, matchingPublicKey);
+      await signer.signTransaction(tx);
 
       return {
         signerKey: tx.signatureKeys[0],

@@ -1,13 +1,12 @@
-import type { IEncryptingTransaction, ITransaction, transaction } from '../../dist/bundle';
+import type { IEncryptingTransaction, ITransaction, TPublicKey, transaction } from '../../dist/bundle';
 import { createHiveChain } from '../../dist/bundle/node.js';
-import { TPublicKey } from '@hiveio/beekeeper';
 import "./globals.js";
 import type { IWaxGlobals } from './globals.js';
 
 const chain = await createHiveChain();
 
 export const utilFunctionTest = async (
-  { beekeeper, chain, wax }: Pick<IWaxGlobals, 'beekeeper' | 'chain' | 'wax'>,
+  { beekeeper, chain, wax, createSigner }: Pick<IWaxGlobals, 'beekeeper' | 'chain' | 'wax' | 'createSigner'>,
   txOperationsLambda: (tx: ITransaction & IEncryptingTransaction<ITransaction>, encryptionKeys: [TPublicKey] | [TPublicKey, TPublicKey]) => void,
   nonEncryptedOperationIndices: number[] = [],
   otherEncryptionKey: boolean = false
@@ -31,7 +30,9 @@ export const utilFunctionTest = async (
 
   encryptingTx.stopEncrypt();
 
-  encryptingTx.sign(wallet, await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78'));
+  const signingKey = await wallet.importKey('5KGKYWMXReJewfj5M29APNMqGEu173DzvHv5TeJAg9SkjUeQV78');
+  const signer = createSigner(chain, wallet, signingKey);
+  await signer.signTransaction(encryptingTx);
 
   const builtTransaction = encryptingTx.transaction;
 
@@ -55,7 +56,8 @@ export const utilFunctionTest = async (
     }
   }
 
-  return encryptingTx.decrypt(wallet);
+  const decryptor = createSigner(chain, wallet, key);
+  return encryptingTx.decrypt(decryptor);
 };
 
 export const commentOp = {

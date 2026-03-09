@@ -9,7 +9,7 @@ import type { ApiTransaction } from '../../dist/bundle';
 
 test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create TAPOS transaction using implicit expiration time', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ wax, beekeeper, base }, protoVoteOp) => {
+    const retVal = await waxTest(async({ wax, beekeeper, base, createSigner }, protoVoteOp) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -23,7 +23,8 @@ test.describe('Wax object interface foundation tests', () => {
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
 
-      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const signer = createSigner(base, wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      await signer.signTransaction(tx);
       const stx = tx.transaction;
 
       const appliedExpirationTime: Date = wax.dateFromString(stx.expiration);
@@ -326,7 +327,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create and sign transaction using object interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ beekeeper, base }, protoVoteOp) => {
+    const retVal = await waxTest(async({ beekeeper, base, createSigner }, protoVoteOp) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -338,7 +339,8 @@ test.describe('Wax object interface foundation tests', () => {
       // Create signed transaction
       tx.pushOperation(protoVoteOp).validate();
 
-      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const signer = createSigner(base, wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      await signer.signTransaction(tx);
       const stx = tx.transaction;
 
       return {
@@ -355,7 +357,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to binary serialize signed transaction using object interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async ({ beekeeper, base, wax }, protoVoteOp) => {
+    const retVal = await waxTest(async ({ beekeeper, base, wax, createSigner }, protoVoteOp) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -368,7 +370,8 @@ test.describe('Wax object interface foundation tests', () => {
       tx.pushOperation(protoVoteOp);
       tx.pushOperation(new wax.DefineRecurrentTransferOperation({ from: "initminer", to: "gtg", amount: base.hiveSatoshis(100) }));
 
-      tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      const signer = createSigner(base, wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh");
+      await signer.signTransaction(tx);
       const stx = tx.transaction;
 
       const binaryHex = tx.toBinaryForm();
@@ -587,7 +590,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to create encrypted operations using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ base, beekeeper }) => {
+    const retVal = await waxTest(async({ base, beekeeper, createSigner }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -611,7 +614,8 @@ test.describe('Wax object interface foundation tests', () => {
         }
       });
 
-      tx.sign(wallet, publicKey)
+      const signer = createSigner(base, wallet, publicKey);
+      await signer.signTransaction(tx);
       const operations = tx.transaction.operations;
 
       const encrypted1 = operations[0].transfer_operation!.memo;
@@ -619,7 +623,7 @@ test.describe('Wax object interface foundation tests', () => {
 
       return {
         encrypted: [ encrypted1, encrypted2 ],
-        decrypted: [ base.decrypt(wallet, encrypted1), base.decrypt(wallet, encrypted2) ]
+        decrypted: [ await signer.decryptData(encrypted1), await signer.decryptData(encrypted2) ]
       };
     });
 
@@ -630,7 +634,7 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
   test('Should be able to decrypt operations using transaction interface', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ base, beekeeper }) => {
+    const retVal = await waxTest(async({ base, beekeeper, createSigner }) => {
       // Create wallet:
       const session = beekeeper.createSession("salt");
       const { wallet } = await session.createWallet("w0");
@@ -647,12 +651,13 @@ test.describe('Wax object interface foundation tests', () => {
         }
       });
 
-      tx.sign(wallet, publicKey)
+      const signer = createSigner(base, wallet, publicKey);
+      await signer.signTransaction(tx);
       const operations = tx.transaction.operations;
 
       const encrypted = operations[0].transfer_operation!.memo;
 
-      const decrypted = tx.decrypt(wallet);
+      const decrypted = await tx.decrypt(signer);
 
       return {
         encrypted,
