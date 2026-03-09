@@ -112,12 +112,18 @@ hiveio_api_package:
     - job: generate_hived_flattened_openapi_definition
       artifacts: true
   extends: .hiveio_api_package_template
-  # Override after_script to export HIVEIO_API_WHEEL_BUILD_VERSION instead of WHEEL_BUILD_VERSION
-  # The parent template's after_script would overwrite build_wheel.env with wrong version
-  after_script:
-    - HIVEIO_API_WHEEL_BUILD_VERSION=$(poetry -C "${API_GENERATION_DIR}/hiveio_api" version -s)
-    - echo "HIVEIO_API_WHEEL_BUILD_VERSION is ${HIVEIO_API_WHEEL_BUILD_VERSION}"
-    - echo "HIVEIO_API_WHEEL_BUILD_VERSION=${HIVEIO_API_WHEEL_BUILD_VERSION}" >> build_wheel.env
+  script:
+    - |
+      SCRIPT_ARGS=(
+        "--hive-project-root=${HIVE_PROJECT_ROOT}"
+        "--api-generation-dir=${API_GENERATION_DIR}"
+        "--dependency-source-dir=${DEPENDENCY_SOURCE_DIR:-${HIVE_PROJECT_ROOT}/tests/python/hive-local-tools}"
+        "--package-registry-project-id=${PACKAGE_REGISTRY_PROJECT_ID:-${CI_PROJECT_ID}}"
+        "--env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION"
+      )
+      [[ "${SKIP_WHEEL_DEPLOY}" == "true" ]] && SCRIPT_ARGS+=("--skip-deploy")
+      [[ "${SKIP_REGISTRY_CHECK}" == "true" ]] && SCRIPT_ARGS+=("--skip-registry-check")
+      "${HIVE_PROJECT_ROOT}/scripts/ci-helpers/hiveio_api_package.sh" "${SCRIPT_ARGS[@]}"
 
 build_wheel:
   extends: .build_wheel_template

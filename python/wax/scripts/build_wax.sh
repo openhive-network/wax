@@ -77,7 +77,12 @@ else
     fi
 
     echo "Build API packages."
-    ${PROJECT_DIR}/scripts/build_api_packages.sh
+    "${HIVE_SUBMODULE_DIR}/scripts/ci-helpers/hiveio_api_package.sh" \
+      --hive-project-root="${HIVE_SUBMODULE_DIR}" \
+      --apis="database_api network_broadcast_api rc_api" \
+      --flatten-openapi \
+      --env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION \
+      --skip-deploy --skip-tests --skip-registry-check
   fi
 
 
