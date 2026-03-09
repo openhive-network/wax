@@ -41,7 +41,6 @@ loguru = "^0.7.2"
 python-dateutil = "^2.8.2"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"
-hiveio-api = "==1.28.6rc8.post20260227150305"  # pinned: must match the version built from the hived submodule
 
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"
