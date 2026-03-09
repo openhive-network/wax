@@ -123,6 +123,13 @@ hiveio_api_package:
       [[ "${SKIP_WHEEL_DEPLOY}" == "true" ]] && SCRIPT_ARGS+=("--skip-deploy")
       [[ "${SKIP_REGISTRY_CHECK}" == "true" ]] && SCRIPT_ARGS+=("--skip-registry-check")
       "${HIVE_PROJECT_ROOT}/scripts/ci-helpers/hiveio_api_package.sh" "${SCRIPT_ARGS[@]}"
+  after_script:
+    - |
+      if [ -f "${HIVE_PROJECT_ROOT}/build_wheel.env" ]; then
+        cp "${HIVE_PROJECT_ROOT}/build_wheel.env" build_wheel.env
+      else
+        echo "WARNING: build_wheel.env not found in ${HIVE_PROJECT_ROOT} - hiveio_api_package.sh likely failed"
+      fi
 
 build_wheel:
   extends: .build_wheel_template
