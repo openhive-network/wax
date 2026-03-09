@@ -809,7 +809,7 @@ build_test_tools_wheel:
     # Replace path dependency with registry version (same version from git tag)
     - echo "Replacing wax path dependency with registry version..."
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
-    - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s)
+    - WAX_VERSION="${WHEEL_BUILD_VERSION}"
     - echo "Using wax version ${WAX_VERSION} from registry"
     - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
   artifacts:
@@ -846,10 +846,12 @@ deploy_test_tools_wheel_to_pypi:
   extends: .test_tools_base
   needs:
     - job: deploy_wheel_to_gitlab
+      artifacts: true
   before_script:
     - !reference [.configuration_template, before_script]
     # Replace wax path dependency with registry version
-    - WAX_VERSION=$(poetry -C "${WAX_DIR}" version -s | sed 's/+.*//')
+    - WAX_VERSION="${WHEEL_BUILD_VERSION}"
+    - echo "Using wax version ${WAX_VERSION} from registry"
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
     - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
     - !reference [.update_deps_for_tests, script]
@@ -876,6 +878,7 @@ test_tools_hived_handle:
   needs:
     - job: test_tools_unit_tests
     - job: deploy_wheel_to_gitlab
+      artifacts: true
   variables:
     HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
