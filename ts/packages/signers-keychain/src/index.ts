@@ -79,7 +79,7 @@ class KeychainProvider extends AEncryptionProvider {
    *
    * @throws on any error from the Keychain invocation.
    */
-  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName, _nonce?: number): Promise<string> {
     KeychainProvider.ensureKeychainInstalled();
 
     const msg = typeof buffer === "string" ? buffer : JSON.stringify({type:"Buffer", data: Array.from(new Uint8Array(buffer as ArrayBuffer))});

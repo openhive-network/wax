@@ -35,7 +35,7 @@ type TBeekeeperInfo = {
 };
 
 const initInternalBeekeeperWallet = async (beekeeperWalletName: string): Promise<TBeekeeperInfo> => {
-  const beekeeper = await createBeekeeper({ inMemory: true, enableLogs: false, unlockTimeout: 365 * 24 * 60 * 60 * 1000 });
+  const beekeeper = await createBeekeeper({ inMemory: true, unlockTimeout: 365 * 24 * 60 * 60 * 1000 });
 
   const session = beekeeper.createSession(Math.random().toString());
   const { wallet } = await session.createWallet(beekeeperWalletName);
@@ -216,8 +216,8 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
       await this.mainWallet.createStorageFile();
   }
 
-  public async encryptData (buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
-    return await this.beekeeperProvider.encryptData(buffer as string, recipient as TPublicKey);
+  public async encryptData (buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName, nonce?: number): Promise<string> {
+    return await this.beekeeperProvider.encryptData(buffer as string, recipient as TPublicKey, nonce);
   }
 
   public async decryptData (buffer: string): Promise<string> {
@@ -225,7 +225,7 @@ class WalletContent extends AEncryptionProvider implements IExternalWalletConten
   }
 
   protected async generateSignatures (transaction: ISignatureTransaction): Promise<TSignature[]> {
-    const signature = this.keyStorage.wallet.signDigest(this.publicKey, transaction.sigDigest);
+    const signature = await this.keyStorage.wallet.signDigest(this.publicKey, transaction.sigDigest);
 
     return [signature];
   }
@@ -399,7 +399,7 @@ class ExternalWallet implements IExternalWallet {
     const rawData = await this.storageProvider.get(this.fileName);
     try {
       // Decrypt using the encryption key
-      const decrypted = this.storageEncryptor!.wallet.decryptData(rawData, this.storageEncryptionPublicKey);
+      const decrypted = await this.storageEncryptor!.wallet.decryptData(rawData, this.storageEncryptionPublicKey);
       return migrateWalletData(JSON.parse(decrypted));
     } catch (error) {
       throw new WaxExternalSignatureProviderError(
@@ -412,7 +412,7 @@ class ExternalWallet implements IExternalWallet {
 
   public async saveStorageFile (data: IWalletDataV3): Promise<void> {
     const rawData = JSON.stringify(data);
-    const encrypted = this.storageEncryptor!.wallet.encryptData(rawData, this.storageEncryptionPublicKey);
+    const encrypted = await this.storageEncryptor!.wallet.encryptData(rawData, this.storageEncryptionPublicKey);
     await this.storageProvider.save(this.fileName, encrypted);
   }
 

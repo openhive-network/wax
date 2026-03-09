@@ -52,15 +52,16 @@ export class BeekeeperProvider extends AEncryptionProvider {
    *
    * @param buffer The string or binary buffer to encrypt.
    * @param recipient The public key of the recipient to encrypt the data for. The recipient should be a valid public key, starting with "STM".
+   * @param nonce Optional nonce to be explicitly specified for encryption. If not provided, a random nonce will be generated.
    * @returns A string containing the encrypted data. If the input was a string, the output will start with the `#` prefix.
    *          If the input was binary, the output will be a raw, hexadecimal signature string.
    * @throws on any error from the Beekeeper invocation.
    */
-  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey, nonce?: number): Promise<string> {
     if (typeof buffer === "string")
-      return this.base.encrypt(this.wallet, buffer, this.publicKey, recipient);
+      return await this.base.encrypt(this.wallet, buffer, this.publicKey, recipient, nonce);
 
-    return this.wallet.signDigest(this.publicKey, Array.from(new Uint8Array(buffer as ArrayBuffer))
+    return await this.wallet.signDigest(this.publicKey, Array.from(new Uint8Array(buffer as ArrayBuffer))
       .map(byte => byte.toString(16).padStart(2, '0'))
       .join(''));
   }
@@ -73,7 +74,7 @@ export class BeekeeperProvider extends AEncryptionProvider {
    * @throws on any error from the Beekeeper invocation.
    */
   public async decryptData(content: string): Promise<string> {
-    return this.base.decrypt(this.wallet, content);
+    return await this.base.decrypt(this.wallet, content);
   }
 
   /**
@@ -83,7 +84,7 @@ export class BeekeeperProvider extends AEncryptionProvider {
    * @throws on any error from the Beekeeper invocation.
    */
   protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
-    const signature = this.wallet.signDigest(this.publicKey, transaction.sigDigest);
+    const signature = await this.wallet.signDigest(this.publicKey, transaction.sigDigest);
 
     return [signature];
   }

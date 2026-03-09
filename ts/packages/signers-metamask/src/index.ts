@@ -216,7 +216,7 @@ export class MetaMaskProvider extends AEncryptionProvider {
    * @returns The encrypted buffer as a string, starting with the `#` prefix.
    * @throws on any error from the Hive Wallet invocation.
    */
-  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey, _nonce?: number): Promise<string> {
     const encryptBuffer = typeof buffer === "string" ? buffer : Array.from(new Uint8Array(buffer as ArrayBuffer));
 
     const response = await this.invokeSnap('hive_encrypt', { buffer: encryptBuffer, firstKey: this.#selectedKeyIndex, secondKey: recipient }) as any;

@@ -3,14 +3,14 @@ import { createWaxFoundation } from '@hiveio/wax';
 import BeekeeperSigner from '../dist';
 import assert from 'node:assert/strict';
 
-const beekeeper = await beekeeperFactory({ enableLogs: false });
+const beekeeper = await beekeeperFactory();
 
 const session = beekeeper.createSession('my.salt');
 
 let wallet1: IBeekeeperUnlockedWallet, wallet2: IBeekeeperUnlockedWallet;
 if (session.hasWallet('w0')) {
-  wallet1 = session.openWallet('w0').unlock('password');
-  wallet2 = session.openWallet('w1').unlock('password');
+  wallet1 = await session.openWallet('w0').unlock('password');
+  wallet2 = await session.openWallet('w1').unlock('password');
 } else {
   ({ wallet: wallet1 } = await session.createWallet('w0', 'password'));
   ({ wallet: wallet2 } = await session.createWallet('w1', 'password'));

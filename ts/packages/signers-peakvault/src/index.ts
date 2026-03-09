@@ -82,7 +82,7 @@ class PeakVaultProvider extends AEncryptionProvider {
    * @returns A string containing the encrypted data. The string starts with the `#` prefix.
    * @throws on any error from the Peak Vault invocation.
    */
-  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName): Promise<string> {
+  public async encryptData(buffer: string | TBinaryBuffer, recipient: TPublicKey | TAccountName, _nonce?: number): Promise<string> {
     PeakVaultProvider.ensurePeakVaultInstalled();
 
     if (typeof buffer !== "string") {
