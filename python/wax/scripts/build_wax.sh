@@ -83,6 +83,9 @@ else
       --flatten-openapi \
       --env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION \
       --skip-deploy --skip-tests --skip-registry-check
+
+    # Copy build_wheel.env from hive submodule to wax root where build_wax.sh expects it
+    cp "${HIVE_SUBMODULE_DIR}/build_wheel.env" "${WAX_DIR}/build_wheel.env"
   fi
 
 

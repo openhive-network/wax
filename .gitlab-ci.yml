@@ -100,7 +100,6 @@ generate_hived_flattened_openapi_definition:
 
 # Build hiveio-api package (build only, test and deploy in later stages)
 hiveio_api_package:
-  extends: .build_wheel_template
   stage: build
   variables:
     HIVE_PROJECT_ROOT: "${CI_PROJECT_DIR}/hive"
