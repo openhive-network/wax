@@ -19,9 +19,13 @@
   },
   "dependencies": {
     "@hiveio/beekeeper": "file:../../../ts/node_modules/@hiveio/beekeeper",
-    "@hiveio/wax": "file:../../../ts"
+    "@hiveio/wax": "file:../../../ts",
+    "@hiveio/wax-signers-beekeeper": "file:../../../ts/packages/signers-beekeeper"
   },
   "type": "module",
+  "alias": {
+    "@hiveio/wax": "../../../ts/wasm/dist/bundle/web.js"
+  },
   "pnpm": {
     "peerDependencyRules": {
       "allowedVersions": {

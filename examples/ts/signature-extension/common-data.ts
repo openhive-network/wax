@@ -1,5 +1,6 @@
 import { type account_create, createHiveChain, IHiveChainInterface, TAccountName, TPublicKey } from "@hiveio/wax";
 import createBeekeeper, {IBeekeeperUnlockedWallet} from "@hiveio/beekeeper";
+import { BeekeeperProvider } from "@hiveio/wax-signers-beekeeper";
 
 const testAccountName = "keychainsigner";
 const testAccountPostingKey = "5J7cSrAhgnAWe2uQqTTPhb7BggUeKjuLS8AFPpn53Yv7mFYHo53";
@@ -86,7 +87,8 @@ export const prepareTestingEnvironemnt = async (): Promise<TTestEnvData> => {
     };
 
     tx.pushOperation({account_create_operation: operationBody});
-    tx.sign(wallet, mirrornetSkeletonPublicKey);
+    const signer = BeekeeperProvider.for(chain, wallet, mirrornetSkeletonPublicKey) as BeekeeperProvider;
+    await signer.signTransaction(tx);
 
     await chain.broadcast(tx);
 
