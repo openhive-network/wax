@@ -811,7 +811,7 @@ build_test_tools_wheel:
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
     - WAX_VERSION="${WHEEL_BUILD_VERSION}"
     - echo "Using wax version ${WAX_VERSION} from registry"
-    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
   artifacts:
     when: always
     paths:
@@ -853,7 +853,7 @@ deploy_test_tools_wheel_to_pypi:
     - WAX_VERSION="${WHEEL_BUILD_VERSION}"
     - echo "Using wax version ${WAX_VERSION} from registry"
     - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
-    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}" --source gitlab-hive || poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax>=${WAX_VERSION}"
+    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
     - !reference [.update_deps_for_tests, script]
     - poetry -C "${TEST_TOOLS_DIR}" install
     - pip list
