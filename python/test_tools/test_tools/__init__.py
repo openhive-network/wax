@@ -46,6 +46,8 @@ __all__ = [
     "InitNode",
     "InitialVesting",
     "Network",
+    "NodeArguments",
+    "NodeConfig",
     "OffsetTimeControl",
     "OldWallet",
     "PrivateKey",
@@ -54,12 +56,9 @@ __all__ = [
     "RemoteNode",
     "SpeedUpRateTimeControl",
     "StartTimeControl",
-    "wax_wrapper",
     "Time",
     "TimeFormats",
     "Wallet",
-    "NodeArguments",
-    "NodeConfig",
     "WitnessNode",
     "cleanup_policy",
     "complex_networks",
@@ -68,6 +67,7 @@ __all__ = [
     "exceptions",
     "logger",
     "paths_to_executables",
+    "wax_wrapper",
 ]
 
 if TYPE_CHECKING:
