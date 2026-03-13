@@ -23,10 +23,10 @@ def count_ops_by_type(node: tt.AnyNode, op_type: str, start: int, limit: int = 5
     count = {}
     for i in range(start, start - limit, -1):
         response = node.api.account_history.get_ops_in_block(block_num=i, only_virtual=False)
-        ops = response["ops"]
+        ops = response.ops
         count[i] = 0
         for current_op in ops:
-            this_op_type = current_op["op"]["type"]
+            this_op_type = current_op.op.type
             if this_op_type == op_type:
                 count[i] += 1
     return count

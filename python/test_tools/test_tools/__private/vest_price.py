@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Protocol
 
 from schemas.fields.compound import Price
 
 if TYPE_CHECKING:
-    from schemas.apis.database_api import GetDynamicGlobalProperties
     from schemas.fields.assets._base import AssetNaiAmount
     from wax.helpy import Hf26Asset
+
+
+class HasVestingInfo(Protocol):
+    # Any is intentional: accepts both schemas Asset (Pydantic) and hiveio_api Asset (msgspec Struct)
+    total_vesting_shares: Any
+    total_vesting_fund_hive: Any
 
 
 @dataclass
@@ -24,7 +29,7 @@ class VestPrice:
         return f"{self.__class__.__name__}({self.as_nai()})"
 
     @classmethod
-    def from_dgpo(cls, dgpo: GetDynamicGlobalProperties) -> VestPrice:
+    def from_dgpo(cls, dgpo: HasVestingInfo) -> VestPrice:
         return cls(quote=dgpo.total_vesting_shares, base=dgpo.total_vesting_fund_hive)
 
     def as_nai(self) -> dict[str, dict[str, AssetNaiAmount | str]]:

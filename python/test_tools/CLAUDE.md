@@ -232,7 +232,8 @@ When tests are flaky (especially network/timing-related):
 
 - **wax** (hiveio-wax): Blockchain transaction building, serialization
 - **beekeepy**: Wallet/key management (beekeeper integration)
-- **schemas**: API response schemas
+- **hiveio-api**: Auto-generated API response types (msgspec)
+- **schemas**: Legacy API response schemas (only debug_node_api)
 - **abstractcp**: Process management
 - **loguru**: Logging
 
