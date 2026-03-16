@@ -34,6 +34,7 @@ loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
 hiveio-beekeepy = "^1.28.6-post.0"
 hiveio-schemas = "^1.28.2-post.0"
+hiveio-api = ">=1.28.8rc12.dev0"
 
 
 [tool.poetry.group.static-analysis.dependencies]
@@ -160,6 +161,7 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "test_tools/__private/hived/api/**" = [
     "TCH001", # API response models cannot be placed in the type checking block
+    "TCH002", # API response models cannot be placed in the type checking block
 ]
 "tests/**" = [
     "D1",  # Missing docstrings — not required in tests
