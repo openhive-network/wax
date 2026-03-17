@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Final, get_args
 
 from beekeepy import Beekeeper
 from beekeepy.communication import StrictOverseer
-from beekeepy.exceptions import ErrorInResponseError
+from beekeepy.exceptions import ErrorInResponseError, WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
 
 from schemas.fields.basic import PublicKey
@@ -183,6 +183,9 @@ class Wallet(UserHandleImplementation, ScopedObject):
             self._beekeeper_wallet = self.__beekeeper_session.create_wallet(name=self.name, password=DEFAULT_PASSWORD)
             if preconfigure:
                 self._beekeeper_wallet.import_key(private_key=Account("initminer").private_key)
+        except WalletWithSuchNameAlreadyExistsError:
+            locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
+            self._beekeeper_wallet = locked_wallet.unlock(DEFAULT_PASSWORD)
         except ErrorInResponseError as exception:
             if f"Wallet with name: '{self.name}' already exists" in exception.error:
                 locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
