@@ -267,7 +267,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
     @api
     def get_market_history(
         self, bucket_seconds: int, start: datetime, stop: datetime, /
-    ) -> list[condenser_api.MarketHistory]:
+    ) -> list[condenser_api.MarketHistoryBucket]:
         raise NotImplementedError
 
     @api
