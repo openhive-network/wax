@@ -2,13 +2,30 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["local>hive/common-ci-configuration//renovate/python.json5"],
 
+  "git-submodules": {
+    "enabled": true
+  },
+
   "packageRules": [
     {
       // hiveio-api is built from the hived submodule — its version must match.
-      // Renovate must not bump it automatically; update manually when bumping the submodule.
-      "description": "Disable hiveio-api updates — version is tied to the hived submodule",
+      // Renovate must not bump it; CI job sync_hiveio_api handles it when submodule changes.
+      "description": "Disable hiveio-api updates — synced automatically via bump_hive_submodule.sh",
       "matchManagers": ["poetry"],
       "matchPackageNames": ["hiveio-api"],
+      "enabled": false
+    },
+    {
+      // Only track the hive submodule, not npm-common-config (managed separately).
+      "description": "Track hive submodule updates",
+      "matchManagers": ["git-submodules"],
+      "matchPackageNames": ["hive"],
+      "enabled": true
+    },
+    {
+      "description": "Ignore npm-common-config submodule — managed manually",
+      "matchManagers": ["git-submodules"],
+      "matchPackageNames": ["ts/npm-common-config"],
       "enabled": false
     }
   ]

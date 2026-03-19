@@ -78,6 +78,50 @@ default:
   tags:
     - public-runner-docker
 
+# Sync hiveio-api version in poetry.lock when hive submodule is bumped.
+# Runs on Renovate branches where the submodule changed but the lock wasn't updated.
+sync_hiveio_api:
+  stage: prepare
+  needs: []
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^renovate\//'
+      changes:
+        paths:
+          - hive
+  variables:
+    GIT_SUBMODULE_STRATEGY: normal
+    GIT_DEPTH: 0
+  script:
+    - |
+      # Determine expected hiveio-api version from submodule
+      GENERATED_PACKAGE_DIR="${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
+      poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1
+      EXPECTED_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+
+      # Check current pin in pyproject.toml
+      CURRENT_PIN=$(grep -oP 'hiveio-api = "==\K[^"]+' python/wax/pyproject.toml || echo "")
+
+      if [ "${CURRENT_PIN}" = "${EXPECTED_VERSION}" ]; then
+        echo "hiveio-api already at ${EXPECTED_VERSION}, nothing to do"
+        exit 0
+      fi
+
+      echo "Syncing hiveio-api: ${CURRENT_PIN} → ${EXPECTED_VERSION}"
+
+      # Configure git for push
+      git config user.email "ci@syncad.com"
+      git config user.name "GitLab CI"
+      git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.syncad.com/${CI_PROJECT_PATH}.git"
+      git checkout "${CI_COMMIT_BRANCH}"
+
+      # Run sync (submodule already updated by Renovate)
+      python/wax/scripts/bump_hive_submodule.sh --skip-submodule-update
+
+      # Push the lock update commit
+      git push origin "${CI_COMMIT_BRANCH}"
+  tags:
+    - public-runner-docker
+
 # Verify that include refs match submodule commits
 verify_include_refs:
   extends: .verify_multiple_refs_template
