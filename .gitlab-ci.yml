@@ -86,7 +86,7 @@ sync_hiveio_api:
   rules:
     # Only run on Renovate branches, only when hive submodule changed,
     # and skip if the last commit was from this CI job (prevent loop)
-    - if: '$CI_COMMIT_BRANCH =~ /^renovate\//' && $CI_COMMIT_MESSAGE !~ /Bump hive submodule/
+    - if: $CI_COMMIT_BRANCH =~ /^renovate\// && $CI_COMMIT_MESSAGE !~ /Bump hive submodule/
       changes:
         paths:
           - hive
