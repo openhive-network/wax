@@ -65,8 +65,16 @@ log_success "Hive submodule at: ${HIVE_COMMIT}"
 # --- Step 2: Determine hiveio-api version ---
 
 log_info "Determining hiveio-api version..."
-poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1
+if ! poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1; then
+    log_error "poetry install --dry-run failed — poetry-dynamic-versioning plugin may not be available"
+    exit 1
+fi
 HIVEIO_API_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+
+if [[ "${HIVEIO_API_VERSION}" == "0.0.0" ]]; then
+    log_error "poetry-dynamic-versioning returned 0.0.0 — plugin not active"
+    exit 1
+fi
 
 if [[ "${HIVEIO_API_VERSION}" == *"+dirty"* ]]; then
     log_error "Submodule has uncommitted changes (version: ${HIVEIO_API_VERSION})"
@@ -124,6 +132,15 @@ PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring \
 # poetry add changes constraint format; restore exact pin style
 sed -i "s|^hiveio-api = .*|hiveio-api = \"==${HIVEIO_API_VERSION}\"  # pinned: must match the version built from the hived submodule|" \
     pyproject.toml
+
+# Verify sed actually replaced the line
+if ! grep -q "hiveio-api = \"==${HIVEIO_API_VERSION}\"" pyproject.toml; then
+    log_error "Failed to update hiveio-api pin in pyproject.toml"
+    log_error "Expected: hiveio-api = \"==${HIVEIO_API_VERSION}\""
+    log_error "Current content:"
+    grep "hiveio-api" pyproject.toml || echo "(not found)"
+    exit 1
+fi
 
 # Re-lock to match restored constraint (wheel is already in cache from poetry add)
 PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring poetry lock

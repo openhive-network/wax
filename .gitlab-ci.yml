@@ -84,7 +84,9 @@ sync_hiveio_api:
   stage: prepare
   needs: []
   rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^renovate\//'
+    # Only run on Renovate branches, only when hive submodule changed,
+    # and skip if the last commit was from this CI job (prevent loop)
+    - if: '$CI_COMMIT_BRANCH =~ /^renovate\//' && $CI_COMMIT_MESSAGE !~ /Bump hive submodule/
       changes:
         paths:
           - hive
@@ -95,8 +97,15 @@ sync_hiveio_api:
     - |
       # Determine expected hiveio-api version from submodule
       GENERATED_PACKAGE_DIR="${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
-      poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1
+      if ! poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1; then
+        echo "WARNING: poetry install --dry-run failed, plugin may not be available"
+      fi
       EXPECTED_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+
+      if [ "${EXPECTED_VERSION}" = "0.0.0" ]; then
+        echo "ERROR: poetry-dynamic-versioning returned 0.0.0 — plugin not active"
+        exit 1
+      fi
 
       # Check current pin in pyproject.toml
       CURRENT_PIN=$(grep -oP 'hiveio-api = "==\K[^"]+' python/wax/pyproject.toml || echo "")
