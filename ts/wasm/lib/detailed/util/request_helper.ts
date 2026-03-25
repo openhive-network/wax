@@ -39,6 +39,14 @@ export class RequestHelper {
       response: undefined
     };
 
+    let abortController: AbortController | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    if (config.timeout !== 0) {
+      abortController = new AbortController();
+      timeoutId = setTimeout(() => abortController!.abort(new DOMException('The operation was aborted due to timeout', 'TimeoutError')), config.timeout);
+    }
+
     try {
       const finalUrl = config.endpoint + config.url;
 
@@ -53,7 +61,7 @@ export class RequestHelper {
       const response = await fetch(finalUrl, {
         headers: headers.has('content-type') || headers.has('user-agent') || headers.has('x-wax-api-caller') ? headers : undefined,
         method: config.method,
-        signal: config.timeout === 0 ? undefined : AbortSignal.timeout(config.timeout),
+        signal: abortController?.signal,
         body: typeof config.data === "object" ? JSON.stringify(config.data) : config.data
       });
 
@@ -89,6 +97,9 @@ export class RequestHelper {
         throw new WaxRequestAbortedByUser<T>(config, runningData);
 
       throw new WaxUnknownRequestError<T>(config, runningData, error);
+    } finally {
+      if (timeoutId !== undefined)
+        clearTimeout(timeoutId);
     }
   }
 
