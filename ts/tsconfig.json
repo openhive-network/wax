@@ -4,12 +4,7 @@
     "rootDir": "./wasm/lib",
     "outDir": "./wasm/dist/lib",
     "incremental": true,
-    "tsBuildInfoFile": "./wasm/dist/.tsbuildinfo",
-    "paths": {
-      "wasm/lib/build_wasm/wax.common": [
-        "./wasm/build_wasm/wax.common"
-      ]
-    }
+    "tsBuildInfoFile": "./wasm/dist/.tsbuildinfo"
   },
   "include": [
     "./wasm/lib"
