@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 import wax
-
+from wax.exceptions import WaxError
 from wax_local_tools.consts import VALID_PROTO_OPERATIONS
 from wax_local_tools.util import get_proto_operation_name
 
@@ -30,12 +30,9 @@ def test_invalid_empty_proto_operation() -> None:
     operation = {}  # type: ignore[var-annotated]
     operation_json = json.dumps(operation)
 
-    # ACT
-    result = wax.validate_proto_operation(operation_json)
-
-    # ASSERT
-    assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    # ACT & ASSERT
+    with pytest.raises(WaxError):
+        wax.validate_proto_operation(operation_json)
 
 
 @pytest.mark.parametrize("operation", deepcopy(VALID_PROTO_OPERATIONS), ids=get_proto_operation_name)
@@ -49,9 +46,6 @@ def test_invalid_proto_operation_without_a_key(operation: dict[str, Any]) -> Non
 
     operation_json = json.dumps(operation)
 
-    # ACT
-    result = wax.validate_proto_operation(operation_json)
-
-    # ASSERT
-    assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    # ACT & ASSERT
+    with pytest.raises(WaxError):
+        wax.validate_proto_operation(operation_json)

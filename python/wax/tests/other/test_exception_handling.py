@@ -39,14 +39,14 @@ def test_exception_relay() -> None:
     except WaxChainAssertionError as inst:
         ex_source = "Chain"
         ex_type = type(inst)
-        ex_args = inst.assertion_hash
+        ex_args = inst.assert_hash
     except WaxProtocolAssertionError as inst:
         ex_source = "Protocol"
         ex_type = type(inst)
-        ex_args = inst.assertion_hash
+        ex_args = inst.assert_hash
     except WaxAssertionError as inst:
         ex_type = type(inst)
-        ex_args = inst.assertion_hash
+        ex_args = inst.assert_hash
     except Exception as inst:
         ex_type = type(inst)
         ex_args = inst.args

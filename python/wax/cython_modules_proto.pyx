@@ -22,6 +22,7 @@ include "_decorators.pxi"
 # Forward declaration is not needed for def functions in the same compilation unit.
 
 
+@wax_error_boundary
 def proto_operation_get_impacted_accounts(operation: str) -> list[str]:
     """Get impacted accounts from a protobuf operation."""
     op = json.loads(operation)
@@ -29,6 +30,7 @@ def proto_operation_get_impacted_accounts(operation: str) -> list[str]:
     return decode_list(_op_impacted_accounts(hOp))
 
 
+@wax_error_boundary
 def proto_transaction_get_impacted_accounts(transaction: str) -> list[str]:
     """Get impacted accounts from a protobuf transaction."""
     tx = json.loads(transaction)
@@ -36,6 +38,7 @@ def proto_transaction_get_impacted_accounts(transaction: str) -> list[str]:
     return decode_list(_tx_impacted_accounts(hTx))
 
 
+@wax_error_boundary
 @return_python_result
 def validate_proto_operation(operation: str) -> python_result:
     """Validate a protobuf operation."""
@@ -44,6 +47,7 @@ def validate_proto_operation(operation: str) -> python_result:
     _op_validate(hOp)
 
 
+@wax_error_boundary
 @return_python_result
 def validate_proto_transaction(transaction: str) -> python_result:
     """Validate a protobuf transaction."""
@@ -52,6 +56,7 @@ def validate_proto_transaction(transaction: str) -> python_result:
     _tx_validate(hTx)
 
 
+@wax_error_boundary
 @return_python_result
 def calculate_proto_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID from a protobuf transaction."""
@@ -60,6 +65,7 @@ def calculate_proto_transaction_id(transaction: str) -> python_result:
     return _tx_id(hTx, True)
 
 
+@wax_error_boundary
 @return_python_result
 def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate legacy transaction ID from a protobuf transaction."""
@@ -68,6 +74,7 @@ def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
     return _tx_id(hTx, False)
 
 
+@wax_error_boundary
 @return_python_result
 def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest from a protobuf transaction."""
@@ -76,6 +83,7 @@ def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result
     return _tx_sig_digest(hTx, encode_str(chain_id), True)
 
 
+@wax_error_boundary
 @return_python_result
 def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate legacy signature digest from a protobuf transaction."""
@@ -84,6 +92,7 @@ def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python
     return _tx_sig_digest(hTx, encode_str(chain_id), False)
 
 
+@wax_error_boundary
 @return_python_result
 def serialize_proto_transaction(transaction: str) -> python_result:
     """Serialize a protobuf transaction to binary."""
@@ -92,6 +101,7 @@ def serialize_proto_transaction(transaction: str) -> python_result:
     return _tx_to_binary(hTx, True, False)
 
 
+@wax_error_boundary
 @return_python_result
 def deserialize_proto_transaction(transaction: str) -> python_result:
     """Deserialize a binary transaction to protobuf format."""
@@ -102,6 +112,7 @@ def deserialize_proto_transaction(transaction: str) -> python_result:
     return json.dumps(tx)
 
 
+@wax_error_boundary
 @return_python_result
 def proto_to_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to API format."""
@@ -113,6 +124,7 @@ def proto_to_api(only_tx: str) -> python_result:
     return json.dumps(tx)
 
 
+@wax_error_boundary
 @return_python_result
 def proto_to_legacy_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to legacy API format."""
@@ -124,6 +136,7 @@ def proto_to_legacy_api(only_tx: str) -> python_result:
     return _tx_to_legacy_json(hTx)
 
 
+@wax_error_boundary
 @return_python_result
 def api_to_proto(only_tx: str) -> python_result:
     """Convert an API transaction to protobuf format."""
@@ -135,12 +148,14 @@ def api_to_proto(only_tx: str) -> python_result:
     return json.dumps(tx)
 
 
+@wax_error_boundary
 def tx_proto_to_api(tx: object) -> None:
     """Convert transaction from proto to API format (in-place)."""
     cdef protocol obj
     obj.cpp_tx_proto_to_api(tx)
 
 
+@wax_error_boundary
 def tx_api_to_proto(transaction: object) -> None:
     """Convert transaction from API to proto format (in-place)."""
     cdef protocol obj
