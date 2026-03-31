@@ -31,40 +31,90 @@ from .validation_errors import (
 from .wax_error import (
     WaxAssertionError,
     WaxChainAssertionError,
+    WaxChainAssetAssertionError,
+    WaxChainBalanceAssertionError,
+    WaxChainHardforkAssertionError,
+    WaxChainLimitAssertionError,
+    WaxChainPermissionAssertionError,
+    WaxChainStateAssertionError,
+    WaxChainTimeAssertionError,
+    WaxChainTreasuryAssertionError,
+    WaxChainUnreachableCodeAssertionError,
+    WaxChainVotingAssertionError,
     WaxError,
     WaxImportProtoBeforeCompileError,
+    WaxProtocolAccountNameAssertionError,
     WaxProtocolAssertionError,
+    WaxProtocolAssetAssertionError,
+    WaxProtocolAuthorityAssertionError,
+    WaxProtocolHardforkAssertionError,
+    WaxProtocolNumberAssertionError,
+    WaxProtocolStringAssertionError,
+    WaxProtocolUnreachableCodeAssertionError,
+    WaxUnhandledAssertionError,
 )
+from .wax_specialised_errors import CxxExceptionData
+
+# Backward-compatible aliases
+WaxBaseAssertionError = WaxAssertionError
+DetailedCxxError = CxxExceptionData
+UnhandledWaxError = WaxUnhandledAssertionError
 
 __all__ = [
+    # Chain-related errors.
+    "AccountNotFoundError",
+    # Asset-related errors.
+    "AssetError",
+    "AuthorityCannotBeSatisfiedError",
+    "CannotCreateAssetError",
+    # C++ exception data model.
+    "CxxExceptionData",
+    # Conversion-related errors.
+    "DecimalConversionError",
+    "DecimalConversionNegativePrecisionError",
+    "DecimalConversionNotANumberError",
+    "DetailedCxxError",
+    "HiveAccountCategoryError",
+    "HiveMaxAuthorityMembershipExceededError",
+    "HiveTempAccountUsedError",
+    "InvalidAccountNameError",
+    "InvalidAccountOrKeyError",
+    "InvalidAssetAmountError",
+    "InvalidMemoKeyError",
+    "InvalidOperationFormatError",
+    "MissingAuthorityError",
+    "ToLongFollowingListError",
+    "UnhandledWaxError",
+    "UnknownAssetNaiError",
+    "UnknownAssetTypeError",
+    # C++ assertion errors — base classes.
+    "WaxAssertionError",
+    "WaxBaseAssertionError",
+    # C++ assertion errors — chain category.
+    "WaxChainAssertionError",
+    "WaxChainAssetAssertionError",
+    "WaxChainBalanceAssertionError",
+    "WaxChainHardforkAssertionError",
+    "WaxChainLimitAssertionError",
+    "WaxChainPermissionAssertionError",
+    "WaxChainStateAssertionError",
+    "WaxChainTimeAssertionError",
+    "WaxChainTreasuryAssertionError",
+    "WaxChainUnreachableCodeAssertionError",
+    "WaxChainVotingAssertionError",
     # Base error for all wax errors.
     "WaxError",
     "WaxImportProtoBeforeCompileError",
-    "WaxAssertionError",
-    "WaxChainAssertionError",
+    "WaxProtocolAccountNameAssertionError",
+    # C++ assertion errors — protocol category.
     "WaxProtocolAssertionError",
-    # Asset-related errors.
-    "AssetError",
-    "InvalidAssetAmountError",
-    "UnknownAssetTypeError",
-    "UnknownAssetNaiError",
-    "CannotCreateAssetError",
-    # Conversion-related errors.
-    "DecimalConversionError",
-    "DecimalConversionNotANumberError",
-    "DecimalConversionNegativePrecisionError",
+    "WaxProtocolAssetAssertionError",
+    "WaxProtocolAuthorityAssertionError",
+    "WaxProtocolHardforkAssertionError",
+    "WaxProtocolNumberAssertionError",
+    "WaxProtocolStringAssertionError",
+    "WaxProtocolUnreachableCodeAssertionError",
+    "WaxUnhandledAssertionError",
     # Validation-related errors.
     "WaxValidationFailedError",
-    "InvalidAccountNameError",
-    "InvalidAccountOrKeyError",
-    "InvalidOperationFormatError",
-    "InvalidMemoKeyError",
-    "ToLongFollowingListError",
-    # Chain-related errors.
-    "AccountNotFoundError",
-    "HiveAccountCategoryError",
-    "HiveTempAccountUsedError",
-    "HiveMaxAuthorityMembershipExceededError",
-    "AuthorityCannotBeSatisfiedError",
-    "MissingAuthorityError",
 ]

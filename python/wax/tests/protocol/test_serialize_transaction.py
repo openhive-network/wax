@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from wax import deserialize_transaction, serialize_transaction
+from wax.exceptions import WaxError
 from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
 
@@ -51,12 +54,6 @@ def test_serialize_transaction_negative():
     # Arrange
     tx_str = json.dumps(PROTO_REF_TRANSACTION)
 
-    # Act
-    result = serialize_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "Proto format transaction should fail API serialization"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Python function call failed" in result.exception_message, "Error should indicate Python call failure"
-    assert "'type'" in result.exception_message, "Error should reference type field"
+    # Act & Assert
+    with pytest.raises(WaxError):
+        serialize_transaction(tx_str)

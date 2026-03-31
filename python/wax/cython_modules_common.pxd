@@ -33,7 +33,6 @@ from cpp_python_bridge cimport (
 from libcpp.exception cimport exception_ptr, wrapped_exception_ptr_from_exception
 
 # Declare cdef functions that other modules need to cimport
-# NOTE: raise_appropriate_wax_exception is now in _decorators.pxi (included by each module)
 cdef object convert_binary_data_node_to_python(binary_data_node node)
 
 # String conversion helpers (def functions - no cdef declaration needed, they're importable as Python functions)

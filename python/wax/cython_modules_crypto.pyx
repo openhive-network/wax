@@ -12,6 +12,7 @@ from wax.wax_result import python_result, python_private_key_data, python_brain_
 include "_decorators.pxi"
 
 
+@wax_error_boundary
 @return_python_result
 def generate_private_key() -> python_result:
     """Generate a new random private key."""
@@ -20,6 +21,7 @@ def generate_private_key() -> python_result:
     return response
 
 
+@wax_error_boundary
 def generate_password_based_private_key(account: str, role: str, password: str) -> python_private_key_data:
     """Generate a private key from account, role, and password."""
     cdef protocol obj
@@ -30,6 +32,7 @@ def generate_password_based_private_key(account: str, role: str, password: str) 
     )
 
 
+@wax_error_boundary
 def suggest_brain_key() -> python_brain_key_data:
     """Generate a suggested brain key with associated private and public keys."""
     cdef protocol obj
@@ -41,6 +44,7 @@ def suggest_brain_key() -> python_brain_key_data:
     )
 
 
+@wax_error_boundary
 @return_python_result
 def calculate_public_key(wif: str) -> python_result:
     """Calculate the public key from a WIF private key."""
@@ -49,6 +53,7 @@ def calculate_public_key(wif: str) -> python_result:
     return response
 
 
+@wax_error_boundary
 def convert_wif_public_key_to_raw(wif: str) -> str:
     """Convert WIF public key to raw hex format."""
     cdef protocol obj
@@ -56,6 +61,7 @@ def convert_wif_public_key_to_raw(wif: str) -> str:
     return decode_bytes(response)
 
 
+@wax_error_boundary
 @return_python_result
 def get_public_key_from_signature(digest: str, signature: str) -> python_result:
     """Recover the public key from a signature and digest."""

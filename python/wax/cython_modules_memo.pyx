@@ -5,8 +5,10 @@
 from cython_modules_common cimport protocol, crypto_memo
 from cython_modules_common import encode_str, decode_bytes
 from wax.wax_result import python_encrypted_memo
+from wax.exceptions.wax_specialised_errors import wax_error_boundary
 
 
+@wax_error_boundary
 def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, other_encryption_key: str = '') -> str:
     """Encode an encrypted memo with the given keys."""
     cdef protocol obj
@@ -21,6 +23,7 @@ def encode_encrypted_memo(encrypted_content: str, main_encryption_key: str, othe
     return decode_bytes(encoded_memo)
 
 
+@wax_error_boundary
 def decode_encrypted_memo(encoded_memo: str) -> python_encrypted_memo:
     """Decode an encrypted memo string."""
     cdef protocol obj

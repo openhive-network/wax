@@ -1,8 +1,10 @@
 import json
 
+import pytest
 from google.protobuf.json_format import ParseDict
 
 from wax import deserialize_proto_transaction, serialize_proto_transaction
+from wax.exceptions import WaxError
 from wax.proto.transaction import transaction
 from wax_local_tools.refs import API_REF_TRANSACTION, PROTO_REF_TRANSACTION
 
@@ -58,12 +60,6 @@ def test_serialize_proto_transaction_negative():
     # Arrange
     tx_str = json.dumps(API_REF_TRANSACTION)
 
-    # Act
-    result = serialize_proto_transaction(tx_str)
-
-    # Assert
-    assert result.status == result.status.fail, "API format transaction should fail proto serialization"
-    assert "'code': 10" in result.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in result.exception_message, "Error should be assert_exception type"
-    assert "Could not find the supported property in static variant" in result.exception_message, "Error should indicate format mismatch"
-    assert "'nextkey': 'type'" in result.exception_message, "Error should reference missing type field"
+    # Act & Assert
+    with pytest.raises(WaxError, match="Could not find the supported property in static variant"):
+        serialize_proto_transaction(tx_str)

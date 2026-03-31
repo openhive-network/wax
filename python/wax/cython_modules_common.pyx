@@ -2,10 +2,9 @@
 # distutils: language = c++
 # Common module - exception handling and shared cdef utilities
 #
-# NOTE: Decorators (call_with_exception_relay, return_python_*, etc.) and
-# raise_appropriate_wax_exception are defined in _decorators.pxi and included
-# by each module that needs them. This avoids runtime imports between modules
-# (which would fail since all modules compile to a single .so file).
+# NOTE: Decorators (return_python_json_asset, etc.) are defined in _decorators.pxi
+# and included by each module that needs them. This avoids runtime imports between
+# modules (which would fail since all modules compile to a single .so file).
 
 import json
 
@@ -21,10 +20,9 @@ from cython_modules_common cimport (
     wrapped_exception_ptr_from_exception,
 )
 
-from wax.exceptions import WaxChainAssertionError, WaxProtocolAssertionError, WaxAssertionError, WaxError
 from wax.wax_result import python_binary_data_node
 
-# Include shared decorators and raise_appropriate_wax_exception
+# Include shared decorators
 include "_decorators.pxi"
 
 
@@ -59,6 +57,27 @@ def encode_list(source: list) -> list:
 def decode_list(source: list) -> list:
     """Decode list of bytes from C++ to strings."""
     return [decode_bytes(item) for item in source]
+
+
+def parse_cxx_exception(ex: object) -> tuple | None:
+    """Parse a C++ exception into a (wax_exception_name, parsed_data) tuple.
+
+    Returns (name, data) where data is a dict (parsed JSON) or str (raw message).
+    Returns None if the exception cannot be extracted.
+    """
+    cdef protocol obj
+    cdef exception_ptr eptr = wrapped_exception_ptr_from_exception(ex)
+    cdef hive_exception_data raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+    wax_exception_name = raw_data.wax_exception_name.decode()
+    wax_exception_what = raw_data.what.decode()
+    if wax_exception_name == "WaxError":
+        return (wax_exception_name, wax_exception_what)
+
+    try:
+        result = json.loads(wax_exception_what)
+        return (wax_exception_name, result)
+    except Exception:
+        return (wax_exception_name, wax_exception_what)
 
 
 cdef object convert_binary_data_node_to_python(binary_data_node node):
