@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 import wax
-
+from wax.exceptions import WaxError
 from wax_local_tools.consts import VALID_OPERATIONS
 
 
@@ -17,6 +17,5 @@ def test_valid_operation(operation_name: str) -> None:
 
 def test_invalid_operation() -> None:
     invalid_op = """{"type":"transfer_operation","value":{"from":"initminer","to":"alpha","amount":"123.000 HIVE","memo":"test"}}"""
-    result = wax.validate_operation(invalid_op)
-    assert result.status == wax.python_error_code.fail
-    assert result.exception_message
+    with pytest.raises(WaxError):
+        wax.validate_operation(invalid_op)

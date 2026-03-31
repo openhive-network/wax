@@ -62,13 +62,13 @@ cdef WaxOperationHandle _handle_deserialize_operation(bytes operation_data):
 # These wrap the cdef functions with exception handling decorators
 # =============================================================================
 
-@call_with_exception_relay
+@wax_error_boundary
 def create_wax_transaction(tx: object, is_protobuf: bool) -> WaxTransactionHandle:
     """Create a WaxTransactionHandle from a transaction dict."""
     return _create_wax_transaction(tx, is_protobuf)
 
 
-@call_with_exception_relay
+@wax_error_boundary
 def create_wax_operation(op: object, is_protobuf: bool) -> WaxOperationHandle:
     """Create a WaxOperationHandle from an operation dict."""
     return _create_wax_operation(op, is_protobuf)

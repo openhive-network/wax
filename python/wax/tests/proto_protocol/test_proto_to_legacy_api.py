@@ -1,6 +1,9 @@
 import json
 
+import pytest
+
 from wax import proto_to_legacy_api
+from wax.exceptions import WaxError
 from wax_local_tools.refs import (
     API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
     PROTO_REF_SERIALIZATION_SENSITIVE_TRANSACTION,
@@ -24,15 +27,9 @@ def test_tx_proto_to_legacy_api_negative():
     # Arrange
     proto_str = json.dumps(API_LEGACY_REF_SERIALIZATION_SENSITIVE_TRANSACTION)
 
-    # Act
-    api = proto_to_legacy_api(proto_str)
-
-    # Assert
-    assert api.status == api.status.fail, "Legacy API format input should fail for proto_to_legacy_api"
-    assert "'code': 10" in api.exception_message, "Error should contain assert_exception code"
-    assert "'name': 'assert_exception'" in api.exception_message, "Error should be assert_exception type"
-    assert "Python function call failed" in api.exception_message, "Error should indicate Python call failure"
-    assert "'list' object has no attribute 'keys'" in api.exception_message, "Error should indicate list/dict mismatch"
+    # Act & Assert
+    with pytest.raises(WaxError):
+        proto_to_legacy_api(proto_str)
 
 
 # We do not test conversion for operations (legacy code)
