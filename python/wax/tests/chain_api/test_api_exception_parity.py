@@ -12,6 +12,8 @@ with equivalent category, subject_type, and assert_hash.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
+from typing import Any
 
 import pytest
 
@@ -24,12 +26,12 @@ from wax.proto.operations import transfer
 HIVE_NAI = "@@000000021"
 
 
-def _build_invalid_account_transaction() -> dict:
+def _build_invalid_account_transaction() -> dict[str, Any]:
     """Build an API-format transaction containing a transfer with an invalid (too short) account name."""
     return {
         "ref_block_num": 19260,
         "ref_block_prefix": 2140466769,
-        "expiration": "2099-09-15T19:47:33",
+        "expiration": (datetime.now(tz=timezone.utc) + timedelta(seconds=60)).strftime("%Y-%m-%dT%H:%M:%S"),
         "operations": [
             {
                 "type": "transfer_operation",
@@ -62,9 +64,7 @@ class TestCppLayerValidation:
     def test_transaction_validate_rejects_short_account_name(self) -> None:
         """Transaction.validate() validates through C++ and should raise the same exception."""
         foundation = wax.create_wax_foundation()
-        tx = foundation.create_transaction_with_tapos(
-            tapos_block_id="0000000000000000000000000000000000000000"
-        )
+        tx = foundation.create_transaction_with_tapos(tapos_block_id="0000000000000000000000000000000000000000")
         tx.push_operation(
             transfer(
                 from_account="a",
@@ -124,16 +124,28 @@ class TestApiExceptionParity:
         assert cpp_exception.subject_type == api_exception.subject_type
         assert cpp_exception.assert_hash == api_exception.assert_hash
 
-    async def test_broadcast_raw_transaction_with_invalid_account(
-        self, remote_chain: IHiveChainInterface
-    ) -> None:
+    async def test_broadcast_raw_transaction_with_invalid_account(self, remote_chain: IHiveChainInterface) -> None:
         """
         Bypass push_operation validation by sending a raw transaction dict to the API.
 
         This exercises the full network path: hived validates and returns a structured
         error, WaxOverseer parses it via resolve_exception(), same exception type is raised.
         """
-        tx_dict = _build_invalid_account_transaction()
+        # Build a raw transaction with valid tapos from the chain but an invalid account name.
+        # We need valid tapos/expiration so hived reaches the account name validation step.
+        template_tx = await remote_chain.create_transaction()
+        tx_dict = template_tx.to_dict()
+        tx_dict["operations"] = [
+            {
+                "type": "transfer_operation",
+                "value": {
+                    "from": "a",
+                    "to": "initminer",
+                    "amount": {"nai": HIVE_NAI, "precision": 3, "amount": "100"},
+                    "memo": "",
+                },
+            }
+        ]
 
         # Capture the C++ layer exception for comparison
         cpp_exception: WaxAssertionError | None = None
@@ -147,7 +159,7 @@ class TestApiExceptionParity:
         # Send raw transaction directly through the API (bypasses push_operation)
         api_exception: WaxAssertionError | None = None
         try:
-            internal_api = remote_chain.api  # type: ignore[union-attr]
+            internal_api = remote_chain.api
             await internal_api.network_broadcast_api.broadcast_transaction(
                 trx=ApiTransaction(**tx_dict), max_block_age=-1
             )
