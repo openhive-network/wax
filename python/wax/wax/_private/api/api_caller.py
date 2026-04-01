@@ -2,12 +2,19 @@ from __future__ import annotations
 
 import atexit
 from functools import partial
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
+from beekeepy.exceptions import CommunicationError
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
+from wax._private.api.overseer import WaxAssertionInResponseError, WaxOverseer
+from wax.exceptions.wax_error import WaxError
 from wax.interfaces import ApiCollectionT
 
 if TYPE_CHECKING:
+    from schemas.jsonrpc import ExpectResultT, JSONRPCResult
+
+    from beekeepy._communication.abc.communicator_models import AsyncCallbacks, Methods
+    from beekeepy._communication.url import HttpUrl as CommunicationHttpUrl
     from beekeepy.handle.remote import AsyncSendable
     from beekeepy.interfaces import HttpUrl
 
@@ -34,6 +41,7 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
         # is called in the constructor of the parent class
         settings = RemoteHandleSettings()
         settings.http_endpoint = endpoint_url
+        settings.overseer = WaxOverseer
         super().__init__(settings=settings)
         self._INSTANCES.add(self)
 
@@ -55,6 +63,30 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
             api=partial(api_collection_factory, self._api_collection),
             delay_error_on_data_access=delay_error_on_data_access,
         )
+
+    async def _async_send(  # noqa: PLR0913
+        self,
+        *,
+        method: Methods,
+        expected_type: type[ExpectResultT],
+        serialization_type: Literal["hf26", "legacy"],
+        data: str | None = None,
+        url: CommunicationHttpUrl | None = None,
+        callbacks: AsyncCallbacks | None = None,
+    ) -> JSONRPCResult[ExpectResultT]:
+        try:
+            return await super()._async_send(
+                method=method,
+                expected_type=expected_type,
+                serialization_type=serialization_type,
+                data=data,
+                url=url,
+                callbacks=callbacks,
+            )
+        except WaxAssertionInResponseError as ex:
+            raise ex.wax_exception from ex
+        except CommunicationError as ex:
+            raise WaxError(str(ex)) from ex
 
     def _construct_api(self) -> ApiCollectionT:
         return api_collection_factory(self._api_collection, self)
