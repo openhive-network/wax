@@ -124,7 +124,7 @@ sync_hiveio_api:
       git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.syncad.com/${CI_PROJECT_PATH}.git"
       git checkout "${CI_COMMIT_BRANCH}"
 
-      # Run sync (submodule already updated by Renovate)
+      # Sync hiveio-api lock to match updated hive submodule
       python/wax/scripts/bump_hive_submodule.sh --skip-submodule-update
 
       # Push the lock update commit
