@@ -91,6 +91,7 @@ class TestResolveApiResponseError:
     def test_returns_unhandled_for_unknown_category(self) -> None:
         data = _make_assertion_data(category="unknown", subject_type="other", subject=None)
         data["stack"][0]["data"] = {"category": "unknown"}
+        data["stack"][0]["format"] = "Unknown error occurred"
         response = _make_jsonrpc_error_response(data=data)
 
         result = resolve_api_response_error(response)
