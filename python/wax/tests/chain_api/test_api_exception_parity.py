@@ -29,7 +29,7 @@ def _build_invalid_account_transaction() -> dict:
     return {
         "ref_block_num": 19260,
         "ref_block_prefix": 2140466769,
-        "expiration": "2016-09-15T19:47:33",
+        "expiration": "2099-09-15T19:47:33",
         "operations": [
             {
                 "type": "transfer_operation",
@@ -59,22 +59,23 @@ class TestCppLayerValidation:
         assert exc.value.subject_type == "account_name"
         assert exc.value.assert_hash
 
-    def test_push_operation_rejects_short_account_name(self) -> None:
-        """push_operation also validates through C++ and should raise the same exception."""
+    def test_transaction_validate_rejects_short_account_name(self) -> None:
+        """Transaction.validate() validates through C++ and should raise the same exception."""
         foundation = wax.create_wax_foundation()
         tx = foundation.create_transaction_with_tapos(
             tapos_block_id="0000000000000000000000000000000000000000"
         )
+        tx.push_operation(
+            transfer(
+                from_account="a",
+                to_account="initminer",
+                amount=foundation.hive.coins(100),
+                memo="",
+            )
+        )
 
         with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
-            tx.push_operation(
-                transfer(
-                    from_account="a",
-                    to_account="initminer",
-                    amount=foundation.hive.coins(100),
-                    memo="",
-                )
-            )
+            tx.validate()
 
         assert exc.value.category == "protocol"
         assert exc.value.subject_type == "account_name"
