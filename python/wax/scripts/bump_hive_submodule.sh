@@ -65,8 +65,9 @@ log_success "Hive submodule at: ${HIVE_COMMIT}"
 # --- Step 2: Determine hiveio-api version ---
 
 log_info "Determining hiveio-api version..."
-if ! poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1; then
-    log_error "poetry install --dry-run failed — poetry-dynamic-versioning plugin may not be available"
+if ! POETRY_OUTPUT=$(poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run 2>&1); then
+    log_error "poetry install --dry-run failed:"
+    echo "${POETRY_OUTPUT}" >&2
     exit 1
 fi
 HIVEIO_API_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)

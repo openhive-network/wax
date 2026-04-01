@@ -97,8 +97,9 @@ sync_hiveio_api:
     - |
       # Determine expected hiveio-api version from submodule
       GENERATED_PACKAGE_DIR="${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
-      if ! poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run > /dev/null 2>&1; then
-        echo "WARNING: poetry install --dry-run failed, plugin may not be available"
+      if ! POETRY_OUTPUT=$(poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run 2>&1); then
+        echo "WARNING: poetry install --dry-run failed:"
+        echo "${POETRY_OUTPUT}" >&2
       fi
       EXPECTED_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
 
