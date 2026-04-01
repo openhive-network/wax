@@ -175,16 +175,48 @@ def _determine_category(data: CxxExceptionData, wax_exception_name: str | None) 
     return "unknown"
 
 
+_ASSERT_HASH_CLASSIFICATION_CACHE: dict[str, tuple[str, str]] = {}
+"""Runtime cache mapping assert_hash → (category, subject_type).
+
+Populated when resolve_exception() successfully classifies an exception via the C++
+bridge (which includes category/subject_type in stack frame data).  When the same
+assert_hash appears later in an API response (which lacks those fields), the cached
+classification is used instead of falling back to WaxUnhandledAssertionError.
+"""
+
+
 def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError:
     """Instantiate the most specific exception class for the given data and category."""
     subject_type = data.subject_type
+
+    # When the stack data doesn't carry category/subject_type (e.g. API responses
+    # from hived versions without HIVE_SPECIALISED_ASSERT metadata), fall back to
+    # the assert_hash cache populated by earlier C++ bridge resolutions.
+    # Only use cache when "category" is genuinely absent from stack frames,
+    # not when it's explicitly set to "unknown".
+    _category_absent = not any("category" in frame.data for frame in data.stack)
+    if category == "unknown" and _category_absent and data.assert_hash in _ASSERT_HASH_CLASSIFICATION_CACHE:
+        category, subject_type = _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash]
+        # Inject cached classification into the stack data so that properties
+        # like WaxAssertionError.category and .subject_type read correct values.
+        if data.stack:
+            frame_data = data.stack[0].data
+            frame_data.setdefault("category", category)
+            frame_data.setdefault("subject_type", subject_type)
+            # Ensure "subject" key exists so WaxAssertionError.subject_type reads it.
+            # The subject value may be present under a different key in API responses.
+            if "subject" not in frame_data:
+                frame_data["subject"] = frame_data.get("name", "")
+
     # Try the most specific match: (category, subject_type)
     cls = _SUBJECT_TYPE_MAP.get((category, subject_type))
     if cls is not None:
+        _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash] = (category, subject_type)
         return cls(raw=data)
     # Fall back to category-level match
     cls = _CATEGORY_MAP.get(category)
     if cls is not None:
+        _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash] = (category, subject_type)
         return cls(raw=data)
     # Unknown category
     return WaxUnhandledAssertionError(raw=data)
@@ -234,6 +266,36 @@ def resolve_exception(
 
     category = _determine_category(data, wax_exception_name)
     return _build_exception(data, category)
+
+
+# ---------------------------------------------------------------------------
+# API response error resolver — extracts structured data from JSON-RPC errors
+# ---------------------------------------------------------------------------
+
+
+def resolve_api_response_error(response: dict[str, Any]) -> Exception | None:
+    """
+    Extract structured error data from a JSON-RPC response and resolve it.
+
+    Looks for ``response["error"]["data"]`` containing structured hived exception
+    data (with ``name`` and ``stack`` fields) and passes it through
+    :func:`resolve_exception` — the same function used for C++ exceptions.
+
+    Returns:
+        A :class:`WaxAssertionError` subclass (or generic :class:`WaxError`) when
+        structured data is found and parseable, or ``None`` when the response does
+        not contain structured error data.
+    """
+    error_obj = response.get("error")
+    if not isinstance(error_obj, dict):
+        return None
+    data = error_obj.get("data")
+    if not isinstance(data, dict):
+        return None
+    # Lightweight check: structured hived errors carry at least "name" and "stack"
+    if "name" not in data or "stack" not in data:
+        return None
+    return resolve_exception(data)
 
 
 # ---------------------------------------------------------------------------
