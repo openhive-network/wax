@@ -25,7 +25,7 @@ WAX_ROOT_DIR="$(cd "${WAX_PROJECT_DIR}/../.." && pwd)"
 HIVE_SUBMODULE_DIR="${WAX_ROOT_DIR}/hive"
 GENERATED_PACKAGE_DIR="${HIVE_SUBMODULE_DIR}/libraries/plugins/apis/api_generation/python_api_package"
 
-REGISTRY_URL="https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
+REGISTRY_URL="${HIVE_PYPI_INDEX:-https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple}"
 
 log_info()    { echo -e "\e[1;34m$*\e[0m"; }
 log_success() { echo -e "\e[1;32m$*\e[0m"; }
