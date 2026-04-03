@@ -800,21 +800,22 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc12.dev20260317200050"
+version = "1.28.8rc12.dev20260402073300"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc12.dev20260317200050-py3-none-any.whl", hash = "sha256:f68c3d7c4e53fe8e9959cabd3ebaf2bc91f83cd0b9f26612f1c92bec2948a061"},
+    {file = "hiveio_api-1.28.8rc12.dev20260402073300-py3-none-any.whl", hash = "sha256:ed4b180acf9c8fd90dfbdd3aceec5fbacfcb7ed865de6346250021c4c256518e"},
 ]
 
 [package.dependencies]
 hiveio-beekeepy = ">=1.28.6.post20260317125034,<2.0.0"
 
 [package.source]
-type = "file"
-url = "../../hive/libraries/plugins/apis/api_generation/python_api_package/dist/hiveio_api-1.28.8rc12.dev20260317200050-py3-none-any.whl"
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
+reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-beekeepy"
@@ -2550,4 +2551,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "715243df87d0ed8a88b0a16f2ec3fadb07d3adead4111c193f706c084006afc3"
+content-hash = "800c421a3130afdb331f663fb2be486f3614ba8c0e307d0cd53dc2ea8d922805"
