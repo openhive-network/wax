@@ -181,7 +181,7 @@ test.describe('WASM Base tests', () => {
     throw new Error('Expected exception was not thrown');
   });
 
-  test('Should test throw 5 - throw wax_unknown_assertion', async () => {
+  test('Should test throw 5 - throw wax_chain_assertion', async () => {
     const { protocol, provider } = await createWasmTestFor('node');
 
     try {
@@ -190,9 +190,8 @@ test.describe('WASM Base tests', () => {
       const exMsg = provider.getExceptionMessage(error);
       // console.error(`name: ${e.name}, message: ${e.message}, stack: ${e.stack ? e.stack : "Missing stacktrace"}`);
 
-      expect(exMsg[0]).toStrictEqual('cpp::wax_unknown_assertion');
+      expect(exMsg[0]).toStrictEqual('cpp::wax_chain_assertion');
       expect(exMsg[1]).toContain('"format":"Simulated assert exception","data":{}');
-      expect(exMsg[1]).not.toContain('"assert_hash":'); // wax_unknown_assertion does not contain assert_hash by default
 
       return;
     }
