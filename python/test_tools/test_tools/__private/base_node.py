@@ -3,12 +3,12 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from beekeepy.communication import StrictOverseer
 from beekeepy.settings import RunnableHandleSettings as Settings
 
 from test_tools.__private.hived.sync_handle import HivedTemplate
 from test_tools.__private.scope import context
 from test_tools.__private.user_handles.implementation import Implementation as UserHandleImplementation
+from wax._private.api.overseer import WaxOverseer
 
 if TYPE_CHECKING:
     from beekeepy.interfaces import HttpUrl
@@ -24,7 +24,7 @@ class BaseNode(UserHandleImplementation, HivedTemplate[Settings]):
             settings=Settings(
                 period_between_retries=timedelta(seconds=0.5),
                 max_retries=8,
-                overseer=StrictOverseer,
+                overseer=WaxOverseer,
                 propagate_sigint=False,
             ),
         )
