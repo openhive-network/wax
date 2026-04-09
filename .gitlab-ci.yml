@@ -1,30 +1,30 @@
 stages:
-  - prepare
-  - build
-  - static_code_analysis
-  - test_python
-  - test
-  - deploy
-  - test-tools
+- prepare
+- build
+- static_code_analysis
+- test_python
+- test
+- deploy
+- test-tools
 
 include:
-  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+- template: Workflows/Branch-Pipelines.gitlab-ci.yml
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
-  - project: 'hive/common-ci-configuration'
-    ref: c9cb02ea67f9f381f52280be4ca1f708243373a0
-    file:
-      - '/templates/npm_projects.gitlab-ci.yml'
-      - '/templates/wasm_build.gitlab-ci.yml'
-      - '/templates/python_projects.gitlab-ci.yml'
-      - '/templates/docker_image_jobs.gitlab-ci.yml'
-      - '/templates/verify_submodule_ref.gitlab-ci.yml'
-      - '/templates/github_pages.gitlab-ci.yml'
+- project: 'hive/common-ci-configuration'
+  ref: e2825f108f61a949862fb7f4d4793b78ecf712af
+  file:
+  - '/templates/npm_projects.gitlab-ci.yml'
+  - '/templates/wasm_build.gitlab-ci.yml'
+  - '/templates/python_projects.gitlab-ci.yml'
+  - '/templates/docker_image_jobs.gitlab-ci.yml'
+  - '/templates/verify_submodule_ref.gitlab-ci.yml'
+  - '/templates/github_pages.gitlab-ci.yml'
 
   # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
-  - project: 'hive/hive'
-    ref: 44c3fd880fc176b606ec3c86e7387ebf18135d9f
-    file:
-      - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
+- project: 'hive/hive'
+  ref: ec517ee51ec459522904ef2c087cd9101c1e1f73
+  file:
+  - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
 variables:
   TEST_WITH_LATEST_DEPENDENCIES: "false"
@@ -76,7 +76,7 @@ image: "${CI_BASE_IMAGE}"
 
 default:
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 # Sync hiveio-api version in poetry.lock when hive submodule is bumped.
 # Runs on Renovate branches where the submodule changed but the lock wasn't updated.
@@ -86,51 +86,51 @@ sync_hiveio_api:
   rules:
     # Only run on Renovate branches, only when hive submodule changed,
     # and skip if the last commit was from this CI job (prevent loop)
-    - if: $CI_COMMIT_BRANCH =~ /^renovate\// && $CI_COMMIT_MESSAGE !~ /Bump hive submodule/
-      changes:
-        paths:
-          - hive
+  - if: $CI_COMMIT_BRANCH =~ /^renovate\// && $CI_COMMIT_MESSAGE !~ /Bump hive submodule/
+    changes:
+      paths:
+      - hive
   variables:
     GIT_SUBMODULE_STRATEGY: normal
     GIT_DEPTH: 0
   script:
-    - |
-      # Determine expected hiveio-api version from submodule
-      GENERATED_PACKAGE_DIR="${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
-      if ! POETRY_OUTPUT=$(poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run 2>&1); then
-        echo "WARNING: poetry install --dry-run failed:"
-        echo "${POETRY_OUTPUT}" >&2
-      fi
-      EXPECTED_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+  - |
+    # Determine expected hiveio-api version from submodule
+    GENERATED_PACKAGE_DIR="${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
+    if ! POETRY_OUTPUT=$(poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run 2>&1); then
+      echo "WARNING: poetry install --dry-run failed:"
+      echo "${POETRY_OUTPUT}" >&2
+    fi
+    EXPECTED_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
 
-      if [ "${EXPECTED_VERSION}" = "0.0.0" ]; then
-        echo "ERROR: poetry-dynamic-versioning returned 0.0.0 — plugin not active"
-        exit 1
-      fi
+    if [ "${EXPECTED_VERSION}" = "0.0.0" ]; then
+      echo "ERROR: poetry-dynamic-versioning returned 0.0.0 — plugin not active"
+      exit 1
+    fi
 
-      # Check current pin in pyproject.toml
-      CURRENT_PIN=$(grep -oP 'hiveio-api = "==\K[^"]+' python/wax/pyproject.toml || echo "")
+    # Check current pin in pyproject.toml
+    CURRENT_PIN=$(grep -oP 'hiveio-api = "==\K[^"]+' python/wax/pyproject.toml || echo "")
 
-      if [ "${CURRENT_PIN}" = "${EXPECTED_VERSION}" ]; then
-        echo "hiveio-api already at ${EXPECTED_VERSION}, nothing to do"
-        exit 0
-      fi
+    if [ "${CURRENT_PIN}" = "${EXPECTED_VERSION}" ]; then
+      echo "hiveio-api already at ${EXPECTED_VERSION}, nothing to do"
+      exit 0
+    fi
 
-      echo "Syncing hiveio-api: ${CURRENT_PIN} → ${EXPECTED_VERSION}"
+    echo "Syncing hiveio-api: ${CURRENT_PIN} → ${EXPECTED_VERSION}"
 
-      # Configure git for push
-      git config user.email "ci@syncad.com"
-      git config user.name "GitLab CI"
-      git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.syncad.com/${CI_PROJECT_PATH}.git"
-      git checkout "${CI_COMMIT_BRANCH}"
+    # Configure git for push
+    git config user.email "ci@syncad.com"
+    git config user.name "GitLab CI"
+    git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.syncad.com/${CI_PROJECT_PATH}.git"
+    git checkout "${CI_COMMIT_BRANCH}"
 
-      # Sync hiveio-api lock to match updated hive submodule
-      python/wax/scripts/bump_hive_submodule.sh --skip-submodule-update
+    # Sync hiveio-api lock to match updated hive submodule
+    python/wax/scripts/bump_hive_submodule.sh --skip-submodule-update
 
-      # Push the lock update commit
-      git push origin "${CI_COMMIT_BRANCH}"
+    # Push the lock update commit
+    git push origin "${CI_COMMIT_BRANCH}"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 # Verify that include refs match submodule commits
 verify_include_refs:
@@ -143,14 +143,15 @@ generate_hived_flattened_openapi_definition:
   extends: .node_based_job_base
   stage: build
   script:
-    - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
-    - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
-    - node "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/flatten_swagger.js" "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi.json" > "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
+  - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
+  - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
+  - node "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/flatten_swagger.js"
+    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi.json" > "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
   artifacts:
     paths:
-      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
+    - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 # Build hiveio-api package (build only, test and deploy in later stages)
 hiveio_api_package:
@@ -162,60 +163,60 @@ hiveio_api_package:
     GIT_SUBMODULE_STRATEGY: recursive
     PACKAGE_REGISTRY_PROJECT_ID: "198"  # Push to hive/hive registry, not wax
   needs:
-    - job: generate_hived_flattened_openapi_definition
-      artifacts: true
+  - job: generate_hived_flattened_openapi_definition
+    artifacts: true
   extends: .hiveio_api_package_template
   script:
-    - |
-      SCRIPT_ARGS=(
-        "--hive-project-root=${HIVE_PROJECT_ROOT}"
-        "--api-generation-dir=${API_GENERATION_DIR}"
-        "--dependency-source-dir=${DEPENDENCY_SOURCE_DIR:-${HIVE_PROJECT_ROOT}/tests/python/hive-local-tools}"
-        "--package-registry-project-id=${PACKAGE_REGISTRY_PROJECT_ID:-${CI_PROJECT_ID}}"
-        "--env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION"
-      )
-      [[ "${SKIP_WHEEL_DEPLOY}" == "true" ]] && SCRIPT_ARGS+=("--skip-deploy")
-      [[ "${SKIP_REGISTRY_CHECK}" == "true" ]] && SCRIPT_ARGS+=("--skip-registry-check")
-      "${HIVE_PROJECT_ROOT}/scripts/ci-helpers/hiveio_api_package.sh" "${SCRIPT_ARGS[@]}"
+  - |
+    SCRIPT_ARGS=(
+      "--hive-project-root=${HIVE_PROJECT_ROOT}"
+      "--api-generation-dir=${API_GENERATION_DIR}"
+      "--dependency-source-dir=${DEPENDENCY_SOURCE_DIR:-${HIVE_PROJECT_ROOT}/tests/python/hive-local-tools}"
+      "--package-registry-project-id=${PACKAGE_REGISTRY_PROJECT_ID:-${CI_PROJECT_ID}}"
+      "--env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION"
+    )
+    [[ "${SKIP_WHEEL_DEPLOY}" == "true" ]] && SCRIPT_ARGS+=("--skip-deploy")
+    [[ "${SKIP_REGISTRY_CHECK}" == "true" ]] && SCRIPT_ARGS+=("--skip-registry-check")
+    "${HIVE_PROJECT_ROOT}/scripts/ci-helpers/hiveio_api_package.sh" "${SCRIPT_ARGS[@]}"
   after_script:
-    - |
-      if [ -f "${HIVE_PROJECT_ROOT}/build_wheel.env" ]; then
-        cp "${HIVE_PROJECT_ROOT}/build_wheel.env" build_wheel.env
-      else
-        echo "WARNING: build_wheel.env not found in ${HIVE_PROJECT_ROOT} - hiveio_api_package.sh likely failed"
-      fi
+  - |
+    if [ -f "${HIVE_PROJECT_ROOT}/build_wheel.env" ]; then
+      cp "${HIVE_PROJECT_ROOT}/build_wheel.env" build_wheel.env
+    else
+      echo "WARNING: build_wheel.env not found in ${HIVE_PROJECT_ROOT} - hiveio_api_package.sh likely failed"
+    fi
 
 build_wheel:
   extends: .build_wheel_template
   needs:
-    - job: hiveio_api_package
-      artifacts: true
+  - job: hiveio_api_package
+    artifacts: true
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
     GIT_SUBMODULE_STRATEGY: recursive
   stage: build
   image: "${CI_BASE_IMAGE}"
   script:
-    - echo "Building wheel for Python ${PYTHON_VERSION}"
-    - python3 --version
-    - ./python/wax/scripts/build_wax.sh 1
+  - echo "Building wheel for Python ${PYTHON_VERSION}"
+  - python3 --version
+  - ./python/wax/scripts/build_wax.sh 1
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
   artifacts:
     when: always
     paths:
-      - "${PYPROJECT_DIR}/dist/"
-      - "${PYPROJECT_DIR}/.build/logs/"
-      - "${PYPROJECT_DIR}/wax/*.so"
-      - "build_wheel.env"
-      - "${PYPROJECT_DIR}/wax/_private/proto"
-      - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
+    - "${PYPROJECT_DIR}/dist/"
+    - "${PYPROJECT_DIR}/.build/logs/"
+    - "${PYPROJECT_DIR}/wax/*.so"
+    - "build_wheel.env"
+    - "${PYPROJECT_DIR}/wax/_private/proto"
+    - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/python_api_package"
     expire_in: 1 week
     reports:
       dotenv: "build_wheel.env"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
@@ -232,46 +233,46 @@ wax_wasm_proto_tsc_generation:
   artifacts:
     when: always
     paths:
-      - "${DIST_DIR}/*.tgz"  # Built package
-      - "${SOURCE_DIR}/packages/*/dist"
-      - "${REPLACE_FILE_PATH}"  # Modified README
-      - "${CI_PROJECT_DIR}/ts/wasm/lib/proto" # For documentation generator
-      - "${CI_PROJECT_DIR}/ts/wasm/lib/build_wasm" # For documentation generator
-      - "${DIST_DIR}/lib" # For Node.js tests
-      - "${CI_PROJECT_DIR}/ts/wasm/build_wasm/*.log"
+    - "${DIST_DIR}/*.tgz"    # Built package
+    - "${SOURCE_DIR}/packages/*/dist"
+    - "${REPLACE_FILE_PATH}"    # Modified README
+    - "${CI_PROJECT_DIR}/ts/wasm/lib/proto"   # For documentation generator
+    - "${CI_PROJECT_DIR}/ts/wasm/lib/build_wasm"   # For documentation generator
+    - "${DIST_DIR}/lib"   # For Node.js tests
+    - "${CI_PROJECT_DIR}/ts/wasm/build_wasm/*.log"
     reports:
       dotenv:
-        - "${SOURCE_DIR}/gen_doc.env"  # contains URL to generated documentation pointed by `GEN_DOC_URL` variable
-        - "${SOURCE_DIR}/built_package_info.env"  # contains path to produced tgz
-        - "${SOURCE_DIR}/built_package_version_info.env"  # contains information related to generated package version and git revision
+      - "${SOURCE_DIR}/gen_doc.env"    # contains URL to generated documentation pointed by `GEN_DOC_URL` variable
+      - "${SOURCE_DIR}/built_package_info.env"    # contains path to produced tgz
+      - "${SOURCE_DIR}/built_package_version_info.env"    # contains information related to generated package version and git revision
 
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 wax_wasm_build_tests:
   extends:
-    - .npm_process_built_package_tarball
+  - .npm_process_built_package_tarball
   stage: build
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   script:
-    - cd "${SOURCE_DIR}"
-    - npm run build:test
+  - cd "${SOURCE_DIR}"
+  - npm run build:test
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/ts/wasm/dist/assets"
-      - "$CI_PROJECT_DIR/ts/wasm/dist/detailed"
-      - "$CI_PROJECT_DIR/ts/wasm/dist/index.spec.*"
+    - "$CI_PROJECT_DIR/ts/wasm/dist/assets"
+    - "$CI_PROJECT_DIR/ts/wasm/dist/detailed"
+    - "$CI_PROJECT_DIR/ts/wasm/dist/index.spec.*"
 
     when: always
     expire_in: 1 week
 
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 generate_docs:
   stage: build
@@ -281,52 +282,52 @@ generate_docs:
     DIST_DIR: "${TS_DIST_DIR}"
 
   script:
-    - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
+  - scripts/generate_api_docs.sh "${CI_PROJECT_URL}" "${CI_COMMIT_SHA}"
 
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
 
   artifacts:
     paths:
-      - "${DIST_DIR}/docs"
+    - "${DIST_DIR}/docs"
 
     when: always
     expire_in: 1 week
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
   needs:
-    - job: build_wheel
-      artifacts: true
+  - job: build_wheel
+    artifacts: true
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
     API_PACKAGES_DIR: "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation"
     PRE_COMMIT_CONFIG: "${CI_PROJECT_DIR}/python/.pre-commit-config.yaml"
   before_script:
-    - cd "${CI_PROJECT_DIR}"  # pre-commit config paths are relative to repo root
-    - !reference [.configuration_template, before_script]
-    - !reference [.update_deps_for_static_analysis, script]
-    - poetry -C "${PYPROJECT_DIR}" install --no-root
+  - cd "${CI_PROJECT_DIR}"    # pre-commit config paths are relative to repo root
+  - !reference [.configuration_template, before_script]
+  - !reference [.update_deps_for_static_analysis, script]
+  - poetry -C "${PYPROJECT_DIR}" install --no-root
     # Install wax wheel so mypy-test-tools can resolve wax imports
-    - PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
-    - pip install --extra-index-url $HIVE_PYPI_INDEX ${WAX_DIR}/dist/*-${PYTHON_TAG}-*.whl
+  - PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+  - pip install --extra-index-url $HIVE_PYPI_INDEX ${WAX_DIR}/dist/*-${PYTHON_TAG}-*.whl
     # Install test-tools (--no-deps to avoid rebuilding wax from path dependency)
-    - pip install --no-deps "${TEST_TOOLS_DIR}"
+  - pip install --no-deps "${TEST_TOOLS_DIR}"
     # Remove wax path dependency from lock and install remaining test-tools dependencies
     # (wax is already installed from wheel above, no need to fetch from registry)
-    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
-    - poetry -C "${TEST_TOOLS_DIR}" install --no-root
+  - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+  - poetry -C "${TEST_TOOLS_DIR}" install --no-root
   artifacts:
     when: always
     expire_in: 1 week
     paths:
-      - python/wax/poetry.lock
+    - python/wax/poetry.lock
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .verify_wax_poetry_lock_stability:
   stage: static_code_analysis
@@ -335,7 +336,7 @@ pre_commit_checks:
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .verify_test_tools_poetry_lock_stability:
   stage: static_code_analysis
@@ -344,7 +345,7 @@ pre_commit_checks:
   variables:
     PYPROJECT_DIR: "${TEST_TOOLS_DIR}"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .verify_examples_poetry_lock_stability:
   stage: static_code_analysis
@@ -353,7 +354,7 @@ pre_commit_checks:
   variables:
     PYPROJECT_DIR: "${CI_PROJECT_DIR}/examples/python"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 push_to_wiki:
   extends: .npm_push_doc_template
@@ -364,12 +365,12 @@ push_to_wiki:
     DIST_DIR: "${TS_DIST_DIR}"
 
   needs:
-    - job: generate_docs
-      artifacts: true
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: generate_docs
+    artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .runtime_like_python_env:
   stage: test_python
@@ -377,196 +378,198 @@ push_to_wiki:
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   needs:
-    - job: build_wheel
-      artifacts: true
+  - job: build_wheel
+    artifacts: true
   before_script:
-    - !reference [.configuration_template, before_script]
+  - !reference [.configuration_template, before_script]
     # Install only the wheel matching current Python version (e.g., cp314 for Python 3.14)
-    - |
-      set -x
-      PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
-      WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
-      if [ -z "$WHEEL_FILE" ]; then
-        echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
-        ls -la ${PYPROJECT_DIR}/dist/
-        exit 1
-      fi
-      echo "Installing wheel: $WHEEL_FILE"
-      pip install --extra-index-url $HIVE_PYPI_INDEX "$WHEEL_FILE"
-    - pip list
+  - |
+    set -x
+    PYTHON_TAG="cp$(python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")')"
+    WHEEL_FILE=$(ls ${PYPROJECT_DIR}/dist/*-${PYTHON_TAG}-*.whl 2>/dev/null | head -1)
+    if [ -z "$WHEEL_FILE" ]; then
+      echo "ERROR: No wheel found for Python tag ${PYTHON_TAG}"
+      ls -la ${PYPROJECT_DIR}/dist/
+      exit 1
+    fi
+    echo "Installing wheel: $WHEEL_FILE"
+    pip install --extra-index-url $HIVE_PYPI_INDEX "$WHEEL_FILE"
+  - pip list
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .test_python_env:
   extends: .runtime_like_python_env
   before_script:
-    - !reference [.runtime_like_python_env, before_script]
-    - !reference [.update_deps_for_tests, script]
-    - poetry -C "${PYPROJECT_DIR}" install --no-root  # install dependencies for tests
-    - pip list
+  - !reference [.runtime_like_python_env, before_script]
+  - !reference [.update_deps_for_tests, script]
+  - poetry -C "${PYPROJECT_DIR}" install --no-root    # install dependencies for tests
+  - pip list
 
 .python_test_matrix:
   image: ${CI_BASE_IMAGE}
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
 
 test_installing_wax_from_registry:
   stage: .post
   image: quay.io/pypa/manylinux_2_28:2026.01.16-1
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   needs:
-    - job: deploy_wheel_to_gitlab
-      artifacts: true
+  - job: deploy_wheel_to_gitlab
+    artifacts: true
   before_script:
     # Set up PATH for the correct Python version from PyPA image
-    - export PATH="/opt/python/cp${PYTHON_VERSION//./}-cp${PYTHON_VERSION//./}/bin:$PATH"
-    - python3 --version
+  - export PATH="/opt/python/cp${PYTHON_VERSION//./}-cp${PYTHON_VERSION//./}/bin:$PATH"
+  - python3 --version
     # Verify Python version matches PYTHON_VERSION env var
-    - |
-      ACTUAL_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-      if [ "$ACTUAL_VERSION" != "$PYTHON_VERSION" ]; then
-        echo "ERROR: Python version mismatch! Expected $PYTHON_VERSION but got $ACTUAL_VERSION"
-        exit 1
-      fi
-      echo "Python version verified: $ACTUAL_VERSION matches PYTHON_VERSION=$PYTHON_VERSION"
+  - |
+    ACTUAL_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+    if [ "$ACTUAL_VERSION" != "$PYTHON_VERSION" ]; then
+      echo "ERROR: Python version mismatch! Expected $PYTHON_VERSION but got $ACTUAL_VERSION"
+      exit 1
+    fi
+    echo "Python version verified: $ACTUAL_VERSION matches PYTHON_VERSION=$PYTHON_VERSION"
   script:
-    - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
-    - python3 --version
-    - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
-    - pip3 install --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
-    - cd "$CI_PROJECT_DIR" && pwd # needed to import installed package instead of local one
-    - python3 -c "import wax; print(wax.__version__); exit()"
+  - echo "Testing on PyPA manylinux_2_28 with Python ${PYTHON_VERSION}..."
+  - python3 --version
+  - echo "Installing hiveio-wax==${WHEEL_BUILD_VERSION} from package registry..."
+  - pip3 install --extra-index-url $HIVE_PYPI_INDEX "hiveio-wax==${WHEEL_BUILD_VERSION}"
+  - cd "$CI_PROJECT_DIR" && pwd   # needed to import installed package instead of local one
+  - python3 -c "import wax; print(wax.__version__); exit()"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 test_wax_protobuf_python:
   extends:
-    - .test_python_env
-    - .python_test_matrix
+  - .test_python_env
+  - .python_test_matrix
   script:
-    - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
-    - ${WAX_DIR}/tests/run_tests.sh
+  - echo -e "${TXT_BLUE}Testing wax with proto ...${TXT_CLEAR}"
+  - ${WAX_DIR}/tests/run_tests.sh
   artifacts:
     reports:
       junit: python/wax/tests/report.xml
     paths:
-      - $PYPROJECT_DIR/mock-server.log
+    - $PYPROJECT_DIR/mock-server.log
 
 test_wax_protobuf_python_pattern:
   extends:
-    - .test_python_env
-    - .python_test_matrix
+  - .test_python_env
+  - .python_test_matrix
   needs:
-    - job: build_wheel
-      artifacts: true
+  - job: build_wheel
+    artifacts: true
   script:
-    - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $WAX_DIR/protobuf_patterns/ $WAX_DIR/wax/_private/proto/
+  - echo -e "${TXT_BLUE}Testing generated proto files with patterns ...${TXT_CLEAR}"
+  - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference  $WAX_DIR/protobuf_patterns/
+    $WAX_DIR/wax/_private/proto/
   artifacts:
     paths:
-      - $WAX_DIR/wax/_private/proto/
+    - $WAX_DIR/wax/_private/proto/
 
     when: always
     expire_in: 1 week
 
 test_wax_protobuf_python_examples:
   extends:
-    - .runtime_like_python_env
-    - .python_test_matrix
+  - .runtime_like_python_env
+  - .python_test_matrix
   script:
-    - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
-    - cd $CI_PROJECT_DIR
-    - ./examples/python/run_example.sh
+  - echo -e "${TXT_BLUE}Testing visitor of wax protobuf...${TXT_CLEAR}"
+  - cd $CI_PROJECT_DIR
+  - ./examples/python/run_example.sh
 
 test_wax_wasm:
   extends:
-    - .npm_test_template
+  - .npm_test_template
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
-    - job: wax_wasm_build_tests
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
+  - job: wax_wasm_build_tests
+    artifacts: true
   tags:
-    - public-runner-docker
+  - public-runner-docker
   parallel:
     matrix:
-      - TEST_GROUPS: [
-        --project=wax_testsuite,
-        --project=healthchecker_tests,
-        --project=wax_utils --project=wax_non_encrypted_operations --project=wax_mock_tests --project=wax_encrypted_operations --project=wax_custom_chain_online_tx --project=wax_testsuite_custom_chain_options,
-        --project=wax_regression_tests --project=wax_operation_factories --project=wax_testsuite_protocol_benchmarks,
-      ]
+    - TEST_GROUPS: [--project=wax_testsuite, --project=healthchecker_tests, --project=wax_utils
+          --project=wax_non_encrypted_operations --project=wax_mock_tests --project=wax_encrypted_operations
+          --project=wax_custom_chain_online_tx --project=wax_testsuite_custom_chain_options,
+        --project=wax_regression_tests --project=wax_operation_factories --project=wax_testsuite_protocol_benchmarks]
   script:
-    - cd ts
-    - npm run test -- $TEST_GROUPS
+  - cd ts
+  - npm run test -- $TEST_GROUPS
 
 test_wax_wasm_proto_pattern:
   extends:
-    - .npm_process_built_package_tarball
+  - .npm_process_built_package_tarball
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   script:
-    - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
-    - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
-    - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen" "$CI_PROJECT_DIR/ts/protobuf_patterns/npm-pack.out"
+  - diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference
+    "$CI_PROJECT_DIR/ts/protobuf_patterns/proto" "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto"
+  - tar -tf "${PACKAGE_TGZ_PATH}" > "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
+  - diff --brief --color=never --no-dereference "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
+    "$CI_PROJECT_DIR/ts/protobuf_patterns/npm-pack.out"
   artifacts:
     paths:
-      - "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
-      - "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto/"
+    - "$CI_PROJECT_DIR/ts/wasm/dist/npm-pack.gen"
+    - "$CI_PROJECT_DIR/ts/wasm/dist/lib/proto/"
 
     when: always
     expire_in: 1 week
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 test_wax_wasm_examples:
   extends:
-    - .npm_process_built_package_tarball
+  - .npm_process_built_package_tarball
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   script:
-    - cd "${SOURCE_DIR}"
-    - echo "Checking Playwright browsers:" && pnpm exec playwright install --dry-run || true
-    - npm run examples
+  - cd "${SOURCE_DIR}"
+  - echo "Checking Playwright browsers:" && pnpm exec playwright install --dry-run
+    || true
+  - npm run examples
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 test_wax_wasm_signature_extension:
   extends:
-    - .npm_process_built_package_tarball
+  - .npm_process_built_package_tarball
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   script:
-    - cd "${SOURCE_DIR}"
-    - npm run examples:signature-extension
+  - cd "${SOURCE_DIR}"
+  - npm run examples:signature-extension
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .deploy_wheel_needs: &deploy_wheel_needs
   needs:
-    - job: test_wax_protobuf_python
-    - job: build_wheel
-      artifacts: true
+  - job: test_wax_protobuf_python
+  - job: build_wheel
+    artifacts: true
 
 deploy_wheel_to_gitlab:
   stage: deploy
@@ -576,7 +579,7 @@ deploy_wheel_to_gitlab:
   <<: *deploy_wheel_needs
   when: on_success
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
@@ -585,29 +588,29 @@ deploy_wheel_to_pypi:
     PYPROJECT_DIR: "${WAX_DIR}"
   <<: *deploy_wheel_needs
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 deploy_wax_wasm_dev_package:
   extends:
-    - .npm_deploy_package_template
+  - .npm_deploy_package_template
   stage: deploy
   variables:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
   needs:
-    - job: test_wax_wasm_examples
-    - job: test_wax_wasm
-    - job: test_wax_wasm_proto_pattern
-    - job: push_to_wiki
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: test_wax_wasm_examples
+  - job: test_wax_wasm
+  - job: test_wax_wasm_proto_pattern
+  - job: push_to_wiki
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 deploy_wax_wasm_production_public_npm:
   extends:
-    - .registry_npmjs_org_deploy_package_template
+  - .registry_npmjs_org_deploy_package_template
   stage: deploy
   variables:
     NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
@@ -615,52 +618,52 @@ deploy_wax_wasm_production_public_npm:
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
   needs:
-    - job: test_wax_wasm_examples
-    - job: test_wax_wasm
-    - job: test_wax_wasm_proto_pattern
-    - job: push_to_wiki
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: test_wax_wasm_examples
+  - job: test_wax_wasm
+  - job: test_wax_wasm_proto_pattern
+  - job: push_to_wiki
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
 
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 test_helpy:
   extends:
-    - .test_python_env
-    - .python_test_matrix
+  - .test_python_env
+  - .python_test_matrix
   script:
-    - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
-    - cd ${WAX_DIR}/tests/helpy_test
-    - python3 -m pytest -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml
-    - echo -e "${TXT_BLUE}Tests successfully...${TXT_CLEAR}"
+  - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}"
+  - cd ${WAX_DIR}/tests/helpy_test
+  - python3 -m pytest -n auto --durations 0 --junitxml=${CI_PROJECT_DIR}/report.xml
+  - echo -e "${TXT_BLUE}Tests successfully...${TXT_CLEAR}"
   artifacts:
     when: always
     expire_in: 1 week
     reports:
       junit: $CI_PROJECT_DIR/report.xml
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 .build_python_docs_env:
   extends: .runtime_like_python_env
   stage: build
   before_script:
-    - !reference [.runtime_like_python_env, before_script]
-    - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs # install dependencies for docs
-    - pip list
+  - !reference [.runtime_like_python_env, before_script]
+  - poetry -C "${PYPROJECT_DIR}" install --no-root --only docs   # install dependencies for docs
+  - pip list
 
 .python_docs_variables:
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
-    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-      variables:
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    when: never
+  - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    variables:
         # subpath to branches content for preview
-        CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
-    - variables:
+      CURRENT_CONTENT_PATH: "preview/${CI_COMMIT_REF_SLUG}"
+  - variables:
         # default branch subpath
-        CURRENT_CONTENT_PATH: $GITLAB_PAGES_DEFAULT_BRANCH_PATH
+      CURRENT_CONTENT_PATH: $GITLAB_PAGES_DEFAULT_BRANCH_PATH
   variables:
     GITLAB_PAGES_DEFAULT_BRANCH_PATH: "default/"
     CURRENT_URL: $CURRENT_CONTENT_PATH
@@ -672,14 +675,14 @@ test_helpy:
 
 build_python_docs:
   extends:
-    - .build_python_docs_env
-    - .python_docs_variables
+  - .build_python_docs_env
+  - .python_docs_variables
   script:
-    - cd $PYPROJECT_DIR
-    - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
+  - cd $PYPROJECT_DIR
+  - mkdocs build --site-dir $DOCS_BUILD_TARGET_DIR
   artifacts:
     paths:
-      - $DOCS_BUILD_TARGET_DIR
+    - $DOCS_BUILD_TARGET_DIR
     when: always
     expire_in: 1 week
 
@@ -690,28 +693,29 @@ build_python_docs:
     # using cache is the workaround for keeping multiple deployments (pages for multiple branches at the same time)
     # due to GitLab "Parallel Deployments" being a premium feature: https://docs.gitlab.com/user/project/pages/#parallel-deployments
     key: gitlab-pages
-    paths: [ public ]
+    paths: [public]
   artifacts:
-    paths: [ public ]
+    paths: [public]
   tags:  # has to be a single runner or cache should be shared between multiple runners
-    - public-runner-docker
-    - data-cache-storage
+  - public-runner-docker
+  - data-cache-storage
 
 deploy_python_docs:
   pages: true
   extends: .python_docs_deployment_base
   needs:
-    - job: build_python_docs
-      artifacts: true
+  - job: build_python_docs
+    artifacts: true
   variables:
     PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
-    - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
-    - rm -rf $PAGES_CONTENT_PATH
-    - mkdir -p $PAGES_CONTENT_PATH
-    - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
-    - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > ${PAGES_BASE_DIR}/_redirects  # redirect gitlab pages url like https://wax-cb93b7.pages.syncad.com/ to https://wax-cb93b7.pages.syncad.com/default/
-    - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments view by pointing ${PAGES_ENV_NAME}"
+  - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
+  - rm -rf $PAGES_CONTENT_PATH
+  - mkdir -p $PAGES_CONTENT_PATH
+  - mv $DOCS_BUILD_TARGET_DIR/* $PAGES_CONTENT_PATH
+  - echo "/ /${GITLAB_PAGES_DEFAULT_BRANCH_PATH} 302" > ${PAGES_BASE_DIR}/_redirects    # redirect gitlab pages url like https://wax-cb93b7.pages.syncad.com/ to https://wax-cb93b7.pages.syncad.com/default/
+  - echo "Documentation will be available at ${PAGES_URL} or through Operate/Environments
+    view by pointing ${PAGES_ENV_NAME}"
   environment:
     name: $PAGES_ENV_NAME
     action: start
@@ -721,8 +725,8 @@ deploy_python_docs:
 clean_python_docs_preview:
   extends: .python_docs_deployment_base
   script:
-    - echo "Removing ${PAGES_CONTENT_PATH}"
-    - rm -rf $PAGES_CONTENT_PATH
+  - echo "Removing ${PAGES_CONTENT_PATH}"
+  - rm -rf $PAGES_CONTENT_PATH
   environment:
     name: $PAGES_ENV_NAME
     action: stop
@@ -732,37 +736,39 @@ clean_python_docs_preview:
 build_and_publish_wax_doc_snippets_image:
   extends: .docker_image_builder_job_template
   needs:
-    - job: build_wheel
+  - job: build_wheel
   stage: build
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${CI_COMMIT_SHA}" "${CI_COMMIT_TAG}"
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY"
+    --password-stdin
+  - ${PYPROJECT_DIR}/scripts/build_and_publish_wax_doc_snippets_image.sh "${CI_COMMIT_SHA}"
+    "${CI_COMMIT_TAG}"
   tags:
   - public-runner-docker
   rules:
-    - if: '$CI_COMMIT_TAG'
-      when: on_success
-    - when: never
+  - if: '$CI_COMMIT_TAG'
+    when: on_success
+  - when: never
 
 test_wax_doc_snippets_image:
   extends: .docker_image_builder_job_template
   stage: test
   needs:
-    - job: build_and_publish_wax_doc_snippets_image
+  - job: build_and_publish_wax_doc_snippets_image
   script:
-    - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}"
-    - |
-      docker run --rm -e EXPECTED_VERSION="${CI_COMMIT_TAG}" \
-        "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}" \
-        python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION'].replace('-rc', 'rc'); print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
+  - docker pull "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}"
+  - |
+    docker run --rm -e EXPECTED_VERSION="${CI_COMMIT_TAG}" \
+      "${CI_REGISTRY_IMAGE}/wax-python-runtime-codespaces:${CI_COMMIT_TAG}" \
+      python -c "import wax; import os; expected = os.environ['EXPECTED_VERSION'].replace('-rc', 'rc'); print(f'Installed hiveio-wax version - {wax.__version__}'); assert wax.__version__ == expected, f'Version mismatch: {wax.__version__} != {expected}'"
   tags:
-    - public-runner-docker
+  - public-runner-docker
   rules:
-    - if: '$CI_COMMIT_TAG'
-      when: on_success
-    - when: never
+  - if: '$CI_COMMIT_TAG'
+    when: on_success
+  - when: never
 
 # =============================================================================
 # WAX CI Base Image Build Job
@@ -776,32 +782,33 @@ build_wax_ci_base_image:
   extends: .docker_image_builder_job_template
   stage: prepare
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - |
-      echo "Building wax ci-base-image"
-      echo "Base image: ${COMMON_CI_BASE_IMAGE}"
-      echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
-    - |
-      docker buildx build \
-        --build-arg BASE_IMAGE="${COMMON_CI_BASE_IMAGE}" \
-        --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
-        --cache-to type=registry,mode=max,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
-        -t "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}" \
-        -f python/wax/docker/Dockerfile.ci \
-        --push .
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY"
+    --password-stdin
+  - |
+    echo "Building wax ci-base-image"
+    echo "Base image: ${COMMON_CI_BASE_IMAGE}"
+    echo "Target tag: ${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}"
+  - |
+    docker buildx build \
+      --build-arg BASE_IMAGE="${COMMON_CI_BASE_IMAGE}" \
+      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
+      --cache-to type=registry,mode=max,ref=${CI_REGISTRY_IMAGE}/ci-base-image/cache:${CI_BASE_IMAGE_TAG} \
+      -t "${CI_REGISTRY_IMAGE}/ci-base-image:${CI_BASE_IMAGE_TAG}" \
+      -f python/wax/docker/Dockerfile.ci \
+      --push .
   tags:
-    - public-runner-docker
+  - public-runner-docker
   rules:
     # Run on Dockerfile.ci changes
-    - if: $CI_COMMIT_BRANCH
-      changes:
-        paths:
-          - python/wax/docker/Dockerfile.ci
-          - python/wax/scripts/prepare_boost.sh
-      when: on_success
+  - if: $CI_COMMIT_BRANCH
+    changes:
+      paths:
+      - python/wax/docker/Dockerfile.ci
+      - python/wax/scripts/prepare_boost.sh
+    when: on_success
     # Manual trigger available
-    - when: manual
-      allow_failure: true
+  - when: manual
+    allow_failure: true
 
 # =============================================================================
 # GitHub Pages Documentation Deployment
@@ -817,8 +824,8 @@ generate_html_docs:
     PACKAGE_NAME: "@hiveio/wax"
     ENTRY_POINT: "wasm/lib/index.ts"
   needs:
-    - job: wax_wasm_proto_tsc_generation
-      artifacts: true
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
 
 deploy_to_github_pages:
   extends: .deploy_github_pages_full_template
@@ -829,12 +836,12 @@ deploy_to_github_pages:
     PY_DOCS_DIR: "${WAX_DIR}/site"
     EXTRA_DOCS_DIR: "${TS_DIST_DIR}/docs"
   needs:
-    - job: generate_html_docs
-      artifacts: true
-    - job: build_python_docs
-      artifacts: true
-    - job: generate_docs
-      artifacts: true
+  - job: generate_html_docs
+    artifacts: true
+  - job: build_python_docs
+    artifacts: true
+  - job: generate_docs
+    artifacts: true
 
 # =============================================================================
 # TEST-TOOLS Package Build and Deploy Jobs
@@ -848,77 +855,78 @@ deploy_to_github_pages:
   variables:
     PYPROJECT_DIR: "${TEST_TOOLS_DIR}"
   tags:
-    - public-runner-docker
+  - public-runner-docker
 
 build_test_tools_wheel:
   extends:
-    - .build_wheel_template
-    - .test_tools_base
+  - .build_wheel_template
+  - .test_tools_base
   needs:
-    - job: build_wheel
-      artifacts: true
-    - job: deploy_wheel_to_gitlab
+  - job: build_wheel
+    artifacts: true
+  - job: deploy_wheel_to_gitlab
   before_script:
-    - !reference [.configuration_template, before_script]
+  - !reference [.configuration_template, before_script]
     # Replace path dependency with registry version (same version from git tag)
-    - echo "Replacing wax path dependency with registry version..."
-    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
-    - WAX_VERSION="${WHEEL_BUILD_VERSION}"
-    - echo "Using wax version ${WAX_VERSION} from registry"
-    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
+  - echo "Replacing wax path dependency with registry version..."
+  - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+  - WAX_VERSION="${WHEEL_BUILD_VERSION}"
+  - echo "Using wax version ${WAX_VERSION} from registry"
+  - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
   artifacts:
     when: always
     paths:
-      - "${TEST_TOOLS_DIR}/dist/"
+    - "${TEST_TOOLS_DIR}/dist/"
     expire_in: 1 week
 
 deploy_test_tools_wheel_to_gitlab:
   extends:
-    - .deploy_wheel_to_gitlab_template
-    - .test_tools_base
+  - .deploy_wheel_to_gitlab_template
+  - .test_tools_base
   when: on_success
   needs:
-    - job: build_test_tools_wheel
-      artifacts: true
+  - job: build_test_tools_wheel
+    artifacts: true
   before_script:
-    - !reference [.configuration_template, before_script]
-    - rm -f build_wheel.env
+  - !reference [.configuration_template, before_script]
+  - rm -f build_wheel.env
 
 deploy_test_tools_wheel_to_pypi:
   extends:
-    - .deploy_wheel_to_pypi_template
-    - .test_tools_base
+  - .deploy_wheel_to_pypi_template
+  - .test_tools_base
   needs:
-    - job: build_test_tools_wheel
-      artifacts: true
+  - job: build_test_tools_wheel
+    artifacts: true
   before_script:
-    - !reference [.configuration_template, before_script]
-    - rm -f build_wheel.env
+  - !reference [.configuration_template, before_script]
+  - rm -f build_wheel.env
 
 # test-tools tests only need test-tools + wax (from registry) + dev deps (pytest, etc.)
 .test_tools_test_env:
   extends: .test_tools_base
   needs:
-    - job: deploy_wheel_to_gitlab
-      artifacts: true
+  - job: deploy_wheel_to_gitlab
+    artifacts: true
   before_script:
-    - !reference [.configuration_template, before_script]
+  - !reference [.configuration_template, before_script]
     # Replace wax path dependency with registry version
-    - WAX_VERSION="${WHEEL_BUILD_VERSION}"
-    - echo "Using wax version ${WAX_VERSION} from registry"
-    - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
-    - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
-    - !reference [.update_deps_for_tests, script]
-    - poetry -C "${TEST_TOOLS_DIR}" install
-    - pip list
+  - WAX_VERSION="${WHEEL_BUILD_VERSION}"
+  - echo "Using wax version ${WAX_VERSION} from registry"
+  - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
+  - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
+  - !reference [.update_deps_for_tests, script]
+  - poetry -C "${TEST_TOOLS_DIR}" install
+  - pip list
 
 test_tools_unit_tests:
   extends:
-    - .test_tools_test_env
-    - .python_test_matrix
+  - .test_tools_test_env
+  - .python_test_matrix
   script:
-    - echo -e "${TXT_BLUE}Running test-tools unit tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto -m "not requires_hived_executables" "${TEST_TOOLS_DIR}/tests/unit_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_unit_report.xml"
+  - echo -e "${TXT_BLUE}Running test-tools unit tests...${TXT_CLEAR}"
+  - python3 -m pytest -n auto -m "not requires_hived_executables" "${TEST_TOOLS_DIR}/tests/unit_tests"
+    --junitxml="${CI_PROJECT_DIR}/test_tools_unit_report.xml"
   artifacts:
     when: always
     expire_in: 1 week
@@ -927,13 +935,14 @@ test_tools_unit_tests:
 
 test_tools_hived_handle:
   extends:
-    - .test_tools_test_env
-    - .python_test_matrix
+  - .test_tools_test_env
+  - .python_test_matrix
   variables:
     HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
-    - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TEST_TOOLS_DIR}/tests/hived_handle_tests" --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
+  - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
+  - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TEST_TOOLS_DIR}/tests/hived_handle_tests"
+    --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
   artifacts:
     when: always
     expire_in: 1 week
