@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Final, get_args
 
 from beekeepy import Beekeeper
-from beekeepy.exceptions import ErrorInResponseError, WalletWithSuchNameAlreadyExistsError
+from beekeepy.exceptions import WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
 
 from schemas.fields.basic import PublicKey
@@ -43,7 +43,7 @@ from test_tools.__private.wax_wrapper import (
     validate_transaction,
     wax_authorities,
 )
-from wax._private.api.overseer import WaxOverseer
+from wax._private.api.overseer import WaxAssertionInResponseError, WaxOverseer
 from wax.helpy import Hf26Asset as Asset
 
 if TYPE_CHECKING:
@@ -184,8 +184,8 @@ class Wallet(UserHandleImplementation, ScopedObject):
         except WalletWithSuchNameAlreadyExistsError:
             locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
             self._beekeeper_wallet = locked_wallet.unlock(DEFAULT_PASSWORD)
-        except ErrorInResponseError as exception:
-            if f"Wallet with name: '{self.name}' already exists" in exception.error:
+        except WaxAssertionInResponseError as exception:
+            if f"Wallet with name: '{self.name}' already exists" in str(exception):
                 locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
                 self._beekeeper_wallet = locked_wallet.unlock(DEFAULT_PASSWORD)
             else:
