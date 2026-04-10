@@ -18,7 +18,7 @@ from beekeepy._communication.rules import (
     UnparsableResponse,
     WalletIsAlreadyUnlocked,
 )
-from beekeepy.exceptions import CommunicationResponseT, Json, OverseerError
+from beekeepy.exceptions import CommunicationResponseT, ErrorInResponseError, Json, OverseerError
 from wax.exceptions.wax_error import WaxAssertionError
 from wax.exceptions.wax_specialised_errors import resolve_api_response_error
 
@@ -26,8 +26,14 @@ if TYPE_CHECKING:
     from beekeepy._communication.url import Url
 
 
-class WaxAssertionInResponseError(OverseerError):
-    """OverseerError carrying a resolved WaxAssertionError from a structured API response."""
+class WaxAssertionInResponseError(ErrorInResponseError):
+    """
+    ErrorInResponseError subclass carrying a resolved WaxAssertionError from a structured API response.
+
+    Inherits from ErrorInResponseError so that existing ``except ErrorInResponseError``
+    handlers catch these transparently — no import changes needed in downstream repos.
+    Code that needs the structured assertion data can catch WaxAssertionInResponseError explicitly.
+    """
 
     def __init__(  # noqa: PLR0913
         self,
@@ -49,9 +55,6 @@ class WaxAssertionInResponseError(OverseerError):
             request_id=request_id,
         )
         self.wax_exception = wax_exception
-
-    def retry(self) -> bool:
-        return False
 
 
 class WaxErrorInResponse(OverseerRule):
