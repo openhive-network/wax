@@ -63,11 +63,14 @@ def parse_cxx_exception(ex: object) -> tuple | None:
     """Parse a C++ exception into a (wax_exception_name, parsed_data) tuple.
 
     Returns (name, data) where data is a dict (parsed JSON) or str (raw message).
-    Returns None if the exception cannot be extracted.
+    Returns None if the exception cannot be extracted (e.g. plain Python exceptions).
     """
     cdef protocol obj
-    cdef exception_ptr eptr = wrapped_exception_ptr_from_exception(ex)
-    cdef hive_exception_data raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+    try:
+        eptr = wrapped_exception_ptr_from_exception(ex)
+        raw_data = obj.cpp_translate_to_wax_exception_data(eptr)
+    except Exception:
+        return None
     wax_exception_name = raw_data.wax_exception_name.decode()
     wax_exception_what = raw_data.what.decode()
     if wax_exception_name == "WaxError":
