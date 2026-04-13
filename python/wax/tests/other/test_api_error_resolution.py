@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import pytest
+
 from beekeepy._communication.url import HttpUrl
 from wax._private.api.overseer import WaxAssertionInResponseError, WaxErrorInResponse
 from wax.exceptions.wax_error import (
     WaxAssertionError,
     WaxChainBalanceAssertionError,
+    WaxCommunicationError,
     WaxError,
     WaxProtocolAccountNameAssertionError,
     WaxUnhandledAssertionError,
@@ -229,3 +232,31 @@ class TestWaxErrorInResponseRule:
             wax_exception=resolved,
         )
         assert exc.retry() is False
+
+
+class TestCommunicationErrorFallback:
+    """Verify that CommunicationError is wrapped as WaxCommunicationError."""
+
+    def test_communication_error_becomes_wax_communication_error(self) -> None:
+        import asyncio  # noqa: PLC0415
+        from unittest.mock import patch  # noqa: PLC0415
+
+        from beekeepy.exceptions import CommunicationError  # noqa: PLC0415
+        from wax._private.api.api_caller import WaxApiCaller  # noqa: PLC0415
+
+        caller = WaxApiCaller.__new__(WaxApiCaller)
+
+        async def _raise_communication_error(*_args: object, **_kwargs: object) -> None:
+            raise CommunicationError(url="http://localhost", request=b"{}", message="connection refused")
+
+        with patch.object(type(caller).__bases__[0], "_async_send", new=_raise_communication_error):
+            with pytest.raises(WaxCommunicationError, match="connection refused") as exc_info:
+                asyncio.run(
+                    caller._async_send(
+                        method=("condenser_api", "get_version"),
+                        expected_type=dict,
+                        serialization_type="hf26",
+                    )
+                )
+            assert isinstance(exc_info.value, WaxError)
+            assert exc_info.value.__cause__ is not None

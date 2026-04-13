@@ -114,7 +114,10 @@ class CxxExceptionData(PreconfiguredBaseModel):
             return ""
         fmt = re.sub(r"\$\{", "{", self.stack[0].format)
         kwargs = self.stack[0].data
-        return fmt.format(**kwargs).strip()
+        try:
+            return fmt.format(**kwargs).strip()
+        except (KeyError, IndexError, ValueError):
+            return fmt.strip()
 
 
 # Backward-compatible alias
@@ -182,7 +185,22 @@ Populated when resolve_exception() successfully classifies an exception via the 
 bridge (which includes category/subject_type in stack frame data).  When the same
 assert_hash appears later in an API response (which lacks those fields), the cached
 classification is used instead of falling back to WaxUnhandledAssertionError.
+
+Bounded to _ASSERT_HASH_CACHE_MAX_SIZE entries. Under CPython the GIL serialises
+dict mutations; free-threaded builds (3.13t+) may see benign races on eviction
+but no corruption, since individual dict ops are atomic at the C level.
 """
+_ASSERT_HASH_CACHE_MAX_SIZE = 4096
+
+
+def _cache_classification(assert_hash: str, category: str, subject_type: str) -> None:
+    """Store a classification in the bounded cache, evicting oldest entries when full."""
+    if len(_ASSERT_HASH_CLASSIFICATION_CACHE) >= _ASSERT_HASH_CACHE_MAX_SIZE:
+        # Evict the oldest ~25 % to amortise eviction cost.
+        to_remove = _ASSERT_HASH_CACHE_MAX_SIZE // 4
+        for key in list(_ASSERT_HASH_CLASSIFICATION_CACHE)[:to_remove]:
+            _ASSERT_HASH_CLASSIFICATION_CACHE.pop(key, None)
+    _ASSERT_HASH_CLASSIFICATION_CACHE[assert_hash] = (category, subject_type)
 
 
 def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError:
@@ -211,12 +229,12 @@ def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError
     # Try the most specific match: (category, subject_type)
     cls = _SUBJECT_TYPE_MAP.get((category, subject_type))
     if cls is not None:
-        _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash] = (category, subject_type)
+        _cache_classification(data.assert_hash, category, subject_type)
         return cls(raw=data)
     # Fall back to category-level match
     cls = _CATEGORY_MAP.get(category)
     if cls is not None:
-        _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash] = (category, subject_type)
+        _cache_classification(data.assert_hash, category, subject_type)
         return cls(raw=data)
     # Unknown category
     return WaxUnhandledAssertionError(raw=data)
