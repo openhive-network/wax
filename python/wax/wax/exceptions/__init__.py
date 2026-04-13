@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 from .asset_errors import (
     AssetError,
     CannotCreateAssetError,
@@ -41,6 +43,7 @@ from .wax_error import (
     WaxChainTreasuryAssertionError,
     WaxChainUnreachableCodeAssertionError,
     WaxChainVotingAssertionError,
+    WaxCommunicationError,
     WaxError,
     WaxImportProtoBeforeCompileError,
     WaxProtocolAccountNameAssertionError,
@@ -55,10 +58,25 @@ from .wax_error import (
 )
 from .wax_specialised_errors import CxxExceptionData
 
-# Backward-compatible aliases
-WaxBaseAssertionError = WaxAssertionError
-DetailedCxxError = CxxExceptionData
-UnhandledWaxError = WaxUnhandledAssertionError
+# Backward-compatible aliases — access via __getattr__ to emit DeprecationWarning.
+_DEPRECATED_ALIASES: dict[str, tuple[object, str]] = {
+    "WaxBaseAssertionError": (WaxAssertionError, "WaxAssertionError"),
+    "DetailedCxxError": (CxxExceptionData, "CxxExceptionData"),
+    "UnhandledWaxError": (WaxUnhandledAssertionError, "WaxUnhandledAssertionError"),
+}
+
+
+def __getattr__(name: str) -> object:
+    if name in _DEPRECATED_ALIASES:
+        obj, replacement = _DEPRECATED_ALIASES[name]
+        warnings.warn(
+            f"{name} is deprecated, use {replacement} instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return obj
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     # Chain-related errors.
@@ -102,6 +120,7 @@ __all__ = [
     "WaxChainTreasuryAssertionError",
     "WaxChainUnreachableCodeAssertionError",
     "WaxChainVotingAssertionError",
+    "WaxCommunicationError",
     # Base error for all wax errors.
     "WaxError",
     "WaxImportProtoBeforeCompileError",

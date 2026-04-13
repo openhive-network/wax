@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -8,6 +9,10 @@ if TYPE_CHECKING:
 
 class WaxError(Exception):
     """Base exception for all wax operations."""
+
+
+class WaxCommunicationError(WaxError):
+    """Raised when a transport-level error occurs (timeout, connection refused, DNS failure, etc.)."""
 
 
 class WaxImportProtoBeforeCompileError(WaxError):
@@ -36,20 +41,15 @@ class WaxAssertionError(WaxError):
 
     @property
     def subject_type(self) -> str:
-        extras = self.extras
-        if "subject" not in extras:
-            return "none"
-        result = extras.get("subject_type", "any")
-        assert isinstance(result, str)
-        return result
+        return self._raw.subject_type
 
     @property
     def subject(self) -> Any | None:  # noqa: ANN401
-        return self.extras.get("subject")
+        return self._raw.subject
 
     @property
     def extras(self) -> dict[str, Any]:
-        return self._raw.stack[0].data
+        return self._raw.stack[0].data if self._raw.stack else {}
 
     @property
     def message(self) -> str:
@@ -58,6 +58,17 @@ class WaxAssertionError(WaxError):
     @property
     def assert_hash(self) -> str:
         return self._raw.assert_hash
+
+    # Deprecated aliases for renamed attributes (old API: assertion_hash, assertion_data)
+    @property
+    def assertion_hash(self) -> str:
+        warnings.warn("assertion_hash is deprecated, use assert_hash", DeprecationWarning, stacklevel=2)
+        return self.assert_hash
+
+    @property
+    def assertion_data(self) -> CxxExceptionData:
+        warnings.warn("assertion_data is deprecated, use raw", DeprecationWarning, stacklevel=2)
+        return self._raw
 
 
 class WaxUnhandledAssertionError(WaxAssertionError):

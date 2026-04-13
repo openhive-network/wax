@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Literal
 from beekeepy.exceptions import CommunicationError
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
 from wax._private.api.overseer import WaxAssertionInResponseError, WaxOverseer
-from wax.exceptions.wax_error import WaxError
+from wax.exceptions.wax_error import WaxCommunicationError
 from wax.interfaces import ApiCollectionT
 
 if TYPE_CHECKING:
@@ -86,7 +86,7 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
         except WaxAssertionInResponseError as ex:
             raise ex.wax_exception from ex
         except CommunicationError as ex:
-            raise WaxError(str(ex)) from ex
+            raise WaxCommunicationError(str(ex)) from ex
 
     def _construct_api(self) -> ApiCollectionT:
         return api_collection_factory(self._api_collection, self)
