@@ -4,11 +4,11 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
+from test_tools import exceptions
 from test_tools.__private import (
     cleanup_policy,
     complex_networks,
     constants,
-    exceptions,
     paths_to_executables,
     wax_wrapper,
 )
