@@ -3,7 +3,7 @@ import json
 import pytest
 
 from wax import validate_operation
-from wax.exceptions import WaxError, WaxInvalidAccountNameException
+from wax.exceptions import WaxError, WaxInvalidAccountNameError
 from wax_local_tools.refs import API_REF_VOTE_OP, API_REF_VOTE_OP_EMPTY, PROTO_REF_VOTE_OP
 
 
@@ -39,5 +39,5 @@ def test_validate_operation_negative_empty_account():
     vote_op_str = json.dumps(API_REF_VOTE_OP_EMPTY)
 
     # Act & Assert
-    with pytest.raises(WaxInvalidAccountNameException, match="Account name.*is too short"):
+    with pytest.raises(WaxInvalidAccountNameError, match=r"Account name '.*' is too short"):
         validate_operation(vote_op_str)

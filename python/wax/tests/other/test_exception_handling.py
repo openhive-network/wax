@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import pytest
-
 import wax
-from wax.exceptions import WaxAssertionError, WaxChainAssertionError, WaxError, WaxProtocolAssertionError
+from wax.exceptions import WaxAssertionError, WaxError
 
 
 def test_exception_handling() -> None:
@@ -33,28 +31,21 @@ def test_exception_handling() -> None:
 def test_exception_relay() -> None:
     ex_type: type[Exception] | None = None
     ex_args: str | tuple[object, ...] = ()
-    ex_source = "Unknown"
+    ex_category = "Unknown"
     try:
         wax.cpp_throws(4)
-    except WaxChainAssertionError as inst:
-        ex_source = "Chain"
-        ex_type = type(inst)
-        ex_args = inst.assert_hash
-    except WaxProtocolAssertionError as inst:
-        ex_source = "Protocol"
-        ex_type = type(inst)
-        ex_args = inst.assert_hash
     except WaxAssertionError as inst:
         ex_type = type(inst)
         ex_args = inst.assert_hash
+        ex_category = inst.category
     except Exception as inst:
         ex_type = type(inst)
         ex_args = inst.args
 
     print(ex_type)
     print(ex_args)
-    print(ex_source)
+    print(ex_category)
 
-    assert ex_type is WaxProtocolAssertionError
+    assert ex_type is WaxAssertionError
     assert ex_args == "3372626016653902757"
-    assert ex_source == "Protocol"
+    assert ex_category == "protocol"

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -25,7 +24,14 @@ class WaxImportProtoBeforeCompileError(WaxError):
 
 
 class WaxAssertionError(WaxError):
-    """Base for all C++ assertion errors. Carries structured exception data."""
+    """
+    Base class for C++ assertion errors raised by the Hive protocol or chain layer.
+
+    Subclasses cover common "what went wrong" cases (invalid account name, insufficient
+    balance, invalid asset, etc.). Assertions that do not match any subclass are raised
+    as :class:`WaxAssertionError` itself; callers can inspect :pyattr:`category`,
+    :pyattr:`subject_type` and :pyattr:`subject` to identify the exact assertion.
+    """
 
     def __init__(self, raw: CxxExceptionData) -> None:
         self._raw = raw
@@ -33,130 +39,46 @@ class WaxAssertionError(WaxError):
 
     @property
     def raw(self) -> CxxExceptionData:
+        """The raw parsed C++ exception data."""
         return self._raw
 
     @property
     def category(self) -> str:
-        return self._raw.category
-
-    @property
-    def source(self) -> str:
+        """Origin of the assertion: ``"protocol"`` or ``"chain"``."""
         return self._raw.category
 
     @property
     def subject_type(self) -> str:
-        return self._raw.subject_type
-
-    @property
-    def category_type(self) -> str:
+        """Kind of the value that failed validation (e.g. ``"account_name"``, ``"asset"``, ``"balance"``)."""
         return self._raw.subject_type
 
     @property
     def subject(self) -> Any | None:  # noqa: ANN401
+        """The value that failed the assertion (e.g. the invalid account name)."""
         return self._raw.subject
 
     @property
     def extras(self) -> dict[str, Any]:
+        """Additional fields from the top-level C++ stack frame."""
         return self._raw.stack[0].data if self._raw.stack else {}
 
     @property
     def message(self) -> str:
+        """Human-readable error message."""
         return self._raw.formatted_message()
 
     @property
     def assert_hash(self) -> str:
+        """Hash identifying the specific C++ assertion site."""
         return self._raw.assert_hash
-
-    # Deprecated aliases for renamed attributes (old API: assertion_hash, assertion_data)
-    @property
-    def assertion_hash(self) -> str:
-        warnings.warn("assertion_hash is deprecated, use assert_hash", DeprecationWarning, stacklevel=2)
-        return self.assert_hash
-
-    @property
-    def assertion_data(self) -> CxxExceptionData:
-        warnings.warn("assertion_data is deprecated, use raw", DeprecationWarning, stacklevel=2)
-        return self._raw
 
 
 class WaxUnhandledAssertionError(WaxAssertionError):
-    """Raised for assertion errors that cannot be classified into a known category."""
+    """Raised when an assertion cannot be classified by category or subject type."""
 
 
-# --- Protocol category ---
-
-
-class WaxProtocolAssertionError(WaxAssertionError):
-    """Raised for protocol-level assertion errors (validation of account names, assets, operations, etc.)."""
-
-
-class WaxProtocolAuthorityAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: authority/permission validation failure."""
-
-
-class WaxProtocolNumberAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: numeric constraint violation."""
-
-
-class WaxProtocolStringAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: string constraint violation."""
-
-
-class WaxProtocolHardforkAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: hardfork-related validation failure."""
-
-
-class WaxProtocolUnreachableCodeAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: code path that should never execute."""
-
-
-# --- Chain category ---
-
-
-class WaxChainAssertionError(WaxAssertionError):
-    """Raised for chain-level assertion errors (evaluator, transaction, block processing, etc.)."""
-
-
-class WaxChainHardforkAssertionError(WaxChainAssertionError):
-    """Chain assertion: hardfork-related validation failure."""
-
-
-class WaxChainTreasuryAssertionError(WaxChainAssertionError):
-    """Chain assertion: treasury-related validation failure."""
-
-
-class WaxChainTimeAssertionError(WaxChainAssertionError):
-    """Chain assertion: time constraint violation."""
-
-
-class WaxChainLimitAssertionError(WaxChainAssertionError):
-    """Chain assertion: limit exceeded."""
-
-
-class WaxChainStateAssertionError(WaxChainAssertionError):
-    """Chain assertion: invalid chain state."""
-
-
-class WaxChainVotingAssertionError(WaxChainAssertionError):
-    """Chain assertion: voting-related validation failure."""
-
-
-class WaxChainPermissionAssertionError(WaxChainAssertionError):
-    """Chain assertion: permission-related validation failure."""
-
-
-class WaxChainUnreachableCodeAssertionError(WaxChainAssertionError):
-    """Chain assertion: code path that should never execute."""
-
-
-# ---------------------------------------------------------------------------
-# User-facing exception classes — named by *what went wrong*, not by origin.
-# The chain/protocol origin is available via the .source / .category property.
-# ---------------------------------------------------------------------------
-
-
-class WaxInvalidAccountNameException(WaxAssertionError):  # noqa: N818
-    """Raised when an invalid account name is encountered (too short, too long, bad characters, etc.)."""
+class WaxInvalidAccountNameError(WaxAssertionError):
+    """Raised when an account name is invalid (too short, too long, bad characters, etc.)."""
 
     @property
     def account_name(self) -> str | None:
@@ -164,8 +86,8 @@ class WaxInvalidAccountNameException(WaxAssertionError):  # noqa: N818
         return self.subject if isinstance(self.subject, str) else None
 
 
-class WaxInvalidPermlinkException(WaxAssertionError):  # noqa: N818
-    """Raised when an invalid permlink is encountered."""
+class WaxInvalidPermlinkError(WaxAssertionError):
+    """Raised when a permlink is invalid."""
 
     @property
     def permlink(self) -> str | None:
@@ -173,8 +95,8 @@ class WaxInvalidPermlinkException(WaxAssertionError):  # noqa: N818
         return self.subject if isinstance(self.subject, str) else None
 
 
-class WaxInvalidAssetException(WaxAssertionError):  # noqa: N818
-    """Raised when an invalid asset is encountered (wrong type, zero/negative amount, bad precision, etc.)."""
+class WaxInvalidAssetError(WaxAssertionError):
+    """Raised when an asset is invalid (wrong type, zero/negative amount, bad precision, etc.)."""
 
     @property
     def asset(self) -> Any | None:  # noqa: ANN401
@@ -182,7 +104,7 @@ class WaxInvalidAssetException(WaxAssertionError):  # noqa: N818
         return self.subject
 
 
-class WaxInvalidFeeException(WaxChainAssertionError):  # noqa: N818
+class WaxInvalidFeeError(WaxAssertionError):
     """Raised when a fee does not match the required value."""
 
     @property
@@ -191,7 +113,7 @@ class WaxInvalidFeeException(WaxChainAssertionError):  # noqa: N818
         return self.subject
 
 
-class WaxInsufficientBalanceException(WaxChainAssertionError):  # noqa: N818
+class WaxInsufficientBalanceError(WaxAssertionError):
     """Raised when an account has insufficient balance for the requested operation."""
 
     @property
