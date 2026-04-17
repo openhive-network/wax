@@ -7,11 +7,8 @@ import pytest
 import wax
 from wax.exceptions import (
     WaxAssertionError,
-    WaxInvalidAccountNameException,
-    WaxInvalidAssetException,
-    WaxProtocolAssertionError,
-    WaxProtocolNumberAssertionError,
-    WaxProtocolStringAssertionError,
+    WaxInvalidAccountNameError,
+    WaxInvalidAssetError,
 )
 
 # NAI constants
@@ -42,7 +39,7 @@ def _op(op_type: str, value: dict) -> str:
 
 
 def test_user_facing_exception_catchable_as_base() -> None:
-    """User-facing exceptions (e.g. WaxInvalidAccountNameException) are catchable as WaxAssertionError."""
+    """User-facing exceptions (e.g. WaxInvalidAccountNameError) are catchable as WaxAssertionError."""
     invalid_op = _op(
         "transfer_operation",
         {
@@ -55,22 +52,6 @@ def test_user_facing_exception_catchable_as_base() -> None:
 
     with pytest.raises(WaxAssertionError):
         wax.validate_operation(invalid_op)
-
-
-def test_protocol_exception_hierarchy() -> None:
-    """Protocol-specific assertions (e.g. number, string) are still catchable as WaxProtocolAssertionError."""
-    op = _op(
-        "vote_operation",
-        {
-            "voter": "initminer",
-            "author": "alpha",
-            "permlink": "test-post",
-            "weight": 10001,
-        },
-    )
-
-    with pytest.raises(WaxProtocolAssertionError):
-        wax.validate_operation(op)
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +74,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAccountNameException) as exc:
+        with pytest.raises(WaxInvalidAccountNameError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -111,7 +92,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolStringAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -129,7 +110,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAccountNameException) as exc:
+        with pytest.raises(WaxInvalidAccountNameError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -146,7 +127,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAccountNameException) as exc:
+        with pytest.raises(WaxInvalidAccountNameError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -166,7 +147,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAccountNameException) as exc:
+        with pytest.raises(WaxInvalidAccountNameError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -192,7 +173,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -210,7 +191,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -228,7 +209,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -246,7 +227,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -263,7 +244,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -289,7 +270,7 @@ class TestProtocolNumberAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolNumberAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -306,10 +287,11 @@ class TestProtocolNumberAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolNumberAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "number"
 
     def test_custom_json_no_auths(self) -> None:
         """custom_json requires at least one authority (required_auths or required_posting_auths)."""
@@ -323,10 +305,11 @@ class TestProtocolNumberAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolNumberAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "number"
 
     def test_recurrent_transfer_too_few_executions(self) -> None:
         """recurrent_transfer requires at least 2 executions."""
@@ -343,10 +326,11 @@ class TestProtocolNumberAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolNumberAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "number"
 
 
 # ---------------------------------------------------------------------------
@@ -372,7 +356,7 @@ class TestProtocolStringAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolStringAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -393,7 +377,7 @@ class TestProtocolStringAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolStringAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -416,10 +400,11 @@ class TestProtocolStringAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolStringAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "string"
 
     def test_witness_update_url_too_long(self) -> None:
         """Witness URL cannot exceed HIVE_MAX_WITNESS_URL_LENGTH (2048)."""
@@ -438,10 +423,11 @@ class TestProtocolStringAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolStringAssertionError) as exc:
+        with pytest.raises(WaxAssertionError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "string"
 
 
 # ---------------------------------------------------------------------------
@@ -539,7 +525,7 @@ class TestExceptionDataProperties:
             },
         )
 
-        with pytest.raises(WaxInvalidAssetException) as exc:
+        with pytest.raises(WaxInvalidAssetError) as exc:
             wax.validate_operation(op)
 
         assert exc.value.subject is not None

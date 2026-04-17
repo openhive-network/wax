@@ -11,27 +11,12 @@ from schemas.fields.hive_datetime import HiveDateTime  # noqa: TCH002
 
 from wax.exceptions.wax_error import (
     WaxAssertionError,
-    WaxChainAssertionError,
-    WaxChainHardforkAssertionError,
-    WaxChainLimitAssertionError,
-    WaxChainPermissionAssertionError,
-    WaxChainStateAssertionError,
-    WaxChainTimeAssertionError,
-    WaxChainTreasuryAssertionError,
-    WaxChainUnreachableCodeAssertionError,
-    WaxChainVotingAssertionError,
     WaxError,
-    WaxInsufficientBalanceException,
-    WaxInvalidAccountNameException,
-    WaxInvalidAssetException,
-    WaxInvalidFeeException,
-    WaxInvalidPermlinkException,
-    WaxProtocolAssertionError,
-    WaxProtocolAuthorityAssertionError,
-    WaxProtocolHardforkAssertionError,
-    WaxProtocolNumberAssertionError,
-    WaxProtocolStringAssertionError,
-    WaxProtocolUnreachableCodeAssertionError,
+    WaxInsufficientBalanceError,
+    WaxInvalidAccountNameError,
+    WaxInvalidAssetError,
+    WaxInvalidFeeError,
+    WaxInvalidPermlinkError,
     WaxUnhandledAssertionError,
 )
 
@@ -121,10 +106,6 @@ class CxxExceptionData(PreconfiguredBaseModel):
             return fmt.strip()
 
 
-# Backward-compatible alias
-DetailedCxxError = CxxExceptionData
-
-
 # ---------------------------------------------------------------------------
 # Exception resolver — maps C++ exception data to the correct Python class
 # ---------------------------------------------------------------------------
@@ -134,41 +115,16 @@ _WAX_EXCEPTION_NAME_TO_CATEGORY: dict[str, str] = {
     "WaxChainAssertionError": "chain",
 }
 
-_CATEGORY_MAP: dict[str, type[WaxAssertionError]] = {
-    "protocol": WaxProtocolAssertionError,
-    "chain": WaxChainAssertionError,
-}
-
 _SUBJECT_TYPE_MAP: dict[tuple[str, str], type[WaxAssertionError]] = {
-    # User-facing exception classes — named by what went wrong, not origin.
-    # Account name validation (protocol or chain)
-    ("protocol", "account_name"): WaxInvalidAccountNameException,
-    ("chain", "account_name"): WaxInvalidAccountNameException,
-    # Asset validation (protocol or chain)
-    ("protocol", "asset"): WaxInvalidAssetException,
-    ("chain", "asset"): WaxInvalidAssetException,
-    # Permlink validation (protocol or chain)
-    ("protocol", "permlink"): WaxInvalidPermlinkException,
-    ("chain", "permlink"): WaxInvalidPermlinkException,
-    # Fee validation (chain-level)
-    ("chain", "fee"): WaxInvalidFeeException,
-    # Balance validation (chain-level)
-    ("chain", "balance"): WaxInsufficientBalanceException,
-    # Protocol subject types (remaining, from HIVE_PROTOCOL_*_ASSERT macros)
-    ("protocol", "authority"): WaxProtocolAuthorityAssertionError,
-    ("protocol", "number"): WaxProtocolNumberAssertionError,
-    ("protocol", "string"): WaxProtocolStringAssertionError,
-    ("protocol", "hardfork"): WaxProtocolHardforkAssertionError,
-    ("protocol", "unreachable_code"): WaxProtocolUnreachableCodeAssertionError,
-    # Chain subject types (remaining, from HIVE_CHAIN_*_ASSERT macros)
-    ("chain", "hardfork"): WaxChainHardforkAssertionError,
-    ("chain", "treasury"): WaxChainTreasuryAssertionError,
-    ("chain", "time"): WaxChainTimeAssertionError,
-    ("chain", "limit"): WaxChainLimitAssertionError,
-    ("chain", "state"): WaxChainStateAssertionError,
-    ("chain", "voting"): WaxChainVotingAssertionError,
-    ("chain", "permission"): WaxChainPermissionAssertionError,
-    ("chain", "unreachable_code"): WaxChainUnreachableCodeAssertionError,
+    # User-facing exception classes — named by what went wrong, not by origin.
+    ("protocol", "account_name"): WaxInvalidAccountNameError,
+    ("chain", "account_name"): WaxInvalidAccountNameError,
+    ("protocol", "asset"): WaxInvalidAssetError,
+    ("chain", "asset"): WaxInvalidAssetError,
+    ("protocol", "permlink"): WaxInvalidPermlinkError,
+    ("chain", "permlink"): WaxInvalidPermlinkError,
+    ("chain", "fee"): WaxInvalidFeeError,
+    ("chain", "balance"): WaxInsufficientBalanceError,
 }
 
 
@@ -226,14 +182,17 @@ def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError
     _category_absent = not any("category" in frame.data for frame in data.stack)
     if category == "unknown" and _category_absent and data.assert_hash in _ASSERT_HASH_CLASSIFICATION_CACHE:
         category, subject_type = _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash]
-        # Inject cached classification into the stack data so that properties
-        # like WaxAssertionError.category and .subject_type read correct values.
-        if data.stack:
-            frame_data = data.stack[0].data
-            frame_data.setdefault("category", category)
+
+    # Inject the resolved category / subject_type back into the top stack frame
+    # so that the WaxAssertionError properties (which read from raw data) return
+    # the same values the resolver used for classification. Without this, the
+    # category derived from the C++ exception class name (e.g. "WaxProtocolAssertionError"
+    # → "protocol") is lost once the exception reaches the caller.
+    if category != "unknown" and data.stack:
+        frame_data = data.stack[0].data
+        frame_data.setdefault("category", category)
+        if subject_type not in ("none", "any"):
             frame_data.setdefault("subject_type", subject_type)
-            # Ensure "subject" key exists so WaxAssertionError.subject_type reads it.
-            # The subject value may be present under a different key in API responses.
             if "subject" not in frame_data:
                 frame_data["subject"] = frame_data.get("name", "")
 
@@ -242,11 +201,11 @@ def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError
     if cls is not None:
         _cache_classification(data.assert_hash, category, subject_type)
         return cls(raw=data)
-    # Fall back to category-level match
-    cls = _CATEGORY_MAP.get(category)
-    if cls is not None:
+    # Known category but no user-facing subclass → base WaxAssertionError.
+    # Callers may inspect `.category`, `.subject_type`, `.subject` for details.
+    if category in ("protocol", "chain"):
         _cache_classification(data.assert_hash, category, subject_type)
-        return cls(raw=data)
+        return WaxAssertionError(raw=data)
     # Unknown category
     return WaxUnhandledAssertionError(raw=data)
 
