@@ -12,8 +12,6 @@ from schemas.fields.hive_datetime import HiveDateTime  # noqa: TCH002
 from wax.exceptions.wax_error import (
     WaxAssertionError,
     WaxChainAssertionError,
-    WaxChainAssetAssertionError,
-    WaxChainBalanceAssertionError,
     WaxChainHardforkAssertionError,
     WaxChainLimitAssertionError,
     WaxChainPermissionAssertionError,
@@ -23,9 +21,12 @@ from wax.exceptions.wax_error import (
     WaxChainUnreachableCodeAssertionError,
     WaxChainVotingAssertionError,
     WaxError,
-    WaxProtocolAccountNameAssertionError,
+    WaxInsufficientBalanceException,
+    WaxInvalidAccountNameException,
+    WaxInvalidAssetException,
+    WaxInvalidFeeException,
+    WaxInvalidPermlinkException,
     WaxProtocolAssertionError,
-    WaxProtocolAssetAssertionError,
     WaxProtocolAuthorityAssertionError,
     WaxProtocolHardforkAssertionError,
     WaxProtocolNumberAssertionError,
@@ -139,17 +140,27 @@ _CATEGORY_MAP: dict[str, type[WaxAssertionError]] = {
 }
 
 _SUBJECT_TYPE_MAP: dict[tuple[str, str], type[WaxAssertionError]] = {
-    # Protocol subject types (from HIVE_PROTOCOL_*_ASSERT macros)
-    ("protocol", "asset"): WaxProtocolAssetAssertionError,
+    # User-facing exception classes — named by what went wrong, not origin.
+    # Account name validation (protocol or chain)
+    ("protocol", "account_name"): WaxInvalidAccountNameException,
+    ("chain", "account_name"): WaxInvalidAccountNameException,
+    # Asset validation (protocol or chain)
+    ("protocol", "asset"): WaxInvalidAssetException,
+    ("chain", "asset"): WaxInvalidAssetException,
+    # Permlink validation (protocol or chain)
+    ("protocol", "permlink"): WaxInvalidPermlinkException,
+    ("chain", "permlink"): WaxInvalidPermlinkException,
+    # Fee validation (chain-level)
+    ("chain", "fee"): WaxInvalidFeeException,
+    # Balance validation (chain-level)
+    ("chain", "balance"): WaxInsufficientBalanceException,
+    # Protocol subject types (remaining, from HIVE_PROTOCOL_*_ASSERT macros)
     ("protocol", "authority"): WaxProtocolAuthorityAssertionError,
-    ("protocol", "account_name"): WaxProtocolAccountNameAssertionError,
     ("protocol", "number"): WaxProtocolNumberAssertionError,
     ("protocol", "string"): WaxProtocolStringAssertionError,
     ("protocol", "hardfork"): WaxProtocolHardforkAssertionError,
     ("protocol", "unreachable_code"): WaxProtocolUnreachableCodeAssertionError,
-    # Chain subject types (from HIVE_CHAIN_*_ASSERT macros)
-    ("chain", "asset"): WaxChainAssetAssertionError,
-    ("chain", "balance"): WaxChainBalanceAssertionError,
+    # Chain subject types (remaining, from HIVE_CHAIN_*_ASSERT macros)
     ("chain", "hardfork"): WaxChainHardforkAssertionError,
     ("chain", "treasury"): WaxChainTreasuryAssertionError,
     ("chain", "time"): WaxChainTimeAssertionError,

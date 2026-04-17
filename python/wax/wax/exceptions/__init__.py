@@ -33,8 +33,6 @@ from .validation_errors import (
 from .wax_error import (
     WaxAssertionError,
     WaxChainAssertionError,
-    WaxChainAssetAssertionError,
-    WaxChainBalanceAssertionError,
     WaxChainHardforkAssertionError,
     WaxChainLimitAssertionError,
     WaxChainPermissionAssertionError,
@@ -46,9 +44,12 @@ from .wax_error import (
     WaxCommunicationError,
     WaxError,
     WaxImportProtoBeforeCompileError,
-    WaxProtocolAccountNameAssertionError,
+    WaxInsufficientBalanceException,
+    WaxInvalidAccountNameException,
+    WaxInvalidAssetException,
+    WaxInvalidFeeException,
+    WaxInvalidPermlinkException,
     WaxProtocolAssertionError,
-    WaxProtocolAssetAssertionError,
     WaxProtocolAuthorityAssertionError,
     WaxProtocolHardforkAssertionError,
     WaxProtocolNumberAssertionError,
@@ -91,7 +92,6 @@ __all__ = [
     "DecimalConversionError",
     "DecimalConversionNegativePrecisionError",
     "DecimalConversionNotANumberError",
-    "DetailedCxxError",
     "HiveAccountCategoryError",
     "HiveMaxAuthorityMembershipExceededError",
     "HiveTempAccountUsedError",
@@ -102,16 +102,18 @@ __all__ = [
     "InvalidOperationFormatError",
     "MissingAuthorityError",
     "ToLongFollowingListError",
-    "UnhandledWaxError",
     "UnknownAssetNaiError",
     "UnknownAssetTypeError",
     # C++ assertion errors — base classes.
     "WaxAssertionError",
-    "WaxBaseAssertionError",
+    # C++ assertion errors — user-facing (named by what went wrong).
+    "WaxInvalidAccountNameException",
+    "WaxInvalidPermlinkException",
+    "WaxInvalidAssetException",
+    "WaxInvalidFeeException",
+    "WaxInsufficientBalanceException",
     # C++ assertion errors — chain category.
     "WaxChainAssertionError",
-    "WaxChainAssetAssertionError",
-    "WaxChainBalanceAssertionError",
     "WaxChainHardforkAssertionError",
     "WaxChainLimitAssertionError",
     "WaxChainPermissionAssertionError",
@@ -124,10 +126,8 @@ __all__ = [
     # Base error for all wax errors.
     "WaxError",
     "WaxImportProtoBeforeCompileError",
-    "WaxProtocolAccountNameAssertionError",
     # C++ assertion errors — protocol category.
     "WaxProtocolAssertionError",
-    "WaxProtocolAssetAssertionError",
     "WaxProtocolAuthorityAssertionError",
     "WaxProtocolHardforkAssertionError",
     "WaxProtocolNumberAssertionError",
@@ -136,4 +136,8 @@ __all__ = [
     "WaxUnhandledAssertionError",
     # Validation-related errors.
     "WaxValidationFailedError",
+    # Deprecated aliases (backward compatibility).
+    "DetailedCxxError",
+    "UnhandledWaxError",
+    "WaxBaseAssertionError",
 ]
