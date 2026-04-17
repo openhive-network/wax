@@ -1,4 +1,5 @@
-"""Public re-exports of exception classes used by test-tools consumers.
+"""
+Public re-exports of exception classes used by test-tools consumers.
 
 Importing from this module shields test code from implementation-layer churn
 (wax, beekeepy, helpy).  Tests should prefer ``from test_tools.exceptions import X``
@@ -14,19 +15,6 @@ from beekeepy.exceptions import (
     ErrorInResponseError,
     FailedToStartExecutableError,
 )
-from wax.exceptions import (
-    WaxAssertionError,
-    WaxCommunicationError,
-    WaxError,
-    WaxInsufficientBalanceError,
-    WaxInvalidAccountNameError,
-    WaxInvalidAssetError,
-    WaxInvalidFeeError,
-    WaxInvalidPermlinkError,
-    WaxUnhandledAssertionError,
-    WaxValidationFailedError,
-)
-from wax.helpy.exceptions import BlockWaitTimeoutError
 
 from test_tools.__private.exceptions import (
     AccountNotExistError,
@@ -50,6 +38,19 @@ from test_tools.__private.exceptions import (
     WalletError,
     WeightOutOfRangeError,
 )
+from wax.exceptions import (
+    WaxAssertionError,
+    WaxCommunicationError,
+    WaxError,
+    WaxInsufficientBalanceError,
+    WaxInvalidAccountNameError,
+    WaxInvalidAssetError,
+    WaxInvalidFeeError,
+    WaxInvalidPermlinkError,
+    WaxUnhandledAssertionError,
+    WaxValidationFailedError,
+)
+from wax.helpy.exceptions import BlockWaitTimeoutError
 
 __all__ = [
     # beekeepy
