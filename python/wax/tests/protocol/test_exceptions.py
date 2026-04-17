@@ -7,9 +7,9 @@ import pytest
 import wax
 from wax.exceptions import (
     WaxAssertionError,
-    WaxProtocolAccountNameAssertionError,
+    WaxInvalidAccountNameException,
+    WaxInvalidAssetException,
     WaxProtocolAssertionError,
-    WaxProtocolAssetAssertionError,
     WaxProtocolNumberAssertionError,
     WaxProtocolStringAssertionError,
 )
@@ -40,15 +40,9 @@ def _op(op_type: str, value: dict) -> str:
 # Hierarchy tests — verify that subclasses are catchable by parent types
 # ---------------------------------------------------------------------------
 
-PROTOCOL_EXCEPTION_GROUP: list[type[WaxAssertionError]] = [
-    WaxAssertionError,
-    WaxProtocolAssertionError,
-]
 
-
-@pytest.mark.parametrize("exception_cls", PROTOCOL_EXCEPTION_GROUP)
-def test_protocol_exception_hierarchy(exception_cls: type[WaxAssertionError]) -> None:
-    """Any protocol assertion should be catchable as both WaxAssertionError and WaxProtocolAssertionError."""
+def test_user_facing_exception_catchable_as_base() -> None:
+    """User-facing exceptions (e.g. WaxInvalidAccountNameException) are catchable as WaxAssertionError."""
     invalid_op = _op(
         "transfer_operation",
         {
@@ -59,8 +53,24 @@ def test_protocol_exception_hierarchy(exception_cls: type[WaxAssertionError]) ->
         },
     )
 
-    with pytest.raises(exception_cls):
+    with pytest.raises(WaxAssertionError):
         wax.validate_operation(invalid_op)
+
+
+def test_protocol_exception_hierarchy() -> None:
+    """Protocol-specific assertions (e.g. number, string) are still catchable as WaxProtocolAssertionError."""
+    op = _op(
+        "vote_operation",
+        {
+            "voter": "initminer",
+            "author": "alpha",
+            "permlink": "test-post",
+            "weight": 10001,
+        },
+    )
+
+    with pytest.raises(WaxProtocolAssertionError):
+        wax.validate_operation(op)
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +93,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -119,8 +129,11 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssertionError):
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             wax.validate_operation(op)
+
+        assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "account_name"
 
     def test_self_delegation(self) -> None:
         """delegate_vesting_shares with delegator == delegatee triggers account_name assertion."""
@@ -133,7 +146,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -153,7 +166,7 @@ class TestProtocolAccountNameAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -179,7 +192,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -197,7 +210,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -215,7 +228,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -233,7 +246,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -250,7 +263,7 @@ class TestProtocolAssetAssertions:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.category == "protocol"
@@ -526,8 +539,9 @@ class TestExceptionDataProperties:
             },
         )
 
-        with pytest.raises(WaxProtocolAssetAssertionError) as exc:
+        with pytest.raises(WaxInvalidAssetException) as exc:
             wax.validate_operation(op)
 
         assert exc.value.subject is not None
         assert exc.value.subject_type == "asset"
+        assert exc.value.asset is not None
