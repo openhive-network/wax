@@ -4,12 +4,12 @@ import pytest
 
 from beekeepy._communication.url import HttpUrl
 from wax._private.api.overseer import WaxAssertionInResponseError, WaxErrorInResponse
-from wax.exceptions.wax_error import (
+from wax.exceptions import (
     WaxAssertionError,
     WaxCommunicationError,
     WaxError,
-    WaxInsufficientBalanceException,
-    WaxInvalidAccountNameException,
+    WaxInsufficientBalanceError,
+    WaxInvalidAccountNameError,
     WaxUnhandledAssertionError,
 )
 from wax.exceptions.wax_specialised_errors import resolve_api_response_error, resolve_exception
@@ -78,7 +78,7 @@ class TestResolveApiResponseError:
 
         result = resolve_api_response_error(response)
 
-        assert isinstance(result, WaxInsufficientBalanceException)
+        assert isinstance(result, WaxInsufficientBalanceError)
         assert result.category == "chain"
         assert result.subject_type == "balance"
 
@@ -88,7 +88,7 @@ class TestResolveApiResponseError:
 
         result = resolve_api_response_error(response)
 
-        assert isinstance(result, WaxInvalidAccountNameException)
+        assert isinstance(result, WaxInvalidAccountNameError)
         assert result.category == "protocol"
 
     def test_returns_unhandled_for_unknown_category(self) -> None:
@@ -172,7 +172,7 @@ class TestResolveExceptionWithDict:
 
         result = resolve_exception(data)
 
-        assert isinstance(result, WaxInsufficientBalanceException)
+        assert isinstance(result, WaxInsufficientBalanceError)
 
     def test_invalid_dict_falls_back_to_wax_error(self) -> None:
         result = resolve_exception({"not": "valid"})
@@ -198,7 +198,7 @@ class TestWaxErrorInResponseRule:
 
         assert len(errors) == 1
         assert isinstance(errors[0], WaxAssertionInResponseError)
-        assert isinstance(errors[0].wax_exception, WaxInsufficientBalanceException)
+        assert isinstance(errors[0].wax_exception, WaxInsufficientBalanceError)
 
     def test_returns_empty_for_non_assertion_error(self) -> None:
         url = _make_url()
