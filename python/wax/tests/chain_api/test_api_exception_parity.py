@@ -5,7 +5,7 @@ This test verifies that when a transaction with an invalid account name is:
 1. Validated locally via C++/Python layer (validate_transaction)
 2. Rejected by hived via the broadcast API
 
-...both paths produce the same WaxProtocolAccountNameAssertionError exception type
+...both paths produce the same WaxInvalidAccountNameException exception type
 with equivalent category, subject_type, and assert_hash.
 """
 
@@ -20,7 +20,7 @@ import pytest
 import wax
 from wax import IHiveChainInterface, validate_transaction
 from wax._private.api.models import ApiTransaction
-from wax.exceptions import WaxAssertionError, WaxProtocolAccountNameAssertionError
+from wax.exceptions import WaxAssertionError, WaxInvalidAccountNameException
 from wax.proto.operations import transfer
 
 HIVE_NAI = "@@000000021"
@@ -54,7 +54,7 @@ class TestCppLayerValidation:
     def test_validate_transaction_rejects_short_account_name(self) -> None:
         tx = _build_invalid_account_transaction()
 
-        with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             validate_transaction(json.dumps(tx))
 
         assert exc.value.category == "protocol"
@@ -74,7 +74,7 @@ class TestCppLayerValidation:
             )
         )
 
-        with pytest.raises(WaxProtocolAccountNameAssertionError) as exc:
+        with pytest.raises(WaxInvalidAccountNameException) as exc:
             tx.validate()
 
         assert exc.value.category == "protocol"
@@ -93,10 +93,10 @@ class TestApiExceptionParity:
         tx_dict = _build_invalid_account_transaction()
         try:
             validate_transaction(json.dumps(tx_dict))
-        except WaxProtocolAccountNameAssertionError as ex:
+        except WaxInvalidAccountNameException as ex:
             cpp_exception = ex
 
-        assert cpp_exception is not None, "C++ layer should raise WaxProtocolAccountNameAssertionError"
+        assert cpp_exception is not None, "C++ layer should raise WaxInvalidAccountNameException"
 
         # --- Path 2: API broadcast ---
         # push_operation validates through C++ and will raise the same exception locally.
@@ -113,10 +113,10 @@ class TestApiExceptionParity:
                 )
             )
             await remote_chain.broadcast(transaction)
-        except WaxProtocolAccountNameAssertionError as ex:
+        except WaxInvalidAccountNameException as ex:
             api_exception = ex
 
-        assert api_exception is not None, "API path should raise WaxProtocolAccountNameAssertionError"
+        assert api_exception is not None, "API path should raise WaxInvalidAccountNameException"
 
         # --- Compare both exceptions ---
         assert type(cpp_exception) is type(api_exception)
@@ -151,7 +151,7 @@ class TestApiExceptionParity:
         cpp_exception: WaxAssertionError | None = None
         try:
             validate_transaction(json.dumps(tx_dict))
-        except WaxProtocolAccountNameAssertionError as ex:
+        except WaxInvalidAccountNameException as ex:
             cpp_exception = ex
 
         assert cpp_exception is not None
@@ -163,12 +163,12 @@ class TestApiExceptionParity:
             await internal_api.network_broadcast_api.broadcast_transaction(
                 trx=ApiTransaction(**tx_dict), max_block_age=-1
             )
-        except WaxProtocolAccountNameAssertionError as ex:
+        except WaxInvalidAccountNameException as ex:
             api_exception = ex
 
         assert api_exception is not None, (
             "Broadcasting a transaction with invalid account name should raise "
-            "WaxProtocolAccountNameAssertionError from the API path"
+            "WaxInvalidAccountNameException from the API path"
         )
 
         # Both paths should produce equivalent exceptions

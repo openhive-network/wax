@@ -6,10 +6,10 @@ from beekeepy._communication.url import HttpUrl
 from wax._private.api.overseer import WaxAssertionInResponseError, WaxErrorInResponse
 from wax.exceptions.wax_error import (
     WaxAssertionError,
-    WaxChainBalanceAssertionError,
     WaxCommunicationError,
     WaxError,
-    WaxProtocolAccountNameAssertionError,
+    WaxInsufficientBalanceException,
+    WaxInvalidAccountNameException,
     WaxUnhandledAssertionError,
 )
 from wax.exceptions.wax_specialised_errors import resolve_api_response_error, resolve_exception
@@ -78,7 +78,7 @@ class TestResolveApiResponseError:
 
         result = resolve_api_response_error(response)
 
-        assert isinstance(result, WaxChainBalanceAssertionError)
+        assert isinstance(result, WaxInsufficientBalanceException)
         assert result.category == "chain"
         assert result.subject_type == "balance"
 
@@ -88,7 +88,7 @@ class TestResolveApiResponseError:
 
         result = resolve_api_response_error(response)
 
-        assert isinstance(result, WaxProtocolAccountNameAssertionError)
+        assert isinstance(result, WaxInvalidAccountNameException)
         assert result.category == "protocol"
 
     def test_returns_unhandled_for_unknown_category(self) -> None:
@@ -172,7 +172,7 @@ class TestResolveExceptionWithDict:
 
         result = resolve_exception(data)
 
-        assert isinstance(result, WaxChainBalanceAssertionError)
+        assert isinstance(result, WaxInsufficientBalanceException)
 
     def test_invalid_dict_falls_back_to_wax_error(self) -> None:
         result = resolve_exception({"not": "valid"})
@@ -198,7 +198,7 @@ class TestWaxErrorInResponseRule:
 
         assert len(errors) == 1
         assert isinstance(errors[0], WaxAssertionInResponseError)
-        assert isinstance(errors[0].wax_exception, WaxChainBalanceAssertionError)
+        assert isinstance(errors[0].wax_exception, WaxInsufficientBalanceException)
 
     def test_returns_empty_for_non_assertion_error(self) -> None:
         url = _make_url()

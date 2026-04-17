@@ -40,7 +40,15 @@ class WaxAssertionError(WaxError):
         return self._raw.category
 
     @property
+    def source(self) -> str:
+        return self._raw.category
+
+    @property
     def subject_type(self) -> str:
+        return self._raw.subject_type
+
+    @property
+    def category_type(self) -> str:
         return self._raw.subject_type
 
     @property
@@ -82,16 +90,8 @@ class WaxProtocolAssertionError(WaxAssertionError):
     """Raised for protocol-level assertion errors (validation of account names, assets, operations, etc.)."""
 
 
-class WaxProtocolAssetAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: asset validation failure."""
-
-
 class WaxProtocolAuthorityAssertionError(WaxProtocolAssertionError):
     """Protocol assertion: authority/permission validation failure."""
-
-
-class WaxProtocolAccountNameAssertionError(WaxProtocolAssertionError):
-    """Protocol assertion: invalid account name."""
 
 
 class WaxProtocolNumberAssertionError(WaxProtocolAssertionError):
@@ -115,14 +115,6 @@ class WaxProtocolUnreachableCodeAssertionError(WaxProtocolAssertionError):
 
 class WaxChainAssertionError(WaxAssertionError):
     """Raised for chain-level assertion errors (evaluator, transaction, block processing, etc.)."""
-
-
-class WaxChainAssetAssertionError(WaxChainAssertionError):
-    """Chain assertion: asset validation failure."""
-
-
-class WaxChainBalanceAssertionError(WaxChainAssertionError):
-    """Chain assertion: insufficient balance."""
 
 
 class WaxChainHardforkAssertionError(WaxChainAssertionError):
@@ -155,3 +147,60 @@ class WaxChainPermissionAssertionError(WaxChainAssertionError):
 
 class WaxChainUnreachableCodeAssertionError(WaxChainAssertionError):
     """Chain assertion: code path that should never execute."""
+
+
+# ---------------------------------------------------------------------------
+# User-facing exception classes — named by *what went wrong*, not by origin.
+# The chain/protocol origin is available via the .source / .category property.
+# ---------------------------------------------------------------------------
+
+
+class WaxInvalidAccountNameException(WaxAssertionError):  # noqa: N818
+    """Raised when an invalid account name is encountered (too short, too long, bad characters, etc.)."""
+
+    @property
+    def account_name(self) -> str | None:
+        """The invalid account name, if available from the assertion data."""
+        return self.subject if isinstance(self.subject, str) else None
+
+
+class WaxInvalidPermlinkException(WaxAssertionError):  # noqa: N818
+    """Raised when an invalid permlink is encountered."""
+
+    @property
+    def permlink(self) -> str | None:
+        """The invalid permlink, if available from the assertion data."""
+        return self.subject if isinstance(self.subject, str) else None
+
+
+class WaxInvalidAssetException(WaxAssertionError):  # noqa: N818
+    """Raised when an invalid asset is encountered (wrong type, zero/negative amount, bad precision, etc.)."""
+
+    @property
+    def asset(self) -> Any | None:  # noqa: ANN401
+        """The invalid asset value, if available from the assertion data."""
+        return self.subject
+
+
+class WaxInvalidFeeException(WaxChainAssertionError):  # noqa: N818
+    """Raised when a fee does not match the required value."""
+
+    @property
+    def fee(self) -> Any | None:  # noqa: ANN401
+        """The invalid fee value, if available from the assertion data."""
+        return self.subject
+
+
+class WaxInsufficientBalanceException(WaxChainAssertionError):  # noqa: N818
+    """Raised when an account has insufficient balance for the requested operation."""
+
+    @property
+    def balance(self) -> Any | None:  # noqa: ANN401
+        """The balance-related asset value from the assertion data."""
+        return self.subject
+
+    @property
+    def account(self) -> str | None:
+        """The account name related to the insufficient balance, if available."""
+        name = self.extras.get("name")
+        return name if isinstance(name, str) else None
