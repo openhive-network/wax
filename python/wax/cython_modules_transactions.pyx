@@ -17,6 +17,7 @@ include "_decorators.pxi"
 
 
 @wax_error_boundary
+@return_python_result
 def serialize_transaction(transaction: str) -> python_result:
     """Serialize a transaction to binary format."""
     tx = json.loads(transaction)
@@ -25,6 +26,7 @@ def serialize_transaction(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def deserialize_transaction(transaction: str) -> python_result:
     """Deserialize a binary transaction to JSON."""
     hTx = _handle_deserialize_transaction(encode_str(transaction))

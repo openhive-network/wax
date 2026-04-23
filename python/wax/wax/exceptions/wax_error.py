@@ -117,12 +117,12 @@ class WaxInsufficientBalanceError(WaxAssertionError):
     """Raised when an account has insufficient balance for the requested operation."""
 
     @property
-    def balance(self) -> Any | None:  # noqa: ANN401
-        """The balance-related asset value from the assertion data."""
+    def available(self) -> Any | None:  # noqa: ANN401
+        """Balance actually available at the time of the assertion."""
         return self.subject
 
     @property
     def account(self) -> str | None:
-        """The account name related to the insufficient balance, if available."""
-        name = self.extras.get("name")
-        return name if isinstance(name, str) else None
+        """Account whose balance was checked, if reported."""
+        account = self.extras.get("account")
+        return account if isinstance(account, str) else None

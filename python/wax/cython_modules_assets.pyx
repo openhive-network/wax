@@ -68,6 +68,7 @@ def get_tapos_data(block_id: str) -> python_ref_block_data:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
     """Calculate when manabar will be fully regenerated."""
     cdef protocol obj
@@ -76,6 +77,7 @@ def calculate_manabar_full_regeneration_time(now: int, max_mana: int, current_ma
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> python_result:
     """Calculate the current manabar value."""
     cdef protocol obj
@@ -84,6 +86,7 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_hp_apr(
     head_block_num: int,
     vesting_reward_percent: int,
@@ -162,6 +165,7 @@ def calculate_witness_votes_hp(votes: int, total_vesting_fund_hive: python_json_
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_inflation_rate_for_block(block_num: int) -> python_result:
     """Calculate inflation rate for a given block number."""
     cdef protocol obj

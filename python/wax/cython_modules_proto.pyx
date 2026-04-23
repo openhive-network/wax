@@ -39,6 +39,7 @@ def proto_transaction_get_impacted_accounts(transaction: str) -> list[str]:
 
 
 @wax_error_boundary
+@return_python_result
 def validate_proto_operation(operation: str) -> python_result:
     """Validate a protobuf operation."""
     op = json.loads(operation)
@@ -47,6 +48,7 @@ def validate_proto_operation(operation: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def validate_proto_transaction(transaction: str) -> python_result:
     """Validate a protobuf transaction."""
     tx = json.loads(transaction)
@@ -55,6 +57,7 @@ def validate_proto_transaction(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_proto_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID from a protobuf transaction."""
     tx = json.loads(transaction)
@@ -63,6 +66,7 @@ def calculate_proto_transaction_id(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate legacy transaction ID from a protobuf transaction."""
     tx = json.loads(transaction)
@@ -71,6 +75,7 @@ def calculate_proto_legacy_transaction_id(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest from a protobuf transaction."""
     tx = json.loads(transaction)
@@ -79,6 +84,7 @@ def calculate_proto_sig_digest(transaction: str, chain_id: str) -> python_result
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate legacy signature digest from a protobuf transaction."""
     tx = json.loads(transaction)
@@ -87,6 +93,7 @@ def calculate_proto_legacy_sig_digest(transaction: str, chain_id: str) -> python
 
 
 @wax_error_boundary
+@return_python_result
 def serialize_proto_transaction(transaction: str) -> python_result:
     """Serialize a protobuf transaction to binary."""
     tx = json.loads(transaction)
@@ -95,6 +102,7 @@ def serialize_proto_transaction(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def deserialize_proto_transaction(transaction: str) -> python_result:
     """Deserialize a binary transaction to protobuf format."""
     hTx = _handle_deserialize_transaction(encode_str(transaction))
@@ -105,6 +113,7 @@ def deserialize_proto_transaction(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def proto_to_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to API format."""
     tx = json.loads(only_tx)
@@ -116,6 +125,7 @@ def proto_to_api(only_tx: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def proto_to_legacy_api(only_tx: str) -> python_result:
     """Convert a protobuf transaction to legacy API format."""
     tx = json.loads(only_tx)
@@ -127,6 +137,7 @@ def proto_to_legacy_api(only_tx: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def api_to_proto(only_tx: str) -> python_result:
     """Convert an API transaction to protobuf format."""
     tx = json.loads(only_tx)

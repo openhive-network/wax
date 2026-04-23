@@ -13,6 +13,7 @@ include "_decorators.pxi"
 
 
 @wax_error_boundary
+@return_python_result
 def generate_private_key() -> python_result:
     """Generate a new random private key."""
     cdef protocol obj
@@ -44,6 +45,7 @@ def suggest_brain_key() -> python_brain_key_data:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_public_key(wif: str) -> python_result:
     """Calculate the public key from a WIF private key."""
     cdef protocol obj
@@ -60,6 +62,7 @@ def convert_wif_public_key_to_raw(wif: str) -> str:
 
 
 @wax_error_boundary
+@return_python_result
 def get_public_key_from_signature(digest: str, signature: str) -> python_result:
     """Recover the public key from a signature and digest."""
     cdef protocol obj

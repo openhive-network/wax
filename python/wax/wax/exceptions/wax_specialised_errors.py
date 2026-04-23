@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 import re
 from functools import wraps
-from typing import TYPE_CHECKING, Any, get_type_hints
+from typing import TYPE_CHECKING, Any
 
 from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.errors import DecodeError
@@ -287,68 +287,18 @@ def resolve_api_response_error(response: dict[str, Any]) -> Exception | None:
 
 
 # ---------------------------------------------------------------------------
-# Helpers used by wax_error_boundary
+# Exception boundary decorator for Cython proxy functions
 # ---------------------------------------------------------------------------
 
 
-def is_python_result_return(func: Callable[..., Any]) -> bool:
-    """
-    Check if the function return type is python_result.
-
-    Uses string matching on type hints because Cython .pyx functions do not
-    fully support ``get_type_hints()`` — the ``python_result`` type may not
-    be importable at annotation-resolution time.  The ``NameError`` suppression
-    handles exactly this case.  Comparing against the type object directly is
-    not feasible here.
-    """
-    with contextlib.suppress(NameError):
-        return "python_result" in str(get_type_hints(func).get("return"))
-    return False
-
-
-def _coerce_to_str(res: Any) -> str:  # noqa: ANN401
-    """Coerce a C++ result value to str for python_result wrapping."""
-    if res is None:
-        return ""
-    if isinstance(res, bytes):
-        return res.decode("utf-8")
-    if isinstance(res, str):
-        return res
-    return str(res)
-
-
 def wax_error_boundary(foo: Callable[..., Any]) -> Callable[..., Any]:
-    """
-    Unified wrapper for Cython proxy functions.
-
-    - Catches exceptions from C++ and raises specialised Wax errors via resolve_exception.
-    - If the wrapped function returns a python_result with failure status, raises specialised
-      Wax error using its exception_message (or content as fallback).
-    """
-    is_python_result = is_python_result_return(foo)
+    """Catch exceptions from the wrapped function and re-raise them as Wax errors."""
 
     @wraps(foo)
     def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        from wax import python_error_code, python_result
-
         try:
-            res = foo(*args, **kwargs)
-            if is_python_result:
-                res = python_result(python_error_code.ok, result=_coerce_to_str(res), exception_message="")
+            return foo(*args, **kwargs)
         except Exception as ex:
-            new_ex = resolve_exception(ex)
-            raise new_ex from ex
-
-        # If function returned python_result, assert success and raise on failure
-        try:
-            if isinstance(res, python_result) and res.status == python_error_code.fail:
-                payload = getattr(res, "exception_message", None)
-                if payload is None or payload in (b"", ""):
-                    payload = getattr(res, "result", None)
-                raise resolve_exception(payload if payload is not None else "") from None
-        except NameError:
-            pass
-
-        return res
+            raise resolve_exception(ex) from ex
 
     return wrapper

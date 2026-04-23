@@ -33,6 +33,7 @@ def transaction_get_impacted_accounts(transaction: str) -> list[str]:
 
 
 @wax_error_boundary
+@return_python_result
 def validate_operation(operation: str) -> python_result:
     """Validate an operation."""
     op = json.loads(operation)
@@ -41,6 +42,7 @@ def validate_operation(operation: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def validate_transaction(transaction: str) -> python_result:
     """Validate a transaction."""
     tx = json.loads(transaction)
@@ -49,6 +51,7 @@ def validate_transaction(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using HF26 serialization."""
     tx = json.loads(transaction)
@@ -57,6 +60,7 @@ def calculate_transaction_id(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_legacy_transaction_id(transaction: str) -> python_result:
     """Calculate transaction ID using legacy serialization."""
     tx = json.loads(transaction)
@@ -65,6 +69,7 @@ def calculate_legacy_transaction_id(transaction: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using HF26 serialization."""
     tx = json.loads(transaction)
@@ -73,6 +78,7 @@ def calculate_sig_digest(transaction: str, chain_id: str) -> python_result:
 
 
 @wax_error_boundary
+@return_python_result
 def calculate_legacy_sig_digest(transaction: str, chain_id: str) -> python_result:
     """Calculate signature digest using legacy serialization."""
     tx = json.loads(transaction)

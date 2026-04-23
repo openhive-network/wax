@@ -51,3 +51,20 @@ def return_python_ref_block_data(foo):
             ref_block_prefix=ref_block_prefix & 0xffffffff  # convert to unsigned
         )
     return wrapper
+
+
+def return_python_result(foo):
+    """Decorator that wraps a raw return value in python_result(ok, result=<str>)."""
+    @wraps(foo)
+    def wrapper(*args, **kwargs):
+        res = foo(*args, **kwargs)
+        if res is None:
+            result_str = ""
+        elif isinstance(res, bytes):
+            result_str = res.decode("utf-8")
+        elif isinstance(res, str):
+            result_str = res
+        else:
+            result_str = str(res)
+        return python_result(python_error_code.ok, result=result_str, exception_message="")
+    return wrapper
