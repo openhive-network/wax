@@ -139,21 +139,34 @@ test.describe('Wax base mock tests', () => {
   });
 
   test('Should be able to correctly handle standard Hived errors', async ({ waxTest }) => {
-    const retVal = await waxTest(async({ chain }) => {
+    const retVal = await waxTest(async({ chain, wax }) => {
       try {
         await chain.api.database_api.find_accounts({ accounts: ["toolargeinputitis"] });
       } catch(error) {
-        // console.error(error);
-
+        if (error instanceof wax.WaxAssertionError) {
+          const assertion = error as WaxAssertionError;
+          return {
+            name: assertion.name,
+            category: assertion.category,
+            rawName: assertion.raw.name,
+            rawMessage: assertion.raw.message,
+            formatted: assertion.message,
+            stackFormat: assertion.raw.stack[0]?.format,
+            stackData: assertion.raw.stack[0]?.data,
+          };
+        }
         return { name: (error as Error).name, message: (error as Error).message };
       }
 
       return {};
     });
 
-    expect(retVal.name).toBe('WaxProtocolAssertionError');
-    expect(retVal.message).toMatch(/"name":"assert_exception","message":"Assert Exception"/);
-    expect(retVal.message).toMatch(/Input too large: `\${in}` \(\${is}\) for fixed size string: \(\${fs}\)","data":{"fs":16,"in":"toolargeinputitis","is":17}}/);
+    expect(retVal.name).toBe('WaxAssertionError');
+    expect(retVal.category).toBe('protocol');
+    expect(retVal.rawName).toBe('assert_exception');
+    expect(retVal.rawMessage).toBe('Assert Exception');
+    expect(retVal.stackFormat).toBe('Input too large: `${in}` (${is}) for fixed size string: (${fs})');
+    expect(retVal.stackData).toStrictEqual({ fs: 16, in: 'toolargeinputitis', is: 17 });
   });
 
   test('Testing assertion during transaction broadcast', async ({ waxTest }) => {
@@ -177,13 +190,11 @@ test.describe('Wax base mock tests', () => {
           const error: object = e as object;
           if(e instanceof wax.WaxAssertionError) {
             const caughtAssertion: WaxAssertionError = error as WaxAssertionError;
-            // To extract assertion expression we need object form of message json.
-            const objectMsg = JSON.parse(caughtAssertion.message);
             return {
               detectedError: {
-                source: "unknown",
-                expression: objectMsg.extension.assertion_expression || "Unknown assertion expression",
-                hash: caughtAssertion.assertionHash
+                source: caughtAssertion.category,
+                expression: caughtAssertion.raw.extension.assertion_expression || "Unknown assertion expression",
+                hash: caughtAssertion.assertHash
               }
             };
           } else {

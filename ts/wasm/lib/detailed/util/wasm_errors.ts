@@ -1,4 +1,5 @@
-import { WaxError, WaxAssertionError, WaxChainAssertionError, WaxProtocolAssertionError, WaxPrivateKeyLeakDetectedException } from "../errors.js";
+import { WaxError, WaxPrivateKeyLeakDetectedException } from "../errors.js";
+import { resolveException } from "../error_resolver.js";
 import type { MainModule } from "../../build_wasm/wax.common"
 import type { IOptionalModuleArgs } from "../../detailed/module_types.js"
 
@@ -17,16 +18,7 @@ export type TCustomExceptionHandlerFunction = (error: TWaxStdExceptionData) => v
 export class WasmManager {
   private mainModule?: MainModuleEmscriptenExtended;
 
-  private throwGivenWaxAssertionError(assertionBody: string, ExceptionClass: new (...args: any[]) => Error) {
-    const assertionObject = JSON.parse(assertionBody);
-    const assertionCode = assertionObject.assert_hash || "Unknown assertion code";
-    const errorInstance = new ExceptionClass(assertionCode, JSON.stringify(assertionObject));
-    throw errorInstance;
-  }
-
   public handleWasmStdException(error: any): never {
-    // console.log(error, typeof error === "object" ? error instanceof (WebAssembly as any).Exception ? "WASM error" : error instanceof WaxError ? "Wax error" : "Unknown error" : "Non-object error");
-
     // If it is an error caused by the JS implementation called from the inside of WASM, just rethrow our high-level, already wrapped error
     if (typeof error === "object" && error instanceof WaxError)
       throw error;
@@ -39,25 +31,22 @@ export class WasmManager {
       errorMessageList = this.mainModule.getExceptionMessage(error)
     } catch {}
 
-    //errorMessageList.forEach(function(item){
-    //  console.log(`Received array item: ${JSON.stringify(item)} of type ${typeof item}`);
-    //});
-    if (errorMessageList !== undefined)
-      switch (errorMessageList[0]) {
+    if (errorMessageList !== undefined) {
+      const [exceptionName, payload] = errorMessageList;
+      switch (exceptionName) {
         case "cpp::wax_chain_assertion":
-          this.throwGivenWaxAssertionError(errorMessageList[1], WaxChainAssertionError);
         case "cpp::wax_protocol_assertion":
-          this.throwGivenWaxAssertionError(errorMessageList[1], WaxProtocolAssertionError);
         case "cpp::wax_api_assertion":
         case "cpp::wax_unknown_assertion":
         case "cpp::wax_assertion":
-          this.throwGivenWaxAssertionError(errorMessageList[1], WaxAssertionError);
+          throw resolveException(payload, exceptionName);
         case "cpp::wax_private_key_leak":
         {
-          const contextMsg = JSON.parse(errorMessageList[1]);
+          const contextMsg = JSON.parse(payload);
           throw new WaxPrivateKeyLeakDetectedException(contextMsg.msg, contextMsg.public_key, contextMsg.account, contextMsg.authority_role);
         }
       }
+    }
 
     //console.log("Non-typed Error during Wasm call...", e);
     let generalMessage = '';
