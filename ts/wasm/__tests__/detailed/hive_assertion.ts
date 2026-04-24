@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
-import type { WaxProtocolAssertionError } from '../../dist/bundle';
+import type { WaxAssertionError } from '../../dist/bundle';
 
 import type { claim_account, operation } from '../../dist/bundle';
 import type { IWasmGlobals, IWaxGlobals } from '../assets/globals';
@@ -19,21 +19,20 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
     catch (e) {
       if(e && typeof e === "object") {
         const error: object = e as object;
-        if(e instanceof wax.WaxProtocolAssertionError) {
-          const caughtAssertion: WaxProtocolAssertionError = error as WaxProtocolAssertionError;
-          // To extract assertion expression we need object form of message json.
-          const objectMsg = JSON.parse(caughtAssertion.message);
-          return {
-            detectedError: {
-              source: "protocol",
-              expression: objectMsg.extension.assertion_expression || "Unknown assertion expression",
-              hash: caughtAssertion.assertionHash
-            }
-          };
-        } else {
-          const errorStr = JSON.stringify(error);
-          return { detectedError: {message: errorStr} };
+        if(e instanceof wax.WaxAssertionError) {
+          const caughtAssertion: WaxAssertionError = error as WaxAssertionError;
+          if (caughtAssertion.category === "protocol") {
+            return {
+              detectedError: {
+                source: caughtAssertion.category,
+                expression: caughtAssertion.raw.extension.assertion_expression || "Unknown assertion expression",
+                hash: caughtAssertion.assertHash
+              }
+            };
+          }
         }
+        const errorStr = JSON.stringify(error);
+        return { detectedError: {message: errorStr} };
       }
 
       throw new Error("Unexpected error type caught: " + e);

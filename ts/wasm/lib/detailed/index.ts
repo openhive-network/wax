@@ -23,3 +23,4 @@ export * from './protocol.js';
 export * from "./visitor.js";
 
 export * from "./errors.js";
+export { CxxExceptionData, IStackContext, IStackFrame, IExtensionData } from "./cxx_exception_data.js";
