@@ -69,14 +69,15 @@ export class CxxExceptionData {
     return this.stack.length > 0 ? this.stack[0].data : {};
   }
 
-  public formattedMessage(): string {
+  public formattedMessage(categoryOverride?: string): string {
     let msg = this.combineMessage();
     if (msg.length === 0)
       msg = `${this.message}: ${this.extension.assertion_expression}`;
 
-    const categoryTitle = this.category.length > 0
-      ? this.category[0].toUpperCase() + this.category.slice(1)
-      : this.category;
+    const category = categoryOverride ?? this.category;
+    const categoryTitle = category.length > 0
+      ? category[0].toUpperCase() + category.slice(1)
+      : category;
     let out = `[${categoryTitle} Error] ${msg}`;
 
     const context = this.stack.length > 0 ? this.stack[0].data.context : undefined;

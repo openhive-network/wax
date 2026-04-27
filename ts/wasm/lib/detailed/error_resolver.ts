@@ -9,7 +9,7 @@ import {
   WaxUnhandledAssertionError,
 } from "./errors.js";
 
-type WaxAssertionConstructor = new (raw: CxxExceptionData) => WaxAssertionError;
+type WaxAssertionConstructor = new (raw: CxxExceptionData, category?: string) => WaxAssertionError;
 
 /**
  * Maps the C++ exception class name (from `getExceptionMessage()` first tuple element)
@@ -65,10 +65,10 @@ export function resolveException(
 
   const specific = SUBJECT_TYPE_MAP.get(`${category}/${subjectType}`);
   if (specific !== undefined)
-    return new specific(data);
+    return new specific(data, category);
 
   if (category === "protocol" || category === "chain")
-    return new WaxAssertionError(data);
+    return new WaxAssertionError(data, category);
 
-  return new WaxUnhandledAssertionError(data);
+  return new WaxUnhandledAssertionError(data, category);
 }

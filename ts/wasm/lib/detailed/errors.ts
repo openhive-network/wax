@@ -30,15 +30,18 @@ export class WaxCommunicationError extends WaxError {
  */
 export class WaxAssertionError extends WaxError {
   public readonly raw: CxxExceptionData;
+  private readonly _category: string;
 
-  constructor(raw: CxxExceptionData) {
-    super(raw.formattedMessage());
+  constructor(raw: CxxExceptionData, category?: string) {
+    const resolvedCategory = category ?? raw.category;
+    super(raw.formattedMessage(resolvedCategory));
     this.raw = raw;
+    this._category = resolvedCategory;
     this.name = "WaxAssertionError";
   }
 
   /** Origin of the assertion: `"protocol"` or `"chain"`. */
-  public get category(): string { return this.raw.category; }
+  public get category(): string { return this._category; }
 
   /** Kind of the value that failed validation (e.g. `"account_name"`, `"asset"`, `"balance"`). */
   public get subjectType(): string { return this.raw.subjectType; }
@@ -55,16 +58,16 @@ export class WaxAssertionError extends WaxError {
 
 /** Raised when an assertion cannot be classified by category or subject type. */
 export class WaxUnhandledAssertionError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxUnhandledAssertionError";
   }
 }
 
 /** Raised when an account name is invalid (too short, too long, bad characters, etc.). */
 export class WaxInvalidAccountNameError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxInvalidAccountNameError";
   }
 
@@ -76,8 +79,8 @@ export class WaxInvalidAccountNameError extends WaxAssertionError {
 
 /** Raised when a permlink is invalid. */
 export class WaxInvalidPermlinkError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxInvalidPermlinkError";
   }
 
@@ -89,8 +92,8 @@ export class WaxInvalidPermlinkError extends WaxAssertionError {
 
 /** Raised when an asset is invalid (wrong type, zero/negative amount, bad precision, etc.). */
 export class WaxInvalidAssetError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxInvalidAssetError";
   }
 
@@ -100,8 +103,8 @@ export class WaxInvalidAssetError extends WaxAssertionError {
 
 /** Raised when a fee does not match the required value. */
 export class WaxInvalidFeeError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxInvalidFeeError";
   }
 
@@ -111,8 +114,8 @@ export class WaxInvalidFeeError extends WaxAssertionError {
 
 /** Raised when an account has insufficient balance for the requested operation. */
 export class WaxInsufficientBalanceError extends WaxAssertionError {
-  constructor(raw: CxxExceptionData) {
-    super(raw);
+  constructor(raw: CxxExceptionData, category?: string) {
+    super(raw, category);
     this.name = "WaxInsufficientBalanceError";
   }
 
