@@ -1,6 +1,8 @@
 ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-2
 FROM $BASE_IMAGE AS base_builder
 
+# bumping change to force image rebuild.
+
 USER hived_admin
 WORKDIR /home/hived_admin
 SHELL ["/bin/bash", "-c"]
