@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
-members = ["proto_builder", "wasm", "api"]
+members = ["proto_builder", "wasm", "api", "wax"]
 resolver = "3"
 
 [dependencies]
