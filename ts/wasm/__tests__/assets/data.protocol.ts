@@ -468,7 +468,7 @@ export const initminerAccountApi = {
   savings_withdraw_requests: 0,
   to_withdraw: 0,
   vesting_shares: "1,000,000.000000 VESTS",
-  vesting_withdraw_rate: "0.000001 VESTS",
+  vesting_withdraw_rate: "0.000000 VESTS",
   voting_manabar: {
     current_mana: 0,
     last_update_time: 0
