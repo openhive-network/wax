@@ -582,13 +582,13 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc12.dev20260317152927"
+version = "1.28.8rc12.dev20260402073300"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc12.dev20260317152927-py3-none-any.whl", hash = "sha256:456dbbd3312fa34835a99ae34e024b5da61f90ef8ea50d61b21a556038a4b7a5"},
+    {file = "hiveio_api-1.28.8rc12.dev20260402073300-py3-none-any.whl", hash = "sha256:ed4b180acf9c8fd90dfbdd3aceec5fbacfcb7ed865de6346250021c4c256518e"},
 ]
 
 [package.dependencies]
@@ -644,7 +644,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "2.0.2.dev20260317172053+dirty"
+version = "0.0.0"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
@@ -653,7 +653,7 @@ files = []
 develop = true
 
 [package.dependencies]
-hiveio-api = "==1.28.8rc12.dev20260317152927"
+hiveio-api = "==1.28.8rc12.dev20260402073300"
 httpx = {version = "^0.28.0", extras = ["http2"]}
 loguru = "^0.7.2"
 protobuf = "^6.33.0"
@@ -1899,4 +1899,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "ed5d36503287d91d539227aa94c672ae475cf3f0a8437d50d3bd4e58a7e22668"
+content-hash = "bd0efe6673b9cd050f0e3124f80a07d27cd578e978429bbfecc62f13d661ef65"
