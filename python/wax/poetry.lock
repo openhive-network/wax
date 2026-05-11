@@ -564,6 +564,7 @@ python-versions = ">=3.10"
 groups = ["docs"]
 files = [
     {file = "griffe-2.0.0-py3-none-any.whl", hash = "sha256:5418081135a391c3e6e757a7f3f156f1a1a746cc7b4023868ff7d5e2f9a980aa"},
+    {file = "griffe-2.0.0.tar.gz", hash = "sha256:c68979cd8395422083a51ea7cf02f9c119d889646d99b7b656ee43725de1b80f"},
 ]
 
 [package.dependencies]
@@ -582,6 +583,7 @@ python-versions = ">=3.10"
 groups = ["docs"]
 files = [
     {file = "griffecli-2.0.0-py3-none-any.whl", hash = "sha256:9f7cd9ee9b21d55e91689358978d2385ae65c22f307a63fb3269acf3f21e643d"},
+    {file = "griffecli-2.0.0.tar.gz", hash = "sha256:312fa5ebb4ce6afc786356e2d0ce85b06c1c20d45abc42d74f0cda65e159f6ef"},
 ]
 
 [package.dependencies]
@@ -597,6 +599,7 @@ python-versions = ">=3.10"
 groups = ["docs"]
 files = [
     {file = "griffelib-2.0.0-py3-none-any.whl", hash = "sha256:01284878c966508b6d6f1dbff9b6fa607bc062d8261c5c7253cb285b06422a7f"},
+    {file = "griffelib-2.0.0.tar.gz", hash = "sha256:e504d637a089f5cab9b5daf18f7645970509bf4f53eda8d79ed71cce8bd97934"},
 ]
 
 [package.extras]
@@ -800,13 +803,13 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc12.dev20260402073300"
+version = "1.28.8rc12.dev20260511173553"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc12.dev20260402073300-py3-none-any.whl", hash = "sha256:ed4b180acf9c8fd90dfbdd3aceec5fbacfcb7ed865de6346250021c4c256518e"},
+    {file = "hiveio_api-1.28.8rc12.dev20260511173553-py3-none-any.whl", hash = "sha256:68873d12d5d1d3323bc943497fbe4770adb1555f1e7a95acc30fd1bec3f224bd"},
 ]
 
 [package.dependencies]
@@ -2551,4 +2554,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "800c421a3130afdb331f663fb2be486f3614ba8c0e307d0cd53dc2ea8d922805"
+content-hash = "63d8c8be1ab96481462caace5bdb181b14a71b0fbe887e3e770d9a26a6b51053"
