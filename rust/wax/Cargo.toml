@@ -3,8 +3,19 @@ name = "wax"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+default = []
+# Enables linking the Rust bridge against the real cpp::foundation in core/.
+# Requires the hive/fc/boost/openssl C++ build to be wired in via build.rs
+# (CMake driven, mirroring python/wax/CMakeLists.txt). When this feature is
+# off, cargo only compiles the Rust managed-object layer and the cxx glue
+# for the extern "Rust" callback surface.
+with_cpp_core = []
+
 [dependencies]
 cxx = "1.0"
+prost = "0.13"
+prost-reflect = "0.16"
 
 [build-dependencies]
 cxx-build = "1.0"

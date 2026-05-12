@@ -25,6 +25,7 @@ fn main() {
 
     let mut config = prost_build::Config::new();
     config.out_dir(&out_dir);
+    config.file_descriptor_set_path(out_dir.join("hive.protocol.buffers.bin"));
     config
         .compile_protos(&protos, &[&proto_src])
         .expect("prost-build failed to compile .proto files");

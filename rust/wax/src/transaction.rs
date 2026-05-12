@@ -1,38 +1,44 @@
+use crate::managed_object::RustManagedObject;
+use crate::proto;
+
 pub struct RustTransaction {
-    block_num: u32,
-    block_prefix: u32,
-    expiration_iso: String,
-    ops: Vec<String>,
+    inner: proto::Transaction,
 }
 
 impl RustTransaction {
     pub fn new(
-        block_num: u32,
-        block_prefix: u32,
-        expiration_iso: impl Into<String>,
-        ops: Vec<String>,
+        ref_block_num: u32,
+        ref_block_prefix: u32,
+        expiration: impl Into<String>,
+        operations: Vec<proto::Operation>,
     ) -> Self {
         Self {
-            block_num,
-            block_prefix,
-            expiration_iso: expiration_iso.into(),
-            ops,
+            inner: proto::Transaction {
+                ref_block_num,
+                ref_block_prefix,
+                expiration: expiration.into(),
+                operations,
+                extensions: Vec::new(),
+                signatures: Vec::new(),
+            },
         }
     }
 
-    pub(crate) fn ref_block_num(&self) -> u32 {
-        self.block_num
+    pub fn from_proto(inner: proto::Transaction) -> Self {
+        Self { inner }
     }
-    pub(crate) fn ref_block_prefix(&self) -> u32 {
-        self.block_prefix
+
+    pub fn proto(&self) -> &proto::Transaction {
+        &self.inner
     }
-    pub(crate) fn expiration(&self) -> String {
-        self.expiration_iso.clone()
+
+    pub fn into_proto(self) -> proto::Transaction {
+        self.inner
     }
-    pub(crate) fn operation_count(&self) -> usize {
-        self.ops.len()
-    }
-    pub(crate) fn operation_at(&self, idx: usize) -> String {
-        self.ops[idx].clone()
+
+    /// Wrap this transaction as a `RustManagedObject` ready to cross the
+    /// cxx bridge into `cpp::rust_protocol::cpp_create_transaction_handle`.
+    pub fn to_managed(&self) -> Box<RustManagedObject> {
+        RustManagedObject::from_transaction(&self.inner)
     }
 }

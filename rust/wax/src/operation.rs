@@ -1,26 +1,32 @@
+use crate::managed_object::RustManagedObject;
+use crate::proto::{self, operation::Value};
+
 pub struct RustOperation {
-    kind: String,
-    fields: Vec<(String, String)>,
+    inner: proto::Operation,
 }
 
 impl RustOperation {
-    pub fn new(kind: impl Into<String>, fields: Vec<(String, String)>) -> Self {
+    pub fn new(value: Value) -> Self {
         Self {
-            kind: kind.into(),
-            fields,
+            inner: proto::Operation { value: Some(value) },
         }
     }
 
-    pub(crate) fn op_type(&self) -> String {
-        self.kind.clone()
+    pub fn from_proto(inner: proto::Operation) -> Self {
+        Self { inner }
     }
-    pub(crate) fn field_count(&self) -> usize {
-        self.fields.len()
+
+    pub fn proto(&self) -> &proto::Operation {
+        &self.inner
     }
-    pub(crate) fn field_key_at(&self, idx: usize) -> String {
-        self.fields[idx].0.clone()
+
+    pub fn into_proto(self) -> proto::Operation {
+        self.inner
     }
-    pub(crate) fn field_value_at(&self, idx: usize) -> String {
-        self.fields[idx].1.clone()
+
+    /// Wrap this operation as a `RustManagedObject` ready to cross the
+    /// cxx bridge into `cpp::rust_protocol::cpp_create_operation_handle`.
+    pub fn to_managed(&self) -> Box<RustManagedObject> {
+        RustManagedObject::from_operation(&self.inner)
     }
 }
