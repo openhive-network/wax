@@ -36,8 +36,6 @@ impl RustTransaction {
         self.inner
     }
 
-    /// Wrap this transaction as a `RustManagedObject` ready to cross the
-    /// cxx bridge into `cpp::rust_protocol::cpp_create_transaction_handle`.
     pub fn to_managed(&self) -> Box<RustManagedObject> {
         RustManagedObject::from_transaction(&self.inner)
     }

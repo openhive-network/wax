@@ -1,28 +1,15 @@
-//! Runtime-typed view of a hive protocol message for the cxx bridge.
-//!
-//! `RustManagedObject` plays the same role for the Rust bridge that
-//! `python_managed_object` plays for the Cython bridge and
-//! `emscripten_managed_object` plays for the WASM bridge: a thin wrapper
-//! around a protobuf-shaped payload that the core/ visitor system can poke
-//! field-by-field via `operator[]("field_name")`, `as<T>()`, etc.
-//!
-//! The Rust side stores a [`prost_reflect::Value`] (which can be a
-//! `DynamicMessage`, list, map, or scalar). The C++ side holds a
-//! `rust::Box<RustManagedObject>` and forwards every method call back into
-//! Rust through cxx callbacks.
-
 use std::sync::OnceLock;
 
 use prost::Message;
-use prost_reflect::{DescriptorPool, DynamicMessage, MapKey, MessageDescriptor, ReflectMessage, Value};
+use prost_reflect::{
+    DescriptorPool, DynamicMessage, MapKey, MessageDescriptor, ReflectMessage, Value,
+};
 
 use crate::proto;
 
 const FILE_DESCRIPTOR_SET: &[u8] =
     include_bytes!("../../protobuf_patterns/hive.protocol.buffers.bin");
 
-/// Process-wide descriptor pool, lazily built from the FileDescriptorSet
-/// emitted by `proto_builder`.
 pub fn descriptor_pool() -> &'static DescriptorPool {
     static POOL: OnceLock<DescriptorPool> = OnceLock::new();
     POOL.get_or_init(|| {
@@ -37,23 +24,15 @@ fn message_descriptor(full_name: &str) -> MessageDescriptor {
         .unwrap_or_else(|| panic!("missing descriptor for {full_name}"))
 }
 
-/// Build a `DynamicMessage` for a typed prost message by round-tripping
-/// through the wire format.
 fn dynamic_from_prost<M: Message>(msg: &M, full_name: &str) -> DynamicMessage {
     let bytes = msg.encode_to_vec();
     DynamicMessage::decode(message_descriptor(full_name), bytes.as_slice())
         .expect("prost message must decode under its own descriptor")
 }
 
-/// Runtime view of a hive protocol payload at one level of nesting.
-///
-/// Mirrors what `python_managed_object` carries: either a message, a list
-/// (repeated field), a map, or a scalar.
+#[derive(Clone)]
 pub struct RustManagedObject {
     value: Value,
-    /// Owning descriptor for the current message, when [`value`] is a
-    /// `Message`. Lets us answer `is_optional_field_present` and walk
-    /// oneofs without consulting the pool again.
     descriptor: Option<MessageDescriptor>,
 }
 
@@ -84,17 +63,15 @@ impl RustManagedObject {
         Self { value, descriptor }
     }
 
-    /// Field access by name. For a message, returns the named field's value
-    /// (or the field's default if it isn't set). For a map keyed by string,
-    /// returns the value at that key. For a list whose key parses as an
-    /// integer, defers to indexed access (mirrors python_managed_object).
     pub fn get_field(&self, key: &str) -> Box<RustManagedObject> {
         match &self.value {
             Value::Message(m) => {
                 let field = m
                     .descriptor()
                     .get_field_by_name(key)
-                    .unwrap_or_else(|| panic!("no field '{key}' on {}", m.descriptor().full_name()));
+                    .unwrap_or_else(|| {
+                        panic!("no field '{key}' on {}", m.descriptor().full_name())
+                    });
                 let value = m.get_field(&field).into_owned();
                 Box::new(Self::from_value(value))
             }
@@ -132,11 +109,6 @@ impl RustManagedObject {
     }
 
     pub fn is_undefined(&self) -> bool {
-        // prost-reflect has no explicit "none" value: messages whose oneof
-        // is unset surface as a Message with no fields populated. Treat
-        // default-everywhere messages as defined; only an explicit empty
-        // string scalar with no descriptor maps to "undefined" via the
-        // python parallel.
         false
     }
 
@@ -144,11 +116,6 @@ impl RustManagedObject {
         matches!(&self.value, Value::String(_))
     }
 
-    /// For a oneof-bearing message (notably `Operation`), return the
-    /// variant name that is currently populated. The `field_name` argument
-    /// is the name of the oneof on the parent message ("value" in the
-    /// hive Operation case). Mirrors python's
-    /// `WhichOneof("value")` and python_managed_object::get_underlying_sv_type.
     pub fn oneof_variant(&self) -> String {
         match &self.value {
             Value::Message(m) => {
@@ -162,22 +129,18 @@ impl RustManagedObject {
                 }
                 String::new()
             }
-            Value::Map(map) => {
-                // python's fallback path: first key of a static-variant map
-                map.keys()
-                    .next()
-                    .map(|k| match k {
-                        MapKey::String(s) => s.clone(),
-                        other => format!("{other:?}"),
-                    })
-                    .unwrap_or_default()
-            }
+            Value::Map(map) => map
+                .keys()
+                .next()
+                .map(|k| match k {
+                    MapKey::String(s) => s.clone(),
+                    other => format!("{other:?}"),
+                })
+                .unwrap_or_default(),
             _ => String::new(),
         }
     }
 
-    /// Names of every key in a string-keyed map. Matches
-    /// python_managed_object::get_map_keys.
     pub fn map_keys(&self) -> Vec<String> {
         match &self.value {
             Value::Map(map) => map
@@ -191,9 +154,6 @@ impl RustManagedObject {
         }
     }
 
-    /// Whether an *optional* field is explicitly present on the underlying
-    /// message. For required/repeated fields this returns true unconditionally
-    /// — matches python_managed_object semantics.
     pub fn is_optional_field_present(&self, name: &str) -> bool {
         match (&self.value, &self.descriptor) {
             (Value::Message(m), Some(_)) => {
@@ -201,7 +161,6 @@ impl RustManagedObject {
                     return false;
                 };
                 if !field.supports_presence() {
-                    // required or repeated: always considered present
                     return true;
                 }
                 m.has_field(&field)
@@ -273,9 +232,9 @@ impl RustManagedObject {
     }
 }
 
-// cxx bridge callback shims. Each takes &RustManagedObject + the args the
-// C++ side has; the C++ rust_managed_object class is a thin forwarder.
-
+pub(crate) fn rmo_clone(obj: &RustManagedObject) -> Box<RustManagedObject> {
+    Box::new(obj.clone())
+}
 pub(crate) fn rmo_get_field(obj: &RustManagedObject, key: &str) -> Box<RustManagedObject> {
     obj.get_field(key)
 }

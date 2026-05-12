@@ -11,11 +11,9 @@ pub use managed_object::{descriptor_pool, RustManagedObject};
 pub use operation::RustOperation;
 pub use transaction::RustTransaction;
 
-// Bring the cxx callback shims into the module that hosts the bridge so
-// cxx::bridge can resolve them without crate paths.
 use managed_object::{
     rmo_array_length, rmo_as_bool, rmo_as_i16, rmo_as_i32, rmo_as_i64, rmo_as_i8, rmo_as_string,
-    rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_get_field, rmo_get_index,
+    rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_clone, rmo_get_field, rmo_get_index,
     rmo_is_optional_field_present, rmo_is_string, rmo_is_undefined, rmo_map_keys,
     rmo_oneof_variant,
 };
@@ -25,9 +23,7 @@ mod ffi {
     extern "Rust" {
         type RustManagedObject;
 
-        // Mirrors the surface python_managed_object / emscripten_managed_object
-        // expose to the core/ visitor system. The C++ `rust_managed_object`
-        // class in inc/rust_managed_object.hpp forwards every call here.
+        fn rmo_clone(obj: &RustManagedObject) -> Box<RustManagedObject>;
         fn rmo_get_field(obj: &RustManagedObject, key: &str) -> Box<RustManagedObject>;
         fn rmo_get_index(obj: &RustManagedObject, idx: usize) -> Box<RustManagedObject>;
         fn rmo_array_length(obj: &RustManagedObject) -> usize;
@@ -49,10 +45,6 @@ mod ffi {
         fn rmo_as_u8(obj: &RustManagedObject) -> u8;
     }
 
-    // The C++ side of the bridge — the real cpp::rust_protocol shim sitting
-    // on top of cpp::foundation from core/ — is gated on `with_cpp_core`.
-    // Without it, the crate compiles to the Rust managed-object layer alone,
-    // which is independently unit-testable.
     #[cfg(feature = "with_cpp_core")]
     unsafe extern "C++" {
         include!("rust_protocol.hpp");
@@ -86,4 +78,4 @@ mod ffi {
 }
 
 #[cfg(feature = "with_cpp_core")]
-pub use ffi::{new_rust_protocol, hive_operation_handle, hive_transaction_handle, rust_protocol};
+pub use ffi::{hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol};

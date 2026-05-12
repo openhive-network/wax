@@ -24,8 +24,6 @@ impl RustOperation {
         self.inner
     }
 
-    /// Wrap this operation as a `RustManagedObject` ready to cross the
-    /// cxx bridge into `cpp::rust_protocol::cpp_create_operation_handle`.
     pub fn to_managed(&self) -> Box<RustManagedObject> {
         RustManagedObject::from_operation(&self.inner)
     }
