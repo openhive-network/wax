@@ -1,7 +1,3 @@
-// These tests exercise the Rust-side managed-object surface — the same
-// surface the cxx callbacks expose to the C++ rust_managed_object class.
-// Whatever the C++ visitor would ask for, we can ask for from Rust here.
-
 use wax::proto::{operation::Value, Asset, Operation, Transfer, Vote};
 use wax::{RustManagedObject, RustOperation, RustTransaction};
 
@@ -136,8 +132,6 @@ fn is_optional_field_present_returns_true_for_required_fields() {
     let op = RustOperation::new(Value::VoteOperation(Vote::default()));
     let mo = op.to_managed();
     let vote = mo.get_field("vote_operation");
-    // All fields on Vote are `required` in the proto, so they're always
-    // considered present regardless of their value.
     assert!(vote.is_optional_field_present("voter"));
     assert!(vote.is_optional_field_present("weight"));
 }
