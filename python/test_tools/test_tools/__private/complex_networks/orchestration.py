@@ -116,18 +116,18 @@ def init_network(  # noqa: C901
     tt.logger.info("Wait 21 blocks (when every witness sign at least one block)")
     init_node.wait_number_of_blocks(21)
 
-    irreversible = init_node.api.wallet_bridge.get_dynamic_global_properties().last_irreversible_block_num
-    head = init_node.api.wallet_bridge.get_dynamic_global_properties().head_block_number
+    irreversible = init_node.api.database.get_dynamic_global_properties().last_irreversible_block_num
+    head = init_node.api.database.get_dynamic_global_properties().head_block_number
     tt.logger.info(f"Network prepared, irreversible block: {irreversible}, head block: {head}")
 
     if desired_blocklog_length is not None:
         while irreversible < desired_blocklog_length:
             init_node.wait_number_of_blocks(1)
-            irreversible = init_node.api.wallet_bridge.get_dynamic_global_properties().last_irreversible_block_num
+            irreversible = init_node.api.database.get_dynamic_global_properties().last_irreversible_block_num
             tt.logger.info(
                 f"Generating block_log of length: {desired_blocklog_length}, "
                 f"current irreversible: {irreversible}, "
-                f"current head block: {init_node.api.wallet_bridge.get_dynamic_global_properties().head_block_number}"
+                f"current head block: {init_node.api.database.get_dynamic_global_properties().head_block_number}"
             )
 
     # If a directory of `block_log` is given then it"s possible to save several files:
@@ -378,9 +378,9 @@ def generate_port_ranges(number_of_nodes: int) -> list[int]:
         port += 1
 
     last_used_port_number = ports[-1]
-    assert (
-        last_used_port_number < 3000 + worker_id * 1000
-    ), f"The pool of available ports for worker {worker_id} has been depleted."
+    assert last_used_port_number < 3000 + worker_id * 1000, (
+        f"The pool of available ports for worker {worker_id} has been depleted."
+    )
     max_port = 65535
     assert last_used_port_number <= max_port, "The maximum value of available ports has been depleted."
     return ports

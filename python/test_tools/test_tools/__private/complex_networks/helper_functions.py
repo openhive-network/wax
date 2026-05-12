@@ -33,7 +33,7 @@ def count_ops_by_type(node: tt.AnyNode, op_type: str, start: int, limit: int = 5
 
 
 def check_account_history_duplicates(node: tt.AnyNode) -> None:
-    last_irreversible_block = node.api.wallet_bridge.get_dynamic_global_properties().last_irreversible_block_num
+    last_irreversible_block = node.api.database.get_dynamic_global_properties().last_irreversible_block_num
     node_reward_operations = count_ops_by_type(node, "producer_reward_operation", last_irreversible_block, limit=50)
     expected_unique_rewards = 50
     assert sum(i == 1 for i in node_reward_operations.values()) == expected_unique_rewards
@@ -136,7 +136,7 @@ def info(msg: str, wallet: tt.OldWallet | tt.Wallet) -> tuple[int, int]:
         current_witness = info["current_witness"]
     else:
         assert wallet.connected_node is not None, "Wallet must be connected to a node"
-        gdpo = wallet.connected_node.api.wallet_bridge.get_dynamic_global_properties()
+        gdpo = wallet.connected_node.api.database.get_dynamic_global_properties()
         hb = gdpo.head_block_number
         lib = gdpo.last_irreversible_block_num
         current_witness = gdpo.current_witness
@@ -280,7 +280,7 @@ def wait_for_specific_witnesses(node: tt.AnyNode, logs: list[NodeLog], witness_n
 def display_info(node: tt.AnyNode) -> None:
     # Network should be set up at this time, with 21 active witnesses, enough participation rate
     # and irreversible block number lagging behind around 15-20 blocks head block number
-    gdpo = node.api.wallet_bridge.get_dynamic_global_properties()
+    gdpo = node.api.database.get_dynamic_global_properties()
     irreversible = gdpo.last_irreversible_block_num
     head = gdpo.head_block_number
     tt.logger.info(f"Network prepared, irreversible block: {irreversible}, head block: {head}")
