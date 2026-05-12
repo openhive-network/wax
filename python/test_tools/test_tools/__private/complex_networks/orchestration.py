@@ -378,9 +378,9 @@ def generate_port_ranges(number_of_nodes: int) -> list[int]:
         port += 1
 
     last_used_port_number = ports[-1]
-    assert last_used_port_number < 3000 + worker_id * 1000, (
-        f"The pool of available ports for worker {worker_id} has been depleted."
-    )
+    assert (
+        last_used_port_number < 3000 + worker_id * 1000
+    ), f"The pool of available ports for worker {worker_id} has been depleted."
     max_port = 65535
     assert last_used_port_number <= max_port, "The maximum value of available ports has been depleted."
     return ports
