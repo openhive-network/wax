@@ -27,7 +27,7 @@ fn main() {
         let mut cmake_cfg = cmake::Config::new(&manifest_dir);
         cmake_cfg
             .build_target("wax_core")
-            .define("CMAKE_BUILD_TYPE", "Release");
+            .profile("Release");
 
         for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR"] {
             if let Ok(v) = std::env::var(var) {
@@ -46,6 +46,9 @@ fn main() {
             "no static archives produced under {}",
             build_dir.display()
         );
+        println!("cargo:rustc-link-arg=-static-libgcc");
+        println!("cargo:rustc-link-arg=-static-libstdc++");
+
         println!("cargo:rustc-link-arg=-Wl,--start-group");
         for a in &archives {
             println!("cargo:rustc-link-arg={}", a.display());
