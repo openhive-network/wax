@@ -7,4 +7,11 @@ edition = "2024"
 members = ["proto_builder", "wasm", "api", "wax"]
 resolver = "3"
 
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+opt-level = "z"
+panic = "abort"
+
 [dependencies]
