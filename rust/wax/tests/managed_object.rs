@@ -1,13 +1,5 @@
-use wax::proto::{operation::Value, Asset, Operation, Transfer, Vote};
-use wax::{RustManagedObject, RustOperation, RustTransaction};
-
-fn hive_asset(amount: &str) -> Asset {
-    Asset {
-        amount: amount.into(),
-        precision: 3,
-        nai: "@@000000021".into(),
-    }
-}
+use wax::proto::{operation::Value, Operation, Transfer, Vote};
+use wax::{RustAsset, RustManagedObject, RustOperation, RustTransaction};
 
 #[test]
 fn descriptor_pool_loads_hive_protocol_buffers() {
@@ -49,7 +41,7 @@ fn transfer_operation_exposes_nested_asset() {
     let op = RustOperation::new(Value::TransferOperation(Transfer {
         from_account: "alice".into(),
         to_account: "bob".into(),
-        amount: hive_asset("100000"),
+        amount: RustAsset::hive(100_000).into_proto(),
         memo: "hello".into(),
     }));
 
