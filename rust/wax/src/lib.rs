@@ -3,10 +3,12 @@ pub mod proto {
     include!("../../protobuf_patterns/hive.protocol.buffers.rs");
 }
 
+mod asset;
 mod managed_object;
 mod operation;
 mod transaction;
 
+pub use asset::RustAsset;
 pub use managed_object::{descriptor_pool, RustManagedObject};
 pub use operation::RustOperation;
 pub use transaction::RustTransaction;

@@ -80,6 +80,7 @@ fn main() {
     build.compile("cpp_rust_bridge");
 
     println!("cargo:rerun-if-changed=src/lib.rs");
+    println!("cargo:rerun-if-changed=src/asset.rs");
     println!("cargo:rerun-if-changed=src/managed_object.rs");
     println!("cargo:rerun-if-changed=src/operation.rs");
     println!("cargo:rerun-if-changed=src/transaction.rs");
