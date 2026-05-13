@@ -6,4 +6,3 @@ edition = "2024"
 [dependencies]
 wax = { path = "../wax" }
 cxx = "1.0"
-

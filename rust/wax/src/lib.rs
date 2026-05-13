@@ -78,5 +78,4 @@ pub mod ffi {
     }
 }
 
-#[cfg(feature = "with_cpp_core")]
 pub use ffi::{hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol};
