@@ -47,7 +47,6 @@ pub mod ffi {
         fn rmo_as_u8(obj: &RustManagedObject) -> u8;
     }
 
-    #[cfg(feature = "with_cpp_core")]
     unsafe extern "C++" {
         include!("rust_protocol.hpp");
         include!("rust_managed_object.hpp");
