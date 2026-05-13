@@ -21,7 +21,7 @@ use managed_object::{
 };
 
 #[cxx::bridge(namespace = "cpp")]
-mod ffi {
+pub mod ffi {
     extern "Rust" {
         type RustManagedObject;
 

@@ -2,7 +2,7 @@ use crate::managed_object::RustManagedObject;
 use crate::proto;
 
 pub struct RustTransaction {
-    inner: proto::Transaction,
+    pub inner: proto::Transaction,
 }
 
 impl RustTransaction {

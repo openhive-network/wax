@@ -2,7 +2,7 @@ use crate::managed_object::RustManagedObject;
 use crate::proto::{self, operation::Value};
 
 pub struct RustOperation {
-    inner: proto::Operation,
+    pub inner: proto::Operation,
 }
 
 impl RustOperation {

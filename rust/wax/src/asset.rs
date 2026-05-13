@@ -9,7 +9,7 @@ const HBD_PRECISION: u32 = 3;
 const VESTS_PRECISION: u32 = 6;
 
 pub struct RustAsset {
-    inner: proto::Asset,
+    pub inner: proto::Asset,
 }
 
 impl RustAsset {
