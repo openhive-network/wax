@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
-members = ["proto_builder", "wasm", "api", "wax"]
+members = ["proto_builder", "wax", "wax_core"]
 resolver = "3"
 
 [profile.release]

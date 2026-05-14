@@ -1,4 +1,4 @@
-use wax::RustAsset;
+use wax_core::RustAsset;
 
 #[test]
 fn hive_satoshis_uses_canonical_nai_and_precision() {

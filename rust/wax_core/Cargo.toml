@@ -1,0 +1,13 @@
+[package]
+name = "wax_core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cxx = "1.0"
+prost = "0.13"
+prost-reflect = "0.16"
+
+[build-dependencies]
+cxx-build = "1.0"
+cmake = "0.1"

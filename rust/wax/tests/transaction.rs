@@ -1,6 +1,6 @@
-use api::RustTransactionApi;
-use wax::proto::{operation::Value, Vote};
-use wax::{RustOperation, RustTransaction};
+use wax::RustTransactionApi;
+use wax_core::proto::{operation::Value, Vote};
+use wax_core::{RustOperation, RustTransaction};
 
 fn vote(voter: &str, weight: u32) -> RustOperation {
     RustOperation::new(Value::VoteOperation(Vote {

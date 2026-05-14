@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rust/cxx.h"
-#include "wax/src/lib.rs.h"
+#include "wax_core/src/lib.rs.h"
 
 #include <cstdint>
 #include <optional>

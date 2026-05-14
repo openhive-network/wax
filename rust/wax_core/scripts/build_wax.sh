@@ -43,7 +43,7 @@ else
     CARGO_FLAGS="--release"
   fi
 
-  cargo build ${CARGO_FLAGS} -p wax --features with_cpp_core
+  cargo build ${CARGO_FLAGS} -p wax_core --features with_cpp_core
 
   echo "Built artifacts under ${WAX_DIR}/rust/target/${WAX_PROFILE}/"
 fi

@@ -1,9 +1,9 @@
-use wax::proto::{operation::Value, Operation, Transfer, Vote};
-use wax::{RustAsset, RustManagedObject, RustOperation, RustTransaction};
+use wax_core::proto::{operation::Value, Operation, Transfer, Vote};
+use wax_core::{RustAsset, RustManagedObject, RustOperation, RustTransaction};
 
 #[test]
 fn descriptor_pool_loads_hive_protocol_buffers() {
-    let pool = wax::descriptor_pool();
+    let pool = wax_core::descriptor_pool();
     assert!(
         pool.get_message_by_name("hive.protocol.buffers.operation")
             .is_some(),

@@ -18,7 +18,7 @@ fn main() {
     let repo_root = manifest_dir
         .ancestors()
         .nth(2)
-        .expect("expected repo root three levels above rust/wax/Cargo.toml")
+        .expect("expected repo root three levels above rust/wax_core/Cargo.toml")
         .to_path_buf();
 
     let mut cmake_cfg = cmake::Config::new(&manifest_dir);

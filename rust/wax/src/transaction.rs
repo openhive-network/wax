@@ -1,42 +1,43 @@
-use crate::managed_object::RustManagedObject;
-use crate::proto;
+use crate::interfaces::RustTransactionApi;
+use crate::protocol::{create_operation_handle, create_transaction_handle, rust_protocol};
+use crate::WaxError;
+use wax_core::{RustOperation, RustTransaction};
 
-pub struct RustTransaction {
-    pub inner: proto::Transaction,
-}
+impl RustTransactionApi for RustTransaction {
+    fn push_operation(mut self, op: RustOperation) -> Self {
+        let op_handle = create_operation_handle(&op);
+        let mut tx_handle = create_transaction_handle(&self);
 
-impl RustTransaction {
-    pub fn new(
-        ref_block_num: u32,
-        ref_block_prefix: u32,
-        expiration: impl Into<String>,
-        operations: Vec<proto::Operation>,
-    ) -> Self {
-        Self {
-            inner: proto::Transaction {
-                ref_block_num,
-                ref_block_prefix,
-                expiration: expiration.into(),
-                operations,
-                extensions: Vec::new(),
-                signatures: Vec::new(),
-            },
-        }
+        rust_protocol()
+            .cpp_tx_add_operation(tx_handle.pin_mut(), &op_handle)
+            .expect("failed to add operation to transaction");
+
+        self.inner.operations.push(op.inner);
+
+        self
     }
 
-    pub fn from_proto(inner: proto::Transaction) -> Self {
-        Self { inner }
+    fn validate(&self) -> Result<(), WaxError> {
+        let tx_handle = create_transaction_handle(self);
+        rust_protocol().cpp_tx_validate(&tx_handle).map_err(WaxError::from)
     }
 
-    pub fn proto(&self) -> &proto::Transaction {
-        &self.inner
+    fn sig_digest(&self, chain_id: &str) -> Result<String, WaxError> {
+        let tx_handle = create_transaction_handle(self);
+        rust_protocol()
+            .cpp_tx_sig_digest(&tx_handle, chain_id)
+            .map_err(WaxError::from)
     }
 
-    pub fn into_proto(self) -> proto::Transaction {
-        self.inner
+    fn id(&self) -> Result<String, WaxError> {
+        let tx_handle = create_transaction_handle(self);
+        rust_protocol().cpp_tx_id(&tx_handle).map_err(WaxError::from)
     }
 
-    pub fn to_managed(&self) -> Box<RustManagedObject> {
-        RustManagedObject::from_transaction(&self.inner)
+    fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError> {
+        let tx_handle = create_transaction_handle(self);
+        rust_protocol()
+            .cpp_tx_to_binary(&tx_handle, strip_to_unsigned)
+            .map_err(WaxError::from)
     }
 }

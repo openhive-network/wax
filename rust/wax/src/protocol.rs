@@ -1,6 +1,6 @@
 use cxx::UniquePtr;
 use std::sync::OnceLock;
-use wax::{ffi, RustOperation, RustTransaction};
+use wax_core::{ffi, RustOperation, RustTransaction};
 
 struct SyncProtocol(UniquePtr<ffi::rust_protocol>);
 unsafe impl Sync for SyncProtocol {}

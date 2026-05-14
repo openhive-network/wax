@@ -1,7 +1,7 @@
 #![cfg(feature = "with_cpp_core")]
 
-use wax::proto::{operation::Value, Operation, Vote};
-use wax::{new_rust_protocol, RustOperation, RustTransaction};
+use wax_core::proto::{operation::Value, Operation, Vote};
+use wax_core::{new_rust_protocol, RustOperation, RustTransaction};
 
 #[test]
 fn new_rust_protocol_returns_non_null_instance() {
