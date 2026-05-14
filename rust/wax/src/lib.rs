@@ -80,6 +80,12 @@ pub mod ffi {
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<()>;
+
+        fn cpp_tx_sig_digest(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            chain_id: &str,
+        ) -> Result<String>;
     }
 }
 

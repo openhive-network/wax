@@ -29,4 +29,14 @@ impl RustTransactionApi for RustTransaction {
 
         rust_protocol().cpp_tx_validate(&tx_handle).map_err(WaxError::from)
     }
+
+    fn sig_digest(&self, chain_id: &str) -> Result<String, WaxError> {
+        let tx_handle = rust_protocol()
+            .cpp_create_transaction_handle(self.to_managed())
+            .expect("failed to create transaction handle");
+
+        rust_protocol()
+            .cpp_tx_sig_digest(&tx_handle, chain_id)
+            .map_err(WaxError::from)
+    }
 }

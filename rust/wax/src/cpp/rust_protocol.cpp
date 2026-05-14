@@ -53,4 +53,11 @@ namespace cpp {
 	void rust_protocol::cpp_tx_validate(const hive_transaction_handle& tx) const {
 		foundation::cpp_tx_validate(tx);
 	}
+
+	::rust::String rust_protocol::cpp_tx_sig_digest(
+		const hive_transaction_handle& tx,
+		::rust::Str chain_id
+	) const {
+		return foundation::cpp_tx_sig_digest(tx, std::string(chain_id), true);
+	}
 }

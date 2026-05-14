@@ -38,6 +38,49 @@ fn validate_passes_for_well_formed_transaction() {
     tx.validate().expect("well-formed transaction should validate");
 }
 
+const MAINNET_CHAIN_ID: &str =
+    "beeab0de00000000000000000000000000000000000000000000000000000000";
+
+#[test]
+fn sig_digest_returns_hex_for_well_formed_transaction() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let digest = tx
+        .sig_digest(MAINNET_CHAIN_ID)
+        .expect("sig_digest should succeed for a valid transaction");
+
+    assert_eq!(digest.len(), 64, "sig digest should be 32-byte hex (64 chars)");
+    assert!(
+        digest.chars().all(|c| c.is_ascii_hexdigit()),
+        "sig digest should be lowercase hex: {digest}"
+    );
+}
+
+#[test]
+fn sig_digest_differs_when_operations_differ() {
+    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+
+    let a = base().push_operation(vote("alice", 10_000));
+    let b = base().push_operation(vote("bob", 10_000));
+
+    let da = a.sig_digest(MAINNET_CHAIN_ID).expect("a digest");
+    let db = b.sig_digest(MAINNET_CHAIN_ID).expect("b digest");
+
+    assert_ne!(da, db, "different operations must produce different digests");
+}
+
+#[test]
+fn sig_digest_fails_for_invalid_chain_id() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    assert!(
+        tx.sig_digest("not-hex").is_err(),
+        "non-hex chain_id should fail"
+    );
+}
+
 #[test]
 fn validate_fails_for_invalid_operation() {
     let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
