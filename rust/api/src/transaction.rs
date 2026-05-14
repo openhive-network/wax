@@ -47,4 +47,14 @@ impl RustTransactionApi for RustTransaction {
 
         rust_protocol().cpp_tx_id(&tx_handle).map_err(WaxError::from)
     }
+
+    fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError> {
+        let tx_handle = rust_protocol()
+            .cpp_create_transaction_handle(self.to_managed())
+            .expect("failed to create transaction handle");
+
+        rust_protocol()
+            .cpp_tx_to_binary(&tx_handle, strip_to_unsigned)
+            .map_err(WaxError::from)
+    }
 }

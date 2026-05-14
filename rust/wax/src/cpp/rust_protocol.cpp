@@ -64,4 +64,11 @@ namespace cpp {
 	::rust::String rust_protocol::cpp_tx_id(const hive_transaction_handle& tx) const {
 		return foundation::cpp_tx_id(tx, true);
 	}
+
+	::rust::String rust_protocol::cpp_tx_to_binary(
+		const hive_transaction_handle& tx,
+		bool strip_to_unsigned_transaction
+	) const {
+		return foundation::cpp_tx_to_binary(tx, true, strip_to_unsigned_transaction);
+	}
 }

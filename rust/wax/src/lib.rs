@@ -91,6 +91,12 @@ pub mod ffi {
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<String>;
+
+        fn cpp_tx_to_binary(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            strip_to_unsigned_transaction: bool,
+        ) -> Result<String>;
     }
 }
 

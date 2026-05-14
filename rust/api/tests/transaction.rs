@@ -122,6 +122,49 @@ fn id_is_independent_of_chain_id() {
 }
 
 #[test]
+fn to_binary_form_returns_hex_for_well_formed_transaction() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let bin = tx
+        .to_binary_form(false)
+        .expect("to_binary_form should succeed for a valid transaction");
+
+    assert!(!bin.is_empty(), "binary form should not be empty");
+    assert_eq!(bin.len() % 2, 0, "hex string should have even length: {bin}");
+    assert!(
+        bin.chars().all(|c| c.is_ascii_hexdigit()),
+        "binary form should be hex: {bin}"
+    );
+}
+
+#[test]
+fn to_binary_form_differs_when_operations_differ() {
+    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+
+    let a = base().push_operation(vote("alice", 10_000)).to_binary_form(false).expect("a bin");
+    let b = base().push_operation(vote("bob", 10_000)).to_binary_form(false).expect("b bin");
+
+    assert_ne!(a, b, "different operations must produce different binary forms");
+}
+
+#[test]
+fn to_binary_form_stripped_is_no_longer_than_full() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let full = tx.to_binary_form(false).expect("full bin");
+    let stripped = tx.to_binary_form(true).expect("stripped bin");
+
+    assert!(
+        stripped.len() <= full.len(),
+        "stripped form (len={}) must not exceed full form (len={})",
+        stripped.len(),
+        full.len()
+    );
+}
+
+#[test]
 fn validate_fails_for_invalid_operation() {
     let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 20_000));
