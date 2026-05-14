@@ -62,6 +62,12 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn impacted_accounts(&self) -> Result<Vec<String>, WaxError> {
+        rust_protocol()
+            .cpp_tx_impacted_accounts(&self.handle)
+            .map_err(WaxError::from)
+    }
+
     fn transaction(&self) -> &proto::Transaction {
         self.proto()
     }

@@ -114,6 +114,11 @@ pub mod ffi {
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<String>;
+
+        fn cpp_tx_impacted_accounts(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+        ) -> Result<Vec<String>>;
     }
 }
 

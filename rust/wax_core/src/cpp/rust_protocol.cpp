@@ -5,6 +5,18 @@
 #include "core/utils.hpp"
 
 namespace cpp {
+	namespace {
+		template <typename T>
+		::rust::Vec<::rust::String> to_rust_string_vec(const std::vector<T>& v) {
+			::rust::Vec<::rust::String> result;
+			result.reserve(v.size());
+			for (const auto& item : v) {
+				result.emplace_back(item);
+			}
+			return result;
+		}
+	}
+
 	std::unique_ptr<rust_protocol>
 	new_rust_protocol() {
 		return std::make_unique<rust_protocol>();
@@ -83,17 +95,16 @@ namespace cpp {
 		const hive_transaction_handle& tx,
 		::rust::Str chain_id
 	) const {
-		auto keys = foundation::cpp_tx_signature_keys(tx, std::string(chain_id), true);
-
-		::rust::Vec<::rust::String> result;
-		result.reserve(keys.size());
-		for (const auto& key : keys) {
-			result.push_back(::rust::String(key));
-		}
-		return result;
+		return to_rust_string_vec(foundation::cpp_tx_signature_keys(tx, std::string(chain_id), true));
 	}
 
 	::rust::String rust_protocol::cpp_tx_to_json(const hive_transaction_handle& tx) const {
 		return foundation::cpp_tx_to_json(tx);
+	}
+
+	::rust::Vec<::rust::String> rust_protocol::cpp_tx_impacted_accounts(
+		const hive_transaction_handle& tx
+	) const {
+		return to_rust_string_vec(foundation::cpp_tx_impacted_accounts(tx));
 	}
 }

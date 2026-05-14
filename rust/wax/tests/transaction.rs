@@ -319,6 +319,43 @@ fn to_api_reflects_added_signatures() {
 }
 
 #[test]
+fn impacted_accounts_is_empty_for_transaction_without_operations() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+
+    let accounts = tx
+        .impacted_accounts()
+        .expect("impacted_accounts should succeed for empty tx");
+
+    assert!(accounts.is_empty(), "tx with no ops must yield no impacted accounts");
+}
+
+#[test]
+fn impacted_accounts_returns_voter_and_author_for_vote() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let accounts = tx.impacted_accounts().expect("impacted_accounts");
+
+    // vote fixture uses author="author"; impacted set is returned sorted.
+    assert_eq!(accounts, vec!["alice".to_string(), "author".to_string()]);
+}
+
+#[test]
+fn impacted_accounts_unions_across_operations() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("zebra", 1))
+        .push_operation(vote("alice", 1));
+
+    let accounts = tx.impacted_accounts().expect("impacted_accounts");
+
+    assert_eq!(
+        accounts,
+        vec!["alice".to_string(), "author".to_string(), "zebra".to_string()],
+        "impacted accounts must be the deduplicated, sorted union across ops"
+    );
+}
+
+#[test]
 fn signature_keys_is_empty_for_unsigned_transaction() {
     let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));

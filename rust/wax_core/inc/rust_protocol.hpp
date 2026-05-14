@@ -54,6 +54,8 @@ namespace cpp {
 		) const;
 
 		::rust::String cpp_tx_to_json(const hive_transaction_handle& tx) const;
+
+		::rust::Vec<::rust::String> cpp_tx_impacted_accounts(const hive_transaction_handle& tx) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();
