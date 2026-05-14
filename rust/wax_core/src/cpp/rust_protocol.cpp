@@ -50,6 +50,13 @@ namespace cpp {
 		foundation::cpp_tx_add_operation(tx, op);
 	}
 
+	void rust_protocol::cpp_tx_add_signature(
+		hive_transaction_handle& tx,
+		::rust::Str signature
+	) const {
+		foundation::cpp_tx_add_signature(tx, std::string(signature));
+	}
+
 	void rust_protocol::cpp_tx_validate(const hive_transaction_handle& tx) const {
 		foundation::cpp_tx_validate(tx);
 	}

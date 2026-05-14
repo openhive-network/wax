@@ -11,6 +11,7 @@ pub use error::WaxError;
 pub use foundation::WaxFoundation;
 pub use interfaces::RustTransactionApi;
 pub use options::{ChainId, WaxChainOptions, WaxOptions};
+pub use protocol::rust_protocol;
 
 pub fn create_wax_foundation(
     options: impl Into<Option<WaxOptions>>,

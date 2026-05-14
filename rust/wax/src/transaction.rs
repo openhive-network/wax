@@ -16,6 +16,16 @@ impl RustTransactionApi for RustTransaction {
         self
     }
 
+    fn add_signature(&mut self, signature: &str) -> Result<(), WaxError> {
+        rust_protocol()
+            .cpp_tx_add_signature(self.handle.pin_mut(), signature)
+            .map_err(WaxError::from)?;
+
+        self.inner.signatures.push(signature.to_string());
+
+        Ok(())
+    }
+
     fn validate(&self) -> Result<(), WaxError> {
         rust_protocol().cpp_tx_validate(&self.handle).map_err(WaxError::from)
     }

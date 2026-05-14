@@ -175,6 +175,78 @@ fn validate_fails_for_invalid_operation() {
     );
 }
 
+// 65-byte (130 hex char) compact ECDSA signature. Contents are not a real
+// signature — cpp_tx_add_signature only hex-decodes the input, it doesn't
+// verify the signature against the digest.
+const FAKE_SIG_A: &str =
+    "1f00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff";
+const FAKE_SIG_B: &str =
+    "20ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa998877665544332211ff";
+
+#[test]
+fn add_signature_appends_to_proto_signatures() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+    assert!(tx.proto().signatures.is_empty());
+
+    tx.add_signature(FAKE_SIG_A).expect("valid hex signature should be accepted");
+
+    assert_eq!(tx.proto().signatures, vec![FAKE_SIG_A.to_string()]);
+}
+
+#[test]
+fn add_signature_accumulates_across_calls() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    tx.add_signature(FAKE_SIG_A).expect("first signature");
+    tx.add_signature(FAKE_SIG_B).expect("second signature");
+
+    assert_eq!(
+        tx.proto().signatures,
+        vec![FAKE_SIG_A.to_string(), FAKE_SIG_B.to_string()]
+    );
+}
+
+#[test]
+fn add_signature_extends_full_binary_form_but_not_stripped() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let full_before = tx.to_binary_form(false).expect("full bin pre-sig");
+    let stripped_before = tx.to_binary_form(true).expect("stripped bin pre-sig");
+
+    tx.add_signature(FAKE_SIG_A).expect("signature should be accepted");
+
+    let full_after = tx.to_binary_form(false).expect("full bin post-sig");
+    let stripped_after = tx.to_binary_form(true).expect("stripped bin post-sig");
+
+    assert!(
+        full_after.len() > full_before.len(),
+        "adding a signature should grow the full binary form ({} -> {})",
+        full_before.len(),
+        full_after.len()
+    );
+    assert_eq!(
+        stripped_before, stripped_after,
+        "stripped binary form must ignore signatures"
+    );
+}
+
+#[test]
+fn add_signature_rejects_non_hex_input() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let result = tx.add_signature("not-a-hex-signature");
+
+    assert!(result.is_err(), "non-hex signature must fail");
+    assert!(
+        tx.proto().signatures.is_empty(),
+        "failed add_signature must not mutate proto state"
+    );
+}
+
 #[test]
 fn push_operation_preserves_order_when_chained() {
     let tx = RustTransaction::new(rust_protocol(), 2, 0xdead_beef, "2026-05-13T12:00:00", Vec::new())

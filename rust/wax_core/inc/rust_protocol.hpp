@@ -29,6 +29,11 @@ namespace cpp {
 			const hive_operation_handle& op
 		) const;
 
+		void cpp_tx_add_signature(
+			hive_transaction_handle& tx,
+			::rust::Str signature
+		) const;
+
 		void cpp_tx_validate(const hive_transaction_handle& tx) const;
 
 		::rust::String cpp_tx_sig_digest(

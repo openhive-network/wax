@@ -76,6 +76,12 @@ pub mod ffi {
             op: &hive_operation_handle,
         ) -> Result<()>;
 
+        fn cpp_tx_add_signature(
+            self: &rust_protocol,
+            tx: Pin<&mut hive_transaction_handle>,
+            signature: &str,
+        ) -> Result<()>;
+
         fn cpp_tx_validate(
             self: &rust_protocol,
             tx: &hive_transaction_handle,
