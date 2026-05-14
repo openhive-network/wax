@@ -34,7 +34,14 @@ fn transaction_handle_accepts_added_operation() {
             weight: 1,
         })),
     }];
-    let tx = RustTransaction::new(42, 0xdead_beef, "2026-05-11T12:00:00", ops);
+    let protocol = new_rust_protocol();
+    let tx = RustTransaction::new(
+        protocol.as_ref().unwrap(),
+        42,
+        0xdead_beef,
+        "2026-05-11T12:00:00",
+        ops,
+    );
     let extra_op = RustOperation::new(Value::VoteOperation(Vote {
         voter: "second".into(),
         author: "a".into(),
@@ -42,7 +49,6 @@ fn transaction_handle_accepts_added_operation() {
         weight: 2,
     }));
 
-    let protocol = new_rust_protocol();
     let mut tx_handle = protocol
         .cpp_create_transaction_handle(tx.to_managed())
         .expect("transaction should ingest cleanly");

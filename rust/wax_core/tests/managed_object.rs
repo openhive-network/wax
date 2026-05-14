@@ -1,5 +1,5 @@
 use wax_core::proto::{operation::Value, Operation, Transfer, Vote};
-use wax_core::{RustAsset, RustManagedObject, RustOperation, RustTransaction};
+use wax_core::{new_rust_protocol, RustAsset, RustManagedObject, RustOperation, RustTransaction};
 
 #[test]
 fn descriptor_pool_loads_hive_protocol_buffers() {
@@ -80,7 +80,14 @@ fn transaction_repeated_operations_are_indexable() {
         },
     ];
 
-    let tx = RustTransaction::new(42, 0xdead_beef, "2026-05-11T12:00:00", ops);
+    let protocol = new_rust_protocol();
+    let tx = RustTransaction::new(
+        protocol.as_ref().unwrap(),
+        42,
+        0xdead_beef,
+        "2026-05-11T12:00:00",
+        ops,
+    );
     let mo = tx.to_managed();
 
     assert_eq!(mo.get_field("ref_block_num").as_u32(), 42);

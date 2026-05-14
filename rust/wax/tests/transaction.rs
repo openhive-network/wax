@@ -1,4 +1,4 @@
-use wax::RustTransactionApi;
+use wax::{rust_protocol, RustTransactionApi};
 use wax_core::proto::{operation::Value, Vote};
 use wax_core::{RustOperation, RustTransaction};
 
@@ -13,7 +13,7 @@ fn vote(voter: &str, weight: u32) -> RustOperation {
 
 #[test]
 fn push_operation_appends_op_to_proto_state() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
     assert!(tx.proto().operations.is_empty());
 
     let tx = tx.push_operation(vote("alice", 10_000));
@@ -32,7 +32,7 @@ fn push_operation_appends_op_to_proto_state() {
 
 #[test]
 fn validate_passes_for_well_formed_transaction() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     tx.validate().expect("well-formed transaction should validate");
@@ -43,7 +43,7 @@ const MAINNET_CHAIN_ID: &str =
 
 #[test]
 fn sig_digest_returns_hex_for_well_formed_transaction() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     let digest = tx
@@ -59,7 +59,7 @@ fn sig_digest_returns_hex_for_well_formed_transaction() {
 
 #[test]
 fn sig_digest_differs_when_operations_differ() {
-    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+    let base = || RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
 
     let a = base().push_operation(vote("alice", 10_000));
     let b = base().push_operation(vote("bob", 10_000));
@@ -72,7 +72,7 @@ fn sig_digest_differs_when_operations_differ() {
 
 #[test]
 fn sig_digest_fails_for_invalid_chain_id() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     assert!(
@@ -83,7 +83,7 @@ fn sig_digest_fails_for_invalid_chain_id() {
 
 #[test]
 fn id_returns_40_char_hex_for_well_formed_transaction() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     let id = tx.id().expect("id should succeed for a valid transaction");
@@ -97,7 +97,7 @@ fn id_returns_40_char_hex_for_well_formed_transaction() {
 
 #[test]
 fn id_differs_when_operations_differ() {
-    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+    let base = || RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
 
     let a = base().push_operation(vote("alice", 10_000)).id().expect("a id");
     let b = base().push_operation(vote("bob", 10_000)).id().expect("b id");
@@ -107,7 +107,7 @@ fn id_differs_when_operations_differ() {
 
 #[test]
 fn id_is_independent_of_chain_id() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     let id_via_self = tx.id().expect("id should succeed");
@@ -123,7 +123,7 @@ fn id_is_independent_of_chain_id() {
 
 #[test]
 fn to_binary_form_returns_hex_for_well_formed_transaction() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     let bin = tx
@@ -140,7 +140,7 @@ fn to_binary_form_returns_hex_for_well_formed_transaction() {
 
 #[test]
 fn to_binary_form_differs_when_operations_differ() {
-    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+    let base = || RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
 
     let a = base().push_operation(vote("alice", 10_000)).to_binary_form(false).expect("a bin");
     let b = base().push_operation(vote("bob", 10_000)).to_binary_form(false).expect("b bin");
@@ -150,7 +150,7 @@ fn to_binary_form_differs_when_operations_differ() {
 
 #[test]
 fn to_binary_form_stripped_is_no_longer_than_full() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));
 
     let full = tx.to_binary_form(false).expect("full bin");
@@ -166,7 +166,7 @@ fn to_binary_form_stripped_is_no_longer_than_full() {
 
 #[test]
 fn validate_fails_for_invalid_operation() {
-    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 20_000));
 
     assert!(
@@ -177,7 +177,7 @@ fn validate_fails_for_invalid_operation() {
 
 #[test]
 fn push_operation_preserves_order_when_chained() {
-    let tx = RustTransaction::new(2, 0xdead_beef, "2026-05-13T12:00:00", Vec::new())
+    let tx = RustTransaction::new(rust_protocol(), 2, 0xdead_beef, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("first", 1))
         .push_operation(vote("second", 2));
 

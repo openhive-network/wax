@@ -1,4 +1,4 @@
-use wax_core::RustOperation;
+use wax_core::{proto, RustOperation};
 
 use crate::WaxError;
 

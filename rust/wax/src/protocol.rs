@@ -1,6 +1,6 @@
 use cxx::UniquePtr;
 use std::sync::OnceLock;
-use wax_core::{ffi, RustOperation, RustTransaction};
+use wax_core::{ffi, RustOperation};
 
 struct SyncProtocol(UniquePtr<ffi::rust_protocol>);
 unsafe impl Sync for SyncProtocol {}
@@ -16,11 +16,6 @@ pub fn rust_protocol() -> &'static ffi::rust_protocol {
         .expect("new_rust_protocol returned null")
 }
 
-pub fn create_transaction_handle(tx: &RustTransaction) -> UniquePtr<ffi::hive_transaction_handle> {
-    rust_protocol()
-        .cpp_create_transaction_handle(tx.to_managed())
-        .expect("failed to create transaction handle")
-}
 
 pub fn create_operation_handle(op: &RustOperation) -> UniquePtr<ffi::hive_operation_handle> {
     rust_protocol()
