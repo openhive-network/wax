@@ -3,13 +3,14 @@ pub use wax_core::proto;
 mod error;
 mod foundation;
 mod interfaces;
+pub mod models;
 mod options;
 mod protocol;
 mod transaction;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
-pub use interfaces::{RequiredAuthorities, Transaction};
+pub use interfaces::{AuthorityDataProvider, Transaction};
 pub use options::{ChainId, WaxChainOptions, WaxOptions};
 pub use protocol::rust_protocol;
 

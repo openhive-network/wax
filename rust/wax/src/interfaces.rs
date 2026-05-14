@@ -1,13 +1,10 @@
 use wax_core::{proto, RustOperation};
 
+use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
 use crate::WaxError;
 
-#[derive(Debug, Clone, Default, PartialEq)]
-pub struct RequiredAuthorities {
-    pub posting_accounts: Vec<String>,
-    pub active_accounts: Vec<String>,
-    pub owner_accounts: Vec<String>,
-    pub other_authorities: Vec<proto::Authority>,
+pub trait AuthorityDataProvider {
+    fn get_account_authorities(&self, account: &str) -> Result<AccountAuthorityInfo, WaxError>;
 }
 
 pub trait Transaction {
@@ -23,4 +20,5 @@ pub trait Transaction {
     fn impacted_accounts(&self) -> Result<Vec<String>, WaxError>;
     fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
+    // TODO: add `sign` method
 }

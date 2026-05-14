@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use crate::interfaces::{RequiredAuthorities, Transaction};
+use crate::interfaces::Transaction;
+use crate::models::authority::RequiredAuthorities;
 use crate::protocol::{create_operation_handle, rust_protocol};
 use crate::WaxError;
 use wax_core::ffi::{RustAuthEntry, RustRequiredAuthorities, RustWaxAuthority};
