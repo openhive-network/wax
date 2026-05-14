@@ -60,4 +60,8 @@ namespace cpp {
 	) const {
 		return foundation::cpp_tx_sig_digest(tx, std::string(chain_id), true);
 	}
+
+	::rust::String rust_protocol::cpp_tx_id(const hive_transaction_handle& tx) const {
+		return foundation::cpp_tx_id(tx, true);
+	}
 }

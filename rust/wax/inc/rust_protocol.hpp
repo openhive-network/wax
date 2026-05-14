@@ -35,6 +35,8 @@ namespace cpp {
 			const hive_transaction_handle& tx,
 			::rust::Str chain_id
 		) const;
+
+		::rust::String cpp_tx_id(const hive_transaction_handle& tx) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

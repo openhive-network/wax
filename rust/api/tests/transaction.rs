@@ -82,6 +82,46 @@ fn sig_digest_fails_for_invalid_chain_id() {
 }
 
 #[test]
+fn id_returns_40_char_hex_for_well_formed_transaction() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let id = tx.id().expect("id should succeed for a valid transaction");
+
+    assert_eq!(id.len(), 40, "tx id should be 20-byte hex (40 chars)");
+    assert!(
+        id.chars().all(|c| c.is_ascii_hexdigit()),
+        "tx id should be hex: {id}"
+    );
+}
+
+#[test]
+fn id_differs_when_operations_differ() {
+    let base = || RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+
+    let a = base().push_operation(vote("alice", 10_000)).id().expect("a id");
+    let b = base().push_operation(vote("bob", 10_000)).id().expect("b id");
+
+    assert_ne!(a, b, "different operations must produce different ids");
+}
+
+#[test]
+fn id_is_independent_of_chain_id() {
+    let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let id_via_self = tx.id().expect("id should succeed");
+    let digest_main = tx.sig_digest(MAINNET_CHAIN_ID).expect("digest should succeed");
+
+    assert_ne!(
+        id_via_self, digest_main,
+        "tx id and sig digest are different hashes and should not collide"
+    );
+    assert_eq!(id_via_self.len(), 40);
+    assert_eq!(digest_main.len(), 64);
+}
+
+#[test]
 fn validate_fails_for_invalid_operation() {
     let tx = RustTransaction::new(1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 20_000));
