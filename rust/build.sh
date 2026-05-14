@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
-
-cd proto_builder
-cargo run
+cargo run -p proto-builder
+cargo build -p wax_core
+cargo build -p wax
