@@ -49,4 +49,8 @@ namespace cpp {
 	) const {
 		foundation::cpp_tx_add_operation(tx, op);
 	}
+
+	void rust_protocol::cpp_tx_validate(const hive_transaction_handle& tx) const {
+		foundation::cpp_tx_validate(tx);
+	}
 }

@@ -75,6 +75,11 @@ pub mod ffi {
             tx: Pin<&mut hive_transaction_handle>,
             op: &hive_operation_handle,
         ) -> Result<()>;
+
+        fn cpp_tx_validate(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+        ) -> Result<()>;
     }
 }
 

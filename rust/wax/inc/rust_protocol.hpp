@@ -28,6 +28,8 @@ namespace cpp {
 			hive_transaction_handle& tx,
 			const hive_operation_handle& op
 		) const;
+
+		void cpp_tx_validate(const hive_transaction_handle& tx) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

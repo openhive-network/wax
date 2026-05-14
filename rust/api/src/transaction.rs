@@ -1,6 +1,7 @@
 use crate::interfaces::RustTransactionApi;
-use wax::{RustOperation, RustTransaction};
 use crate::protocol::rust_protocol;
+use crate::WaxError;
+use wax::{RustOperation, RustTransaction};
 
 impl RustTransactionApi for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
@@ -19,5 +20,13 @@ impl RustTransactionApi for RustTransaction {
         self.inner.operations.push(op.inner);
 
         self
+    }
+
+    fn validate(&self) -> Result<(), WaxError> {
+        let tx_handle = rust_protocol()
+            .cpp_create_transaction_handle(self.to_managed())
+            .expect("failed to create transaction handle");
+
+        rust_protocol().cpp_tx_validate(&tx_handle).map_err(WaxError::from)
     }
 }
