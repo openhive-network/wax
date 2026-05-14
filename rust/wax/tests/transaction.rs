@@ -184,6 +184,35 @@ const FAKE_SIG_B: &str =
     "20ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa998877665544332211ff";
 
 #[test]
+fn is_signed_is_false_for_fresh_transaction() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    assert!(!tx.is_signed(), "transaction with no signatures must not be signed");
+}
+
+#[test]
+fn is_signed_becomes_true_after_add_signature() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+    assert!(!tx.is_signed());
+
+    tx.add_signature(FAKE_SIG_A).expect("signature should be accepted");
+
+    assert!(tx.is_signed(), "transaction must be signed after add_signature");
+}
+
+#[test]
+fn is_signed_stays_false_when_add_signature_fails() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let _ = tx.add_signature("not-a-hex-signature");
+
+    assert!(!tx.is_signed(), "failed add_signature must leave tx unsigned");
+}
+
+#[test]
 fn add_signature_appends_to_proto_signatures() {
     let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));

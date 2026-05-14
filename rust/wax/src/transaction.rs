@@ -26,6 +26,10 @@ impl RustTransactionApi for RustTransaction {
         Ok(())
     }
 
+    fn is_signed(&self) -> bool {
+        !self.inner.signatures.is_empty()
+    }
+
     fn validate(&self) -> Result<(), WaxError> {
         rust_protocol().cpp_tx_validate(&self.handle).map_err(WaxError::from)
     }
