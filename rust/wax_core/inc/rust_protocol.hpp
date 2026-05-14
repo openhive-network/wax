@@ -47,6 +47,11 @@ namespace cpp {
 			const hive_transaction_handle& tx,
 			bool strip_to_unsigned_transaction
 		) const;
+
+		::rust::Vec<::rust::String> cpp_tx_signature_keys(
+			const hive_transaction_handle& tx,
+			::rust::Str chain_id
+		) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

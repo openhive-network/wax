@@ -277,6 +277,43 @@ fn add_signature_rejects_non_hex_input() {
 }
 
 #[test]
+fn signature_keys_is_empty_for_unsigned_transaction() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let keys = tx
+        .signature_keys(MAINNET_CHAIN_ID)
+        .expect("signature_keys should succeed for unsigned tx");
+
+    assert!(keys.is_empty(), "unsigned transaction must yield no signature keys");
+}
+
+#[test]
+fn signature_keys_skips_chain_id_when_unsigned() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    // With no signatures, sig_digest is never computed, so chain_id is not consulted.
+    let keys = tx
+        .signature_keys("not-hex")
+        .expect("signature_keys must not touch chain_id when signatures are empty");
+
+    assert!(keys.is_empty());
+}
+
+#[test]
+fn signature_keys_fails_for_invalid_chain_id_when_signed() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+    tx.add_signature(FAKE_SIG_A).expect("signature accepted");
+
+    assert!(
+        tx.signature_keys("not-hex").is_err(),
+        "non-hex chain_id must fail once signatures are present"
+    );
+}
+
+#[test]
 fn push_operation_preserves_order_when_chained() {
     let tx = RustTransaction::new(rust_protocol(), 2, 0xdead_beef, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("first", 1))

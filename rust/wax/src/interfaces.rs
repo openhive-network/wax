@@ -10,5 +10,6 @@ pub trait Transaction {
     fn sig_digest(&self, chain_id: &str) -> Result<String, WaxError>;
     fn id(&self) -> Result<String, WaxError>;
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError>;
+    fn signature_keys(&self, chain_id: &str) -> Result<Vec<String>, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
 }

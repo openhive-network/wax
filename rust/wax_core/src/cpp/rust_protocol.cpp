@@ -78,4 +78,18 @@ namespace cpp {
 	) const {
 		return foundation::cpp_tx_to_binary(tx, true, strip_to_unsigned_transaction);
 	}
+
+	::rust::Vec<::rust::String> rust_protocol::cpp_tx_signature_keys(
+		const hive_transaction_handle& tx,
+		::rust::Str chain_id
+	) const {
+		auto keys = foundation::cpp_tx_signature_keys(tx, std::string(chain_id), true);
+
+		::rust::Vec<::rust::String> result;
+		result.reserve(keys.size());
+		for (const auto& key : keys) {
+			result.push_back(::rust::String(key));
+		}
+		return result;
+	}
 }

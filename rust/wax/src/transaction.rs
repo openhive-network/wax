@@ -50,6 +50,12 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn signature_keys(&self, chain_id: &str) -> Result<Vec<String>, WaxError> {
+        rust_protocol()
+            .cpp_tx_signature_keys(&self.handle, chain_id)
+            .map_err(WaxError::from)
+    }
+
     fn transaction(&self) -> &proto::Transaction {
         self.proto()
     }

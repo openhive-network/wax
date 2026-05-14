@@ -103,6 +103,12 @@ pub mod ffi {
             tx: &hive_transaction_handle,
             strip_to_unsigned_transaction: bool,
         ) -> Result<String>;
+
+        fn cpp_tx_signature_keys(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            chain_id: &str,
+        ) -> Result<Vec<String>>;
     }
 }
 
