@@ -1,32 +1,18 @@
-const MAINNET_CHAIN_ID: &str =
-    "beeab0de00000000000000000000000000000000000000000000000000000000";
+use crate::models::basic::{ChainId, MAINNET_CHAIN_ID};
 
 const DEFAULT_API_ENDPOINT: &str = "https://api.hive.blog/";
 const DEFAULT_REST_API_ENDPOINT: &str = "https://api.syncad.com";
 const DEFAULT_API_TIMEOUT_MS: u32 = 2_000;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ChainId(String);
-
-impl ChainId {
-    pub fn new(hex: impl Into<String>) -> Self {
-        Self(hex.into())
-    }
-
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-impl Default for ChainId {
-    fn default() -> Self {
-        Self(MAINNET_CHAIN_ID.to_string())
-    }
-}
-
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct WaxOptions {
     pub chain_id: ChainId,
+}
+
+impl Default for WaxOptions {
+    fn default() -> Self {
+        Self { chain_id: MAINNET_CHAIN_ID.to_string() }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -41,7 +27,7 @@ pub struct WaxChainOptions {
 impl Default for WaxChainOptions {
     fn default() -> Self {
         Self {
-            chain_id: ChainId::default(),
+            chain_id: MAINNET_CHAIN_ID.to_string(),
             api_endpoint: DEFAULT_API_ENDPOINT.to_string(),
             rest_api_endpoint: DEFAULT_REST_API_ENDPOINT.to_string(),
             api_timeout_ms: DEFAULT_API_TIMEOUT_MS,

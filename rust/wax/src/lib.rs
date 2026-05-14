@@ -11,7 +11,7 @@ mod transaction;
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
 pub use interfaces::{AuthorityDataProvider, Transaction};
-pub use options::{ChainId, WaxChainOptions, WaxOptions};
+pub use options::{WaxChainOptions, WaxOptions};
 pub use protocol::rust_protocol;
 
 pub fn create_wax_foundation(
