@@ -1,9 +1,9 @@
-use crate::interfaces::RustTransactionApi;
+use crate::interfaces::Transaction;
 use crate::protocol::{create_operation_handle, rust_protocol};
 use crate::WaxError;
 use wax_core::{proto, RustOperation, RustTransaction};
 
-impl RustTransactionApi for RustTransaction {
+impl Transaction for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
         let op_handle = create_operation_handle(&op);
 

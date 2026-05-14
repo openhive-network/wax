@@ -1,4 +1,4 @@
-use wax::{rust_protocol, RustTransactionApi};
+use wax::{rust_protocol, Transaction};
 use wax_core::proto::{operation::Value, Vote};
 use wax_core::{RustOperation, RustTransaction};
 

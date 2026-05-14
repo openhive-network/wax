@@ -9,7 +9,7 @@ mod transaction;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
-pub use interfaces::RustTransactionApi;
+pub use interfaces::Transaction;
 pub use options::{ChainId, WaxChainOptions, WaxOptions};
 pub use protocol::rust_protocol;
 

@@ -2,7 +2,7 @@ use wax_core::{proto, RustOperation};
 
 use crate::WaxError;
 
-pub trait RustTransactionApi {
+pub trait Transaction {
     fn push_operation(self, op: RustOperation) -> Self;
     fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;
     fn is_signed(&self) -> bool;
