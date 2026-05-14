@@ -1,5 +1,3 @@
-#![cfg(feature = "with_cpp_core")]
-
 use wax_core::proto::{operation::Value, Operation, Vote};
 use wax_core::{new_rust_protocol, RustOperation, RustTransaction};
 
