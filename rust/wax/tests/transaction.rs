@@ -277,6 +277,48 @@ fn add_signature_rejects_non_hex_input() {
 }
 
 #[test]
+fn to_api_returns_json_describing_the_transaction() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let json = tx.to_api().expect("to_api should succeed for a valid transaction");
+
+    assert!(json.starts_with('{') && json.ends_with('}'), "expected JSON object: {json}");
+    assert!(json.contains("\"operations\""), "missing operations field: {json}");
+    assert!(json.contains("vote_operation"), "missing op type tag: {json}");
+    assert!(json.contains("\"voter\":\"alice\""), "missing voter field: {json}");
+    assert!(json.contains("\"weight\":10000"), "missing weight field: {json}");
+    assert!(json.contains("\"expiration\":\"2026-05-13T12:00:00\""), "missing expiration: {json}");
+}
+
+#[test]
+fn to_api_reflects_pushed_operations() {
+    let empty_tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+    let voted_tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let before = empty_tx.to_api().expect("empty to_api");
+    let after = voted_tx.to_api().expect("voted to_api");
+
+    assert_ne!(before, after, "pushing an op must change the API JSON output");
+    assert!(!before.contains("vote_operation"));
+    assert!(after.contains("vote_operation"));
+}
+
+#[test]
+fn to_api_reflects_added_signatures() {
+    let mut tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let before = tx.to_api().expect("to_api before sig");
+    tx.add_signature(FAKE_SIG_A).expect("signature accepted");
+    let after = tx.to_api().expect("to_api after sig");
+
+    assert_ne!(before, after, "adding a signature must change the API JSON output");
+    assert!(after.contains(FAKE_SIG_A), "signature hex must appear in API JSON: {after}");
+}
+
+#[test]
 fn signature_keys_is_empty_for_unsigned_transaction() {
     let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
         .push_operation(vote("alice", 10_000));

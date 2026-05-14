@@ -92,4 +92,8 @@ namespace cpp {
 		}
 		return result;
 	}
+
+	::rust::String rust_protocol::cpp_tx_to_json(const hive_transaction_handle& tx) const {
+		return foundation::cpp_tx_to_json(tx);
+	}
 }
