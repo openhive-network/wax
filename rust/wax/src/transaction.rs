@@ -40,4 +40,8 @@ impl RustTransactionApi for RustTransaction {
             .cpp_tx_to_binary(&tx_handle, strip_to_unsigned)
             .map_err(WaxError::from)
     }
+
+    fn transaction(&self) -> &proto::Transaction {
+        self.proto()
+    }
 }
