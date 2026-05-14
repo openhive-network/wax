@@ -1,6 +1,9 @@
-use crate::interfaces::Transaction;
+use std::collections::HashMap;
+
+use crate::interfaces::{RequiredAuthorities, Transaction};
 use crate::protocol::{create_operation_handle, rust_protocol};
 use crate::WaxError;
+use wax_core::ffi::{RustAuthEntry, RustRequiredAuthorities, RustWaxAuthority};
 use wax_core::{proto, RustOperation, RustTransaction};
 
 impl Transaction for RustTransaction {
@@ -68,7 +71,42 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError> {
+        rust_protocol()
+            .cpp_tx_required_authorities(&self.handle)
+            .map(to_required_authorities)
+            .map_err(WaxError::from)
+    }
+
     fn transaction(&self) -> &proto::Transaction {
         self.proto()
+    }
+}
+
+fn auth_entries_to_map(entries: Vec<RustAuthEntry>) -> HashMap<String, u32> {
+    entries
+        .into_iter()
+        .map(|entry| (entry.name, entry.weight))
+        .collect()
+}
+
+fn to_proto_authority(authority: RustWaxAuthority) -> proto::Authority {
+    proto::Authority {
+        weight_threshold: authority.weight_threshold,
+        account_auths: auth_entries_to_map(authority.account_auths),
+        key_auths: auth_entries_to_map(authority.key_auths),
+    }
+}
+
+fn to_required_authorities(ffi: RustRequiredAuthorities) -> RequiredAuthorities {
+    RequiredAuthorities {
+        posting_accounts: ffi.posting_accounts,
+        active_accounts: ffi.active_accounts,
+        owner_accounts: ffi.owner_accounts,
+        other_authorities: ffi
+            .other_authorities
+            .into_iter()
+            .map(to_proto_authority)
+            .collect(),
     }
 }

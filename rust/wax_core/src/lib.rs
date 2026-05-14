@@ -22,6 +22,24 @@ use managed_object::{
 
 #[cxx::bridge(namespace = "cpp")]
 pub mod ffi {
+    pub struct RustAuthEntry {
+        pub name: String,
+        pub weight: u32,
+    }
+
+    pub struct RustWaxAuthority {
+        pub weight_threshold: u32,
+        pub account_auths: Vec<RustAuthEntry>,
+        pub key_auths: Vec<RustAuthEntry>,
+    }
+
+    pub struct RustRequiredAuthorities {
+        pub posting_accounts: Vec<String>,
+        pub active_accounts: Vec<String>,
+        pub owner_accounts: Vec<String>,
+        pub other_authorities: Vec<RustWaxAuthority>,
+    }
+
     extern "Rust" {
         type RustManagedObject;
 
@@ -119,6 +137,11 @@ pub mod ffi {
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<Vec<String>>;
+
+        fn cpp_tx_required_authorities(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+        ) -> Result<RustRequiredAuthorities>;
     }
 }
 

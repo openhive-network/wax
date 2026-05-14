@@ -6,6 +6,8 @@ namespace cpp {
     class rust_protocol;
     class hive_transaction_handle;
     class hive_operation_handle;
+
+    struct RustRequiredAuthorities;
 }
 
 #include "rust_managed_object.hpp"
@@ -56,6 +58,8 @@ namespace cpp {
 		::rust::String cpp_tx_to_json(const hive_transaction_handle& tx) const;
 
 		::rust::Vec<::rust::String> cpp_tx_impacted_accounts(const hive_transaction_handle& tx) const;
+
+		RustRequiredAuthorities cpp_tx_required_authorities(const hive_transaction_handle& tx) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

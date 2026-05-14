@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use wax::{rust_protocol, Transaction};
-use wax_core::proto::{operation::Value, Vote};
+use wax_core::proto::{operation::Value, AccountWitnessProxy, Authority, RecoverAccount, Vote};
 use wax_core::{RustOperation, RustTransaction};
 
 fn vote(voter: &str, weight: u32) -> RustOperation {
@@ -8,6 +10,30 @@ fn vote(voter: &str, weight: u32) -> RustOperation {
         author: "author".into(),
         permlink: "permlink".into(),
         weight,
+    }))
+}
+
+fn account_witness_proxy(account: &str, proxy: &str) -> RustOperation {
+    RustOperation::new(Value::AccountWitnessProxyOperation(AccountWitnessProxy {
+        account: account.into(),
+        proxy: proxy.into(),
+    }))
+}
+
+fn authority_with_key(public_key: &str) -> Authority {
+    Authority {
+        weight_threshold: 1,
+        account_auths: HashMap::new(),
+        key_auths: HashMap::from([(public_key.to_string(), 1)]),
+    }
+}
+
+fn recover_account(account: &str, new_owner_key: &str, recent_owner_key: &str) -> RustOperation {
+    RustOperation::new(Value::RecoverAccountOperation(RecoverAccount {
+        account_to_recover: account.into(),
+        new_owner_authority: authority_with_key(new_owner_key),
+        recent_owner_authority: authority_with_key(recent_owner_key),
+        extensions: Vec::new(),
     }))
 }
 
@@ -316,6 +342,74 @@ fn to_api_reflects_added_signatures() {
 
     assert_ne!(before, after, "adding a signature must change the API JSON output");
     assert!(after.contains(FAKE_SIG_A), "signature hex must appear in API JSON: {after}");
+}
+
+#[test]
+fn required_authorities_is_empty_for_transaction_without_operations() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new());
+
+    let auths = tx.required_authorities().expect("required_authorities");
+
+    assert!(auths.posting_accounts.is_empty());
+    assert!(auths.active_accounts.is_empty());
+    assert!(auths.owner_accounts.is_empty());
+    assert!(auths.other_authorities.is_empty());
+}
+
+#[test]
+fn required_authorities_collects_posting_for_vote() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(vote("alice", 10_000));
+
+    let auths = tx.required_authorities().expect("required_authorities");
+
+    assert_eq!(auths.posting_accounts, vec!["alice".to_string()]);
+    assert!(auths.active_accounts.is_empty());
+    assert!(auths.owner_accounts.is_empty());
+    assert!(auths.other_authorities.is_empty());
+}
+
+#[test]
+fn required_authorities_collects_active_for_account_witness_proxy() {
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(account_witness_proxy("alice", "bob"));
+
+    let auths = tx.required_authorities().expect("required_authorities");
+
+    assert_eq!(auths.active_accounts, vec!["alice".to_string()]);
+    assert!(auths.posting_accounts.is_empty());
+    assert!(auths.owner_accounts.is_empty());
+    assert!(auths.other_authorities.is_empty());
+}
+
+#[test]
+fn required_authorities_collects_other_for_recover_account() {
+    const NEW_OWNER: &str = "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW";
+    const RECENT_OWNER: &str = "STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s";
+
+    let tx = RustTransaction::new(rust_protocol(), 1, 0xfeed_face, "2026-05-13T12:00:00", Vec::new())
+        .push_operation(recover_account("alice", NEW_OWNER, RECENT_OWNER));
+
+    let auths = tx.required_authorities().expect("required_authorities");
+
+    assert!(auths.posting_accounts.is_empty());
+    assert!(auths.active_accounts.is_empty());
+    assert!(auths.owner_accounts.is_empty());
+    assert_eq!(auths.other_authorities.len(), 2);
+
+    assert_eq!(auths.other_authorities[0].weight_threshold, 1);
+    assert_eq!(
+        auths.other_authorities[0].key_auths,
+        HashMap::from([(NEW_OWNER.to_string(), 1)])
+    );
+    assert!(auths.other_authorities[0].account_auths.is_empty());
+
+    assert_eq!(auths.other_authorities[1].weight_threshold, 1);
+    assert_eq!(
+        auths.other_authorities[1].key_auths,
+        HashMap::from([(RECENT_OWNER.to_string(), 1)])
+    );
+    assert!(auths.other_authorities[1].account_auths.is_empty());
 }
 
 #[test]

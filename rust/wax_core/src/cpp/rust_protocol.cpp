@@ -1,4 +1,5 @@
 #include "rust_protocol.hpp"
+#include "wax_core/src/lib.rs.h"
 
 #include "core/val_protocol.hpp"
 #include "core/proto_converter.hpp"
@@ -14,6 +15,26 @@ namespace cpp {
 				result.emplace_back(item);
 			}
 			return result;
+		}
+
+		RustWaxAuthority to_rust_wax_authority(const wax_authority& a) {
+			::rust::Vec<RustAuthEntry> account_auths;
+			account_auths.reserve(a.account_auths.size());
+			for (const auto& [name, weight] : a.account_auths) {
+				account_auths.push_back(RustAuthEntry{ ::rust::String(name), static_cast<uint32_t>(weight) });
+			}
+
+			::rust::Vec<RustAuthEntry> key_auths;
+			key_auths.reserve(a.key_auths.size());
+			for (const auto& [name, weight] : a.key_auths) {
+				key_auths.push_back(RustAuthEntry{ ::rust::String(name), static_cast<uint32_t>(weight) });
+			}
+
+			return RustWaxAuthority{
+				a.weight_threshold,
+				std::move(account_auths),
+				std::move(key_auths),
+			};
 		}
 	}
 
@@ -106,5 +127,24 @@ namespace cpp {
 		const hive_transaction_handle& tx
 	) const {
 		return to_rust_string_vec(foundation::cpp_tx_impacted_accounts(tx));
+	}
+
+	RustRequiredAuthorities rust_protocol::cpp_tx_required_authorities(
+		const hive_transaction_handle& tx
+	) const {
+		auto required = foundation::cpp_tx_required_authorities(tx);
+
+		::rust::Vec<RustWaxAuthority> other_authorities;
+		other_authorities.reserve(required.other_authorities.size());
+		for (const auto& authority : required.other_authorities) {
+			other_authorities.push_back(to_rust_wax_authority(authority));
+		}
+
+		return RustRequiredAuthorities{
+			to_rust_string_vec(required.posting_accounts),
+			to_rust_string_vec(required.active_accounts),
+			to_rust_string_vec(required.owner_accounts),
+			std::move(other_authorities),
+		};
 	}
 }
