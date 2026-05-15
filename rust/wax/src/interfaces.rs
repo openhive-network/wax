@@ -20,6 +20,10 @@ pub trait Transaction {
     fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
     fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
+    fn collect_signing_keys(
+        &self,
+        provider: &dyn AuthorityDataProvider,
+    ) -> Result<Vec<PublicKey>, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
     // TODO: add `sign` method
 }

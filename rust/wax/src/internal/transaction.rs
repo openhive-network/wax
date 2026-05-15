@@ -4,7 +4,8 @@ use wax_core::ffi::{RustAuthEntry, RustRequiredAuthorities, RustWaxAuthority};
 use wax_core::{proto, RustOperation, RustTransaction};
 
 use crate::WaxError;
-use crate::interfaces::Transaction;
+use crate::interfaces::{AuthorityDataProvider, Transaction};
+use crate::internal::authority::build_provider;
 use crate::internal::protocol::{create_operation_handle, rust_protocol};
 use crate::models::authority::RequiredAuthorities;
 
@@ -77,6 +78,16 @@ impl Transaction for RustTransaction {
         rust_protocol()
             .cpp_tx_required_authorities(&self.handle)
             .map(to_required_authorities)
+            .map_err(WaxError::from)
+    }
+
+    fn collect_signing_keys(
+        &self,
+        provider: &dyn AuthorityDataProvider,
+    ) -> Result<Vec<String>, WaxError> {
+        let core_provider = build_provider(provider);
+        rust_protocol()
+            .cpp_tx_collect_signing_keys(&self.handle, &core_provider)
             .map_err(WaxError::from)
     }
 
