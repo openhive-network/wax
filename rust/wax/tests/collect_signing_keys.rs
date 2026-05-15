@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use cxx::UniquePtr;
+use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
 use wax::{AuthorityDataProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
@@ -24,9 +25,6 @@ fn test_protocol() -> &'static rust_protocol {
         .as_ref()
         .expect("new_rust_protocol returned null")
 }
-
-const MAINNET_CHAIN_ID: &str =
-    "beeab0de00000000000000000000000000000000000000000000000000000000";
 
 // Real Hive public keys lifted from canonical wax fixtures
 // (python/wax/tests/wax-local-tools/wax_local_tools/consts.py). They must be

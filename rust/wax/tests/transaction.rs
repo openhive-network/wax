@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use cxx::UniquePtr;
+use wax::constants::MAINNET_CHAIN_ID;
 use wax::Transaction;
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
 use wax_core::proto::{operation::Value, AccountWitnessProxy, Authority, RecoverAccount, Vote};
@@ -23,9 +24,6 @@ fn test_protocol() -> &'static rust_protocol {
         .as_ref()
         .expect("new_rust_protocol returned null")
 }
-
-const MAINNET_CHAIN_ID: &str =
-    "beeab0de00000000000000000000000000000000000000000000000000000000";
 
 // Canonical mainnet transaction shell used by most tests. Block data and
 // expiration are arbitrary fixed values — tests that care about those build

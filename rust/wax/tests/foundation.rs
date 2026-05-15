@@ -4,6 +4,7 @@
 // wax-level types), not exhaustive C++ behavior — that lives next to
 // `wax_core`.
 
+use wax::constants::MAINNET_CHAIN_ID;
 use wax::result::JsonAsset;
 use wax::{create_wax_foundation, WaxFoundation};
 
@@ -128,7 +129,7 @@ fn deserialize_transaction_round_trips_through_binary() {
     // back through deserialize_transaction.
     let tx = RustTransaction::new(
         protocol,
-        "beeab0de00000000000000000000000000000000000000000000000000000000",
+        MAINNET_CHAIN_ID,
         1,
         0xfeed_face,
         "2026-05-15T12:00:00",
@@ -182,7 +183,7 @@ fn set_expiration_updates_both_handle_and_proto_state() {
 
     let mut tx = RustTransaction::new(
         protocol,
-        "beeab0de00000000000000000000000000000000000000000000000000000000",
+        MAINNET_CHAIN_ID,
         1,
         0xfeed_face,
         "2026-05-15T12:00:00",

@@ -1,8 +1,7 @@
-use crate::models::basic::{ChainId, MAINNET_CHAIN_ID};
-
-const DEFAULT_API_ENDPOINT: &str = "https://api.hive.blog/";
-const DEFAULT_REST_API_ENDPOINT: &str = "https://api.syncad.com";
-const DEFAULT_API_TIMEOUT_MS: u32 = 2_000;
+use crate::constants::{
+    DEFAULT_API_ENDPOINT, DEFAULT_API_TIMEOUT_MS, DEFAULT_CHAIN_ID, DEFAULT_REST_API_ENDPOINT,
+};
+use crate::models::basic::ChainId;
 
 #[derive(Debug, Clone)]
 pub struct WaxOptions {
@@ -11,7 +10,7 @@ pub struct WaxOptions {
 
 impl Default for WaxOptions {
     fn default() -> Self {
-        Self { chain_id: MAINNET_CHAIN_ID.to_string() }
+        Self { chain_id: DEFAULT_CHAIN_ID.to_string() }
     }
 }
 
@@ -27,7 +26,7 @@ pub struct WaxChainOptions {
 impl Default for WaxChainOptions {
     fn default() -> Self {
         Self {
-            chain_id: MAINNET_CHAIN_ID.to_string(),
+            chain_id: DEFAULT_CHAIN_ID.to_string(),
             api_endpoint: DEFAULT_API_ENDPOINT.to_string(),
             rest_api_endpoint: DEFAULT_REST_API_ENDPOINT.to_string(),
             api_timeout_ms: DEFAULT_API_TIMEOUT_MS,
