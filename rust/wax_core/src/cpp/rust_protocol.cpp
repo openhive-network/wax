@@ -36,6 +36,43 @@ namespace cpp {
 				std::move(key_auths),
 			};
 		}
+
+		wax_authority from_rust_wax_authority(const RustWaxAuthority& a) {
+			wax_authority out;
+			out.weight_threshold = a.weight_threshold;
+			for (const auto& e : a.account_auths) {
+				out.account_auths.emplace(std::string(e.name), static_cast<uint16_t>(e.weight));
+			}
+			for (const auto& e : a.key_auths) {
+				out.key_auths.emplace(std::string(e.name), static_cast<uint16_t>(e.weight));
+			}
+			return out;
+		}
+
+		wax_authorities_map_t rust_retrieve_authorities_trampoline(
+			std::vector<std::string> accounts,
+			void* ctx
+		) {
+			const auto* provider = static_cast<const RustAuthorityProvider*>(ctx);
+
+			::rust::Vec<::rust::String> rust_accounts;
+			rust_accounts.reserve(accounts.size());
+			for (const auto& a : accounts) {
+				rust_accounts.emplace_back(a);
+			}
+
+			auto results = rap_get_authorities(*provider, std::move(rust_accounts));
+
+			wax_authorities_map_t out;
+			for (const auto& entry : results) {
+				wax_authorities wa;
+				wa.owner   = from_rust_wax_authority(entry.authorities.owner);
+				wa.active  = from_rust_wax_authority(entry.authorities.active);
+				wa.posting = from_rust_wax_authority(entry.authorities.posting);
+				out.emplace(std::string(entry.account), std::move(wa));
+			}
+			return out;
+		}
 	}
 
 	std::unique_ptr<rust_protocol>
@@ -146,5 +183,16 @@ namespace cpp {
 			to_rust_string_vec(required.owner_accounts),
 			std::move(other_authorities),
 		};
+	}
+
+	::rust::Vec<::rust::String> rust_protocol::cpp_tx_collect_signing_keys(
+		const hive_transaction_handle& tx,
+		const RustAuthorityProvider& provider
+	) const {
+		return to_rust_string_vec(foundation::cpp_collect_signing_keys(
+			tx,
+			&rust_retrieve_authorities_trampoline,
+			const_cast<RustAuthorityProvider*>(&provider)
+		));
 	}
 }

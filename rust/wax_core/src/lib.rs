@@ -4,15 +4,18 @@ pub mod proto {
 }
 
 mod asset;
+mod authority_provider;
 mod managed_object;
 mod operation;
 mod transaction;
 
 pub use asset::RustAsset;
+pub use authority_provider::{AuthorityProvider, RustAuthorityProvider};
 pub use managed_object::{descriptor_pool, RustManagedObject};
 pub use operation::RustOperation;
 pub use transaction::RustTransaction;
 
+use authority_provider::{rap_get_authorities, rap_get_witness_public_key};
 use managed_object::{
     rmo_array_length, rmo_as_bool, rmo_as_i16, rmo_as_i32, rmo_as_i64, rmo_as_i8, rmo_as_string,
     rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_clone, rmo_get_field, rmo_get_index,
@@ -40,9 +43,30 @@ pub mod ffi {
         pub other_authorities: Vec<RustWaxAuthority>,
     }
 
+    pub struct RustWaxAuthorities {
+        pub owner: RustWaxAuthority,
+        pub active: RustWaxAuthority,
+        pub posting: RustWaxAuthority,
+    }
+
+    pub struct RustAccountAuthorities {
+        pub account: String,
+        pub authorities: RustWaxAuthorities,
+    }
+
     extern "Rust" {
         type RustManagedObject;
+        type RustAuthorityProvider;
 
+        fn rap_get_authorities(
+            provider: &RustAuthorityProvider,
+            accounts: Vec<String>,
+        ) -> Vec<RustAccountAuthorities>;
+        fn rap_get_witness_public_key(provider: &RustAuthorityProvider, witness: String)
+            -> String;
+    }
+
+    extern "Rust" {
         fn rmo_clone(obj: &RustManagedObject) -> Box<RustManagedObject>;
         fn rmo_get_field(obj: &RustManagedObject, key: &str) -> Box<RustManagedObject>;
         fn rmo_get_index(obj: &RustManagedObject, idx: usize) -> Box<RustManagedObject>;
@@ -142,6 +166,12 @@ pub mod ffi {
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<RustRequiredAuthorities>;
+
+        fn cpp_tx_collect_signing_keys(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            provider: &RustAuthorityProvider,
+        ) -> Result<Vec<String>>;
     }
 }
 
