@@ -1,4 +1,7 @@
+use rust_decimal::Decimal;
 use wax_core::proto;
+
+pub use crate::internal::models::asset::{Asset, NaiAssetFactory};
 
 pub type NaiAsset = proto::Asset;
 
@@ -6,6 +9,31 @@ pub type NaiAsset = proto::Asset;
 pub enum AssetAmount {
     Int(i64),
     Float(f64),
+    Decimal(Decimal),
+}
+
+impl From<i64> for AssetAmount {
+    fn from(value: i64) -> Self {
+        Self::Int(value)
+    }
+}
+
+impl From<i32> for AssetAmount {
+    fn from(value: i32) -> Self {
+        Self::Int(value.into())
+    }
+}
+
+impl From<f64> for AssetAmount {
+    fn from(value: f64) -> Self {
+        Self::Float(value)
+    }
+}
+
+impl From<Decimal> for AssetAmount {
+    fn from(value: Decimal) -> Self {
+        Self::Decimal(value)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -43,6 +71,6 @@ pub struct AssetInfo {
 }
 
 pub trait AssetFactory {
-    fn coins(amount: AssetAmount) -> NaiAsset;
-    fn satoshis(amount: i64) -> NaiAsset;
+    fn coins(&self, amount: AssetAmount) -> Result<NaiAsset, crate::WaxError>;
+    fn satoshis(&self, amount: i64) -> Result<NaiAsset, crate::WaxError>;
 }

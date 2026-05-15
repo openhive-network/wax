@@ -7,4 +7,5 @@ edition = "2024"
 wax_core = { path = "../wax_core" }
 cxx = "1.0"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+rust_decimal = { version = "1", default-features = false, features = ["std"] }
 thiserror = "2"
