@@ -1,8 +1,28 @@
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
-use wax::{rust_protocol, Transaction};
+use cxx::UniquePtr;
+use wax::Transaction;
+use wax_core::ffi::{new_rust_protocol, rust_protocol};
 use wax_core::proto::{operation::Value, AccountWitnessProxy, Authority, RecoverAccount, Vote};
 use wax_core::{RustOperation, RustTransaction};
+
+// Test-local replica of wax's internal protocol singleton. `rust_protocol` is
+// no longer re-exported from `wax`; tests bootstrap their own instance via the
+// (stateless) `wax_core::ffi::new_rust_protocol()` factory.
+struct SyncProtocol(UniquePtr<rust_protocol>);
+unsafe impl Sync for SyncProtocol {}
+unsafe impl Send for SyncProtocol {}
+
+static TEST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
+
+fn test_protocol() -> &'static rust_protocol {
+    TEST_PROTOCOL
+        .get_or_init(|| SyncProtocol(new_rust_protocol()))
+        .0
+        .as_ref()
+        .expect("new_rust_protocol returned null")
+}
 
 const MAINNET_CHAIN_ID: &str =
     "beeab0de00000000000000000000000000000000000000000000000000000000";
@@ -16,7 +36,7 @@ fn mainnet_tx() -> RustTransaction {
 
 fn tx_with_chain_id(chain_id: &str) -> RustTransaction {
     RustTransaction::new(
-        rust_protocol(),
+        test_protocol(),
         chain_id,
         1,
         0xfeed_face,
@@ -477,7 +497,7 @@ fn signature_keys_fails_for_invalid_chain_id_when_signed() {
 #[test]
 fn push_operation_preserves_order_when_chained() {
     let tx = RustTransaction::new(
-        rust_protocol(),
+        test_protocol(),
         MAINNET_CHAIN_ID,
         2,
         0xdead_beef,

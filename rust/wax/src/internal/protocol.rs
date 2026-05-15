@@ -8,7 +8,7 @@ unsafe impl Send for SyncProtocol {}
 
 static RUST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
 
-pub fn rust_protocol() -> &'static ffi::rust_protocol {
+pub(crate) fn rust_protocol() -> &'static ffi::rust_protocol {
     RUST_PROTOCOL
         .get_or_init(|| SyncProtocol(ffi::new_rust_protocol()))
         .0
@@ -16,8 +16,7 @@ pub fn rust_protocol() -> &'static ffi::rust_protocol {
         .expect("new_rust_protocol returned null")
 }
 
-
-pub fn create_operation_handle(op: &RustOperation) -> UniquePtr<ffi::hive_operation_handle> {
+pub(crate) fn create_operation_handle(op: &RustOperation) -> UniquePtr<ffi::hive_operation_handle> {
     rust_protocol()
         .cpp_create_operation_handle(op.to_managed())
         .expect("failed to create operation handle")

@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
-use crate::interfaces::Transaction;
-use crate::models::authority::RequiredAuthorities;
-use crate::protocol::{create_operation_handle, rust_protocol};
-use crate::WaxError;
 use wax_core::ffi::{RustAuthEntry, RustRequiredAuthorities, RustWaxAuthority};
 use wax_core::{proto, RustOperation, RustTransaction};
+
+use crate::WaxError;
+use crate::interfaces::Transaction;
+use crate::internal::protocol::{create_operation_handle, rust_protocol};
+use crate::models::authority::RequiredAuthorities;
 
 impl Transaction for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
