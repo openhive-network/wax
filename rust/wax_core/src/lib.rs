@@ -54,6 +54,47 @@ pub mod ffi {
         pub authorities: RustWaxAuthorities,
     }
 
+    pub struct RustJsonAsset {
+        pub amount: String,
+        pub precision: u32,
+        pub nai: String,
+    }
+
+    pub struct RustRefBlockData {
+        pub ref_block_num: u16,
+        pub ref_block_prefix: u32,
+    }
+
+    pub struct RustMinimizeRequiredSignaturesData {
+        pub chain_id: String,
+        pub available_keys: Vec<String>,
+        pub authorities: Vec<RustAccountAuthorities>,
+        pub max_recursion: u32,
+        pub has_max_recursion: bool,
+        pub max_membership: u32,
+        pub has_max_membership: bool,
+        pub max_account_auths: u32,
+        pub has_max_account_auths: bool,
+        pub allow_strict_and_mixed_authorities: bool,
+    }
+
+    pub struct RustAuthPathNode {
+        pub processed_entry: String,
+        pub processed_role: String,
+        pub recursion_depth: u32,
+        pub threshold: u32,
+        pub weight: u32,
+        pub flags: u32,
+        pub visited_indices: Vec<u32>,
+    }
+
+    pub struct RustAuthVerificationTrace {
+        pub nodes: Vec<RustAuthPathNode>,
+        pub root_indices: Vec<u32>,
+        pub final_authority_path_indices: Vec<u32>,
+        pub verification_status: u32,
+    }
+
     extern "Rust" {
         type RustManagedObject;
         type RustAuthorityProvider;
@@ -172,7 +213,46 @@ pub mod ffi {
             tx: &hive_transaction_handle,
             provider: &RustAuthorityProvider,
         ) -> Result<Vec<String>>;
+
+        fn cpp_hive(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
+        fn cpp_hbd(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
+        fn cpp_vests(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
+
+        fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
+
+        fn cpp_deserialize_transaction(
+            self: &rust_protocol,
+            hex: &str,
+        ) -> Result<UniquePtr<hive_transaction_handle>>;
+
+        fn cpp_legacy_tx_to_json(self: &rust_protocol, tx_str: &str) -> Result<String>;
+
+        fn cpp_tx_set_expiration(
+            self: &rust_protocol,
+            tx: Pin<&mut hive_transaction_handle>,
+            expiration: &str,
+        ) -> Result<()>;
+
+        fn cpp_get_tapos_data(self: Pin<&mut rust_protocol>, block_id: &str) -> Result<RustRefBlockData>;
+
+        fn cpp_minimize_required_signatures(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            data: &RustMinimizeRequiredSignaturesData,
+            provider: &RustAuthorityProvider,
+        ) -> Result<Vec<String>>;
+
+        fn cpp_trace_authority_verification(
+            self: &rust_protocol,
+            required_authorities: &RustRequiredAuthorities,
+            decoded_signature_public_keys: &Vec<String>,
+            provider: &RustAuthorityProvider,
+        ) -> Result<RustAuthVerificationTrace>;
     }
 }
 
-pub use ffi::{hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol};
+pub use ffi::{
+    hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
+    RustAuthPathNode, RustAuthVerificationTrace, RustJsonAsset,
+    RustMinimizeRequiredSignaturesData, RustRefBlockData,
+};

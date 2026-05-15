@@ -9,6 +9,10 @@ namespace cpp {
 
     struct RustRequiredAuthorities;
     struct RustAuthorityProvider;
+    struct RustJsonAsset;
+    struct RustRefBlockData;
+    struct RustMinimizeRequiredSignaturesData;
+    struct RustAuthVerificationTrace;
 }
 
 #include "rust_managed_object.hpp"
@@ -64,6 +68,36 @@ namespace cpp {
 
 		::rust::Vec<::rust::String> cpp_tx_collect_signing_keys(
 			const hive_transaction_handle& tx,
+			const RustAuthorityProvider& provider
+		) const;
+
+		RustJsonAsset cpp_hive(int64_t amount) const;
+		RustJsonAsset cpp_hbd(int64_t amount) const;
+		RustJsonAsset cpp_vests(int64_t amount) const;
+
+		bool cpp_is_valid_account_name(::rust::Str name) const;
+
+		std::unique_ptr<hive_transaction_handle>
+		cpp_deserialize_transaction(::rust::Str hex) const;
+
+		::rust::String cpp_legacy_tx_to_json(::rust::Str tx_str) const;
+
+		void cpp_tx_set_expiration(
+			hive_transaction_handle& tx,
+			::rust::Str expiration
+		) const;
+
+		RustRefBlockData cpp_get_tapos_data(::rust::Str block_id);
+
+		::rust::Vec<::rust::String> cpp_minimize_required_signatures(
+			const hive_transaction_handle& tx,
+			const RustMinimizeRequiredSignaturesData& data,
+			const RustAuthorityProvider& provider
+		) const;
+
+		RustAuthVerificationTrace cpp_trace_authority_verification(
+			const RustRequiredAuthorities& required_authorities,
+			const ::rust::Vec<::rust::String>& decoded_signature_public_keys,
 			const RustAuthorityProvider& provider
 		) const;
 	};
