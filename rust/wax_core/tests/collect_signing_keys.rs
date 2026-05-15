@@ -85,6 +85,7 @@ fn build_vote_transaction(
         .collect();
     let tx = RustTransaction::new(
         protocol.as_ref().unwrap(),
+        "beeab0de00000000000000000000000000000000000000000000000000000000",
         42,
         0xdead_beef,
         "2026-05-11T12:00:00",
