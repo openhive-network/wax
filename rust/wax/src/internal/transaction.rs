@@ -1,13 +1,17 @@
 use std::collections::HashMap;
 
-use wax_core::ffi::{RustAuthEntry, RustRequiredAuthorities, RustWaxAuthority};
+use wax_core::ffi::{
+    RustAccountAuthorities, RustAuthEntry, RustMinimizeRequiredSignaturesData,
+    RustRequiredAuthorities, RustWaxAuthority,
+};
 use wax_core::{proto, RustOperation, RustTransaction};
 
 use crate::WaxError;
 use crate::interfaces::{AuthorityDataProvider, Transaction};
-use crate::internal::authority::build_provider;
+use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::{create_operation_handle, rust_protocol};
 use crate::models::authority::RequiredAuthorities;
+use crate::result::MinimizeRequiredSignaturesData;
 
 impl Transaction for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
@@ -28,6 +32,16 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)?;
 
         self.inner.signatures.push(signature.to_string());
+
+        Ok(())
+    }
+
+    fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError> {
+        rust_protocol()
+            .cpp_tx_set_expiration(self.handle.pin_mut(), expiration)
+            .map_err(WaxError::from)?;
+
+        self.inner.expiration = expiration.to_string();
 
         Ok(())
     }
@@ -91,8 +105,60 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn minimize_required_signatures(
+        &self,
+        data: &MinimizeRequiredSignaturesData,
+        provider: &dyn AuthorityDataProvider,
+    ) -> Result<Vec<String>, WaxError> {
+        let core_provider = build_provider(provider);
+        let ffi_data = to_rust_minimize_data(data);
+
+        rust_protocol()
+            .cpp_minimize_required_signatures(&self.handle, &ffi_data, &core_provider)
+            .map_err(WaxError::from)
+    }
+
     fn transaction(&self) -> &proto::Transaction {
         self.proto()
+    }
+}
+
+fn to_rust_minimize_data(
+    data: &MinimizeRequiredSignaturesData,
+) -> RustMinimizeRequiredSignaturesData {
+    let authorities = data
+        .authorities
+        .iter()
+        .map(|(account, auths)| RustAccountAuthorities {
+            account: account.clone(),
+            authorities: to_rust_authorities(auths.clone()),
+        })
+        .collect();
+
+    let (max_recursion, has_max_recursion) = match data.max_recursion {
+        Some(v) => (v, true),
+        None => (0, false),
+    };
+    let (max_membership, has_max_membership) = match data.max_membership {
+        Some(v) => (v, true),
+        None => (0, false),
+    };
+    let (max_account_auths, has_max_account_auths) = match data.max_account_auths {
+        Some(v) => (v, true),
+        None => (0, false),
+    };
+
+    RustMinimizeRequiredSignaturesData {
+        chain_id: data.chain_id.clone(),
+        available_keys: data.available_keys.clone(),
+        authorities,
+        max_recursion,
+        has_max_recursion,
+        max_membership,
+        has_max_membership,
+        max_account_auths,
+        has_max_account_auths,
+        allow_strict_and_mixed_authorities: data.allow_strict_and_mixed_authorities,
     }
 }
 

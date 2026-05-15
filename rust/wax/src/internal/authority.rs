@@ -33,11 +33,13 @@ impl AuthorityProvider for AuthorityProviderAdapter {
             .collect()
     }
 
-    fn get_witness_public_key(&self, _witness: String) -> String {
-        // collect_signing_keys never asks for witness keys; only
-        // minimize_required_signatures needs this — wire it through
-        // AuthorityDataProvider when that feature is ported.
-        String::new()
+    fn get_witness_public_key(&self, witness: String) -> String {
+        // SAFETY: see struct docs — the source reference outlives the call.
+        let provider = unsafe { &*self.inner };
+        match provider.get_witness_public_key(&witness) {
+            Ok(Some(key)) => key,
+            Ok(None) | Err(_) => String::new(),
+        }
     }
 }
 
@@ -54,7 +56,7 @@ pub(crate) fn build_provider(
     RustAuthorityProvider::new(Box::new(adapter))
 }
 
-fn to_rust_authorities(authorities: Authorities) -> RustWaxAuthorities {
+pub(crate) fn to_rust_authorities(authorities: Authorities) -> RustWaxAuthorities {
     RustWaxAuthorities {
         owner: to_rust_authority(authorities.owner),
         active: to_rust_authority(authorities.active),
@@ -62,7 +64,7 @@ fn to_rust_authorities(authorities: Authorities) -> RustWaxAuthorities {
     }
 }
 
-fn to_rust_authority(authority: Option<WaxAuthority>) -> RustWaxAuthority {
+pub(crate) fn to_rust_authority(authority: Option<WaxAuthority>) -> RustWaxAuthority {
     let Some(auth) = authority else {
         return RustWaxAuthority {
             weight_threshold: 0,

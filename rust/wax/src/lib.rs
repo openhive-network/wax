@@ -6,6 +6,7 @@ mod interfaces;
 mod internal;
 pub mod models;
 mod options;
+pub mod result;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
