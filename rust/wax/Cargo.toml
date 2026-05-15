@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 wax_core = { path = "../wax_core" }
 cxx = "1.0"
+thiserror = "2"

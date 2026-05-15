@@ -46,6 +46,7 @@ fn alice_info() -> AccountAuthorityInfo {
             active: Some(authority_with_key("STM-active-key", 1)),
             posting: Some(authority_with_key("STM-posting-key", 1)),
         },
+        memo_key: "STM-memo-key".into(),
     }
 }
 
@@ -89,6 +90,7 @@ fn supports_sparse_authorities() {
             active: None,
             posting: Some(authority_with_key("STM-posting-only-key", 1)),
         },
+        memo_key: "STM-posting-only-memo-key".into(),
     });
 
     let info = provider
