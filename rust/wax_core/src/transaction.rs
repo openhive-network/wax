@@ -7,11 +7,13 @@ use crate::proto;
 pub struct RustTransaction {
     pub inner: proto::Transaction,
     pub handle: UniquePtr<hive_transaction_handle>,
+    pub chain_id: String,
 }
 
 impl RustTransaction {
     pub fn new(
         protocol: &rust_protocol,
+        chain_id: impl Into<String>,
         ref_block_num: u32,
         ref_block_prefix: u32,
         expiration: impl Into<String>,
@@ -26,12 +28,16 @@ impl RustTransaction {
             signatures: Vec::new(),
         };
         let handle = create_handle(protocol, &inner);
-        Self { inner, handle }
+        Self { inner, handle, chain_id: chain_id.into() }
     }
 
-    pub fn from_proto(protocol: &rust_protocol, inner: proto::Transaction) -> Self {
+    pub fn from_proto(
+        protocol: &rust_protocol,
+        chain_id: impl Into<String>,
+        inner: proto::Transaction,
+    ) -> Self {
         let handle = create_handle(protocol, &inner);
-        Self { inner, handle }
+        Self { inner, handle, chain_id: chain_id.into() }
     }
 
     pub fn proto(&self) -> &proto::Transaction {

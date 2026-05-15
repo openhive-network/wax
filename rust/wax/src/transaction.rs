@@ -38,9 +38,9 @@ impl Transaction for RustTransaction {
         rust_protocol().cpp_tx_validate(&self.handle).map_err(WaxError::from)
     }
 
-    fn sig_digest(&self, chain_id: &str) -> Result<String, WaxError> {
+    fn sig_digest(&self) -> Result<String, WaxError> {
         rust_protocol()
-            .cpp_tx_sig_digest(&self.handle, chain_id)
+            .cpp_tx_sig_digest(&self.handle, &self.chain_id)
             .map_err(WaxError::from)
     }
 
@@ -60,9 +60,9 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
-    fn signature_keys(&self, chain_id: &str) -> Result<Vec<String>, WaxError> {
+    fn signature_keys(&self) -> Result<Vec<String>, WaxError> {
         rust_protocol()
-            .cpp_tx_signature_keys(&self.handle, chain_id)
+            .cpp_tx_signature_keys(&self.handle, &self.chain_id)
             .map_err(WaxError::from)
     }
 

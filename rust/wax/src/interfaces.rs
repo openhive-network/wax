@@ -13,11 +13,11 @@ pub trait Transaction {
     fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;
     fn is_signed(&self) -> bool;
     fn validate(&self) -> Result<(), WaxError>;
-    fn sig_digest(&self, chain_id: &str) -> Result<SigDigest, WaxError>;
+    fn sig_digest(&self) -> Result<SigDigest, WaxError>;
     fn id(&self) -> Result<TransactionId, WaxError>;
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<Hex, WaxError>;
     fn to_api(&self) -> Result<String, WaxError>;
-    fn signature_keys(&self, chain_id: &str) -> Result<Vec<PublicKey>, WaxError>;
+    fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
     fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
