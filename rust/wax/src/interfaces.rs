@@ -1,9 +1,16 @@
+use rust_decimal::Decimal;
 use wax_core::{proto, RustOperation};
 
 use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
 use crate::models::basic::{AccountName, Hex, PublicKey, SigDigest, TransactionId};
 use crate::result::MinimizeRequiredSignaturesData;
 use crate::WaxError;
+
+pub trait Manabar {
+    fn max_mana(&self) -> i64;
+    fn current_mana(&self) -> i64;
+    fn percent(&self) -> Decimal;
+}
 
 pub trait AuthorityDataProvider {
     fn get_account_authorities(&self, account: &str) -> Result<AccountAuthorityInfo, WaxError>;
