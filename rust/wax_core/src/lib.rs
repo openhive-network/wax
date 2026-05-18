@@ -218,6 +218,34 @@ pub mod ffi {
         fn cpp_hbd(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
         fn cpp_vests(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
 
+        fn cpp_hbd_to_hive(
+            self: &rust_protocol,
+            hbd: &RustJsonAsset,
+            base: &RustJsonAsset,
+            quote: &RustJsonAsset,
+        ) -> Result<RustJsonAsset>;
+
+        fn cpp_hive_to_hbd(
+            self: &rust_protocol,
+            amount: &RustJsonAsset,
+            base: &RustJsonAsset,
+            quote: &RustJsonAsset,
+        ) -> Result<RustJsonAsset>;
+
+        fn cpp_vests_to_hp(
+            self: &rust_protocol,
+            vests: &RustJsonAsset,
+            total_vesting_fund_hive: &RustJsonAsset,
+            total_vesting_shares: &RustJsonAsset,
+        ) -> Result<RustJsonAsset>;
+
+        fn cpp_hp_to_vests(
+            self: &rust_protocol,
+            hive: &RustJsonAsset,
+            total_vesting_fund_hive: &RustJsonAsset,
+            total_vesting_shares: &RustJsonAsset,
+        ) -> Result<RustJsonAsset>;
+
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
         fn cpp_deserialize_transaction(

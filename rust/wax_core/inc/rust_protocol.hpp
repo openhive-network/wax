@@ -75,6 +75,11 @@ namespace cpp {
 		RustJsonAsset cpp_hbd(int64_t amount) const;
 		RustJsonAsset cpp_vests(int64_t amount) const;
 
+		RustJsonAsset cpp_hbd_to_hive(const RustJsonAsset& hbd, const RustJsonAsset& base, const RustJsonAsset& quote) const;
+		RustJsonAsset cpp_hive_to_hbd(const RustJsonAsset& amount, const RustJsonAsset& base, const RustJsonAsset& quote) const;
+		RustJsonAsset cpp_vests_to_hp(const RustJsonAsset& vests, const RustJsonAsset& total_vesting_fund_hive, const RustJsonAsset& total_vesting_shares) const;
+		RustJsonAsset cpp_hp_to_vests(const RustJsonAsset& hive, const RustJsonAsset& total_vesting_fund_hive, const RustJsonAsset& total_vesting_shares) const;
+
 		bool cpp_is_valid_account_name(::rust::Str name) const;
 
 		std::unique_ptr<hive_transaction_handle>

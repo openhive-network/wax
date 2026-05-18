@@ -7,6 +7,34 @@ pub trait WaxFoundation {
     fn hbd(&self, amount: i64) -> Result<JsonAsset, WaxError>;
     fn vests(&self, amount: i64) -> Result<JsonAsset, WaxError>;
 
+    fn hbd_to_hive(
+        &self,
+        hbd: &JsonAsset,
+        base: &JsonAsset,
+        quote: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError>;
+
+    fn hive_to_hbd(
+        &self,
+        amount: &JsonAsset,
+        base: &JsonAsset,
+        quote: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError>;
+
+    fn vests_to_hp(
+        &self,
+        vests: &JsonAsset,
+        total_vesting_fund_hive: &JsonAsset,
+        total_vesting_shares: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError>;
+
+    fn hp_to_vests(
+        &self,
+        hive: &JsonAsset,
+        total_vesting_fund_hive: &JsonAsset,
+        total_vesting_shares: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError>;
+
     fn is_valid_account_name(&self, name: &str) -> bool;
 
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;

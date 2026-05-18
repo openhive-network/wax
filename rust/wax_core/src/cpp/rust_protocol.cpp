@@ -94,6 +94,10 @@ namespace cpp {
 			};
 		}
 
+		json_asset from_rust_json_asset(const RustJsonAsset& a) {
+			return json_asset(std::string(a.amount), a.precision, std::string(a.nai));
+		}
+
 		required_authority_collection from_rust_required_authorities(const RustRequiredAuthorities& r) {
 			required_authority_collection out;
 			out.posting_accounts.reserve(r.posting_accounts.size());
@@ -291,6 +295,54 @@ namespace cpp {
 
 	RustJsonAsset rust_protocol::cpp_vests(int64_t amount) const {
 		return to_rust_json_asset(foundation::cpp_vests(amount));
+	}
+
+	RustJsonAsset rust_protocol::cpp_hbd_to_hive(
+		const RustJsonAsset& hbd,
+		const RustJsonAsset& base,
+		const RustJsonAsset& quote
+	) const {
+		return to_rust_json_asset(foundation::cpp_hbd_to_hive(
+			from_rust_json_asset(hbd),
+			from_rust_json_asset(base),
+			from_rust_json_asset(quote)
+		));
+	}
+
+	RustJsonAsset rust_protocol::cpp_hive_to_hbd(
+		const RustJsonAsset& amount,
+		const RustJsonAsset& base,
+		const RustJsonAsset& quote
+	) const {
+		return to_rust_json_asset(foundation::cpp_hive_to_hbd(
+			from_rust_json_asset(amount),
+			from_rust_json_asset(base),
+			from_rust_json_asset(quote)
+		));
+	}
+
+	RustJsonAsset rust_protocol::cpp_vests_to_hp(
+		const RustJsonAsset& vests,
+		const RustJsonAsset& total_vesting_fund_hive,
+		const RustJsonAsset& total_vesting_shares
+	) const {
+		return to_rust_json_asset(foundation::cpp_vests_to_hp(
+			from_rust_json_asset(vests),
+			from_rust_json_asset(total_vesting_fund_hive),
+			from_rust_json_asset(total_vesting_shares)
+		));
+	}
+
+	RustJsonAsset rust_protocol::cpp_hp_to_vests(
+		const RustJsonAsset& hive,
+		const RustJsonAsset& total_vesting_fund_hive,
+		const RustJsonAsset& total_vesting_shares
+	) const {
+		return to_rust_json_asset(foundation::cpp_hp_to_vests(
+			from_rust_json_asset(hive),
+			from_rust_json_asset(total_vesting_fund_hive),
+			from_rust_json_asset(total_vesting_shares)
+		));
 	}
 
 	bool rust_protocol::cpp_is_valid_account_name(::rust::Str name) const {
