@@ -6,7 +6,8 @@ edition = "2024"
 [dependencies]
 cxx = "1.0"
 prost = "0.13"
-prost-reflect = "0.16"
+prost-reflect = { version = "0.16", features = ["serde"] }
+serde_json = "1"
 
 [build-dependencies]
 cxx-build = "1.0"

@@ -1,5 +1,3 @@
-pub use wax_core::proto;
-
 pub mod constants;
 mod error;
 mod foundation;

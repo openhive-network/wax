@@ -1,3 +1,5 @@
+use wax_core::{RustTransaction, proto};
+
 use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
@@ -92,4 +94,17 @@ pub trait WaxFoundation {
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
 
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
+
+    fn create_transaction_from_proto(
+        &self,
+        transaction: proto::Transaction,
+    ) -> Result<RustTransaction, WaxError>;
+
+    fn create_transaction_from_json(&self, json: &str) -> Result<RustTransaction, WaxError>;
+
+    fn create_transaction_with_tapos(
+        &self,
+        tapos_block_id: &str,
+        expiration: &str,
+    ) -> Result<RustTransaction, WaxError>;
 }

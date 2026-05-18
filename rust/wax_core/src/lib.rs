@@ -13,7 +13,7 @@ pub use asset::RustAsset;
 pub use authority_provider::{AuthorityProvider, RustAuthorityProvider};
 pub use managed_object::{descriptor_pool, RustManagedObject};
 pub use operation::RustOperation;
-pub use transaction::RustTransaction;
+pub use transaction::{transaction_to_canonical_json, RustTransaction};
 
 use authority_provider::{rap_get_authorities, rap_get_witness_public_key};
 use managed_object::{

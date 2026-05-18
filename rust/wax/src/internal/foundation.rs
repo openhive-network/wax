@@ -1,4 +1,5 @@
 use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
+use wax_core::{RustTransaction, proto};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
@@ -10,7 +11,6 @@ use crate::options::WaxOptions;
 use crate::result::{HiveAssetData, JsonAsset, JsonPrice, RefBlockData};
 
 pub(crate) struct WaxFoundationApi {
-    #[allow(dead_code)]
     options: WaxOptions,
 }
 
@@ -237,6 +237,40 @@ impl WaxFoundation for WaxFoundationApi {
             })
             .map_err(WaxError::from)
     }
+
+    fn create_transaction_from_proto(
+        &self,
+        transaction: proto::Transaction,
+    ) -> Result<RustTransaction, WaxError> {
+        Ok(RustTransaction::from_proto(
+            rust_protocol(),
+            self.options.chain_id.clone(),
+            transaction,
+        ))
+    }
+
+    fn create_transaction_from_json(&self, json: &str) -> Result<RustTransaction, WaxError> {
+        RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), json)
+            .map_err(WaxError::new)
+    }
+
+    fn create_transaction_with_tapos(
+        &self,
+        tapos_block_id: &str,
+        expiration: &str,
+    ) -> Result<RustTransaction, WaxError> {
+        let tapos = rust_protocol()
+            .cpp_get_tapos_data(tapos_block_id)
+            .map_err(WaxError::from)?;
+        Ok(RustTransaction::new(
+            rust_protocol(),
+            self.options.chain_id.clone(),
+            tapos.ref_block_num as u32,
+            tapos.ref_block_prefix,
+            expiration,
+            Vec::new(),
+        ))
+    }
 }
 
 pub(crate) fn to_json_asset(asset: RustJsonAsset) -> JsonAsset {
@@ -262,8 +296,6 @@ pub(crate) fn from_json_price(price: &JsonPrice) -> RustJsonPrice {
     }
 }
 
-/// Reduces a `HiveDateTime` to the `int32_t` unix timestamp the C++ manabar
-/// helpers consume — same `int(dt.timestamp())` shape as Python's wrapper.
 fn head_block_time_to_now(dt: HiveDateTime) -> i32 {
     dt.inner().timestamp() as i32
 }
