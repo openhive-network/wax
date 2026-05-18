@@ -10,6 +10,7 @@ namespace cpp {
     struct RustRequiredAuthorities;
     struct RustAuthorityProvider;
     struct RustJsonAsset;
+    struct RustJsonPrice;
     struct RustRefBlockData;
     struct RustMinimizeRequiredSignaturesData;
     struct RustAuthVerificationTrace;
@@ -79,6 +80,28 @@ namespace cpp {
 		RustJsonAsset cpp_hive_to_hbd(const RustJsonAsset& amount, const RustJsonAsset& base, const RustJsonAsset& quote) const;
 		RustJsonAsset cpp_vests_to_hp(const RustJsonAsset& vests, const RustJsonAsset& total_vesting_fund_hive, const RustJsonAsset& total_vesting_shares) const;
 		RustJsonAsset cpp_hp_to_vests(const RustJsonAsset& hive, const RustJsonAsset& total_vesting_fund_hive, const RustJsonAsset& total_vesting_shares) const;
+
+		RustJsonAsset cpp_estimate_hive_collateral(
+			const RustJsonPrice& current_median_history,
+			const RustJsonPrice& current_min_history,
+			const RustJsonAsset& hbd_amount_to_get
+		) const;
+
+		RustJsonAsset cpp_estimate_hbd_interest(
+			uint64_t hbd_seconds_low,
+			uint64_t hbd_seconds_high,
+			uint32_t head_block_time,
+			const RustJsonAsset& hbd,
+			uint32_t hbd_seconds_last_update,
+			uint16_t hbd_interest_rate
+		) const;
+
+		::rust::String cpp_calculate_hp_apr(
+			uint32_t head_block_num,
+			uint16_t vesting_reward_percent,
+			const RustJsonAsset& virtual_supply,
+			const RustJsonAsset& total_vesting_fund_hive
+		) const;
 
 		bool cpp_is_valid_account_name(::rust::Str name) const;
 

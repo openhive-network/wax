@@ -345,6 +345,58 @@ namespace cpp {
 		));
 	}
 
+	RustJsonAsset rust_protocol::cpp_estimate_hive_collateral(
+		const RustJsonPrice& current_median_history,
+		const RustJsonPrice& current_min_history,
+		const RustJsonAsset& hbd_amount_to_get
+	) const {
+		json_price median{
+			from_rust_json_asset(current_median_history.base),
+			from_rust_json_asset(current_median_history.quote),
+		};
+		json_price minimal{
+			from_rust_json_asset(current_min_history.base),
+			from_rust_json_asset(current_min_history.quote),
+		};
+		return to_rust_json_asset(foundation::cpp_estimate_hive_collateral(
+			median,
+			minimal,
+			from_rust_json_asset(hbd_amount_to_get)
+		));
+	}
+
+	RustJsonAsset rust_protocol::cpp_estimate_hbd_interest(
+		uint64_t hbd_seconds_low,
+		uint64_t hbd_seconds_high,
+		uint32_t head_block_time,
+		const RustJsonAsset& hbd,
+		uint32_t hbd_seconds_last_update,
+		uint16_t hbd_interest_rate
+	) const {
+		return to_rust_json_asset(foundation::cpp_evaluate_hbd_interest(
+			hbd_seconds_low,
+			hbd_seconds_high,
+			head_block_time,
+			from_rust_json_asset(hbd),
+			hbd_seconds_last_update,
+			hbd_interest_rate
+		));
+	}
+
+	::rust::String rust_protocol::cpp_calculate_hp_apr(
+		uint32_t head_block_num,
+		uint16_t vesting_reward_percent,
+		const RustJsonAsset& virtual_supply,
+		const RustJsonAsset& total_vesting_fund_hive
+	) const {
+		return foundation::cpp_calculate_hp_apr(
+			head_block_num,
+			vesting_reward_percent,
+			from_rust_json_asset(virtual_supply),
+			from_rust_json_asset(total_vesting_fund_hive)
+		);
+	}
+
 	bool rust_protocol::cpp_is_valid_account_name(::rust::Str name) const {
 		return foundation::cpp_is_valid_account_name(std::string(name));
 	}

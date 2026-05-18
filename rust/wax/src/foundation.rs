@@ -1,5 +1,5 @@
 use crate::models::basic::Hex;
-use crate::result::{JsonAsset, RefBlockData};
+use crate::result::{JsonAsset, JsonPrice, RefBlockData};
 use crate::WaxError;
 
 pub trait WaxFoundation {
@@ -34,6 +34,30 @@ pub trait WaxFoundation {
         total_vesting_fund_hive: &JsonAsset,
         total_vesting_shares: &JsonAsset,
     ) -> Result<JsonAsset, WaxError>;
+
+    fn estimate_hive_collateral(
+        &self,
+        current_median_history: &JsonPrice,
+        current_min_history: &JsonPrice,
+        hbd_amount_to_get: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError>;
+
+    fn estimate_hbd_interest(
+        &self,
+        hbd_seconds: u128,
+        head_block_time: u32,
+        hbd: &JsonAsset,
+        hbd_seconds_last_update: u32,
+        hbd_interest_rate: u16,
+    ) -> Result<JsonAsset, WaxError>;
+
+    fn calculate_hp_apr(
+        &self,
+        head_block_num: u32,
+        vesting_reward_percent: u16,
+        virtual_supply: &JsonAsset,
+        total_vesting_fund_hive: &JsonAsset,
+    ) -> Result<String, WaxError>;
 
     fn is_valid_account_name(&self, name: &str) -> bool;
 

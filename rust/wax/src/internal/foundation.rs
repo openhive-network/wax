@@ -1,10 +1,10 @@
-use wax_core::ffi::RustJsonAsset;
+use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
 
 use crate::foundation::WaxFoundation;
 use crate::internal::protocol::{rust_protocol, with_protocol_mut};
 use crate::models::basic::Hex;
 use crate::options::WaxOptions;
-use crate::result::{JsonAsset, RefBlockData};
+use crate::result::{JsonAsset, JsonPrice, RefBlockData};
 use crate::WaxError;
 
 pub(crate) struct WaxFoundationApi {
@@ -104,6 +104,62 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn estimate_hive_collateral(
+        &self,
+        current_median_history: &JsonPrice,
+        current_min_history: &JsonPrice,
+        hbd_amount_to_get: &JsonAsset,
+    ) -> Result<JsonAsset, WaxError> {
+        rust_protocol()
+            .cpp_estimate_hive_collateral(
+                &from_json_price(current_median_history),
+                &from_json_price(current_min_history),
+                &from_json_asset(hbd_amount_to_get),
+            )
+            .map(to_json_asset)
+            .map_err(WaxError::from)
+    }
+
+    fn estimate_hbd_interest(
+        &self,
+        hbd_seconds: u128,
+        head_block_time: u32,
+        hbd: &JsonAsset,
+        hbd_seconds_last_update: u32,
+        hbd_interest_rate: u16,
+    ) -> Result<JsonAsset, WaxError> {
+        let hbd_seconds_low = hbd_seconds as u64;
+        let hbd_seconds_high = (hbd_seconds >> 64) as u64;
+        rust_protocol()
+            .cpp_estimate_hbd_interest(
+                hbd_seconds_low,
+                hbd_seconds_high,
+                head_block_time,
+                &from_json_asset(hbd),
+                hbd_seconds_last_update,
+                hbd_interest_rate,
+            )
+            .map(to_json_asset)
+            .map_err(WaxError::from)
+    }
+
+    fn calculate_hp_apr(
+        &self,
+        head_block_num: u32,
+        vesting_reward_percent: u16,
+        virtual_supply: &JsonAsset,
+        total_vesting_fund_hive: &JsonAsset,
+    ) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_calculate_hp_apr(
+                head_block_num,
+                vesting_reward_percent,
+                &from_json_asset(virtual_supply),
+                &from_json_asset(total_vesting_fund_hive),
+            )
+            .map_err(WaxError::from)
+    }
+
     fn is_valid_account_name(&self, name: &str) -> bool {
         rust_protocol().cpp_is_valid_account_name(name)
     }
@@ -148,5 +204,12 @@ pub(crate) fn from_json_asset(asset: &JsonAsset) -> RustJsonAsset {
         amount: asset.amount.clone(),
         precision: asset.precision,
         nai: asset.nai.clone(),
+    }
+}
+
+pub(crate) fn from_json_price(price: &JsonPrice) -> RustJsonPrice {
+    RustJsonPrice {
+        base: from_json_asset(&price.base),
+        quote: from_json_asset(&price.quote),
     }
 }

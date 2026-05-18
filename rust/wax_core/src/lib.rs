@@ -60,6 +60,11 @@ pub mod ffi {
         pub nai: String,
     }
 
+    pub struct RustJsonPrice {
+        pub base: RustJsonAsset,
+        pub quote: RustJsonAsset,
+    }
+
     pub struct RustRefBlockData {
         pub ref_block_num: u16,
         pub ref_block_prefix: u32,
@@ -246,6 +251,31 @@ pub mod ffi {
             total_vesting_shares: &RustJsonAsset,
         ) -> Result<RustJsonAsset>;
 
+        fn cpp_estimate_hive_collateral(
+            self: &rust_protocol,
+            current_median_history: &RustJsonPrice,
+            current_min_history: &RustJsonPrice,
+            hbd_amount_to_get: &RustJsonAsset,
+        ) -> Result<RustJsonAsset>;
+
+        fn cpp_estimate_hbd_interest(
+            self: &rust_protocol,
+            hbd_seconds_low: u64,
+            hbd_seconds_high: u64,
+            head_block_time: u32,
+            hbd: &RustJsonAsset,
+            hbd_seconds_last_update: u32,
+            hbd_interest_rate: u16,
+        ) -> Result<RustJsonAsset>;
+
+        fn cpp_calculate_hp_apr(
+            self: &rust_protocol,
+            head_block_num: u32,
+            vesting_reward_percent: u16,
+            virtual_supply: &RustJsonAsset,
+            total_vesting_fund_hive: &RustJsonAsset,
+        ) -> Result<String>;
+
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
         fn cpp_deserialize_transaction(
@@ -281,6 +311,6 @@ pub mod ffi {
 
 pub use ffi::{
     hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
-    RustAuthPathNode, RustAuthVerificationTrace, RustJsonAsset,
+    RustAuthPathNode, RustAuthVerificationTrace, RustJsonAsset, RustJsonPrice,
     RustMinimizeRequiredSignaturesData, RustRefBlockData,
 };
