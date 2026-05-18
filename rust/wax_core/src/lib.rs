@@ -276,6 +276,9 @@ pub mod ffi {
             total_vesting_fund_hive: &RustJsonAsset,
         ) -> Result<String>;
 
+        fn cpp_asset_value(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
+        fn cpp_asset_symbol(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
+
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
         fn cpp_deserialize_transaction(

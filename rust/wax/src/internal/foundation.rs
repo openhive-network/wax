@@ -3,9 +3,10 @@ use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
 use crate::internal::protocol::rust_protocol;
+use crate::models::asset::{Asset, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::Hex;
 use crate::options::WaxOptions;
-use crate::result::{JsonAsset, JsonPrice, RefBlockData};
+use crate::result::{HiveAssetData, JsonAsset, JsonPrice, RefBlockData};
 
 pub(crate) struct WaxFoundationApi {
     #[allow(dead_code)]
@@ -158,6 +159,22 @@ impl WaxFoundation for WaxFoundationApi {
                 &from_json_asset(total_vesting_fund_hive),
             )
             .map_err(WaxError::from)
+    }
+
+    fn create_asset_with_required_symbol(
+        &self,
+        required_symbol: AssetName,
+        asset: NaiAssetConvertible,
+    ) -> Result<NaiAsset, WaxError> {
+        Asset::new()?.resolve_from_convertible_type(required_symbol, asset)
+    }
+
+    fn get_asset(&self, asset: &JsonAsset) -> Result<HiveAssetData, WaxError> {
+        let protocol = rust_protocol();
+        let ffi = from_json_asset(asset);
+        let amount = protocol.cpp_asset_value(&ffi).map_err(WaxError::from)?;
+        let symbol = protocol.cpp_asset_symbol(&ffi).map_err(WaxError::from)?;
+        Ok(HiveAssetData { amount, symbol })
     }
 
     fn is_valid_account_name(&self, name: &str) -> bool {

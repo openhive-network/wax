@@ -397,6 +397,14 @@ namespace cpp {
 		);
 	}
 
+	::rust::String rust_protocol::cpp_asset_value(const RustJsonAsset& asset) const {
+		return foundation::cpp_asset_value(from_rust_json_asset(asset));
+	}
+
+	::rust::String rust_protocol::cpp_asset_symbol(const RustJsonAsset& asset) const {
+		return foundation::cpp_asset_symbol(from_rust_json_asset(asset));
+	}
+
 	bool rust_protocol::cpp_is_valid_account_name(::rust::Str name) const {
 		return foundation::cpp_is_valid_account_name(std::string(name));
 	}
@@ -420,7 +428,11 @@ namespace cpp {
 	}
 
 	RustRefBlockData rust_protocol::cpp_get_tapos_data(::rust::Str block_id) const {
-		const auto data = foundation::cpp_get_tapos_data(std::string(block_id));
+		// foundation::cpp_get_tapos_data is not declared const upstream even
+		// though the implementation does not mutate `*this`; cast it away so
+		// the rust side can keep this method on the immutable code path.
+		auto& self = const_cast<rust_protocol&>(*this);
+		const auto data = self.foundation::cpp_get_tapos_data(std::string(block_id));
 		return RustRefBlockData{ data.ref_block_num, data.ref_block_prefix };
 	}
 

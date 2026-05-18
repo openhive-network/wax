@@ -103,6 +103,9 @@ namespace cpp {
 			const RustJsonAsset& total_vesting_fund_hive
 		) const;
 
+		::rust::String cpp_asset_value(const RustJsonAsset& asset) const;
+		::rust::String cpp_asset_symbol(const RustJsonAsset& asset) const;
+
 		bool cpp_is_valid_account_name(::rust::Str name) const;
 
 		std::unique_ptr<hive_transaction_handle>

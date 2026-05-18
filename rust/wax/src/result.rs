@@ -22,6 +22,12 @@ pub struct RefBlockData {
     pub ref_block_prefix: u32,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HiveAssetData {
+    pub amount: String,
+    pub symbol: String,
+}
+
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct MinimizeRequiredSignaturesData {
     pub chain_id: ChainId,
