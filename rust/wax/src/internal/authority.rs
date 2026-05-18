@@ -43,9 +43,7 @@ impl AuthorityProvider for AuthorityProviderAdapter {
     }
 }
 
-pub(crate) fn build_provider(
-    provider: &dyn AuthorityDataProvider,
-) -> Box<RustAuthorityProvider> {
+pub(crate) fn build_provider(provider: &dyn AuthorityDataProvider) -> Box<RustAuthorityProvider> {
     // Lifetime-erase the trait object so it can live in an adapter that
     // satisfies the `'static` bound on `RustAuthorityProvider::new`. The
     // resulting `Box<RustAuthorityProvider>` must not outlive `provider` —

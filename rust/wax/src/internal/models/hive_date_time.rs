@@ -1,7 +1,7 @@
 use chrono::{DateTime, NaiveDateTime, Utc};
 
-use crate::constants::HIVE_TIME_FORMAT;
 use crate::WaxError;
+use crate::constants::HIVE_TIME_FORMAT;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct HiveDateTime(DateTime<Utc>);
@@ -16,9 +16,8 @@ impl HiveDateTime {
     }
 
     pub fn parse(value: &str) -> Result<Self, WaxError> {
-        let naive = NaiveDateTime::parse_from_str(value, HIVE_TIME_FORMAT).map_err(|_| {
-            WaxError::new(format!("Date must be in format {HIVE_TIME_FORMAT}"))
-        })?;
+        let naive = NaiveDateTime::parse_from_str(value, HIVE_TIME_FORMAT)
+            .map_err(|_| WaxError::new(format!("Date must be in format {HIVE_TIME_FORMAT}")))?;
         Ok(Self(naive.and_utc()))
     }
 

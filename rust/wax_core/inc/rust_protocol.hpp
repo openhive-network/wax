@@ -115,7 +115,7 @@ namespace cpp {
 			::rust::Str expiration
 		) const;
 
-		RustRefBlockData cpp_get_tapos_data(::rust::Str block_id);
+		RustRefBlockData cpp_get_tapos_data(::rust::Str block_id) const;
 
 		::rust::Vec<::rust::String> cpp_minimize_required_signatures(
 			const hive_transaction_handle& tx,

@@ -1,10 +1,10 @@
 use rust_decimal::Decimal;
-use wax_core::{proto, RustOperation};
+use wax_core::{RustOperation, proto};
 
+use crate::WaxError;
 use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
 use crate::models::basic::{AccountName, Hex, PublicKey, SigDigest, TransactionId};
 use crate::result::MinimizeRequiredSignaturesData;
-use crate::WaxError;
 
 pub trait Manabar {
     fn max_mana(&self) -> i64;
@@ -15,10 +15,7 @@ pub trait Manabar {
 pub trait AuthorityDataProvider {
     fn get_account_authorities(&self, account: &str) -> Result<AccountAuthorityInfo, WaxError>;
 
-    fn get_witness_public_key(
-        &self,
-        _witness: &str,
-    ) -> Result<Option<PublicKey>, WaxError> {
+    fn get_witness_public_key(&self, _witness: &str) -> Result<Option<PublicKey>, WaxError> {
         Ok(None)
     }
 }

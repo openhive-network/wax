@@ -291,7 +291,7 @@ pub mod ffi {
             expiration: &str,
         ) -> Result<()>;
 
-        fn cpp_get_tapos_data(self: Pin<&mut rust_protocol>, block_id: &str) -> Result<RustRefBlockData>;
+        fn cpp_get_tapos_data(self: &rust_protocol, block_id: &str) -> Result<RustRefBlockData>;
 
         fn cpp_minimize_required_signatures(
             self: &rust_protocol,

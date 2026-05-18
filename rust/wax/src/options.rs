@@ -10,7 +10,9 @@ pub struct WaxOptions {
 
 impl Default for WaxOptions {
     fn default() -> Self {
-        Self { chain_id: DEFAULT_CHAIN_ID.to_string() }
+        Self {
+            chain_id: DEFAULT_CHAIN_ID.to_string(),
+        }
     }
 }
 

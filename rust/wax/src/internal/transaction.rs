@@ -4,7 +4,7 @@ use wax_core::ffi::{
     RustAccountAuthorities, RustAuthEntry, RustMinimizeRequiredSignaturesData,
     RustRequiredAuthorities, RustWaxAuthority,
 };
-use wax_core::{proto, RustOperation, RustTransaction};
+use wax_core::{RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::interfaces::{AuthorityDataProvider, Transaction};
@@ -51,7 +51,9 @@ impl Transaction for RustTransaction {
     }
 
     fn validate(&self) -> Result<(), WaxError> {
-        rust_protocol().cpp_tx_validate(&self.handle).map_err(WaxError::from)
+        rust_protocol()
+            .cpp_tx_validate(&self.handle)
+            .map_err(WaxError::from)
     }
 
     fn sig_digest(&self) -> Result<String, WaxError> {
@@ -61,7 +63,9 @@ impl Transaction for RustTransaction {
     }
 
     fn id(&self) -> Result<String, WaxError> {
-        rust_protocol().cpp_tx_id(&self.handle).map_err(WaxError::from)
+        rust_protocol()
+            .cpp_tx_id(&self.handle)
+            .map_err(WaxError::from)
     }
 
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError> {

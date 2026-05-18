@@ -7,7 +7,7 @@
 // against the canonical implementation rather than reinventing the math here.
 
 use wax::result::{JsonAsset, JsonPrice};
-use wax::{create_wax_foundation, WaxFoundation};
+use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";

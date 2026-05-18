@@ -419,7 +419,7 @@ namespace cpp {
 		foundation::cpp_tx_set_expiration(tx, std::string(expiration));
 	}
 
-	RustRefBlockData rust_protocol::cpp_get_tapos_data(::rust::Str block_id){
+	RustRefBlockData rust_protocol::cpp_get_tapos_data(::rust::Str block_id) const {
 		const auto data = foundation::cpp_get_tapos_data(std::string(block_id));
 		return RustRefBlockData{ data.ref_block_num, data.ref_block_prefix };
 	}

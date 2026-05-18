@@ -1,6 +1,6 @@
+use crate::WaxError;
 use crate::models::basic::Hex;
 use crate::result::{JsonAsset, JsonPrice, RefBlockData};
-use crate::WaxError;
 
 pub trait WaxFoundation {
     fn hive(&self, amount: i64) -> Result<JsonAsset, WaxError>;

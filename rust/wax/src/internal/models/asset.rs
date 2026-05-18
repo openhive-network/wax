@@ -1,15 +1,15 @@
 use std::collections::HashMap;
 
-use rust_decimal::prelude::*;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::*;
 use wax_core::RustJsonAsset;
 
+use crate::WaxError;
 use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{
     AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset, NaiAssetConvertible,
 };
 use crate::result::JsonAsset;
-use crate::WaxError;
 
 const INIT_CPP_ASSET_AMOUNT: i64 = 0;
 
@@ -71,11 +71,13 @@ impl Asset {
         }
 
         let scaled = amount_to_decimal(amount)? * scale(info.precision);
-        let integer_amount = scaled.trunc().to_i128().ok_or_else(|| {
-            WaxError::InvalidAssetAmount {
-                amount: scaled.to_string(),
-            }
-        })?;
+        let integer_amount =
+            scaled
+                .trunc()
+                .to_i128()
+                .ok_or_else(|| WaxError::InvalidAssetAmount {
+                    amount: scaled.to_string(),
+                })?;
 
         Ok(NaiAsset {
             amount: integer_amount.to_string(),
@@ -125,11 +127,12 @@ impl Asset {
             .find(|(_, cpp_asset)| cpp_asset.nai == asset.nai)
             .map(|(name, _)| *name);
 
-        let amount: i64 = asset.amount.parse().map_err(|_| {
-            WaxError::InvalidAssetAmount {
+        let amount: i64 = asset
+            .amount
+            .parse()
+            .map_err(|_| WaxError::InvalidAssetAmount {
                 amount: asset.amount.clone(),
-            }
-        })?;
+            })?;
 
         let protocol = rust_protocol();
         let ffi = match matched {

@@ -2,10 +2,10 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use cxx::UniquePtr;
-use wax::constants::MAINNET_CHAIN_ID;
 use wax::Transaction;
+use wax::constants::MAINNET_CHAIN_ID;
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
-use wax_core::proto::{operation::Value, AccountWitnessProxy, Authority, RecoverAccount, Vote};
+use wax_core::proto::{AccountWitnessProxy, Authority, RecoverAccount, Vote, operation::Value};
 use wax_core::{RustOperation, RustTransaction};
 
 // Test-local replica of wax's internal protocol singleton. `rust_protocol` is
@@ -99,7 +99,8 @@ fn push_operation_appends_op_to_proto_state() {
 fn validate_passes_for_well_formed_transaction() {
     let tx = mainnet_tx().push_operation(vote("alice", 10_000));
 
-    tx.validate().expect("well-formed transaction should validate");
+    tx.validate()
+        .expect("well-formed transaction should validate");
 }
 
 #[test]
@@ -110,7 +111,11 @@ fn sig_digest_returns_hex_for_well_formed_transaction() {
         .sig_digest()
         .expect("sig_digest should succeed for a valid transaction");
 
-    assert_eq!(digest.len(), 64, "sig digest should be 32-byte hex (64 chars)");
+    assert_eq!(
+        digest.len(),
+        64,
+        "sig digest should be 32-byte hex (64 chars)"
+    );
     assert!(
         digest.chars().all(|c| c.is_ascii_hexdigit()),
         "sig digest should be lowercase hex: {digest}"
@@ -125,7 +130,10 @@ fn sig_digest_differs_when_operations_differ() {
     let da = a.sig_digest().expect("a digest");
     let db = b.sig_digest().expect("b digest");
 
-    assert_ne!(da, db, "different operations must produce different digests");
+    assert_ne!(
+        da, db,
+        "different operations must produce different digests"
+    );
 }
 
 #[test]
@@ -153,8 +161,14 @@ fn id_returns_40_char_hex_for_well_formed_transaction() {
 
 #[test]
 fn id_differs_when_operations_differ() {
-    let a = mainnet_tx().push_operation(vote("alice", 10_000)).id().expect("a id");
-    let b = mainnet_tx().push_operation(vote("bob", 10_000)).id().expect("b id");
+    let a = mainnet_tx()
+        .push_operation(vote("alice", 10_000))
+        .id()
+        .expect("a id");
+    let b = mainnet_tx()
+        .push_operation(vote("bob", 10_000))
+        .id()
+        .expect("b id");
 
     assert_ne!(a, b, "different operations must produce different ids");
 }
@@ -183,7 +197,11 @@ fn to_binary_form_returns_hex_for_well_formed_transaction() {
         .expect("to_binary_form should succeed for a valid transaction");
 
     assert!(!bin.is_empty(), "binary form should not be empty");
-    assert_eq!(bin.len() % 2, 0, "hex string should have even length: {bin}");
+    assert_eq!(
+        bin.len() % 2,
+        0,
+        "hex string should have even length: {bin}"
+    );
     assert!(
         bin.chars().all(|c| c.is_ascii_hexdigit()),
         "binary form should be hex: {bin}"
@@ -192,10 +210,19 @@ fn to_binary_form_returns_hex_for_well_formed_transaction() {
 
 #[test]
 fn to_binary_form_differs_when_operations_differ() {
-    let a = mainnet_tx().push_operation(vote("alice", 10_000)).to_binary_form(false).expect("a bin");
-    let b = mainnet_tx().push_operation(vote("bob", 10_000)).to_binary_form(false).expect("b bin");
+    let a = mainnet_tx()
+        .push_operation(vote("alice", 10_000))
+        .to_binary_form(false)
+        .expect("a bin");
+    let b = mainnet_tx()
+        .push_operation(vote("bob", 10_000))
+        .to_binary_form(false)
+        .expect("b bin");
 
-    assert_ne!(a, b, "different operations must produce different binary forms");
+    assert_ne!(
+        a, b,
+        "different operations must produce different binary forms"
+    );
 }
 
 #[test]
@@ -226,16 +253,17 @@ fn validate_fails_for_invalid_operation() {
 // 65-byte (130 hex char) compact ECDSA signature. Contents are not a real
 // signature — cpp_tx_add_signature only hex-decodes the input, it doesn't
 // verify the signature against the digest.
-const FAKE_SIG_A: &str =
-    "1f00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff";
-const FAKE_SIG_B: &str =
-    "20ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa998877665544332211ff";
+const FAKE_SIG_A: &str = "1f00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff";
+const FAKE_SIG_B: &str = "20ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa998877665544332211ff";
 
 #[test]
 fn is_signed_is_false_for_fresh_transaction() {
     let tx = mainnet_tx().push_operation(vote("alice", 10_000));
 
-    assert!(!tx.is_signed(), "transaction with no signatures must not be signed");
+    assert!(
+        !tx.is_signed(),
+        "transaction with no signatures must not be signed"
+    );
 }
 
 #[test]
@@ -243,9 +271,13 @@ fn is_signed_becomes_true_after_add_signature() {
     let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
     assert!(!tx.is_signed());
 
-    tx.add_signature(FAKE_SIG_A).expect("signature should be accepted");
+    tx.add_signature(FAKE_SIG_A)
+        .expect("signature should be accepted");
 
-    assert!(tx.is_signed(), "transaction must be signed after add_signature");
+    assert!(
+        tx.is_signed(),
+        "transaction must be signed after add_signature"
+    );
 }
 
 #[test]
@@ -254,7 +286,10 @@ fn is_signed_stays_false_when_add_signature_fails() {
 
     let _ = tx.add_signature("not-a-hex-signature");
 
-    assert!(!tx.is_signed(), "failed add_signature must leave tx unsigned");
+    assert!(
+        !tx.is_signed(),
+        "failed add_signature must leave tx unsigned"
+    );
 }
 
 #[test]
@@ -262,7 +297,8 @@ fn add_signature_appends_to_proto_signatures() {
     let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
     assert!(tx.proto().signatures.is_empty());
 
-    tx.add_signature(FAKE_SIG_A).expect("valid hex signature should be accepted");
+    tx.add_signature(FAKE_SIG_A)
+        .expect("valid hex signature should be accepted");
 
     assert_eq!(tx.proto().signatures, vec![FAKE_SIG_A.to_string()]);
 }
@@ -287,7 +323,8 @@ fn add_signature_extends_full_binary_form_but_not_stripped() {
     let full_before = tx.to_binary_form(false).expect("full bin pre-sig");
     let stripped_before = tx.to_binary_form(true).expect("stripped bin pre-sig");
 
-    tx.add_signature(FAKE_SIG_A).expect("signature should be accepted");
+    tx.add_signature(FAKE_SIG_A)
+        .expect("signature should be accepted");
 
     let full_after = tx.to_binary_form(false).expect("full bin post-sig");
     let stripped_after = tx.to_binary_form(true).expect("stripped bin post-sig");
@@ -321,14 +358,34 @@ fn add_signature_rejects_non_hex_input() {
 fn to_api_returns_json_describing_the_transaction() {
     let tx = mainnet_tx().push_operation(vote("alice", 10_000));
 
-    let json = tx.to_api().expect("to_api should succeed for a valid transaction");
+    let json = tx
+        .to_api()
+        .expect("to_api should succeed for a valid transaction");
 
-    assert!(json.starts_with('{') && json.ends_with('}'), "expected JSON object: {json}");
-    assert!(json.contains("\"operations\""), "missing operations field: {json}");
-    assert!(json.contains("vote_operation"), "missing op type tag: {json}");
-    assert!(json.contains("\"voter\":\"alice\""), "missing voter field: {json}");
-    assert!(json.contains("\"weight\":10000"), "missing weight field: {json}");
-    assert!(json.contains("\"expiration\":\"2026-05-13T12:00:00\""), "missing expiration: {json}");
+    assert!(
+        json.starts_with('{') && json.ends_with('}'),
+        "expected JSON object: {json}"
+    );
+    assert!(
+        json.contains("\"operations\""),
+        "missing operations field: {json}"
+    );
+    assert!(
+        json.contains("vote_operation"),
+        "missing op type tag: {json}"
+    );
+    assert!(
+        json.contains("\"voter\":\"alice\""),
+        "missing voter field: {json}"
+    );
+    assert!(
+        json.contains("\"weight\":10000"),
+        "missing weight field: {json}"
+    );
+    assert!(
+        json.contains("\"expiration\":\"2026-05-13T12:00:00\""),
+        "missing expiration: {json}"
+    );
 }
 
 #[test]
@@ -339,7 +396,10 @@ fn to_api_reflects_pushed_operations() {
     let before = empty_tx.to_api().expect("empty to_api");
     let after = voted_tx.to_api().expect("voted to_api");
 
-    assert_ne!(before, after, "pushing an op must change the API JSON output");
+    assert_ne!(
+        before, after,
+        "pushing an op must change the API JSON output"
+    );
     assert!(!before.contains("vote_operation"));
     assert!(after.contains("vote_operation"));
 }
@@ -352,8 +412,14 @@ fn to_api_reflects_added_signatures() {
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
     let after = tx.to_api().expect("to_api after sig");
 
-    assert_ne!(before, after, "adding a signature must change the API JSON output");
-    assert!(after.contains(FAKE_SIG_A), "signature hex must appear in API JSON: {after}");
+    assert_ne!(
+        before, after,
+        "adding a signature must change the API JSON output"
+    );
+    assert!(
+        after.contains(FAKE_SIG_A),
+        "signature hex must appear in API JSON: {after}"
+    );
 }
 
 #[test]
@@ -429,7 +495,10 @@ fn impacted_accounts_is_empty_for_transaction_without_operations() {
         .impacted_accounts()
         .expect("impacted_accounts should succeed for empty tx");
 
-    assert!(accounts.is_empty(), "tx with no ops must yield no impacted accounts");
+    assert!(
+        accounts.is_empty(),
+        "tx with no ops must yield no impacted accounts"
+    );
 }
 
 #[test]
@@ -452,7 +521,11 @@ fn impacted_accounts_unions_across_operations() {
 
     assert_eq!(
         accounts,
-        vec!["alice".to_string(), "author".to_string(), "zebra".to_string()],
+        vec![
+            "alice".to_string(),
+            "author".to_string(),
+            "zebra".to_string()
+        ],
         "impacted accounts must be the deduplicated, sorted union across ops"
     );
 }
@@ -465,7 +538,10 @@ fn signature_keys_is_empty_for_unsigned_transaction() {
         .signature_keys()
         .expect("signature_keys should succeed for unsigned tx");
 
-    assert!(keys.is_empty(), "unsigned transaction must yield no signature keys");
+    assert!(
+        keys.is_empty(),
+        "unsigned transaction must yield no signature keys"
+    );
 }
 
 #[test]

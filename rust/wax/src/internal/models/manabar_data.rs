@@ -11,7 +11,10 @@ pub struct ManabarData {
 
 impl ManabarData {
     pub fn new(max_mana: i64, current_mana: i64) -> Self {
-        Self { max_mana, current_mana }
+        Self {
+            max_mana,
+            current_mana,
+        }
     }
 }
 
@@ -28,7 +31,8 @@ impl Manabar for ManabarData {
         if self.max_mana <= 0 {
             return Decimal::ZERO.round_dp_with_strategy(
                 HIVE_PERCENT_PRECISION_DOT_PLACES,
-                RoundingStrategy::ToZero);
+                RoundingStrategy::ToZero,
+            );
         }
 
         let percent =

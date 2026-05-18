@@ -6,7 +6,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::result::JsonAsset;
-use wax::{create_wax_foundation, WaxFoundation};
+use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -112,7 +112,7 @@ fn deserialize_transaction_round_trips_through_binary() {
     use std::sync::OnceLock;
     use wax::Transaction;
     use wax_core::ffi::{new_rust_protocol, rust_protocol};
-    use wax_core::proto::{operation::Value, Vote};
+    use wax_core::proto::{Vote, operation::Value};
     use wax_core::{RustOperation, RustTransaction};
 
     struct SyncProtocol(UniquePtr<rust_protocol>);
@@ -150,7 +150,10 @@ fn deserialize_transaction_round_trips_through_binary() {
         .expect("deserialize_transaction should succeed for hex from to_binary_form");
 
     assert!(json.contains("vote_operation"), "missing op type: {json}");
-    assert!(json.contains("\"voter\":\"alice\""), "missing voter: {json}");
+    assert!(
+        json.contains("\"voter\":\"alice\""),
+        "missing voter: {json}"
+    );
 }
 
 #[test]
@@ -168,8 +171,8 @@ fn set_expiration_updates_both_handle_and_proto_state() {
     use cxx::UniquePtr;
     use std::sync::OnceLock;
     use wax::Transaction;
-    use wax_core::ffi::{new_rust_protocol, rust_protocol};
     use wax_core::RustTransaction;
+    use wax_core::ffi::{new_rust_protocol, rust_protocol};
 
     struct SyncProtocol(UniquePtr<rust_protocol>);
     unsafe impl Sync for SyncProtocol {}

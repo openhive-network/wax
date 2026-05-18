@@ -1,11 +1,11 @@
 use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
 
+use crate::WaxError;
 use crate::foundation::WaxFoundation;
-use crate::internal::protocol::{rust_protocol, with_protocol_mut};
+use crate::internal::protocol::rust_protocol;
 use crate::models::basic::Hex;
 use crate::options::WaxOptions;
 use crate::result::{JsonAsset, JsonPrice, RefBlockData};
-use crate::WaxError;
 
 pub(crate) struct WaxFoundationApi {
     #[allow(dead_code)]
@@ -179,15 +179,13 @@ impl WaxFoundation for WaxFoundationApi {
     }
 
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError> {
-        with_protocol_mut(|protocol| {
-            protocol
-                .cpp_get_tapos_data(block_id)
-                .map(|d| RefBlockData {
-                    ref_block_num: d.ref_block_num,
-                    ref_block_prefix: d.ref_block_prefix,
-                })
-                .map_err(WaxError::from)
-        })
+        rust_protocol()
+            .cpp_get_tapos_data(block_id)
+            .map(|d| RefBlockData {
+                ref_block_num: d.ref_block_num,
+                ref_block_prefix: d.ref_block_prefix,
+            })
+            .map_err(WaxError::from)
     }
 }
 

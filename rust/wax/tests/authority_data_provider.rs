@@ -13,7 +13,9 @@ struct InMemoryAuthorityDataProvider {
 
 impl InMemoryAuthorityDataProvider {
     fn new() -> Self {
-        Self { accounts: HashMap::new() }
+        Self {
+            accounts: HashMap::new(),
+        }
     }
 
     fn insert(&mut self, info: AccountAuthorityInfo) {

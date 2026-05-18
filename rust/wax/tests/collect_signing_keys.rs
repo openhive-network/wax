@@ -6,7 +6,7 @@ use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
 use wax::{AuthorityDataProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
-use wax_core::proto::{operation::Value, Operation, Vote};
+use wax_core::proto::{Operation, Vote, operation::Value};
 use wax_core::{RustOperation, RustTransaction};
 
 // Test-local protocol singleton, mirroring tests/transaction.rs. The wax crate
