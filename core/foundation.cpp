@@ -760,7 +760,7 @@ int64_t foundation::cpp_calculate_current_manabar_value(int32_t now, const int64
   });
 }
 
-ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id)
+ref_block_data foundation::cpp_get_tapos_data(const std::string& block_id) const
 {
   return cpp::safe_exception_wrapper([&]()-> ref_block_data {
     const hive::protocol::block_id_type id { block_id };

@@ -138,7 +138,7 @@ public:
   uint64_t cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
   int64_t cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
 
-  ref_block_data cpp_get_tapos_data(const std::string& block_id);
+  ref_block_data cpp_get_tapos_data(const std::string& block_id) const;
 
   /**
    * Calculate current HP APR.
