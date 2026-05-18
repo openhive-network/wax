@@ -4,7 +4,6 @@ use std::str::FromStr;
 use wax::models::asset::{
     Asset, AssetAmount, AssetFactory, AssetName, NaiAsset, NaiAssetConvertible,
 };
-use wax::result::JsonAsset;
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -180,21 +179,21 @@ fn resolve_rejects_wrong_nai() {
     assert_eq!(err.message(), "Nai is not the same as expected.");
 }
 
-// ---------- json bridges -----------------------------------------------------
+// ---------- normalize_asset --------------------------------------------------
 
 #[test]
-fn to_json_asset_dispatches_through_matching_cpp_constructor() {
+fn normalize_asset_dispatches_through_matching_cpp_constructor() {
     let a = asset();
 
-    let proto = NaiAsset {
+    let input = NaiAsset {
         amount: "1500".into(),
         precision: ASSET_PRECISION,
         nai: HIVE_NAI.into(),
     };
-    let json = a.to_json_asset(proto).unwrap();
+    let normalized = a.normalize_asset(input).unwrap();
     assert_eq!(
-        json,
-        JsonAsset {
+        normalized,
+        NaiAsset {
             amount: "1500".into(),
             precision: ASSET_PRECISION,
             nai: HIVE_NAI.into(),
@@ -203,15 +202,15 @@ fn to_json_asset_dispatches_through_matching_cpp_constructor() {
 }
 
 #[test]
-fn to_json_asset_rejects_unknown_nai() {
+fn normalize_asset_rejects_unknown_nai() {
     let a = asset();
 
-    let proto = NaiAsset {
+    let input = NaiAsset {
         amount: "1500".into(),
         precision: ASSET_PRECISION,
         nai: "@@deadbeef0".into(),
     };
-    let err = a.to_json_asset(proto).expect_err("unknown nai must error");
+    let err = a.normalize_asset(input).expect_err("unknown nai must error");
     assert!(
         err.message().contains("@@deadbeef0"),
         "error should mention the unknown nai: {}",
@@ -220,31 +219,16 @@ fn to_json_asset_rejects_unknown_nai() {
 }
 
 #[test]
-fn to_json_asset_rejects_non_integer_amount() {
+fn normalize_asset_rejects_non_integer_amount() {
     let a = asset();
 
-    let proto = NaiAsset {
+    let input = NaiAsset {
         amount: "not-a-number".into(),
         precision: ASSET_PRECISION,
         nai: HIVE_NAI.into(),
     };
     assert!(
-        a.to_json_asset(proto).is_err(),
+        a.normalize_asset(input).is_err(),
         "non-integer amount must error"
     );
-}
-
-#[test]
-fn from_json_asset_is_field_rename() {
-    let a = asset();
-
-    let json = JsonAsset {
-        amount: "1500".into(),
-        precision: ASSET_PRECISION,
-        nai: HIVE_NAI.into(),
-    };
-    let proto = a.from_json_asset(json.clone());
-    assert_eq!(proto.amount, json.amount);
-    assert_eq!(proto.precision, json.precision);
-    assert_eq!(proto.nai, json.nai);
 }

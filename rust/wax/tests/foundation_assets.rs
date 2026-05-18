@@ -5,7 +5,7 @@
 //     `cpp_asset_value`)
 
 use wax::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
-use wax::result::{HiveAssetData, JsonAsset};
+use wax::result::HiveAssetData;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -26,8 +26,8 @@ fn proto(amount: &str, precision: u32, nai: &str) -> NaiAsset {
     }
 }
 
-fn json(amount: &str, precision: u32, nai: &str) -> JsonAsset {
-    JsonAsset {
+fn json(amount: &str, precision: u32, nai: &str) -> NaiAsset {
+    NaiAsset {
         amount: amount.into(),
         precision,
         nai: nai.into(),
@@ -151,11 +151,11 @@ fn get_asset_returns_six_decimal_amount_for_vests() {
 
 #[test]
 fn get_asset_round_trips_amount_from_hive_constructor() {
-    // Sanity: a JsonAsset produced by `hive()` must parse back to the same
-    // numeric value via `get_asset`.
+    // Sanity: a NaiAsset produced by `hive_satoshis` must parse back to the
+    // same numeric value via `get_asset`.
     let f = foundation();
 
-    let asset = f.hive(2_500).expect("hive constructor");
+    let asset = f.hive_satoshis(2_500).expect("hive_satoshis");
     let data = f.get_asset(&asset).expect("get_asset");
 
     assert_eq!(data.amount, "2.500");

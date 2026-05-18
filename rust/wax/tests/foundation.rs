@@ -5,7 +5,7 @@
 // `wax_core`.
 
 use wax::constants::MAINNET_CHAIN_ID;
-use wax::result::JsonAsset;
+use wax::models::asset::NaiAsset;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -19,14 +19,14 @@ fn foundation() -> Box<dyn WaxFoundation> {
 }
 
 #[test]
-fn hive_returns_typed_nai_asset() {
+fn hive_satoshis_returns_typed_nai_asset() {
     let f = foundation();
 
-    let asset = f.hive(1_234).expect("hive");
+    let asset = f.hive_satoshis(1_234).expect("hive_satoshis");
 
     assert_eq!(
         asset,
-        JsonAsset {
+        NaiAsset {
             amount: "1234".into(),
             precision: ASSET_PRECISION,
             nai: HIVE_NAI.into(),
@@ -35,10 +35,10 @@ fn hive_returns_typed_nai_asset() {
 }
 
 #[test]
-fn hbd_returns_typed_nai_asset() {
+fn hbd_satoshis_returns_typed_nai_asset() {
     let f = foundation();
 
-    let asset = f.hbd(42).expect("hbd");
+    let asset = f.hbd_satoshis(42).expect("hbd_satoshis");
 
     assert_eq!(asset.nai, HBD_NAI);
     assert_eq!(asset.precision, ASSET_PRECISION);
@@ -46,10 +46,10 @@ fn hbd_returns_typed_nai_asset() {
 }
 
 #[test]
-fn vests_returns_six_decimal_asset() {
+fn vests_satoshis_returns_six_decimal_asset() {
     let f = foundation();
 
-    let asset = f.vests(1_000_000).expect("vests");
+    let asset = f.vests_satoshis(1_000_000).expect("vests_satoshis");
 
     assert_eq!(asset.nai, VESTS_NAI);
     assert_eq!(asset.precision, VESTS_PRECISION);

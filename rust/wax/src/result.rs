@@ -1,19 +1,13 @@
 use std::collections::HashMap;
 
+use crate::models::asset::NaiAsset;
 use crate::models::authority::Authorities;
 use crate::models::basic::{AccountName, ChainId, PublicKey};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct JsonAsset {
-    pub amount: String,
-    pub precision: u32,
-    pub nai: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct JsonPrice {
-    pub base: JsonAsset,
-    pub quote: JsonAsset,
+    pub base: NaiAsset,
+    pub quote: NaiAsset,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -2,65 +2,69 @@ use wax_core::{RustTransaction, proto};
 
 use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
-use crate::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
+use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
-use crate::result::{HiveAssetData, JsonAsset, JsonPrice, RefBlockData};
+use crate::result::{HiveAssetData, JsonPrice, RefBlockData};
 
 pub trait WaxFoundation {
-    fn hive(&self, amount: i64) -> Result<JsonAsset, WaxError>;
-    fn hbd(&self, amount: i64) -> Result<JsonAsset, WaxError>;
-    fn vests(&self, amount: i64) -> Result<JsonAsset, WaxError>;
+    fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
+    fn hbd_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
+    fn vests_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
+
+    fn hive_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
+    fn hbd_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
+    fn vests_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
 
     fn hbd_to_hive(
         &self,
-        hbd: &JsonAsset,
-        base: &JsonAsset,
-        quote: &JsonAsset,
-    ) -> Result<JsonAsset, WaxError>;
+        hbd: &NaiAsset,
+        base: &NaiAsset,
+        quote: &NaiAsset,
+    ) -> Result<NaiAsset, WaxError>;
 
     fn hive_to_hbd(
         &self,
-        amount: &JsonAsset,
-        base: &JsonAsset,
-        quote: &JsonAsset,
-    ) -> Result<JsonAsset, WaxError>;
+        amount: &NaiAsset,
+        base: &NaiAsset,
+        quote: &NaiAsset,
+    ) -> Result<NaiAsset, WaxError>;
 
     fn vests_to_hp(
         &self,
-        vests: &JsonAsset,
-        total_vesting_fund_hive: &JsonAsset,
-        total_vesting_shares: &JsonAsset,
-    ) -> Result<JsonAsset, WaxError>;
+        vests: &NaiAsset,
+        total_vesting_fund_hive: &NaiAsset,
+        total_vesting_shares: &NaiAsset,
+    ) -> Result<NaiAsset, WaxError>;
 
     fn hp_to_vests(
         &self,
-        hive: &JsonAsset,
-        total_vesting_fund_hive: &JsonAsset,
-        total_vesting_shares: &JsonAsset,
-    ) -> Result<JsonAsset, WaxError>;
+        hive: &NaiAsset,
+        total_vesting_fund_hive: &NaiAsset,
+        total_vesting_shares: &NaiAsset,
+    ) -> Result<NaiAsset, WaxError>;
 
     fn estimate_hive_collateral(
         &self,
         current_median_history: &JsonPrice,
         current_min_history: &JsonPrice,
-        hbd_amount_to_get: &JsonAsset,
-    ) -> Result<JsonAsset, WaxError>;
+        hbd_amount_to_get: &NaiAsset,
+    ) -> Result<NaiAsset, WaxError>;
 
     fn estimate_hbd_interest(
         &self,
         hbd_seconds: u128,
         head_block_time: u32,
-        hbd: &JsonAsset,
+        hbd: &NaiAsset,
         hbd_seconds_last_update: u32,
         hbd_interest_rate: u16,
-    ) -> Result<JsonAsset, WaxError>;
+    ) -> Result<NaiAsset, WaxError>;
 
     fn calculate_hp_apr(
         &self,
         head_block_num: u32,
         vesting_reward_percent: u16,
-        virtual_supply: &JsonAsset,
-        total_vesting_fund_hive: &JsonAsset,
+        virtual_supply: &NaiAsset,
+        total_vesting_fund_hive: &NaiAsset,
     ) -> Result<String, WaxError>;
 
     fn create_asset_with_required_symbol(
@@ -69,7 +73,7 @@ pub trait WaxFoundation {
         asset: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError>;
 
-    fn get_asset(&self, asset: &JsonAsset) -> Result<HiveAssetData, WaxError>;
+    fn get_asset(&self, asset: &NaiAsset) -> Result<HiveAssetData, WaxError>;
 
     fn calculate_current_manabar_value(
         &self,

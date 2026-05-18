@@ -6,7 +6,8 @@
 // Python wax suite (python/wax/tests/...), so any divergence is a regression
 // against the canonical implementation rather than reinventing the math here.
 
-use wax::result::{JsonAsset, JsonPrice};
+use wax::models::asset::NaiAsset;
+use wax::result::JsonPrice;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -17,16 +18,16 @@ fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
 }
 
-fn hive(amount: i64) -> JsonAsset {
-    JsonAsset {
+fn hive(amount: i64) -> NaiAsset {
+    NaiAsset {
         amount: amount.to_string(),
         precision: ASSET_PRECISION,
         nai: HIVE_NAI.into(),
     }
 }
 
-fn hbd(amount: i64) -> JsonAsset {
-    JsonAsset {
+fn hbd(amount: i64) -> NaiAsset {
+    NaiAsset {
         amount: amount.to_string(),
         precision: ASSET_PRECISION,
         nai: HBD_NAI.into(),

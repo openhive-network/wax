@@ -9,18 +9,17 @@ use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{
     AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset, NaiAssetConvertible,
 };
-use crate::result::JsonAsset;
 
 const INIT_CPP_ASSET_AMOUNT: i64 = 0;
 
 pub struct Asset {
-    assets: HashMap<AssetName, JsonAsset>,
+    assets: HashMap<AssetName, NaiAsset>,
 }
 
 impl Asset {
     pub fn new() -> Result<Self, WaxError> {
-        let to_json = |ffi: Result<RustJsonAsset, _>| {
-            ffi.map(|a| JsonAsset {
+        let to_nai = |ffi: Result<RustJsonAsset, _>| {
+            ffi.map(|a| NaiAsset {
                 amount: a.amount,
                 precision: a.precision,
                 nai: a.nai,
@@ -32,15 +31,15 @@ impl Asset {
             assets: HashMap::from([
                 (
                     AssetName::Hive,
-                    to_json(rust_protocol().cpp_hive(INIT_CPP_ASSET_AMOUNT))?,
+                    to_nai(rust_protocol().cpp_hive(INIT_CPP_ASSET_AMOUNT))?,
                 ),
                 (
                     AssetName::Hbd,
-                    to_json(rust_protocol().cpp_hbd(INIT_CPP_ASSET_AMOUNT))?,
+                    to_nai(rust_protocol().cpp_hbd(INIT_CPP_ASSET_AMOUNT))?,
                 ),
                 (
                     AssetName::Vests,
-                    to_json(rust_protocol().cpp_vests(INIT_CPP_ASSET_AMOUNT))?,
+                    to_nai(rust_protocol().cpp_vests(INIT_CPP_ASSET_AMOUNT))?,
                 ),
             ]),
         })
@@ -120,7 +119,7 @@ impl Asset {
         }
     }
 
-    pub fn to_json_asset(&self, asset: NaiAsset) -> Result<JsonAsset, WaxError> {
+    pub fn normalize_asset(&self, asset: NaiAsset) -> Result<NaiAsset, WaxError> {
         let matched = self
             .assets
             .iter()
@@ -143,24 +142,16 @@ impl Asset {
         }
         .map_err(WaxError::from)?;
 
-        Ok(JsonAsset {
+        Ok(NaiAsset {
             amount: ffi.amount,
             precision: ffi.precision,
             nai: ffi.nai,
         })
     }
 
-    pub fn from_json_asset(&self, asset: JsonAsset) -> NaiAsset {
-        NaiAsset {
-            amount: asset.amount,
-            precision: asset.precision,
-            nai: asset.nai,
-        }
-    }
-
     fn assert_asset_nai_valid(
         &self,
-        valid_asset: &JsonAsset,
+        valid_asset: &NaiAsset,
         asset_to_check: &NaiAsset,
     ) -> Result<(), WaxError> {
         if valid_asset.nai == asset_to_check.nai {
@@ -169,7 +160,7 @@ impl Asset {
         Err(WaxError::new("Nai is not the same as expected."))
     }
 
-    fn cpp_asset(&self, asset_name: AssetName) -> Result<&JsonAsset, WaxError> {
+    fn cpp_asset(&self, asset_name: AssetName) -> Result<&NaiAsset, WaxError> {
         self.assets
             .get(&asset_name)
             .ok_or_else(|| WaxError::UnknownAssetType {

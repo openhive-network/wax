@@ -5,7 +5,7 @@
 // C++ math — that lives in hived. We pick simple feeds where the integer
 // arithmetic is easy to verify by hand.
 
-use wax::result::JsonAsset;
+use wax::models::asset::NaiAsset;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -18,24 +18,24 @@ fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
 }
 
-fn hive(amount: i64) -> JsonAsset {
-    JsonAsset {
+fn hive(amount: i64) -> NaiAsset {
+    NaiAsset {
         amount: amount.to_string(),
         precision: ASSET_PRECISION,
         nai: HIVE_NAI.into(),
     }
 }
 
-fn hbd(amount: i64) -> JsonAsset {
-    JsonAsset {
+fn hbd(amount: i64) -> NaiAsset {
+    NaiAsset {
         amount: amount.to_string(),
         precision: ASSET_PRECISION,
         nai: HBD_NAI.into(),
     }
 }
 
-fn vests(amount: i64) -> JsonAsset {
-    JsonAsset {
+fn vests(amount: i64) -> NaiAsset {
+    NaiAsset {
         amount: amount.to_string(),
         precision: VESTS_PRECISION,
         nai: VESTS_NAI.into(),

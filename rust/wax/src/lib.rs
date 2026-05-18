@@ -12,6 +12,8 @@ pub use foundation::WaxFoundation;
 pub use interfaces::{AuthorityDataProvider, Manabar, Transaction};
 pub use internal::models::manabar_data::ManabarData;
 pub use options::{WaxChainOptions, WaxOptions};
+pub use wax_core::proto;
+pub use wax_core::{RustOperation, RustTransaction, transaction_to_canonical_json};
 
 pub fn create_wax_foundation(options: impl Into<Option<WaxOptions>>) -> Box<dyn WaxFoundation> {
     let options = options.into().unwrap_or_default();
