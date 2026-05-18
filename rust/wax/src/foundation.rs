@@ -1,6 +1,7 @@
 use crate::WaxError;
+use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
-use crate::models::basic::Hex;
+use crate::models::basic::{Hex, HiveDateTime};
 use crate::result::{HiveAssetData, JsonAsset, JsonPrice, RefBlockData};
 
 pub trait WaxFoundation {
@@ -67,6 +68,22 @@ pub trait WaxFoundation {
     ) -> Result<NaiAsset, WaxError>;
 
     fn get_asset(&self, asset: &JsonAsset) -> Result<HiveAssetData, WaxError>;
+
+    fn calculate_current_manabar_value(
+        &self,
+        head_block_time: HiveDateTime,
+        max_mana: i64,
+        current_mana: i64,
+        last_update_time: u32,
+    ) -> Result<ManabarData, WaxError>;
+
+    fn calculate_manabar_full_regeneration_time(
+        &self,
+        head_block_time: HiveDateTime,
+        max_mana: i64,
+        current_mana: i64,
+        last_update_time: u32,
+    ) -> Result<u64, WaxError>;
 
     fn is_valid_account_name(&self, name: &str) -> bool;
 

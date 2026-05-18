@@ -2,9 +2,10 @@ use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
+use crate::internal::models::manabar_data::ManabarData;
 use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{Asset, AssetName, NaiAsset, NaiAssetConvertible};
-use crate::models::basic::Hex;
+use crate::models::basic::{Hex, HiveDateTime};
 use crate::options::WaxOptions;
 use crate::result::{HiveAssetData, JsonAsset, JsonPrice, RefBlockData};
 
@@ -177,6 +178,38 @@ impl WaxFoundation for WaxFoundationApi {
         Ok(HiveAssetData { amount, symbol })
     }
 
+    fn calculate_current_manabar_value(
+        &self,
+        head_block_time: HiveDateTime,
+        max_mana: i64,
+        current_mana: i64,
+        last_update_time: u32,
+    ) -> Result<ManabarData, WaxError> {
+        let now = head_block_time_to_now(head_block_time);
+        let regenerated = rust_protocol()
+            .cpp_calculate_current_manabar_value(now, max_mana, current_mana, last_update_time)
+            .map_err(WaxError::from)?;
+        Ok(ManabarData::new(max_mana, regenerated))
+    }
+
+    fn calculate_manabar_full_regeneration_time(
+        &self,
+        head_block_time: HiveDateTime,
+        max_mana: i64,
+        current_mana: i64,
+        last_update_time: u32,
+    ) -> Result<u64, WaxError> {
+        let now = head_block_time_to_now(head_block_time);
+        rust_protocol()
+            .cpp_calculate_manabar_full_regeneration_time(
+                now,
+                max_mana,
+                current_mana,
+                last_update_time,
+            )
+            .map_err(WaxError::from)
+    }
+
     fn is_valid_account_name(&self, name: &str) -> bool {
         rust_protocol().cpp_is_valid_account_name(name)
     }
@@ -227,4 +260,10 @@ pub(crate) fn from_json_price(price: &JsonPrice) -> RustJsonPrice {
         base: from_json_asset(&price.base),
         quote: from_json_asset(&price.quote),
     }
+}
+
+/// Reduces a `HiveDateTime` to the `int32_t` unix timestamp the C++ manabar
+/// helpers consume — same `int(dt.timestamp())` shape as Python's wrapper.
+fn head_block_time_to_now(dt: HiveDateTime) -> i32 {
+    dt.inner().timestamp() as i32
 }

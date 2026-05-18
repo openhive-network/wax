@@ -405,6 +405,28 @@ namespace cpp {
 		return foundation::cpp_asset_symbol(from_rust_json_asset(asset));
 	}
 
+	int64_t rust_protocol::cpp_calculate_current_manabar_value(
+		int32_t now,
+		int64_t max_mana,
+		int64_t current_mana,
+		uint32_t last_update_time
+	) const {
+		// foundation::cpp_calculate_current_manabar_value isn't declared const
+		// upstream even though it doesn't mutate `*this`.
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_calculate_current_manabar_value(now, max_mana, current_mana, last_update_time);
+	}
+
+	uint64_t rust_protocol::cpp_calculate_manabar_full_regeneration_time(
+		int32_t now,
+		int64_t max_mana,
+		int64_t current_mana,
+		uint32_t last_update_time
+	) const {
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_calculate_manabar_full_regeneration_time(now, max_mana, current_mana, last_update_time);
+	}
+
 	bool rust_protocol::cpp_is_valid_account_name(::rust::Str name) const {
 		return foundation::cpp_is_valid_account_name(std::string(name));
 	}

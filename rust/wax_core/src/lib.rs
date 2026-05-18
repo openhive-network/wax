@@ -279,6 +279,22 @@ pub mod ffi {
         fn cpp_asset_value(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
         fn cpp_asset_symbol(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
 
+        fn cpp_calculate_current_manabar_value(
+            self: &rust_protocol,
+            now: i32,
+            max_mana: i64,
+            current_mana: i64,
+            last_update_time: u32,
+        ) -> Result<i64>;
+
+        fn cpp_calculate_manabar_full_regeneration_time(
+            self: &rust_protocol,
+            now: i32,
+            max_mana: i64,
+            current_mana: i64,
+            last_update_time: u32,
+        ) -> Result<u64>;
+
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
         fn cpp_deserialize_transaction(

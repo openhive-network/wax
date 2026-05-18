@@ -106,6 +106,20 @@ namespace cpp {
 		::rust::String cpp_asset_value(const RustJsonAsset& asset) const;
 		::rust::String cpp_asset_symbol(const RustJsonAsset& asset) const;
 
+		int64_t cpp_calculate_current_manabar_value(
+			int32_t now,
+			int64_t max_mana,
+			int64_t current_mana,
+			uint32_t last_update_time
+		) const;
+
+		uint64_t cpp_calculate_manabar_full_regeneration_time(
+			int32_t now,
+			int64_t max_mana,
+			int64_t current_mana,
+			uint32_t last_update_time
+		) const;
+
 		bool cpp_is_valid_account_name(::rust::Str name) const;
 
 		std::unique_ptr<hive_transaction_handle>
