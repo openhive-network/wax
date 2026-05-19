@@ -112,9 +112,39 @@ impl Asset {
                 Ok(a)
             }
             NaiAssetConvertible::Json(s) => {
-                // TODO: add JSON parsing once a json crate is justified by a
-                // real caller. Python uses stdlib `json.loads` here.
-                Err(WaxError::CannotCreateAsset { potential_asset: s })
+                let cannot = || WaxError::CannotCreateAsset {
+                    potential_asset: s.clone(),
+                };
+
+                let parsed: serde_json::Value =
+                    serde_json::from_str(&s).map_err(|_| cannot())?;
+
+                let amount = parsed
+                    .get("amount")
+                    .and_then(serde_json::Value::as_str)
+                    .ok_or_else(cannot)?
+                    .to_string();
+                let precision = parsed
+                    .get("precision")
+                    .and_then(serde_json::Value::as_u64)
+                    .and_then(|n| u32::try_from(n).ok())
+                    .ok_or_else(cannot)?;
+                let nai = parsed
+                    .get("nai")
+                    .and_then(serde_json::Value::as_str)
+                    .ok_or_else(cannot)?
+                    .to_string();
+
+                let asset = NaiAsset {
+                    amount,
+                    precision,
+                    nai,
+                };
+
+                self.assert_asset_nai_valid(proper_asset, &asset)
+                    .map_err(|_| cannot())?;
+
+                Ok(asset)
             }
         }
     }

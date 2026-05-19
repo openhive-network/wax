@@ -81,10 +81,61 @@ fn create_asset_with_required_symbol_rejects_mismatched_nai() {
 }
 
 #[test]
-fn create_asset_with_required_symbol_rejects_json_string() {
-    // The current `NaiAssetConvertible::Json` branch is a stub (no JSON crate
-    // wired in yet). Lock that behaviour: it must surface a CannotCreateAsset
-    // error rather than silently succeeding.
+fn create_asset_with_required_symbol_accepts_valid_json_string() {
+    let f = foundation();
+
+    let json_str = format!(
+        "{{\"amount\":\"1000\",\"precision\":{},\"nai\":\"{}\"}}",
+        ASSET_PRECISION, HIVE_NAI
+    );
+    let resolved = f
+        .create_asset_with_required_symbol(AssetName::Hive, NaiAssetConvertible::Json(json_str))
+        .expect("valid HIVE JSON must resolve");
+
+    assert_eq!(resolved, proto("1000", ASSET_PRECISION, HIVE_NAI));
+}
+
+#[test]
+fn create_asset_with_required_symbol_rejects_json_with_wrong_nai() {
+    // Mismatched nai is wrapped into CannotCreateAsset (mirrors Python's
+    // try/except around _assert_asset_nai_valid on the JSON branch).
+    let f = foundation();
+
+    let json_str = format!(
+        "{{\"amount\":\"1000\",\"precision\":{},\"nai\":\"{}\"}}",
+        ASSET_PRECISION, HBD_NAI
+    );
+    let err = f
+        .create_asset_with_required_symbol(
+            AssetName::Hive,
+            NaiAssetConvertible::Json(json_str.clone()),
+        )
+        .expect_err("nai mismatch in JSON must error");
+
+    assert!(
+        err.message().contains(HBD_NAI),
+        "error should echo the offending JSON: {}",
+        err.message()
+    );
+    assert!(err.message().to_lowercase().contains("cannot create asset"));
+}
+
+#[test]
+fn create_asset_with_required_symbol_rejects_malformed_json() {
+    let f = foundation();
+
+    let err = f
+        .create_asset_with_required_symbol(
+            AssetName::Hive,
+            NaiAssetConvertible::Json("not-valid-json".into()),
+        )
+        .expect_err("malformed JSON must error");
+
+    assert!(err.message().contains("not-valid-json"));
+}
+
+#[test]
+fn create_asset_with_required_symbol_rejects_json_missing_fields() {
     let f = foundation();
 
     let err = f
@@ -92,7 +143,7 @@ fn create_asset_with_required_symbol_rejects_json_string() {
             AssetName::Hive,
             NaiAssetConvertible::Json("{\"amount\":\"1000\"}".into()),
         )
-        .expect_err("json string is not yet supported");
+        .expect_err("JSON missing precision/nai must error");
 
     assert!(
         err.message().contains("1000"),

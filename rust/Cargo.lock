@@ -1285,6 +1285,7 @@ dependencies = [
  "chrono",
  "cxx",
  "rust_decimal",
+ "serde_json",
  "thiserror",
  "wax_core",
 ]
