@@ -49,7 +49,14 @@ namespace cpp {
 			::rust::Str chain_id
 		) const;
 
+		::rust::String cpp_tx_legacy_sig_digest(
+			const hive_transaction_handle& tx,
+			::rust::Str chain_id
+		) const;
+
 		::rust::String cpp_tx_id(const hive_transaction_handle& tx) const;
+
+		::rust::String cpp_tx_legacy_id(const hive_transaction_handle& tx) const;
 
 		::rust::String cpp_tx_to_binary(
 			const hive_transaction_handle& tx,
@@ -61,7 +68,14 @@ namespace cpp {
 			::rust::Str chain_id
 		) const;
 
+		::rust::Vec<::rust::String> cpp_tx_legacy_signature_keys(
+			const hive_transaction_handle& tx,
+			::rust::Str chain_id
+		) const;
+
 		::rust::String cpp_tx_to_json(const hive_transaction_handle& tx) const;
+
+		::rust::String cpp_tx_to_legacy_json(const hive_transaction_handle& tx) const;
 
 		::rust::Vec<::rust::String> cpp_tx_impacted_accounts(const hive_transaction_handle& tx) const;
 

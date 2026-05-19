@@ -569,6 +569,181 @@ fn signature_keys_fails_for_invalid_chain_id_when_signed() {
 }
 
 #[test]
+fn legacy_sig_digest_returns_hex_for_well_formed_transaction() {
+    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let digest = tx
+        .legacy_sig_digest()
+        .expect("legacy_sig_digest should succeed for a valid transaction");
+
+    assert_eq!(
+        digest.len(),
+        64,
+        "legacy sig digest should be 32-byte hex (64 chars)"
+    );
+    assert!(
+        digest.chars().all(|c| c.is_ascii_hexdigit()),
+        "legacy sig digest should be lowercase hex: {digest}"
+    );
+}
+
+#[test]
+fn legacy_sig_digest_differs_when_operations_differ() {
+    let a = mainnet_tx().push_operation(vote("alice", 10_000));
+    let b = mainnet_tx().push_operation(vote("bob", 10_000));
+
+    let da = a.legacy_sig_digest().expect("a legacy digest");
+    let db = b.legacy_sig_digest().expect("b legacy digest");
+
+    assert_ne!(
+        da, db,
+        "different operations must produce different legacy digests"
+    );
+}
+
+#[test]
+fn legacy_sig_digest_fails_for_invalid_chain_id() {
+    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+
+    assert!(
+        tx.legacy_sig_digest().is_err(),
+        "non-hex chain_id baked into the tx should fail at legacy_sig_digest time"
+    );
+}
+
+#[test]
+fn legacy_id_returns_40_char_hex_for_well_formed_transaction() {
+    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let id = tx
+        .legacy_id()
+        .expect("legacy_id should succeed for a valid transaction");
+
+    assert_eq!(id.len(), 40, "legacy tx id should be 20-byte hex (40 chars)");
+    assert!(
+        id.chars().all(|c| c.is_ascii_hexdigit()),
+        "legacy tx id should be hex: {id}"
+    );
+}
+
+#[test]
+fn legacy_id_differs_when_operations_differ() {
+    let a = mainnet_tx()
+        .push_operation(vote("alice", 10_000))
+        .legacy_id()
+        .expect("a legacy id");
+    let b = mainnet_tx()
+        .push_operation(vote("bob", 10_000))
+        .legacy_id()
+        .expect("b legacy id");
+
+    assert_ne!(
+        a, b,
+        "different operations must produce different legacy ids"
+    );
+}
+
+#[test]
+fn to_legacy_api_returns_json_describing_the_transaction() {
+    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let json = tx
+        .to_legacy_api()
+        .expect("to_legacy_api should succeed for a valid transaction");
+
+    assert!(
+        json.starts_with('{') && json.ends_with('}'),
+        "expected JSON object: {json}"
+    );
+    assert!(
+        json.contains("\"operations\""),
+        "missing operations field: {json}"
+    );
+    assert!(
+        json.contains("\"voter\":\"alice\""),
+        "missing voter field: {json}"
+    );
+    assert!(
+        json.contains("\"weight\":10000"),
+        "missing weight field: {json}"
+    );
+    assert!(
+        json.contains("\"expiration\":\"2026-05-13T12:00:00\""),
+        "missing expiration: {json}"
+    );
+}
+
+#[test]
+fn to_legacy_api_reflects_pushed_operations() {
+    let empty_tx = mainnet_tx();
+    let voted_tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let before = empty_tx.to_legacy_api().expect("empty to_legacy_api");
+    let after = voted_tx.to_legacy_api().expect("voted to_legacy_api");
+
+    assert_ne!(
+        before, after,
+        "pushing an op must change the legacy API JSON output"
+    );
+    assert!(!before.contains("\"voter\""));
+    assert!(after.contains("\"voter\":\"alice\""));
+}
+
+#[test]
+fn to_legacy_api_reflects_added_signatures() {
+    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let before = tx.to_legacy_api().expect("to_legacy_api before sig");
+    tx.add_signature(FAKE_SIG_A).expect("signature accepted");
+    let after = tx.to_legacy_api().expect("to_legacy_api after sig");
+
+    assert_ne!(
+        before, after,
+        "adding a signature must change the legacy API JSON output"
+    );
+    assert!(
+        after.contains(FAKE_SIG_A),
+        "signature hex must appear in legacy API JSON: {after}"
+    );
+}
+
+#[test]
+fn legacy_signature_keys_is_empty_for_unsigned_transaction() {
+    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let keys = tx
+        .legacy_signature_keys()
+        .expect("legacy_signature_keys should succeed for unsigned tx");
+
+    assert!(
+        keys.is_empty(),
+        "unsigned transaction must yield no legacy signature keys"
+    );
+}
+
+#[test]
+fn legacy_signature_keys_skips_chain_id_when_unsigned() {
+    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+
+    let keys = tx
+        .legacy_signature_keys()
+        .expect("legacy_signature_keys must not touch chain_id when signatures are empty");
+
+    assert!(keys.is_empty());
+}
+
+#[test]
+fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
+    let mut tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    tx.add_signature(FAKE_SIG_A).expect("signature accepted");
+
+    assert!(
+        tx.legacy_signature_keys().is_err(),
+        "non-hex chain_id must fail once signatures are present (legacy)"
+    );
+}
+
+#[test]
 fn push_operation_preserves_order_when_chained() {
     let tx = RustTransaction::new(
         test_protocol(),

@@ -62,9 +62,21 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn legacy_sig_digest(&self) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_tx_legacy_sig_digest(&self.handle, &self.chain_id)
+            .map_err(WaxError::from)
+    }
+
     fn id(&self) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_tx_id(&self.handle)
+            .map_err(WaxError::from)
+    }
+
+    fn legacy_id(&self) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_tx_legacy_id(&self.handle)
             .map_err(WaxError::from)
     }
 
@@ -80,9 +92,21 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn to_legacy_api(&self) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_tx_to_legacy_json(&self.handle)
+            .map_err(WaxError::from)
+    }
+
     fn signature_keys(&self) -> Result<Vec<String>, WaxError> {
         rust_protocol()
             .cpp_tx_signature_keys(&self.handle, &self.chain_id)
+            .map_err(WaxError::from)
+    }
+
+    fn legacy_signature_keys(&self) -> Result<Vec<String>, WaxError> {
+        rust_protocol()
+            .cpp_tx_legacy_signature_keys(&self.handle, &self.chain_id)
             .map_err(WaxError::from)
     }
 

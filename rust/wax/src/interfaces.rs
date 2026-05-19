@@ -27,10 +27,14 @@ pub trait Transaction {
     fn is_signed(&self) -> bool;
     fn validate(&self) -> Result<(), WaxError>;
     fn sig_digest(&self) -> Result<SigDigest, WaxError>;
+    fn legacy_sig_digest(&self) -> Result<SigDigest, WaxError>;
     fn id(&self) -> Result<TransactionId, WaxError>;
+    fn legacy_id(&self) -> Result<TransactionId, WaxError>;
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<Hex, WaxError>;
     fn to_api(&self) -> Result<String, WaxError>;
+    fn to_legacy_api(&self) -> Result<String, WaxError>;
     fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
+    fn legacy_signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
     fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
     fn collect_signing_keys(

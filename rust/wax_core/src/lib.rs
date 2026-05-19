@@ -181,7 +181,18 @@ pub mod ffi {
             chain_id: &str,
         ) -> Result<String>;
 
+        fn cpp_tx_legacy_sig_digest(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            chain_id: &str,
+        ) -> Result<String>;
+
         fn cpp_tx_id(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+        ) -> Result<String>;
+
+        fn cpp_tx_legacy_id(
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<String>;
@@ -198,7 +209,18 @@ pub mod ffi {
             chain_id: &str,
         ) -> Result<Vec<String>>;
 
+        fn cpp_tx_legacy_signature_keys(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            chain_id: &str,
+        ) -> Result<Vec<String>>;
+
         fn cpp_tx_to_json(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+        ) -> Result<String>;
+
+        fn cpp_tx_to_legacy_json(
             self: &rust_protocol,
             tx: &hive_transaction_handle,
         ) -> Result<String>;

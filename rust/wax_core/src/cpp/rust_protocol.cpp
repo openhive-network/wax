@@ -227,8 +227,19 @@ namespace cpp {
 		return foundation::cpp_tx_sig_digest(tx, std::string(chain_id), true);
 	}
 
+	::rust::String rust_protocol::cpp_tx_legacy_sig_digest(
+		const hive_transaction_handle& tx,
+		::rust::Str chain_id
+	) const {
+		return foundation::cpp_tx_sig_digest(tx, std::string(chain_id), false);
+	}
+
 	::rust::String rust_protocol::cpp_tx_id(const hive_transaction_handle& tx) const {
 		return foundation::cpp_tx_id(tx, true);
+	}
+
+	::rust::String rust_protocol::cpp_tx_legacy_id(const hive_transaction_handle& tx) const {
+		return foundation::cpp_tx_id(tx, false);
 	}
 
 	::rust::String rust_protocol::cpp_tx_to_binary(
@@ -245,8 +256,19 @@ namespace cpp {
 		return to_rust_string_vec(foundation::cpp_tx_signature_keys(tx, std::string(chain_id), true));
 	}
 
+	::rust::Vec<::rust::String> rust_protocol::cpp_tx_legacy_signature_keys(
+		const hive_transaction_handle& tx,
+		::rust::Str chain_id
+	) const {
+		return to_rust_string_vec(foundation::cpp_tx_signature_keys(tx, std::string(chain_id), false));
+	}
+
 	::rust::String rust_protocol::cpp_tx_to_json(const hive_transaction_handle& tx) const {
 		return foundation::cpp_tx_to_json(tx);
+	}
+
+	::rust::String rust_protocol::cpp_tx_to_legacy_json(const hive_transaction_handle& tx) const {
+		return foundation::cpp_tx_to_legacy_json(tx);
 	}
 
 	::rust::Vec<::rust::String> rust_protocol::cpp_tx_impacted_accounts(
@@ -450,9 +472,6 @@ namespace cpp {
 	}
 
 	RustRefBlockData rust_protocol::cpp_get_tapos_data(::rust::Str block_id) const {
-		// foundation::cpp_get_tapos_data is not declared const upstream even
-		// though the implementation does not mutate `*this`; cast it away so
-		// the rust side can keep this method on the immutable code path.
 		auto& self = const_cast<rust_protocol&>(*this);
 		const auto data = self.foundation::cpp_get_tapos_data(std::string(block_id));
 		return RustRefBlockData{ data.ref_block_num, data.ref_block_prefix };
