@@ -19,12 +19,16 @@ fn descriptor_pool_loads_hive_protocol_buffers() {
 
 #[test]
 fn vote_operation_fields_round_trip_by_name() {
-    let op = RustOperation::new(Value::VoteOperation(Vote {
-        voter: "alice".into(),
-        author: "bob".into(),
-        permlink: "post-1".into(),
-        weight: 10_000,
-    }));
+    let protocol = new_rust_protocol();
+    let op = RustOperation::new(
+        protocol.as_ref().unwrap(),
+        Value::VoteOperation(Vote {
+            voter: "alice".into(),
+            author: "bob".into(),
+            permlink: "post-1".into(),
+            weight: 10_000,
+        }),
+    );
 
     let mo = op.to_managed();
     assert_eq!(mo.oneof_variant(), "vote_operation");
@@ -38,12 +42,16 @@ fn vote_operation_fields_round_trip_by_name() {
 
 #[test]
 fn transfer_operation_exposes_nested_asset() {
-    let op = RustOperation::new(Value::TransferOperation(Transfer {
-        from_account: "alice".into(),
-        to_account: "bob".into(),
-        amount: RustAsset::hive(100_000).into_proto(),
-        memo: "hello".into(),
-    }));
+    let protocol = new_rust_protocol();
+    let op = RustOperation::new(
+        protocol.as_ref().unwrap(),
+        Value::TransferOperation(Transfer {
+            from_account: "alice".into(),
+            to_account: "bob".into(),
+            amount: RustAsset::hive(100_000).into_proto(),
+            memo: "hello".into(),
+        }),
+    );
 
     let mo = op.to_managed();
     assert_eq!(mo.oneof_variant(), "transfer_operation");
@@ -129,7 +137,11 @@ fn operation_with_no_variant_reports_empty_oneof() {
 
 #[test]
 fn is_optional_field_present_returns_true_for_required_fields() {
-    let op = RustOperation::new(Value::VoteOperation(Vote::default()));
+    let protocol = new_rust_protocol();
+    let op = RustOperation::new(
+        protocol.as_ref().unwrap(),
+        Value::VoteOperation(Vote::default()),
+    );
     let mo = op.to_managed();
     let vote = mo.get_field("vote_operation");
     assert!(vote.is_optional_field_present("voter"));

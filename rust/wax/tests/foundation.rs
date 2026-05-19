@@ -135,12 +135,15 @@ fn deserialize_transaction_round_trips_through_binary() {
         "2026-05-15T12:00:00",
         Vec::new(),
     )
-    .push_operation(RustOperation::new(Value::VoteOperation(Vote {
-        voter: "alice".into(),
-        author: "bob".into(),
-        permlink: "p".into(),
-        weight: 10_000,
-    })));
+    .push_operation(RustOperation::new(
+        protocol,
+        Value::VoteOperation(Vote {
+            voter: "alice".into(),
+            author: "bob".into(),
+            permlink: "p".into(),
+            weight: 10_000,
+        }),
+    ));
 
     let hex = tx.to_binary_form(false).expect("to_binary_form");
 

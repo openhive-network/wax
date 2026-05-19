@@ -76,12 +76,15 @@ fn posting_only(key: &str) -> Authorities {
 }
 
 fn vote_op(voter: &str) -> RustOperation {
-    RustOperation::new(Value::VoteOperation(Vote {
-        voter: voter.into(),
-        author: "anyone".into(),
-        permlink: "p".into(),
-        weight: 10_000,
-    }))
+    RustOperation::new(
+        test_protocol(),
+        Value::VoteOperation(Vote {
+            voter: voter.into(),
+            author: "anyone".into(),
+            permlink: "p".into(),
+            weight: 10_000,
+        }),
+    )
 }
 
 fn vote_tx(voters: &[&str]) -> RustTransaction {

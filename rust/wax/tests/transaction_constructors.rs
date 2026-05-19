@@ -186,12 +186,16 @@ fn create_transaction_with_tapos_returns_usable_handle() {
         .create_transaction_with_tapos(block_id, "2026-05-15T12:00:00")
         .expect("create_transaction_with_tapos");
 
-    let pushed = wax::RustOperation::new(Value::VoteOperation(Vote {
-        voter: "alice".into(),
-        author: "bob".into(),
-        permlink: "p".into(),
-        weight: 1,
-    }));
+    let protocol = wax_core::ffi::new_rust_protocol();
+    let pushed = wax::RustOperation::new(
+        protocol.as_ref().unwrap(),
+        Value::VoteOperation(Vote {
+            voter: "alice".into(),
+            author: "bob".into(),
+            permlink: "p".into(),
+            weight: 1,
+        }),
+    );
     tx = tx.push_operation(pushed);
 
     let api = tx.to_api().expect("to_api");

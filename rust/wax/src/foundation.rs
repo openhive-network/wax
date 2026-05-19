@@ -94,7 +94,7 @@ pub trait WaxFoundation {
     fn is_valid_account_name(&self, name: &str) -> bool;
 
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;
-    // TODO: probably remove this
+
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
 
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;

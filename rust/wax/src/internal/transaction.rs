@@ -9,16 +9,14 @@ use wax_core::{RustOperation, RustTransaction, proto};
 use crate::WaxError;
 use crate::interfaces::{AuthorityDataProvider, Transaction};
 use crate::internal::authority::{build_provider, to_rust_authorities};
-use crate::internal::protocol::{create_operation_handle, rust_protocol};
+use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
 use crate::result::MinimizeRequiredSignaturesData;
 
 impl Transaction for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
-        let op_handle = create_operation_handle(&op);
-
         rust_protocol()
-            .cpp_tx_add_operation(self.handle.pin_mut(), &op_handle)
+            .cpp_tx_add_operation(self.handle.pin_mut(), &op.handle)
             .expect("failed to add operation to transaction");
 
         self.inner.operations.push(op.inner);

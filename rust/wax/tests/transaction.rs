@@ -44,19 +44,25 @@ fn tx_with_chain_id(chain_id: &str) -> RustTransaction {
 }
 
 fn vote(voter: &str, weight: u32) -> RustOperation {
-    RustOperation::new(Value::VoteOperation(Vote {
-        voter: voter.into(),
-        author: "author".into(),
-        permlink: "permlink".into(),
-        weight,
-    }))
+    RustOperation::new(
+        test_protocol(),
+        Value::VoteOperation(Vote {
+            voter: voter.into(),
+            author: "author".into(),
+            permlink: "permlink".into(),
+            weight,
+        }),
+    )
 }
 
 fn account_witness_proxy(account: &str, proxy: &str) -> RustOperation {
-    RustOperation::new(Value::AccountWitnessProxyOperation(AccountWitnessProxy {
-        account: account.into(),
-        proxy: proxy.into(),
-    }))
+    RustOperation::new(
+        test_protocol(),
+        Value::AccountWitnessProxyOperation(AccountWitnessProxy {
+            account: account.into(),
+            proxy: proxy.into(),
+        }),
+    )
 }
 
 fn authority_with_key(public_key: &str) -> Authority {
@@ -68,12 +74,15 @@ fn authority_with_key(public_key: &str) -> Authority {
 }
 
 fn recover_account(account: &str, new_owner_key: &str, recent_owner_key: &str) -> RustOperation {
-    RustOperation::new(Value::RecoverAccountOperation(RecoverAccount {
-        account_to_recover: account.into(),
-        new_owner_authority: authority_with_key(new_owner_key),
-        recent_owner_authority: authority_with_key(recent_owner_key),
-        extensions: Vec::new(),
-    }))
+    RustOperation::new(
+        test_protocol(),
+        Value::RecoverAccountOperation(RecoverAccount {
+            account_to_recover: account.into(),
+            new_owner_authority: authority_with_key(new_owner_key),
+            recent_owner_authority: authority_with_key(recent_owner_key),
+            extensions: Vec::new(),
+        }),
+    )
 }
 
 #[test]
