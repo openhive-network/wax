@@ -1,19 +1,8 @@
 use cxx::UniquePtr;
-// `DynamicMessage` impls `prost::Message` from the prost version that
-// prost-reflect itself depends on, which may differ from the prost release
-// our generated `proto::*` types target. Importing both traits under
-// distinct names lets method resolution pick the right one per type.
-#[allow(unused_imports)]
-use prost::Message as _;
-#[allow(unused_imports)]
-use prost_reflect::prost::Message as _;
-use prost_reflect::DynamicMessage;
 
 use crate::ffi::{hive_transaction_handle, rust_protocol};
-use crate::managed_object::{descriptor_pool, RustManagedObject};
+use crate::managed_object::RustManagedObject;
 use crate::proto;
-
-const TRANSACTION_MESSAGE_NAME: &str = "hive.protocol.buffers.transaction";
 
 pub struct RustTransaction {
     pub inner: proto::Transaction,
@@ -56,15 +45,7 @@ impl RustTransaction {
         chain_id: impl Into<String>,
         json: &str,
     ) -> Result<Self, String> {
-        let descriptor = descriptor_pool()
-            .get_message_by_name(TRANSACTION_MESSAGE_NAME)
-            .expect("missing descriptor for hive.protocol.buffers.transaction");
-        let mut deserializer = serde_json::Deserializer::from_str(json);
-        let dyn_msg = DynamicMessage::deserialize(descriptor, &mut deserializer)
-            .map_err(|e| e.to_string())?;
-        deserializer.end().map_err(|e| e.to_string())?;
-        let bytes = dyn_msg.encode_to_vec();
-        let inner = proto::Transaction::decode(bytes.as_slice()).map_err(|e| e.to_string())?;
+        let inner: proto::Transaction = serde_json::from_str(json).map_err(|e| e.to_string())?;
         Ok(Self::from_proto(protocol, chain_id, inner))
     }
 
@@ -82,13 +63,7 @@ impl RustTransaction {
 }
 
 pub fn transaction_to_canonical_json(tx: &proto::Transaction) -> String {
-    let descriptor = descriptor_pool()
-        .get_message_by_name(TRANSACTION_MESSAGE_NAME)
-        .expect("missing descriptor for hive.protocol.buffers.transaction");
-    let bytes = tx.encode_to_vec();
-    let dyn_msg = DynamicMessage::decode(descriptor, bytes.as_slice())
-        .expect("prost-encoded Transaction must decode under its own descriptor");
-    serde_json::to_string(&dyn_msg).expect("DynamicMessage::serialize must produce valid JSON")
+    serde_json::to_string(tx).expect("pbjson Serialize impl must produce valid JSON")
 }
 
 fn create_handle(

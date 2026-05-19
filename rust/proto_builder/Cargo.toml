@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 prost-build = "0.13"
+pbjson-build = "0.7"

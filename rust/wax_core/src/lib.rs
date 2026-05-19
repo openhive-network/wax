@@ -1,6 +1,10 @@
 pub mod proto {
     #![allow(clippy::all)]
     include!("../../protobuf_patterns/hive.protocol.buffers.rs");
+    // serde::Serialize/Deserialize impls for the prost types above. Emitted by
+    // `pbjson-build` from `proto_builder` and committed alongside the prost
+    // output in `protobuf_patterns/`.
+    include!("../../protobuf_patterns/hive.protocol.buffers.serde.rs");
 }
 
 mod asset;

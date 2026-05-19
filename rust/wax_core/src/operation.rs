@@ -16,6 +16,11 @@ impl RustOperation {
         Self { inner }
     }
 
+    pub fn from_json(json: &str) -> Result<Self, String> {
+        let inner: proto::Operation = serde_json::from_str(json).map_err(|e| e.to_string())?;
+        Ok(Self { inner })
+    }
+
     pub fn proto(&self) -> &proto::Operation {
         &self.inner
     }
