@@ -44,6 +44,10 @@ namespace cpp {
 
 		void cpp_tx_validate(const hive_transaction_handle& tx) const;
 
+		void cpp_op_validate(const hive_operation_handle& op) const;
+
+		::rust::Vec<::rust::String> cpp_op_impacted_accounts(const hive_operation_handle& op) const;
+
 		::rust::String cpp_tx_sig_digest(
 			const hive_transaction_handle& tx,
 			::rust::Str chain_id

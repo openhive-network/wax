@@ -20,6 +20,11 @@ pub trait AuthorityDataProvider {
     }
 }
 
+pub trait Operation {
+    fn validate(&self) -> Result<(), WaxError>;
+    fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
+}
+
 pub trait Transaction {
     fn push_operation(self, op: RustOperation) -> Self;
     fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;

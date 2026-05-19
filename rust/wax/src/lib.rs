@@ -9,7 +9,7 @@ pub mod result;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
-pub use interfaces::{AuthorityDataProvider, Manabar, Transaction};
+pub use interfaces::{AuthorityDataProvider, Manabar, Operation, Transaction};
 pub use internal::models::manabar_data::ManabarData;
 pub use options::{WaxChainOptions, WaxOptions};
 pub use wax_core::proto;

@@ -220,6 +220,16 @@ namespace cpp {
 		foundation::cpp_tx_validate(tx);
 	}
 
+	void rust_protocol::cpp_op_validate(const hive_operation_handle& op) const {
+		foundation::cpp_op_validate(op);
+	}
+
+	::rust::Vec<::rust::String> rust_protocol::cpp_op_impacted_accounts(
+		const hive_operation_handle& op
+	) const {
+		return to_rust_string_vec(foundation::cpp_op_impacted_accounts(op));
+	}
+
 	::rust::String rust_protocol::cpp_tx_sig_digest(
 		const hive_transaction_handle& tx,
 		::rust::Str chain_id

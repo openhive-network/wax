@@ -179,6 +179,16 @@ pub mod ffi {
             tx: &hive_transaction_handle,
         ) -> Result<()>;
 
+        fn cpp_op_validate(
+            self: &rust_protocol,
+            op: &hive_operation_handle,
+        ) -> Result<()>;
+
+        fn cpp_op_impacted_accounts(
+            self: &rust_protocol,
+            op: &hive_operation_handle,
+        ) -> Result<Vec<String>>;
+
         fn cpp_tx_sig_digest(
             self: &rust_protocol,
             tx: &hive_transaction_handle,
