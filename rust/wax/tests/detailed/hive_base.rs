@@ -868,13 +868,14 @@ fn legacy_transaction_impacted_accounts() {
 }
 
 // TS line 963: "Should be able to calculate transaction ID from legacy
-// transaction". TS reads `tx.id`; for a legacy-shaped tx the matching Rust
-// method is `legacy_id()`.
+// transaction". `tx.id` in TS is the HF26/modern transaction id, which is
+// what's asserted here — the legacy source format only affects parsing,
+// not which id flavour is computed.
 #[test]
 fn legacy_transaction_id() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
-        let id = tx.legacy_id().expect("legacy_id");
+        let id = tx.id().expect("id");
         assert_eq!(id, "3725c81634f152011e2043eb7119911b953d4267");
     });
 }
