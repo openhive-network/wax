@@ -285,7 +285,7 @@ std::string foundation::cpp_asset_symbol(const json_asset& value) const
   });
 }
 
-std::string foundation::cpp_generate_private_key()
+std::string foundation::cpp_generate_private_key() const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string
   {
@@ -293,7 +293,7 @@ std::string foundation::cpp_generate_private_key()
   });
 }
 
-private_key_data foundation::cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password)
+private_key_data foundation::cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password) const
 {
   return cpp::safe_exception_wrapper(
     [&]() -> private_key_data {
@@ -307,7 +307,7 @@ private_key_data foundation::cpp_generate_private_key(const std::string& account
   );
 }
 
-std::string foundation::cpp_convert_raw_private_key_to_wif(const std::string& hexData)
+std::string foundation::cpp_convert_raw_private_key_to_wif(const std::string& hexData) const
 {
   return cpp::safe_exception_wrapper(
     [&]() -> std::string {
@@ -320,7 +320,7 @@ std::string foundation::cpp_convert_raw_private_key_to_wif(const std::string& he
   );
 }
 
-std::string foundation::cpp_convert_raw_public_key_to_wif(const std::string& hexData)
+std::string foundation::cpp_convert_raw_public_key_to_wif(const std::string& hexData) const
 {
   return cpp::safe_exception_wrapper(
     [&]() -> std::string {
@@ -347,7 +347,7 @@ std::string foundation::cpp_convert_raw_public_key_to_wif(const std::string& hex
   );
 }
 
-std::string foundation::cpp_convert_wif_public_key_to_raw(const std::string& wifPublicKey)
+std::string foundation::cpp_convert_wif_public_key_to_raw(const std::string& wifPublicKey) const
 {
   return cpp::safe_exception_wrapper(
     [&]() -> std::string {
@@ -359,7 +359,7 @@ std::string foundation::cpp_convert_wif_public_key_to_raw(const std::string& wif
   );
 }
 
-brain_key_data foundation::cpp_suggest_brain_key()
+brain_key_data foundation::cpp_suggest_brain_key() const
 {
   return cpp::safe_exception_wrapper(
     []() ->brain_key_data {
@@ -505,7 +505,7 @@ std::string foundation::cpp_get_default_comment_options_operation() const
       return fc::json::to_string(op);
     });
 }
-std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(const std::string& chain_id)
+std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(const std::string& chain_id) const
 {
   return cpp::safe_exception_wrapper([&]() -> std::map<std::string, std::string> {
     const auto config = hive::protocol::get_config(NEW_HIVE_TREASURY_ACCOUNT, fc::sha256(chain_id));
@@ -541,7 +541,7 @@ std::map<std::string, std::string> foundation::cpp_get_hive_protocol_config(cons
     });
 }
 
-std::string foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature)
+std::string foundation::cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature) const
 {
   return cpp::safe_exception_wrapper([&]() -> std::string
   {
@@ -711,7 +711,7 @@ void foundation::cpp_check_memo_for_private_keys(const std::string& memo, const 
 }
 
 
-std::string foundation::cpp_calculate_public_key(const std::string& wif)
+std::string foundation::cpp_calculate_public_key(const std::string& wif) const
 {
   return cpp::safe_exception_wrapper([&]()-> std::string {
     const auto private_key = fc::ecc::private_key::wif_to_key(wif);
@@ -734,7 +734,7 @@ int64_t __current_manabar(int32_t* now, const int64_t max_mana, const int64_t cu
   return manabar.current_mana;
 }
 
-uint64_t foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time)
+uint64_t foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) const
 {
   // safe is used because of detected issue with overflow
   using safe_uint128_t = fc::safe<fc::uint128_t>;
@@ -753,7 +753,7 @@ uint64_t foundation::cpp_calculate_manabar_full_regeneration_time(int32_t now, c
   });
 }
 
-int64_t foundation::cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) {
+int64_t foundation::cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) const {
   return cpp::safe_exception_wrapper([&]() -> int64_t
   {
     return __current_manabar(&now, max_mana, current_mana, last_update_time);

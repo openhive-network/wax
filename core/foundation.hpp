@@ -78,31 +78,31 @@ class foundation
 public:
   using required_authority_collection_t = required_authority_collection;
 
-  std::string cpp_calculate_public_key(const std::string& wif);
-  std::string cpp_generate_private_key();
-  private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password);
+  std::string cpp_calculate_public_key(const std::string& wif) const;
+  std::string cpp_generate_private_key() const;
+  private_key_data cpp_generate_private_key(const std::string& account, const std::string& role, const std::string& password) const;
   /** Allows to convert 32 bytes data buffer expressed as hex string (pointing private key secret) into private key encoded as WIF format.
   */
-  std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData);
+  std::string cpp_convert_raw_private_key_to_wif(const std::string& hexData) const;
 
   /** Allows to convert raw public key form (expressed as hex string) into Hive WIF format (with prefix).
   *   \param hexData - depending on length compressed or uncompressed key format is chosen
   */
-  std::string cpp_convert_raw_public_key_to_wif(const std::string& hexData);
+  std::string cpp_convert_raw_public_key_to_wif(const std::string& hexData) const;
 
   /** Allows to convert public key in Hive WIF format (with prefix) form into raw compressed format.
   */
-  std::string cpp_convert_wif_public_key_to_raw(const std::string& wifPublicKey);
+  std::string cpp_convert_wif_public_key_to_raw(const std::string& wifPublicKey) const;
 
-  brain_key_data cpp_suggest_brain_key();
+  brain_key_data cpp_suggest_brain_key() const;
 
   /** Returns map of hive::protocol constants in form:
   *   constant_name => constant_value as string.
   */
-  std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id);
+  std::map<std::string, std::string> cpp_get_hive_protocol_config(const std::string& chain_id) const;
 
   ///  Allows to retrieve public key in WIF format from the signature and digest in hexadecimal format
-  std::string cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature);
+  std::string cpp_get_public_key_from_signature(const std::string& digest, const std::string& signature) const;
 
   json_asset cpp_general_asset(const uint32_t asset_num, const int64_t amount)const;
   json_asset cpp_hive(const int64_t amount)const;
@@ -135,8 +135,8 @@ public:
   void cpp_check_memo_for_private_keys(const std::string& memo, const std::string& account, const wax_authorities& auths, const std::string& memo_key,
     const std::vector<std::string>& imported_keys) const;
 
-  uint64_t cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
-  int64_t cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time);
+  uint64_t cpp_calculate_manabar_full_regeneration_time(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) const;
+  int64_t cpp_calculate_current_manabar_value(int32_t now, const int64_t max_mana, const int64_t current_mana, const uint32_t last_update_time) const;
 
   ref_block_data cpp_get_tapos_data(const std::string& block_id) const;
 
