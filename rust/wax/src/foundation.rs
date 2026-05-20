@@ -118,6 +118,10 @@ pub trait WaxFoundation {
         password: &str,
     ) -> Result<PrivateKeyData, WaxError>;
 
+    fn convert_raw_private_key_to_wif(&self, raw_private_key: &Hex) -> Result<String, WaxError>;
+
+    fn convert_raw_public_key_to_wif(&self, raw_public_key: &Hex) -> Result<String, WaxError>;
+
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;
 
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;

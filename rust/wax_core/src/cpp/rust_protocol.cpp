@@ -492,6 +492,14 @@ namespace cpp {
 		};
 	}
 
+	::rust::String rust_protocol::cpp_convert_raw_private_key_to_wif(::rust::Str hex_data) const {
+		return foundation::cpp_convert_raw_private_key_to_wif(std::string(hex_data));
+	}
+
+	::rust::String rust_protocol::cpp_convert_raw_public_key_to_wif(::rust::Str hex_data) const {
+		return foundation::cpp_convert_raw_public_key_to_wif(std::string(hex_data));
+	}
+
 	std::unique_ptr<hive_transaction_handle>
 	rust_protocol::cpp_deserialize_transaction(::rust::Str hex) const {
 		auto handle = std::make_unique<hive_transaction_handle>();

@@ -152,6 +152,10 @@ namespace cpp {
 			::rust::Str password
 		) const;
 
+		::rust::String cpp_convert_raw_private_key_to_wif(::rust::Str hex_data) const;
+
+		::rust::String cpp_convert_raw_public_key_to_wif(::rust::Str hex_data) const;
+
 		std::unique_ptr<hive_transaction_handle>
 		cpp_deserialize_transaction(::rust::Str hex) const;
 

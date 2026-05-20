@@ -368,6 +368,16 @@ pub mod ffi {
             password: &str,
         ) -> Result<RustPrivateKeyData>;
 
+        fn cpp_convert_raw_private_key_to_wif(
+            self: &rust_protocol,
+            hex_data: &str,
+        ) -> Result<String>;
+
+        fn cpp_convert_raw_public_key_to_wif(
+            self: &rust_protocol,
+            hex_data: &str,
+        ) -> Result<String>;
+
         fn cpp_deserialize_transaction(
             self: &rust_protocol,
             hex: &str,

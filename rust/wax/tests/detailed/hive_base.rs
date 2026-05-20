@@ -965,23 +965,50 @@ fn suggest_brain_key() {
 
 // TS line 852: "Should be able to convert between raw private key -> WIF
 // formats".
-// TODO: needs `WaxFoundation::convert_raw_private_key_to_wif`.
 #[test]
-#[ignore = "needs WaxFoundation::convert_raw_private_key_to_wif"]
-fn convert_raw_private_key_to_wif() {}
+fn convert_raw_private_key_to_wif() {
+    wax_test(None, |ctx| {
+        let wif = ctx
+            .base
+            .convert_raw_private_key_to_wif(
+                &"48a9c812cafcd35eb761501768ba7e2eb9a238853548556c2c38431f51d63030".into(),
+            )
+            .expect("convert_raw_private_key_to_wif");
+        assert_eq!(wif, "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n");
+    });
+}
 
 // TS line 860: "Should be able to convert between raw compressed public key
 // -> WIF formats".
-// TODO: needs `WaxFoundation::convert_raw_public_key_to_wif`.
 #[test]
-#[ignore = "needs WaxFoundation::convert_raw_public_key_to_wif"]
-fn convert_raw_compressed_public_key_to_wif() {}
+fn convert_raw_compressed_public_key_to_wif() {
+    wax_test(None, |ctx| {
+        let wif = ctx
+            .base
+            .convert_raw_public_key_to_wif(
+                &"02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705".into(),
+            )
+            .expect("convert_raw_public_key_to_wif (compressed)");
+        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+    });
+}
 
 // TS line 868: "Should be able to convert between raw uncompressed public
-// key -> WIF formats".
+// key -> WIF formats". The C++ side auto-detects compressed vs uncompressed
+// by hex length, so both call into the same trait method.
 #[test]
-#[ignore = "needs WaxFoundation::convert_raw_public_key_to_wif"]
-fn convert_raw_uncompressed_public_key_to_wif() {}
+fn convert_raw_uncompressed_public_key_to_wif() {
+    wax_test(None, |ctx| {
+        let wif = ctx
+            .base
+            .convert_raw_public_key_to_wif(
+                &"04be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c5017051a9cc2866c479818522ffd2b4a3d7a5a64d1b98c968f8f6ea2ef6745a637eb92"
+                    .into(),
+            )
+            .expect("convert_raw_public_key_to_wif (uncompressed)");
+        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+    });
+}
 
 // TS line 876: "Should be able to estimate hive collateral".
 #[test]

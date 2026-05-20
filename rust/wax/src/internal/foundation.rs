@@ -296,6 +296,18 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn convert_raw_private_key_to_wif(&self, raw_private_key: &Hex) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_convert_raw_private_key_to_wif(raw_private_key)
+            .map_err(WaxError::from)
+    }
+
+    fn convert_raw_public_key_to_wif(&self, raw_public_key: &Hex) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_convert_raw_public_key_to_wif(raw_public_key)
+            .map_err(WaxError::from)
+    }
+
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError> {
         let protocol = rust_protocol();
         let handle = protocol
