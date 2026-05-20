@@ -145,6 +145,8 @@ namespace cpp {
 
 		::rust::String cpp_legacy_tx_to_json(::rust::Str tx_str) const;
 
+		::rust::String cpp_tx_api_to_proto_json(::rust::Str api_json) const;
+
 		void cpp_tx_set_expiration(
 			hive_transaction_handle& tx,
 			::rust::Str expiration

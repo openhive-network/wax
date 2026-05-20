@@ -272,7 +272,10 @@ impl WaxFoundation for WaxFoundationApi {
     }
 
     fn create_transaction_from_json(&self, json: &str) -> Result<RustTransaction, WaxError> {
-        RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), json)
+        let proto_json = rust_protocol()
+            .cpp_tx_api_to_proto_json(json)
+            .map_err(WaxError::from)?;
+        RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), &proto_json)
             .map_err(WaxError::new)
     }
 

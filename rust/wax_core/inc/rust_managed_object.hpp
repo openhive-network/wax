@@ -36,6 +36,40 @@ namespace cpp {
 		rust_managed_object(rust_managed_object&&)            = default;
 		rust_managed_object& operator=(rust_managed_object&&) = default;
 
+		// JSON-backed factory. Used by the `to_proto_visitor` flat_map
+		// specialization (`ManagedObjectT::object()`) and by the
+		// `cpp_tx_api_to_proto_json` entry point (`from_json`).
+		static rust_managed_object object() {
+			return rust_managed_object(rmo_new_object());
+		}
+
+		static rust_managed_object from_json(const std::string& json) {
+			return rust_managed_object(rmo_from_json_str(::rust::Str(json)));
+		}
+
+		std::string to_json_string() const {
+			return static_cast<std::string>(rmo_to_json_string(borrow()));
+		}
+
+		// In-place mutations on JSON-backed objects. The visitor uses these
+		// to rewrite `{ "type": "X", "value": {…} }` envelopes into proto-
+		// shape `{ "X": {…} }` and to convert pair-arrays into objects.
+		void set(const char* key, const rust_managed_object& value) {
+			rmo_set_field(borrow(), ::rust::Str(key), value.borrow());
+		}
+
+		void set(const std::string& key, const rust_managed_object& value) {
+			set(key.c_str(), value);
+		}
+
+		void set(const rust_managed_object& key, const rust_managed_object& value) {
+			rmo_set_field_obj_key(borrow(), key.borrow(), value.borrow());
+		}
+
+		void del(const std::string& key) {
+			rmo_del_field(borrow(), ::rust::Str(key));
+		}
+
 		rust_managed_object operator[](const char* key) const {
 			return rust_managed_object(rmo_get_field(borrow(), ::rust::Str(key)));
 		}

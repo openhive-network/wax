@@ -8,9 +8,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::proto::{Operation, Transaction as ProtoTransaction, Vote, operation::Value};
-use wax::{
-    Transaction, WaxFoundation, create_wax_foundation, transaction_to_canonical_json,
-};
+use wax::{Transaction, WaxFoundation, create_wax_foundation};
 
 fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
@@ -83,28 +81,47 @@ fn create_transaction_from_proto_uses_default_chain_id() {
 }
 
 // ---------- create_transaction_from_json -------------------------------------
+// `create_transaction_from_json` consumes API JSON — the `{type, value}`
+// envelope shape that TS's `createTransactionFromJson` and Python's
+// `create_transaction_from_json` accept. Proto JSON goes through
+// `create_transaction_from_proto` (with the typed `proto::Transaction`).
+
+const API_TX_JSON: &str = r#"{
+    "ref_block_num": 42,
+    "ref_block_prefix": 3735928559,
+    "expiration": "2026-12-31T23:59:00",
+    "operations": [
+        {
+            "type": "vote_operation",
+            "value": {
+                "voter": "alice",
+                "author": "bob",
+                "permlink": "post",
+                "weight": 10000
+            }
+        }
+    ],
+    "extensions": [],
+    "signatures": []
+}"#;
 
 #[test]
-fn create_transaction_from_json_round_trips_canonical_proto_json() {
+fn create_transaction_from_json_round_trips_api_json() {
     let f = foundation();
-    let original = proto_tx_with_vote();
-    let json = transaction_to_canonical_json(&original);
 
     let tx = f
-        .create_transaction_from_json(&json)
+        .create_transaction_from_json(API_TX_JSON)
         .expect("create_transaction_from_json");
 
-    assert_eq!(tx.transaction(), &original);
+    assert_eq!(tx.transaction(), &proto_tx_with_vote());
 }
 
 #[test]
 fn create_transaction_from_json_handle_round_trips_to_binary() {
     let f = foundation();
-    let original = proto_tx_with_vote();
-    let json = transaction_to_canonical_json(&original);
 
     let tx = f
-        .create_transaction_from_json(&json)
+        .create_transaction_from_json(API_TX_JSON)
         .expect("create_transaction_from_json");
 
     // Binary form goes through the C++ handle, exercising that the JSON path
@@ -129,30 +146,25 @@ fn create_transaction_from_json_rejects_malformed_input() {
 }
 
 #[test]
-fn create_transaction_from_json_rejects_unknown_fields() {
+fn create_transaction_from_json_rejects_unknown_operation_type() {
     let f = foundation();
 
-    // prost-reflect's default mode rejects unknown fields, which guards
-    // against silently dropping data when a caller passes a malformed shape.
+    // The C++ `to_proto_visitor`'s static_variant case asserts the `type`
+    // string maps to a known operation name (`Invalid object name`).
     let json = r#"{
         "ref_block_num": 1,
         "ref_block_prefix": 1,
         "expiration": "2026-01-01T00:00:00",
-        "operations": [],
+        "operations": [
+            { "type": "no_such_operation", "value": {} }
+        ],
         "extensions": [],
-        "signatures": [],
-        "unexpected_field": 1
+        "signatures": []
     }"#;
 
-    let err = match f.create_transaction_from_json(json) {
-        Err(e) => e,
-        Ok(_) => panic!("unknown field must error"),
-    };
     assert!(
-        err.message().contains("unexpected_field")
-            || err.message().to_lowercase().contains("unknown"),
-        "error should explain the unknown field: {}",
-        err.message()
+        f.create_transaction_from_json(json).is_err(),
+        "unknown operation type must error"
     );
 }
 

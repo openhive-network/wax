@@ -474,6 +474,16 @@ namespace cpp {
 		return foundation::cpp_legacy_tx_to_json(std::string(tx_str));
 	}
 
+	::rust::String rust_protocol::cpp_tx_api_to_proto_json(::rust::Str api_json) const {
+		return safe_exception_wrapper([&]() -> ::rust::String {
+			auto wrapper = rust_managed_object::from_json(std::string(api_json));
+			fc::reflector<hive::protocol::signed_transaction>::visit(
+				cpp::to_proto_visitor<rust_managed_object, hive::protocol::signed_transaction>{ wrapper }
+			);
+			return ::rust::String(wrapper.to_json_string());
+		});
+	}
+
 	void rust_protocol::cpp_tx_set_expiration(
 		hive_transaction_handle& tx,
 		::rust::Str expiration

@@ -22,9 +22,10 @@ pub use transaction::{transaction_to_canonical_json, RustTransaction};
 use authority_provider::{rap_get_authorities, rap_get_witness_public_key};
 use managed_object::{
     rmo_array_length, rmo_as_bool, rmo_as_i16, rmo_as_i32, rmo_as_i64, rmo_as_i8, rmo_as_string,
-    rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_clone, rmo_get_field, rmo_get_index,
-    rmo_is_optional_field_present, rmo_is_string, rmo_is_undefined, rmo_map_keys,
-    rmo_oneof_variant,
+    rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_clone, rmo_del_field, rmo_from_json_str,
+    rmo_get_field, rmo_get_index, rmo_is_optional_field_present, rmo_is_string, rmo_is_undefined,
+    rmo_map_keys, rmo_new_object, rmo_oneof_variant, rmo_set_field, rmo_set_field_obj_key,
+    rmo_to_json_string,
 };
 
 #[cxx::bridge(namespace = "cpp")]
@@ -137,6 +138,18 @@ pub mod ffi {
         fn rmo_as_u32(obj: &RustManagedObject) -> u32;
         fn rmo_as_u16(obj: &RustManagedObject) -> u16;
         fn rmo_as_u8(obj: &RustManagedObject) -> u8;
+
+        // JSON-backed mode (used by cpp_tx_api_to_proto_json).
+        fn rmo_new_object() -> Box<RustManagedObject>;
+        fn rmo_from_json_str(json: &str) -> Result<Box<RustManagedObject>>;
+        fn rmo_to_json_string(obj: &RustManagedObject) -> Result<String>;
+        fn rmo_set_field(obj: &RustManagedObject, key: &str, value: &RustManagedObject);
+        fn rmo_set_field_obj_key(
+            obj: &RustManagedObject,
+            key: &RustManagedObject,
+            value: &RustManagedObject,
+        );
+        fn rmo_del_field(obj: &RustManagedObject, key: &str);
     }
 
     unsafe extern "C++" {
@@ -339,6 +352,8 @@ pub mod ffi {
         ) -> Result<UniquePtr<hive_transaction_handle>>;
 
         fn cpp_legacy_tx_to_json(self: &rust_protocol, tx_str: &str) -> Result<String>;
+
+        fn cpp_tx_api_to_proto_json(self: &rust_protocol, api_json: &str) -> Result<String>;
 
         fn cpp_tx_set_expiration(
             self: &rust_protocol,

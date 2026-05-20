@@ -36,16 +36,17 @@ fn nai_asset() -> NaiAsset {
     }
 }
 
-// data.protocol.ts: `transaction`, expressed in proto-JSON form (the shape
-// Rust's `create_transaction_from_json` accepts — the {type, value} API
-// shape is C++/TS-only).
-const TRANSACTION_PROTO_JSON: &str = r#"{
+// data.protocol.ts: `transaction` — API JSON shape (`{type, value}` envelope).
+// Matches TS's `createTransactionFromJson` and Python's
+// `create_transaction_from_json` input contract.
+const TRANSACTION_JSON: &str = r#"{
     "ref_block_num": 34559,
     "ref_block_prefix": 1271006404,
     "expiration": "2021-12-13T11:31:33",
     "operations": [
         {
-            "vote_operation": {
+            "type": "vote_operation",
+            "value": {
                 "voter": "otom",
                 "author": "c0ff33a",
                 "permlink": "ewxhnjbj",
@@ -75,17 +76,18 @@ const LEGACY_TRANSACTION_JSON: &str = r#"{
 }"#;
 
 // Convenience: Rust has no `createTransactionFromLegacyJson` shortcut, so
-// every legacy-path test goes through this two-step bridge.
+// every legacy-path test goes through this two-step bridge — mirrors what TS
+// and Python do internally (`cpp_legacy_tx_to_json` → `from_api`).
 fn create_transaction_from_legacy_json(
     ctx: &crate::common::WaxTestCtx,
     legacy_json: &str,
 ) -> wax::RustTransaction {
-    let modern = ctx
+    let api_json = ctx
         .base
         .legacy_transaction_to_json(legacy_json)
         .expect("legacy_transaction_to_json");
     ctx.base
-        .create_transaction_from_json(&modern)
+        .create_transaction_from_json(&api_json)
         .expect("create_transaction_from_json")
 }
 
@@ -402,26 +404,23 @@ fn get_asset_custom_nai() {
 }
 
 // TS line 299: "Should be able to bidirectional convert api to proto using
-// object interface". The TS test feeds API JSON in and out; in Rust, JSON
-// input must be proto JSON (asymmetric with `to_api()`'s API JSON output),
-// so we verify the round-trip on the proto representation instead of the
-// JSON string.
+// object interface". Feed API JSON in, get API JSON back, expect the second
+// round to parse identically to the first.
 #[test]
 fn bidirectional_json_proto_round_trip() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let first = ctx
             .base
-            .create_transaction_from_json(TRANSACTION_PROTO_JSON)
+            .create_transaction_from_json(TRANSACTION_JSON)
             .expect("create_transaction_from_json");
+        let api_json = first.to_api().expect("to_api");
 
-        // Round-trip the resulting API JSON back into a transaction and
-        // compare protos — exercises the same path as TS's exact-string
-        // assertion without depending on the API/proto shape mismatch.
-        let api_json = tx.to_api().expect("to_api");
-        assert!(api_json.contains("vote_operation"));
-        assert!(api_json.contains("\"voter\":\"otom\""));
-        assert!(api_json.contains("\"author\":\"c0ff33a\""));
-        assert!(api_json.contains("\"weight\":2200"));
+        let second = ctx
+            .base
+            .create_transaction_from_json(&api_json)
+            .expect("create_transaction_from_json (round-trip)");
+
+        assert_eq!(first.transaction(), second.transaction());
     });
 }
 
@@ -510,7 +509,7 @@ fn convert_transaction_json_to_binary_form() {
     wax_test(None, |ctx| {
         let hex = ctx
             .base
-            .create_transaction_from_json(TRANSACTION_PROTO_JSON)
+            .create_transaction_from_json(TRANSACTION_JSON)
             .expect("create_transaction_from_json")
             .to_binary_form(false)
             .expect("to_binary_form");
@@ -522,9 +521,9 @@ fn convert_transaction_json_to_binary_form() {
 }
 
 // TS line 404: "Should not be able to convert transaction json to binary
-// form because of invalid input type". The TS test uses an op key `vote`
-// instead of `vote_operation` — proto JSON parsing should reject the unknown
-// field.
+// form because of invalid input type". The TS test uses `"type": "vote"`
+// instead of `"vote_operation"`; the C++ visitor's static_variant case
+// rejects unknown operation names.
 #[test]
 fn invalid_transaction_json_fails_to_parse() {
     wax_test(None, |ctx| {
@@ -532,7 +531,8 @@ fn invalid_transaction_json_fails_to_parse() {
             "expiration": "2021-12-13T11:31:33",
             "extensions": [],
             "operations": [{
-                "vote": {
+                "type": "vote",
+                "value": {
                     "author": "c0ff33a",
                     "permlink": "ewxhnjbj",
                     "voter": "otom",
@@ -543,15 +543,10 @@ fn invalid_transaction_json_fails_to_parse() {
             "ref_block_prefix": 1271006404,
             "signatures": []
         }"#;
-        // Either create_transaction_from_json errors, or it parses (silently
-        // dropping the unknown `vote` field) and produces a tx with no ops —
-        // in which case to_binary_form still differs from the canonical hex.
-        // Both paths fail the test, but the natural assertion is that the
-        // parse itself errors.
         let result = ctx.base.create_transaction_from_json(bad);
         assert!(
             result.is_err(),
-            "transaction JSON with unknown op key must be rejected"
+            "transaction JSON with unknown operation type must be rejected"
         );
     });
 }
@@ -582,13 +577,24 @@ fn convert_binary_transaction_to_json_form() {
 
 // TS line 453: "Should be able to call convertTransactionToBinaryForm on
 // object received from convertTransactionFromBinaryForm".
-// TODO: needs a JSON parser that accepts API JSON (`{type, value}` shape),
-// not just proto JSON. `deserialize_transaction` produces API JSON, but
-// `create_transaction_from_json` only consumes proto JSON, so we can't
-// close the loop without an api→proto JSON converter.
 #[test]
-#[ignore = "needs API-JSON parser (deserialize_transaction emits API JSON, create_transaction_from_json only consumes proto JSON)"]
-fn binary_to_json_to_binary_round_trip() {}
+fn binary_to_json_to_binary_round_trip() {
+    wax_test(None, |ctx| {
+        let hex: String =
+            "ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000".into();
+        let api_json = ctx
+            .base
+            .deserialize_transaction(&hex)
+            .expect("deserialize_transaction");
+        let rebuilt_hex = ctx
+            .base
+            .create_transaction_from_json(&api_json)
+            .expect("create_transaction_from_json")
+            .to_binary_form(false)
+            .expect("to_binary_form");
+        assert_eq!(rebuilt_hex, hex);
+    });
+}
 
 // TS line 461: "Should be able to create a recurrent transfer with underlying
 // extensions using transaction interface".
@@ -814,7 +820,6 @@ fn estimate_hbd_interest() {
 // TS line 900: "Should be able to create transaction from legacy JSON
 // format".
 #[test]
-#[ignore = "failed"]
 fn create_transaction_from_legacy_json_parses_correctly() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -832,7 +837,6 @@ fn create_transaction_from_legacy_json_parses_correctly() {
 
 // TS line 921: "Should be able to convert legacy transaction to API JSON".
 #[test]
-#[ignore = "failed"]
 fn legacy_transaction_to_api_json() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -844,7 +848,6 @@ fn legacy_transaction_to_api_json() {
 
 // TS line 943: "Should be able to validate legacy transaction".
 #[test]
-#[ignore = "failed"]
 fn validate_legacy_transaction() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -855,7 +858,6 @@ fn validate_legacy_transaction() {
 // TS line 952: "Should be able to get impacted accounts from legacy
 // transaction".
 #[test]
-#[ignore = "failed"]
 fn legacy_transaction_impacted_accounts() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -869,7 +871,6 @@ fn legacy_transaction_impacted_accounts() {
 // transaction". TS reads `tx.id`; for a legacy-shaped tx the matching Rust
 // method is `legacy_id()`.
 #[test]
-#[ignore = "failed"]
 fn legacy_transaction_id() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -880,7 +881,6 @@ fn legacy_transaction_id() {
 
 // TS line 973: "Should be able to push operations to legacy transaction".
 #[test]
-#[ignore = "failed"]
 fn push_operation_onto_legacy_transaction() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
@@ -904,7 +904,6 @@ fn push_operation_onto_legacy_transaction() {
 
 // TS line 993: "Should handle legacy asset format conversion".
 #[test]
-#[ignore = "failed"]
 fn legacy_asset_format_hive() {
     wax_test(None, |ctx| {
         let legacy = r#"{
@@ -940,7 +939,6 @@ fn legacy_asset_format_hive() {
 
 // TS line 1028: "Should handle legacy HBD asset format".
 #[test]
-#[ignore = "failed"]
 fn legacy_asset_format_hbd() {
     wax_test(None, |ctx| {
         let legacy = r#"{
@@ -976,7 +974,6 @@ fn legacy_asset_format_hbd() {
 
 // TS line 1063: "Should handle legacy operation with numeric type ID".
 #[test]
-#[ignore = "failed"]
 fn legacy_operation_with_numeric_type_id() {
     wax_test(None, |ctx| {
         let legacy = r#"{
