@@ -7,7 +7,8 @@ use wax_core::ffi::{
 use wax_core::{RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
-use crate::interfaces::{AuthorityDataProvider, Transaction};
+use crate::foundation::WaxFoundation;
+use crate::interfaces::{AuthorityDataProvider, OperationBuilder, Transaction};
 use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
@@ -146,6 +147,19 @@ impl Transaction for RustTransaction {
 
     fn transaction(&self) -> &proto::Transaction {
         self.proto()
+    }
+
+    fn push_builder(
+        self,
+        foundation: &dyn WaxFoundation,
+        builder: impl OperationBuilder,
+    ) -> Result<Self, WaxError> {
+        let protocol = rust_protocol();
+        let mut tx = self;
+        for op in builder.finalize(foundation)? {
+            tx = tx.push_operation(RustOperation::from_proto(protocol, op));
+        }
+        Ok(tx)
     }
 }
 

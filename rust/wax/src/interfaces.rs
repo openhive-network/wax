@@ -2,6 +2,7 @@ use rust_decimal::Decimal;
 use wax_core::{RustOperation, proto};
 
 use crate::WaxError;
+use crate::foundation::WaxFoundation;
 use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
 use crate::models::basic::{AccountName, Hex, PublicKey, SigDigest, TransactionId};
 use crate::result::MinimizeRequiredSignaturesData;
@@ -23,6 +24,11 @@ pub trait AuthorityDataProvider {
 pub trait Operation {
     fn validate(&self) -> Result<(), WaxError>;
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
+}
+
+pub trait OperationBuilder {
+    fn finalize(self, foundation: &dyn WaxFoundation)
+        -> Result<Vec<proto::Operation>, WaxError>;
 }
 
 pub trait Transaction {
@@ -52,5 +58,12 @@ pub trait Transaction {
         provider: &dyn AuthorityDataProvider,
     ) -> Result<Vec<PublicKey>, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
+    fn push_builder(
+        self,
+        foundation: &dyn WaxFoundation,
+        builder: impl OperationBuilder,
+    ) -> Result<Self, WaxError>
+    where
+        Self: Sized;
     // TODO: add `sign` method
 }

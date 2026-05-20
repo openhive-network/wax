@@ -7,7 +7,11 @@
 // calculateWitnessVotesHp) are kept as `#[ignore]` stubs so they remain
 // visible in `cargo test` output.
 
+use wax::complex_operations::{
+    DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation,
+};
 use wax::models::asset::{NaiAsset, NaiAssetConvertible};
+use wax::models::basic::HiveDateTime;
 use wax::result::JsonPrice;
 use wax::{Operation, RustOperation, Transaction};
 
@@ -598,32 +602,225 @@ fn binary_to_json_to_binary_round_trip() {
 
 // TS line 461: "Should be able to create a recurrent transfer with underlying
 // extensions using transaction interface".
-// TODO: needs `RecurrentTransferRemovalOperation` and
-// `DefineRecurrentTransferOperation` complex-op builders.
 #[test]
-#[ignore = "needs RecurrentTransferRemovalOperation + DefineRecurrentTransferOperation builders"]
-fn recurrent_transfer_with_extensions() {}
+fn recurrent_transfer_with_extensions() {
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let tx = tx
+            .push_builder(
+                &*ctx.base,
+                RecurrentTransferRemovalOperation {
+                    from_account: "initminer".into(),
+                    to_account: "gtg".into(),
+                    pair_id: Some(100),
+                },
+            )
+            .expect("removal builder");
+
+        let tx = tx
+            .push_builder(
+                &*ctx.base,
+                DefineRecurrentTransferOperation {
+                    from_account: "initminer".into(),
+                    to_account: "gtg".into(),
+                    amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
+                    memo: None,
+                    recurrence: None,
+                    executions: None,
+                    pair_id: None,
+                },
+            )
+            .expect("define builder");
+
+        let ops = &tx.transaction().operations;
+        assert_eq!(ops.len(), 2);
+
+        // First op: removal — amount HIVE 0, pair_id extension.
+        let removal = match &ops[0].value {
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
+            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+        };
+        assert_eq!(removal.from_account, "initminer");
+        assert_eq!(removal.to_account, "gtg");
+        assert_eq!(removal.amount.amount, "0");
+        assert_eq!(removal.amount.nai, "@@000000021");
+        assert_eq!(removal.recurrence, 24);
+        assert_eq!(removal.executions, 2);
+        assert_eq!(removal.extensions.len(), 1);
+        match &removal.extensions[0].value {
+            Some(wax::proto::recurrent_transfer_extension::Value::RecurrentTransferPairId(
+                p,
+            )) => assert_eq!(p.pair_id, 100),
+            other => panic!("expected RecurrentTransferPairId extension, got {other:?}"),
+        }
+
+        // Second op: define — amount HIVE 100, no extensions.
+        let define = match &ops[1].value {
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
+            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+        };
+        assert_eq!(define.amount.amount, "100");
+        assert_eq!(define.amount.nai, "@@000000021");
+        assert!(define.extensions.is_empty());
+    });
+}
 
 // TS line 510: "Should be able to create a recurrent transfer without any
 // underlying extensions using transaction interface".
-// TODO: same as above.
 #[test]
-#[ignore = "needs DefineRecurrentTransferOperation builder"]
-fn recurrent_transfer_without_extensions() {}
+fn recurrent_transfer_without_extensions() {
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let tx = tx
+            .push_builder(
+                &*ctx.base,
+                DefineRecurrentTransferOperation {
+                    from_account: "initminer".into(),
+                    to_account: "gtg".into(),
+                    amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
+                    memo: None,
+                    recurrence: None,
+                    executions: None,
+                    pair_id: None,
+                },
+            )
+            .expect("define builder");
+
+        let ops = &tx.transaction().operations;
+        assert_eq!(ops.len(), 1);
+
+        let rt = match &ops[0].value {
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
+            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+        };
+        assert_eq!(rt.from_account, "initminer");
+        assert_eq!(rt.to_account, "gtg");
+        assert_eq!(rt.amount.amount, "100");
+        assert_eq!(rt.amount.nai, "@@000000021");
+        assert_eq!(rt.amount.precision, 3);
+        assert_eq!(rt.memo, "");
+        assert_eq!(rt.recurrence, 24);
+        assert_eq!(rt.executions, 2);
+        assert!(rt.extensions.is_empty());
+    });
+}
 
 // TS line 537: "Should fail when invalid asset is provided".
-// TODO: needs `UpdateProposalOperation` complex-op builder (the TS test
-// constructs one with the wrong asset symbol to trigger the validation).
+// The TS test passes `hiveSatoshis(0)` to `UpdateProposalOperation.dailyPay`,
+// which only accepts HBD — the asset-coercion step at finalize-time should
+// surface a `WaxError` rather than producing a malformed op.
 #[test]
-#[ignore = "needs UpdateProposalOperation builder"]
-fn invalid_asset_in_update_proposal_fails() {}
+fn invalid_asset_in_update_proposal_fails() {
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let result = tx.push_builder(
+            &*ctx.base,
+            wax::complex_operations::UpdateProposalOperation {
+                proposal_id: 100,
+                creator: "initminer".into(),
+                daily_pay: NaiAssetConvertible::Asset(hive_sat(ctx, 0)),
+                subject: "subject".into(),
+                permlink: "permlink".into(),
+                end_date: Some(HiveDateTime::parse("2023-08-01T15:38:48").unwrap()),
+            },
+        );
+        assert!(
+            result.is_err(),
+            "expected push_builder to reject a HIVE asset where HBD is required"
+        );
+    });
+}
 
 // TS line 548: "Should be able to create an update proposal with underlying
 // extensions using transaction interface".
-// TODO: needs `UpdateProposalOperation` complex-op builder.
 #[test]
-#[ignore = "needs UpdateProposalOperation builder"]
-fn update_proposal_with_extensions() {}
+fn update_proposal_with_extensions() {
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let tx = tx
+            .push_builder(
+                &*ctx.base,
+                wax::complex_operations::UpdateProposalOperation {
+                    proposal_id: 100,
+                    creator: "initminer".into(),
+                    daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
+                    subject: "subject".into(),
+                    permlink: "permlink".into(),
+                    end_date: Some(HiveDateTime::parse("2023-08-01T15:38:48").unwrap()),
+                },
+            )
+            .expect("update_proposal with end_date");
+
+        let tx = tx
+            .push_builder(
+                &*ctx.base,
+                wax::complex_operations::UpdateProposalOperation {
+                    proposal_id: 100,
+                    creator: "initminer".into(),
+                    daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
+                    subject: "subject".into(),
+                    permlink: "permlink".into(),
+                    end_date: None,
+                },
+            )
+            .expect("update_proposal without end_date");
+
+        let ops = &tx.transaction().operations;
+        assert_eq!(ops.len(), 2);
+
+        let with_end = match &ops[0].value {
+            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => up,
+            other => panic!("expected UpdateProposalOperation, got {other:?}"),
+        };
+        assert_eq!(with_end.proposal_id, 100);
+        assert_eq!(with_end.creator, "initminer");
+        assert_eq!(with_end.daily_pay.amount, "0");
+        assert_eq!(with_end.daily_pay.nai, "@@000000013");
+        assert_eq!(with_end.subject, "subject");
+        assert_eq!(with_end.permlink, "permlink");
+        assert_eq!(with_end.extensions.len(), 1);
+        match &with_end.extensions[0].value {
+            Some(wax::proto::update_proposal_extension::Value::UpdateProposalEndDate(
+                d,
+            )) => assert_eq!(d.end_date, "2023-08-01T15:38:48"),
+            other => panic!("expected UpdateProposalEndDate extension, got {other:?}"),
+        }
+
+        let without_end = match &ops[1].value {
+            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => up,
+            other => panic!("expected UpdateProposalOperation, got {other:?}"),
+        };
+        assert!(without_end.extensions.is_empty());
+    });
+}
 
 // TS line 592: "Should be able to create encrypted operations using
 // transaction interface".
