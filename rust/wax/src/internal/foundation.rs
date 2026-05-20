@@ -128,6 +128,20 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn calculate_account_hp(
+        &self,
+        vests: NaiAssetConvertible,
+        total_vesting_fund_hive: NaiAssetConvertible,
+        total_vesting_shares: NaiAssetConvertible,
+    ) -> Result<NaiAsset, WaxError> {
+        let vests = self.create_asset_with_required_symbol(AssetName::Vests, vests)?;
+        let total_vesting_fund_hive =
+            self.create_asset_with_required_symbol(AssetName::Hive, total_vesting_fund_hive)?;
+        let total_vesting_shares =
+            self.create_asset_with_required_symbol(AssetName::Vests, total_vesting_shares)?;
+        self.vests_to_hp(&vests, &total_vesting_fund_hive, &total_vesting_shares)
+    }
+
     fn estimate_hive_collateral(
         &self,
         current_median_history: &JsonPrice,

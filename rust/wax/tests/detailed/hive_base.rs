@@ -7,7 +7,7 @@
 // calculateWitnessVotesHp) are kept as `#[ignore]` stubs so they remain
 // visible in `cargo test` output.
 
-use wax::models::asset::NaiAsset;
+use wax::models::asset::{NaiAsset, NaiAssetConvertible};
 use wax::result::JsonPrice;
 use wax::{Operation, RustOperation, Transaction};
 
@@ -644,13 +644,51 @@ fn decrypt_operations() {}
 // TODO: needs `WaxFoundation::calculate_account_hp`. (TS exposes it as a
 // distinct API; in C++ it's a thin wrapper over the vests/HP ratio.)
 #[test]
-#[ignore = "needs WaxFoundation::calculate_account_hp"]
-fn calculate_account_hp_basic() {}
+fn calculate_account_hp_basic() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_account_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+            )
+            .expect("calculate_account_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "10".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 684: "Should be able to calculate account HP with mixed params".
+// In TS one param is raw and one is `hiveSatoshis(...)`; Rust has no raw-number
+// overload so both forms collapse to NaiAssets. Kept for TS parity.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_account_hp"]
-fn calculate_account_hp_mixed_params() {}
+fn calculate_account_hp_mixed_params() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_account_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+            )
+            .expect("calculate_account_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "10".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 696: "Should be able to calculate witness votes HP".
 // TODO: needs `WaxFoundation::calculate_witness_votes_hp`.
@@ -678,13 +716,49 @@ fn calculate_witness_votes_hp_big_values_typed() {}
 
 // TS line 744: "Should be able to calculate account hp 1".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_account_hp"]
-fn calculate_account_hp_fixture_1() {}
+fn calculate_account_hp_fixture_1() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_account_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 1_100_000_000)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 100_000)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 100_000_000_000)),
+            )
+            .expect("calculate_account_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "1100".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 759: "Should be able to calculate account hp 2".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_account_hp"]
-fn calculate_account_hp_fixture_2() {}
+fn calculate_account_hp_fixture_2() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_account_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 2_268_225_009_295_472)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 173_009_633_181)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 300_729_442_281_783_339)),
+            )
+            .expect("calculate_account_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "1304909734".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 774: "Should be able to calculate witness votes hp 1".
 #[test]
