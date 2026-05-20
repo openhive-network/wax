@@ -932,16 +932,36 @@ fn calculate_hp_apr_mixed_params() {
 
 // TS line 833: "Should be able to generate random private key using
 // password".
-// TODO: needs `WaxFoundation::get_private_key_from_password`.
 #[test]
-#[ignore = "needs WaxFoundation::get_private_key_from_password"]
-fn get_private_key_from_password() {}
+fn get_private_key_from_password() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .get_private_key_from_password("gtg", "active", "verysecurepassword")
+            .expect("get_private_key_from_password");
+        assert_eq!(
+            result.associated_public_key,
+            "STM6JswFatSixhR9AMUP38rtpMVAagTvxGYu7d8i2JUK1QZDkPbH3"
+        );
+        assert_eq!(
+            result.wif_private_key,
+            "5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12"
+        );
+    });
+}
 
 // TS line 842: "Should be able to suggest brain key".
-// TODO: needs `WaxFoundation::suggest_brain_key`.
+// Output is randomized; only structural assertions are possible — matching
+// the TS test which checks lengths and non-emptiness.
 #[test]
-#[ignore = "needs WaxFoundation::suggest_brain_key"]
-fn suggest_brain_key() {}
+fn suggest_brain_key() {
+    wax_test(None, |ctx| {
+        let result = ctx.base.suggest_brain_key().expect("suggest_brain_key");
+        assert_eq!(result.associated_public_key.len(), 53);
+        assert!(!result.brain_key.is_empty());
+        assert_eq!(result.wif_private_key.len(), 51);
+    });
+}
 
 // TS line 852: "Should be able to convert between raw private key -> WIF
 // formats".
@@ -1207,13 +1227,29 @@ fn legacy_operation_with_numeric_type_id() {
 }
 
 // TS line 1089: "Should calculate public key from private key using wax API".
-// TODO: needs `WaxFoundation::calculate_public_key`.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_public_key"]
-fn calculate_public_key_from_private_key() {}
+fn calculate_public_key_from_private_key() {
+    wax_test(None, |ctx| {
+        let public_key = ctx
+            .base
+            .calculate_public_key("5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT")
+            .expect("calculate_public_key");
+        assert_eq!(
+            public_key,
+            "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh"
+        );
+    });
+}
 
 // TS line 1100: "Should throw error for invalid private key format using
 // wax API".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_public_key"]
-fn calculate_public_key_rejects_invalid_input() {}
+fn calculate_public_key_rejects_invalid_input() {
+    wax_test(None, |ctx| {
+        let err = ctx
+            .base
+            .calculate_public_key("invalid_key")
+            .expect_err("calculate_public_key should reject malformed WIF");
+        let _ = err.to_string();
+    });
+}

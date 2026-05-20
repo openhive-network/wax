@@ -463,6 +463,35 @@ namespace cpp {
 		return foundation::cpp_is_valid_account_name(std::string(name));
 	}
 
+	::rust::String rust_protocol::cpp_calculate_public_key(::rust::Str wif) const {
+		return foundation::cpp_calculate_public_key(std::string(wif));
+	}
+
+	RustBrainKeyData rust_protocol::cpp_suggest_brain_key() const {
+		auto data = foundation::cpp_suggest_brain_key();
+		return RustBrainKeyData{
+			::rust::String(data.brain_key),
+			::rust::String(data.wif_private_key),
+			::rust::String(data.associated_public_key),
+		};
+	}
+
+	RustPrivateKeyData rust_protocol::cpp_get_private_key_from_password(
+		::rust::Str account,
+		::rust::Str role,
+		::rust::Str password
+	) const {
+		auto data = foundation::cpp_generate_private_key(
+			std::string(account),
+			std::string(role),
+			std::string(password)
+		);
+		return RustPrivateKeyData{
+			::rust::String(data.wif_private_key),
+			::rust::String(data.associated_public_key),
+		};
+	}
+
 	std::unique_ptr<hive_transaction_handle>
 	rust_protocol::cpp_deserialize_transaction(::rust::Str hex) const {
 		auto handle = std::make_unique<hive_transaction_handle>();

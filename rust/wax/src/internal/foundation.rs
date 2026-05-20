@@ -11,7 +11,7 @@ use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
 use crate::options::WaxOptions;
-use crate::result::{HiveAssetData, JsonPrice, RefBlockData};
+use crate::result::{BrainKeyData, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
 
 pub(crate) struct WaxFoundationApi {
     options: WaxOptions,
@@ -262,6 +262,38 @@ impl WaxFoundation for WaxFoundationApi {
 
     fn is_valid_account_name(&self, name: &str) -> bool {
         rust_protocol().cpp_is_valid_account_name(name)
+    }
+
+    fn calculate_public_key(&self, wif_private_key: &str) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_calculate_public_key(wif_private_key)
+            .map_err(WaxError::from)
+    }
+
+    fn suggest_brain_key(&self) -> Result<BrainKeyData, WaxError> {
+        rust_protocol()
+            .cpp_suggest_brain_key()
+            .map(|d| BrainKeyData {
+                brain_key: d.brain_key,
+                wif_private_key: d.wif_private_key,
+                associated_public_key: d.associated_public_key,
+            })
+            .map_err(WaxError::from)
+    }
+
+    fn get_private_key_from_password(
+        &self,
+        account: &str,
+        role: &str,
+        password: &str,
+    ) -> Result<PrivateKeyData, WaxError> {
+        rust_protocol()
+            .cpp_get_private_key_from_password(account, role, password)
+            .map(|d| PrivateKeyData {
+                wif_private_key: d.wif_private_key,
+                associated_public_key: d.associated_public_key,
+            })
+            .map_err(WaxError::from)
     }
 
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError> {

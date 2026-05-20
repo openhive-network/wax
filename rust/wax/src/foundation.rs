@@ -4,7 +4,7 @@ use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
-use crate::result::{HiveAssetData, JsonPrice, RefBlockData};
+use crate::result::{BrainKeyData, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
 
 pub trait WaxFoundation {
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
@@ -106,6 +106,17 @@ pub trait WaxFoundation {
     ) -> Result<u64, WaxError>;
 
     fn is_valid_account_name(&self, name: &str) -> bool;
+
+    fn calculate_public_key(&self, wif_private_key: &str) -> Result<String, WaxError>;
+
+    fn suggest_brain_key(&self) -> Result<BrainKeyData, WaxError>;
+
+    fn get_private_key_from_password(
+        &self,
+        account: &str,
+        role: &str,
+        password: &str,
+    ) -> Result<PrivateKeyData, WaxError>;
 
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;
 

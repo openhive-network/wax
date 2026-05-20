@@ -22,6 +22,19 @@ pub struct HiveAssetData {
     pub symbol: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct BrainKeyData {
+    pub brain_key: String,
+    pub wif_private_key: String,
+    pub associated_public_key: PublicKey,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PrivateKeyData {
+    pub wif_private_key: String,
+    pub associated_public_key: PublicKey,
+}
+
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct MinimizeRequiredSignaturesData {
     pub chain_id: ChainId,

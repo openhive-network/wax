@@ -14,6 +14,8 @@ namespace cpp {
     struct RustRefBlockData;
     struct RustMinimizeRequiredSignaturesData;
     struct RustAuthVerificationTrace;
+    struct RustBrainKeyData;
+    struct RustPrivateKeyData;
 }
 
 #include "rust_managed_object.hpp"
@@ -139,6 +141,16 @@ namespace cpp {
 		) const;
 
 		bool cpp_is_valid_account_name(::rust::Str name) const;
+
+		::rust::String cpp_calculate_public_key(::rust::Str wif) const;
+
+		RustBrainKeyData cpp_suggest_brain_key() const;
+
+		RustPrivateKeyData cpp_get_private_key_from_password(
+			::rust::Str account,
+			::rust::Str role,
+			::rust::Str password
+		) const;
 
 		std::unique_ptr<hive_transaction_handle>
 		cpp_deserialize_transaction(::rust::Str hex) const;

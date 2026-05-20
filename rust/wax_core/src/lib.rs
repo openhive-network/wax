@@ -105,6 +105,17 @@ pub mod ffi {
         pub verification_status: u32,
     }
 
+    pub struct RustBrainKeyData {
+        pub brain_key: String,
+        pub wif_private_key: String,
+        pub associated_public_key: String,
+    }
+
+    pub struct RustPrivateKeyData {
+        pub wif_private_key: String,
+        pub associated_public_key: String,
+    }
+
     extern "Rust" {
         type RustManagedObject;
         type RustAuthorityProvider;
@@ -345,6 +356,17 @@ pub mod ffi {
         ) -> Result<u64>;
 
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
+
+        fn cpp_calculate_public_key(self: &rust_protocol, wif: &str) -> Result<String>;
+
+        fn cpp_suggest_brain_key(self: &rust_protocol) -> Result<RustBrainKeyData>;
+
+        fn cpp_get_private_key_from_password(
+            self: &rust_protocol,
+            account: &str,
+            role: &str,
+            password: &str,
+        ) -> Result<RustPrivateKeyData>;
 
         fn cpp_deserialize_transaction(
             self: &rust_protocol,
