@@ -50,6 +50,13 @@ pub trait WaxFoundation {
         total_vesting_shares: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError>;
 
+    fn calculate_witness_votes_hp(
+        &self,
+        votes: NaiAssetConvertible,
+        total_vesting_fund_hive: NaiAssetConvertible,
+        total_vesting_shares: NaiAssetConvertible,
+    ) -> Result<NaiAsset, WaxError>;
+
     fn estimate_hive_collateral(
         &self,
         current_median_history: &JsonPrice,

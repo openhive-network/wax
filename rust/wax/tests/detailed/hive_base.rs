@@ -691,28 +691,101 @@ fn calculate_account_hp_mixed_params() {
 }
 
 // TS line 696: "Should be able to calculate witness votes HP".
-// TODO: needs `WaxFoundation::calculate_witness_votes_hp`.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_basic() {}
+fn calculate_witness_votes_hp_basic() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "10".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 708: "Should be able to calculate witness votes HP with mixed
-// params".
+// params". TS difference (raw vs hiveSatoshis on one arg) doesn't translate
+// in Rust; kept for TS parity.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_mixed_params() {}
+fn calculate_witness_votes_hp_mixed_params() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 10)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 10)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "10".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 720: "Should be able to calculate witness votes HP with big values
 // (mainnet 5M)".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_big_values() {}
+fn calculate_witness_votes_hp_big_values() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "87388337178".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 732: "Should be able to calculate witness votes HP with big values
-// (mainnet 5M) - typed asset version".
+// (mainnet 5M) - typed asset version". Same call as above in Rust — kept for
+// TS parity.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_big_values_typed() {}
+fn calculate_witness_votes_hp_big_values_typed() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "87388337178".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 744: "Should be able to calculate account hp 1".
 #[test]
@@ -762,19 +835,74 @@ fn calculate_account_hp_fixture_2() {
 
 // TS line 774: "Should be able to calculate witness votes hp 1".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_fixture_1() {}
+fn calculate_witness_votes_hp_fixture_1() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 1_100_000_000)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 100_000)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 100_000_000_000)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "1100".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 789: "Should be able to calculate witness votes hp 2".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_fixture_2() {}
+fn calculate_witness_votes_hp_fixture_2() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 142_103_996_686_715_320)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 173_009_633_181)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 300_729_442_281_783_339)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "81752422223".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 805: "Should be able to calculate witness votes HP with big values
-// (mainnet 5M)-mixed param types".
+// (mainnet 5M)-mixed param types". Same call as `_big_values` in Rust — kept
+// for TS parity.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_witness_votes_hp"]
-fn calculate_witness_votes_hp_big_values_mixed() {}
+fn calculate_witness_votes_hp_big_values_mixed() {
+    wax_test(None, |ctx| {
+        let result = ctx
+            .base
+            .calculate_witness_votes_hp(
+                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
+                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+            )
+            .expect("calculate_witness_votes_hp");
+        assert_eq!(
+            result,
+            NaiAsset {
+                amount: "87388337178".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 817: "Should be able to calculate HP APR".
 #[test]
