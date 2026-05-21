@@ -165,8 +165,12 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
     .function("cpp_tx_api_to_proto", &foundation_wasm::cpp_tx_api_to_proto)
     .function("cpp_tx_proto_to_api", &foundation_wasm::cpp_tx_proto_to_api)
 
-    .function("cpp_generate_private_key", select_overload<std::string()>(&foundation_wasm::cpp_generate_private_key))
-    .function("cpp_generate_private_key_password_based", select_overload<private_key_data(const std::string&, const std::string&, const std::string&)>(&foundation_wasm::cpp_generate_private_key))
+    .function("cpp_generate_private_key", select_const(
+      select_overload<std::string() const>(&foundation_wasm::cpp_generate_private_key)
+    ))
+    .function("cpp_generate_private_key_password_based", select_const(
+      select_overload<private_key_data(const std::string&, const std::string&, const std::string&) const>(&foundation_wasm::cpp_generate_private_key)
+    ))
     .function("cpp_convert_raw_private_key_to_wif", &foundation_wasm::cpp_convert_raw_private_key_to_wif)
     .function("cpp_convert_raw_public_key_to_wif", &foundation_wasm::cpp_convert_raw_public_key_to_wif)
     .function("cpp_convert_wif_public_key_to_raw", &foundation_wasm::cpp_convert_wif_public_key_to_raw)
