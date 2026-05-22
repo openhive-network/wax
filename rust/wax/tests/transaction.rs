@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use cxx::UniquePtr;
-use wax::Transaction;
 use wax::constants::MAINNET_CHAIN_ID;
+use wax::{SignatureProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
 use wax_core::proto::{AccountWitnessProxy, Authority, RecoverAccount, Vote, operation::Value};
 use wax_core::{RustOperation, RustTransaction};
@@ -310,6 +310,163 @@ fn add_signature_appends_to_proto_signatures() {
         .expect("valid hex signature should be accepted");
 
     assert_eq!(tx.proto().signatures, vec![FAKE_SIG_A.to_string()]);
+}
+
+// Stub wallet that hands back a canned signature and records what it saw, so
+// we can assert `sign` routes the digest + public key to `sign_digest` and the
+// returned signature back into `add_signature`.
+struct StubWallet {
+    canned: String,
+    last_call: std::cell::RefCell<Option<(String, String)>>,
+}
+
+impl StubWallet {
+    fn new(canned: &str) -> Self {
+        Self {
+            canned: canned.to_string(),
+            last_call: std::cell::RefCell::new(None),
+        }
+    }
+}
+
+impl SignatureProvider for StubWallet {
+    fn sign_digest(&self, public_key: &str, sig_digest: &str) -> Result<String, WaxError> {
+        *self.last_call.borrow_mut() = Some((public_key.to_string(), sig_digest.to_string()));
+        Ok(self.canned.clone())
+    }
+    fn encrypt_data(
+        &self,
+        _content: &str,
+        _key: &str,
+        _other_key: Option<&str>,
+        _nonce: Option<u64>,
+    ) -> Result<String, WaxError> {
+        unimplemented!("encrypt_data is not exercised by sign() tests")
+    }
+    fn decrypt_data(
+        &self,
+        _content: &str,
+        _key: &str,
+        _other_key: Option<&str>,
+    ) -> Result<String, WaxError> {
+        unimplemented!("decrypt_data is not exercised by sign() tests")
+    }
+}
+
+#[test]
+fn sign_routes_digest_and_pubkey_to_wallet_and_appends_returned_signature() {
+    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let expected_digest = tx.sig_digest().expect("digest");
+    let wallet = StubWallet::new(FAKE_SIG_A);
+
+    let returned = tx
+        .sign(&wallet, "STM_PUBKEY_ALICE")
+        .expect("sign should succeed");
+
+    assert_eq!(returned, FAKE_SIG_A);
+    assert_eq!(
+        tx.proto().signatures,
+        vec![FAKE_SIG_A.to_string()],
+        "sign must append the wallet's signature to the transaction"
+    );
+    let (seen_pk, seen_digest) = wallet
+        .last_call
+        .borrow()
+        .clone()
+        .expect("wallet was called");
+    assert_eq!(seen_pk, "STM_PUBKEY_ALICE");
+    assert_eq!(
+        seen_digest, expected_digest,
+        "wallet must receive the transaction's own sig_digest"
+    );
+    assert!(tx.is_signed());
+}
+
+#[test]
+fn sign_refuses_to_run_when_transaction_is_invalid() {
+    // Empty transaction (no operations) — tx_validate rejects it.
+    let mut tx = mainnet_tx();
+    assert!(tx.validate().is_err(), "precondition: empty tx must fail validate");
+
+    struct PoisonWallet;
+    impl SignatureProvider for PoisonWallet {
+        fn sign_digest(&self, _pk: &str, _digest: &str) -> Result<String, WaxError> {
+            panic!("wallet must not be called when tx is invalid")
+        }
+        fn encrypt_data(
+            &self,
+            _: &str,
+            _: &str,
+            _: Option<&str>,
+            _: Option<u64>,
+        ) -> Result<String, WaxError> {
+            unimplemented!()
+        }
+        fn decrypt_data(
+            &self,
+            _: &str,
+            _: &str,
+            _: Option<&str>,
+        ) -> Result<String, WaxError> {
+            unimplemented!()
+        }
+    }
+
+    let result = tx.sign(&PoisonWallet, "STM_PUBKEY_X");
+
+    assert!(result.is_err(), "sign must refuse to run on an invalid tx");
+    assert!(!tx.is_signed(), "failed sign must leave tx unsigned");
+}
+
+#[test]
+fn sign_can_be_called_multiple_times_for_multi_key_signing() {
+    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let wallet_a = StubWallet::new(FAKE_SIG_A);
+    let wallet_b = StubWallet::new(FAKE_SIG_B);
+
+    tx.sign(&wallet_a, "STM_PUBKEY_A").expect("first sign");
+    tx.sign(&wallet_b, "STM_PUBKEY_B").expect("second sign");
+
+    assert_eq!(
+        tx.proto().signatures,
+        vec![FAKE_SIG_A.to_string(), FAKE_SIG_B.to_string()]
+    );
+}
+
+#[test]
+fn sign_propagates_wallet_error_without_mutating_transaction() {
+    struct FailingWallet;
+    impl SignatureProvider for FailingWallet {
+        fn sign_digest(&self, _pk: &str, _digest: &str) -> Result<String, WaxError> {
+            Err(WaxError::new("wallet refused"))
+        }
+        fn encrypt_data(
+            &self,
+            _: &str,
+            _: &str,
+            _: Option<&str>,
+            _: Option<u64>,
+        ) -> Result<String, WaxError> {
+            unimplemented!()
+        }
+        fn decrypt_data(
+            &self,
+            _: &str,
+            _: &str,
+            _: Option<&str>,
+        ) -> Result<String, WaxError> {
+            unimplemented!()
+        }
+    }
+
+    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let result = tx.sign(&FailingWallet, "STM_PUBKEY_X");
+
+    assert!(result.is_err(), "wallet error must surface");
+    assert!(
+        !tx.is_signed(),
+        "failed sign must not leave a partial signature on the tx"
+    );
 }
 
 #[test]

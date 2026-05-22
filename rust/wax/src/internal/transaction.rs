@@ -8,7 +8,7 @@ use wax_core::{RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
-use crate::interfaces::{AuthorityDataProvider, OperationBuilder, Transaction};
+use crate::interfaces::{AuthorityDataProvider, OperationBuilder, SignatureProvider, Transaction};
 use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
@@ -160,6 +160,19 @@ impl Transaction for RustTransaction {
             tx = tx.push_operation(RustOperation::from_proto(protocol, op));
         }
         Ok(tx)
+    }
+
+    fn sign(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+        public_key: &str,
+    ) -> Result<String, WaxError> {
+        self.validate()?;
+        let digest = self.sig_digest()?;
+        let signature = wallet.sign_digest(public_key, &digest)?;
+        self.add_signature(&signature)?;
+
+        Ok(signature)
     }
 }
 

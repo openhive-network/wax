@@ -100,5 +100,15 @@ pub trait Transaction {
     ) -> Result<Self, WaxError>
     where
         Self: Sized;
-    // TODO: add `sign` method
+
+    /// Convenience: compute the transaction's `sig_digest`, ask `wallet` to
+    /// sign it with the private key matching `public_key`, append the result
+    /// to this transaction, and return it.
+    ///
+    /// To sign with multiple keys, call this once per key.
+    fn sign(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+        public_key: &str,
+    ) -> Result<Signature, WaxError>;
 }
