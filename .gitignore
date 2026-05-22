@@ -214,6 +214,7 @@ python/tests/wax/report.xml
 python/tests/wax/base_api/generated_*
 python/wax/*.wallet
 python/wax/setup.py
+*.bin
 
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope
