@@ -10,3 +10,6 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "std"
 rust_decimal = { version = "1", default-features = false, features = ["std"] }
 serde_json = "1"
 thiserror = "2"
+
+[dev-dependencies]
+beekeeper_rust = { path = "../crates/beekeeper/programs/beekeeper/beekeeper_rust" }
