@@ -16,6 +16,8 @@ namespace cpp {
     struct RustAuthVerificationTrace;
     struct RustBrainKeyData;
     struct RustPrivateKeyData;
+    struct RustBinaryData;
+    struct RustBinaryDataNode;
 }
 
 #include "rust_managed_object.hpp"
@@ -66,6 +68,12 @@ namespace cpp {
 
 		::rust::String cpp_tx_to_binary(
 			const hive_transaction_handle& tx,
+			bool strip_to_unsigned_transaction
+		) const;
+
+		RustBinaryData cpp_tx_binary_view(
+			const hive_transaction_handle& tx,
+			bool use_hf26_serialization,
 			bool strip_to_unsigned_transaction
 		) const;
 

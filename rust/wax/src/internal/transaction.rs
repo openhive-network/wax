@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use wax_core::ffi::{
-    RustAccountAuthorities, RustAuthEntry, RustMinimizeRequiredSignaturesData,
-    RustRequiredAuthorities, RustWaxAuthority,
+    RustAccountAuthorities, RustAuthEntry, RustBinaryData, RustBinaryDataNode,
+    RustMinimizeRequiredSignaturesData, RustRequiredAuthorities, RustWaxAuthority,
 };
 use wax_core::{RustOperation, RustTransaction, proto};
 
@@ -12,7 +12,7 @@ use crate::interfaces::{AuthorityDataProvider, OperationBuilder, SignatureProvid
 use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
-use crate::result::MinimizeRequiredSignaturesData;
+use crate::result::{BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData};
 
 impl Transaction for RustTransaction {
     fn push_operation(mut self, op: RustOperation) -> Self {
@@ -82,6 +82,20 @@ impl Transaction for RustTransaction {
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_tx_to_binary(&self.handle, strip_to_unsigned)
+            .map_err(WaxError::from)
+    }
+
+    fn binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError> {
+        rust_protocol()
+            .cpp_tx_binary_view(&self.handle, true, false)
+            .map(to_binary_view_output)
+            .map_err(WaxError::from)
+    }
+
+    fn legacy_binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError> {
+        rust_protocol()
+            .cpp_tx_binary_view(&self.handle, false, false)
+            .map(to_binary_view_output)
             .map_err(WaxError::from)
     }
 
@@ -227,6 +241,55 @@ fn to_proto_authority(authority: RustWaxAuthority) -> proto::Authority {
         weight_threshold: authority.weight_threshold,
         account_auths: auth_entries_to_map(authority.account_auths),
         key_auths: auth_entries_to_map(authority.key_auths),
+    }
+}
+
+fn to_binary_view_output(ffi: RustBinaryData) -> BinaryViewOutputData {
+    let nodes = ffi.nodes;
+    let offsets = ffi
+        .root_indices
+        .iter()
+        .map(|&idx| build_binary_view_node(&nodes, idx))
+        .collect();
+
+    BinaryViewOutputData {
+        binary: ffi.binary,
+        offsets,
+    }
+}
+
+fn build_binary_view_node(nodes: &[RustBinaryDataNode], idx: u32) -> BinaryViewNode {
+    let node = &nodes[idx as usize];
+    let children: Vec<BinaryViewNode> = node
+        .child_indices
+        .iter()
+        .map(|&child| build_binary_view_node(nodes, child))
+        .collect();
+
+    match node.node_type.as_str() {
+        "scalar" => BinaryViewNode::Scalar {
+            key: node.key.clone(),
+            offset: node.offset,
+            size: node.size,
+            value: node.value.clone(),
+        },
+        "array" => BinaryViewNode::Array {
+            key: node.key.clone(),
+            offset: node.offset,
+            size: node.size,
+            length: node.length,
+            value: node.value.clone(),
+            children,
+        },
+        // "object" — the C++ producer emits exactly these three discriminants; treat anything
+        // else (including any unforeseen future tag) as an object so we don't lose its children.
+        _ => BinaryViewNode::Object {
+            key: node.key.clone(),
+            offset: node.offset,
+            size: node.size,
+            value: node.value.clone(),
+            children,
+        },
     }
 }
 

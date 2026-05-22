@@ -140,6 +140,29 @@ namespace cpp {
 			const RustAuthorityProvider& _provider;
 		};
 
+		uint32_t flatten_binary_data_node(
+			const binary_data_node& src,
+			::rust::Vec<RustBinaryDataNode>& nodes
+		) {
+			::rust::Vec<uint32_t> child_indices;
+			child_indices.reserve(src.children.size());
+			for (const auto& child : src.children) {
+				child_indices.push_back(flatten_binary_data_node(child, nodes));
+			}
+
+			uint32_t self_idx = static_cast<uint32_t>(nodes.size());
+			nodes.push_back(RustBinaryDataNode{
+				::rust::String(src.key),
+				::rust::String(src.type),
+				src.offset,
+				src.size,
+				::rust::String(src.value),
+				src.length,
+				std::move(child_indices),
+			});
+			return self_idx;
+		}
+
 		uint32_t flatten_path_entry(
 			const hive::protocol::authority_verification_trace::path_entry& src,
 			::rust::Vec<RustAuthPathNode>& nodes
@@ -257,6 +280,27 @@ namespace cpp {
 		bool strip_to_unsigned_transaction
 	) const {
 		return foundation::cpp_tx_to_binary(tx, true, strip_to_unsigned_transaction);
+	}
+
+	RustBinaryData rust_protocol::cpp_tx_binary_view(
+		const hive_transaction_handle& tx,
+		bool use_hf26_serialization,
+		bool strip_to_unsigned_transaction
+	) const {
+		const auto data = foundation::cpp_tx_binary(tx, use_hf26_serialization, strip_to_unsigned_transaction);
+
+		::rust::Vec<RustBinaryDataNode> nodes;
+		::rust::Vec<uint32_t> root_indices;
+		root_indices.reserve(data.offsets.size());
+		for (const auto& node : data.offsets) {
+			root_indices.push_back(flatten_binary_data_node(node, nodes));
+		}
+
+		return RustBinaryData{
+			::rust::String(data.binary),
+			std::move(nodes),
+			std::move(root_indices),
+		};
 	}
 
 	::rust::Vec<::rust::String> rust_protocol::cpp_tx_signature_keys(
@@ -464,11 +508,13 @@ namespace cpp {
 	}
 
 	::rust::String rust_protocol::cpp_calculate_public_key(::rust::Str wif) const {
-		return foundation::cpp_calculate_public_key(std::string(wif));
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_calculate_public_key(std::string(wif));
 	}
 
 	RustBrainKeyData rust_protocol::cpp_suggest_brain_key() const {
-		auto data = foundation::cpp_suggest_brain_key();
+		auto& self = const_cast<rust_protocol&>(*this);
+		auto data = self.foundation::cpp_suggest_brain_key();
 		return RustBrainKeyData{
 			::rust::String(data.brain_key),
 			::rust::String(data.wif_private_key),
@@ -481,7 +527,8 @@ namespace cpp {
 		::rust::Str role,
 		::rust::Str password
 	) const {
-		auto data = foundation::cpp_generate_private_key(
+		auto& self = const_cast<rust_protocol&>(*this);
+		auto data = self.foundation::cpp_generate_private_key(
 			std::string(account),
 			std::string(role),
 			std::string(password)
@@ -493,11 +540,13 @@ namespace cpp {
 	}
 
 	::rust::String rust_protocol::cpp_convert_raw_private_key_to_wif(::rust::Str hex_data) const {
-		return foundation::cpp_convert_raw_private_key_to_wif(std::string(hex_data));
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_convert_raw_private_key_to_wif(std::string(hex_data));
 	}
 
 	::rust::String rust_protocol::cpp_convert_raw_public_key_to_wif(::rust::Str hex_data) const {
-		return foundation::cpp_convert_raw_public_key_to_wif(std::string(hex_data));
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_convert_raw_public_key_to_wif(std::string(hex_data));
 	}
 
 	std::unique_ptr<hive_transaction_handle>

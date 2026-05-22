@@ -5,7 +5,7 @@ use crate::WaxError;
 use crate::foundation::WaxFoundation;
 use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
 use crate::models::basic::{AccountName, Hex, PublicKey, Signature, SigDigest, TransactionId};
-use crate::result::MinimizeRequiredSignaturesData;
+use crate::result::{BinaryViewOutputData, MinimizeRequiredSignaturesData};
 
 pub trait Manabar {
     fn max_mana(&self) -> i64;
@@ -77,6 +77,11 @@ pub trait Transaction {
     fn id(&self) -> Result<TransactionId, WaxError>;
     fn legacy_id(&self) -> Result<TransactionId, WaxError>;
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<Hex, WaxError>;
+    /// Returns the HF26 binary view: the wire-form hex plus a parsed AST
+    /// annotating each byte range with its field name and type.
+    fn binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
+    /// Legacy-serialization counterpart to [`Self::binary_view_metadata`].
+    fn legacy_binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
     fn to_api(&self) -> Result<String, WaxError>;
     fn to_legacy_api(&self) -> Result<String, WaxError>;
     fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;

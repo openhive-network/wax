@@ -88,6 +88,26 @@ pub mod ffi {
         pub allow_strict_and_mixed_authorities: bool,
     }
 
+    /// Flat representation of `cpp::binary_data_node`. The recursive tree is
+    /// linearized into a `Vec<RustBinaryDataNode>` and each parent stores the
+    /// indices of its children, so the structure is cxx-bridge-compatible.
+    pub struct RustBinaryDataNode {
+        pub key: String,
+        // "scalar" | "array" | "object" (mirrors cpp::binary_data_node::type).
+        pub node_type: String,
+        pub offset: u32,
+        pub size: u32,
+        pub value: String,
+        pub length: u32,
+        pub child_indices: Vec<u32>,
+    }
+
+    pub struct RustBinaryData {
+        pub binary: String,
+        pub nodes: Vec<RustBinaryDataNode>,
+        pub root_indices: Vec<u32>,
+    }
+
     pub struct RustAuthPathNode {
         pub processed_entry: String,
         pub processed_role: String,
@@ -240,6 +260,13 @@ pub mod ffi {
             tx: &hive_transaction_handle,
             strip_to_unsigned_transaction: bool,
         ) -> Result<String>;
+
+        fn cpp_tx_binary_view(
+            self: &rust_protocol,
+            tx: &hive_transaction_handle,
+            use_hf26_serialization: bool,
+            strip_to_unsigned_transaction: bool,
+        ) -> Result<RustBinaryData>;
 
         fn cpp_tx_signature_keys(
             self: &rust_protocol,
@@ -413,6 +440,6 @@ pub mod ffi {
 
 pub use ffi::{
     hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
-    RustAuthPathNode, RustAuthVerificationTrace, RustJsonAsset, RustJsonPrice,
-    RustMinimizeRequiredSignaturesData, RustRefBlockData,
+    RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData, RustBinaryDataNode, RustJsonAsset,
+    RustJsonPrice, RustMinimizeRequiredSignaturesData, RustRefBlockData,
 };
