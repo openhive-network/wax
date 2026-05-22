@@ -13,21 +13,50 @@ use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
 use crate::options::WaxOptions;
-use crate::result::{BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
+use crate::result::{
+    Assets, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+};
 
 pub(crate) struct WaxFoundationApi {
     options: WaxOptions,
     // Lazily-populated cache of `hive::protocol::get_config(chain_id)` so we
     // don't pay the FFI + map-build cost on every `address_prefix()` /
-    // `config()` call (TS caches identically in WaxBaseApi).
+    // `config()` call (TS caches identically in WaxBaseApi, Python in
+    // base_api._cached_config).
     cached_config: OnceLock<ChainConfig>,
+    // Zero-amount NaiAsset templates. Eagerly populated in `new()` to match
+    // how TS sets `this.ASSETS` in its constructor and Python in `Asset.__init__`.
+    assets: Assets,
 }
 
 impl WaxFoundationApi {
     pub(crate) fn new(options: WaxOptions) -> Self {
+        // The three cpp_{hive,hbd,vests}(0) calls are deterministic for a
+        // well-built native lib; failure here is a build / linkage problem,
+        // not a runtime input issue. Matches `RustTransaction::new`'s
+        // `.expect("failed to create transaction handle")` precedent.
+        let protocol = rust_protocol();
+        let assets = Assets {
+            hive: to_nai_asset(
+                protocol
+                    .cpp_hive(0)
+                    .expect("cpp_hive(0) must not fail in a well-built wax_core"),
+            ),
+            hbd: to_nai_asset(
+                protocol
+                    .cpp_hbd(0)
+                    .expect("cpp_hbd(0) must not fail in a well-built wax_core"),
+            ),
+            vests: to_nai_asset(
+                protocol
+                    .cpp_vests(0)
+                    .expect("cpp_vests(0) must not fail in a well-built wax_core"),
+            ),
+        };
         Self {
             options,
             cached_config: OnceLock::new(),
+            assets,
         }
     }
 }
@@ -79,6 +108,10 @@ impl WaxFoundation for WaxFoundationApi {
         Box::new(WaxFoundationApi::new(WaxOptions {
             chain_id: chain_id.to_string(),
         }))
+    }
+
+    fn assets(&self) -> Result<Assets, WaxError> {
+        Ok(self.assets.clone())
     }
 
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError> {

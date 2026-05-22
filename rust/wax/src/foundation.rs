@@ -4,7 +4,9 @@ use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
-use crate::result::{BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
+use crate::result::{
+    Assets, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+};
 
 pub trait WaxFoundation {
     /// Chain id this foundation was constructed with. Matches TS
@@ -26,6 +28,10 @@ pub trait WaxFoundation {
     /// Derive a new foundation that shares this one's runtime state but uses
     /// the given chain id. Mirrors TS `extendConfig({ chainId })`.
     fn extend_config(&self, chain_id: &str) -> Box<dyn WaxFoundation>;
+
+    /// Zero-amount NaiAsset templates for HIVE / HBD / VESTS. Mirrors TS
+    /// `IWaxBaseInterface.ASSETS`. Result is cached per foundation instance.
+    fn assets(&self) -> Result<Assets, WaxError>;
 
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
     fn hbd_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;

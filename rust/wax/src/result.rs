@@ -4,6 +4,19 @@ use crate::models::asset::NaiAsset;
 use crate::models::authority::Authorities;
 use crate::models::basic::{AccountName, ChainId, Hex, PublicKey};
 
+/// Zero-amount NaiAsset templates for the three first-class Hive symbols.
+/// Mirrors TS `IWaxBaseInterface.ASSETS` (a `Record<EAssetName, NaiAsset>`).
+///
+/// Useful as a starting point when building assets via `with_amount`-style
+/// helpers, or as a no-allocation sentinel where the caller needs an asset
+/// of a specific symbol regardless of value.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Assets {
+    pub hive: NaiAsset,
+    pub hbd: NaiAsset,
+    pub vests: NaiAsset,
+}
+
 /// Hive chain configuration constants as returned by `hived`'s `get_config`
 /// helper. Keys vary by chain build; common ones include `HIVE_CHAIN_ID`,
 /// `HIVE_ADDRESS_PREFIX`, `HIVE_TREASURY_ACCOUNT`, `HIVE_SYMBOL`, `HBD_SYMBOL`,

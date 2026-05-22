@@ -289,6 +289,35 @@ fn address_prefix_fails_for_chain_id_without_address_prefix() {
 }
 
 #[test]
+fn assets_returns_zero_amount_templates_for_each_symbol() {
+    let f = foundation();
+    let a = f.assets().expect("assets");
+
+    assert_eq!(a.hive.nai, HIVE_NAI);
+    assert_eq!(a.hive.precision, ASSET_PRECISION);
+    assert_eq!(a.hive.amount, "0");
+
+    assert_eq!(a.hbd.nai, HBD_NAI);
+    assert_eq!(a.hbd.precision, ASSET_PRECISION);
+    assert_eq!(a.hbd.amount, "0");
+
+    assert_eq!(a.vests.nai, VESTS_NAI);
+    assert_eq!(a.vests.precision, VESTS_PRECISION);
+    assert_eq!(a.vests.amount, "0");
+}
+
+#[test]
+fn assets_is_cached_across_calls() {
+    let f = foundation();
+    let a = f.assets().expect("first assets");
+    let b = f.assets().expect("second assets");
+    assert_eq!(
+        a, b,
+        "repeated assets() calls must produce identical templates"
+    );
+}
+
+#[test]
 fn extend_config_produces_foundation_with_new_chain_id() {
     let base = foundation();
     let new_chain = "00000000000000000000000000000000000000000000000000000000deadbeef";
