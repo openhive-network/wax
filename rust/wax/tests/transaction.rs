@@ -6,7 +6,10 @@ use wax::constants::MAINNET_CHAIN_ID;
 use wax::result::BinaryViewNode;
 use wax::{SignatureProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
-use wax_core::proto::{AccountWitnessProxy, Authority, RecoverAccount, Vote, operation::Value};
+use wax_core::proto::{
+    AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount, Transfer, Vote,
+    operation::Value,
+};
 use wax_core::{RustOperation, RustTransaction};
 
 // Test-local replica of wax's internal protocol singleton. `rust_protocol` is
@@ -1012,6 +1015,356 @@ fn legacy_binary_view_metadata_returns_tree() {
         view.offsets.iter().any(|n| node_key(n) == "operations"),
         "legacy view should contain an `operations` node at the top level"
     );
+}
+
+fn hive_asset(amount: i64) -> Asset {
+    Asset {
+        amount: amount.to_string(),
+        precision: 3,
+        nai: "@@000000021".into(),
+    }
+}
+
+fn transfer(from: &str, to: &str, memo: &str) -> RustOperation {
+    RustOperation::new(
+        test_protocol(),
+        Value::TransferOperation(Transfer {
+            from_account: from.into(),
+            to_account: to.into(),
+            amount: hive_asset(1),
+            memo: memo.into(),
+        }),
+    )
+}
+
+fn comment_op(author: &str, permlink: &str, body: &str) -> RustOperation {
+    RustOperation::new(
+        test_protocol(),
+        Value::CommentOperation(Comment {
+            parent_author: "".into(),
+            parent_permlink: "hive-100000".into(),
+            author: author.into(),
+            permlink: permlink.into(),
+            title: "title".into(),
+            body: body.into(),
+            json_metadata: "{}".into(),
+        }),
+    )
+}
+
+fn custom_json(account: &str, id: &str, json: &str) -> RustOperation {
+    RustOperation::new(
+        test_protocol(),
+        Value::CustomJsonOperation(CustomJson {
+            required_auths: Vec::new(),
+            required_posting_auths: vec![account.into()],
+            id: id.into(),
+            json: json.into(),
+        }),
+    )
+}
+
+// Records what was encrypted/decrypted and parrots back a tagged version so
+// tests can assert the exact wallet contract (which key was used, which nonce,
+// what payload). encrypt prepends "#enc:"; decrypt strips it.
+struct CryptoStub {
+    encrypts: std::cell::RefCell<Vec<(String, String, Option<String>, Option<u64>)>>,
+    decrypts: std::cell::RefCell<Vec<String>>,
+}
+
+impl CryptoStub {
+    fn new() -> Self {
+        Self {
+            encrypts: std::cell::RefCell::new(Vec::new()),
+            decrypts: std::cell::RefCell::new(Vec::new()),
+        }
+    }
+}
+
+impl SignatureProvider for CryptoStub {
+    fn sign_digest(&self, _: &str, _: &str) -> Result<String, WaxError> {
+        unimplemented!("sign not exercised by encryption tests")
+    }
+    fn encrypt_data(
+        &self,
+        content: &str,
+        key: &str,
+        other_key: Option<&str>,
+        nonce: Option<u64>,
+    ) -> Result<String, WaxError> {
+        self.encrypts.borrow_mut().push((
+            content.to_string(),
+            key.to_string(),
+            other_key.map(str::to_string),
+            nonce,
+        ));
+        Ok(format!("#enc:{key}:{content}"))
+    }
+    fn decrypt_data(
+        &self,
+        content: &str,
+        _: &str,
+        _: Option<&str>,
+    ) -> Result<String, WaxError> {
+        self.decrypts.borrow_mut().push(content.to_string());
+        Ok(content.strip_prefix("#enc:").map_or_else(
+            || content.to_string(),
+            |rest| rest.splitn(2, ':').nth(1).unwrap_or("").to_string(),
+        ))
+    }
+}
+
+#[test]
+fn stop_encrypt_without_start_returns_error() {
+    let tx = mainnet_tx();
+    assert!(
+        tx.stop_encrypt().is_err(),
+        "stop_encrypt with no open range must fail"
+    );
+}
+
+#[test]
+fn stop_encrypt_twice_on_same_range_returns_error() {
+    let tx = mainnet_tx()
+        .start_encrypt("STM_K1", None)
+        .stop_encrypt()
+        .expect("first stop_encrypt should succeed");
+
+    assert!(
+        tx.stop_encrypt().is_err(),
+        "second stop_encrypt without a fresh start must fail"
+    );
+}
+
+#[test]
+fn perform_operation_encryption_is_noop_when_no_ranges_are_open() {
+    let mut tx = mainnet_tx().push_operation(transfer("alice", "bob", "plain"));
+    let wallet = CryptoStub::new();
+
+    tx.perform_operation_encryption(&wallet)
+        .expect("noop with no ranges");
+
+    assert!(
+        wallet.encrypts.borrow().is_empty(),
+        "wallet must not be called when no ranges are tracked"
+    );
+    match tx.proto().operations[0].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(t.memo, "plain"),
+        other => panic!("unexpected op variant: {other:?}"),
+    }
+}
+
+#[test]
+fn perform_operation_encryption_rewrites_memos_in_range() {
+    let mut tx = mainnet_tx()
+        .push_operation(transfer("alice", "bob", "before"))
+        .start_encrypt("STM_MAIN", Some("STM_OTHER"))
+        .push_operation(transfer("alice", "carol", "secret-1"))
+        .push_operation(transfer("alice", "dave", "secret-2"))
+        .stop_encrypt()
+        .expect("stop_encrypt should succeed")
+        .push_operation(transfer("alice", "eve", "after"));
+
+    tx.perform_operation_encryption(&CryptoStub::new())
+        .expect("perform_operation_encryption should succeed");
+
+    let memos: Vec<&str> = tx
+        .proto()
+        .operations
+        .iter()
+        .map(|op| match op.value.as_ref().unwrap() {
+            Value::TransferOperation(t) => t.memo.as_str(),
+            _ => panic!("unexpected variant"),
+        })
+        .collect();
+
+    assert_eq!(
+        memos,
+        vec![
+            "before",
+            "#enc:STM_MAIN:secret-1",
+            "#enc:STM_MAIN:secret-2",
+            "after",
+        ],
+        "only ops inside the [start, stop) range must be encrypted"
+    );
+    assert!(
+        tx.encryption_indices.is_empty(),
+        "ranges must be cleared after a successful perform_operation_encryption"
+    );
+}
+
+#[test]
+fn perform_operation_encryption_passes_keys_and_nonce_to_wallet() {
+    const REF_BLOCK_PREFIX: u32 = 0xfeed_face;
+    let mut tx = mainnet_tx()
+        .start_encrypt("STM_MAIN", Some("STM_OTHER"))
+        .push_operation(transfer("alice", "bob", "msg"))
+        .stop_encrypt()
+        .expect("stop_encrypt");
+    let wallet = CryptoStub::new();
+
+    tx.perform_operation_encryption(&wallet)
+        .expect("encryption should succeed");
+
+    let calls = wallet.encrypts.borrow();
+    assert_eq!(calls.len(), 1, "exactly one memo should be encrypted");
+    assert_eq!(calls[0].0, "msg", "wallet receives the plaintext memo");
+    assert_eq!(calls[0].1, "STM_MAIN", "main_key forwards to wallet");
+    assert_eq!(
+        calls[0].2.as_deref(),
+        Some("STM_OTHER"),
+        "other_key forwards to wallet when provided"
+    );
+    assert_eq!(
+        calls[0].3,
+        Some(u64::from(REF_BLOCK_PREFIX)),
+        "ref_block_prefix is used as the encryption nonce"
+    );
+}
+
+#[test]
+fn perform_operation_encryption_covers_all_supported_memo_fields() {
+    let mut tx = mainnet_tx()
+        .start_encrypt("K", None)
+        .push_operation(transfer("alice", "bob", "transfer-memo"))
+        .push_operation(comment_op("alice", "p", "comment-body"))
+        .push_operation(custom_json("alice", "test", "{\"hello\":\"world\"}"))
+        .stop_encrypt()
+        .expect("stop_encrypt");
+
+    tx.perform_operation_encryption(&CryptoStub::new())
+        .expect("encryption");
+
+    let ops = &tx.proto().operations;
+    match ops[0].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(t.memo, "#enc:K:transfer-memo"),
+        _ => panic!("transfer variant"),
+    }
+    match ops[1].value.as_ref().unwrap() {
+        Value::CommentOperation(c) => assert_eq!(c.body, "#enc:K:comment-body"),
+        _ => panic!("comment variant"),
+    }
+    match ops[2].value.as_ref().unwrap() {
+        Value::CustomJsonOperation(c) => {
+            // custom_json wraps the ciphertext in an {"encrypted": "..."} envelope.
+            let v: serde_json::Value = serde_json::from_str(&c.json).expect("valid json");
+            assert_eq!(
+                v.get("encrypted").and_then(|x| x.as_str()),
+                Some("#enc:K:{\"hello\":\"world\"}")
+            );
+        }
+        _ => panic!("custom_json variant"),
+    }
+}
+
+#[test]
+fn perform_operation_encryption_skips_unencryptable_operations() {
+    // Vote has no memo/body/json — the visitor must leave it alone, but other
+    // ops in the same range must still get encrypted.
+    let mut tx = mainnet_tx()
+        .start_encrypt("K", None)
+        .push_operation(vote("alice", 10_000))
+        .push_operation(transfer("alice", "bob", "secret"))
+        .stop_encrypt()
+        .expect("stop_encrypt");
+    let wallet = CryptoStub::new();
+
+    tx.perform_operation_encryption(&wallet)
+        .expect("encryption");
+
+    assert_eq!(
+        wallet.encrypts.borrow().len(),
+        1,
+        "wallet must be called exactly once — the vote has no encryptable field"
+    );
+    match &tx.proto().operations[1].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(t.memo, "#enc:K:secret"),
+        _ => panic!("transfer variant"),
+    }
+}
+
+#[test]
+fn perform_operation_encryption_rebuilds_handle_for_subsequent_calls() {
+    // After encryption mutates the proto in-place, the C++ handle must be
+    // rebuilt so derived outputs reflect the new state.
+    let mut tx = mainnet_tx()
+        .start_encrypt("K", None)
+        .push_operation(transfer("alice", "bob", "secret"))
+        .stop_encrypt()
+        .expect("stop_encrypt");
+
+    let bin_before = tx.to_binary_form(false).expect("bin before");
+    tx.perform_operation_encryption(&CryptoStub::new())
+        .expect("encryption");
+    let bin_after = tx.to_binary_form(false).expect("bin after");
+
+    assert_ne!(
+        bin_before, bin_after,
+        "to_binary_form must reflect the encrypted memo, proving the handle was rebuilt"
+    );
+}
+
+#[test]
+fn decrypt_only_unwraps_fields_with_hash_prefix() {
+    // Construct a tx whose ops mix encrypted (#-prefixed) and plaintext memos.
+    // Only the prefixed ones should be sent to the wallet.
+    let mut tx = mainnet_tx()
+        .push_operation(transfer("alice", "bob", "#enc:K:secret"))
+        .push_operation(transfer("alice", "carol", "plaintext"));
+    let wallet = CryptoStub::new();
+
+    tx.decrypt(&wallet).expect("decrypt");
+
+    assert_eq!(
+        wallet.decrypts.borrow().as_slice(),
+        &["#enc:K:secret".to_string()],
+        "only the #-prefixed memo must be sent to decrypt_data"
+    );
+    match tx.proto().operations[0].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(t.memo, "secret"),
+        _ => panic!("transfer variant"),
+    }
+    match tx.proto().operations[1].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(t.memo, "plaintext"),
+        _ => panic!("transfer variant"),
+    }
+}
+
+#[test]
+fn decrypt_unwraps_custom_json_envelope() {
+    // The encrypt path wraps the json payload in {"encrypted": ...}; decrypt
+    // should peel that envelope back off and decrypt the inner string.
+    let envelope = serde_json::json!({ "encrypted": "#enc:K:{\"hello\":\"world\"}" }).to_string();
+    let mut tx = mainnet_tx().push_operation(custom_json("alice", "test", &envelope));
+
+    tx.decrypt(&CryptoStub::new()).expect("decrypt");
+
+    match tx.proto().operations[0].value.as_ref().unwrap() {
+        Value::CustomJsonOperation(c) => assert_eq!(c.json, "{\"hello\":\"world\"}"),
+        _ => panic!("custom_json variant"),
+    }
+}
+
+#[test]
+fn encrypt_then_decrypt_round_trips_memo() {
+    let mut tx = mainnet_tx()
+        .start_encrypt("K", None)
+        .push_operation(transfer("alice", "bob", "round-trip"))
+        .stop_encrypt()
+        .expect("stop_encrypt");
+
+    tx.perform_operation_encryption(&CryptoStub::new())
+        .expect("encryption");
+    tx.decrypt(&CryptoStub::new()).expect("decryption");
+
+    match tx.proto().operations[0].value.as_ref().unwrap() {
+        Value::TransferOperation(t) => assert_eq!(
+            t.memo, "round-trip",
+            "encrypt then decrypt must restore the original memo with the stub wallet"
+        ),
+        _ => panic!("transfer variant"),
+    }
 }
 
 #[test]

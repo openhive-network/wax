@@ -116,4 +116,43 @@ pub trait Transaction {
         wallet: &dyn SignatureProvider,
         public_key: &str,
     ) -> Result<Signature, WaxError>;
+
+    /// Open an encryption range. Operations pushed (or already at) the
+    /// current end of the transaction will be encrypted by the next
+    /// `perform_operation_encryption` call. Multiple ranges may be opened
+    /// sequentially, each with its own key(s).
+    ///
+    /// `main_key` is the principal recipient public key; `other_key` is an
+    /// optional second recipient (memo-style two-party encryption).
+    fn start_encrypt(self, main_key: &str, other_key: Option<&str>) -> Self
+    where
+        Self: Sized;
+
+    /// Close the most recently opened encryption range. Errors if no range is
+    /// open or the latest range is already closed.
+    fn stop_encrypt(self) -> Result<Self, WaxError>
+    where
+        Self: Sized;
+
+    /// Walk each tracked encryption range and encrypt the memo-style field on
+    /// the operations it covers, using `wallet.encrypt_data` with the range's
+    /// keys and the transaction's `ref_block_prefix` as the nonce. The C++
+    /// transaction handle is rebuilt from the mutated proto, and all ranges
+    /// are cleared on success.
+    ///
+    /// The affected fields are: `transfer.memo`, `transfer_to_savings.memo`,
+    /// `transfer_from_savings.memo`, `recurrent_transfer.memo`, `comment.body`,
+    /// and `custom_json.json` (which is wrapped as `{"encrypted": "<ciphertext>"}`).
+    /// Operations without an encryptable field are skipped silently.
+    fn perform_operation_encryption(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+    ) -> Result<(), WaxError>;
+
+    /// Walk every operation on the transaction and, for memo-style fields whose
+    /// value starts with `#` (the encrypted marker used by hived), decrypt it
+    /// via `wallet.decrypt_data`. Plaintext fields and operations without an
+    /// encryptable field are left untouched. The C++ transaction handle is
+    /// rebuilt from the mutated proto on success.
+    fn decrypt(&mut self, wallet: &dyn SignatureProvider) -> Result<(), WaxError>;
 }

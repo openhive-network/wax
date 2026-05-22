@@ -4,7 +4,7 @@ use wax_core::ffi::{
     RustAccountAuthorities, RustAuthEntry, RustBinaryData, RustBinaryDataNode,
     RustMinimizeRequiredSignaturesData, RustRequiredAuthorities, RustWaxAuthority,
 };
-use wax_core::{RustOperation, RustTransaction, proto};
+use wax_core::{EncryptionIndex, RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
@@ -188,6 +188,164 @@ impl Transaction for RustTransaction {
 
         Ok(signature)
     }
+
+    fn start_encrypt(mut self, main_key: &str, other_key: Option<&str>) -> Self {
+        let begin = self.inner.operations.len();
+        self.encryption_indices.push(EncryptionIndex {
+            main_key: main_key.to_string(),
+            other_key: other_key.map(str::to_string),
+            begin,
+            end: None,
+        });
+        self
+    }
+
+    fn stop_encrypt(mut self) -> Result<Self, WaxError> {
+        let current_len = self.inner.operations.len();
+        let last = self.encryption_indices.last_mut().ok_or_else(|| {
+            WaxError::new("Mismatch in index types - stop_encrypt called before start_encrypt")
+        })?;
+        if last.end.is_some() {
+            return Err(WaxError::new(format!(
+                "Encryption on operation index: #{} for key: {:?} already closed",
+                last.begin, last.main_key
+            )));
+        }
+        last.end = Some(current_len);
+        Ok(self)
+    }
+
+    fn perform_operation_encryption(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+    ) -> Result<(), WaxError> {
+        if self.encryption_indices.is_empty() {
+            return Ok(());
+        }
+        let nonce = Some(u64::from(self.inner.ref_block_prefix));
+        let total = self.inner.operations.len();
+        // Take ownership of the index list up-front so we can iterate while
+        // mutably borrowing self.inner. On success we leave it cleared (matches TS).
+        let indices = std::mem::take(&mut self.encryption_indices);
+        for index in &indices {
+            let end = index.end.unwrap_or(total).min(total);
+            for op in &mut self.inner.operations[index.begin..end] {
+                visit_encryptable(op, EncryptMode::Encrypt, |data| {
+                    wallet.encrypt_data(
+                        data,
+                        &index.main_key,
+                        index.other_key.as_deref(),
+                        nonce,
+                    )
+                })?;
+            }
+        }
+        refresh_handle(self);
+        Ok(())
+    }
+
+    fn decrypt(&mut self, wallet: &dyn SignatureProvider) -> Result<(), WaxError> {
+        // decrypt visits every operation; ranges are not consulted. Per TS,
+        // only memo-style values that begin with '#' are sent to the wallet —
+        // everything else is left untouched.
+        let mutated = {
+            let mut any = false;
+            for op in &mut self.inner.operations {
+                visit_encryptable(op, EncryptMode::Decrypt, |data| {
+                    if data.starts_with('#') {
+                        any = true;
+                        // TODO: avoid passing `""`
+                        wallet.decrypt_data(data, "", None)
+                    } else {
+                        Ok(data.to_string())
+                    }
+                })?;
+            }
+            any
+        };
+        if mutated {
+            refresh_handle(self);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy)]
+enum EncryptMode {
+    Encrypt,
+    Decrypt,
+}
+
+/// Apply `crypto` to the single memo-style field on each operation variant we
+/// recognize (transfer*, comment, custom_json). The closure is invoked once
+/// per encryptable field and its return value replaces the field in-place. On
+/// non-encryptable variants this is a no-op.
+///
+/// For `custom_json_operation` the encrypt direction wraps the result in
+/// `{"encrypted": "<ciphertext>"}` and the decrypt direction unwraps the same
+/// envelope — matching TS `encryption_visitor.ts`. Custom-json payloads that
+/// don't have the envelope are left alone.
+fn visit_encryptable<F>(
+    op: &mut proto::Operation,
+    mode: EncryptMode,
+    mut crypto: F,
+) -> Result<(), WaxError>
+where
+    F: FnMut(&str) -> Result<String, WaxError>,
+{
+    use proto::operation::Value;
+
+    let Some(value) = op.value.as_mut() else {
+        return Ok(());
+    };
+    match value {
+        Value::TransferOperation(t) => t.memo = crypto(&t.memo)?,
+        Value::TransferToSavingsOperation(t) => t.memo = crypto(&t.memo)?,
+        Value::TransferFromSavingsOperation(t) => t.memo = crypto(&t.memo)?,
+        Value::RecurrentTransferOperation(t) => t.memo = crypto(&t.memo)?,
+        Value::CommentOperation(c) => c.body = crypto(&c.body)?,
+        Value::CustomJsonOperation(c) => apply_custom_json_crypto(c, mode, &mut crypto)?,
+        _ => {}
+    }
+    Ok(())
+}
+
+const CUSTOM_JSON_ENCRYPTED_KEY: &str = "encrypted";
+
+fn apply_custom_json_crypto<F>(
+    op: &mut proto::CustomJson,
+    mode: EncryptMode,
+    crypto: &mut F,
+) -> Result<(), WaxError>
+where
+    F: FnMut(&str) -> Result<String, WaxError>,
+{
+    match mode {
+        EncryptMode::Encrypt => {
+            let ciphertext = crypto(&op.json)?;
+            // serde_json::json! handles escaping; manual concat would be fragile.
+            op.json = serde_json::json!({ CUSTOM_JSON_ENCRYPTED_KEY: ciphertext }).to_string();
+        }
+        EncryptMode::Decrypt => {
+            // Only unwrap if the payload looks like the envelope produced by
+            // the encrypt path. Anything else is treated as already plaintext.
+            let parsed: serde_json::Value = match serde_json::from_str(&op.json) {
+                Ok(v) => v,
+                Err(_) => return Ok(()),
+            };
+            if let Some(inner) = parsed
+                .get(CUSTOM_JSON_ENCRYPTED_KEY)
+                .and_then(serde_json::Value::as_str)
+            {
+                op.json = crypto(inner)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn refresh_handle(tx: &mut RustTransaction) {
+    tx.refresh_handle(rust_protocol());
 }
 
 fn to_rust_minimize_data(

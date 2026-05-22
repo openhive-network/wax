@@ -4,10 +4,23 @@ use crate::ffi::{hive_transaction_handle, rust_protocol};
 use crate::managed_object::RustManagedObject;
 use crate::proto;
 
+/// Half-open encryption range over `RustTransaction::inner.operations`.
+/// `end == None` while a `start_encrypt` has not yet been matched by `stop_encrypt`.
+#[derive(Debug, Clone)]
+pub struct EncryptionIndex {
+    pub main_key: String,
+    pub other_key: Option<String>,
+    pub begin: usize,
+    pub end: Option<usize>,
+}
+
 pub struct RustTransaction {
     pub inner: proto::Transaction,
     pub handle: UniquePtr<hive_transaction_handle>,
     pub chain_id: String,
+    /// Pending encryption ranges populated by `start_encrypt` / `stop_encrypt`.
+    /// Cleared after a successful `perform_operation_encryption`.
+    pub encryption_indices: Vec<EncryptionIndex>,
 }
 
 impl RustTransaction {
@@ -28,7 +41,12 @@ impl RustTransaction {
             signatures: Vec::new(),
         };
         let handle = create_handle(protocol, &inner);
-        Self { inner, handle, chain_id: chain_id.into() }
+        Self {
+            inner,
+            handle,
+            chain_id: chain_id.into(),
+            encryption_indices: Vec::new(),
+        }
     }
 
     pub fn from_proto(
@@ -37,7 +55,19 @@ impl RustTransaction {
         inner: proto::Transaction,
     ) -> Self {
         let handle = create_handle(protocol, &inner);
-        Self { inner, handle, chain_id: chain_id.into() }
+        Self {
+            inner,
+            handle,
+            chain_id: chain_id.into(),
+            encryption_indices: Vec::new(),
+        }
+    }
+
+    /// Rebuild the C++ handle from the (mutated) Rust-side proto. Call after
+    /// any in-place mutation of `inner.operations` that bypasses the existing
+    /// `cpp_tx_*` mutators (e.g. memo encryption rewrites).
+    pub fn refresh_handle(&mut self, protocol: &rust_protocol) {
+        self.handle = create_handle(protocol, &self.inner);
     }
 
     pub fn from_json(
