@@ -105,6 +105,11 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
+    fn to_api_json(&self) -> Result<serde_json::Value, WaxError> {
+        let raw = self.to_api()?;
+        serde_json::from_str(&raw).map_err(|e| WaxError::new(e.to_string()))
+    }
+
     fn to_legacy_api(&self) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_tx_to_legacy_json(&self.handle)

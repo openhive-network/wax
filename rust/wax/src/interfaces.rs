@@ -83,6 +83,9 @@ pub trait Transaction {
     /// Legacy-serialization counterpart to [`Self::binary_view_metadata`].
     fn legacy_binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
     fn to_api(&self) -> Result<String, WaxError>;
+    /// Same payload as [`Self::to_api`], parsed into a [`serde_json::Value`]
+    /// for callers that want structured access without a manual parse step.
+    fn to_api_json(&self) -> Result<serde_json::Value, WaxError>;
     fn to_legacy_api(&self) -> Result<String, WaxError>;
     fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
     fn legacy_signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;

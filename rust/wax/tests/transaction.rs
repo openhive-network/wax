@@ -559,6 +559,29 @@ fn to_api_returns_json_describing_the_transaction() {
 }
 
 #[test]
+fn to_api_json_returns_parsed_object_matching_to_api() {
+    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+
+    let raw = tx.to_api().expect("to_api should succeed");
+    let parsed = tx.to_api_json().expect("to_api_json should succeed");
+
+    assert!(parsed.is_object(), "to_api_json must return a JSON object");
+    let reparsed_raw: serde_json::Value =
+        serde_json::from_str(&raw).expect("to_api output must be valid JSON");
+    assert_eq!(
+        parsed, reparsed_raw,
+        "to_api_json must be the parsed equivalent of to_api"
+    );
+    // Spot-check structured access — the value the test cares about, reached
+    // by indexing rather than substring matching.
+    assert_eq!(
+        parsed["operations"][0]["value"]["voter"],
+        serde_json::Value::String("alice".into()),
+        "voter should be reachable via JSON pointers: {parsed}"
+    );
+}
+
+#[test]
 fn to_api_reflects_pushed_operations() {
     let empty_tx = mainnet_tx();
     let voted_tx = mainnet_tx().push_operation(vote("alice", 10_000));
