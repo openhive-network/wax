@@ -1,8 +1,16 @@
 use std::collections::HashMap;
 
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
+use wax::models::basic::HiveDateTime;
 use wax::{AuthorityDataProvider, WaxError};
 use wax_core::proto;
+
+fn placeholder_timestamp() -> HiveDateTime {
+    // Fixed epoch-ish timestamp for tests that don't care about owner-update
+    // recency. The AuthorityDataProvider contract doesn't constrain the value,
+    // it just needs to round-trip through clone/equality.
+    HiveDateTime::parse("2020-01-01T00:00:00").expect("static HiveDateTime literal must parse")
+}
 
 /// Test-only in-memory provider. Returns the stored info for known accounts,
 /// and a WaxError ("account '<name>' not found") for unknown accounts —
@@ -49,6 +57,8 @@ fn alice_info() -> AccountAuthorityInfo {
             posting: Some(authority_with_key("STM-posting-key", 1)),
         },
         memo_key: "STM-memo-key".into(),
+        last_owner_update: placeholder_timestamp(),
+        previous_owner_update: placeholder_timestamp(),
     }
 }
 
@@ -93,6 +103,8 @@ fn supports_sparse_authorities() {
             posting: Some(authority_with_key("STM-posting-only-key", 1)),
         },
         memo_key: "STM-posting-only-memo-key".into(),
+        last_owner_update: placeholder_timestamp(),
+        previous_owner_update: placeholder_timestamp(),
     });
 
     let info = provider

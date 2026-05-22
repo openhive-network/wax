@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use wax_core::proto;
 
-use crate::models::basic::{AccountName, PublicKey};
+use crate::models::basic::{AccountName, HiveDateTime, PublicKey};
 
 pub type WaxAuthority = proto::Authority;
 pub type KeyAuths = HashMap<PublicKey, u32>;
@@ -28,5 +28,12 @@ pub struct AccountAuthorityInfo {
     pub account: AccountName,
     pub authorities: Authorities,
     pub memo_key: PublicKey,
-    // TODO: add `last_owner_update`, `previous_owner_update`
+    /// Last time the owner authority was changed. Used by the offline
+    /// `AccountAuthorityUpdateOperation` builder to decide whether a recent
+    /// owner update would expose a stale-key window (mirrors Python's
+    /// `last_owner_update` on `AccountAuthorityInfo`).
+    pub last_owner_update: HiveDateTime,
+    /// The owner authority's previous update timestamp, kept as a fallback
+    /// for the same recovery-window check.
+    pub previous_owner_update: HiveDateTime,
 }
