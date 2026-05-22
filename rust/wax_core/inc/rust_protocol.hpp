@@ -18,6 +18,7 @@ namespace cpp {
     struct RustPrivateKeyData;
     struct RustBinaryData;
     struct RustBinaryDataNode;
+    struct RustConfigEntry;
 }
 
 #include "rust_managed_object.hpp"
@@ -189,6 +190,8 @@ namespace cpp {
 			const ::rust::Vec<::rust::String>& decoded_signature_public_keys,
 			const RustAuthorityProvider& provider
 		) const;
+
+		::rust::Vec<RustConfigEntry> cpp_get_hive_protocol_config(::rust::Str chain_id) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

@@ -136,6 +136,15 @@ pub mod ffi {
         pub associated_public_key: String,
     }
 
+    /// One entry in the chain-config map returned by
+    /// `cpp_get_hive_protocol_config`. cxx-bridge cannot express
+    /// `std::map<String, String>` directly so we surface it as a flat Vec
+    /// of key/value pairs.
+    pub struct RustConfigEntry {
+        pub key: String,
+        pub value: String,
+    }
+
     extern "Rust" {
         type RustManagedObject;
         type RustAuthorityProvider;
@@ -435,11 +444,17 @@ pub mod ffi {
             decoded_signature_public_keys: &Vec<String>,
             provider: &RustAuthorityProvider,
         ) -> Result<RustAuthVerificationTrace>;
+
+        fn cpp_get_hive_protocol_config(
+            self: &rust_protocol,
+            chain_id: &str,
+        ) -> Result<Vec<RustConfigEntry>>;
     }
 }
 
 pub use ffi::{
     hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
-    RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData, RustBinaryDataNode, RustJsonAsset,
-    RustJsonPrice, RustMinimizeRequiredSignaturesData, RustRefBlockData,
+    RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData, RustBinaryDataNode,
+    RustConfigEntry, RustJsonAsset, RustJsonPrice, RustMinimizeRequiredSignaturesData,
+    RustRefBlockData,
 };

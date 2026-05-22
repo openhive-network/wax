@@ -4,6 +4,12 @@ use crate::models::asset::NaiAsset;
 use crate::models::authority::Authorities;
 use crate::models::basic::{AccountName, ChainId, Hex, PublicKey};
 
+/// Hive chain configuration constants as returned by `hived`'s `get_config`
+/// helper. Keys vary by chain build; common ones include `HIVE_CHAIN_ID`,
+/// `HIVE_ADDRESS_PREFIX`, `HIVE_TREASURY_ACCOUNT`, `HIVE_SYMBOL`, `HBD_SYMBOL`,
+/// `VESTS_SYMBOL`, and `IS_TEST_NET`. Mirrors TS's `IChainConfig`.
+pub type ChainConfig = HashMap<String, String>;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct JsonPrice {
     pub base: NaiAsset,

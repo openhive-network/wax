@@ -6,7 +6,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::asset::NaiAsset;
-use wax::{WaxFoundation, create_wax_foundation};
+use wax::{WaxFoundation, WaxOptions, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -206,5 +206,103 @@ fn set_expiration_updates_both_handle_and_proto_state() {
     assert!(
         json.contains(new_expiration),
         "to_api should reflect new expiration: {json}"
+    );
+}
+
+#[test]
+fn chain_id_returns_value_from_options() {
+    let f = foundation();
+    assert_eq!(f.chain_id(), MAINNET_CHAIN_ID);
+}
+
+#[test]
+fn chain_id_reflects_custom_options() {
+    let custom = "00000000000000000000000000000000000000000000000000000000deadbeef";
+    let f = create_wax_foundation(WaxOptions {
+        chain_id: custom.to_string(),
+    });
+    assert_eq!(f.chain_id(), custom);
+}
+
+#[test]
+fn get_version_matches_cargo_pkg_version() {
+    let f = foundation();
+    assert_eq!(f.get_version(), env!("CARGO_PKG_VERSION"));
+}
+
+#[test]
+fn config_returns_known_protocol_constants() {
+    let f = foundation();
+    let cfg = f.config().expect("config should succeed for mainnet chain id");
+
+    // These keys are well-known and stable across hived builds; their exact
+    // values aren't asserted (they can drift with hardforks), only presence
+    // and string shape.
+    for required in [
+        "HIVE_ADDRESS_PREFIX",
+        "HIVE_CHAIN_ID",
+        "HIVE_SYMBOL",
+        "HBD_SYMBOL",
+        "VESTS_SYMBOL",
+    ] {
+        assert!(
+            cfg.contains_key(required),
+            "config missing expected key {required}: keys={:?}",
+            cfg.keys().collect::<Vec<_>>()
+        );
+    }
+    assert_eq!(
+        cfg.get("HIVE_CHAIN_ID").map(String::as_str),
+        Some(MAINNET_CHAIN_ID),
+        "HIVE_CHAIN_ID in config should round-trip to the configured chain_id"
+    );
+}
+
+#[test]
+fn config_is_cached_across_calls() {
+    let f = foundation();
+    let a = f.config().expect("first config");
+    let b = f.config().expect("second config");
+    assert_eq!(a, b, "repeated config() calls must produce identical maps");
+}
+
+#[test]
+fn address_prefix_is_stm_on_mainnet() {
+    let f = foundation();
+    let prefix = f.address_prefix().expect("address_prefix");
+    assert_eq!(prefix, "STM");
+}
+
+#[test]
+fn address_prefix_fails_for_chain_id_without_address_prefix() {
+    // hived's get_config rejects non-32-byte chain ids before producing the
+    // map, so a malformed chain_id surfaces an error via config() rather than
+    // a missing HIVE_ADDRESS_PREFIX entry. Either way, address_prefix must be
+    // a Result and not silently produce empty.
+    let f = create_wax_foundation(WaxOptions {
+        chain_id: "not-hex".to_string(),
+    });
+    assert!(
+        f.address_prefix().is_err(),
+        "malformed chain_id must surface as an error from address_prefix"
+    );
+}
+
+#[test]
+fn extend_config_produces_foundation_with_new_chain_id() {
+    let base = foundation();
+    let new_chain = "00000000000000000000000000000000000000000000000000000000deadbeef";
+
+    let extended = base.extend_config(new_chain);
+
+    assert_eq!(
+        base.chain_id(),
+        MAINNET_CHAIN_ID,
+        "extend_config must not mutate the original foundation"
+    );
+    assert_eq!(
+        extended.chain_id(),
+        new_chain,
+        "extended foundation must report the overridden chain id"
     );
 }

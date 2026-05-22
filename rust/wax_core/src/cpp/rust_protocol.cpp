@@ -653,4 +653,18 @@ namespace cpp {
 			static_cast<uint32_t>(trace.verification_status),
 		};
 	}
+
+	::rust::Vec<RustConfigEntry> rust_protocol::cpp_get_hive_protocol_config(::rust::Str chain_id) const {
+		// foundation::cpp_get_hive_protocol_config isn't declared const upstream
+		// even though it doesn't mutate `*this`.
+		auto& self = const_cast<rust_protocol&>(*this);
+		const auto config = self.foundation::cpp_get_hive_protocol_config(std::string(chain_id));
+
+		::rust::Vec<RustConfigEntry> result;
+		result.reserve(config.size());
+		for (const auto& [key, value] : config) {
+			result.push_back(RustConfigEntry{ ::rust::String(key), ::rust::String(value) });
+		}
+		return result;
+	}
 }

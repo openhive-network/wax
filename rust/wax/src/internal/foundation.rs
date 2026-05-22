@@ -1,3 +1,5 @@
+use std::sync::OnceLock;
+
 use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
 use wax_core::{RustTransaction, proto};
 
@@ -11,15 +13,22 @@ use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
 use crate::options::WaxOptions;
-use crate::result::{BrainKeyData, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
+use crate::result::{BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
 
 pub(crate) struct WaxFoundationApi {
     options: WaxOptions,
+    // Lazily-populated cache of `hive::protocol::get_config(chain_id)` so we
+    // don't pay the FFI + map-build cost on every `address_prefix()` /
+    // `config()` call (TS caches identically in WaxBaseApi).
+    cached_config: OnceLock<ChainConfig>,
 }
 
 impl WaxFoundationApi {
     pub(crate) fn new(options: WaxOptions) -> Self {
-        Self { options }
+        Self {
+            options,
+            cached_config: OnceLock::new(),
+        }
     }
 }
 
@@ -27,7 +36,51 @@ const HIVE_PRECISION: u32 = 3;
 const HBD_PRECISION: u32 = 3;
 const VESTS_PRECISION: u32 = 6;
 
+const HIVE_ADDRESS_PREFIX_KEY: &str = "HIVE_ADDRESS_PREFIX";
+
 impl WaxFoundation for WaxFoundationApi {
+    fn chain_id(&self) -> &str {
+        &self.options.chain_id
+    }
+
+    fn address_prefix(&self) -> Result<String, WaxError> {
+        let config = self.config()?;
+        config
+            .get(HIVE_ADDRESS_PREFIX_KEY)
+            .cloned()
+            .ok_or_else(|| {
+                WaxError::new(format!(
+                    "{HIVE_ADDRESS_PREFIX_KEY} missing from protocol config"
+                ))
+            })
+    }
+
+    fn config(&self) -> Result<ChainConfig, WaxError> {
+        if let Some(cached) = self.cached_config.get() {
+            return Ok(cached.clone());
+        }
+
+        let entries = rust_protocol()
+            .cpp_get_hive_protocol_config(&self.options.chain_id)
+            .map_err(WaxError::from)?;
+        let map: ChainConfig = entries.into_iter().map(|e| (e.key, e.value)).collect();
+        // OnceLock::set is a noop if another thread won the race; either way,
+        // we end up returning the same logical config.
+        let _ = self.cached_config.set(map.clone());
+
+        Ok(map)
+    }
+
+    fn get_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+
+    fn extend_config(&self, chain_id: &str) -> Box<dyn WaxFoundation> {
+        Box::new(WaxFoundationApi::new(WaxOptions {
+            chain_id: chain_id.to_string(),
+        }))
+    }
+
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError> {
         let satoshis = amount_to_satoshis(amount, HIVE_PRECISION)?;
         self.hive_satoshis(satoshis)

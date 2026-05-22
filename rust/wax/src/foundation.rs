@@ -4,9 +4,29 @@ use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::{Hex, HiveDateTime};
-use crate::result::{BrainKeyData, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
+use crate::result::{BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData};
 
 pub trait WaxFoundation {
+    /// Chain id this foundation was constructed with. Matches TS
+    /// `IWaxBaseInterface.chainId`.
+    fn chain_id(&self) -> &str;
+
+    /// Hive address prefix (typically `"STM"` for mainnet). Derived from
+    /// [`Self::config`] via the `HIVE_ADDRESS_PREFIX` key.
+    fn address_prefix(&self) -> Result<String, WaxError>;
+
+    /// Full hived protocol config for this chain — the map returned by
+    /// `hive::protocol::get_config`. Result is cached per foundation instance.
+    fn config(&self) -> Result<ChainConfig, WaxError>;
+
+    /// Bundled crate version (`CARGO_PKG_VERSION`). Mirrors TS `getVersion()`,
+    /// which returns the npm package version.
+    fn get_version(&self) -> &'static str;
+
+    /// Derive a new foundation that shares this one's runtime state but uses
+    /// the given chain id. Mirrors TS `extendConfig({ chainId })`.
+    fn extend_config(&self, chain_id: &str) -> Box<dyn WaxFoundation>;
+
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
     fn hbd_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
     fn vests_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
