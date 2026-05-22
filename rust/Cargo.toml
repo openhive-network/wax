@@ -1,8 +1,3 @@
-[package]
-name = "rust"
-version = "0.1.0"
-edition = "2024"
-
 [workspace]
 members = ["proto_builder", "wax", "wax_core"]
 resolver = "3"
@@ -13,5 +8,3 @@ codegen-units = 1
 strip = "symbols"
 opt-level = "z"
 panic = "abort"
-
-[dependencies]
