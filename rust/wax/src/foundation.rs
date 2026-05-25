@@ -184,6 +184,16 @@ pub trait WaxFoundation {
 
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
 
+    /// Build a [`RustTransaction`] from a legacy-form JSON transaction. Mirrors
+    /// TS `createTransactionFromLegacyJson` and Python's
+    /// `create_transaction_from_legacy_json`: rewrites the legacy payload to
+    /// HF26/API JSON via [`Self::legacy_transaction_to_json`] and then parses
+    /// it with [`Self::create_transaction_from_json`].
+    fn create_transaction_from_legacy_json(
+        &self,
+        legacy_json: &str,
+    ) -> Result<RustTransaction, WaxError>;
+
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
 
     fn create_transaction_from_proto(

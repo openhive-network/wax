@@ -79,20 +79,13 @@ const LEGACY_TRANSACTION_JSON: &str = r#"{
     "signatures": []
 }"#;
 
-// Convenience: Rust has no `createTransactionFromLegacyJson` shortcut, so
-// every legacy-path test goes through this two-step bridge — mirrors what TS
-// and Python do internally (`cpp_legacy_tx_to_json` → `from_api`).
 fn create_transaction_from_legacy_json(
     ctx: &crate::common::WaxTestCtx,
     legacy_json: &str,
 ) -> wax::RustTransaction {
-    let api_json = ctx
-        .base
-        .legacy_transaction_to_json(legacy_json)
-        .expect("legacy_transaction_to_json");
     ctx.base
-        .create_transaction_from_json(&api_json)
-        .expect("create_transaction_from_json")
+        .create_transaction_from_legacy_json(legacy_json)
+        .expect("create_transaction_from_legacy_json")
 }
 
 fn hive_sat(ctx: &crate::common::WaxTestCtx, amount: i64) -> NaiAsset {

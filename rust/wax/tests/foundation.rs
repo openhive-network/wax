@@ -6,7 +6,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::asset::NaiAsset;
-use wax::{WaxFoundation, WaxOptions, create_wax_foundation};
+use wax::{Transaction, WaxFoundation, WaxOptions, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -239,6 +239,55 @@ fn convert_transaction_from_binary_form_rejects_bad_hex() {
         f.convert_transaction_from_binary_form(&"not-hex".to_string())
             .is_err(),
         "non-hex blob must error"
+    );
+}
+
+// Shared with the legacy-path tests in tests/detailed/hive_base.rs — the same
+// fixture also appears in ts/wasm/__tests__/assets/data.protocol.ts
+// (`legacyApiTransaction`), so all three ports verify against the same bytes.
+const LEGACY_TRANSACTION_JSON: &str = r#"{
+    "ref_block_num": 1959,
+    "ref_block_prefix": 3625727107,
+    "expiration": "2023-11-09T22:01:24",
+    "operations": [
+        ["transfer", {
+            "from": "oneplus7",
+            "to": "kryptogames",
+            "amount": "300.000 HIVE",
+            "memo": "Roll under 50 4d434bd943616"
+        }]
+    ],
+    "extensions": [],
+    "signatures": []
+}"#;
+
+#[test]
+fn create_transaction_from_legacy_json_returns_parsed_transaction() {
+    let f = foundation();
+
+    let tx = f
+        .create_transaction_from_legacy_json(LEGACY_TRANSACTION_JSON)
+        .expect("create_transaction_from_legacy_json should accept canonical legacy fixture");
+
+    let ops = &tx.transaction().operations;
+    assert_eq!(ops.len(), 1, "legacy fixture has exactly one transfer op");
+
+    let transfer = match ops[0].value.as_ref().expect("op value present") {
+        wax_core::proto::operation::Value::TransferOperation(t) => t,
+        other => panic!("expected transfer_operation, got {other:?}"),
+    };
+    assert_eq!(transfer.from_account, "oneplus7");
+    assert_eq!(transfer.to_account, "kryptogames");
+}
+
+#[test]
+fn create_transaction_from_legacy_json_rejects_malformed_input() {
+    let f = foundation();
+
+    assert!(
+        f.create_transaction_from_legacy_json("{ not valid legacy json")
+            .is_err(),
+        "malformed legacy JSON must surface as an error, not panic"
     );
 }
 

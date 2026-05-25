@@ -439,6 +439,14 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn create_transaction_from_legacy_json(
+        &self,
+        legacy_json: &str,
+    ) -> Result<RustTransaction, WaxError> {
+        let api_json = self.legacy_transaction_to_json(legacy_json)?;
+        self.create_transaction_from_json(&api_json)
+    }
+
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError> {
         rust_protocol()
             .cpp_get_tapos_data(block_id)
