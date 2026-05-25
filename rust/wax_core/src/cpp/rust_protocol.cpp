@@ -700,4 +700,39 @@ namespace cpp {
 		}
 		return result;
 	}
+
+	::rust::Vec<RustWitnessPropEntry> rust_protocol::cpp_serialize_witness_set_properties(
+		const RustWitnessSetPropertiesData& data
+	) const {
+		witness_set_properties_data input;
+		input.key = std::string(data.key);
+		if (data.has_new_signing_key)
+			input.new_signing_key = std::string(data.new_signing_key);
+		if (data.has_account_creation_fee)
+			input.account_creation_fee = from_rust_json_asset(data.account_creation_fee);
+		if (data.has_url)
+			input.url = std::string(data.url);
+		if (data.has_hbd_exchange_rate)
+			input.hbd_exchange_rate = json_price{
+				from_rust_json_asset(data.hbd_exchange_rate.base),
+				from_rust_json_asset(data.hbd_exchange_rate.quote),
+			};
+		if (data.has_maximum_block_size)
+			input.maximum_block_size = data.maximum_block_size;
+		if (data.has_hbd_interest_rate)
+			input.hbd_interest_rate = data.hbd_interest_rate;
+		if (data.has_account_subsidy_budget)
+			input.account_subsidy_budget = data.account_subsidy_budget;
+		if (data.has_account_subsidy_decay)
+			input.account_subsidy_decay = data.account_subsidy_decay;
+
+		const auto serialized = foundation::cpp_serialize_witness_set_properties(input);
+
+		::rust::Vec<RustWitnessPropEntry> result;
+		result.reserve(serialized.size());
+		for (const auto& [key, value] : serialized) {
+			result.push_back(RustWitnessPropEntry{ ::rust::String(key), ::rust::String(value) });
+		}
+		return result;
+	}
 }

@@ -7,7 +7,9 @@ use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest,
 use crate::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
     PrivateKeyData, RefBlockData,
+    WitnessSetPropertiesProps,
 };
+use std::collections::HashMap;
 
 pub trait WaxFoundation {
     /// Chain id this foundation was constructed with. Matches TS
@@ -247,4 +249,15 @@ pub trait WaxFoundation {
         operation: &proto::Operation,
         use_hf26_serialization: bool,
     ) -> Result<BinaryViewOutputData, WaxError>;
+
+    /// Serialize witness-update props into the `name → hex(packed bytes)` map
+    /// that `witness_set_properties_operation.props` expects on the wire.
+    ///
+    /// Mirrors the TS `serializeWitnessProps` and Python `serialize_witness_props`
+    /// base-API helpers. Optional fields on `props` that are `None` are simply
+    /// omitted from the output, matching the C++ behaviour.
+    fn serialize_witness_props(
+        &self,
+        props: &WitnessSetPropertiesProps,
+    ) -> Result<HashMap<String, String>, WaxError>;
 }

@@ -19,6 +19,8 @@ namespace cpp {
     struct RustBinaryData;
     struct RustBinaryDataNode;
     struct RustConfigEntry;
+    struct RustWitnessPropEntry;
+    struct RustWitnessSetPropertiesData;
 }
 
 #include "rust_managed_object.hpp"
@@ -202,6 +204,10 @@ namespace cpp {
 		) const;
 
 		::rust::Vec<RustConfigEntry> cpp_get_hive_protocol_config(::rust::Str chain_id) const;
+
+		::rust::Vec<RustWitnessPropEntry> cpp_serialize_witness_set_properties(
+			const RustWitnessSetPropertiesData& data
+		) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

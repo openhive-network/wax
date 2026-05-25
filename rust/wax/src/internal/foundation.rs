@@ -1,6 +1,7 @@
+use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
+use wax_core::ffi::{RustJsonAsset, RustJsonPrice, RustWitnessSetPropertiesData};
 use wax_core::{RustOperation, RustTransaction, proto};
 
 use rust_decimal::Decimal;
@@ -18,7 +19,7 @@ use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest,
 use crate::options::WaxOptions;
 use crate::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
-    PrivateKeyData, RefBlockData,
+    PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
 };
 
 pub(crate) struct WaxFoundationApi {
@@ -544,6 +545,16 @@ impl WaxFoundation for WaxFoundationApi {
             .map(to_binary_view_output)
             .map_err(WaxError::from)
     }
+
+    fn serialize_witness_props(
+        &self,
+        props: &WitnessSetPropertiesProps,
+    ) -> Result<HashMap<String, String>, WaxError> {
+        let entries = rust_protocol()
+            .cpp_serialize_witness_set_properties(&to_ffi_witness_props(props))
+            .map_err(WaxError::from)?;
+        Ok(entries.into_iter().map(|e| (e.key, e.value)).collect())
+    }
 }
 
 pub(crate) fn to_nai_asset(asset: RustJsonAsset) -> NaiAsset {
@@ -566,6 +577,62 @@ pub(crate) fn to_ffi_price(price: &JsonPrice) -> RustJsonPrice {
     RustJsonPrice {
         base: to_ffi_asset(&price.base),
         quote: to_ffi_asset(&price.quote),
+    }
+}
+
+/// Map idiomatic `Option`-bearing Rust props into the cxx-bridge's flat
+/// `RustWitnessSetPropertiesData` (which can't express `Option`, so it uses
+/// paired `has_X` discriminants — see `RustMinimizeRequiredSignaturesData`
+/// for the same trick).
+fn to_ffi_witness_props(props: &WitnessSetPropertiesProps) -> RustWitnessSetPropertiesData {
+    // cxx-bridge shared structs aren't `Clone`, so the inert placeholders for
+    // unset optional fields are built fresh each time. The C++ side ignores
+    // them when the corresponding `has_*` flag is false.
+    fn zero_asset() -> RustJsonAsset {
+        RustJsonAsset {
+            amount: "0".to_string(),
+            precision: HIVE_PRECISION,
+            nai: String::new(),
+        }
+    }
+
+    RustWitnessSetPropertiesData {
+        key: props.key.clone(),
+
+        new_signing_key: props.new_signing_key.clone().unwrap_or_default(),
+        has_new_signing_key: props.new_signing_key.is_some(),
+
+        account_creation_fee: props
+            .account_creation_fee
+            .as_ref()
+            .map(to_ffi_asset)
+            .unwrap_or_else(zero_asset),
+        has_account_creation_fee: props.account_creation_fee.is_some(),
+
+        url: props.url.clone().unwrap_or_default(),
+        has_url: props.url.is_some(),
+
+        hbd_exchange_rate: props
+            .hbd_exchange_rate
+            .as_ref()
+            .map(to_ffi_price)
+            .unwrap_or_else(|| RustJsonPrice {
+                base: zero_asset(),
+                quote: zero_asset(),
+            }),
+        has_hbd_exchange_rate: props.hbd_exchange_rate.is_some(),
+
+        maximum_block_size: props.maximum_block_size.unwrap_or(0),
+        has_maximum_block_size: props.maximum_block_size.is_some(),
+
+        hbd_interest_rate: props.hbd_interest_rate.unwrap_or(0),
+        has_hbd_interest_rate: props.hbd_interest_rate.is_some(),
+
+        account_subsidy_budget: props.account_subsidy_budget.unwrap_or(0),
+        has_account_subsidy_budget: props.account_subsidy_budget.is_some(),
+
+        account_subsidy_decay: props.account_subsidy_decay.unwrap_or(0),
+        has_account_subsidy_decay: props.account_subsidy_decay.is_some(),
     }
 }
 

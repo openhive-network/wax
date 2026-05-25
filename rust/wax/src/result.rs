@@ -103,3 +103,25 @@ pub struct MinimizeRequiredSignaturesData {
     pub max_account_auths: Option<u32>,
     pub allow_strict_and_mixed_authorities: bool,
 }
+
+/// Input to [`crate::WaxFoundation::serialize_witness_props`]. Mirrors the C++
+/// `witness_set_properties_data` struct — every field except `key` (the
+/// current signing key, used to gate the operation) is optional, and the
+/// serializer only packs the subset the caller actually provided.
+#[derive(Debug, Clone, PartialEq)]
+pub struct WitnessSetPropertiesProps {
+    /// Current witness signing public key. Used by hived to authorise the
+    /// update; always required.
+    pub key: PublicKey,
+    pub new_signing_key: Option<PublicKey>,
+    /// HIVE-denominated. Caller is expected to have already coerced the asset
+    /// to the HIVE symbol (the builder does this in `finalize`).
+    pub account_creation_fee: Option<NaiAsset>,
+    pub url: Option<String>,
+    /// Price pair with `base` in HBD and `quote` in HIVE.
+    pub hbd_exchange_rate: Option<JsonPrice>,
+    pub maximum_block_size: Option<u32>,
+    pub hbd_interest_rate: Option<u16>,
+    pub account_subsidy_budget: Option<i32>,
+    pub account_subsidy_decay: Option<u32>,
+}

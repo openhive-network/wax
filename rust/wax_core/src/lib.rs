@@ -145,6 +145,48 @@ pub mod ffi {
         pub value: String,
     }
 
+    /// One serialized witness-prop entry — a name and the hex-encoded packed
+    /// binary that hived expects on the wire. cxx-bridge cannot express
+    /// `std::map<String, String>` directly, so the serializer output is
+    /// surfaced as a flat Vec for the same reason as `RustConfigEntry`.
+    pub struct RustWitnessPropEntry {
+        pub key: String,
+        pub value: String,
+    }
+
+    /// Input to `cpp_serialize_witness_set_properties`. Mirrors C++
+    /// `witness_set_properties_data` but with `has_*` companion booleans
+    /// instead of `std::optional` (cxx bridge does not support Option /
+    /// optional on shared structs). When `has_X` is `false`, field `X` is
+    /// ignored by the C++ side.
+    pub struct RustWitnessSetPropertiesData {
+        pub key: String,
+
+        pub new_signing_key: String,
+        pub has_new_signing_key: bool,
+
+        pub account_creation_fee: RustJsonAsset,
+        pub has_account_creation_fee: bool,
+
+        pub url: String,
+        pub has_url: bool,
+
+        pub hbd_exchange_rate: RustJsonPrice,
+        pub has_hbd_exchange_rate: bool,
+
+        pub maximum_block_size: u32,
+        pub has_maximum_block_size: bool,
+
+        pub hbd_interest_rate: u16,
+        pub has_hbd_interest_rate: bool,
+
+        pub account_subsidy_budget: i32,
+        pub has_account_subsidy_budget: bool,
+
+        pub account_subsidy_decay: u32,
+        pub has_account_subsidy_decay: bool,
+    }
+
     extern "Rust" {
         type RustManagedObject;
         type RustAuthorityProvider;
@@ -461,6 +503,11 @@ pub mod ffi {
             self: &rust_protocol,
             chain_id: &str,
         ) -> Result<Vec<RustConfigEntry>>;
+
+        fn cpp_serialize_witness_set_properties(
+            self: &rust_protocol,
+            data: &RustWitnessSetPropertiesData,
+        ) -> Result<Vec<RustWitnessPropEntry>>;
     }
 }
 
@@ -468,5 +515,5 @@ pub use ffi::{
     hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
     RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData, RustBinaryDataNode,
     RustConfigEntry, RustJsonAsset, RustJsonPrice, RustMinimizeRequiredSignaturesData,
-    RustRefBlockData,
+    RustRefBlockData, RustWitnessPropEntry, RustWitnessSetPropertiesData,
 };
