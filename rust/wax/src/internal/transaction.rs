@@ -407,7 +407,7 @@ fn to_proto_authority(authority: RustWaxAuthority) -> proto::Authority {
     }
 }
 
-fn to_binary_view_output(ffi: RustBinaryData) -> BinaryViewOutputData {
+pub(crate) fn to_binary_view_output(ffi: RustBinaryData) -> BinaryViewOutputData {
     let nodes = ffi.nodes;
     let offsets = ffi
         .root_indices

@@ -242,6 +242,97 @@ fn convert_transaction_from_binary_form_rejects_bad_hex() {
     );
 }
 
+// Shared `vote_operation` fixture from ts/wasm/__tests__/assets/data.protocol.ts —
+// reusing it keeps the Rust port verifying against the same bytes the TS suite does.
+fn sample_vote_operation() -> wax_core::proto::Operation {
+    use wax_core::proto::{Vote, operation::Value};
+    wax_core::proto::Operation {
+        value: Some(Value::VoteOperation(Vote {
+            voter: "otom".into(),
+            author: "c0ff33a".into(),
+            permlink: "ewxhnjbj".into(),
+            weight: 2200,
+        })),
+    }
+}
+
+#[test]
+fn operation_get_impacted_accounts_returns_voter_and_author() {
+    let f = foundation();
+    let op = sample_vote_operation();
+
+    let impacted = f
+        .operation_get_impacted_accounts(&op)
+        .expect("operation_get_impacted_accounts");
+
+    // TS asserts the same order: ["c0ff33a", "otom"] (author, then voter).
+    assert_eq!(impacted, vec!["c0ff33a".to_string(), "otom".to_string()]);
+}
+
+#[test]
+fn operation_binary_view_metadata_returns_binary_and_offsets() {
+    use wax::result::BinaryViewNode;
+
+    let f = foundation();
+    let op = sample_vote_operation();
+
+    let view = f
+        .operation_binary_view_metadata(&op, true)
+        .expect("operation_binary_view_metadata");
+
+    // Operation binary for this vote: type tag (`00` = vote_operation),
+    // then length-prefixed voter / author / permlink and little-endian
+    // weight 2200 (0x0898).
+    assert_eq!(
+        view.binary,
+        "00046f746f6d076330666633336108657778686e6a626a9808"
+    );
+    assert!(
+        !view.offsets.is_empty(),
+        "binary view must contain at least one root offset node"
+    );
+
+    // First root node should be the vote operation envelope/key; sanity check
+    // that the tree walker produced *something* with a key, not an empty stub.
+    let key = match &view.offsets[0] {
+        BinaryViewNode::Scalar { key, .. }
+        | BinaryViewNode::Array { key, .. }
+        | BinaryViewNode::Object { key, .. } => key,
+    };
+    assert!(!key.is_empty(), "root offset node must carry a key");
+}
+
+#[test]
+fn get_public_key_from_signature_recovers_known_signer() {
+    // Fixture from python/wax/tests/base_api/test_transaction_processing.py:
+    // signing the digest below with private key
+    // 5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT yields this
+    // canonical signature and recovers the matching STM-form public key.
+    let digest = "d07a8509795ff7c6f33ab7d6f4da24044e8f5833f0dffcd357bf21ba5e4db1d9".to_string();
+    let signature = "1f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d1\
+                     45269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58"
+        .to_string();
+    let expected = "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
+
+    let f = foundation();
+    let recovered = f
+        .get_public_key_from_signature(&digest, &signature)
+        .expect("get_public_key_from_signature");
+
+    assert_eq!(recovered, expected);
+}
+
+#[test]
+fn get_public_key_from_signature_rejects_invalid_signature() {
+    let f = foundation();
+
+    assert!(
+        f.get_public_key_from_signature(&"not-hex".to_string(), &"not-hex".to_string())
+            .is_err(),
+        "non-hex inputs must surface as a Result error"
+    );
+}
+
 #[test]
 fn set_expiration_updates_both_handle_and_proto_state() {
     use cxx::UniquePtr;

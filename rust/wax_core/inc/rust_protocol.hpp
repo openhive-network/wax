@@ -53,6 +53,11 @@ namespace cpp {
 
 		::rust::Vec<::rust::String> cpp_op_impacted_accounts(const hive_operation_handle& op) const;
 
+		RustBinaryData cpp_op_binary(
+			const hive_operation_handle& op,
+			bool use_hf26_serialization
+		) const;
+
 		::rust::String cpp_tx_sig_digest(
 			const hive_transaction_handle& tx,
 			::rust::Str chain_id
@@ -152,6 +157,11 @@ namespace cpp {
 		bool cpp_is_valid_account_name(::rust::Str name) const;
 
 		::rust::String cpp_calculate_public_key(::rust::Str wif) const;
+
+		::rust::String cpp_get_public_key_from_signature(
+			::rust::Str digest,
+			::rust::Str signature
+		) const;
 
 		RustBrainKeyData cpp_suggest_brain_key() const;
 

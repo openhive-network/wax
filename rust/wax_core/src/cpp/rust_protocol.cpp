@@ -253,6 +253,26 @@ namespace cpp {
 		return to_rust_string_vec(foundation::cpp_op_impacted_accounts(op));
 	}
 
+	RustBinaryData rust_protocol::cpp_op_binary(
+		const hive_operation_handle& op,
+		bool use_hf26_serialization
+	) const {
+		const auto data = foundation::cpp_op_binary(op, use_hf26_serialization);
+
+		::rust::Vec<RustBinaryDataNode> nodes;
+		::rust::Vec<uint32_t> root_indices;
+		root_indices.reserve(data.offsets.size());
+		for (const auto& node : data.offsets) {
+			root_indices.push_back(flatten_binary_data_node(node, nodes));
+		}
+
+		return RustBinaryData{
+			::rust::String(data.binary),
+			std::move(nodes),
+			std::move(root_indices),
+		};
+	}
+
 	::rust::String rust_protocol::cpp_tx_sig_digest(
 		const hive_transaction_handle& tx,
 		::rust::Str chain_id
@@ -510,6 +530,19 @@ namespace cpp {
 	::rust::String rust_protocol::cpp_calculate_public_key(::rust::Str wif) const {
 		auto& self = const_cast<rust_protocol&>(*this);
 		return self.foundation::cpp_calculate_public_key(std::string(wif));
+	}
+
+	::rust::String rust_protocol::cpp_get_public_key_from_signature(
+		::rust::Str digest,
+		::rust::Str signature
+	) const {
+		// foundation::cpp_get_public_key_from_signature isn't declared const
+		// upstream even though it doesn't mutate `*this`.
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_get_public_key_from_signature(
+			std::string(digest),
+			std::string(signature)
+		);
 	}
 
 	RustBrainKeyData rust_protocol::cpp_suggest_brain_key() const {

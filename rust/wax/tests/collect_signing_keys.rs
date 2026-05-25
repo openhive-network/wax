@@ -4,6 +4,7 @@ use std::sync::OnceLock;
 use cxx::UniquePtr;
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
+use wax::models::basic::HiveDateTime;
 use wax::{AuthorityDataProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
 use wax_core::proto::{Operation, Vote, operation::Value};
@@ -26,6 +27,12 @@ fn test_protocol() -> &'static rust_protocol {
         .expect("new_rust_protocol returned null")
 }
 
+fn placeholder_timestamp() -> HiveDateTime {
+    // collect_signing_keys ignores owner-update recency, so any valid
+    // timestamp will do — mirrors the helper in tests/authority_data_provider.rs.
+    HiveDateTime::parse("2020-01-01T00:00:00").expect("static HiveDateTime literal must parse")
+}
+
 // Real Hive public keys lifted from canonical wax fixtures
 // (python/wax/tests/wax-local-tools/wax_local_tools/consts.py). They must be
 // valid base58 because the foundation layer parses them via
@@ -46,6 +53,8 @@ impl InMemoryAuthorityDataProvider {
                     account: (*account).into(),
                     authorities: posting_only(key),
                     memo_key: String::new(),
+                    last_owner_update: placeholder_timestamp(),
+                    previous_owner_update: placeholder_timestamp(),
                 };
                 (info.account.clone(), info)
             })

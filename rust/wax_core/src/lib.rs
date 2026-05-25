@@ -242,6 +242,12 @@ pub mod ffi {
             op: &hive_operation_handle,
         ) -> Result<Vec<String>>;
 
+        fn cpp_op_binary(
+            self: &rust_protocol,
+            op: &hive_operation_handle,
+            use_hf26_serialization: bool,
+        ) -> Result<RustBinaryData>;
+
         fn cpp_tx_sig_digest(
             self: &rust_protocol,
             tx: &hive_transaction_handle,
@@ -394,6 +400,12 @@ pub mod ffi {
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
         fn cpp_calculate_public_key(self: &rust_protocol, wif: &str) -> Result<String>;
+
+        fn cpp_get_public_key_from_signature(
+            self: &rust_protocol,
+            digest: &str,
+            signature: &str,
+        ) -> Result<String>;
 
         fn cpp_suggest_brain_key(self: &rust_protocol) -> Result<RustBrainKeyData>;
 

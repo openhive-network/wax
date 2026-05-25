@@ -1,21 +1,23 @@
 use std::sync::OnceLock;
 
 use wax_core::ffi::{RustJsonAsset, RustJsonPrice};
-use wax_core::{RustTransaction, proto};
+use wax_core::{RustOperation, RustTransaction, proto};
 
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
-use crate::interfaces::Transaction;
+use crate::interfaces::{Operation, Transaction};
 use crate::internal::models::manabar_data::ManabarData;
 use crate::internal::protocol::rust_protocol;
+use crate::internal::transaction::to_binary_view_output;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
-use crate::models::basic::{Hex, HiveDateTime};
+use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
 use crate::options::WaxOptions;
 use crate::result::{
-    Assets, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
+    PrivateKeyData, RefBlockData,
 };
 
 pub(crate) struct WaxFoundationApi {
@@ -357,6 +359,16 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn get_public_key_from_signature(
+        &self,
+        sig_digest: &SigDigest,
+        signature: &Signature,
+    ) -> Result<PublicKey, WaxError> {
+        rust_protocol()
+            .cpp_get_public_key_from_signature(sig_digest, signature)
+            .map_err(WaxError::from)
+    }
+
     fn suggest_brain_key(&self) -> Result<BrainKeyData, WaxError> {
         rust_protocol()
             .cpp_suggest_brain_key()
@@ -472,6 +484,26 @@ impl WaxFoundation for WaxFoundationApi {
             expiration,
             Vec::new(),
         ))
+    }
+
+    fn operation_get_impacted_accounts(
+        &self,
+        operation: &proto::Operation,
+    ) -> Result<Vec<AccountName>, WaxError> {
+        let op = RustOperation::from_proto(rust_protocol(), operation.clone());
+        op.impacted_accounts()
+    }
+
+    fn operation_binary_view_metadata(
+        &self,
+        operation: &proto::Operation,
+        use_hf26_serialization: bool,
+    ) -> Result<BinaryViewOutputData, WaxError> {
+        let op = RustOperation::from_proto(rust_protocol(), operation.clone());
+        rust_protocol()
+            .cpp_op_binary(&op.handle, use_hf26_serialization)
+            .map(to_binary_view_output)
+            .map_err(WaxError::from)
     }
 }
 

@@ -3,9 +3,10 @@ use wax_core::{RustTransaction, proto};
 use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
-use crate::models::basic::{Hex, HiveDateTime};
+use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
 use crate::result::{
-    Assets, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
+    PrivateKeyData, RefBlockData,
 };
 
 pub trait WaxFoundation {
@@ -135,6 +136,15 @@ pub trait WaxFoundation {
 
     fn calculate_public_key(&self, wif_private_key: &str) -> Result<String, WaxError>;
 
+    /// Recover the WIF-format public key that produced `signature` for the
+    /// given transaction `sig_digest`. Mirrors TS `getPublicKeyFromSignature`
+    /// and Python `base_api.get_public_key_from_signature`.
+    fn get_public_key_from_signature(
+        &self,
+        sig_digest: &SigDigest,
+        signature: &Signature,
+    ) -> Result<PublicKey, WaxError>;
+
     fn suggest_brain_key(&self) -> Result<BrainKeyData, WaxError>;
 
     fn get_private_key_from_password(
@@ -188,4 +198,23 @@ pub trait WaxFoundation {
         tapos_block_id: &str,
         expiration: &str,
     ) -> Result<RustTransaction, WaxError>;
+
+    /// Accounts whose state would be affected by `operation`. Mirrors TS
+    /// `operationGetImpactedAccounts` and Python's equivalent on the base API.
+    /// The order of the returned list matches the C++ producer; callers that
+    /// need deduplication should collect into a set themselves.
+    fn operation_get_impacted_accounts(
+        &self,
+        operation: &proto::Operation,
+    ) -> Result<Vec<AccountName>, WaxError>;
+
+    /// Binary view of `operation`: the wire-form hex plus a parsed AST
+    /// annotating each byte range with its field name and type. Mirrors TS
+    /// `operationBinaryViewMetadata` (TS defaults `use_hf26_serialization` to
+    /// `true`; Rust requires the flag explicitly).
+    fn operation_binary_view_metadata(
+        &self,
+        operation: &proto::Operation,
+        use_hf26_serialization: bool,
+    ) -> Result<BinaryViewOutputData, WaxError>;
 }
