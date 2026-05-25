@@ -8,6 +8,7 @@ use rust_decimal::prelude::ToPrimitive;
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
+use crate::interfaces::Transaction;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
@@ -400,6 +401,24 @@ impl WaxFoundation for WaxFoundationApi {
             .cpp_deserialize_transaction(hex)
             .map_err(WaxError::from)?;
         protocol.cpp_tx_to_json(&handle).map_err(WaxError::from)
+    }
+
+    fn convert_transaction_to_binary_form(
+        &self,
+        transaction: &serde_json::Value,
+        strip_to_unsigned: bool,
+    ) -> Result<Hex, WaxError> {
+        let json = serde_json::to_string(transaction).map_err(|e| WaxError::new(e.to_string()))?;
+        let tx = self.create_transaction_from_json(&json)?;
+        tx.to_binary_form(strip_to_unsigned)
+    }
+
+    fn convert_transaction_from_binary_form(
+        &self,
+        hex: &Hex,
+    ) -> Result<serde_json::Value, WaxError> {
+        let raw = self.deserialize_transaction(hex)?;
+        serde_json::from_str(&raw).map_err(|e| WaxError::new(e.to_string()))
     }
 
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError> {

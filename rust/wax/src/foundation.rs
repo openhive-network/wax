@@ -150,6 +150,28 @@ pub trait WaxFoundation {
 
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;
 
+    /// Convert a transaction from Hive API-form JSON into its HF26 binary
+    /// (hex) form. Mirrors TS `convertTransactionToBinaryForm`.
+    ///
+    /// Pass `strip_to_unsigned = true` to drop the signatures container before
+    /// serialization — useful when computing an external transaction hash.
+    fn convert_transaction_to_binary_form(
+        &self,
+        transaction: &serde_json::Value,
+        strip_to_unsigned: bool,
+    ) -> Result<Hex, WaxError>;
+
+    /// Convert a transaction from HF26 binary (hex) form back into a Hive
+    /// API-form JSON object. Mirrors TS `convertTransactionFromBinaryForm`.
+    ///
+    /// Unlike [`Self::deserialize_transaction`] (which returns the raw JSON
+    /// string), this returns a parsed [`serde_json::Value`] for structured
+    /// access by callers.
+    fn convert_transaction_from_binary_form(
+        &self,
+        hex: &Hex,
+    ) -> Result<serde_json::Value, WaxError>;
+
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
 
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;

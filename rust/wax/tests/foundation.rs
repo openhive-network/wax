@@ -169,6 +169,79 @@ fn deserialize_transaction_rejects_bad_hex() {
     );
 }
 
+// Mirrors the TS canonical example
+// (`convertTransactionFromBinaryForm` test in hive_base.ts): the hex below is
+// the wire form of the API JSON also asserted in TS, so reusing it keeps the
+// two ports verifying against the same fixture.
+const SAMPLE_TX_HEX: &str =
+    "ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000";
+
+fn sample_tx_api_json() -> serde_json::Value {
+    serde_json::json!({
+        "ref_block_num": 34559u32,
+        "ref_block_prefix": 1271006404u32,
+        "expiration": "2021-12-13T11:31:33",
+        "operations": [{
+            "type": "vote_operation",
+            "value": {
+                "voter": "otom",
+                "author": "c0ff33a",
+                "permlink": "ewxhnjbj",
+                "weight": 2200,
+            }
+        }],
+        "extensions": [],
+        "signatures": [],
+    })
+}
+
+#[test]
+fn convert_transaction_to_binary_form_matches_known_hex() {
+    let f = foundation();
+
+    let hex = f
+        .convert_transaction_to_binary_form(&sample_tx_api_json(), false)
+        .expect("convert_transaction_to_binary_form");
+
+    assert_eq!(hex, SAMPLE_TX_HEX);
+}
+
+#[test]
+fn convert_transaction_from_binary_form_returns_api_json_object() {
+    let f = foundation();
+
+    let value = f
+        .convert_transaction_from_binary_form(&SAMPLE_TX_HEX.to_string())
+        .expect("convert_transaction_from_binary_form");
+
+    assert_eq!(value, sample_tx_api_json());
+}
+
+#[test]
+fn convert_transaction_round_trips_hex_to_value_to_hex() {
+    let f = foundation();
+
+    let value = f
+        .convert_transaction_from_binary_form(&SAMPLE_TX_HEX.to_string())
+        .expect("convert_transaction_from_binary_form");
+    let hex = f
+        .convert_transaction_to_binary_form(&value, false)
+        .expect("convert_transaction_to_binary_form");
+
+    assert_eq!(hex, SAMPLE_TX_HEX);
+}
+
+#[test]
+fn convert_transaction_from_binary_form_rejects_bad_hex() {
+    let f = foundation();
+
+    assert!(
+        f.convert_transaction_from_binary_form(&"not-hex".to_string())
+            .is_err(),
+        "non-hex blob must error"
+    );
+}
+
 #[test]
 fn set_expiration_updates_both_handle_and_proto_state() {
     use cxx::UniquePtr;
