@@ -648,3 +648,125 @@ fn extend_config_produces_foundation_with_new_chain_id() {
         "extended foundation must report the overridden chain id"
     );
 }
+
+// Fixtures shared with python/wax/tests/protocol/test_check_memo_for_private_keys.py,
+// so the Rust + Python ports verify against the same private/public key pairs.
+mod scan_text_for_matching_private_keys {
+    use super::foundation;
+    use std::collections::HashMap;
+    use wax::models::authority::{Authorities, WaxAuthority};
+
+    const ACCOUNT: &str = "alice";
+
+    const OWNER_PRIVATE: &str = "5Kcb526wim2obMPFQVJcAVbtkWJkFYo746afCLU5cMGttD9cYGw";
+    const ACTIVE_PRIVATE: &str = "5Jj2jixMhsR2R1oriWchsQYimH1XyGo4N9s6iB7J3uHyNeq3Ge5";
+    const POSTING_PRIVATE: &str = "5JhEUJADWcRq3rEP7eWxAHmd8yrigfPhi4DXFPr442AavFEgjXX";
+    const MEMO_PRIVATE: &str = "5KZEKVcSF1t2JhbZHNm1PQ3yoxDxRJGK9UWTQdeZw136vXpHTsj";
+
+    const OWNER_PUBLIC: &str = "STM5v3682EzJbJmxUiACzLdtNP3AYYYSATC5AszYpb2Ve3riBnevN";
+    const ACTIVE_PUBLIC: &str = "STM7599MhAJN4hkBLp7JHvqMVRMb9X1rnfpbc23LJs7HjQgkAi7ea";
+    const POSTING_PUBLIC: &str = "STM5h6ivYuxwA6KTQYHBoZihbou8MsjahP4CgtmG5owtpxQYeyyh3";
+    const MEMO_PUBLIC: &str = "STM65g4T6xwpy9tE8PeQaBfqgpWXUHshUjSTpnu2MwUiftdbZ8c3x";
+
+    const IMPORTED_PRIVATE: &str = "5JZhZRpYjWYm3jKsz5JEpPDG38Dn9JzhXTFg7gwrpgiLVKuH13B";
+    const IMPORTED_PUBLIC: &str = "STM8fZEprWbZPauKhypTWsaZunyzhVpauB6xkUJZJXVEvkNzpS2ue";
+
+    fn role_authority(public_key: &str) -> WaxAuthority {
+        let mut key_auths = HashMap::new();
+        key_auths.insert(public_key.to_string(), 1);
+        WaxAuthority {
+            weight_threshold: 1,
+            account_auths: HashMap::new(),
+            key_auths,
+        }
+    }
+
+    fn authorities() -> Authorities {
+        Authorities {
+            owner: Some(role_authority(OWNER_PUBLIC)),
+            active: Some(role_authority(ACTIVE_PUBLIC)),
+            posting: Some(role_authority(POSTING_PUBLIC)),
+        }
+    }
+
+    fn assert_leak(content: &str, expected_role: &str) {
+        let f = foundation();
+        let err = f
+            .scan_text_for_matching_private_keys(
+                content,
+                ACCOUNT,
+                &authorities(),
+                &MEMO_PUBLIC.to_string(),
+                &[IMPORTED_PUBLIC.to_string()],
+            )
+            .expect_err("private key leak must surface as an error");
+        let msg = err.to_string();
+        assert!(
+            msg.contains("Detected private key leak"),
+            "error must carry the C++ leak diagnostic, got: {msg}"
+        );
+        assert!(
+            msg.contains(&format!("\"authority_role\":\"{expected_role}\"")),
+            "error must mention authority_role={expected_role}, got: {msg}"
+        );
+        assert!(
+            msg.contains(&format!("\"account\":\"{ACCOUNT}\"")),
+            "error must mention account={ACCOUNT}, got: {msg}"
+        );
+    }
+
+    #[test]
+    fn detects_owner_private_key_in_content() {
+        assert_leak(OWNER_PRIVATE, "owner");
+    }
+
+    #[test]
+    fn detects_active_private_key_in_content() {
+        assert_leak(ACTIVE_PRIVATE, "active");
+    }
+
+    #[test]
+    fn detects_posting_private_key_in_content() {
+        assert_leak(POSTING_PRIVATE, "posting");
+    }
+
+    #[test]
+    fn detects_memo_private_key_in_content() {
+        assert_leak(MEMO_PRIVATE, "memo");
+    }
+
+    #[test]
+    fn detects_imported_private_key_in_content() {
+        assert_leak(IMPORTED_PRIVATE, "imported");
+    }
+
+    #[test]
+    fn clean_text_returns_ok() {
+        let f = foundation();
+        let result = f.scan_text_for_matching_private_keys(
+            "just a regular memo with no keys inside",
+            ACCOUNT,
+            &authorities(),
+            &MEMO_PUBLIC.to_string(),
+            &[IMPORTED_PUBLIC.to_string()],
+        );
+        assert!(result.is_ok(), "clean content must not produce an error");
+    }
+
+    #[test]
+    fn accepts_no_other_keys() {
+        let f = foundation();
+        // Same memo private key still trips the memo-role check even with no
+        // imported keys supplied — matches Python's default `other_keys = []`.
+        let err = f
+            .scan_text_for_matching_private_keys(
+                MEMO_PRIVATE,
+                ACCOUNT,
+                &authorities(),
+                &MEMO_PUBLIC.to_string(),
+                &[],
+            )
+            .expect_err("memo private key with empty other_keys must still error");
+        assert!(err.to_string().contains("\"authority_role\":\"memo\""));
+    }
+}

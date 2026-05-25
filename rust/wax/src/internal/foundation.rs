@@ -11,10 +11,12 @@ use crate::WaxError;
 use crate::constants::DEFAULT_CHAIN_ID;
 use crate::foundation::WaxFoundation;
 use crate::interfaces::{Operation, Transaction};
+use crate::internal::authority::to_rust_authorities;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::internal::protocol::rust_protocol;
 use crate::internal::transaction::to_binary_view_output;
 use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
+use crate::models::authority::Authorities;
 use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
 use crate::options::WaxOptions;
 use crate::result::{
@@ -554,6 +556,21 @@ impl WaxFoundation for WaxFoundationApi {
             .cpp_serialize_witness_set_properties(&to_ffi_witness_props(props))
             .map_err(WaxError::from)?;
         Ok(entries.into_iter().map(|e| (e.key, e.value)).collect())
+    }
+
+    fn scan_text_for_matching_private_keys(
+        &self,
+        content: &str,
+        account: &str,
+        account_authorities: &Authorities,
+        memo_key: &PublicKey,
+        other_keys: &[PublicKey],
+    ) -> Result<(), WaxError> {
+        let auths = to_rust_authorities(account_authorities.clone());
+        let others = other_keys.to_vec();
+        rust_protocol()
+            .cpp_check_memo_for_private_keys(content, account, &auths, memo_key, &others)
+            .map_err(WaxError::from)
     }
 }
 

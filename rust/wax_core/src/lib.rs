@@ -508,6 +508,15 @@ pub mod ffi {
             self: &rust_protocol,
             data: &RustWitnessSetPropertiesData,
         ) -> Result<Vec<RustWitnessPropEntry>>;
+
+        fn cpp_check_memo_for_private_keys(
+            self: &rust_protocol,
+            content: &str,
+            account: &str,
+            authorities: &RustWaxAuthorities,
+            memo_key: &str,
+            other_keys: &Vec<String>,
+        ) -> Result<()>;
     }
 }
 

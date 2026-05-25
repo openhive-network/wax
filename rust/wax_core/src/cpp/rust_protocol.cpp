@@ -701,6 +701,33 @@ namespace cpp {
 		return result;
 	}
 
+	void rust_protocol::cpp_check_memo_for_private_keys(
+		::rust::Str content,
+		::rust::Str account,
+		const RustWaxAuthorities& authorities,
+		::rust::Str memo_key,
+		const ::rust::Vec<::rust::String>& other_keys
+	) const {
+		wax_authorities cpp_auths;
+		cpp_auths.owner   = from_rust_wax_authority(authorities.owner);
+		cpp_auths.active  = from_rust_wax_authority(authorities.active);
+		cpp_auths.posting = from_rust_wax_authority(authorities.posting);
+
+		std::vector<std::string> cpp_other_keys;
+		cpp_other_keys.reserve(other_keys.size());
+		for (const auto& k : other_keys) {
+			cpp_other_keys.emplace_back(k);
+		}
+
+		foundation::cpp_check_memo_for_private_keys(
+			std::string(content),
+			std::string(account),
+			cpp_auths,
+			std::string(memo_key),
+			cpp_other_keys
+		);
+	}
+
 	::rust::Vec<RustWitnessPropEntry> rust_protocol::cpp_serialize_witness_set_properties(
 		const RustWitnessSetPropertiesData& data
 	) const {

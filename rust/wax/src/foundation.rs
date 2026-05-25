@@ -3,6 +3,7 @@ use wax_core::{RustTransaction, proto};
 use crate::WaxError;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
+use crate::models::authority::Authorities;
 use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
 use crate::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
@@ -260,4 +261,22 @@ pub trait WaxFoundation {
         &self,
         props: &WitnessSetPropertiesProps,
     ) -> Result<HashMap<String, String>, WaxError>;
+
+    /// Scan `content` for any private keys that match `account`'s authorities,
+    /// memo key, or any of `other_keys`. Mirrors TS
+    /// `scanTextForMatchingPrivateKeys` and Python
+    /// `scan_text_for_matching_private_keys`.
+    ///
+    /// Returns `Ok(())` when no leak is detected. Returns `Err(WaxError::Cxx)`
+    /// carrying the C++ leak diagnostic (account / authority role / public
+    /// key) when a private key is found — useful for surfacing the role that
+    /// was exposed.
+    fn scan_text_for_matching_private_keys(
+        &self,
+        content: &str,
+        account: &str,
+        account_authorities: &Authorities,
+        memo_key: &PublicKey,
+        other_keys: &[PublicKey],
+    ) -> Result<(), WaxError>;
 }

@@ -8,6 +8,7 @@ namespace cpp {
     class hive_operation_handle;
 
     struct RustRequiredAuthorities;
+    struct RustWaxAuthorities;
     struct RustAuthorityProvider;
     struct RustJsonAsset;
     struct RustJsonPrice;
@@ -207,6 +208,14 @@ namespace cpp {
 
 		::rust::Vec<RustWitnessPropEntry> cpp_serialize_witness_set_properties(
 			const RustWitnessSetPropertiesData& data
+		) const;
+
+		void cpp_check_memo_for_private_keys(
+			::rust::Str content,
+			::rust::Str account,
+			const RustWaxAuthorities& authorities,
+			::rust::Str memo_key,
+			const ::rust::Vec<::rust::String>& other_keys
 		) const;
 	};
 
