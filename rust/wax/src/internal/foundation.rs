@@ -7,6 +7,7 @@ use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 
 use crate::WaxError;
+use crate::constants::DEFAULT_CHAIN_ID;
 use crate::foundation::WaxFoundation;
 use crate::interfaces::{Operation, Transaction};
 use crate::internal::models::manabar_data::ManabarData;
@@ -494,6 +495,36 @@ impl WaxFoundation for WaxFoundationApi {
         ))
     }
 
+    fn create_transaction_with_chain_reference_data(
+        &self,
+        tapos_block_id: &str,
+        head_block_time: Option<HiveDateTime>,
+        expiration: Option<&str>,
+    ) -> Result<RustTransaction, WaxError> {
+        let expiration_spec = expiration.unwrap_or("+1m");
+        // TS deliberately ignores caller-supplied head_block_time on the
+        // default chain so mainnet expiration is anchored to the local clock —
+        // see createTransactionWithChainReferenceData / Transaction ctor.
+        let reference = if self.options.chain_id == DEFAULT_CHAIN_ID {
+            None
+        } else {
+            head_block_time
+        };
+        let resolved = resolve_expiration(expiration_spec, reference)?;
+
+        let tapos = rust_protocol()
+            .cpp_get_tapos_data(tapos_block_id)
+            .map_err(WaxError::from)?;
+        Ok(RustTransaction::new(
+            rust_protocol(),
+            self.options.chain_id.clone(),
+            tapos.ref_block_num as u32,
+            tapos.ref_block_prefix,
+            &resolved,
+            Vec::new(),
+        ))
+    }
+
     fn operation_get_impacted_accounts(
         &self,
         operation: &proto::Operation,
@@ -540,6 +571,56 @@ pub(crate) fn to_ffi_price(price: &JsonPrice) -> RustJsonPrice {
 
 fn head_block_time_to_now(dt: HiveDateTime) -> i32 {
     dt.inner().timestamp() as i32
+}
+
+/// Resolve an expiration spec to a concrete Hive-formatted timestamp.
+///
+/// Absolute specs (anything not starting with `+`) round-trip unchanged — the
+/// C++ side validates the format when the transaction is committed. Relative
+/// specs are `+N[s|m|h]`, where an absent suffix is treated as seconds. The
+/// offset is added to `reference` if supplied, otherwise to the current wall
+/// clock. Mirrors TS `calculateExpiration`.
+fn resolve_expiration(
+    expiration: &str,
+    reference: Option<HiveDateTime>,
+) -> Result<String, WaxError> {
+    if !expiration.starts_with('+') {
+        return Ok(expiration.to_string());
+    }
+
+    let body = &expiration[1..];
+    let digits_end = body
+        .find(|c: char| !c.is_ascii_digit())
+        .unwrap_or(body.len());
+    if digits_end == 0 {
+        return Err(WaxError::new(format!(
+            "Invalid expiration time offset: '{expiration}'"
+        )));
+    }
+    let (num_str, suffix) = body.split_at(digits_end);
+    let num: i64 = num_str.parse().map_err(|_| {
+        WaxError::new(format!("Invalid expiration time offset: '{expiration}'"))
+    })?;
+
+    let seconds = match suffix {
+        "" | "s" => num,
+        "m" => num
+            .checked_mul(60)
+            .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?,
+        "h" => num
+            .checked_mul(3_600)
+            .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?,
+        other => {
+            return Err(WaxError::new(format!(
+                "Invalid expiration time suffix: '{other}' in '{expiration}'"
+            )));
+        }
+    };
+
+    let reference = reference.unwrap_or_else(HiveDateTime::now);
+    let delta = chrono::Duration::try_seconds(seconds)
+        .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?;
+    Ok(HiveDateTime::new(reference.inner() + delta).serialize())
 }
 
 fn amount_to_satoshis(amount: AssetAmount, precision: u32) -> Result<i64, WaxError> {

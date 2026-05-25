@@ -291,6 +291,106 @@ fn create_transaction_from_legacy_json_rejects_malformed_input() {
     );
 }
 
+// Shared with the tapos test above — exercises the same C++ path.
+const TAPOS_BLOCK_ID: &str = "01020304ffeeddccbbaa99887766554433221100";
+// Non-mainnet chain id so head_block_time is honored — mirrors the TS
+// branch in Transaction's constructor that skips chainHeadBlockTime on
+// mainnet to anchor expiration to the local clock.
+const TESTNET_CHAIN_ID: &str =
+    "00000000000000000000000000000000000000000000000000000000deadbeef";
+
+#[test]
+fn chain_reference_data_passes_absolute_expiration_through() {
+    let f = foundation();
+
+    let tx = f
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            None,
+            Some("2026-05-15T12:00:00"),
+        )
+        .expect("absolute expiration must be accepted");
+
+    assert_eq!(tx.transaction().expiration, "2026-05-15T12:00:00");
+    assert_eq!(tx.transaction().ref_block_num, 0x0304);
+}
+
+#[test]
+fn chain_reference_data_resolves_offset_against_head_block_time_on_testnet() {
+    use wax::models::basic::HiveDateTime;
+    let f = create_wax_foundation(WaxOptions {
+        chain_id: TESTNET_CHAIN_ID.to_string(),
+    });
+    let head = HiveDateTime::parse("2026-05-15T12:00:00").expect("static HiveDateTime literal");
+
+    let tx_min = f
+        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1m"))
+        .expect("`+1m` offset must resolve");
+    assert_eq!(tx_min.transaction().expiration, "2026-05-15T12:01:00");
+
+    let tx_hour = f
+        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1h"))
+        .expect("`+1h` offset must resolve");
+    assert_eq!(tx_hour.transaction().expiration, "2026-05-15T13:00:00");
+
+    let tx_sec = f
+        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+30s"))
+        .expect("`+30s` offset must resolve");
+    assert_eq!(tx_sec.transaction().expiration, "2026-05-15T12:00:30");
+}
+
+#[test]
+fn chain_reference_data_ignores_head_block_time_on_mainnet() {
+    // On mainnet, head_block_time must NOT influence the expiration — the
+    // foundation anchors to the local clock instead. Asserting "expiration
+    // doesn't match the head_block_time-derived value" is enough; we don't
+    // pin a precise wall-clock window because tests run on slow shared CI.
+    use wax::models::basic::HiveDateTime;
+    let f = foundation();
+    let head = HiveDateTime::parse("2020-01-01T00:00:00").expect("static HiveDateTime literal");
+
+    let tx = f
+        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1m"))
+        .expect("offset must resolve against local clock");
+
+    assert_ne!(
+        tx.transaction().expiration,
+        "2020-01-01T00:01:00",
+        "mainnet expiration must not be anchored to caller-supplied head_block_time"
+    );
+}
+
+#[test]
+fn chain_reference_data_defaults_expiration_to_one_minute() {
+    let f = foundation();
+
+    let tx = f
+        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, None)
+        .expect("default expiration path must succeed");
+
+    let exp = &tx.transaction().expiration;
+    assert!(
+        !exp.is_empty() && exp.contains('T'),
+        "default expiration must be a hive-formatted timestamp, got: {exp}"
+    );
+}
+
+#[test]
+fn chain_reference_data_rejects_malformed_offset() {
+    let f = foundation();
+
+    assert!(
+        f.create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, Some("+"))
+            .is_err(),
+        "bare `+` must error — no digits"
+    );
+    assert!(
+        f.create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, Some("+10x"))
+            .is_err(),
+        "unknown suffix must error"
+    );
+}
+
 // Shared `vote_operation` fixture from ts/wasm/__tests__/assets/data.protocol.ts —
 // reusing it keeps the Rust port verifying against the same bytes the TS suite does.
 fn sample_vote_operation() -> wax_core::proto::Operation {

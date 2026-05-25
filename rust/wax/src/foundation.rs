@@ -209,6 +209,26 @@ pub trait WaxFoundation {
         expiration: &str,
     ) -> Result<RustTransaction, WaxError>;
 
+    /// Build a transaction from chain reference data: a tapos block id, plus
+    /// optional head-block time and expiration spec. Mirrors TS
+    /// `createTransactionWithChainReferenceData`.
+    ///
+    /// `expiration` accepts either an absolute Hive timestamp
+    /// (`"2026-05-15T12:00:00"`) or a `+N[s|m|h]` relative offset (unitless
+    /// suffix is treated as seconds). When `None`, defaults to `"+1m"` —
+    /// matching the TS default.
+    ///
+    /// `head_block_time` is only used as the reference for relative offsets on
+    /// **non-default** chains (testnet/mirrornet). On mainnet it is ignored in
+    /// favor of the local clock, so transaction expiration doesn't depend on
+    /// API-node time accuracy.
+    fn create_transaction_with_chain_reference_data(
+        &self,
+        tapos_block_id: &str,
+        head_block_time: Option<HiveDateTime>,
+        expiration: Option<&str>,
+    ) -> Result<RustTransaction, WaxError>;
+
     /// Accounts whose state would be affected by `operation`. Mirrors TS
     /// `operationGetImpactedAccounts` and Python's equivalent on the base API.
     /// The order of the returned list matches the C++ producer; callers that
