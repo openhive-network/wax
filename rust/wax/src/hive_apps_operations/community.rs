@@ -166,7 +166,7 @@ impl CommunityOperation {
                 }
             }
         }
-        self.base.stage(action.as_str(), body);
+        self.base.body.push((action.as_str(), body));
     }
 
     /// Stages a `flagPost` action on the given community.

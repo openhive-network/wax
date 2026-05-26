@@ -154,14 +154,14 @@ impl FollowOperation {
             Value::Array(blogs.into_iter().map(Value::String).collect())
         };
 
-        self.base.stage(
+        self.base.body.push((
             FollowOperationActions::Follow.as_str(),
             json!({
                 "follower": working_account,
                 "following": following,
                 "what": [what.as_str()],
             }),
-        );
+        ));
 
         Ok(self)
     }
@@ -345,14 +345,14 @@ impl FollowOperation {
         author: impl Into<AccountName>,
         permlink: impl Into<String>,
     ) -> Self {
-        self.base.stage(
+        self.base.body.push((
             FollowOperationActions::Reblog.as_str(),
             json!({
                 "account": working_account.into(),
                 "author": author.into(),
                 "permlink": permlink.into(),
             }),
-        );
+        ));
         self
     }
 }
