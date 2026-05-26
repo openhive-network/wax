@@ -1,4 +1,5 @@
 pub mod complex_operations;
+pub mod hive_apps_operations;
 pub mod constants;
 mod error;
 mod foundation;

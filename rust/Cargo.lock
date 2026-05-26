@@ -1288,9 +1288,11 @@ dependencies = [
 name = "wax"
 version = "0.1.0"
 dependencies = [
+ "beekeeper_rust",
  "chrono",
  "cxx",
  "rust_decimal",
+ "serde",
  "serde_json",
  "thiserror",
  "wax_core",
