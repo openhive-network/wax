@@ -26,7 +26,7 @@ fn main() {
         .build_target("wax_core")
         .profile("Release");
 
-    for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR"] {
+    for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR", "BOOST_ROOT"] {
         if let Ok(v) = std::env::var(var) {
             cmake_cfg.define(var, &v);
             println!("cargo:rerun-if-env-changed={var}");
