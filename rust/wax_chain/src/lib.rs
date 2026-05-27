@@ -1,11 +1,13 @@
 mod chain;
 mod error;
 mod internal;
+mod online_transaction;
 mod options;
 mod rpc;
 
 pub use chain::HiveChain;
 pub use error::WaxChainError;
+pub use online_transaction::{AuthorityTrace, OnlineTransaction};
 pub use options::WaxChainOptions;
 
 /// Constructs a [`HiveChain`] from the given options.
