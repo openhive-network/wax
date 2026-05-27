@@ -4,9 +4,10 @@ use std::time::Duration;
 
 use wax::WaxError;
 use wax::WaxFoundation;
-use wax::WaxChainOptions;
 use wax::WaxOptions;
 use wax::create_wax_foundation;
+
+use crate::options::WaxChainOptions;
 use wax::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use wax::models::authority::Authorities;
 use wax::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
@@ -20,6 +21,7 @@ use wax::{ManabarData, RustTransaction};
 use crate::chain::HiveChain;
 use crate::error::WaxChainError;
 use crate::rpc::JsonRpcClient;
+
 
 /// Concrete [`HiveChain`] implementation. Composes a [`WaxFoundation`] for
 /// offline operations and holds the JSON-RPC / REST endpoints used for

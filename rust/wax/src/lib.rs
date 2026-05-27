@@ -15,7 +15,7 @@ pub use interfaces::{
     AuthorityDataProvider, Manabar, Operation, OperationBuilder, SignatureProvider, Transaction,
 };
 pub use internal::models::manabar_data::ManabarData;
-pub use options::{WaxChainOptions, WaxOptions};
+pub use options::WaxOptions;
 pub use wax_core::proto;
 pub use wax_core::{RustOperation, RustTransaction, transaction_to_canonical_json};
 

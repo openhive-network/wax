@@ -1,11 +1,12 @@
 mod chain;
 mod error;
 mod internal;
+mod options;
 mod rpc;
 
 pub use chain::HiveChain;
 pub use error::WaxChainError;
-pub use wax::WaxChainOptions;
+pub use options::WaxChainOptions;
 
 /// Constructs a [`HiveChain`] from the given options.
 ///
