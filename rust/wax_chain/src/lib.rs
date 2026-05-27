@@ -1,3 +1,4 @@
+mod authority_trace;
 mod chain;
 mod error;
 mod internal;
@@ -5,9 +6,13 @@ mod online_transaction;
 mod options;
 mod rpc;
 
+pub use authority_trace::{
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData, AuthorityRole,
+    AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
+};
 pub use chain::HiveChain;
 pub use error::WaxChainError;
-pub use online_transaction::{AuthorityTrace, OnlineTransaction};
+pub use online_transaction::OnlineTransaction;
 pub use options::WaxChainOptions;
 
 /// Constructs a [`HiveChain`] from the given options.

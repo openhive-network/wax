@@ -1,17 +1,7 @@
 use wax::Transaction;
 
+use crate::authority_trace::AuthorityTrace;
 use crate::error::WaxChainError;
-
-/// Represents data produced by walking the on-chain authority graph for a
-/// signed transaction.
-///
-/// TS NOTE: the TypeScript counterpart `IVerifyAuthorityTrace`
-/// (`ts/wasm/lib/detailed/verify_authority_trace_interface.ts`) carries a
-/// tree of `IAuthorityPathEntry` nodes plus matched signatures. The Rust
-/// shape is left as a placeholder until the authority-trace transport is
-/// wired up — see `rust/hive.md` Phase 4.
-#[derive(Debug, Clone, Default)]
-pub struct AuthorityTrace {}
 
 /// Provides chain-bound checks on top of an offline-built [`Transaction`].
 ///
@@ -21,7 +11,6 @@ pub struct AuthorityTrace {}
 ///
 /// Both require fetching account authorities from the chain, so they live on
 /// this trait instead of `Transaction`.
-///
 #[allow(async_fn_in_trait)]
 pub trait OnlineTransaction: Transaction {
     /// Runs chain-dependent transaction checks (currently: private-key leak
