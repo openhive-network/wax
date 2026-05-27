@@ -13,9 +13,16 @@ use wax::complex_operations::{
 use wax::models::asset::{NaiAsset, NaiAssetConvertible};
 use wax::models::basic::HiveDateTime;
 use wax::result::JsonPrice;
-use wax::{Operation, RustOperation, Transaction};
+use wax::{Operation, RustOperation, SignatureProvider, Transaction};
 
-use crate::common::wax_test;
+use crate::common::{new_in_memory_beekeeper, wax_test, BeekeeperSignatureProvider};
+
+// `5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT` →
+// `STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh`. Pinned by the TS
+// fixtures (`__tests__/detailed/hive_base.ts`) and reused across every test
+// that needs a real (importable) WIF / public-key pair.
+const FIXTURE_WIF: &str = "5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT";
+const FIXTURE_PUBLIC_KEY: &str = "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
 
 // ---------------------------------------------------------------------------
 // Shared fixtures mirroring ts/wasm/__tests__/assets/*.ts
@@ -104,12 +111,62 @@ fn vests_sat(ctx: &crate::common::WaxTestCtx, amount: i64) -> NaiAsset {
 
 // TS line 11: "Should be able to create TAPOS transaction using implicit
 // expiration time".
-// TODO: requires (a) a no-expiration overload of `create_transaction_with_tapos`
-// (Rust's signature mandates an explicit expiration), and (b) signing via a
-// wallet/signer — neither is ported to Rust yet.
+//
+// TS NOTE: TS gets the implicit-expiration overload via
+// `createTransactionWithTaPoS(blockId)` (single argument). Rust splits this
+// off into `create_transaction_with_chain_reference_data`, which defaults to
+// `"+1m"` when no expiration spec is supplied — the same default the TS
+// foundation applies internally.
 #[test]
-#[ignore = "needs implicit-expiration TaPoS overload and a Rust signer"]
-fn tapos_with_implicit_expiration() {}
+fn tapos_with_implicit_expiration() {
+    wax_test(None, |ctx| {
+        let mut bk = new_in_memory_beekeeper();
+        let created = bk
+            .api
+            .session(&bk.token)
+            .create_wallet("w0", Some("pw"), Some(true))
+            .expect("create_wallet");
+        let mut wallet = created.wallet;
+        let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
+        assert_eq!(public_key, FIXTURE_PUBLIC_KEY);
+
+        let now = HiveDateTime::now();
+
+        let mut tx = ctx
+            .base
+            .create_transaction_with_chain_reference_data(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                None,
+                None,
+            )
+            .expect("create_transaction_with_chain_reference_data")
+            .push_operation(
+                RustOperation::from_json(
+                    wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
+                    VOTE_OPERATION_JSON,
+                )
+                .expect("vote op"),
+            );
+        tx.validate().expect("validate");
+
+        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        tx.sign(&provider, &public_key).expect("sign");
+
+        // TS NOTE: TS asserts `now < applied_expiration + 60s`; since `"+1m"`
+        // resolves to `now + 60s`, we mirror the same window check here.
+        let applied = HiveDateTime::parse(&tx.transaction().expiration)
+            .expect("parse expiration");
+        let now_ts = now.inner().timestamp();
+        let applied_ts = applied.inner().timestamp();
+        assert!(
+            now_ts < applied_ts + 60,
+            "expiration {applied_ts} should be within +60s of now {now_ts}"
+        );
+
+        let signees = tx.signature_keys().expect("signature_keys");
+        assert_eq!(signees, vec![public_key]);
+    });
+}
 
 // TS line 49: "Should be able to convert HIVE to HBD - numbers".
 #[test]
@@ -456,17 +513,24 @@ fn operation_get_impacted_accounts_proto() {
 }
 
 // TS line 329: "Should be able to create and sign transaction using object
-// interface". Ported without signing: we build, validate, and confirm the
-// (unsigned) sig digest matches the TS-pinned value. The signature / signees
-// half of the TS assertions can't run until a Rust signer lands.
+// interface".
 #[test]
 fn create_transaction_using_object_interface() {
     wax_test(None, |ctx| {
+        let mut bk = new_in_memory_beekeeper();
+        let created = bk
+            .api
+            .session(&bk.token)
+            .create_wallet("w0", Some("pw"), Some(true))
+            .expect("create_wallet");
+        let mut wallet = created.wallet;
+        let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
+
         let protocol = wax_core::ffi::new_rust_protocol();
         let op = RustOperation::from_json(protocol.as_ref().unwrap(), VOTE_OPERATION_JSON)
             .expect("operation json");
 
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -483,22 +547,82 @@ fn create_transaction_using_object_interface() {
             "sig digest must match the value pinned by the TS suite"
         );
 
+        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        tx.sign(&provider, &public_key).expect("sign");
+
         let signees = tx.signature_keys().expect("signature_keys");
-        assert!(
-            signees.is_empty(),
-            "unsigned transaction must yield no signature keys (signing TODO)"
-        );
+        assert_eq!(signees, vec![public_key]);
     });
 }
 
 // TS line 359: "Should be able to binary serialize signed transaction using
 // object interface".
-// TODO: all the pinned values (sig, digest, binHex) include signature bytes,
-// and the second pushed op is a `DefineRecurrentTransferOperation` complex
-// builder. Needs both a signer and the complex-op wrappers.
 #[test]
-#[ignore = "needs Rust signer + DefineRecurrentTransferOperation complex builder"]
-fn binary_serialize_signed_transaction() {}
+fn binary_serialize_signed_transaction() {
+    wax_test(None, |ctx| {
+        let mut bk = new_in_memory_beekeeper();
+        let created = bk
+            .api
+            .session(&bk.token)
+            .create_wallet("w0", Some("pw"), Some(true))
+            .expect("create_wallet");
+        let mut wallet = created.wallet;
+        let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
+
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let vote_op = RustOperation::from_json(
+            wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
+            VOTE_OPERATION_JSON,
+        )
+        .expect("vote op");
+
+        let mut tx = tx
+            .push_operation(vote_op)
+            .push_builder(
+                &*ctx.base,
+                DefineRecurrentTransferOperation {
+                    from_account: "initminer".into(),
+                    to_account: "gtg".into(),
+                    amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
+                    memo: None,
+                    recurrence: None,
+                    executions: None,
+                    pair_id: None,
+                },
+            )
+            .expect("define builder");
+
+        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let signature = tx.sign(&provider, &public_key).expect("sign");
+
+        assert_eq!(
+            signature,
+            "1f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d145269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58"
+        );
+
+        let digest = tx.sig_digest().expect("sig_digest");
+        assert_eq!(
+            digest,
+            "d07a8509795ff7c6f33ab7d6f4da24044e8f5833f0dffcd357bf21ba5e4db1d9"
+        );
+
+        let signees = tx.signature_keys().expect("signature_keys");
+        assert_eq!(signees, vec![public_key]);
+
+        let bin_hex = tx.to_binary_form(false).expect("to_binary_form");
+        assert_eq!(
+            bin_hex,
+            "a5c766fc0da60827c9640200046f746f6d076330666633336108657778686e6a626a98083109696e69746d696e65720367746764000000000000002320bcbe00180002000000011f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d145269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58"
+        );
+    });
+}
 
 // TS line 396: "Should be able to convert transaction json to binary form".
 #[test]
@@ -815,24 +939,154 @@ fn update_proposal_with_extensions() {
     });
 }
 
+// Builds a `transfer_operation` with the supplied parameters, mirroring the TS
+// `tx.pushOperation({ transfer_operation: { ... } })` shape used in the
+// encryption tests.
+fn transfer_op(amount: NaiAsset, from: &str, to: &str, memo: &str) -> RustOperation {
+    use wax::proto::{Transfer, operation::Value};
+    RustOperation::new(
+        wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
+        Value::TransferOperation(Transfer {
+            from_account: from.into(),
+            to_account: to.into(),
+            amount,
+            memo: memo.into(),
+        }),
+    )
+}
+
+// Extracts the memo from the i'th `TransferOperation` of `tx`.
+fn transfer_memo(tx: &wax::RustTransaction, index: usize) -> String {
+    match tx.transaction().operations[index].value.as_ref().expect("op value") {
+        wax::proto::operation::Value::TransferOperation(t) => t.memo.clone(),
+        other => panic!("expected TransferOperation, got {other:?}"),
+    }
+}
+
 // TS line 592: "Should be able to create encrypted operations using
 // transaction interface".
-// TODO: needs a Rust signer (encryption is driven through the signer) and
-// the `startEncrypt`/`stopEncrypt` transaction-builder methods.
+//
+// TS NOTE: TS folds encryption into `signer.signTransaction(tx)` via the
+// `AEncryptionProvider` base class. Rust keeps the two steps explicit —
+// `perform_operation_encryption` then `sign` — matching the order TS performs
+// them in `extension_helpers.ts` line 28-31.
 #[test]
-#[ignore = "needs Rust signer + start_encrypt/stop_encrypt transaction API"]
-fn create_encrypted_operations() {}
+fn create_encrypted_operations() {
+    wax_test(None, |ctx| {
+        let mut bk = new_in_memory_beekeeper();
+        let created = bk
+            .api
+            .session(&bk.token)
+            .create_wallet("w0", Some("pw"), Some(true))
+            .expect("create_wallet");
+        let mut wallet = created.wallet;
+        let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
+
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let mut tx = tx
+            .start_encrypt(&public_key, None)
+            .push_operation(transfer_op(
+                hive_sat(ctx, 100),
+                "gtg",
+                "initminer",
+                "This should be encrypted",
+            ))
+            .stop_encrypt()
+            .expect("stop_encrypt")
+            .start_encrypt(&public_key, None)
+            .push_operation(transfer_op(
+                hive_sat(ctx, 120),
+                "initminer",
+                "gtg",
+                "This also should be encrypted",
+            ));
+
+        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        tx.perform_operation_encryption(&provider)
+            .expect("perform_operation_encryption");
+        tx.sign(&provider, &public_key).expect("sign");
+
+        let encrypted0 = transfer_memo(&tx, 0);
+        let encrypted1 = transfer_memo(&tx, 1);
+        assert_eq!(
+            encrypted0,
+            "#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWZSsvTXr78tSCezfzAwehn1umdeHgCefsE1rTp45N3A9P"
+        );
+        assert_eq!(
+            encrypted1,
+            "#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWmELbYYWqWsXFo7qgdyadwyRrnrZnhaQFwzKfysyDKKQw"
+        );
+
+        // The TS test also round-trips through the signer's `decryptData` to
+        // confirm the ciphertexts decrypt back to the original plaintext.
+        assert_eq!(
+            provider
+                .decrypt_data(&encrypted0, &public_key, None)
+                .expect("decrypt_data 0"),
+            "This should be encrypted"
+        );
+        assert_eq!(
+            provider
+                .decrypt_data(&encrypted1, &public_key, None)
+                .expect("decrypt_data 1"),
+            "This also should be encrypted"
+        );
+    });
+}
 
 // TS line 636: "Should be able to decrypt operations using transaction
 // interface".
-// TODO: same as above plus `Transaction::decrypt`.
 #[test]
-#[ignore = "needs Rust signer + start_encrypt/stop_encrypt + Transaction::decrypt"]
-fn decrypt_operations() {}
+fn decrypt_operations() {
+    wax_test(None, |ctx| {
+        let mut bk = new_in_memory_beekeeper();
+        let created = bk
+            .api
+            .session(&bk.token)
+            .create_wallet("w0", Some("pw"), Some(true))
+            .expect("create_wallet");
+        let mut wallet = created.wallet;
+        let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
+
+        let tx = ctx
+            .base
+            .create_transaction_with_tapos(
+                "04c1c7a566fc0da66aee465714acee7346b48ac2",
+                "2023-08-01T15:38:48",
+            )
+            .expect("create_transaction_with_tapos");
+
+        let mut tx = tx.start_encrypt(&public_key, None).push_operation(transfer_op(
+            hive_sat(ctx, 100),
+            "gtg",
+            "initminer",
+            "This should be encrypted",
+        ));
+
+        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        tx.perform_operation_encryption(&provider)
+            .expect("perform_operation_encryption");
+        tx.sign(&provider, &public_key).expect("sign");
+
+        let encrypted = transfer_memo(&tx, 0);
+        assert_eq!(
+            encrypted,
+            "#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWZSsvTXr78tSCezfzAwehn1umdeHgCefsE1rTp45N3A9P"
+        );
+
+        tx.decrypt(&provider).expect("decrypt");
+        assert_eq!(transfer_memo(&tx, 0), "This should be encrypted");
+    });
+}
 
 // TS line 672: "Should be able to calculate account HP".
-// TODO: needs `WaxFoundation::calculate_account_hp`. (TS exposes it as a
-// distinct API; in C++ it's a thin wrapper over the vests/HP ratio.)
 #[test]
 fn calculate_account_hp_basic() {
     wax_test(None, |ctx| {
