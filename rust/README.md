@@ -6,9 +6,10 @@ Provides Hive Protocol features to Rust.
 
 | Crate | Purpose |
 |-------|---------|
-| `wax` | Public Rust API (`create_wax_foundation`, …). What downstream users depend on. |
-| `wax_core` | C++ bridge to `hive/libraries/{protocol,fc}` via [`cxx`](https://cxx.rs). Compiles the C++ side through CMake. |
-| `proto_builder` | Generates Rust types from the protobuf definitions in `hive/libraries/protocol/proto/`. |
+| [`wax`](wax/README.md) | Public Rust API (`create_wax_foundation`, …) for offline transaction building, signing, and validation. What downstream users depend on. |
+| [`wax_chain`](wax_chain/README.md) | Online layer (`create_hive_chain`, …) built on `wax`: endpoint management, JSON-RPC transport, chain-dependent checks. |
+| [`wax_core`](wax_core/README.md) | C++ bridge to `hive/libraries/{protocol,fc}` via [`cxx`](https://cxx.rs). Compiles the C++ side through CMake. |
+| [`proto_builder`](proto_builder/README.md) | Build-time tool that generates Rust types from the protobuf definitions in `hive/libraries/protocol/proto/`. |
 
 ## Prerequisites
 
