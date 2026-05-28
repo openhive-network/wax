@@ -266,7 +266,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "proto-builder"
+name = "proto_builder"
 version = "0.1.0"
 dependencies = [
  "prost-build",

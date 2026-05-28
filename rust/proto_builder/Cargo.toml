@@ -1,5 +1,5 @@
 [package]
-name = "proto-builder"
+name = "proto_builder"
 version = "0.1.0"
 edition = "2024"
 

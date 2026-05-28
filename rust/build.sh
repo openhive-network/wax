@@ -52,7 +52,7 @@ else
   # share cmake caches (with absolute paths baked in) with host builds.
   export CARGO_TARGET_DIR="${SCRIPT_DIR}/target/docker"
 
-  cargo run -p proto-builder
+  cargo run -p proto_builder
   cargo build ${CARGO_FLAGS} -p wax_core
   cargo build ${CARGO_FLAGS} -p wax
 

@@ -8,7 +8,7 @@ Provides Hive Protocol features to Rust.
 |-------|---------|
 | `wax` | Public Rust API (`create_wax_foundation`, …). What downstream users depend on. |
 | `wax_core` | C++ bridge to `hive/libraries/{protocol,fc}` via [`cxx`](https://cxx.rs). Compiles the C++ side through CMake. |
-| `proto-builder` | Generates Rust types from the protobuf definitions in `hive/libraries/protocol/proto/`. |
+| `proto_builder` | Generates Rust types from the protobuf definitions in `hive/libraries/protocol/proto/`. |
 
 ## Prerequisites
 
@@ -36,7 +36,7 @@ From `rust/`:
 Inside the container the script runs, in order:
 
 ```bash
-cargo run -p proto-builder              # regenerate proto-derived Rust sources
+cargo run -p proto_builder              # regenerate proto-derived Rust sources
 cargo build [--release] -p wax_core     # build C++ bridge (invokes CMake)
 cargo build [--release] -p wax          # build the public crate
 ```
@@ -46,12 +46,12 @@ cargo build [--release] -p wax          # build the public crate
 If the C++ build dependencies (Boost ≥ 1.74, OpenSSL, CMake, C++17 compiler, `protoc`) and a stable Rust toolchain are installed on the host, just invoke `cargo` directly from `rust/`:
 
 ```bash
-cargo run -p proto-builder
+cargo run -p proto_builder
 cargo build -p wax_core
 cargo build -p wax
 ```
 
-Output goes to the standard `rust/target/<profile>/`. `wax` builds incrementally without re-running `proto-builder` or rebuilding `wax_core` if their inputs are unchanged.
+Output goes to the standard `rust/target/<profile>/`. `wax` builds incrementally without re-running `proto_builder` or rebuilding `wax_core` if their inputs are unchanged.
 
 ## Tests
 

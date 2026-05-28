@@ -34,12 +34,12 @@ Artifacts land under `rust/target/docker/<profile>/` on the host (see [Why a sep
 Inside the container, `build.sh` runs:
 
 ```bash
-cargo run -p proto-builder              # regenerate proto-derived Rust sources
+cargo run -p proto_builder              # regenerate proto-derived Rust sources
 cargo build [--release] -p wax_core     # build the C++ bridge via CMake
 cargo build [--release] -p wax          # build the public crate
 ```
 
-`proto-builder` reads `.proto` files from `hive/libraries/protocol/proto/` (the `hive` submodule must be initialized — `git submodule update --init --recursive`).
+`proto_builder` reads `.proto` files from `hive/libraries/protocol/proto/` (the `hive` submodule must be initialized — `git submodule update --init --recursive`).
 
 ## Why a separate target dir
 
@@ -57,7 +57,7 @@ If the C++ build dependencies (Boost ≥ 1.74, OpenSSL, CMake ≥ 3.16, a C++17 
 
 ```bash
 cd rust
-cargo run -p proto-builder
+cargo run -p proto_builder
 cargo build -p wax_core
 cargo build -p wax
 ```
@@ -69,7 +69,7 @@ Output goes to the standard `rust/target/<profile>/`.
 The dockerfile:
 
 - inherits `WAX_BOOST_ROOT=/wax_boost_root/` (set by the base image, points at the prebuilt Boost 1.83 install) and re-exports it as `BOOST_ROOT` so CMake's `find_package(Boost)` finds it
-- installs `protobuf-compiler` (required by `prost-build` for `proto-builder`)
+- installs `protobuf-compiler` (required by `prost-build` for `proto_builder`)
 - installs Rust via rustup with the `RUST_TOOLCHAIN` build-arg (default: `stable`)
 - creates a `user` account with build-arg `USER_ID` / `GROUP_ID` so files written through the bind mount are owned by the host user
 
