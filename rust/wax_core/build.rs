@@ -62,6 +62,20 @@ fn main() {
         println!("cargo:rerun-if-changed={}", a.display());
     }
 
+    // Boost and OpenSSL are linked dynamically below but live outside the CMake
+    // build tree, so their lib directories must be on the link search path.
+    // wax_core itself is an rlib (no final link), but these paths propagate to
+    // downstream binaries and test executables that do perform the final link.
+    for var in ["BOOST_ROOT", "OPENSSL_ROOT_DIR"] {
+        let Ok(root) = std::env::var(var) else { continue };
+        for sub in ["lib", "lib64"] {
+            let dir = std::path::Path::new(&root).join(sub);
+            if dir.is_dir() {
+                println!("cargo:rustc-link-search=native={}", dir.display());
+            }
+        }
+    }
+
     for component in ["chrono", "context", "coroutine", "filesystem", "system", "thread"] {
         println!("cargo:rustc-link-lib=boost_{component}");
     }
