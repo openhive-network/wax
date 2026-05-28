@@ -9,7 +9,8 @@ fn placeholder_timestamp() -> HiveDateTime {
     // Fixed epoch-ish timestamp for tests that don't care about owner-update
     // recency. The AuthorityDataProvider contract doesn't constrain the value,
     // it just needs to round-trip through clone/equality.
-    HiveDateTime::parse("2020-01-01T00:00:00").expect("static HiveDateTime literal must parse")
+    HiveDateTime::parse("2020-01-01T00:00:00")
+        .expect("static HiveDateTime literal must parse")
 }
 
 /// Test-only in-memory provider. Returns the stored info for known accounts,
@@ -32,11 +33,13 @@ impl InMemoryAuthorityDataProvider {
 }
 
 impl AuthorityDataProvider for InMemoryAuthorityDataProvider {
-    fn get_account_authorities(&self, account: &str) -> Result<AccountAuthorityInfo, WaxError> {
-        self.accounts
-            .get(account)
-            .cloned()
-            .ok_or_else(|| WaxError::new(format!("account '{account}' not found")))
+    fn get_account_authorities(
+        &self,
+        account: &str,
+    ) -> Result<AccountAuthorityInfo, WaxError> {
+        self.accounts.get(account).cloned().ok_or_else(|| {
+            WaxError::new(format!("account '{account}' not found"))
+        })
     }
 }
 

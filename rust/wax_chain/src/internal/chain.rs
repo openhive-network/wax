@@ -8,20 +8,23 @@ use wax::WaxOptions;
 use wax::create_wax_foundation;
 
 use crate::options::WaxChainOptions;
-use wax::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
+use wax::models::asset::{
+    AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
+};
 use wax::models::authority::Authorities;
-use wax::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
+use wax::models::basic::{
+    AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
+};
 use wax::proto;
 use wax::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
-    PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
+    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
 };
 use wax::{ManabarData, Operation, Transaction};
 
 use crate::chain::HiveChain;
 use crate::error::WaxChainError;
 use crate::rpc::JsonRpcClient;
-
 
 /// Concrete [`HiveChain`] implementation. Composes a [`WaxFoundation`] for
 /// offline operations and holds the JSON-RPC / REST endpoints used for
@@ -283,6 +286,11 @@ impl WaxFoundation for HiveChainApi {
             json: &str,
         ) -> Result<Box<dyn Transaction>, WaxError>;
 
+        fn create_transaction_from_proto_json(
+            &self,
+            json: &str,
+        ) -> Result<Box<dyn Transaction>, WaxError>;
+
         fn create_transaction_with_tapos(
             &self,
             tapos_block_id: &str,
@@ -313,6 +321,11 @@ impl WaxFoundation for HiveChainApi {
         ) -> Box<dyn Operation>;
 
         fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
+
+        fn create_operation_from_json(
+            &self,
+            json: &str,
+        ) -> Result<Box<dyn Operation>, WaxError>;
 
         fn serialize_witness_props(
             &self,

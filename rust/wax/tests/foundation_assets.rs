@@ -73,7 +73,10 @@ fn create_asset_with_required_symbol_rejects_mismatched_nai() {
     // Ask for HIVE but hand it an HBD-shaped asset.
     let input = proto("1000", ASSET_PRECISION, HBD_NAI);
     let err = f
-        .create_asset_with_required_symbol(AssetName::Hive, NaiAssetConvertible::Asset(input))
+        .create_asset_with_required_symbol(
+            AssetName::Hive,
+            NaiAssetConvertible::Asset(input),
+        )
         .expect_err("mismatched nai must error");
 
     // The underlying Asset helper raises "Nai is not the same as expected.".
@@ -89,7 +92,10 @@ fn create_asset_with_required_symbol_accepts_valid_json_string() {
         ASSET_PRECISION, HIVE_NAI
     );
     let resolved = f
-        .create_asset_with_required_symbol(AssetName::Hive, NaiAssetConvertible::Json(json_str))
+        .create_asset_with_required_symbol(
+            AssetName::Hive,
+            NaiAssetConvertible::Json(json_str),
+        )
         .expect("valid HIVE JSON must resolve");
 
     assert_eq!(resolved, proto("1000", ASSET_PRECISION, HIVE_NAI));

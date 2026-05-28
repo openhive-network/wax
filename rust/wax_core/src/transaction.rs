@@ -4,8 +4,9 @@ use crate::ffi::{hive_transaction_handle, rust_protocol};
 use crate::managed_object::RustManagedObject;
 use crate::proto;
 
-/// Half-open encryption range over `RustTransaction::inner.operations`.
-/// `end == None` while a `start_encrypt` has not yet been matched by `stop_encrypt`.
+/// Represents a half-open encryption range over
+/// `RustTransaction::inner.operations`. `end == None` while a `start_encrypt`
+/// has not yet been matched by a `stop_encrypt`.
 #[derive(Debug, Clone)]
 pub struct EncryptionIndex {
     pub main_key: String,
@@ -14,6 +15,8 @@ pub struct EncryptionIndex {
     pub end: Option<usize>,
 }
 
+/// Represents a transaction together with its C++ handle and the chain id it
+/// is bound to, keeping the Rust-side proto and the C++ representation in sync.
 pub struct RustTransaction {
     pub inner: proto::Transaction,
     pub handle: UniquePtr<hive_transaction_handle>,
@@ -24,6 +27,7 @@ pub struct RustTransaction {
 }
 
 impl RustTransaction {
+    /// Creates a transaction from its TaPoS data, expiration and operations.
     pub fn new(
         protocol: &rust_protocol,
         chain_id: impl Into<String>,
@@ -49,6 +53,8 @@ impl RustTransaction {
         }
     }
 
+    /// Creates a transaction from an existing [`proto::Transaction`], building
+    /// its C++ handle.
     pub fn from_proto(
         protocol: &rust_protocol,
         chain_id: impl Into<String>,
@@ -70,30 +76,37 @@ impl RustTransaction {
         self.handle = create_handle(protocol, &self.inner);
     }
 
+    /// Creates a transaction by deserializing its proto-shape JSON.
     pub fn from_json(
         protocol: &rust_protocol,
         chain_id: impl Into<String>,
         json: &str,
     ) -> Result<Self, String> {
-        let inner: proto::Transaction = serde_json::from_str(json).map_err(|e| e.to_string())?;
+        let inner: proto::Transaction =
+            serde_json::from_str(json).map_err(|e| e.to_string())?;
         Ok(Self::from_proto(protocol, chain_id, inner))
     }
 
+    /// Returns a reference to the wrapped [`proto::Transaction`].
     pub fn proto(&self) -> &proto::Transaction {
         &self.inner
     }
 
+    /// Consumes the wrapper and returns the inner [`proto::Transaction`].
     pub fn into_proto(self) -> proto::Transaction {
         self.inner
     }
 
+    /// Converts the transaction into a managed object for the C++ visitors.
     pub fn to_managed(&self) -> Box<RustManagedObject> {
         RustManagedObject::from_transaction(&self.inner)
     }
 }
 
+/// Converts a transaction into its canonical JSON representation.
 pub fn transaction_to_canonical_json(tx: &proto::Transaction) -> String {
-    serde_json::to_string(tx).expect("pbjson Serialize impl must produce valid JSON")
+    serde_json::to_string(tx)
+        .expect("pbjson Serialize impl must produce valid JSON")
 }
 
 fn create_handle(

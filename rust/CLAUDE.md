@@ -2,7 +2,6 @@
 
 When rewriting TS / Python to Rust, write 'idiomatic' Rust, don't try to mirror 1:1 features from other languages.
 Don't create your own logic or guards unless TS / Python provide some guarantee (guard) by default (language constraint) - then add `NOTE: ` comment.
-Use style guidelines defined in `.rustfmt.toml`
 
 When writing documentation, follow these rules:
 - for types: `Represents...`,
@@ -18,4 +17,34 @@ struct Foo(Bar);
 struct Bar(i32, Baz);
 
 type Baz = String;
+```
+
+## Style
+Use style guidelines defined in `.rustfmt.toml`
+
+If function has more than 2 lines, add 1 blank line before 'return'. E.g.
+```rs
+fn foo() -> i32 {
+    let x = 2;
+    let y = x;
+
+    y
+}
+```
+but
+```rs
+fn foo() -> i32 {
+    let x = 2;
+    x
+}
+```
+
+Each 'logic group' should be separated, e.g.
+```rs
+let res = fetch("x").await?;
+
+if res.status != 200 {...}
+
+let body = res.body().await?;
+let x = body.get("x");
 ```

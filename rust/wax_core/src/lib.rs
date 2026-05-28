@@ -1,3 +1,12 @@
+//! Core Rust bindings shared by the `wax` and `wax_chain` crates.
+//!
+//! `wax_core` wraps the C++ hived protocol code through a cxx bridge and
+//! exposes the generated protobuf types ([`proto`]) alongside thin Rust
+//! wrappers ([`RustTransaction`], [`RustOperation`], [`RustAsset`]) and the
+//! dynamically-typed [`RustManagedObject`] used to shuttle values across the
+//! bridge.
+
+/// Generated Hive protocol buffer types and their `serde` implementations.
 pub mod proto {
     #![allow(clippy::all)]
     include!("../../protobuf_patterns/hive.protocol.buffers.rs");
@@ -15,32 +24,43 @@ mod transaction;
 
 pub use asset::RustAsset;
 pub use authority_provider::{AuthorityProvider, RustAuthorityProvider};
-pub use managed_object::{descriptor_pool, RustManagedObject};
+pub use managed_object::{RustManagedObject, descriptor_pool};
 pub use operation::RustOperation;
-pub use transaction::{transaction_to_canonical_json, EncryptionIndex, RustTransaction};
+pub use transaction::{
+    EncryptionIndex, RustTransaction, transaction_to_canonical_json,
+};
 
 use authority_provider::{rap_get_authorities, rap_get_witness_public_key};
 use managed_object::{
-    rmo_array_length, rmo_as_bool, rmo_as_i16, rmo_as_i32, rmo_as_i64, rmo_as_i8, rmo_as_string,
-    rmo_as_u16, rmo_as_u32, rmo_as_u64, rmo_as_u8, rmo_clone, rmo_del_field, rmo_from_json_str,
-    rmo_get_field, rmo_get_index, rmo_is_optional_field_present, rmo_is_string, rmo_is_undefined,
-    rmo_map_keys, rmo_new_object, rmo_oneof_variant, rmo_set_field, rmo_set_field_obj_key,
-    rmo_to_json_string,
+    rmo_array_length, rmo_as_bool, rmo_as_i8, rmo_as_i16, rmo_as_i32,
+    rmo_as_i64, rmo_as_string, rmo_as_u8, rmo_as_u16, rmo_as_u32, rmo_as_u64,
+    rmo_clone, rmo_del_field, rmo_from_json_str, rmo_get_field, rmo_get_index,
+    rmo_is_optional_field_present, rmo_is_string, rmo_is_undefined,
+    rmo_map_keys, rmo_new_object, rmo_oneof_variant, rmo_set_field,
+    rmo_set_field_obj_key, rmo_to_json_string,
 };
 
+/// The cxx bridge to the C++ hived protocol layer: the shared data structures
+/// exchanged with C++ and the `cpp_*` protocol entry points.
 #[cxx::bridge(namespace = "cpp")]
 pub mod ffi {
+    /// Represents a single authority entry — an account or key name with its
+    /// signing weight.
     pub struct RustAuthEntry {
         pub name: String,
         pub weight: u32,
     }
 
+    /// Represents an authority: a weight threshold together with its account
+    /// and key entries.
     pub struct RustWaxAuthority {
         pub weight_threshold: u32,
         pub account_auths: Vec<RustAuthEntry>,
         pub key_auths: Vec<RustAuthEntry>,
     }
 
+    /// Represents the accounts and authorities required to sign a transaction,
+    /// grouped by role.
     pub struct RustRequiredAuthorities {
         pub posting_accounts: Vec<String>,
         pub active_accounts: Vec<String>,
@@ -48,33 +68,43 @@ pub mod ffi {
         pub other_authorities: Vec<RustWaxAuthority>,
     }
 
+    /// Represents the owner, active and posting authorities of an account.
     pub struct RustWaxAuthorities {
         pub owner: RustWaxAuthority,
         pub active: RustWaxAuthority,
         pub posting: RustWaxAuthority,
     }
 
+    /// Represents an account paired with its three role authorities.
     pub struct RustAccountAuthorities {
         pub account: String,
         pub authorities: RustWaxAuthorities,
     }
 
+    /// Represents an asset as the flat amount/precision/nai triple exchanged
+    /// with C++.
     pub struct RustJsonAsset {
         pub amount: String,
         pub precision: u32,
         pub nai: String,
     }
 
+    /// Represents a price as a base/quote pair of [`RustJsonAsset`]s.
     pub struct RustJsonPrice {
         pub base: RustJsonAsset,
         pub quote: RustJsonAsset,
     }
 
+    /// Represents the TaPoS reference-block data (`ref_block_num` and
+    /// `ref_block_prefix`).
     pub struct RustRefBlockData {
         pub ref_block_num: u16,
         pub ref_block_prefix: u32,
     }
 
+    /// Represents the input to `cpp_minimize_required_signatures`. The `has_*`
+    /// companion booleans stand in for the optional limits the cxx bridge
+    /// cannot express; when `has_X` is `false`, field `X` is ignored.
     pub struct RustMinimizeRequiredSignaturesData {
         pub chain_id: String,
         pub available_keys: Vec<String>,
@@ -88,9 +118,10 @@ pub mod ffi {
         pub allow_strict_and_mixed_authorities: bool,
     }
 
-    /// Flat representation of `cpp::binary_data_node`. The recursive tree is
-    /// linearized into a `Vec<RustBinaryDataNode>` and each parent stores the
-    /// indices of its children, so the structure is cxx-bridge-compatible.
+    /// Represents one `cpp::binary_data_node` in flattened form. The recursive
+    /// tree is linearized into a `Vec<RustBinaryDataNode>` and each parent
+    /// stores the indices of its children, so the structure is
+    /// cxx-bridge-compatible.
     pub struct RustBinaryDataNode {
         pub key: String,
         // "scalar" | "array" | "object" (mirrors cpp::binary_data_node::type).
@@ -102,12 +133,16 @@ pub mod ffi {
         pub child_indices: Vec<u32>,
     }
 
+    /// Represents the flattened binary serialization of a value: the hex
+    /// `binary` plus the linearized node tree describing its structure.
     pub struct RustBinaryData {
         pub binary: String,
         pub nodes: Vec<RustBinaryDataNode>,
         pub root_indices: Vec<u32>,
     }
 
+    /// Represents one node visited while tracing authority verification — the
+    /// processed entry/role with its recursion depth, threshold and weights.
     pub struct RustAuthPathNode {
         pub processed_entry: String,
         pub processed_role: String,
@@ -118,6 +153,8 @@ pub mod ffi {
         pub visited_indices: Vec<u32>,
     }
 
+    /// Represents the full trace of an authority-verification run: the visited
+    /// nodes, the final satisfying path and the overall verification status.
     pub struct RustAuthVerificationTrace {
         pub nodes: Vec<RustAuthPathNode>,
         pub root_indices: Vec<u32>,
@@ -125,38 +162,43 @@ pub mod ffi {
         pub verification_status: u32,
     }
 
+    /// Represents a generated brain key with its derived WIF private key and
+    /// associated public key.
     pub struct RustBrainKeyData {
         pub brain_key: String,
         pub wif_private_key: String,
         pub associated_public_key: String,
     }
 
+    /// Represents a private key as its WIF form paired with the associated
+    /// public key.
     pub struct RustPrivateKeyData {
         pub wif_private_key: String,
         pub associated_public_key: String,
     }
 
-    /// One entry in the chain-config map returned by
+    /// Represents one entry in the chain-config map returned by
     /// `cpp_get_hive_protocol_config`. cxx-bridge cannot express
-    /// `std::map<String, String>` directly so we surface it as a flat Vec
-    /// of key/value pairs.
+    /// `std::map<String, String>` directly, so the map is surfaced as a flat
+    /// Vec of key/value pairs.
     pub struct RustConfigEntry {
         pub key: String,
         pub value: String,
     }
 
-    /// One serialized witness-prop entry — a name and the hex-encoded packed
-    /// binary that hived expects on the wire. cxx-bridge cannot express
-    /// `std::map<String, String>` directly, so the serializer output is
-    /// surfaced as a flat Vec for the same reason as `RustConfigEntry`.
+    /// Represents one serialized witness-property entry — a name and the
+    /// hex-encoded packed binary that hived expects on the wire. cxx-bridge
+    /// cannot express `std::map<String, String>` directly, so the serializer
+    /// output is surfaced as a flat Vec for the same reason as
+    /// `RustConfigEntry`.
     pub struct RustWitnessPropEntry {
         pub key: String,
         pub value: String,
     }
 
-    /// Input to `cpp_serialize_witness_set_properties`. Mirrors C++
-    /// `witness_set_properties_data` but with `has_*` companion booleans
-    /// instead of `std::optional` (cxx bridge does not support Option /
+    /// Represents the input to `cpp_serialize_witness_set_properties`. Mirrors
+    /// C++ `witness_set_properties_data` but with `has_*` companion booleans
+    /// instead of `std::optional` (the cxx bridge does not support Option /
     /// optional on shared structs). When `has_X` is `false`, field `X` is
     /// ignored by the C++ side.
     pub struct RustWitnessSetPropertiesData {
@@ -195,18 +237,29 @@ pub mod ffi {
             provider: &RustAuthorityProvider,
             accounts: Vec<String>,
         ) -> Vec<RustAccountAuthorities>;
-        fn rap_get_witness_public_key(provider: &RustAuthorityProvider, witness: String)
-            -> String;
+        fn rap_get_witness_public_key(
+            provider: &RustAuthorityProvider,
+            witness: String,
+        ) -> String;
     }
 
     extern "Rust" {
         fn rmo_clone(obj: &RustManagedObject) -> Box<RustManagedObject>;
-        fn rmo_get_field(obj: &RustManagedObject, key: &str) -> Box<RustManagedObject>;
-        fn rmo_get_index(obj: &RustManagedObject, idx: usize) -> Box<RustManagedObject>;
+        fn rmo_get_field(
+            obj: &RustManagedObject,
+            key: &str,
+        ) -> Box<RustManagedObject>;
+        fn rmo_get_index(
+            obj: &RustManagedObject,
+            idx: usize,
+        ) -> Box<RustManagedObject>;
         fn rmo_array_length(obj: &RustManagedObject) -> usize;
         fn rmo_is_undefined(obj: &RustManagedObject) -> bool;
         fn rmo_is_string(obj: &RustManagedObject) -> bool;
-        fn rmo_is_optional_field_present(obj: &RustManagedObject, name: &str) -> bool;
+        fn rmo_is_optional_field_present(
+            obj: &RustManagedObject,
+            name: &str,
+        ) -> bool;
         fn rmo_oneof_variant(obj: &RustManagedObject) -> String;
         fn rmo_map_keys(obj: &RustManagedObject) -> Vec<String>;
 
@@ -225,7 +278,11 @@ pub mod ffi {
         fn rmo_new_object() -> Box<RustManagedObject>;
         fn rmo_from_json_str(json: &str) -> Result<Box<RustManagedObject>>;
         fn rmo_to_json_string(obj: &RustManagedObject) -> Result<String>;
-        fn rmo_set_field(obj: &RustManagedObject, key: &str, value: &RustManagedObject);
+        fn rmo_set_field(
+            obj: &RustManagedObject,
+            key: &str,
+            value: &RustManagedObject,
+        );
         fn rmo_set_field_obj_key(
             obj: &RustManagedObject,
             key: &RustManagedObject,
@@ -363,9 +420,13 @@ pub mod ffi {
             provider: &RustAuthorityProvider,
         ) -> Result<Vec<String>>;
 
-        fn cpp_hive(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
+        fn cpp_hive(self: &rust_protocol, amount: i64)
+        -> Result<RustJsonAsset>;
         fn cpp_hbd(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
-        fn cpp_vests(self: &rust_protocol, amount: i64) -> Result<RustJsonAsset>;
+        fn cpp_vests(
+            self: &rust_protocol,
+            amount: i64,
+        ) -> Result<RustJsonAsset>;
 
         fn cpp_hbd_to_hive(
             self: &rust_protocol,
@@ -420,8 +481,14 @@ pub mod ffi {
             total_vesting_fund_hive: &RustJsonAsset,
         ) -> Result<String>;
 
-        fn cpp_asset_value(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
-        fn cpp_asset_symbol(self: &rust_protocol, asset: &RustJsonAsset) -> Result<String>;
+        fn cpp_asset_value(
+            self: &rust_protocol,
+            asset: &RustJsonAsset,
+        ) -> Result<String>;
+        fn cpp_asset_symbol(
+            self: &rust_protocol,
+            asset: &RustJsonAsset,
+        ) -> Result<String>;
 
         fn cpp_calculate_current_manabar_value(
             self: &rust_protocol,
@@ -441,7 +508,10 @@ pub mod ffi {
 
         fn cpp_is_valid_account_name(self: &rust_protocol, name: &str) -> bool;
 
-        fn cpp_calculate_public_key(self: &rust_protocol, wif: &str) -> Result<String>;
+        fn cpp_calculate_public_key(
+            self: &rust_protocol,
+            wif: &str,
+        ) -> Result<String>;
 
         fn cpp_get_public_key_from_signature(
             self: &rust_protocol,
@@ -449,7 +519,9 @@ pub mod ffi {
             signature: &str,
         ) -> Result<String>;
 
-        fn cpp_suggest_brain_key(self: &rust_protocol) -> Result<RustBrainKeyData>;
+        fn cpp_suggest_brain_key(
+            self: &rust_protocol,
+        ) -> Result<RustBrainKeyData>;
 
         fn cpp_get_private_key_from_password(
             self: &rust_protocol,
@@ -473,9 +545,15 @@ pub mod ffi {
             hex: &str,
         ) -> Result<UniquePtr<hive_transaction_handle>>;
 
-        fn cpp_legacy_tx_to_json(self: &rust_protocol, tx_str: &str) -> Result<String>;
+        fn cpp_legacy_tx_to_json(
+            self: &rust_protocol,
+            tx_str: &str,
+        ) -> Result<String>;
 
-        fn cpp_tx_api_to_proto_json(self: &rust_protocol, api_json: &str) -> Result<String>;
+        fn cpp_tx_api_to_proto_json(
+            self: &rust_protocol,
+            api_json: &str,
+        ) -> Result<String>;
 
         fn cpp_tx_set_expiration(
             self: &rust_protocol,
@@ -483,7 +561,10 @@ pub mod ffi {
             expiration: &str,
         ) -> Result<()>;
 
-        fn cpp_get_tapos_data(self: &rust_protocol, block_id: &str) -> Result<RustRefBlockData>;
+        fn cpp_get_tapos_data(
+            self: &rust_protocol,
+            block_id: &str,
+        ) -> Result<RustRefBlockData>;
 
         fn cpp_minimize_required_signatures(
             self: &rust_protocol,
@@ -521,8 +602,9 @@ pub mod ffi {
 }
 
 pub use ffi::{
-    hive_operation_handle, hive_transaction_handle, new_rust_protocol, rust_protocol,
-    RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData, RustBinaryDataNode,
-    RustConfigEntry, RustJsonAsset, RustJsonPrice, RustMinimizeRequiredSignaturesData,
-    RustRefBlockData, RustWitnessPropEntry, RustWitnessSetPropertiesData,
+    RustAuthPathNode, RustAuthVerificationTrace, RustBinaryData,
+    RustBinaryDataNode, RustConfigEntry, RustJsonAsset, RustJsonPrice,
+    RustMinimizeRequiredSignaturesData, RustRefBlockData, RustWitnessPropEntry,
+    RustWitnessSetPropertiesData, hive_operation_handle,
+    hive_transaction_handle, new_rust_protocol, rust_protocol,
 };

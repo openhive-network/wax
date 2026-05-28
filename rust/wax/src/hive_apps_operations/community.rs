@@ -35,6 +35,7 @@ pub enum SupportedLanguages {
 }
 
 impl SupportedLanguages {
+    /// Returns the on-wire string form of the value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::English => "en",
@@ -66,6 +67,7 @@ pub enum AvailableCommunityRoles {
 }
 
 impl AvailableCommunityRoles {
+    /// Returns the on-wire string form of the value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Muted => "muted",
@@ -96,6 +98,7 @@ pub enum CommunityOperationActions {
 }
 
 impl CommunityOperationActions {
+    /// Returns the on-wire string form of the value.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::FlagPost => "flagPost",
@@ -128,7 +131,8 @@ pub struct CommunityProps {
     pub flag_text: Option<String>,
 }
 
-/// Fluent builder for `custom_json_operation` with `id="community"`.
+/// Represents the fluent builder for `custom_json_operation` with
+/// `id="community"`.
 ///
 /// Stage entries with the action methods, then commit them via the
 /// [`HiveAppsOperation::authorize`] method inherited from the base trait.
@@ -147,6 +151,7 @@ impl Default for CommunityOperation {
 }
 
 impl CommunityOperation {
+    /// Creates an empty community-operation builder.
     pub fn new() -> Self {
         Self {
             base: HiveAppsOperationBase::new(OPERATION_ID),

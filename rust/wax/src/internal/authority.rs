@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use wax_core::ffi::{RustAccountAuthorities, RustAuthEntry, RustWaxAuthorities, RustWaxAuthority};
+use wax_core::ffi::{
+    RustAccountAuthorities, RustAuthEntry, RustWaxAuthorities, RustWaxAuthority,
+};
 use wax_core::{AuthorityProvider, RustAuthorityProvider};
 
 use crate::interfaces::AuthorityDataProvider;
@@ -16,19 +18,21 @@ struct AuthorityProviderAdapter {
 }
 
 impl AuthorityProvider for AuthorityProviderAdapter {
-    fn get_authorities(&self, accounts: Vec<String>) -> Vec<RustAccountAuthorities> {
+    fn get_authorities(
+        &self,
+        accounts: Vec<String>,
+    ) -> Vec<RustAccountAuthorities> {
         // SAFETY: see struct docs — the source reference outlives the call.
         let provider = unsafe { &*self.inner };
         accounts
             .into_iter()
             .filter_map(|account| {
-                provider
-                    .get_account_authorities(&account)
-                    .ok()
-                    .map(|info| RustAccountAuthorities {
+                provider.get_account_authorities(&account).ok().map(|info| {
+                    RustAccountAuthorities {
                         account: info.account,
                         authorities: to_rust_authorities(info.authorities),
-                    })
+                    }
+                })
             })
             .collect()
     }
@@ -43,18 +47,23 @@ impl AuthorityProvider for AuthorityProviderAdapter {
     }
 }
 
-pub(crate) fn build_provider(provider: &dyn AuthorityDataProvider) -> Box<RustAuthorityProvider> {
+pub(crate) fn build_provider(
+    provider: &dyn AuthorityDataProvider,
+) -> Box<RustAuthorityProvider> {
     // Lifetime-erase the trait object so it can live in an adapter that
     // satisfies the `'static` bound on `RustAuthorityProvider::new`. The
     // resulting `Box<RustAuthorityProvider>` must not outlive `provider` —
     // callers ensure that by consuming it within one synchronous FFI call.
-    let inner: *const dyn AuthorityDataProvider =
-        unsafe { core::mem::transmute(provider as *const dyn AuthorityDataProvider) };
+    let inner: *const dyn AuthorityDataProvider = unsafe {
+        core::mem::transmute(provider as *const dyn AuthorityDataProvider)
+    };
     let adapter = AuthorityProviderAdapter { inner };
     RustAuthorityProvider::new(Box::new(adapter))
 }
 
-pub(crate) fn to_rust_authorities(authorities: Authorities) -> RustWaxAuthorities {
+pub(crate) fn to_rust_authorities(
+    authorities: Authorities,
+) -> RustWaxAuthorities {
     RustWaxAuthorities {
         owner: to_rust_authority(authorities.owner),
         active: to_rust_authority(authorities.active),
@@ -62,7 +71,9 @@ pub(crate) fn to_rust_authorities(authorities: Authorities) -> RustWaxAuthoritie
     }
 }
 
-pub(crate) fn to_rust_authority(authority: Option<WaxAuthority>) -> RustWaxAuthority {
+pub(crate) fn to_rust_authority(
+    authority: Option<WaxAuthority>,
+) -> RustWaxAuthority {
     let Some(auth) = authority else {
         return RustWaxAuthority {
             weight_threshold: 0,

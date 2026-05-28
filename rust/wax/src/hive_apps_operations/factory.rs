@@ -12,7 +12,7 @@ use wax_core::proto;
 use crate::WaxError;
 use crate::models::basic::AccountName;
 
-/// Holds the shared state for any "hive apps" custom-JSON operation
+/// Represents the shared state for any "hive apps" custom-JSON operation
 /// builder: the on-wire `id`, the in-progress (yet-to-be-authorized) body
 /// entries, and the authorized [`proto::CustomJson`] ops.
 ///
@@ -58,7 +58,9 @@ impl HiveAppsOperationBase {
             // matching TS `JSON.stringify(body)` where `body = [action, data]`.
             let payload = (action, body);
             let json = serde_json::to_string(&payload).map_err(|e| {
-                WaxError::new(format!("failed to serialize hive-apps action: {e}"))
+                WaxError::new(format!(
+                    "failed to serialize hive-apps action: {e}"
+                ))
             })?;
 
             self.ops.push(proto::CustomJson {

@@ -7,7 +7,8 @@ const CANONICAL: &str = "2026-05-15T12:34:56";
 
 #[test]
 fn parse_roundtrips_through_serialize() {
-    let dt = HiveDateTime::parse(CANONICAL).expect("parse should accept Hive format");
+    let dt = HiveDateTime::parse(CANONICAL)
+        .expect("parse should accept Hive format");
     assert_eq!(dt.serialize(), CANONICAL);
 }
 
@@ -21,7 +22,8 @@ fn from_str_matches_parse() {
 #[test]
 fn parse_rejects_non_hive_format() {
     // Same instant, wrong format (space instead of T) — must error.
-    let err = HiveDateTime::parse("2026-05-15 12:34:56").expect_err("space-separated must error");
+    let err = HiveDateTime::parse("2026-05-15 12:34:56")
+        .expect_err("space-separated must error");
     assert!(
         err.message().contains("%Y-%m-%dT%H:%M:%S"),
         "error should mention required format: {}",

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
-use wax_core::ffi::{RustJsonAsset, RustJsonPrice, RustWitnessSetPropertiesData};
+use wax_core::ffi::{
+    RustJsonAsset, RustJsonPrice, RustWitnessSetPropertiesData,
+};
 use wax_core::{RustOperation, RustTransaction, proto};
 
 use rust_decimal::Decimal;
@@ -15,13 +17,17 @@ use crate::internal::authority::to_rust_authorities;
 use crate::internal::models::manabar_data::ManabarData;
 use crate::internal::protocol::rust_protocol;
 use crate::internal::transaction::to_binary_view_output;
-use crate::models::asset::{Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
+use crate::models::asset::{
+    Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
+};
 use crate::models::authority::Authorities;
-use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
+use crate::models::basic::{
+    AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
+};
 use crate::options::WaxOptions;
 use crate::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
-    PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
+    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
 };
 
 pub(crate) struct WaxFoundationApi {
@@ -43,23 +49,18 @@ impl WaxFoundationApi {
         // not a runtime input issue. Matches `RustTransaction::new`'s
         // `.expect("failed to create transaction handle")` precedent.
         let protocol = rust_protocol();
-        let assets = Assets {
-            hive: to_nai_asset(
-                protocol
-                    .cpp_hive(0)
-                    .expect("cpp_hive(0) must not fail in a well-built wax_core"),
-            ),
-            hbd: to_nai_asset(
-                protocol
-                    .cpp_hbd(0)
-                    .expect("cpp_hbd(0) must not fail in a well-built wax_core"),
-            ),
-            vests: to_nai_asset(
-                protocol
-                    .cpp_vests(0)
-                    .expect("cpp_vests(0) must not fail in a well-built wax_core"),
-            ),
-        };
+        let assets =
+            Assets {
+                hive: to_nai_asset(protocol.cpp_hive(0).expect(
+                    "cpp_hive(0) must not fail in a well-built wax_core",
+                )),
+                hbd: to_nai_asset(protocol.cpp_hbd(0).expect(
+                    "cpp_hbd(0) must not fail in a well-built wax_core",
+                )),
+                vests: to_nai_asset(protocol.cpp_vests(0).expect(
+                    "cpp_vests(0) must not fail in a well-built wax_core",
+                )),
+            };
         Self {
             options,
             cached_config: OnceLock::new(),
@@ -81,14 +82,11 @@ impl WaxFoundation for WaxFoundationApi {
 
     fn address_prefix(&self) -> Result<String, WaxError> {
         let config = self.config()?;
-        config
-            .get(HIVE_ADDRESS_PREFIX_KEY)
-            .cloned()
-            .ok_or_else(|| {
-                WaxError::new(format!(
-                    "{HIVE_ADDRESS_PREFIX_KEY} missing from protocol config"
-                ))
-            })
+        config.get(HIVE_ADDRESS_PREFIX_KEY).cloned().ok_or_else(|| {
+            WaxError::new(format!(
+                "{HIVE_ADDRESS_PREFIX_KEY} missing from protocol config"
+            ))
+        })
     }
 
     fn config(&self) -> Result<ChainConfig, WaxError> {
@@ -99,7 +97,8 @@ impl WaxFoundation for WaxFoundationApi {
         let entries = rust_protocol()
             .cpp_get_hive_protocol_config(&self.options.chain_id)
             .map_err(WaxError::from)?;
-        let map: ChainConfig = entries.into_iter().map(|e| (e.key, e.value)).collect();
+        let map: ChainConfig =
+            entries.into_iter().map(|e| (e.key, e.value)).collect();
         // OnceLock::set is a noop if another thread won the race; either way,
         // we end up returning the same logical config.
         let _ = self.cached_config.set(map.clone());
@@ -227,12 +226,21 @@ impl WaxFoundation for WaxFoundationApi {
         total_vesting_fund_hive: NaiAssetConvertible,
         total_vesting_shares: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError> {
-        let vests = self.create_asset_with_required_symbol(AssetName::Vests, vests)?;
-        let total_vesting_fund_hive =
-            self.create_asset_with_required_symbol(AssetName::Hive, total_vesting_fund_hive)?;
-        let total_vesting_shares =
-            self.create_asset_with_required_symbol(AssetName::Vests, total_vesting_shares)?;
-        self.vests_to_hp(&vests, &total_vesting_fund_hive, &total_vesting_shares)
+        let vests =
+            self.create_asset_with_required_symbol(AssetName::Vests, vests)?;
+        let total_vesting_fund_hive = self.create_asset_with_required_symbol(
+            AssetName::Hive,
+            total_vesting_fund_hive,
+        )?;
+        let total_vesting_shares = self.create_asset_with_required_symbol(
+            AssetName::Vests,
+            total_vesting_shares,
+        )?;
+        self.vests_to_hp(
+            &vests,
+            &total_vesting_fund_hive,
+            &total_vesting_shares,
+        )
     }
 
     fn calculate_witness_votes_hp(
@@ -241,12 +249,21 @@ impl WaxFoundation for WaxFoundationApi {
         total_vesting_fund_hive: NaiAssetConvertible,
         total_vesting_shares: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError> {
-        let votes = self.create_asset_with_required_symbol(AssetName::Vests, votes)?;
-        let total_vesting_fund_hive =
-            self.create_asset_with_required_symbol(AssetName::Hive, total_vesting_fund_hive)?;
-        let total_vesting_shares =
-            self.create_asset_with_required_symbol(AssetName::Vests, total_vesting_shares)?;
-        self.vests_to_hp(&votes, &total_vesting_fund_hive, &total_vesting_shares)
+        let votes =
+            self.create_asset_with_required_symbol(AssetName::Vests, votes)?;
+        let total_vesting_fund_hive = self.create_asset_with_required_symbol(
+            AssetName::Hive,
+            total_vesting_fund_hive,
+        )?;
+        let total_vesting_shares = self.create_asset_with_required_symbol(
+            AssetName::Vests,
+            total_vesting_shares,
+        )?;
+        self.vests_to_hp(
+            &votes,
+            &total_vesting_fund_hive,
+            &total_vesting_shares,
+        )
     }
 
     fn estimate_hive_collateral(
@@ -330,7 +347,12 @@ impl WaxFoundation for WaxFoundationApi {
     ) -> Result<ManabarData, WaxError> {
         let now = head_block_time_to_now(head_block_time);
         let regenerated = rust_protocol()
-            .cpp_calculate_current_manabar_value(now, max_mana, current_mana, last_update_time)
+            .cpp_calculate_current_manabar_value(
+                now,
+                max_mana,
+                current_mana,
+                last_update_time,
+            )
             .map_err(WaxError::from)?;
         Ok(ManabarData::new(max_mana, regenerated))
     }
@@ -357,7 +379,10 @@ impl WaxFoundation for WaxFoundationApi {
         rust_protocol().cpp_is_valid_account_name(name)
     }
 
-    fn calculate_public_key(&self, wif_private_key: &str) -> Result<String, WaxError> {
+    fn calculate_public_key(
+        &self,
+        wif_private_key: &str,
+    ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_calculate_public_key(wif_private_key)
             .map_err(WaxError::from)
@@ -399,13 +424,19 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
-    fn convert_raw_private_key_to_wif(&self, raw_private_key: &Hex) -> Result<String, WaxError> {
+    fn convert_raw_private_key_to_wif(
+        &self,
+        raw_private_key: &Hex,
+    ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_convert_raw_private_key_to_wif(raw_private_key)
             .map_err(WaxError::from)
     }
 
-    fn convert_raw_public_key_to_wif(&self, raw_public_key: &Hex) -> Result<String, WaxError> {
+    fn convert_raw_public_key_to_wif(
+        &self,
+        raw_public_key: &Hex,
+    ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_convert_raw_public_key_to_wif(raw_public_key)
             .map_err(WaxError::from)
@@ -424,7 +455,8 @@ impl WaxFoundation for WaxFoundationApi {
         transaction: &serde_json::Value,
         strip_to_unsigned: bool,
     ) -> Result<Hex, WaxError> {
-        let json = serde_json::to_string(transaction).map_err(|e| WaxError::new(e.to_string()))?;
+        let json = serde_json::to_string(transaction)
+            .map_err(|e| WaxError::new(e.to_string()))?;
         let tx = self.create_transaction_from_json(&json)?;
         tx.to_binary_form(strip_to_unsigned)
     }
@@ -437,7 +469,10 @@ impl WaxFoundation for WaxFoundationApi {
         serde_json::from_str(&raw).map_err(|e| WaxError::new(e.to_string()))
     }
 
-    fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError> {
+    fn legacy_transaction_to_json(
+        &self,
+        legacy_json: &str,
+    ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_legacy_tx_to_json(legacy_json)
             .map_err(WaxError::from)
@@ -479,9 +514,12 @@ impl WaxFoundation for WaxFoundationApi {
         let proto_json = rust_protocol()
             .cpp_tx_api_to_proto_json(json)
             .map_err(WaxError::from)?;
-        let tx =
-            RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), &proto_json)
-                .map_err(WaxError::new)?;
+        let tx = RustTransaction::from_json(
+            rust_protocol(),
+            self.options.chain_id.clone(),
+            &proto_json,
+        )
+        .map_err(WaxError::new)?;
         Ok(Box::new(tx))
     }
 
@@ -489,8 +527,12 @@ impl WaxFoundation for WaxFoundationApi {
         &self,
         json: &str,
     ) -> Result<Box<dyn Transaction>, WaxError> {
-        let tx = RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), json)
-            .map_err(WaxError::new)?;
+        let tx = RustTransaction::from_json(
+            rust_protocol(),
+            self.options.chain_id.clone(),
+            json,
+        )
+        .map_err(WaxError::new)?;
         Ok(Box::new(tx))
     }
 
@@ -542,16 +584,26 @@ impl WaxFoundation for WaxFoundationApi {
         )))
     }
 
-    fn create_operation_from_proto(&self, operation: proto::Operation) -> Box<dyn Operation> {
+    fn create_operation_from_proto(
+        &self,
+        operation: proto::Operation,
+    ) -> Box<dyn Operation> {
         Box::new(RustOperation::from_proto(rust_protocol(), operation))
     }
 
-    fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation> {
+    fn create_operation(
+        &self,
+        value: proto::operation::Value,
+    ) -> Box<dyn Operation> {
         Box::new(RustOperation::new(rust_protocol(), value))
     }
 
-    fn create_operation_from_json(&self, json: &str) -> Result<Box<dyn Operation>, WaxError> {
-        let op = RustOperation::from_json(rust_protocol(), json).map_err(WaxError::new)?;
+    fn create_operation_from_json(
+        &self,
+        json: &str,
+    ) -> Result<Box<dyn Operation>, WaxError> {
+        let op = RustOperation::from_json(rust_protocol(), json)
+            .map_err(WaxError::new)?;
         Ok(Box::new(op))
     }
 
@@ -596,7 +648,9 @@ impl WaxFoundation for WaxFoundationApi {
         let auths = to_rust_authorities(account_authorities.clone());
         let others = other_keys.to_vec();
         rust_protocol()
-            .cpp_check_memo_for_private_keys(content, account, &auths, memo_key, &others)
+            .cpp_check_memo_for_private_keys(
+                content, account, &auths, memo_key, &others,
+            )
             .map_err(WaxError::from)
     }
 }
@@ -628,7 +682,9 @@ pub(crate) fn to_ffi_price(price: &JsonPrice) -> RustJsonPrice {
 /// `RustWitnessSetPropertiesData` (which can't express `Option`, so it uses
 /// paired `has_X` discriminants — see `RustMinimizeRequiredSignaturesData`
 /// for the same trick).
-fn to_ffi_witness_props(props: &WitnessSetPropertiesProps) -> RustWitnessSetPropertiesData {
+fn to_ffi_witness_props(
+    props: &WitnessSetPropertiesProps,
+) -> RustWitnessSetPropertiesData {
     // cxx-bridge shared structs aren't `Clone`, so the inert placeholders for
     // unset optional fields are built fresh each time. The C++ side ignores
     // them when the corresponding `has_*` flag is false.
@@ -715,12 +771,12 @@ fn resolve_expiration(
 
     let seconds = match suffix {
         "" | "s" => num,
-        "m" => num
-            .checked_mul(60)
-            .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?,
-        "h" => num
-            .checked_mul(3_600)
-            .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?,
+        "m" => num.checked_mul(60).ok_or_else(|| {
+            WaxError::new(format!("Expiration overflow: '{expiration}'"))
+        })?,
+        "h" => num.checked_mul(3_600).ok_or_else(|| {
+            WaxError::new(format!("Expiration overflow: '{expiration}'"))
+        })?,
         other => {
             return Err(WaxError::new(format!(
                 "Invalid expiration time suffix: '{other}' in '{expiration}'"
@@ -729,18 +785,21 @@ fn resolve_expiration(
     };
 
     let reference = reference.unwrap_or_else(HiveDateTime::now);
-    let delta = chrono::Duration::try_seconds(seconds)
-        .ok_or_else(|| WaxError::new(format!("Expiration overflow: '{expiration}'")))?;
+    let delta = chrono::Duration::try_seconds(seconds).ok_or_else(|| {
+        WaxError::new(format!("Expiration overflow: '{expiration}'"))
+    })?;
     Ok(HiveDateTime::new(reference.inner() + delta).serialize())
 }
 
-fn amount_to_satoshis(amount: AssetAmount, precision: u32) -> Result<i64, WaxError> {
+fn amount_to_satoshis(
+    amount: AssetAmount,
+    precision: u32,
+) -> Result<i64, WaxError> {
     let decimal = match amount {
         AssetAmount::Int(v) => Decimal::from(v),
         AssetAmount::Decimal(v) => v,
-        AssetAmount::Float(v) => {
-            Decimal::from_f64_retain(v).ok_or(WaxError::DecimalConversionNotANumber)?
-        }
+        AssetAmount::Float(v) => Decimal::from_f64_retain(v)
+            .ok_or(WaxError::DecimalConversionNotANumber)?,
     };
 
     let scaled = decimal * Decimal::from(10_i64.pow(precision));

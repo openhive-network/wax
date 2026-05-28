@@ -3,49 +3,67 @@ use wax_core::proto;
 use crate::WaxError;
 use crate::interfaces::{Operation, Transaction};
 use crate::internal::models::manabar_data::ManabarData;
-use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
+use crate::models::asset::{
+    AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
+};
 use crate::models::authority::Authorities;
-use crate::models::basic::{AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature};
+use crate::models::basic::{
+    AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
+};
 use crate::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
-    PrivateKeyData, RefBlockData,
-    WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
+    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
 };
 use std::collections::HashMap;
 
+/// Provides the offline Hive API: asset math, key and account helpers,
+/// transaction and operation construction, and validation.
 pub trait WaxFoundation {
-    /// Chain id this foundation was constructed with. Matches TS
-    /// `IWaxBaseInterface.chainId`.
+    /// Returns the chain id this foundation was constructed with.
+    ///
+    /// TS NOTE: matches `IWaxBaseInterface.chainId`.
     fn chain_id(&self) -> &str;
 
-    /// Hive address prefix (typically `"STM"` for mainnet). Derived from
-    /// [`Self::config`] via the `HIVE_ADDRESS_PREFIX` key.
+    /// Returns the Hive address prefix (typically `"STM"` for mainnet),
+    /// derived from [`Self::config`] via the `HIVE_ADDRESS_PREFIX` key.
     fn address_prefix(&self) -> Result<String, WaxError>;
 
-    /// Full hived protocol config for this chain — the map returned by
-    /// `hive::protocol::get_config`. Result is cached per foundation instance.
+    /// Returns the full hived protocol config for this chain — the map
+    /// returned by `hive::protocol::get_config`. Cached per foundation.
     fn config(&self) -> Result<ChainConfig, WaxError>;
 
-    /// Bundled crate version (`CARGO_PKG_VERSION`). Mirrors TS `getVersion()`,
-    /// which returns the npm package version.
+    /// Returns the bundled crate version (`CARGO_PKG_VERSION`).
+    ///
+    /// TS NOTE: mirrors `getVersion()`, which returns the npm package version.
     fn get_version(&self) -> &'static str;
 
-    /// Derive a new foundation that shares this one's runtime state but uses
-    /// the given chain id. Mirrors TS `extendConfig({ chainId })`.
+    /// Derives a new foundation that shares this one's runtime state but uses
+    /// the given chain id.
+    ///
+    /// TS NOTE: mirrors `extendConfig({ chainId })`.
     fn extend_config(&self, chain_id: &str) -> Box<dyn WaxFoundation>;
 
-    /// Zero-amount NaiAsset templates for HIVE / HBD / VESTS. Mirrors TS
-    /// `IWaxBaseInterface.ASSETS`. Result is cached per foundation instance.
+    /// Returns zero-amount NaiAsset templates for HIVE / HBD / VESTS. Cached
+    /// per foundation.
+    ///
+    /// TS NOTE: mirrors `IWaxBaseInterface.ASSETS`.
     fn assets(&self) -> Result<Assets, WaxError>;
 
+    /// Creates a HIVE asset from a whole-coin amount.
     fn hive_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
+    /// Creates an HBD asset from a whole-coin amount.
     fn hbd_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
+    /// Creates a VESTS asset from a whole-coin amount.
     fn vests_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError>;
 
+    /// Creates a HIVE asset from a raw satoshi amount.
     fn hive_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
+    /// Creates an HBD asset from a raw satoshi amount.
     fn hbd_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
+    /// Creates a VESTS asset from a raw satoshi amount.
     fn vests_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
 
+    /// Converts an HBD amount into HIVE using the given price feed.
     fn hbd_to_hive(
         &self,
         hbd: &NaiAsset,
@@ -53,6 +71,7 @@ pub trait WaxFoundation {
         quote: &NaiAsset,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Converts a HIVE amount into HBD using the given price feed.
     fn hive_to_hbd(
         &self,
         amount: &NaiAsset,
@@ -60,6 +79,7 @@ pub trait WaxFoundation {
         quote: &NaiAsset,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Converts a VESTS amount into Hive Power (HP).
     fn vests_to_hp(
         &self,
         vests: &NaiAsset,
@@ -67,6 +87,7 @@ pub trait WaxFoundation {
         total_vesting_shares: &NaiAsset,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Converts a Hive Power (HP) amount into VESTS.
     fn hp_to_vests(
         &self,
         hive: &NaiAsset,
@@ -74,6 +95,7 @@ pub trait WaxFoundation {
         total_vesting_shares: &NaiAsset,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Calculates an account's Hive Power from its vesting shares.
     fn calculate_account_hp(
         &self,
         vests: NaiAssetConvertible,
@@ -81,6 +103,7 @@ pub trait WaxFoundation {
         total_vesting_shares: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Calculates the Hive Power backing a witness's votes.
     fn calculate_witness_votes_hp(
         &self,
         votes: NaiAssetConvertible,
@@ -88,6 +111,7 @@ pub trait WaxFoundation {
         total_vesting_shares: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Estimates the HIVE collateral required to borrow the given HBD amount.
     fn estimate_hive_collateral(
         &self,
         current_median_history: &JsonPrice,
@@ -95,6 +119,7 @@ pub trait WaxFoundation {
         hbd_amount_to_get: &NaiAsset,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Estimates the HBD interest accrued for the given holding period.
     fn estimate_hbd_interest(
         &self,
         hbd_seconds: u128,
@@ -104,6 +129,7 @@ pub trait WaxFoundation {
         hbd_interest_rate: u16,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Calculates the current Hive Power APR.
     fn calculate_hp_apr(
         &self,
         head_block_num: u32,
@@ -112,14 +138,17 @@ pub trait WaxFoundation {
         total_vesting_fund_hive: &NaiAsset,
     ) -> Result<String, WaxError>;
 
+    /// Resolves a convertible asset into a [`NaiAsset`] of the required symbol.
     fn create_asset_with_required_symbol(
         &self,
         required_symbol: AssetName,
         asset: NaiAssetConvertible,
     ) -> Result<NaiAsset, WaxError>;
 
+    /// Returns the symbol metadata and formatted value of an asset.
     fn get_asset(&self, asset: &NaiAsset) -> Result<HiveAssetData, WaxError>;
 
+    /// Calculates a manabar's current value, regenerated to `head_block_time`.
     fn calculate_current_manabar_value(
         &self,
         head_block_time: HiveDateTime,
@@ -128,6 +157,7 @@ pub trait WaxFoundation {
         last_update_time: u32,
     ) -> Result<ManabarData, WaxError>;
 
+    /// Calculates the time at which a manabar will be fully regenerated.
     fn calculate_manabar_full_regeneration_time(
         &self,
         head_block_time: HiveDateTime,
@@ -136,21 +166,30 @@ pub trait WaxFoundation {
         last_update_time: u32,
     ) -> Result<u64, WaxError>;
 
+    /// Returns whether the given string is a valid Hive account name.
     fn is_valid_account_name(&self, name: &str) -> bool;
 
-    fn calculate_public_key(&self, wif_private_key: &str) -> Result<String, WaxError>;
+    /// Calculates the public key matching the given WIF private key.
+    fn calculate_public_key(
+        &self,
+        wif_private_key: &str,
+    ) -> Result<String, WaxError>;
 
-    /// Recover the WIF-format public key that produced `signature` for the
-    /// given transaction `sig_digest`. Mirrors TS `getPublicKeyFromSignature`
-    /// and Python `base_api.get_public_key_from_signature`.
+    /// Recovers the WIF-format public key that produced `signature` for the
+    /// given transaction `sig_digest`.
+    ///
+    /// TS NOTE: mirrors `getPublicKeyFromSignature`.
+    /// Python NOTE: mirrors `base_api.get_public_key_from_signature`.
     fn get_public_key_from_signature(
         &self,
         sig_digest: &SigDigest,
         signature: &Signature,
     ) -> Result<PublicKey, WaxError>;
 
+    /// Generates a random brain key with its derived keys.
     fn suggest_brain_key(&self) -> Result<BrainKeyData, WaxError>;
 
+    /// Derives the private key for an account role from a master password.
     fn get_private_key_from_password(
         &self,
         account: &str,
@@ -158,10 +197,19 @@ pub trait WaxFoundation {
         password: &str,
     ) -> Result<PrivateKeyData, WaxError>;
 
-    fn convert_raw_private_key_to_wif(&self, raw_private_key: &Hex) -> Result<String, WaxError>;
+    /// Converts a raw hex-encoded private key into its WIF form.
+    fn convert_raw_private_key_to_wif(
+        &self,
+        raw_private_key: &Hex,
+    ) -> Result<String, WaxError>;
 
-    fn convert_raw_public_key_to_wif(&self, raw_public_key: &Hex) -> Result<String, WaxError>;
+    /// Converts a raw hex-encoded public key into its WIF form.
+    fn convert_raw_public_key_to_wif(
+        &self,
+        raw_public_key: &Hex,
+    ) -> Result<String, WaxError>;
 
+    /// Converts a wire-form (hex) transaction into its API JSON string.
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;
 
     /// Convert a transaction from Hive API-form JSON into its HF26 binary
@@ -186,7 +234,11 @@ pub trait WaxFoundation {
         hex: &Hex,
     ) -> Result<serde_json::Value, WaxError>;
 
-    fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
+    /// Converts a legacy-form JSON transaction into HF26/API JSON.
+    fn legacy_transaction_to_json(
+        &self,
+        legacy_json: &str,
+    ) -> Result<String, WaxError>;
 
     /// Build a transaction from a legacy-form JSON transaction. Mirrors TS
     /// `createTransactionFromLegacyJson` and Python's
@@ -198,14 +250,20 @@ pub trait WaxFoundation {
         legacy_json: &str,
     ) -> Result<Box<dyn Transaction>, WaxError>;
 
+    /// Returns the TaPoS reference-block data derived from a block id.
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
 
+    /// Creates a transaction from a [`proto::Transaction`].
     fn create_transaction_from_proto(
         &self,
         transaction: proto::Transaction,
     ) -> Result<Box<dyn Transaction>, WaxError>;
 
-    fn create_transaction_from_json(&self, json: &str) -> Result<Box<dyn Transaction>, WaxError>;
+    /// Creates a transaction from Hive API-shape JSON.
+    fn create_transaction_from_json(
+        &self,
+        json: &str,
+    ) -> Result<Box<dyn Transaction>, WaxError>;
 
     /// Build a transaction from proto-shape JSON — operations keyed by their
     /// oneof name (e.g. `{"vote_operation": { ... }}`) — as opposed to the Hive
@@ -216,6 +274,7 @@ pub trait WaxFoundation {
         json: &str,
     ) -> Result<Box<dyn Transaction>, WaxError>;
 
+    /// Creates a transaction bound to the given TaPoS block id and expiration.
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
@@ -244,17 +303,26 @@ pub trait WaxFoundation {
 
     /// Build an [`Operation`] from a [`proto::Operation`]. Hides the underlying
     /// `wax_core::RustOperation` so callers stay on the public trait surface.
-    fn create_operation_from_proto(&self, operation: proto::Operation) -> Box<dyn Operation>;
+    fn create_operation_from_proto(
+        &self,
+        operation: proto::Operation,
+    ) -> Box<dyn Operation>;
 
     /// Build an [`Operation`] from an [`proto::operation::Value`] variant —
     /// shorthand for wrapping the value in a `proto::Operation` and calling
     /// [`Self::create_operation_from_proto`].
-    fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
+    fn create_operation(
+        &self,
+        value: proto::operation::Value,
+    ) -> Box<dyn Operation>;
 
     /// Build an [`Operation`] from proto-shape JSON (e.g.
     /// `{"vote_operation": { ... }}`). The JSON counterpart of
     /// [`Self::create_operation_from_proto`].
-    fn create_operation_from_json(&self, json: &str) -> Result<Box<dyn Operation>, WaxError>;
+    fn create_operation_from_json(
+        &self,
+        json: &str,
+    ) -> Result<Box<dyn Operation>, WaxError>;
 
     /// Accounts whose state would be affected by `operation`. Mirrors TS
     /// `operationGetImpactedAccounts` and Python's equivalent on the base API.

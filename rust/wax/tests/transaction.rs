@@ -2,11 +2,14 @@ use std::collections::HashMap;
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::proto::{
-    AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount, Transfer,
-    Transaction as ProtoTransaction, Vote, operation::Value,
+    AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount,
+    Transaction as ProtoTransaction, Transfer, Vote, operation::Value,
 };
 use wax::result::BinaryViewNode;
-use wax::{Operation, SignatureProvider, Transaction, WaxError, WaxOptions, create_wax_foundation};
+use wax::{
+    Operation, SignatureProvider, Transaction, WaxError, WaxOptions,
+    create_wax_foundation,
+};
 
 // Operations and transactions are built through the public `WaxFoundation`
 // factory so tests stay on the crate's public surface. Spinning up a foundation
@@ -319,8 +322,13 @@ impl StubWallet {
 }
 
 impl SignatureProvider for StubWallet {
-    fn sign_digest(&self, public_key: &str, sig_digest: &str) -> Result<String, WaxError> {
-        *self.last_call.borrow_mut() = Some((public_key.to_string(), sig_digest.to_string()));
+    fn sign_digest(
+        &self,
+        public_key: &str,
+        sig_digest: &str,
+    ) -> Result<String, WaxError> {
+        *self.last_call.borrow_mut() =
+            Some((public_key.to_string(), sig_digest.to_string()));
         Ok(self.canned.clone())
     }
     fn encrypt_data(
@@ -375,11 +383,18 @@ fn sign_routes_digest_and_pubkey_to_wallet_and_appends_returned_signature() {
 fn sign_refuses_to_run_when_transaction_is_invalid() {
     // Empty transaction (no operations) — tx_validate rejects it.
     let mut tx = mainnet_tx();
-    assert!(tx.validate().is_err(), "precondition: empty tx must fail validate");
+    assert!(
+        tx.validate().is_err(),
+        "precondition: empty tx must fail validate"
+    );
 
     struct PoisonWallet;
     impl SignatureProvider for PoisonWallet {
-        fn sign_digest(&self, _pk: &str, _digest: &str) -> Result<String, WaxError> {
+        fn sign_digest(
+            &self,
+            _pk: &str,
+            _digest: &str,
+        ) -> Result<String, WaxError> {
             panic!("wallet must not be called when tx is invalid")
         }
         fn encrypt_data(
@@ -426,7 +441,11 @@ fn sign_can_be_called_multiple_times_for_multi_key_signing() {
 fn sign_propagates_wallet_error_without_mutating_transaction() {
     struct FailingWallet;
     impl SignatureProvider for FailingWallet {
-        fn sign_digest(&self, _pk: &str, _digest: &str) -> Result<String, WaxError> {
+        fn sign_digest(
+            &self,
+            _pk: &str,
+            _digest: &str,
+        ) -> Result<String, WaxError> {
             Err(WaxError::new("wallet refused"))
         }
         fn encrypt_data(
@@ -476,13 +495,15 @@ fn add_signature_extends_full_binary_form_but_not_stripped() {
     let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
 
     let full_before = tx.to_binary_form(false).expect("full bin pre-sig");
-    let stripped_before = tx.to_binary_form(true).expect("stripped bin pre-sig");
+    let stripped_before =
+        tx.to_binary_form(true).expect("stripped bin pre-sig");
 
     tx.add_signature(FAKE_SIG_A)
         .expect("signature should be accepted");
 
     let full_after = tx.to_binary_form(false).expect("full bin post-sig");
-    let stripped_after = tx.to_binary_form(true).expect("stripped bin post-sig");
+    let stripped_after =
+        tx.to_binary_form(true).expect("stripped bin post-sig");
 
     assert!(
         full_after.len() > full_before.len(),
@@ -638,10 +659,16 @@ fn required_authorities_collects_active_for_account_witness_proxy() {
 
 #[test]
 fn required_authorities_collects_other_for_recover_account() {
-    const NEW_OWNER: &str = "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW";
-    const RECENT_OWNER: &str = "STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s";
+    const NEW_OWNER: &str =
+        "STM5P8syqoj7itoDjbtDvCMCb5W3BNJtUjws9v7TDNZKqBLmp3pQW";
+    const RECENT_OWNER: &str =
+        "STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s";
 
-    let tx = mainnet_tx().push_operation(recover_account("alice", NEW_OWNER, RECENT_OWNER));
+    let tx = mainnet_tx().push_operation(recover_account(
+        "alice",
+        NEW_OWNER,
+        RECENT_OWNER,
+    ));
 
     let auths = tx.required_authorities().expect("required_authorities");
 
@@ -728,16 +755,17 @@ fn signature_keys_skips_chain_id_when_unsigned() {
     // not consult it when there are no signatures to recover.
     let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
 
-    let keys = tx
-        .signature_keys()
-        .expect("signature_keys must not touch chain_id when signatures are empty");
+    let keys = tx.signature_keys().expect(
+        "signature_keys must not touch chain_id when signatures are empty",
+    );
 
     assert!(keys.is_empty());
 }
 
 #[test]
 fn signature_keys_fails_for_invalid_chain_id_when_signed() {
-    let mut tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx =
+        tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
 
     assert!(
@@ -797,7 +825,11 @@ fn legacy_id_returns_40_char_hex_for_well_formed_transaction() {
         .legacy_id()
         .expect("legacy_id should succeed for a valid transaction");
 
-    assert_eq!(id.len(), 40, "legacy tx id should be 20-byte hex (40 chars)");
+    assert_eq!(
+        id.len(),
+        40,
+        "legacy tx id should be 20-byte hex (40 chars)"
+    );
     assert!(
         id.chars().all(|c| c.is_ascii_hexdigit()),
         "legacy tx id should be hex: {id}"
@@ -912,7 +944,8 @@ fn legacy_signature_keys_skips_chain_id_when_unsigned() {
 
 #[test]
 fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
-    let mut tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx =
+        tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
 
     assert!(
@@ -984,8 +1017,11 @@ fn binary_view_metadata_reflects_pushed_operations() {
     fn find_voter<'a>(nodes: &'a [BinaryViewNode]) -> Option<&'a str> {
         for n in nodes {
             match n {
-                BinaryViewNode::Scalar { key, value, .. } if key == "voter" => return Some(value),
-                BinaryViewNode::Array { children, .. } | BinaryViewNode::Object { children, .. } => {
+                BinaryViewNode::Scalar { key, value, .. } if key == "voter" => {
+                    return Some(value);
+                }
+                BinaryViewNode::Array { children, .. }
+                | BinaryViewNode::Object { children, .. } => {
                     if let Some(v) = find_voter(children) {
                         return Some(v);
                     }
@@ -999,7 +1035,8 @@ fn binary_view_metadata_reflects_pushed_operations() {
     let tx = mainnet_tx().push_operation(vote("alice", 10_000));
     let view = tx.binary_view_metadata().expect("view");
 
-    let voter = find_voter(&view.offsets).expect("voter scalar must appear somewhere in the tree");
+    let voter = find_voter(&view.offsets)
+        .expect("voter scalar must appear somewhere in the tree");
     assert!(
         voter.contains("alice"),
         "voter scalar should expose the pushed account name, got {voter:?}"
@@ -1069,7 +1106,8 @@ fn custom_json(account: &str, id: &str, json: &str) -> Box<dyn Operation> {
 // tests can assert the exact wallet contract (which key was used, which nonce,
 // what payload). encrypt prepends "#enc:"; decrypt strips it.
 struct CryptoStub {
-    encrypts: std::cell::RefCell<Vec<(String, String, Option<String>, Option<u64>)>>,
+    encrypts:
+        std::cell::RefCell<Vec<(String, String, Option<String>, Option<u64>)>>,
     decrypts: std::cell::RefCell<Vec<String>>,
 }
 
@@ -1251,7 +1289,9 @@ fn perform_operation_encryption_covers_all_supported_memo_fields() {
 
     let ops = &tx.transaction().operations;
     match ops[0].value.as_ref().unwrap() {
-        Value::TransferOperation(t) => assert_eq!(t.memo, "#enc:K:transfer-memo"),
+        Value::TransferOperation(t) => {
+            assert_eq!(t.memo, "#enc:K:transfer-memo")
+        }
         _ => panic!("transfer variant"),
     }
     match ops[1].value.as_ref().unwrap() {
@@ -1261,7 +1301,8 @@ fn perform_operation_encryption_covers_all_supported_memo_fields() {
     match ops[2].value.as_ref().unwrap() {
         Value::CustomJsonOperation(c) => {
             // custom_json wraps the ciphertext in an {"encrypted": "..."} envelope.
-            let v: serde_json::Value = serde_json::from_str(&c.json).expect("valid json");
+            let v: serde_json::Value =
+                serde_json::from_str(&c.json).expect("valid json");
             assert_eq!(
                 v.get("encrypted").and_then(|x| x.as_str()),
                 Some("#enc:K:{\"hello\":\"world\"}")
@@ -1348,13 +1389,18 @@ fn decrypt_only_unwraps_fields_with_hash_prefix() {
 fn decrypt_unwraps_custom_json_envelope() {
     // The encrypt path wraps the json payload in {"encrypted": ...}; decrypt
     // should peel that envelope back off and decrypt the inner string.
-    let envelope = serde_json::json!({ "encrypted": "#enc:K:{\"hello\":\"world\"}" }).to_string();
-    let mut tx = mainnet_tx().push_operation(custom_json("alice", "test", &envelope));
+    let envelope =
+        serde_json::json!({ "encrypted": "#enc:K:{\"hello\":\"world\"}" })
+            .to_string();
+    let mut tx =
+        mainnet_tx().push_operation(custom_json("alice", "test", &envelope));
 
     tx.decrypt(&CryptoStub::new()).expect("decrypt");
 
     match tx.transaction().operations[0].value.as_ref().unwrap() {
-        Value::CustomJsonOperation(c) => assert_eq!(c.json, "{\"hello\":\"world\"}"),
+        Value::CustomJsonOperation(c) => {
+            assert_eq!(c.json, "{\"hello\":\"world\"}")
+        }
         _ => panic!("custom_json variant"),
     }
 }

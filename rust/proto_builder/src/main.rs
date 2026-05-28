@@ -1,10 +1,21 @@
+//! Code-generation tool that compiles the Hive protocol buffer definitions
+//! into the committed Rust output under `rust/protobuf_patterns/`.
+//!
+//! It runs `prost-build` to emit the prost message types and the binary
+//! `FileDescriptorSet`, then `pbjson-build` to emit matching `serde`
+//! implementations. The generated files are consumed by the `wax_core` crate.
+
 use std::env;
 use std::fs;
 use std::path::PathBuf;
 
+/// Compiles the Hive `.proto` files into prost types, a descriptor set and
+/// `serde` implementations under `rust/protobuf_patterns/`.
 fn main() {
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    let workspace_root = manifest_dir.parent().expect("proto-build must live inside the rust workspace");
+    let workspace_root = manifest_dir
+        .parent()
+        .expect("proto-build must live inside the rust workspace");
 
     let proto_src = workspace_root
         .join("..")
@@ -14,7 +25,8 @@ fn main() {
         .join("proto");
     let out_dir = workspace_root.join("protobuf_patterns");
 
-    fs::create_dir_all(&out_dir).expect("create rust/protobuf_patterns output dir");
+    fs::create_dir_all(&out_dir)
+        .expect("create rust/protobuf_patterns output dir");
 
     let mut protos: Vec<PathBuf> = fs::read_dir(&proto_src)
         .expect("read hive proto dir")
@@ -35,7 +47,8 @@ fn main() {
     // Generate serde::Serialize/Deserialize impls alongside the prost types so
     // proto messages can be JSON-encoded/decoded directly via serde_json rather
     // than routed through prost-reflect's DynamicMessage at runtime.
-    let descriptors = fs::read(&descriptor_path).expect("read generated descriptor set");
+    let descriptors =
+        fs::read(&descriptor_path).expect("read generated descriptor set");
     pbjson_build::Builder::new()
         .register_descriptors(&descriptors)
         .expect("pbjson-build: register descriptors")

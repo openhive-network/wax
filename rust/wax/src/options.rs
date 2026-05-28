@@ -1,6 +1,8 @@
 use crate::constants::DEFAULT_CHAIN_ID;
 use crate::models::basic::ChainId;
 
+/// Represents the configuration for a [`crate::WaxFoundation`], currently the
+/// chain id transactions are bound to.
 #[derive(Debug, Clone)]
 pub struct WaxOptions {
     pub chain_id: ChainId,

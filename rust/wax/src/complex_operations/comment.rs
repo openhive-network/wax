@@ -30,12 +30,14 @@ use crate::interfaces::OperationBuilder;
 use crate::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::basic::AccountName;
 
-const APP_TAG: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+const APP_TAG: &str =
+    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 const DEFAULT_PERCENT_HBD: u32 = 10_000;
 const DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS: i64 = 1_000_000_000;
 
-/// Wire-form `format` strings for the `json_metadata.format` key. Mirrors
-/// TS `ECommentFormat`.
+/// Represents the wire-form `format` value written to `json_metadata.format`.
+///
+/// TS NOTE: mirrors `ECommentFormat`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CommentFormat {
     Html,
@@ -53,18 +55,18 @@ impl CommentFormat {
     }
 }
 
-/// One beneficiary entry for `comment_options.extensions`. Direct mirror of
-/// `proto::BeneficiaryRouteType` exposed without forcing callers to import
-/// from `wax::proto`.
+/// Represents one beneficiary entry for `comment_options.extensions`, mirroring
+/// `proto::BeneficiaryRouteType` without forcing callers to import from
+/// `wax::proto`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BeneficiaryRoute {
     pub account: AccountName,
     pub weight: u32,
 }
 
-/// Reply / comment under an existing post or comment. `parent_author` and
-/// `parent_permlink` are required and non-empty; an empty value for either
-/// is rejected at `finalize` time (mirroring the TS constructor checks).
+/// Represents a reply / comment under an existing post or comment.
+/// `parent_author` and `parent_permlink` are required and non-empty; an empty
+/// value for either is rejected at `finalize` time.
 #[derive(Debug, Clone, Default)]
 pub struct ReplyOperation {
     pub parent_author: AccountName,
@@ -90,8 +92,8 @@ pub struct ReplyOperation {
     pub max_accepted_payout: Option<NaiAssetConvertible>,
 }
 
-/// Top-level blog post under a category (e.g. `"travel"` or a community id
-/// like `"hive-174695"`). `parent_author` is always `""`, and
+/// Represents a top-level blog post under a category (e.g. `"travel"` or a
+/// community id like `"hive-174695"`). `parent_author` is always `""`, and
 /// `parent_permlink = category`.
 #[derive(Debug, Clone, Default)]
 pub struct BlogPostOperation {
@@ -146,15 +148,19 @@ impl OperationBuilder for ReplyOperation {
     ) -> Result<Vec<proto::Operation>, WaxError> {
         let this = *self;
         if this.parent_author.is_empty() {
-            return Err(WaxError::new("No parent author specified in the reply operation"));
+            return Err(WaxError::new(
+                "No parent author specified in the reply operation",
+            ));
         }
         if this.parent_permlink.is_empty() {
-            return Err(WaxError::new("No parent permlink specified in the reply operation"));
+            return Err(WaxError::new(
+                "No parent permlink specified in the reply operation",
+            ));
         }
 
-        let permlink = this
-            .permlink
-            .unwrap_or_else(|| format!("re-{}-{}", this.parent_author, now_millis()));
+        let permlink = this.permlink.unwrap_or_else(|| {
+            format!("re-{}-{}", this.parent_author, now_millis())
+        });
 
         let inputs = CommentInputs {
             parent_author: this.parent_author,
@@ -257,7 +263,11 @@ impl CommentInputs {
         });
 
         if has_options {
-            let default = default_comment_options(foundation, &self.author, &self.permlink)?;
+            let default = default_comment_options(
+                foundation,
+                &self.author,
+                &self.permlink,
+            )?;
             let computed = build_comment_options(
                 foundation,
                 &self.author,
@@ -271,7 +281,11 @@ impl CommentInputs {
 
             if computed != default {
                 ops.push(proto::Operation {
-                    value: Some(proto::operation::Value::CommentOptionsOperation(computed)),
+                    value: Some(
+                        proto::operation::Value::CommentOptionsOperation(
+                            computed,
+                        ),
+                    ),
                 });
             }
         }
@@ -323,14 +337,19 @@ fn build_json_metadata(
         } else {
             Some(deduplicate_preserving_order(tags))
         },
-        image: if images.is_empty() { None } else { Some(images) },
+        image: if images.is_empty() {
+            None
+        } else {
+            Some(images)
+        },
         links: if links.is_empty() { None } else { Some(links) },
         author: alternative_author,
         description,
     };
 
-    serde_json::to_string(&metadata)
-        .map_err(|e| WaxError::new(format!("failed to serialize comment json_metadata: {e}")))
+    serde_json::to_string(&metadata).map_err(|e| {
+        WaxError::new(format!("failed to serialize comment json_metadata: {e}"))
+    })
 }
 
 /// First-occurrence-wins dedupe preserving order. Mirrors TS
@@ -354,7 +373,8 @@ fn default_comment_options(
     Ok(proto::CommentOptions {
         author: author.to_string(),
         permlink: permlink.to_string(),
-        max_accepted_payout: foundation.hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
+        max_accepted_payout: foundation
+            .hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
         percent_hbd: DEFAULT_PERCENT_HBD,
         allow_votes: true,
         allow_curation_rewards: true,
@@ -374,8 +394,11 @@ fn build_comment_options(
     beneficiaries: &[BeneficiaryRoute],
 ) -> Result<proto::CommentOptions, WaxError> {
     let max_accepted_payout: NaiAsset = match max_accepted_payout {
-        Some(asset) => foundation.create_asset_with_required_symbol(AssetName::Hbd, asset)?,
-        None => foundation.hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
+        Some(asset) => foundation
+            .create_asset_with_required_symbol(AssetName::Hbd, asset)?,
+        None => {
+            foundation.hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?
+        }
     };
 
     let extensions = if beneficiaries.is_empty() {

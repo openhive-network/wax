@@ -4,7 +4,8 @@ use std::sync::OnceLock;
 
 use prost::Message;
 use prost_reflect::{
-    DescriptorPool, DynamicMessage, MapKey, MessageDescriptor, ReflectMessage, Value,
+    DescriptorPool, DynamicMessage, MapKey, MessageDescriptor, ReflectMessage,
+    Value,
 };
 
 use crate::proto;
@@ -12,11 +13,14 @@ use crate::proto;
 const FILE_DESCRIPTOR_SET: &[u8] =
     include_bytes!("../../protobuf_patterns/hive.protocol.buffers.bin");
 
+/// Returns the process-wide protobuf descriptor pool, decoding it from the
+/// embedded `FileDescriptorSet` on first use.
 pub fn descriptor_pool() -> &'static DescriptorPool {
     static POOL: OnceLock<DescriptorPool> = OnceLock::new();
     POOL.get_or_init(|| {
-        DescriptorPool::decode(FILE_DESCRIPTOR_SET)
-            .expect("hive.protocol.buffers.bin must be a valid FileDescriptorSet")
+        DescriptorPool::decode(FILE_DESCRIPTOR_SET).expect(
+            "hive.protocol.buffers.bin must be a valid FileDescriptorSet",
+        )
     })
 }
 
@@ -84,9 +88,9 @@ fn node_to_json_value(node: &Node) -> serde_json::Value {
         NodeValue::Bool(b) => serde_json::Value::Bool(*b),
         NodeValue::Number(n) => serde_json::Value::Number(n.clone()),
         NodeValue::String(s) => serde_json::Value::String(s.clone()),
-        NodeValue::Array(arr) => {
-            serde_json::Value::Array(arr.iter().map(node_to_json_value).collect())
-        }
+        NodeValue::Array(arr) => serde_json::Value::Array(
+            arr.iter().map(node_to_json_value).collect(),
+        ),
         NodeValue::Object(entries) => {
             let mut map = serde_json::Map::with_capacity(entries.len());
             for (k, child) in entries {
@@ -110,6 +114,10 @@ enum Backing {
     Json(Node),
 }
 
+/// Represents a dynamically-typed value handed to and from the C++ protocol
+/// visitors. It is backed either by a reflected proto value or by a shared
+/// JSON tree; the JSON backing aliases nodes via `Rc<RefCell<…>>` to mirror
+/// the reference semantics relied on by the TS/Python implementations.
 #[derive(Debug)]
 pub struct RustManagedObject {
     backing: Backing,
@@ -137,16 +145,19 @@ impl Clone for RustManagedObject {
 impl RustManagedObject {
     // --- Proto-backed constructors (existing) ---------------------------
 
+    /// Creates a proto-backed managed object from an operation.
     pub fn from_operation(op: &proto::Operation) -> Box<RustManagedObject> {
         let dm = dynamic_from_prost(op, "hive.protocol.buffers.operation");
         Box::new(Self::from_message(dm))
     }
 
+    /// Creates a proto-backed managed object from a transaction.
     pub fn from_transaction(tx: &proto::Transaction) -> Box<RustManagedObject> {
         let dm = dynamic_from_prost(tx, "hive.protocol.buffers.transaction");
         Box::new(Self::from_message(dm))
     }
 
+    /// Creates a proto-backed managed object from a reflected message.
     pub fn from_message(msg: DynamicMessage) -> Self {
         let descriptor = Some(msg.descriptor());
         Self {
@@ -169,8 +180,10 @@ impl RustManagedObject {
 
     // --- JSON-backed constructors (new) ---------------------------------
 
+    /// Creates a JSON-backed managed object by parsing a JSON string.
     pub fn from_json_str(json: &str) -> Result<Box<RustManagedObject>, String> {
-        let v: serde_json::Value = serde_json::from_str(json).map_err(|e| e.to_string())?;
+        let v: serde_json::Value =
+            serde_json::from_str(json).map_err(|e| e.to_string())?;
         Ok(Box::new(Self {
             backing: Backing::Json(json_value_to_node(v)),
         }))
@@ -182,25 +195,30 @@ impl RustManagedObject {
         }
     }
 
+    /// Creates an empty JSON-backed managed object (an empty object).
     pub fn new_object() -> Box<RustManagedObject> {
         Box::new(Self {
             backing: Backing::Json(new_node(NodeValue::Object(Vec::new()))),
         })
     }
 
+    /// Converts a JSON-backed managed object into its JSON string form.
     pub fn to_json_string(&self) -> Result<String, String> {
         match &self.backing {
             Backing::Json(node) => {
-                serde_json::to_string(&node_to_json_value(node)).map_err(|e| e.to_string())
+                serde_json::to_string(&node_to_json_value(node))
+                    .map_err(|e| e.to_string())
             }
-            Backing::Proto { .. } => {
-                Err("to_json_string only supported for JSON-backed managed objects".into())
-            }
+            Backing::Proto { .. } => Err(
+                "to_json_string only supported for JSON-backed managed objects"
+                    .into(),
+            ),
         }
     }
 
     // --- Read API (dispatches on backing) -------------------------------
 
+    /// Returns the named field (or map/array entry) as a managed object.
     pub fn get_field(&self, key: &str) -> Box<RustManagedObject> {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -216,23 +234,25 @@ impl RustManagedObject {
                         .get_field_by_name(key)
                         .or_else(|| descriptor.get_field_by_json_name(key))
                         .unwrap_or_else(|| {
-                            panic!("no field '{key}' on {}", descriptor.full_name())
+                            panic!(
+                                "no field '{key}' on {}",
+                                descriptor.full_name()
+                            )
                         });
                     let value = m.get_field(&field).into_owned();
                     Box::new(Self::from_value(value))
                 }
                 Value::Map(map) => {
                     let mk = MapKey::String(key.to_string());
-                    let v = map
-                        .get(&mk)
-                        .cloned()
-                        .unwrap_or_else(|| panic!("map key '{key}' not present"));
+                    let v = map.get(&mk).cloned().unwrap_or_else(|| {
+                        panic!("map key '{key}' not present")
+                    });
                     Box::new(Self::from_value(v))
                 }
                 Value::List(list) => {
-                    let idx: usize = key
-                        .parse()
-                        .unwrap_or_else(|_| panic!("list indexed by non-integer key '{key}'"));
+                    let idx: usize = key.parse().unwrap_or_else(|_| {
+                        panic!("list indexed by non-integer key '{key}'")
+                    });
                     Box::new(Self::from_value(list[idx].clone()))
                 }
                 _ => panic!("get_field('{key}') called on a scalar value"),
@@ -241,7 +261,9 @@ impl RustManagedObject {
                 let borrow = node.borrow();
                 match &*borrow {
                     NodeValue::Object(entries) => {
-                        if let Some((_, child)) = entries.iter().find(|(k, _)| k == key) {
+                        if let Some((_, child)) =
+                            entries.iter().find(|(k, _)| k == key)
+                        {
                             Box::new(Self::from_node(Rc::clone(child)))
                         } else {
                             // Match emscripten's `jsval[missing] -> undefined`
@@ -251,9 +273,11 @@ impl RustManagedObject {
                         }
                     }
                     NodeValue::Array(arr) => {
-                        let idx: usize = key
-                            .parse()
-                            .unwrap_or_else(|_| panic!("JSON array indexed by non-integer key '{key}'"));
+                        let idx: usize = key.parse().unwrap_or_else(|_| {
+                            panic!(
+                                "JSON array indexed by non-integer key '{key}'"
+                            )
+                        });
                         Box::new(Self::from_node(Rc::clone(&arr[idx])))
                     }
                     _ => panic!("get_field('{key}') on JSON scalar"),
@@ -262,22 +286,30 @@ impl RustManagedObject {
         }
     }
 
+    /// Returns the list element at `idx` as a managed object.
     pub fn get_index(&self, idx: usize) -> Box<RustManagedObject> {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
-                Value::List(list) => Box::new(Self::from_value(list[idx].clone())),
+                Value::List(list) => {
+                    Box::new(Self::from_value(list[idx].clone()))
+                }
                 _ => panic!("get_index({idx}) called on a non-list"),
             },
             Backing::Json(node) => {
                 let borrow = node.borrow();
                 match &*borrow {
-                    NodeValue::Array(arr) => Box::new(Self::from_node(Rc::clone(&arr[idx]))),
-                    _ => panic!("get_index({idx}) called on a non-list JSON node"),
+                    NodeValue::Array(arr) => {
+                        Box::new(Self::from_node(Rc::clone(&arr[idx])))
+                    }
+                    _ => panic!(
+                        "get_index({idx}) called on a non-list JSON node"
+                    ),
                 }
             }
         }
     }
 
+    /// Returns the number of elements in a list, or entries in a map/object.
     pub fn array_length(&self) -> usize {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -288,11 +320,14 @@ impl RustManagedObject {
             Backing::Json(node) => match &*node.borrow() {
                 NodeValue::Array(arr) => arr.len(),
                 NodeValue::Object(entries) => entries.len(),
-                _ => panic!("array_length() called on a non-collection JSON node"),
+                _ => panic!(
+                    "array_length() called on a non-collection JSON node"
+                ),
             },
         }
     }
 
+    /// Returns whether the value is undefined (a JSON null / missing field).
     pub fn is_undefined(&self) -> bool {
         match &self.backing {
             Backing::Proto { .. } => false,
@@ -300,13 +335,17 @@ impl RustManagedObject {
         }
     }
 
+    /// Returns whether the value is a string.
     pub fn is_string(&self) -> bool {
         match &self.backing {
             Backing::Proto { value, .. } => matches!(value, Value::String(_)),
-            Backing::Json(node) => matches!(&*node.borrow(), NodeValue::String(_)),
+            Backing::Json(node) => {
+                matches!(&*node.borrow(), NodeValue::String(_))
+            }
         }
     }
 
+    /// Returns the name of the active oneof variant (or first present key).
     pub fn oneof_variant(&self) -> String {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -332,12 +371,15 @@ impl RustManagedObject {
                 _ => String::new(),
             },
             Backing::Json(node) => match &*node.borrow() {
-                NodeValue::Object(entries) => entries.first().map(|(k, _)| k.clone()).unwrap_or_default(),
+                NodeValue::Object(entries) => {
+                    entries.first().map(|(k, _)| k.clone()).unwrap_or_default()
+                }
                 _ => String::new(),
             },
         }
     }
 
+    /// Returns the keys of a map or object value.
     pub fn map_keys(&self) -> Vec<String> {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -351,12 +393,15 @@ impl RustManagedObject {
                 _ => Vec::new(),
             },
             Backing::Json(node) => match &*node.borrow() {
-                NodeValue::Object(entries) => entries.iter().map(|(k, _)| k.clone()).collect(),
+                NodeValue::Object(entries) => {
+                    entries.iter().map(|(k, _)| k.clone()).collect()
+                }
                 _ => Vec::new(),
             },
         }
     }
 
+    /// Returns whether an optional field is present on the value.
     pub fn is_optional_field_present(&self, name: &str) -> bool {
         match &self.backing {
             Backing::Proto { value, descriptor } => match (value, descriptor) {
@@ -375,11 +420,15 @@ impl RustManagedObject {
                     }
                     m.has_field(&field)
                 }
-                (Value::Map(map), _) => map.contains_key(&MapKey::String(name.to_string())),
+                (Value::Map(map), _) => {
+                    map.contains_key(&MapKey::String(name.to_string()))
+                }
                 _ => false,
             },
             Backing::Json(node) => match &*node.borrow() {
-                NodeValue::Object(entries) => entries.iter().any(|(k, _)| k == name),
+                NodeValue::Object(entries) => {
+                    entries.iter().any(|(k, _)| k == name)
+                }
                 _ => false,
             },
         }
@@ -387,22 +436,28 @@ impl RustManagedObject {
 
     // --- Scalar conversions ---------------------------------------------
 
+    /// Converts the value into a [`String`].
     pub fn as_string(&self) -> String {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
                 Value::String(s) => s.clone(),
                 Value::Bytes(b) => String::from_utf8_lossy(b).into_owned(),
                 Value::EnumNumber(n) => n.to_string(),
-                other => panic!("as_string called on non-string value: {other:?}"),
+                other => {
+                    panic!("as_string called on non-string value: {other:?}")
+                }
             },
             Backing::Json(node) => match &*node.borrow() {
                 NodeValue::String(s) => s.clone(),
                 NodeValue::Number(n) => n.to_string(),
-                other => panic!("as_string called on non-string JSON node: {other:?}"),
+                other => panic!(
+                    "as_string called on non-string JSON node: {other:?}"
+                ),
             },
         }
     }
 
+    /// Converts the value into a [`bool`].
     pub fn as_bool(&self) -> bool {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -411,11 +466,14 @@ impl RustManagedObject {
             },
             Backing::Json(node) => match &*node.borrow() {
                 NodeValue::Bool(b) => *b,
-                other => panic!("as_bool called on non-bool JSON node: {other:?}"),
+                other => {
+                    panic!("as_bool called on non-bool JSON node: {other:?}")
+                }
             },
         }
     }
 
+    /// Converts the value into an [`i64`].
     pub fn as_i64(&self) -> i64 {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -424,7 +482,9 @@ impl RustManagedObject {
                 Value::U32(n) => *n as i64,
                 Value::U64(n) => *n as i64,
                 Value::EnumNumber(n) => *n as i64,
-                other => panic!("as_i64 called on non-integer value: {other:?}"),
+                other => {
+                    panic!("as_i64 called on non-integer value: {other:?}")
+                }
             },
             Backing::Json(node) => match &*node.borrow() {
                 NodeValue::Number(n) => n
@@ -432,26 +492,32 @@ impl RustManagedObject {
                     .or_else(|| n.as_u64().map(|u| u as i64))
                     .or_else(|| n.as_f64().map(|f| f as i64))
                     .expect("number is convertible to i64"),
-                NodeValue::String(s) => s
-                    .parse::<i64>()
-                    .unwrap_or_else(|_| panic!("as_i64 called on non-numeric string '{s}'")),
-                other => panic!("as_i64 called on non-integer JSON node: {other:?}"),
+                NodeValue::String(s) => s.parse::<i64>().unwrap_or_else(|_| {
+                    panic!("as_i64 called on non-numeric string '{s}'")
+                }),
+                other => {
+                    panic!("as_i64 called on non-integer JSON node: {other:?}")
+                }
             },
         }
     }
 
+    /// Converts the value into an [`i64`] and narrows it to an [`i32`].
     pub fn as_i32(&self) -> i32 {
         self.as_i64() as i32
     }
 
+    /// Converts the value into an [`i64`] and narrows it to an [`i16`].
     pub fn as_i16(&self) -> i16 {
         self.as_i64() as i16
     }
 
+    /// Converts the value into an [`i64`] and narrows it to an [`i8`].
     pub fn as_i8(&self) -> i8 {
         self.as_i64() as i8
     }
 
+    /// Converts the value into a [`u64`].
     pub fn as_u64(&self) -> u64 {
         match &self.backing {
             Backing::Proto { value, .. } => match value {
@@ -459,29 +525,40 @@ impl RustManagedObject {
                 Value::U64(n) => *n,
                 Value::I32(n) if *n >= 0 => *n as u64,
                 Value::I64(n) if *n >= 0 => *n as u64,
-                other => panic!("as_u64 called on non-unsigned value: {other:?}"),
+                other => {
+                    panic!("as_u64 called on non-unsigned value: {other:?}")
+                }
             },
             Backing::Json(node) => match &*node.borrow() {
                 NodeValue::Number(n) => n
                     .as_u64()
-                    .or_else(|| n.as_i64().and_then(|i| if i >= 0 { Some(i as u64) } else { None }))
+                    .or_else(|| {
+                        n.as_i64().and_then(|i| {
+                            if i >= 0 { Some(i as u64) } else { None }
+                        })
+                    })
                     .expect("number is convertible to u64"),
-                NodeValue::String(s) => s
-                    .parse::<u64>()
-                    .unwrap_or_else(|_| panic!("as_u64 called on non-numeric string '{s}'")),
-                other => panic!("as_u64 called on non-integer JSON node: {other:?}"),
+                NodeValue::String(s) => s.parse::<u64>().unwrap_or_else(|_| {
+                    panic!("as_u64 called on non-numeric string '{s}'")
+                }),
+                other => {
+                    panic!("as_u64 called on non-integer JSON node: {other:?}")
+                }
             },
         }
     }
 
+    /// Converts the value into a [`u64`] and narrows it to a [`u32`].
     pub fn as_u32(&self) -> u32 {
         self.as_u64() as u32
     }
 
+    /// Converts the value into a [`u64`] and narrows it to a [`u16`].
     pub fn as_u16(&self) -> u16 {
         self.as_u64() as u16
     }
 
+    /// Converts the value into a [`u64`] and narrows it to a [`u8`].
     pub fn as_u8(&self) -> u8 {
         self.as_u64() as u8
     }
@@ -492,7 +569,9 @@ impl RustManagedObject {
         match &self.backing {
             Backing::Json(n) => n,
             Backing::Proto { .. } => {
-                panic!("mutating operation called on proto-backed managed object")
+                panic!(
+                    "mutating operation called on proto-backed managed object"
+                )
             }
         }
     }
@@ -505,7 +584,8 @@ impl RustManagedObject {
         let mut borrow = self.json_node().borrow_mut();
         match &mut *borrow {
             NodeValue::Object(entries) => {
-                if let Some(entry) = entries.iter_mut().find(|(k, _)| k == key) {
+                if let Some(entry) = entries.iter_mut().find(|(k, _)| k == key)
+                {
                     entry.1 = child;
                 } else {
                     entries.push((key.to_string(), child));
@@ -515,11 +595,17 @@ impl RustManagedObject {
         }
     }
 
-    pub fn set_field_obj_key(&self, key: &RustManagedObject, value: &RustManagedObject) {
+    /// Sets `self[key] = value`, taking the key from a managed-object string.
+    pub fn set_field_obj_key(
+        &self,
+        key: &RustManagedObject,
+        value: &RustManagedObject,
+    ) {
         let k = key.as_string();
         self.set_field(&k, value);
     }
 
+    /// Removes the named field from an object value.
     pub fn del_field(&self, key: &str) {
         let mut borrow = self.json_node().borrow_mut();
         match &mut *borrow {
@@ -540,10 +626,16 @@ impl RustManagedObject {
 pub(crate) fn rmo_clone(obj: &RustManagedObject) -> Box<RustManagedObject> {
     Box::new(obj.clone())
 }
-pub(crate) fn rmo_get_field(obj: &RustManagedObject, key: &str) -> Box<RustManagedObject> {
+pub(crate) fn rmo_get_field(
+    obj: &RustManagedObject,
+    key: &str,
+) -> Box<RustManagedObject> {
     obj.get_field(key)
 }
-pub(crate) fn rmo_get_index(obj: &RustManagedObject, idx: usize) -> Box<RustManagedObject> {
+pub(crate) fn rmo_get_index(
+    obj: &RustManagedObject,
+    idx: usize,
+) -> Box<RustManagedObject> {
     obj.get_index(idx)
 }
 pub(crate) fn rmo_array_length(obj: &RustManagedObject) -> usize {
@@ -555,7 +647,10 @@ pub(crate) fn rmo_is_undefined(obj: &RustManagedObject) -> bool {
 pub(crate) fn rmo_is_string(obj: &RustManagedObject) -> bool {
     obj.is_string()
 }
-pub(crate) fn rmo_is_optional_field_present(obj: &RustManagedObject, name: &str) -> bool {
+pub(crate) fn rmo_is_optional_field_present(
+    obj: &RustManagedObject,
+    name: &str,
+) -> bool {
     obj.is_optional_field_present(name)
 }
 pub(crate) fn rmo_oneof_variant(obj: &RustManagedObject) -> String {
@@ -598,13 +693,21 @@ pub(crate) fn rmo_as_u8(obj: &RustManagedObject) -> u8 {
 pub(crate) fn rmo_new_object() -> Box<RustManagedObject> {
     RustManagedObject::new_object()
 }
-pub(crate) fn rmo_from_json_str(json: &str) -> Result<Box<RustManagedObject>, String> {
+pub(crate) fn rmo_from_json_str(
+    json: &str,
+) -> Result<Box<RustManagedObject>, String> {
     RustManagedObject::from_json_str(json)
 }
-pub(crate) fn rmo_to_json_string(obj: &RustManagedObject) -> Result<String, String> {
+pub(crate) fn rmo_to_json_string(
+    obj: &RustManagedObject,
+) -> Result<String, String> {
     obj.to_json_string()
 }
-pub(crate) fn rmo_set_field(obj: &RustManagedObject, key: &str, value: &RustManagedObject) {
+pub(crate) fn rmo_set_field(
+    obj: &RustManagedObject,
+    key: &str,
+    value: &RustManagedObject,
+) {
     obj.set_field(key, value);
 }
 pub(crate) fn rmo_set_field_obj_key(

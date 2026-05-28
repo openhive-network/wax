@@ -3,6 +3,8 @@ use thiserror::Error;
 use crate::models::asset::AssetName;
 use crate::models::basic::{AccountName, PublicKey};
 
+/// Represents any error returned by the offline wax API, including errors
+/// surfaced from the underlying C++ layer.
 #[derive(Debug, Error)]
 pub enum WaxError {
     #[error("{0}")]
@@ -94,10 +96,12 @@ pub enum WaxError {
 }
 
 impl WaxError {
+    /// Creates a generic error from an arbitrary message.
     pub fn new(message: impl Into<String>) -> Self {
         Self::Generic(message.into())
     }
 
+    /// Returns the error's human-readable message.
     pub fn message(&self) -> String {
         self.to_string()
     }

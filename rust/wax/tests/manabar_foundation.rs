@@ -17,7 +17,9 @@ const DAY: i64 = 24 * 60 * 60;
 /// Builds a `HiveDateTime` from a unix timestamp. Matches the Python tests,
 /// which use `int(timedelta(...).total_seconds())` as the "now" anchor.
 fn at(seconds: i64) -> HiveDateTime {
-    HiveDateTime::from(DateTime::<Utc>::from_timestamp(seconds, 0).expect("valid timestamp"))
+    HiveDateTime::from(
+        DateTime::<Utc>::from_timestamp(seconds, 0).expect("valid timestamp"),
+    )
 }
 
 // ---------- calculate_current_manabar_value ---------------------------------
@@ -118,7 +120,12 @@ fn full_regen_time_partially_drained_finishes_within_window() {
     // (day=3, max=100, current=20, last=day=1) → day=5
     let f = foundation();
     let t = f
-        .calculate_manabar_full_regeneration_time(at(3 * DAY), 100, 20, DAY as u32)
+        .calculate_manabar_full_regeneration_time(
+            at(3 * DAY),
+            100,
+            20,
+            DAY as u32,
+        )
         .expect("calculate_manabar_full_regeneration_time");
 
     assert_eq!(t, (5 * DAY) as u64);
@@ -130,7 +137,12 @@ fn full_regen_time_after_full_returns_now() {
     // regenerated, the function returns `now`.
     let f = foundation();
     let t = f
-        .calculate_manabar_full_regeneration_time(at(6 * DAY), 100, 80, (4 * DAY) as u32)
+        .calculate_manabar_full_regeneration_time(
+            at(6 * DAY),
+            100,
+            80,
+            (4 * DAY) as u32,
+        )
         .expect("calculate_manabar_full_regeneration_time");
 
     assert_eq!(t, (6 * DAY) as u64);
@@ -143,7 +155,8 @@ fn head_block_time_accepts_parsed_hive_format() {
     // exactly the full-regen boundary, so current must reach max.
     let f = foundation();
 
-    let head = HiveDateTime::parse("1970-01-06T00:00:00").expect("parse hive format");
+    let head =
+        HiveDateTime::parse("1970-01-06T00:00:00").expect("parse hive format");
     let m = f
         .calculate_current_manabar_value(head, 100, 0, 0)
         .expect("calculate_current_manabar_value");

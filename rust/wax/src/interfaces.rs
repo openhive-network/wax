@@ -4,31 +4,51 @@ use wax_core::proto;
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
 use crate::models::authority::{AccountAuthorityInfo, RequiredAuthorities};
-use crate::models::basic::{AccountName, Hex, PublicKey, Signature, SigDigest, TransactionId};
+use crate::models::basic::{
+    AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId,
+};
 use crate::result::{BinaryViewOutputData, MinimizeRequiredSignaturesData};
 
+/// Provides read access to an account's mana pool and its computed percentage.
 pub trait Manabar {
+    /// Returns the maximum mana of the pool.
     fn max_mana(&self) -> i64;
+    /// Returns the current mana of the pool.
     fn current_mana(&self) -> i64;
+    /// Returns the current mana as a percentage of the maximum.
     fn percent(&self) -> Decimal;
 }
 
+/// Provides account authorities and witness signing keys to the offline
+/// signing helpers.
 pub trait AuthorityDataProvider {
-    fn get_account_authorities(&self, account: &str) -> Result<AccountAuthorityInfo, WaxError>;
+    /// Returns the authority information for the given account.
+    fn get_account_authorities(
+        &self,
+        account: &str,
+    ) -> Result<AccountAuthorityInfo, WaxError>;
 
-    fn get_witness_public_key(&self, _witness: &str) -> Result<Option<PublicKey>, WaxError> {
+    /// Returns the witness's public signing key, if known.
+    fn get_witness_public_key(
+        &self,
+        _witness: &str,
+    ) -> Result<Option<PublicKey>, WaxError> {
         Ok(None)
     }
 }
 
-/// Offline wallet abstraction. Implementors hold private keys (or proxy a wallet
-/// daemon) and expose digest signing plus memo-style data encryption.
+/// Provides digest signing and memo-style data encryption. Implementors hold
+/// private keys or proxy a wallet daemon.
 pub trait SignatureProvider {
     /// Sign a transaction `sig_digest` with the private key matching `public_key`.
     ///
     /// `public_key` is a WIF-format key string; `sig_digest` is a hex string
     /// produced by [`Transaction::sig_digest`] (or its legacy variant).
-    fn sign_digest(&self, public_key: &str, sig_digest: &str) -> Result<Signature, WaxError>;
+    fn sign_digest(
+        &self,
+        public_key: &str,
+        sig_digest: &str,
+    ) -> Result<Signature, WaxError>;
 
     /// Encrypt `content` for the holder of `key` (and optionally `other_key`,
     /// when the message is also addressed to a third party).
@@ -56,6 +76,7 @@ pub trait SignatureProvider {
     ) -> Result<String, WaxError>;
 }
 
+/// Provides read and validation access to a single operation.
 pub trait Operation {
     /// Returns the underlying [`proto::Operation`] mirror. Exposed on the trait
     /// so the public API can stay object-safe (`Box<dyn Operation>`) — consumers
@@ -63,10 +84,13 @@ pub trait Operation {
     /// without knowing the concrete implementor.
     fn proto(&self) -> &proto::Operation;
 
+    /// Validates the operation against the protocol rules.
     fn validate(&self) -> Result<(), WaxError>;
+    /// Returns the accounts impacted by the operation.
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
 }
 
+/// Provides construction of one or more operations from higher-level inputs.
 pub trait OperationBuilder {
     /// Consume the builder and emit the wire-form operations it represents.
     ///
@@ -78,43 +102,71 @@ pub trait OperationBuilder {
     ) -> Result<Vec<proto::Operation>, WaxError>;
 }
 
+/// Provides the full lifecycle of a transaction: building, signing,
+/// serialization, authority inspection and memo encryption.
 pub trait Transaction {
     /// Append `op` to this transaction, consuming and returning it as a
     /// `Box<dyn Transaction>` so chains stay object-safe.
-    fn push_operation(self: Box<Self>, op: Box<dyn Operation>) -> Box<dyn Transaction>;
+    fn push_operation(
+        self: Box<Self>,
+        op: Box<dyn Operation>,
+    ) -> Box<dyn Transaction>;
 
+    /// Appends a precomputed signature to the transaction.
     fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;
+    /// Sets the transaction's expiration timestamp.
     fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError>;
+    /// Returns whether the transaction carries at least one signature.
     fn is_signed(&self) -> bool;
+    /// Validates the transaction against the protocol rules.
     fn validate(&self) -> Result<(), WaxError>;
+    /// Returns the HF26 signing digest of the transaction.
     fn sig_digest(&self) -> Result<SigDigest, WaxError>;
+    /// Returns the legacy-serialization signing digest of the transaction.
     fn legacy_sig_digest(&self) -> Result<SigDigest, WaxError>;
+    /// Returns the HF26 transaction id.
     fn id(&self) -> Result<TransactionId, WaxError>;
+    /// Returns the legacy-serialization transaction id.
     fn legacy_id(&self) -> Result<TransactionId, WaxError>;
+    /// Converts the transaction into its wire-form hex, optionally stripped to
+    /// the unsigned form.
     fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<Hex, WaxError>;
     /// Returns the HF26 binary view: the wire-form hex plus a parsed AST
     /// annotating each byte range with its field name and type.
     fn binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
     /// Legacy-serialization counterpart to [`Self::binary_view_metadata`].
-    fn legacy_binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
+    fn legacy_binary_view_metadata(
+        &self,
+    ) -> Result<BinaryViewOutputData, WaxError>;
+    /// Converts the transaction into its HF26 API JSON string.
     fn to_api(&self) -> Result<String, WaxError>;
     /// Same payload as [`Self::to_api`], parsed into a [`serde_json::Value`]
     /// for callers that want structured access without a manual parse step.
     fn to_api_json(&self) -> Result<serde_json::Value, WaxError>;
+    /// Converts the transaction into its legacy API JSON string.
     fn to_legacy_api(&self) -> Result<String, WaxError>;
+    /// Returns the public keys that produced the transaction's signatures.
     fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
+    /// Legacy-serialization counterpart to [`Self::signature_keys`].
     fn legacy_signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
+    /// Returns the accounts impacted by the transaction's operations.
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
+    /// Returns the authorities the transaction requires to be signed.
     fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
+    /// Collects the signing keys needed to satisfy the transaction's
+    /// authorities, resolving them through `provider`.
     fn collect_signing_keys(
         &self,
         provider: &dyn AuthorityDataProvider,
     ) -> Result<Vec<PublicKey>, WaxError>;
+    /// Returns the minimal set of signing keys that still satisfies the
+    /// transaction's authorities, subject to the limits in `data`.
     fn minimize_required_signatures(
         &self,
         data: &MinimizeRequiredSignaturesData,
         provider: &dyn AuthorityDataProvider,
     ) -> Result<Vec<PublicKey>, WaxError>;
+    /// Returns the underlying [`proto::Transaction`] mirror.
     fn transaction(&self) -> &proto::Transaction;
 
     /// Finalize `builder` against `foundation` and append the resulting
@@ -173,5 +225,8 @@ pub trait Transaction {
     /// via `wallet.decrypt_data`. Plaintext fields and operations without an
     /// encryptable field are left untouched. The C++ transaction handle is
     /// rebuilt from the mutated proto on success.
-    fn decrypt(&mut self, wallet: &dyn SignatureProvider) -> Result<(), WaxError>;
+    fn decrypt(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+    ) -> Result<(), WaxError>;
 }

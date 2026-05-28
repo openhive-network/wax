@@ -129,9 +129,9 @@ fn deserialize_transaction_round_trips_through_binary() {
 
     let hex = tx.to_binary_form(false).expect("to_binary_form");
 
-    let json = f
-        .deserialize_transaction(&hex)
-        .expect("deserialize_transaction should succeed for hex from to_binary_form");
+    let json = f.deserialize_transaction(&hex).expect(
+        "deserialize_transaction should succeed for hex from to_binary_form",
+    );
 
     assert!(json.contains("vote_operation"), "missing op type: {json}");
     assert!(
@@ -154,8 +154,7 @@ fn deserialize_transaction_rejects_bad_hex() {
 // (`convertTransactionFromBinaryForm` test in hive_base.ts): the hex below is
 // the wire form of the API JSON also asserted in TS, so reusing it keeps the
 // two ports verifying against the same fixture.
-const SAMPLE_TX_HEX: &str =
-    "ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000";
+const SAMPLE_TX_HEX: &str = "ff86c404c24b152fb7610100046f746f6d076330666633336108657778686e6a626a98080000";
 
 fn sample_tx_api_json() -> serde_json::Value {
     serde_json::json!({
@@ -302,20 +301,33 @@ fn chain_reference_data_resolves_offset_against_head_block_time_on_testnet() {
     let f = create_wax_foundation(WaxOptions {
         chain_id: TESTNET_CHAIN_ID.to_string(),
     });
-    let head = HiveDateTime::parse("2026-05-15T12:00:00").expect("static HiveDateTime literal");
+    let head = HiveDateTime::parse("2026-05-15T12:00:00")
+        .expect("static HiveDateTime literal");
 
     let tx_min = f
-        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1m"))
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            Some(head),
+            Some("+1m"),
+        )
         .expect("`+1m` offset must resolve");
     assert_eq!(tx_min.transaction().expiration, "2026-05-15T12:01:00");
 
     let tx_hour = f
-        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1h"))
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            Some(head),
+            Some("+1h"),
+        )
         .expect("`+1h` offset must resolve");
     assert_eq!(tx_hour.transaction().expiration, "2026-05-15T13:00:00");
 
     let tx_sec = f
-        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+30s"))
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            Some(head),
+            Some("+30s"),
+        )
         .expect("`+30s` offset must resolve");
     assert_eq!(tx_sec.transaction().expiration, "2026-05-15T12:00:30");
 }
@@ -328,10 +340,15 @@ fn chain_reference_data_ignores_head_block_time_on_mainnet() {
     // pin a precise wall-clock window because tests run on slow shared CI.
     use wax::models::basic::HiveDateTime;
     let f = foundation();
-    let head = HiveDateTime::parse("2020-01-01T00:00:00").expect("static HiveDateTime literal");
+    let head = HiveDateTime::parse("2020-01-01T00:00:00")
+        .expect("static HiveDateTime literal");
 
     let tx = f
-        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, Some(head), Some("+1m"))
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            Some(head),
+            Some("+1m"),
+        )
         .expect("offset must resolve against local clock");
 
     assert_ne!(
@@ -346,7 +363,11 @@ fn chain_reference_data_defaults_expiration_to_one_minute() {
     let f = foundation();
 
     let tx = f
-        .create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, None)
+        .create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            None,
+            None,
+        )
         .expect("default expiration path must succeed");
 
     let exp = &tx.transaction().expiration;
@@ -361,13 +382,21 @@ fn chain_reference_data_rejects_malformed_offset() {
     let f = foundation();
 
     assert!(
-        f.create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, Some("+"))
-            .is_err(),
+        f.create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            None,
+            Some("+")
+        )
+        .is_err(),
         "bare `+` must error — no digits"
     );
     assert!(
-        f.create_transaction_with_chain_reference_data(TAPOS_BLOCK_ID, None, Some("+10x"))
-            .is_err(),
+        f.create_transaction_with_chain_reference_data(
+            TAPOS_BLOCK_ID,
+            None,
+            Some("+10x")
+        )
+        .is_err(),
         "unknown suffix must error"
     );
 }
@@ -438,7 +467,9 @@ fn get_public_key_from_signature_recovers_known_signer() {
     // signing the digest below with private key
     // 5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT yields this
     // canonical signature and recovers the matching STM-form public key.
-    let digest = "d07a8509795ff7c6f33ab7d6f4da24044e8f5833f0dffcd357bf21ba5e4db1d9".to_string();
+    let digest =
+        "d07a8509795ff7c6f33ab7d6f4da24044e8f5833f0dffcd357bf21ba5e4db1d9"
+            .to_string();
     let signature = "1f7c6eb7a30681d77606a1491be2869e8112fee5241ec13cea5c7b4f54edc8d1\
                      45269172f88359bb190fb26b362c81ccdf02bb56eb1d09daea3a381e5580e52f58"
         .to_string();
@@ -457,8 +488,11 @@ fn get_public_key_from_signature_rejects_invalid_signature() {
     let f = foundation();
 
     assert!(
-        f.get_public_key_from_signature(&"not-hex".to_string(), &"not-hex".to_string())
-            .is_err(),
+        f.get_public_key_from_signature(
+            &"not-hex".to_string(),
+            &"not-hex".to_string()
+        )
+        .is_err(),
         "non-hex inputs must surface as a Result error"
     );
 }
@@ -494,7 +528,8 @@ fn chain_id_returns_value_from_options() {
 
 #[test]
 fn chain_id_reflects_custom_options() {
-    let custom = "00000000000000000000000000000000000000000000000000000000deadbeef";
+    let custom =
+        "00000000000000000000000000000000000000000000000000000000deadbeef";
     let f = create_wax_foundation(WaxOptions {
         chain_id: custom.to_string(),
     });
@@ -510,7 +545,9 @@ fn get_version_matches_cargo_pkg_version() {
 #[test]
 fn config_returns_known_protocol_constants() {
     let f = foundation();
-    let cfg = f.config().expect("config should succeed for mainnet chain id");
+    let cfg = f
+        .config()
+        .expect("config should succeed for mainnet chain id");
 
     // These keys are well-known and stable across hived builds; their exact
     // values aren't asserted (they can drift with hardforks), only presence
@@ -597,7 +634,8 @@ fn assets_is_cached_across_calls() {
 #[test]
 fn extend_config_produces_foundation_with_new_chain_id() {
     let base = foundation();
-    let new_chain = "00000000000000000000000000000000000000000000000000000000deadbeef";
+    let new_chain =
+        "00000000000000000000000000000000000000000000000000000000deadbeef";
 
     let extended = base.extend_config(new_chain);
 
@@ -622,18 +660,28 @@ mod scan_text_for_matching_private_keys {
 
     const ACCOUNT: &str = "alice";
 
-    const OWNER_PRIVATE: &str = "5Kcb526wim2obMPFQVJcAVbtkWJkFYo746afCLU5cMGttD9cYGw";
-    const ACTIVE_PRIVATE: &str = "5Jj2jixMhsR2R1oriWchsQYimH1XyGo4N9s6iB7J3uHyNeq3Ge5";
-    const POSTING_PRIVATE: &str = "5JhEUJADWcRq3rEP7eWxAHmd8yrigfPhi4DXFPr442AavFEgjXX";
-    const MEMO_PRIVATE: &str = "5KZEKVcSF1t2JhbZHNm1PQ3yoxDxRJGK9UWTQdeZw136vXpHTsj";
+    const OWNER_PRIVATE: &str =
+        "5Kcb526wim2obMPFQVJcAVbtkWJkFYo746afCLU5cMGttD9cYGw";
+    const ACTIVE_PRIVATE: &str =
+        "5Jj2jixMhsR2R1oriWchsQYimH1XyGo4N9s6iB7J3uHyNeq3Ge5";
+    const POSTING_PRIVATE: &str =
+        "5JhEUJADWcRq3rEP7eWxAHmd8yrigfPhi4DXFPr442AavFEgjXX";
+    const MEMO_PRIVATE: &str =
+        "5KZEKVcSF1t2JhbZHNm1PQ3yoxDxRJGK9UWTQdeZw136vXpHTsj";
 
-    const OWNER_PUBLIC: &str = "STM5v3682EzJbJmxUiACzLdtNP3AYYYSATC5AszYpb2Ve3riBnevN";
-    const ACTIVE_PUBLIC: &str = "STM7599MhAJN4hkBLp7JHvqMVRMb9X1rnfpbc23LJs7HjQgkAi7ea";
-    const POSTING_PUBLIC: &str = "STM5h6ivYuxwA6KTQYHBoZihbou8MsjahP4CgtmG5owtpxQYeyyh3";
-    const MEMO_PUBLIC: &str = "STM65g4T6xwpy9tE8PeQaBfqgpWXUHshUjSTpnu2MwUiftdbZ8c3x";
+    const OWNER_PUBLIC: &str =
+        "STM5v3682EzJbJmxUiACzLdtNP3AYYYSATC5AszYpb2Ve3riBnevN";
+    const ACTIVE_PUBLIC: &str =
+        "STM7599MhAJN4hkBLp7JHvqMVRMb9X1rnfpbc23LJs7HjQgkAi7ea";
+    const POSTING_PUBLIC: &str =
+        "STM5h6ivYuxwA6KTQYHBoZihbou8MsjahP4CgtmG5owtpxQYeyyh3";
+    const MEMO_PUBLIC: &str =
+        "STM65g4T6xwpy9tE8PeQaBfqgpWXUHshUjSTpnu2MwUiftdbZ8c3x";
 
-    const IMPORTED_PRIVATE: &str = "5JZhZRpYjWYm3jKsz5JEpPDG38Dn9JzhXTFg7gwrpgiLVKuH13B";
-    const IMPORTED_PUBLIC: &str = "STM8fZEprWbZPauKhypTWsaZunyzhVpauB6xkUJZJXVEvkNzpS2ue";
+    const IMPORTED_PRIVATE: &str =
+        "5JZhZRpYjWYm3jKsz5JEpPDG38Dn9JzhXTFg7gwrpgiLVKuH13B";
+    const IMPORTED_PUBLIC: &str =
+        "STM8fZEprWbZPauKhypTWsaZunyzhVpauB6xkUJZJXVEvkNzpS2ue";
 
     fn role_authority(public_key: &str) -> WaxAuthority {
         let mut key_auths = HashMap::new();
@@ -730,7 +778,9 @@ mod scan_text_for_matching_private_keys {
                 &MEMO_PUBLIC.to_string(),
                 &[],
             )
-            .expect_err("memo private key with empty other_keys must still error");
+            .expect_err(
+                "memo private key with empty other_keys must still error",
+            );
         assert!(err.to_string().contains("\"authority_role\":\"memo\""));
     }
 }

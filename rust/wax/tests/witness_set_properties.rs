@@ -33,8 +33,9 @@ fn decay_and_budget() {
             &*f,
             Box::new(WitnessSetPropertiesOperation {
                 owner: "emrebeyler".into(),
-                witness_signing_key: "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju"
-                    .into(),
+                witness_signing_key:
+                    "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju"
+                        .into(),
                 new_signing_key: None,
                 account_creation_fee: None,
                 url: None,
@@ -48,17 +49,29 @@ fn decay_and_budget() {
         .expect("push_builder");
 
     let op = match &tx.transaction().operations[0].value {
-        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(o)) => o,
-        other => panic!("expected WitnessSetPropertiesOperation, got {other:?}"),
+        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
+            o,
+        )) => o,
+        other => {
+            panic!("expected WitnessSetPropertiesOperation, got {other:?}")
+        }
     };
     assert_eq!(op.owner, "emrebeyler");
     assert!(op.extensions.is_empty());
     assert_eq!(op.props.len(), 3);
-    assert_eq!(op.props.get("account_subsidy_budget").map(String::as_str), Some("01000000"));
-    assert_eq!(op.props.get("account_subsidy_decay").map(String::as_str), Some("40000000"));
+    assert_eq!(
+        op.props.get("account_subsidy_budget").map(String::as_str),
+        Some("01000000")
+    );
+    assert_eq!(
+        op.props.get("account_subsidy_decay").map(String::as_str),
+        Some("40000000")
+    );
     assert_eq!(
         op.props.get("key").map(String::as_str),
-        Some("0249202c30b95aec7506ab719fd602256922b9ca86cc31e01499c4c6339c7292a3"),
+        Some(
+            "0249202c30b95aec7506ab719fd602256922b9ca86cc31e01499c4c6339c7292a3"
+        ),
     );
 }
 
@@ -90,17 +103,25 @@ fn url_only() {
         .expect("push_builder");
 
     let op = match &tx.transaction().operations[0].value {
-        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(o)) => o,
-        other => panic!("expected WitnessSetPropertiesOperation, got {other:?}"),
+        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
+            o,
+        )) => o,
+        other => {
+            panic!("expected WitnessSetPropertiesOperation, got {other:?}")
+        }
     };
     assert_eq!(op.props.len(), 2);
     assert_eq!(
         op.props.get("key").map(String::as_str),
-        Some("03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56"),
+        Some(
+            "03fc648d2ac16432f354acc1fe010a3c6567380e4939644deb7a74c6ebbe67da56"
+        ),
     );
     assert_eq!(
         op.props.get("url").map(String::as_str),
-        Some("4e68747470733a2f2f737465656d69742e636f6d2f737465656d2f407468657265616c776f6c662f7769746e6573732d6170706c69636174696f6e2d7468657265616c776f6c662d75706461746564"),
+        Some(
+            "4e68747470733a2f2f737465656d69742e636f6d2f737465656d2f407468657265616c776f6c662f7769746e6573732d6170706c69636174696f6e2d7468657265616c776f6c662d75706461746564"
+        ),
     );
 }
 
@@ -118,8 +139,9 @@ fn with_exchange_rate() {
             &*f,
             Box::new(WitnessSetPropertiesOperation {
                 owner: "ctrpch".into(),
-                witness_signing_key: "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU"
-                    .into(),
+                witness_signing_key:
+                    "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU"
+                        .into(),
                 new_signing_key: None,
                 account_creation_fee: None,
                 url: None,
@@ -136,8 +158,12 @@ fn with_exchange_rate() {
         .expect("push_builder");
 
     let op = match &tx.transaction().operations[0].value {
-        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(o)) => o,
-        other => panic!("expected WitnessSetPropertiesOperation, got {other:?}"),
+        Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
+            o,
+        )) => o,
+        other => {
+            panic!("expected WitnessSetPropertiesOperation, got {other:?}")
+        }
     };
     assert_eq!(op.props.len(), 2);
     assert_eq!(
@@ -158,7 +184,8 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
         &*f,
         Box::new(WitnessSetPropertiesOperation {
             owner: "therealwolf".into(),
-            witness_signing_key: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC".into(),
+            witness_signing_key:
+                "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC".into(),
             new_signing_key: None,
             account_creation_fee: Some(NaiAssetConvertible::Asset(wrong)),
             url: None,

@@ -7,23 +7,25 @@ use crate::models::asset::{AssetName, NaiAssetConvertible};
 use crate::models::basic::{AccountName, PublicKey};
 use crate::result::{JsonPrice, WitnessSetPropertiesProps};
 
-/// Base + quote pair for the witness HBD↔HIVE exchange rate. `base` is the
-/// HBD-denominated side; `quote` is the HIVE-denominated side. Both are
-/// coerced to their required symbols in `finalize` so callers can pass any
-/// `NaiAssetConvertible` shape.
+/// Represents the base/quote pair for the witness HBD↔HIVE exchange rate.
+/// `base` is the HBD-denominated side; `quote` is the HIVE-denominated side.
+/// Both are coerced to their required symbols in `finalize` so callers can
+/// pass any `NaiAssetConvertible` shape.
 #[derive(Debug, Clone)]
 pub struct HbdExchangeRate {
     pub base: NaiAssetConvertible,
     pub quote: NaiAssetConvertible,
 }
 
-/// Builder mirroring `ts/wasm/lib/detailed/complex_operations/witness_set_properties.ts`
-/// and `python/wax/wax/complex_operations/witness_set_properties.py`.
+/// Represents the builder for the witness-set-properties operation.
 ///
 /// Asset/price fields are coerced to their required symbols at `finalize`
 /// time (HIVE for `account_creation_fee`, HBD/HIVE for `hbd_exchange_rate`)
 /// so the wrong symbol surfaces as a `WaxError` rather than a wire-time
 /// rejection by hived.
+///
+/// TS NOTE: mirrors `complex_operations/witness_set_properties.ts`.
+/// Python NOTE: mirrors `complex_operations/witness_set_properties.py`.
 #[derive(Debug, Clone)]
 pub struct WitnessSetPropertiesOperation {
     pub owner: AccountName,
@@ -48,16 +50,23 @@ impl OperationBuilder for WitnessSetPropertiesOperation {
         let this = *self;
         let account_creation_fee = this
             .account_creation_fee
-            .map(|fee| foundation.create_asset_with_required_symbol(AssetName::Hive, fee))
+            .map(|fee| {
+                foundation
+                    .create_asset_with_required_symbol(AssetName::Hive, fee)
+            })
             .transpose()?;
 
         let hbd_exchange_rate = this
             .hbd_exchange_rate
             .map(|rate| {
-                let base =
-                    foundation.create_asset_with_required_symbol(AssetName::Hbd, rate.base)?;
-                let quote =
-                    foundation.create_asset_with_required_symbol(AssetName::Hive, rate.quote)?;
+                let base = foundation.create_asset_with_required_symbol(
+                    AssetName::Hbd,
+                    rate.base,
+                )?;
+                let quote = foundation.create_asset_with_required_symbol(
+                    AssetName::Hive,
+                    rate.quote,
+                )?;
                 Ok::<JsonPrice, WaxError>(JsonPrice { base, quote })
             })
             .transpose()?;
@@ -77,13 +86,15 @@ impl OperationBuilder for WitnessSetPropertiesOperation {
         let serialized_props = foundation.serialize_witness_props(&props)?;
 
         Ok(vec![proto::Operation {
-            value: Some(proto::operation::Value::WitnessSetPropertiesOperation(
-                proto::WitnessSetProperties {
-                    owner: this.owner,
-                    props: serialized_props,
-                    extensions: Vec::new(),
-                },
-            )),
+            value: Some(
+                proto::operation::Value::WitnessSetPropertiesOperation(
+                    proto::WitnessSetProperties {
+                        owner: this.owner,
+                        props: serialized_props,
+                        extensions: Vec::new(),
+                    },
+                ),
+            ),
         }])
     }
 }

@@ -1,5 +1,5 @@
-use wax_core::proto::{operation::Value, Operation, Vote};
-use wax_core::{new_rust_protocol, RustOperation, RustTransaction};
+use wax_core::proto::{Operation, Vote, operation::Value};
+use wax_core::{RustOperation, RustTransaction, new_rust_protocol};
 
 #[test]
 fn new_rust_protocol_returns_non_null_instance() {
@@ -64,5 +64,7 @@ fn transaction_handle_accepts_added_operation() {
 
     protocol
         .cpp_tx_add_operation(tx_handle.pin_mut(), &extra_op.handle)
-        .expect("appending an operation to the transaction handle should succeed");
+        .expect(
+            "appending an operation to the transaction handle should succeed",
+        );
 }

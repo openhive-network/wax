@@ -23,7 +23,10 @@ pub(crate) struct JsonRpcClient {
 }
 
 impl JsonRpcClient {
-    pub(crate) fn new(endpoint: String, timeout: Duration) -> Result<Self, WaxChainError> {
+    pub(crate) fn new(
+        endpoint: String,
+        timeout: Duration,
+    ) -> Result<Self, WaxChainError> {
         let http = reqwest::Client::builder()
             .timeout(timeout)
             .build()
@@ -50,7 +53,11 @@ impl JsonRpcClient {
     /// a [`WaxChainError`] when the transport fails, the response can't be
     /// decoded, or the node reports an error envelope.
     #[allow(dead_code)] // wired in by Phase 2+ API namespaces
-    pub(crate) async fn call<P, R>(&self, method: &str, params: P) -> Result<R, WaxChainError>
+    pub(crate) async fn call<P, R>(
+        &self,
+        method: &str,
+        params: P,
+    ) -> Result<R, WaxChainError>
     where
         P: Serialize,
         R: DeserializeOwned,
@@ -78,7 +85,8 @@ impl JsonRpcClient {
 
         response.result.ok_or(WaxChainError::JsonRpc {
             code: 0,
-            message: "JSON-RPC response missing both `result` and `error`".into(),
+            message: "JSON-RPC response missing both `result` and `error`"
+                .into(),
         })
     }
 }

@@ -1,3 +1,11 @@
+//! Online Hive blockchain API: chain-bound operations layered on the offline
+//! `wax` crate, covering JSON-RPC/REST endpoint configuration and on-chain
+//! authority verification.
+//!
+//! The entry point is [`create_hive_chain`], which returns a [`HiveChain`]
+//! that also implements [`wax::WaxFoundation`], so a chain instance can be used
+//! wherever an offline foundation is expected.
+
 mod authority_trace;
 mod chain;
 mod error;
@@ -7,8 +15,8 @@ mod options;
 mod rpc;
 
 pub use authority_trace::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData, AuthorityRole,
-    AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
+    AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
 };
 pub use chain::HiveChain;
 pub use error::WaxChainError;

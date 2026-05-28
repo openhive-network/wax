@@ -37,7 +37,7 @@ struct DelegateRcBody {
     extensions: Vec<serde_json::Value>,
 }
 
-/// Fluent builder for `custom_json_operation` with `id="rc"`.
+/// Represents the fluent builder for `custom_json_operation` with `id="rc"`.
 ///
 /// Stage entries with [`Self::delegate`] / [`Self::remove_delegation`], then
 /// commit them with [`Self::authorize`] (one `custom_json_operation` is
@@ -51,6 +51,7 @@ pub struct ResourceCreditsOperation {
 }
 
 impl ResourceCreditsOperation {
+    /// Creates an empty resource-credits operation builder.
     pub fn new() -> Self {
         Self::default()
     }
@@ -68,7 +69,9 @@ impl ResourceCreditsOperation {
         delegatees: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
         if delegatees.is_empty() {
-            return Err(WaxError::new("delegatees must contain at least one account"));
+            return Err(WaxError::new(
+                "delegatees must contain at least one account",
+            ));
         }
         if max_rc < 0 {
             return Err(WaxError::new("max_rc must be non-negative"));
@@ -112,8 +115,9 @@ impl ResourceCreditsOperation {
             // Wire form is `[tag, body]` — a heterogenous JSON array,
             // matching TS `JSON.stringify(["delegate_rc", body])`.
             let payload = (DELEGATE_RC_TAG, entry);
-            let json = serde_json::to_string(&payload)
-                .map_err(|e| WaxError::new(format!("failed to serialize delegate_rc: {e}")))?;
+            let json = serde_json::to_string(&payload).map_err(|e| {
+                WaxError::new(format!("failed to serialize delegate_rc: {e}"))
+            })?;
 
             self.authorized.push(proto::CustomJson {
                 id: OPERATION_ID.into(),

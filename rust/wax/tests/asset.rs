@@ -12,7 +12,8 @@ const ASSET_PRECISION: u32 = 3;
 const VESTS_PRECISION: u32 = 6;
 
 fn asset() -> Asset {
-    Asset::new().expect("Asset::new should succeed against the cpp protocol singleton")
+    Asset::new()
+        .expect("Asset::new should succeed against the cpp protocol singleton")
 }
 
 // ---------- get_asset_info ----------------------------------------------------
@@ -154,7 +155,10 @@ fn resolve_passes_through_matching_proto_asset() {
         nai: HIVE_NAI.into(),
     };
     let resolved = a
-        .resolve_from_convertible_type(AssetName::Hive, NaiAssetConvertible::Asset(input.clone()))
+        .resolve_from_convertible_type(
+            AssetName::Hive,
+            NaiAssetConvertible::Asset(input.clone()),
+        )
         .unwrap();
     assert_eq!(resolved, input);
 }
@@ -173,7 +177,10 @@ fn resolve_rejects_wrong_nai() {
         nai: HBD_NAI.into(),
     };
     let err = a
-        .resolve_from_convertible_type(AssetName::Hive, NaiAssetConvertible::Asset(input))
+        .resolve_from_convertible_type(
+            AssetName::Hive,
+            NaiAssetConvertible::Asset(input),
+        )
         .expect_err("mismatched nai must error");
 
     assert_eq!(err.message(), "Nai is not the same as expected.");
@@ -210,7 +217,9 @@ fn normalize_asset_rejects_unknown_nai() {
         precision: ASSET_PRECISION,
         nai: "@@deadbeef0".into(),
     };
-    let err = a.normalize_asset(input).expect_err("unknown nai must error");
+    let err = a
+        .normalize_asset(input)
+        .expect_err("unknown nai must error");
     assert!(
         err.message().contains("@@deadbeef0"),
         "error should mention the unknown nai: {}",

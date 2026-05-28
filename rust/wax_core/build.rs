@@ -1,5 +1,7 @@
 fn collect_archives(dir: &std::path::Path, out: &mut Vec<std::path::PathBuf>) {
-    let Ok(entries) = std::fs::read_dir(dir) else { return };
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return;
+    };
     for entry in entries.flatten() {
         let path = entry.path();
         if path.is_dir() {
@@ -18,13 +20,13 @@ fn main() {
     let repo_root = manifest_dir
         .ancestors()
         .nth(2)
-        .expect("expected repo root three levels above rust/wax_core/Cargo.toml")
+        .expect(
+            "expected repo root three levels above rust/wax_core/Cargo.toml",
+        )
         .to_path_buf();
 
     let mut cmake_cfg = cmake::Config::new(&manifest_dir);
-    cmake_cfg
-        .build_target("wax_core")
-        .profile("Release");
+    cmake_cfg.build_target("wax_core").profile("Release");
 
     for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR", "BOOST_ROOT"] {
         if let Ok(v) = std::env::var(var) {
@@ -67,7 +69,9 @@ fn main() {
     // wax_core itself is an rlib (no final link), but these paths propagate to
     // downstream binaries and test executables that do perform the final link.
     for var in ["BOOST_ROOT", "OPENSSL_ROOT_DIR"] {
-        let Ok(root) = std::env::var(var) else { continue };
+        let Ok(root) = std::env::var(var) else {
+            continue;
+        };
         for sub in ["lib", "lib64"] {
             let dir = std::path::Path::new(&root).join(sub);
             if dir.is_dir() {
@@ -76,7 +80,14 @@ fn main() {
         }
     }
 
-    for component in ["chrono", "context", "coroutine", "filesystem", "system", "thread"] {
+    for component in [
+        "chrono",
+        "context",
+        "coroutine",
+        "filesystem",
+        "system",
+        "thread",
+    ] {
         println!("cargo:rustc-link-lib=boost_{component}");
     }
     for sys in ["ssl", "crypto", "z", "bz2", "pthread", "dl", "stdc++"] {
@@ -104,6 +115,10 @@ fn main() {
     println!("cargo:rerun-if-changed=src/managed_object.rs");
     println!("cargo:rerun-if-changed=src/operation.rs");
     println!("cargo:rerun-if-changed=src/transaction.rs");
-    println!("cargo:rerun-if-changed=../protobuf_patterns/hive.protocol.buffers.bin");
-    println!("cargo:rerun-if-changed=../protobuf_patterns/hive.protocol.buffers.rs");
+    println!(
+        "cargo:rerun-if-changed=../protobuf_patterns/hive.protocol.buffers.bin"
+    );
+    println!(
+        "cargo:rerun-if-changed=../protobuf_patterns/hive.protocol.buffers.rs"
+    );
 }

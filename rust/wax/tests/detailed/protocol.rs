@@ -198,7 +198,9 @@ const MAINNET_ACCOUNT_CREATE_TRANSACTION_API_JSON: &str = r#"{
 /// manabar tests' helper; needed because the TS manabar APIs accept `0`
 /// directly as `head_block_time`.
 fn at(seconds: i64) -> HiveDateTime {
-    HiveDateTime::from(DateTime::<Utc>::from_timestamp(seconds, 0).expect("valid timestamp"))
+    HiveDateTime::from(
+        DateTime::<Utc>::from_timestamp(seconds, 0).expect("valid timestamp"),
+    )
 }
 
 // Build a witness_set_properties payload matching `witness_properties` in
@@ -206,7 +208,9 @@ fn at(seconds: i64) -> HiveDateTime {
 fn witness_properties() -> WitnessSetPropertiesProps {
     WitnessSetPropertiesProps {
         key: "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh".into(),
-        new_signing_key: Some("STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW".into()),
+        new_signing_key: Some(
+            "STM6TqSJaS1aRj6p6yZEo5xicX7bvLhrfdVqi5ToNrKxHU3FRBEdW".into(),
+        ),
         account_creation_fee: Some(NaiAsset {
             amount: "5000".into(),
             precision: 3,
@@ -296,7 +300,9 @@ fn convert_api_to_protobuf_account_create_authority_serialization() {
     wax_test(None, |ctx| {
         let tx = ctx
             .base
-            .create_transaction_from_json(MAINNET_ACCOUNT_CREATE_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                MAINNET_ACCOUNT_CREATE_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json");
 
         assert_eq!(
@@ -345,11 +351,14 @@ fn convert_protobuf_to_api_vote_operation() {
     wax_test(None, |ctx| {
         let tx = ctx
             .base
-            .create_transaction_from_proto_json(MAINNET_VOTE_TRANSACTION_PROTO_JSON)
+            .create_transaction_from_proto_json(
+                MAINNET_VOTE_TRANSACTION_PROTO_JSON,
+            )
             .expect("create_transaction_from_proto_json");
 
         let api_json = tx.to_api().expect("to_api");
-        let parsed: serde_json::Value = serde_json::from_str(&api_json).expect("valid JSON");
+        let parsed: serde_json::Value =
+            serde_json::from_str(&api_json).expect("valid JSON");
 
         assert_eq!(
             parsed,
@@ -424,7 +433,8 @@ fn convert_protobuf_to_api_account_create_authority_serialization() {
             .expect("create_transaction_from_proto_json");
 
         let api_json = tx.to_api().expect("to_api");
-        let parsed: serde_json::Value = serde_json::from_str(&api_json).expect("valid JSON");
+        let parsed: serde_json::Value =
+            serde_json::from_str(&api_json).expect("valid JSON");
 
         assert_eq!(
             parsed,
@@ -493,7 +503,9 @@ fn create_transaction_handle_mainnet_account_create() {
     wax_test(None, |ctx| {
         let tx = ctx
             .base
-            .create_transaction_from_json(MAINNET_ACCOUNT_CREATE_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                MAINNET_ACCOUNT_CREATE_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json");
         let id = tx.legacy_id().expect("tx.legacy_id()");
         assert_eq!(id, "a27dc780a12d9a3e3a0e290208f04bc2c618f11e");
@@ -569,7 +581,10 @@ fn convert_raw_compressed_public_key_to_wif() {
                 &"02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705".into(),
             )
             .expect("convert_raw_public_key_to_wif (compressed)");
-        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+        assert_eq!(
+            wif,
+            "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
+        );
     });
 }
 
@@ -584,7 +599,10 @@ fn convert_raw_uncompressed_public_key_to_wif() {
                 &"04be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c5017051a9cc2866c479818522ffd2b4a3d7a5a64d1b98c968f8f6ea2ef6745a637eb92".into(),
             )
             .expect("convert_raw_public_key_to_wif (uncompressed)");
-        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+        assert_eq!(
+            wif,
+            "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
+        );
     });
 }
 
@@ -639,7 +657,11 @@ fn generate_private_key_password_based() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .get_private_key_from_password("gtg", "active", "verysecurepassword")
+            .get_private_key_from_password(
+                "gtg",
+                "active",
+                "verysecurepassword",
+            )
             .expect("get_private_key_from_password");
         assert_eq!(
             result.associated_public_key,
@@ -669,7 +691,9 @@ fn calculate_public_key() {
     wax_test(None, |ctx| {
         let public_key = ctx
             .base
-            .calculate_public_key("5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12")
+            .calculate_public_key(
+                "5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12",
+            )
             .expect("calculate_public_key");
         assert_eq!(
             public_key,
@@ -699,7 +723,9 @@ fn calculate_legacy_transaction_id_serialization_sensitive() {
     wax_test(None, |ctx| {
         let id = ctx
             .base
-            .create_transaction_from_json(SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json")
             .legacy_id()
             .expect("legacy_id");
@@ -714,7 +740,9 @@ fn calculate_hf26_transaction_id_serialization_sensitive() {
     wax_test(None, |ctx| {
         let id = ctx
             .base
-            .create_transaction_from_json(SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json")
             .id()
             .expect("id");
@@ -764,8 +792,9 @@ fn serialize_transaction_stripped() {
 #[test]
 fn sig_digest_hf26_with_test_chain_id() {
     let opts = WaxOptions {
-        chain_id: "beeab0de00000000000000000000000000000000000000000000000000000000"
-            .into(),
+        chain_id:
+            "beeab0de00000000000000000000000000000000000000000000000000000000"
+                .into(),
     };
     wax_test(opts, |ctx| {
         let digest = ctx
@@ -786,13 +815,16 @@ fn sig_digest_hf26_with_test_chain_id() {
 #[test]
 fn legacy_sig_digest_serialization_sensitive_with_test_chain_id() {
     let opts = WaxOptions {
-        chain_id: "beeab0de00000000000000000000000000000000000000000000000000000000"
-            .into(),
+        chain_id:
+            "beeab0de00000000000000000000000000000000000000000000000000000000"
+                .into(),
     };
     wax_test(opts, |ctx| {
         let digest = ctx
             .base
-            .create_transaction_from_json(SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json")
             .legacy_sig_digest()
             .expect("legacy_sig_digest");
@@ -812,7 +844,9 @@ fn required_authorities_for_vote_transaction() {
     wax_test(None, |ctx| {
         let auths = ctx
             .base
-            .create_transaction_from_json(REQUIRED_AUTHORITIES_TRANSACTION_API_JSON)
+            .create_transaction_from_json(
+                REQUIRED_AUTHORITIES_TRANSACTION_API_JSON,
+            )
             .expect("create_transaction_from_json")
             .required_authorities()
             .expect("required_authorities");
@@ -836,12 +870,16 @@ fn required_authorities_for_vote_transaction() {
 #[test]
 fn get_hive_protocol_config_known_constants() {
     let opts = WaxOptions {
-        chain_id: "beeab0de00000000000000000000000000000000000000000000000000000000"
-            .into(),
+        chain_id:
+            "beeab0de00000000000000000000000000000000000000000000000000000000"
+                .into(),
     };
     wax_test(opts, |ctx| {
         let cfg = ctx.base.config().expect("config");
-        assert_eq!(cfg.get("HBD_SYMBOL").map(String::as_str), Some("@@000000013"));
+        assert_eq!(
+            cfg.get("HBD_SYMBOL").map(String::as_str),
+            Some("@@000000013")
+        );
         assert_eq!(
             cfg.get("HIVE_DEFAULT_ACCOUNT_SUBSIDY_DECAY")
                 .map(String::as_str),
@@ -1103,7 +1141,12 @@ fn calculate_hp_apr_fixture_1() {
             .expect("hive_satoshis");
         let apr = ctx
             .base
-            .calculate_hp_apr(1_000_000, 1_500, &virtual_supply, &total_vesting_fund_hive)
+            .calculate_hp_apr(
+                1_000_000,
+                1_500,
+                &virtual_supply,
+                &total_vesting_fund_hive,
+            )
             .expect("calculate_hp_apr");
         assert_eq!(apr, "4.48");
     });
@@ -1123,7 +1166,12 @@ fn calculate_hp_apr_fixture_2() {
             .expect("hive_satoshis");
         let apr = ctx
             .base
-            .calculate_hp_apr(82_779_364, 1_500, &virtual_supply, &total_vesting_fund_hive)
+            .calculate_hp_apr(
+                82_779_364,
+                1_500,
+                &virtual_supply,
+                &total_vesting_fund_hive,
+            )
             .expect("calculate_hp_apr");
         assert_eq!(apr, "2.97");
     });
@@ -1331,8 +1379,10 @@ fn multiple_bidirectional_conversion_basic_transaction() {
 
         // api1 and api2 are both API-shape JSON; structural equality after
         // parsing confirms idempotency.
-        let v1: serde_json::Value = serde_json::from_str(&api1).expect("api1 JSON");
-        let v2: serde_json::Value = serde_json::from_str(&api2).expect("api2 JSON");
+        let v1: serde_json::Value =
+            serde_json::from_str(&api1).expect("api1 JSON");
+        let v2: serde_json::Value =
+            serde_json::from_str(&api2).expect("api2 JSON");
         assert_eq!(v1, v2);
     });
 }

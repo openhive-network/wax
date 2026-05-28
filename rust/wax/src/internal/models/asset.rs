@@ -7,16 +7,20 @@ use wax_core::RustJsonAsset;
 use crate::WaxError;
 use crate::internal::protocol::rust_protocol;
 use crate::models::asset::{
-    AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset, NaiAssetConvertible,
+    AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset,
+    NaiAssetConvertible,
 };
 
 const INIT_CPP_ASSET_AMOUNT: i64 = 0;
 
+/// Represents the asset helper bound to a chain context, caching the native
+/// HIVE/HBD/VESTS symbol metadata obtained from the C++ layer.
 pub struct Asset {
     assets: HashMap<AssetName, NaiAsset>,
 }
 
 impl Asset {
+    /// Creates an asset helper, loading the native symbols' metadata.
     pub fn new() -> Result<Self, WaxError> {
         let to_nai = |ffi: Result<RustJsonAsset, _>| {
             ffi.map(|a| NaiAsset {
@@ -45,7 +49,11 @@ impl Asset {
         })
     }
 
-    pub fn get_asset_info(&self, asset_name: AssetName) -> Result<AssetInfo, WaxError> {
+    /// Returns the NAI and precision metadata for the given symbol.
+    pub fn get_asset_info(
+        &self,
+        asset_name: AssetName,
+    ) -> Result<AssetInfo, WaxError> {
         let cpp_asset = self.cpp_asset(asset_name)?;
         Ok(AssetInfo {
             nai: cpp_asset.nai.clone(),
@@ -53,6 +61,8 @@ impl Asset {
         })
     }
 
+    /// Creates a NAI asset of the given symbol from an amount, optionally
+    /// scaling whole coins by the symbol's precision.
     pub fn create_wax_asset(
         &self,
         asset_name: AssetName,
@@ -70,13 +80,11 @@ impl Asset {
         }
 
         let scaled = amount_to_decimal(amount)? * scale(info.precision);
-        let integer_amount =
-            scaled
-                .trunc()
-                .to_i128()
-                .ok_or_else(|| WaxError::InvalidAssetAmount {
-                    amount: scaled.to_string(),
-                })?;
+        let integer_amount = scaled.trunc().to_i128().ok_or_else(|| {
+            WaxError::InvalidAssetAmount {
+                amount: scaled.to_string(),
+            }
+        })?;
 
         Ok(NaiAsset {
             amount: integer_amount.to_string(),
@@ -85,6 +93,7 @@ impl Asset {
         })
     }
 
+    /// Creates a NAI asset of the given symbol from a raw satoshi amount.
     pub fn create_asset_satoshis(
         &self,
         asset_name: AssetName,
@@ -93,13 +102,19 @@ impl Asset {
         self.create_wax_asset(asset_name, AssetAmount::Int(amount), false)
     }
 
-    pub fn create_asset_factory(&self, asset_name: AssetName) -> NaiAssetFactory<'_> {
+    /// Returns an [`AssetFactory`] bound to the given symbol.
+    pub fn create_asset_factory(
+        &self,
+        asset_name: AssetName,
+    ) -> NaiAssetFactory<'_> {
         NaiAssetFactory {
             asset: self,
             asset_name,
         }
     }
 
+    /// Resolves a [`NaiAssetConvertible`] into a [`NaiAsset`], validating that
+    /// its NAI matches the expected symbol.
     pub fn resolve_from_convertible_type(
         &self,
         asset_name: AssetName,
@@ -149,19 +164,24 @@ impl Asset {
         }
     }
 
-    pub fn normalize_asset(&self, asset: NaiAsset) -> Result<NaiAsset, WaxError> {
+    /// Normalizes an asset's amount through the C++ layer, validating its NAI.
+    pub fn normalize_asset(
+        &self,
+        asset: NaiAsset,
+    ) -> Result<NaiAsset, WaxError> {
         let matched = self
             .assets
             .iter()
             .find(|(_, cpp_asset)| cpp_asset.nai == asset.nai)
             .map(|(name, _)| *name);
 
-        let amount: i64 = asset
-            .amount
-            .parse()
-            .map_err(|_| WaxError::InvalidAssetAmount {
-                amount: asset.amount.clone(),
-            })?;
+        let amount: i64 =
+            asset
+                .amount
+                .parse()
+                .map_err(|_| WaxError::InvalidAssetAmount {
+                    amount: asset.amount.clone(),
+                })?;
 
         let protocol = rust_protocol();
         let ffi = match matched {
@@ -199,6 +219,7 @@ impl Asset {
     }
 }
 
+/// Represents an [`AssetFactory`] bound to a single symbol of an [`Asset`].
 pub struct NaiAssetFactory<'a> {
     asset: &'a Asset,
     asset_name: AssetName,
@@ -218,9 +239,8 @@ fn amount_to_decimal(amount: AssetAmount) -> Result<Decimal, WaxError> {
     match amount {
         AssetAmount::Int(v) => Ok(Decimal::from(v)),
         AssetAmount::Decimal(v) => Ok(v),
-        AssetAmount::Float(v) => {
-            Decimal::from_f64_retain(v).ok_or(WaxError::DecimalConversionNotANumber)
-        }
+        AssetAmount::Float(v) => Decimal::from_f64_retain(v)
+            .ok_or(WaxError::DecimalConversionNotANumber),
     }
 }
 

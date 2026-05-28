@@ -7,7 +7,9 @@
 // through `to_api()` or `to_binary_form()`).
 
 use wax::constants::MAINNET_CHAIN_ID;
-use wax::proto::{Operation, Transaction as ProtoTransaction, Vote, operation::Value};
+use wax::proto::{
+    Operation, Transaction as ProtoTransaction, Vote, operation::Value,
+};
 use wax::{WaxFoundation, create_wax_foundation};
 
 fn foundation() -> Box<dyn WaxFoundation> {

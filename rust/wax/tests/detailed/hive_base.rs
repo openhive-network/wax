@@ -15,14 +15,17 @@ use wax::models::basic::HiveDateTime;
 use wax::result::JsonPrice;
 use wax::{Operation, SignatureProvider, Transaction};
 
-use crate::common::{new_in_memory_beekeeper, wax_test, BeekeeperSignatureProvider};
+use crate::common::{
+    BeekeeperSignatureProvider, new_in_memory_beekeeper, wax_test,
+};
 
 // `5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT` →
 // `STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh`. Pinned by the TS
 // fixtures (`__tests__/detailed/hive_base.ts`) and reused across every test
 // that needs a real (importable) WIF / public-key pair.
 const FIXTURE_WIF: &str = "5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT";
-const FIXTURE_PUBLIC_KEY: &str = "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
+const FIXTURE_PUBLIC_KEY: &str =
+    "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh";
 
 // ---------------------------------------------------------------------------
 // Shared fixtures mirroring ts/wasm/__tests__/assets/*.ts
@@ -278,7 +281,10 @@ fn negative_hbd_satoshis_asset() {
 #[test]
 fn negative_vests_satoshis_asset() {
     wax_test(None, |ctx| {
-        let asset = ctx.base.vests_satoshis(-300_000_000).expect("vests_satoshis");
+        let asset = ctx
+            .base
+            .vests_satoshis(-300_000_000)
+            .expect("vests_satoshis");
         assert_eq!(
             asset,
             NaiAsset {
@@ -320,7 +326,11 @@ fn vests_to_hp_basic() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .vests_to_hp(&vests_sat(ctx, 10), &hive_sat(ctx, 1), &vests_sat(ctx, 10))
+            .vests_to_hp(
+                &vests_sat(ctx, 10),
+                &hive_sat(ctx, 1),
+                &vests_sat(ctx, 10),
+            )
             .expect("vests_to_hp");
         assert_eq!(
             result,
@@ -387,7 +397,11 @@ fn hbd_to_hive_basic() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .hbd_to_hive(&hbd_sat(ctx, 10), &hbd_sat(ctx, 1), &hive_sat(ctx, 10))
+            .hbd_to_hive(
+                &hbd_sat(ctx, 10),
+                &hbd_sat(ctx, 1),
+                &hive_sat(ctx, 10),
+            )
             .expect("hbd_to_hive");
         assert_eq!(
             result,
@@ -406,7 +420,11 @@ fn hbd_to_hive_using_nai_assets() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .hbd_to_hive(&hbd_sat(ctx, 10), &hbd_sat(ctx, 1), &hive_sat(ctx, 10))
+            .hbd_to_hive(
+                &hbd_sat(ctx, 10),
+                &hbd_sat(ctx, 1),
+                &hive_sat(ctx, 10),
+            )
             .expect("hbd_to_hive");
         assert_eq!(
             result,
@@ -426,7 +444,11 @@ fn hbd_to_hive_mixed_params() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .hbd_to_hive(&hbd_sat(ctx, 10), &hbd_sat(ctx, 1), &hive_sat(ctx, 10))
+            .hbd_to_hive(
+                &hbd_sat(ctx, 10),
+                &hbd_sat(ctx, 1),
+                &hive_sat(ctx, 10),
+            )
             .expect("hbd_to_hive");
         assert_eq!(
             result,
@@ -544,7 +566,8 @@ fn create_transaction_using_object_interface() {
 
         let digest = tx.sig_digest().expect("sig_digest");
         assert_eq!(
-            digest, "205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1",
+            digest,
+            "205c79e3d17211882b1a2ba8640ff208413d68cabdca892cf47e9a6ad46e63a1",
             "sig digest must match the value pinned by the TS suite"
         );
 
@@ -761,8 +784,12 @@ fn recurrent_transfer_with_extensions() {
 
         // First op: removal — amount HIVE 0, pair_id extension.
         let removal = match &ops[0].value {
-            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
-            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(
+                rt,
+            )) => rt,
+            other => {
+                panic!("expected RecurrentTransferOperation, got {other:?}")
+            }
         };
         assert_eq!(removal.from_account, "initminer");
         assert_eq!(removal.to_account, "gtg");
@@ -780,8 +807,12 @@ fn recurrent_transfer_with_extensions() {
 
         // Second op: define — amount HIVE 100, no extensions.
         let define = match &ops[1].value {
-            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
-            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(
+                rt,
+            )) => rt,
+            other => {
+                panic!("expected RecurrentTransferOperation, got {other:?}")
+            }
         };
         assert_eq!(define.amount.amount, "100");
         assert_eq!(define.amount.nai, "@@000000021");
@@ -821,8 +852,12 @@ fn recurrent_transfer_without_extensions() {
         assert_eq!(ops.len(), 1);
 
         let rt = match &ops[0].value {
-            Some(wax::proto::operation::Value::RecurrentTransferOperation(rt)) => rt,
-            other => panic!("expected RecurrentTransferOperation, got {other:?}"),
+            Some(wax::proto::operation::Value::RecurrentTransferOperation(
+                rt,
+            )) => rt,
+            other => {
+                panic!("expected RecurrentTransferOperation, got {other:?}")
+            }
         };
         assert_eq!(rt.from_account, "initminer");
         assert_eq!(rt.to_account, "gtg");
@@ -859,7 +894,9 @@ fn invalid_asset_in_update_proposal_fails() {
                 daily_pay: NaiAssetConvertible::Asset(hive_sat(ctx, 0)),
                 subject: "subject".into(),
                 permlink: "permlink".into(),
-                end_date: Some(HiveDateTime::parse("2023-08-01T15:38:48").unwrap()),
+                end_date: Some(
+                    HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
+                ),
             }),
         );
         assert!(
@@ -891,7 +928,9 @@ fn update_proposal_with_extensions() {
                     daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
                     subject: "subject".into(),
                     permlink: "permlink".into(),
-                    end_date: Some(HiveDateTime::parse("2023-08-01T15:38:48").unwrap()),
+                    end_date: Some(
+                        HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
+                    ),
                 }),
             )
             .expect("update_proposal with end_date");
@@ -914,7 +953,9 @@ fn update_proposal_with_extensions() {
         assert_eq!(ops.len(), 2);
 
         let with_end = match &ops[0].value {
-            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => up,
+            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => {
+                up
+            }
             other => panic!("expected UpdateProposalOperation, got {other:?}"),
         };
         assert_eq!(with_end.proposal_id, 100);
@@ -932,7 +973,9 @@ fn update_proposal_with_extensions() {
         }
 
         let without_end = match &ops[1].value {
-            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => up,
+            Some(wax::proto::operation::Value::UpdateProposalOperation(up)) => {
+                up
+            }
             other => panic!("expected UpdateProposalOperation, got {other:?}"),
         };
         assert!(without_end.extensions.is_empty());
@@ -942,19 +985,30 @@ fn update_proposal_with_extensions() {
 // Builds a `transfer_operation` with the supplied parameters, mirroring the TS
 // `tx.pushOperation({ transfer_operation: { ... } })` shape used in the
 // encryption tests.
-fn transfer_op(amount: NaiAsset, from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
+fn transfer_op(
+    amount: NaiAsset,
+    from: &str,
+    to: &str,
+    memo: &str,
+) -> Box<dyn Operation> {
     use wax::proto::{Transfer, operation::Value};
-    wax::create_wax_foundation(None).create_operation(Value::TransferOperation(Transfer {
-        from_account: from.into(),
-        to_account: to.into(),
-        amount,
-        memo: memo.into(),
-    }))
+    wax::create_wax_foundation(None).create_operation(Value::TransferOperation(
+        Transfer {
+            from_account: from.into(),
+            to_account: to.into(),
+            amount,
+            memo: memo.into(),
+        },
+    ))
 }
 
 // Extracts the memo from the i'th `TransferOperation` of `tx`.
 fn transfer_memo(tx: &dyn Transaction, index: usize) -> String {
-    match tx.transaction().operations[index].value.as_ref().expect("op value") {
+    match tx.transaction().operations[index]
+        .value
+        .as_ref()
+        .expect("op value")
+    {
         wax::proto::operation::Value::TransferOperation(t) => t.memo.clone(),
         other => panic!("expected TransferOperation, got {other:?}"),
     }
@@ -1060,12 +1114,14 @@ fn decrypt_operations() {
             )
             .expect("create_transaction_with_tapos");
 
-        let mut tx = tx.start_encrypt(&public_key, None).push_operation(transfer_op(
-            hive_sat(ctx, 100),
-            "gtg",
-            "initminer",
-            "This should be encrypted",
-        ));
+        let mut tx =
+            tx.start_encrypt(&public_key, None)
+                .push_operation(transfer_op(
+                    hive_sat(ctx, 100),
+                    "gtg",
+                    "initminer",
+                    "This should be encrypted",
+                ));
 
         let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
         tx.perform_operation_encryption(&provider)
@@ -1187,9 +1243,15 @@ fn calculate_witness_votes_hp_big_values() {
         let result = ctx
             .base
             .calculate_witness_votes_hp(
-                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    147_408_633_689_698_596,
+                )),
                 NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
-                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    304_505_804_867_506_145,
+                )),
             )
             .expect("calculate_witness_votes_hp");
         assert_eq!(
@@ -1212,9 +1274,15 @@ fn calculate_witness_votes_hp_big_values_typed() {
         let result = ctx
             .base
             .calculate_witness_votes_hp(
-                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    147_408_633_689_698_596,
+                )),
                 NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
-                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    304_505_804_867_506_145,
+                )),
             )
             .expect("calculate_witness_votes_hp");
         assert_eq!(
@@ -1258,9 +1326,15 @@ fn calculate_account_hp_fixture_2() {
         let result = ctx
             .base
             .calculate_account_hp(
-                NaiAssetConvertible::Asset(vests_sat(ctx, 2_268_225_009_295_472)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    2_268_225_009_295_472,
+                )),
                 NaiAssetConvertible::Asset(hive_sat(ctx, 173_009_633_181)),
-                NaiAssetConvertible::Asset(vests_sat(ctx, 300_729_442_281_783_339)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    300_729_442_281_783_339,
+                )),
             )
             .expect("calculate_account_hp");
         assert_eq!(
@@ -1304,9 +1378,15 @@ fn calculate_witness_votes_hp_fixture_2() {
         let result = ctx
             .base
             .calculate_witness_votes_hp(
-                NaiAssetConvertible::Asset(vests_sat(ctx, 142_103_996_686_715_320)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    142_103_996_686_715_320,
+                )),
                 NaiAssetConvertible::Asset(hive_sat(ctx, 173_009_633_181)),
-                NaiAssetConvertible::Asset(vests_sat(ctx, 300_729_442_281_783_339)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    300_729_442_281_783_339,
+                )),
             )
             .expect("calculate_witness_votes_hp");
         assert_eq!(
@@ -1329,9 +1409,15 @@ fn calculate_witness_votes_hp_big_values_mixed() {
         let result = ctx
             .base
             .calculate_witness_votes_hp(
-                NaiAssetConvertible::Asset(vests_sat(ctx, 147_408_633_689_698_596)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    147_408_633_689_698_596,
+                )),
                 NaiAssetConvertible::Asset(hive_sat(ctx, 180_520_335_089)),
-                NaiAssetConvertible::Asset(vests_sat(ctx, 304_505_804_867_506_145)),
+                NaiAssetConvertible::Asset(vests_sat(
+                    ctx,
+                    304_505_804_867_506_145,
+                )),
             )
             .expect("calculate_witness_votes_hp");
         assert_eq!(
@@ -1351,7 +1437,12 @@ fn calculate_hp_apr_basic() {
     wax_test(None, |ctx| {
         let apr = ctx
             .base
-            .calculate_hp_apr(1_000_000, 1_500, &hive_sat(ctx, 10), &hive_sat(ctx, 10))
+            .calculate_hp_apr(
+                1_000_000,
+                1_500,
+                &hive_sat(ctx, 10),
+                &hive_sat(ctx, 10),
+            )
             .expect("calculate_hp_apr");
         // TS asserts the numeric `1.46`; the Rust API returns a string.
         assert_eq!(apr, "1.46");
@@ -1365,7 +1456,12 @@ fn calculate_hp_apr_mixed_params() {
     wax_test(None, |ctx| {
         let apr = ctx
             .base
-            .calculate_hp_apr(1_000_000, 1_500, &hive_sat(ctx, 10), &hive_sat(ctx, 10))
+            .calculate_hp_apr(
+                1_000_000,
+                1_500,
+                &hive_sat(ctx, 10),
+                &hive_sat(ctx, 10),
+            )
             .expect("calculate_hp_apr");
         assert_eq!(apr, "1.46");
     });
@@ -1378,7 +1474,11 @@ fn get_private_key_from_password() {
     wax_test(None, |ctx| {
         let result = ctx
             .base
-            .get_private_key_from_password("gtg", "active", "verysecurepassword")
+            .get_private_key_from_password(
+                "gtg",
+                "active",
+                "verysecurepassword",
+            )
             .expect("get_private_key_from_password");
         assert_eq!(
             result.associated_public_key,
@@ -1430,7 +1530,10 @@ fn convert_raw_compressed_public_key_to_wif() {
                 &"02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705".into(),
             )
             .expect("convert_raw_public_key_to_wif (compressed)");
-        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+        assert_eq!(
+            wif,
+            "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
+        );
     });
 }
 
@@ -1447,7 +1550,10 @@ fn convert_raw_uncompressed_public_key_to_wif() {
                     .into(),
             )
             .expect("convert_raw_public_key_to_wif (uncompressed)");
-        assert_eq!(wif, "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4");
+        assert_eq!(
+            wif,
+            "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"
+        );
     });
 }
 
@@ -1512,7 +1618,8 @@ fn estimate_hbd_interest() {
 #[test]
 fn create_transaction_from_legacy_json_parses_correctly() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let ops = &tx.transaction().operations;
         assert_eq!(ops.len(), 1);
 
@@ -1529,7 +1636,8 @@ fn create_transaction_from_legacy_json_parses_correctly() {
 #[test]
 fn legacy_transaction_to_api_json() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let api_json = tx.to_api().expect("to_api");
         assert!(api_json.contains("\"type\":\"transfer_operation\""));
         assert!(api_json.contains("\"nai\":\"@@000000021\""));
@@ -1540,7 +1648,8 @@ fn legacy_transaction_to_api_json() {
 #[test]
 fn validate_legacy_transaction() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         tx.validate().expect("legacy transaction should validate");
     });
 }
@@ -1550,7 +1659,8 @@ fn validate_legacy_transaction() {
 #[test]
 fn legacy_transaction_impacted_accounts() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let accounts = tx.impacted_accounts().expect("impacted_accounts");
         assert!(accounts.iter().any(|a| a == "oneplus7"));
         assert!(accounts.iter().any(|a| a == "kryptogames"));
@@ -1564,7 +1674,8 @@ fn legacy_transaction_impacted_accounts() {
 #[test]
 fn legacy_transaction_id() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let id = tx.id().expect("id");
         assert_eq!(id, "3725c81634f152011e2043eb7119911b953d4267");
     });
@@ -1574,7 +1685,8 @@ fn legacy_transaction_id() {
 #[test]
 fn push_operation_onto_legacy_transaction() {
     wax_test(None, |ctx| {
-        let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
+        let tx =
+            create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let extra = ctx
             .base
             .create_operation_from_json(
@@ -1700,7 +1812,9 @@ fn calculate_public_key_from_private_key() {
     wax_test(None, |ctx| {
         let public_key = ctx
             .base
-            .calculate_public_key("5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT")
+            .calculate_public_key(
+                "5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT",
+            )
             .expect("calculate_public_key");
         assert_eq!(
             public_key,

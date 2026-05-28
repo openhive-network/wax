@@ -3,6 +3,7 @@ use rust_decimal::{Decimal, RoundingStrategy};
 use crate::constants::HIVE_PERCENT_PRECISION_DOT_PLACES;
 use crate::interfaces::Manabar;
 
+/// Represents an account's mana state: its maximum and current mana.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ManabarData {
     pub max_mana: i64,
@@ -10,6 +11,7 @@ pub struct ManabarData {
 }
 
 impl ManabarData {
+    /// Creates a manabar from its maximum and current mana values.
     pub fn new(max_mana: i64, current_mana: i64) -> Self {
         Self {
             max_mana,
@@ -35,8 +37,11 @@ impl Manabar for ManabarData {
             );
         }
 
-        let percent =
-            Decimal::from(self.current_mana) * Decimal::from(100) / Decimal::from(self.max_mana);
-        percent.round_dp_with_strategy(HIVE_PERCENT_PRECISION_DOT_PLACES, RoundingStrategy::ToZero)
+        let percent = Decimal::from(self.current_mana) * Decimal::from(100)
+            / Decimal::from(self.max_mana);
+        percent.round_dp_with_strategy(
+            HIVE_PERCENT_PRECISION_DOT_PLACES,
+            RoundingStrategy::ToZero,
+        )
     }
 }

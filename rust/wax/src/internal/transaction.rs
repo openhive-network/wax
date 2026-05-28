@@ -2,19 +2,23 @@ use std::collections::HashMap;
 
 use wax_core::ffi::{
     RustAccountAuthorities, RustAuthEntry, RustBinaryData, RustBinaryDataNode,
-    RustMinimizeRequiredSignaturesData, RustRequiredAuthorities, RustWaxAuthority,
+    RustMinimizeRequiredSignaturesData, RustRequiredAuthorities,
+    RustWaxAuthority,
 };
 use wax_core::{EncryptionIndex, RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
 use crate::interfaces::{
-    AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider, Transaction,
+    AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider,
+    Transaction,
 };
 use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
-use crate::result::{BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData};
+use crate::result::{
+    BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData,
+};
 
 impl Transaction for RustTransaction {
     fn push_operation(
@@ -89,7 +93,10 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
-    fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<String, WaxError> {
+    fn to_binary_form(
+        &self,
+        strip_to_unsigned: bool,
+    ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_tx_to_binary(&self.handle, strip_to_unsigned)
             .map_err(WaxError::from)
@@ -102,7 +109,9 @@ impl Transaction for RustTransaction {
             .map_err(WaxError::from)
     }
 
-    fn legacy_binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError> {
+    fn legacy_binary_view_metadata(
+        &self,
+    ) -> Result<BinaryViewOutputData, WaxError> {
         rust_protocol()
             .cpp_tx_binary_view(&self.handle, false, false)
             .map(to_binary_view_output)
@@ -170,7 +179,11 @@ impl Transaction for RustTransaction {
         let ffi_data = to_rust_minimize_data(data);
 
         rust_protocol()
-            .cpp_minimize_required_signatures(&self.handle, &ffi_data, &core_provider)
+            .cpp_minimize_required_signatures(
+                &self.handle,
+                &ffi_data,
+                &core_provider,
+            )
             .map_err(WaxError::from)
     }
 
@@ -222,7 +235,9 @@ impl Transaction for RustTransaction {
         self
     }
 
-    fn stop_encrypt(mut self: Box<Self>) -> Result<Box<dyn Transaction>, WaxError> {
+    fn stop_encrypt(
+        mut self: Box<Self>,
+    ) -> Result<Box<dyn Transaction>, WaxError> {
         let current_len = self.inner.operations.len();
         let last = self.encryption_indices.last_mut().ok_or_else(|| {
             WaxError::new("Mismatch in index types - stop_encrypt called before start_encrypt")
@@ -266,7 +281,10 @@ impl Transaction for RustTransaction {
         Ok(())
     }
 
-    fn decrypt(&mut self, wallet: &dyn SignatureProvider) -> Result<(), WaxError> {
+    fn decrypt(
+        &mut self,
+        wallet: &dyn SignatureProvider,
+    ) -> Result<(), WaxError> {
         // decrypt visits every operation; ranges are not consulted. Per TS,
         // only memo-style values that begin with '#' are sent to the wallet —
         // everything else is left untouched.
@@ -326,7 +344,9 @@ where
         Value::TransferFromSavingsOperation(t) => t.memo = crypto(&t.memo)?,
         Value::RecurrentTransferOperation(t) => t.memo = crypto(&t.memo)?,
         Value::CommentOperation(c) => c.body = crypto(&c.body)?,
-        Value::CustomJsonOperation(c) => apply_custom_json_crypto(c, mode, &mut crypto)?,
+        Value::CustomJsonOperation(c) => {
+            apply_custom_json_crypto(c, mode, &mut crypto)?
+        }
         _ => {}
     }
     Ok(())
@@ -346,12 +366,15 @@ where
         EncryptMode::Encrypt => {
             let ciphertext = crypto(&op.json)?;
             // serde_json::json! handles escaping; manual concat would be fragile.
-            op.json = serde_json::json!({ CUSTOM_JSON_ENCRYPTED_KEY: ciphertext }).to_string();
+            op.json =
+                serde_json::json!({ CUSTOM_JSON_ENCRYPTED_KEY: ciphertext })
+                    .to_string();
         }
         EncryptMode::Decrypt => {
             // Only unwrap if the payload looks like the envelope produced by
             // the encrypt path. Anything else is treated as already plaintext.
-            let parsed: serde_json::Value = match serde_json::from_str(&op.json) {
+            let parsed: serde_json::Value = match serde_json::from_str(&op.json)
+            {
                 Ok(v) => v,
                 Err(_) => return Ok(()),
             };
@@ -390,10 +413,11 @@ fn to_rust_minimize_data(
         Some(v) => (v, true),
         None => (0, false),
     };
-    let (max_account_auths, has_max_account_auths) = match data.max_account_auths {
-        Some(v) => (v, true),
-        None => (0, false),
-    };
+    let (max_account_auths, has_max_account_auths) =
+        match data.max_account_auths {
+            Some(v) => (v, true),
+            None => (0, false),
+        };
 
     RustMinimizeRequiredSignaturesData {
         chain_id: data.chain_id.clone(),
@@ -405,7 +429,8 @@ fn to_rust_minimize_data(
         has_max_membership,
         max_account_auths,
         has_max_account_auths,
-        allow_strict_and_mixed_authorities: data.allow_strict_and_mixed_authorities,
+        allow_strict_and_mixed_authorities: data
+            .allow_strict_and_mixed_authorities,
     }
 }
 
@@ -424,7 +449,9 @@ fn to_proto_authority(authority: RustWaxAuthority) -> proto::Authority {
     }
 }
 
-pub(crate) fn to_binary_view_output(ffi: RustBinaryData) -> BinaryViewOutputData {
+pub(crate) fn to_binary_view_output(
+    ffi: RustBinaryData,
+) -> BinaryViewOutputData {
     let nodes = ffi.nodes;
     let offsets = ffi
         .root_indices
@@ -438,7 +465,10 @@ pub(crate) fn to_binary_view_output(ffi: RustBinaryData) -> BinaryViewOutputData
     }
 }
 
-fn build_binary_view_node(nodes: &[RustBinaryDataNode], idx: u32) -> BinaryViewNode {
+fn build_binary_view_node(
+    nodes: &[RustBinaryDataNode],
+    idx: u32,
+) -> BinaryViewNode {
     let node = &nodes[idx as usize];
     let children: Vec<BinaryViewNode> = node
         .child_indices
@@ -473,7 +503,9 @@ fn build_binary_view_node(nodes: &[RustBinaryDataNode], idx: u32) -> BinaryViewN
     }
 }
 
-fn to_required_authorities(ffi: RustRequiredAuthorities) -> RequiredAuthorities {
+fn to_required_authorities(
+    ffi: RustRequiredAuthorities,
+) -> RequiredAuthorities {
     RequiredAuthorities {
         posting_accounts: ffi.posting_accounts,
         active_accounts: ffi.active_accounts,

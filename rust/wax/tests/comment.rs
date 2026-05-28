@@ -14,7 +14,8 @@ use wax::{Transaction, WaxFoundation, create_wax_foundation};
 
 const TAPOS: &str = "04c507a8c7fe5be96be64ce7c86855e1806cbde3";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
-const APP: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+const APP: &str =
+    concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
 fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
@@ -32,7 +33,9 @@ fn extract_comment(op: &wax::proto::Operation) -> &wax::proto::Comment {
     }
 }
 
-fn extract_comment_options(op: &wax::proto::Operation) -> &wax::proto::CommentOptions {
+fn extract_comment_options(
+    op: &wax::proto::Operation,
+) -> &wax::proto::CommentOptions {
     match &op.value {
         Some(wax::proto::operation::Value::CommentOptionsOperation(c)) => c,
         other => panic!("expected CommentOptionsOperation, got {other:?}"),
@@ -63,7 +66,9 @@ fn reply_with_beneficiaries_and_tags() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2, "comment + comment_options expected");
 
@@ -118,7 +123,9 @@ fn reply_with_percent_hbd_emits_options() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
 
@@ -155,9 +162,15 @@ fn reply_with_images_emits_only_comment() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let ops = &tx.transaction().operations;
-    assert_eq!(ops.len(), 1, "options op should be suppressed when untouched");
+    assert_eq!(
+        ops.len(),
+        1,
+        "options op should be suppressed when untouched"
+    );
 
     let comment = extract_comment(&ops[0]);
     assert_eq!(
@@ -184,7 +197,9 @@ fn blog_post_with_category() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 1);
 
@@ -213,7 +228,9 @@ fn options_at_default_values_are_suppressed() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     assert_eq!(tx.transaction().operations.len(), 1);
 }
 
@@ -285,7 +302,9 @@ fn reply_default_permlink_template() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let comment = extract_comment(&tx.transaction().operations[0]);
     assert!(
         comment.permlink.starts_with("re-alice-"),

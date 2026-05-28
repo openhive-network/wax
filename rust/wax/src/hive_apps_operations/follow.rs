@@ -46,6 +46,7 @@ pub enum FollowOperationActions {
 }
 
 impl FollowOperationActions {
+    /// Returns the on-wire string form of the action.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Follow => "follow",
@@ -79,6 +80,7 @@ pub enum FollowActions {
 }
 
 impl FollowActions {
+    /// Returns the on-wire string form of the action.
     pub fn as_str(self) -> &'static str {
         match self {
             Self::Follow => "blog",
@@ -100,7 +102,8 @@ impl FollowActions {
     }
 }
 
-/// Fluent builder for `custom_json_operation` with `id="follow"`.
+/// Represents the fluent builder for `custom_json_operation` with
+/// `id="follow"`.
 ///
 /// Stage entries with the action methods (`follow_blog`, `mute_blog`,
 /// `reblog`, …), then commit them via the
@@ -120,6 +123,7 @@ impl Default for FollowOperation {
 }
 
 impl FollowOperation {
+    /// Creates an empty follow-operation builder.
     pub fn new() -> Self {
         Self {
             base: HiveAppsOperationBase::new(OPERATION_ID),
@@ -140,7 +144,9 @@ impl FollowOperation {
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
         if blogs.is_empty() {
-            return Err(WaxError::new("blogs must contain at least one account"));
+            return Err(WaxError::new(
+                "blogs must contain at least one account",
+            ));
         }
 
         let following = if blogs.len() == 1 {
@@ -172,7 +178,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::Follow, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::Follow,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages an unfollow entry — also used to unmute, per the TS comment.
@@ -181,7 +191,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::Unfollow, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::Unfollow,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages a mute entry for the given blog account(s).
@@ -190,7 +204,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::Mute, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::Mute,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages an unmute entry — alias for [`Self::unfollow_blog`] to match
@@ -209,7 +227,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::ResetBlacklist, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::ResetBlacklist,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages a `blacklist` entry for the given blog account(s).
@@ -218,7 +240,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::Blacklist, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::Blacklist,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages a `reset_follow_blacklist` entry for the given blog account(s).
@@ -240,7 +266,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::FollowBlacklist, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::FollowBlacklist,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages an `unblacklist` entry for the given blog account(s).
@@ -249,7 +279,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::Unblacklist, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::Unblacklist,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages an `unfollow_blacklist` entry for the given blog account(s).
@@ -284,7 +318,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::FollowMuted, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::FollowMuted,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages an `unfollow_muted` entry for the given blog account(s).
@@ -293,7 +331,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::UnfollowMuted, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::UnfollowMuted,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages a `reset_all_lists` entry for the given blog account(s).
@@ -302,7 +344,11 @@ impl FollowOperation {
         working_account: impl Into<AccountName>,
         blogs: Vec<AccountName>,
     ) -> Result<Self, WaxError> {
-        self.follow_body_builder(FollowActions::ResetAllLists, working_account.into(), blogs)
+        self.follow_body_builder(
+            FollowActions::ResetAllLists,
+            working_account.into(),
+            blogs,
+        )
     }
 
     /// Stages reset entries clearing matching entries between
@@ -325,16 +371,22 @@ impl FollowOperation {
                 working_account,
                 blogs,
             ),
-            FollowBlogAction::MuteBlog => {
-                self.follow_body_builder(FollowActions::ResetMutedList, working_account, blogs)
-            }
+            FollowBlogAction::MuteBlog => self.follow_body_builder(
+                FollowActions::ResetMutedList,
+                working_account,
+                blogs,
+            ),
             FollowBlogAction::Both => self
                 .follow_body_builder(
                     FollowActions::ResetFollowingList,
                     working_account.clone(),
                     blogs.clone(),
                 )?
-                .follow_body_builder(FollowActions::ResetMutedList, working_account, blogs),
+                .follow_body_builder(
+                    FollowActions::ResetMutedList,
+                    working_account,
+                    blogs,
+                ),
         }
     }
 

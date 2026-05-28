@@ -1,5 +1,8 @@
-use wax_core::proto::{operation::Value, Operation, Transfer, Vote};
-use wax_core::{new_rust_protocol, RustAsset, RustManagedObject, RustOperation, RustTransaction};
+use wax_core::proto::{Operation, Transfer, Vote, operation::Value};
+use wax_core::{
+    RustAsset, RustManagedObject, RustOperation, RustTransaction,
+    new_rust_protocol,
+};
 
 #[test]
 fn descriptor_pool_loads_hive_protocol_buffers() {
@@ -9,12 +12,14 @@ fn descriptor_pool_loads_hive_protocol_buffers() {
             .is_some(),
         "FileDescriptorSet is missing the Operation message"
     );
-    assert!(pool
-        .get_message_by_name("hive.protocol.buffers.transaction")
-        .is_some());
-    assert!(pool
-        .get_message_by_name("hive.protocol.buffers.transfer")
-        .is_some());
+    assert!(
+        pool.get_message_by_name("hive.protocol.buffers.transaction")
+            .is_some()
+    );
+    assert!(
+        pool.get_message_by_name("hive.protocol.buffers.transfer")
+            .is_some()
+    );
 }
 
 #[test]

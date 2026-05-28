@@ -131,7 +131,13 @@ fn estimate_hbd_interest_zero_balance_returns_zero() {
     let f = foundation();
 
     let result = f
-        .estimate_hbd_interest(0_u128, 1_764_165_933, &hbd(0), 1_764_165_933, 1_500)
+        .estimate_hbd_interest(
+            0_u128,
+            1_764_165_933,
+            &hbd(0),
+            1_764_165_933,
+            1_500,
+        )
         .expect("estimate_hbd_interest");
 
     assert_eq!(result, hbd(0));

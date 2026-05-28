@@ -44,7 +44,9 @@ fn delegate_then_remove() {
         .authorize(vec!["initminer".into()], Vec::new())
         .expect("authorize remove");
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
 
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
@@ -81,7 +83,9 @@ fn delegate_multiple_delegatees() {
         .authorize(vec!["testAuthority".into()], Vec::new())
         .expect("authorize");
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
 
     assert_eq!(
@@ -102,7 +106,9 @@ fn authorizes_via_active_auth() {
         .authorize(Vec::new(), vec!["alice".into()])
         .expect("authorize");
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
     assert_eq!(cj.required_auths, vec!["alice".to_string()]);
     assert!(cj.required_posting_auths.is_empty());
@@ -110,13 +116,18 @@ fn authorizes_via_active_auth() {
 
 #[test]
 fn rejects_empty_delegatees() {
-    let result = ResourceCreditsOperation::new().delegate("alice", 1000, Vec::new());
+    let result =
+        ResourceCreditsOperation::new().delegate("alice", 1000, Vec::new());
     assert!(result.is_err(), "empty delegatees must error");
 }
 
 #[test]
 fn rejects_negative_max_rc() {
-    let result = ResourceCreditsOperation::new().delegate("alice", -1, vec!["bob".into()]);
+    let result = ResourceCreditsOperation::new().delegate(
+        "alice",
+        -1,
+        vec!["bob".into()],
+    );
     assert!(result.is_err(), "negative max_rc must error");
 }
 
@@ -139,6 +150,8 @@ fn unauthorized_stage_yields_no_ops() {
         .delegate("alice", 1000, vec!["bob".into()])
         .expect("delegate");
 
-    let tx = fresh_tx(&*f).push_builder(&*f, Box::new(op)).expect("push_builder");
+    let tx = fresh_tx(&*f)
+        .push_builder(&*f, Box::new(op))
+        .expect("push_builder");
     assert!(tx.transaction().operations.is_empty());
 }

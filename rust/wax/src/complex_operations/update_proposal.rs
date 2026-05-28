@@ -1,3 +1,5 @@
+//! Builder for the update-proposal operation.
+
 use wax_core::proto;
 
 use crate::WaxError;
@@ -6,11 +8,13 @@ use crate::interfaces::OperationBuilder;
 use crate::models::asset::{AssetName, NaiAssetConvertible};
 use crate::models::basic::{AccountName, HiveDateTime};
 
-/// Builder mirroring `ts/wasm/lib/detailed/complex_operations/update_proposal.ts`.
+/// Represents the builder for the update-proposal operation.
 ///
 /// `daily_pay` is coerced to HBD at finalize-time, so passing the wrong asset
-/// surfaces as `WaxError` from the foundation rather than panicking when the
+/// surfaces as a `WaxError` from the foundation rather than panicking when the
 /// proto op is pushed onto a transaction.
+///
+/// TS NOTE: mirrors `complex_operations/update_proposal.ts`.
 #[derive(Debug, Clone)]
 pub struct UpdateProposalOperation {
     pub proposal_id: i64,
@@ -27,8 +31,10 @@ impl OperationBuilder for UpdateProposalOperation {
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
         let this = *self;
-        let daily_pay =
-            foundation.create_asset_with_required_symbol(AssetName::Hbd, this.daily_pay)?;
+        let daily_pay = foundation.create_asset_with_required_symbol(
+            AssetName::Hbd,
+            this.daily_pay,
+        )?;
 
         let extensions = match this.end_date {
             Some(end_date) => vec![proto::UpdateProposalExtension {

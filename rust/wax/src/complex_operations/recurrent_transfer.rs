@@ -1,3 +1,6 @@
+//! Builders for the recurrent-transfer operation: defining or updating a
+//! recurring transfer and removing one.
+
 use wax_core::proto;
 
 use crate::WaxError;
@@ -18,15 +21,19 @@ fn coerce_hive_or_hbd(
     // Try HIVE first to match the dominant case; fall through to HBD if the
     // caller supplied HBD instead. Either symbol is valid for recurrent
     // transfers per the protocol spec.
-    let try_hive =
-        foundation.create_asset_with_required_symbol(AssetName::Hive, amount.clone());
+    let try_hive = foundation
+        .create_asset_with_required_symbol(AssetName::Hive, amount.clone());
     match try_hive {
         Ok(asset) => Ok(asset),
-        Err(_) => foundation.create_asset_with_required_symbol(AssetName::Hbd, amount),
+        Err(_) => {
+            foundation.create_asset_with_required_symbol(AssetName::Hbd, amount)
+        }
     }
 }
 
-fn build_extensions(pair_id: Option<u32>) -> Vec<proto::RecurrentTransferExtension> {
+fn build_extensions(
+    pair_id: Option<u32>,
+) -> Vec<proto::RecurrentTransferExtension> {
     match pair_id {
         Some(pair_id) if pair_id != 0 => vec![proto::RecurrentTransferExtension {
             value: Some(
@@ -39,9 +46,11 @@ fn build_extensions(pair_id: Option<u32>) -> Vec<proto::RecurrentTransferExtensi
     }
 }
 
-/// Builder for the `define` / `update` flavour of recurrent transfer, mirroring
-/// `DefineRecurrentTransferOperation` from
-/// `ts/wasm/lib/detailed/complex_operations/recurrent_transfer.ts`.
+/// Represents the builder for the define / update flavour of a recurrent
+/// transfer.
+///
+/// TS NOTE: mirrors `DefineRecurrentTransferOperation`
+/// (`complex_operations/recurrent_transfer.ts`).
 #[derive(Debug, Clone)]
 pub struct DefineRecurrentTransferOperation {
     pub from_account: AccountName,
@@ -71,7 +80,9 @@ impl OperationBuilder for DefineRecurrentTransferOperation {
                     to_account: this.to_account,
                     amount,
                     memo: this.memo.unwrap_or_default(),
-                    recurrence: this.recurrence.unwrap_or(DEFAULT_RECURRENCE_HOURS),
+                    recurrence: this
+                        .recurrence
+                        .unwrap_or(DEFAULT_RECURRENCE_HOURS),
                     executions: this.executions.unwrap_or(DEFAULT_EXECUTIONS),
                     extensions: build_extensions(this.pair_id),
                 },
@@ -80,8 +91,10 @@ impl OperationBuilder for DefineRecurrentTransferOperation {
     }
 }
 
-/// Builder for the removal flavour of recurrent transfer (zero-amount HIVE).
-/// Mirrors `RecurrentTransferRemovalOperation` from TS.
+/// Represents the builder for the removal flavour of a recurrent transfer (a
+/// zero-amount HIVE transfer).
+///
+/// TS NOTE: mirrors `RecurrentTransferRemovalOperation`.
 #[derive(Debug, Clone)]
 pub struct RecurrentTransferRemovalOperation {
     pub from_account: AccountName,

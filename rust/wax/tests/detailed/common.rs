@@ -7,7 +7,10 @@ use std::cell::RefCell;
 use beekeeper_rust::{
     api::BeekeeperApi, options::BeekeeperOptions, wallet::UnlockedWallet,
 };
-use wax::{SignatureProvider, WaxError, WaxFoundation, WaxOptions, create_wax_foundation};
+use wax::{
+    SignatureProvider, WaxError, WaxFoundation, WaxOptions,
+    create_wax_foundation,
+};
 
 pub struct WaxTestCtx {
     pub base: Box<dyn WaxFoundation>,
@@ -41,7 +44,10 @@ pub struct BeekeeperSignatureProvider<'a> {
 }
 
 impl<'a> BeekeeperSignatureProvider<'a> {
-    pub fn new(wallet: UnlockedWallet<'a>, default_key: impl Into<String>) -> Self {
+    pub fn new(
+        wallet: UnlockedWallet<'a>,
+        default_key: impl Into<String>,
+    ) -> Self {
         Self {
             wallet: RefCell::new(wallet),
             default_key: default_key.into(),
@@ -50,7 +56,11 @@ impl<'a> BeekeeperSignatureProvider<'a> {
 }
 
 impl<'a> SignatureProvider for BeekeeperSignatureProvider<'a> {
-    fn sign_digest(&self, public_key: &str, sig_digest: &str) -> Result<String, WaxError> {
+    fn sign_digest(
+        &self,
+        public_key: &str,
+        sig_digest: &str,
+    ) -> Result<String, WaxError> {
         self.wallet
             .borrow_mut()
             .sign_digest(public_key, sig_digest)
@@ -79,7 +89,11 @@ impl<'a> SignatureProvider for BeekeeperSignatureProvider<'a> {
         key: &str,
         other_key: Option<&str>,
     ) -> Result<String, WaxError> {
-        let from = if key.is_empty() { self.default_key.as_str() } else { key };
+        let from = if key.is_empty() {
+            self.default_key.as_str()
+        } else {
+            key
+        };
         self.wallet
             .borrow_mut()
             .decrypt_data(from, other_key, content)
@@ -97,7 +111,8 @@ pub struct BeekeeperFixture {
 
 /// Creates a fresh in-memory beekeeper and opens a session on it.
 pub fn new_in_memory_beekeeper() -> BeekeeperFixture {
-    let mut api = BeekeeperApi::new(BeekeeperOptions::new("ignored").in_memory(true));
+    let mut api =
+        BeekeeperApi::new(BeekeeperOptions::new("ignored").in_memory(true));
     let token = api.create_session().expect("create_session");
     BeekeeperFixture { api, token }
 }

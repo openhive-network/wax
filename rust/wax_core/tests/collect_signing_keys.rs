@@ -1,18 +1,23 @@
 use std::collections::HashMap;
 
 use cxx::UniquePtr;
-use wax_core::ffi::{RustAccountAuthorities, RustAuthEntry, RustWaxAuthorities, RustWaxAuthority};
-use wax_core::proto::{operation::Value, Operation, Vote};
+use wax_core::ffi::{
+    RustAccountAuthorities, RustAuthEntry, RustWaxAuthorities, RustWaxAuthority,
+};
+use wax_core::proto::{Operation, Vote, operation::Value};
 use wax_core::{
-    new_rust_protocol, rust_protocol, AuthorityProvider, RustAuthorityProvider, RustTransaction,
+    AuthorityProvider, RustAuthorityProvider, RustTransaction,
+    new_rust_protocol, rust_protocol,
 };
 
 // Real Hive public keys lifted from the canonical wax fixtures
 // (python/wax/tests/wax-local-tools/wax_local_tools/consts.py). They have to
 // be valid base58 because the foundation layer routes them through
 // hive::protocol::public_key_type, which parses on construction.
-const ALICE_POSTING_KEY: &str = "STM8MN3FNBa8WbEpxz3wGL3L1mkt6sGnncH8iuto7r8Wa3T9NSSGT";
-const BOB_POSTING_KEY: &str = "STM8HCf7QLUexogEviN8x1SpKRhFwg2sc8LrWuJqv7QsmWrua6ZyR";
+const ALICE_POSTING_KEY: &str =
+    "STM8MN3FNBa8WbEpxz3wGL3L1mkt6sGnncH8iuto7r8Wa3T9NSSGT";
+const BOB_POSTING_KEY: &str =
+    "STM8HCf7QLUexogEviN8x1SpKRhFwg2sc8LrWuJqv7QsmWrua6ZyR";
 
 // Maps account name -> posting key. The provider rebuilds a fresh
 // `RustWaxAuthorities` on each lookup to sidestep the bridge structs not
@@ -22,16 +27,19 @@ struct InMemoryAuthorityProvider {
 }
 
 impl AuthorityProvider for InMemoryAuthorityProvider {
-    fn get_authorities(&self, accounts: Vec<String>) -> Vec<RustAccountAuthorities> {
+    fn get_authorities(
+        &self,
+        accounts: Vec<String>,
+    ) -> Vec<RustAccountAuthorities> {
         accounts
             .into_iter()
             .filter_map(|account| {
-                self.posting_keys
-                    .get(&account)
-                    .map(|key| RustAccountAuthorities {
+                self.posting_keys.get(&account).map(|key| {
+                    RustAccountAuthorities {
                         account,
                         authorities: posting_only(key),
-                    })
+                    }
+                })
             })
             .collect()
     }
@@ -99,7 +107,9 @@ fn provider_for(entries: &[(&str, &str)]) -> Box<RustAuthorityProvider> {
         .iter()
         .map(|(account, key)| ((*account).to_string(), (*key).to_string()))
         .collect();
-    RustAuthorityProvider::new(Box::new(InMemoryAuthorityProvider { posting_keys }))
+    RustAuthorityProvider::new(Box::new(InMemoryAuthorityProvider {
+        posting_keys,
+    }))
 }
 
 #[test]
@@ -117,20 +127,16 @@ fn returns_voter_posting_key_for_single_vote() {
 #[test]
 fn returns_distinct_keys_for_multiple_voters() {
     let (protocol, tx) = build_vote_transaction(&["alice", "bob"]);
-    let provider = provider_for(&[
-        ("alice", ALICE_POSTING_KEY),
-        ("bob", BOB_POSTING_KEY),
-    ]);
+    let provider =
+        provider_for(&[("alice", ALICE_POSTING_KEY), ("bob", BOB_POSTING_KEY)]);
 
     let mut keys = protocol
         .cpp_tx_collect_signing_keys(&tx.handle, &provider)
         .expect("collect_signing_keys should succeed for two distinct voters");
     keys.sort();
 
-    let mut expected = vec![
-        ALICE_POSTING_KEY.to_string(),
-        BOB_POSTING_KEY.to_string(),
-    ];
+    let mut expected =
+        vec![ALICE_POSTING_KEY.to_string(), BOB_POSTING_KEY.to_string()];
     expected.sort();
     assert_eq!(keys, expected);
 }
