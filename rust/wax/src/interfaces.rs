@@ -1,5 +1,5 @@
 use rust_decimal::Decimal;
-use wax_core::{RustOperation, proto};
+use wax_core::proto;
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
@@ -57,17 +57,32 @@ pub trait SignatureProvider {
 }
 
 pub trait Operation {
+    /// Returns the underlying [`proto::Operation`] mirror. Exposed on the trait
+    /// so the public API can stay object-safe (`Box<dyn Operation>`) — consumers
+    /// of `dyn Operation` need a way to read the operation's wire-form state
+    /// without knowing the concrete implementor.
+    fn proto(&self) -> &proto::Operation;
+
     fn validate(&self) -> Result<(), WaxError>;
     fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
 }
 
 pub trait OperationBuilder {
-    fn finalize(self, foundation: &dyn WaxFoundation)
-        -> Result<Vec<proto::Operation>, WaxError>;
+    /// Consume the builder and emit the wire-form operations it represents.
+    ///
+    /// Takes `self: Box<Self>` so the trait remains object-safe — `Transaction::push_builder`
+    /// accepts `Box<dyn OperationBuilder>`.
+    fn finalize(
+        self: Box<Self>,
+        foundation: &dyn WaxFoundation,
+    ) -> Result<Vec<proto::Operation>, WaxError>;
 }
 
 pub trait Transaction {
-    fn push_operation(self, op: RustOperation) -> Self;
+    /// Append `op` to this transaction, consuming and returning it as a
+    /// `Box<dyn Transaction>` so chains stay object-safe.
+    fn push_operation(self: Box<Self>, op: Box<dyn Operation>) -> Box<dyn Transaction>;
+
     fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;
     fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError>;
     fn is_signed(&self) -> bool;
@@ -101,13 +116,14 @@ pub trait Transaction {
         provider: &dyn AuthorityDataProvider,
     ) -> Result<Vec<PublicKey>, WaxError>;
     fn transaction(&self) -> &proto::Transaction;
+
+    /// Finalize `builder` against `foundation` and append the resulting
+    /// operations to this transaction.
     fn push_builder(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
-        builder: impl OperationBuilder,
-    ) -> Result<Self, WaxError>
-    where
-        Self: Sized;
+        builder: Box<dyn OperationBuilder>,
+    ) -> Result<Box<dyn Transaction>, WaxError>;
 
     /// Convenience: compute the transaction's `sig_digest`, ask `wallet` to
     /// sign it with the private key matching `public_key`, append the result
@@ -127,15 +143,15 @@ pub trait Transaction {
     ///
     /// `main_key` is the principal recipient public key; `other_key` is an
     /// optional second recipient (memo-style two-party encryption).
-    fn start_encrypt(self, main_key: &str, other_key: Option<&str>) -> Self
-    where
-        Self: Sized;
+    fn start_encrypt(
+        self: Box<Self>,
+        main_key: &str,
+        other_key: Option<&str>,
+    ) -> Box<dyn Transaction>;
 
     /// Close the most recently opened encryption range. Errors if no range is
     /// open or the latest range is already closed.
-    fn stop_encrypt(self) -> Result<Self, WaxError>
-    where
-        Self: Sized;
+    fn stop_encrypt(self: Box<Self>) -> Result<Box<dyn Transaction>, WaxError>;
 
     /// Walk each tracked encryption range and encrypt the memo-style field on
     /// the operations it covers, using `wallet.encrypt_data` with the range's

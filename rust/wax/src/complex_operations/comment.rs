@@ -141,38 +141,39 @@ struct CommentInputs {
 
 impl OperationBuilder for ReplyOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        if self.parent_author.is_empty() {
+        let this = *self;
+        if this.parent_author.is_empty() {
             return Err(WaxError::new("No parent author specified in the reply operation"));
         }
-        if self.parent_permlink.is_empty() {
+        if this.parent_permlink.is_empty() {
             return Err(WaxError::new("No parent permlink specified in the reply operation"));
         }
 
-        let permlink = self
+        let permlink = this
             .permlink
-            .unwrap_or_else(|| format!("re-{}-{}", self.parent_author, now_millis()));
+            .unwrap_or_else(|| format!("re-{}-{}", this.parent_author, now_millis()));
 
         let inputs = CommentInputs {
-            parent_author: self.parent_author,
-            parent_permlink: self.parent_permlink,
-            author: self.author,
+            parent_author: this.parent_author,
+            parent_permlink: this.parent_permlink,
+            author: this.author,
             permlink,
-            title: self.title.unwrap_or_default(),
-            body: self.body,
-            format: self.format,
-            tags: self.tags,
-            images: self.images,
-            links: self.links,
-            alternative_author: self.alternative_author,
-            description: self.description,
-            beneficiaries: self.beneficiaries,
-            allow_curation_rewards: self.allow_curation_rewards,
-            allow_votes: self.allow_votes,
-            percent_hbd: self.percent_hbd,
-            max_accepted_payout: self.max_accepted_payout,
+            title: this.title.unwrap_or_default(),
+            body: this.body,
+            format: this.format,
+            tags: this.tags,
+            images: this.images,
+            links: this.links,
+            alternative_author: this.alternative_author,
+            description: this.description,
+            beneficiaries: this.beneficiaries,
+            allow_curation_rewards: this.allow_curation_rewards,
+            allow_votes: this.allow_votes,
+            percent_hbd: this.percent_hbd,
+            max_accepted_payout: this.max_accepted_payout,
         };
         inputs.into_operations(foundation)
     }
@@ -180,31 +181,32 @@ impl OperationBuilder for ReplyOperation {
 
 impl OperationBuilder for BlogPostOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let permlink = self
+        let this = *self;
+        let permlink = this
             .permlink
-            .unwrap_or_else(|| format!("{}-{}", self.author, now_millis()));
+            .unwrap_or_else(|| format!("{}-{}", this.author, now_millis()));
 
         let inputs = CommentInputs {
             parent_author: String::new(),
-            parent_permlink: self.category,
-            author: self.author,
+            parent_permlink: this.category,
+            author: this.author,
             permlink,
-            title: self.title,
-            body: self.body,
-            format: self.format,
-            tags: self.tags,
-            images: self.images,
-            links: self.links,
-            alternative_author: self.alternative_author,
-            description: self.description,
-            beneficiaries: self.beneficiaries,
-            allow_curation_rewards: self.allow_curation_rewards,
-            allow_votes: self.allow_votes,
-            percent_hbd: self.percent_hbd,
-            max_accepted_payout: self.max_accepted_payout,
+            title: this.title,
+            body: this.body,
+            format: this.format,
+            tags: this.tags,
+            images: this.images,
+            links: this.links,
+            alternative_author: this.alternative_author,
+            description: this.description,
+            beneficiaries: this.beneficiaries,
+            allow_curation_rewards: this.allow_curation_rewards,
+            allow_votes: this.allow_votes,
+            percent_hbd: this.percent_hbd,
+            max_accepted_payout: this.max_accepted_payout,
         };
         inputs.into_operations(foundation)
     }

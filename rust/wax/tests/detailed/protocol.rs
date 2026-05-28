@@ -18,7 +18,8 @@ use wax::proto::{
     Transaction as ProtoTransaction, Transfer, Vote, operation::Value,
 };
 use wax::result::{JsonPrice, WitnessSetPropertiesProps};
-use wax::{Manabar, Operation, RustOperation, RustTransaction, Transaction, WaxOptions};
+use wax::{Manabar, Operation, Transaction, WaxOptions};
+use wax_core::{RustOperation, RustTransaction};
 
 use crate::common::wax_test;
 
@@ -515,14 +516,14 @@ fn create_transaction_from_scratch_matches_mainnet_vote() {
         let protocol = wax_core::ffi::new_rust_protocol();
         let proto = protocol.as_ref().unwrap();
 
-        let mut tx = RustTransaction::new(
+        let tx: Box<dyn Transaction> = Box::new(RustTransaction::new(
             proto,
             wax::constants::MAINNET_CHAIN_ID,
             25263,
             1797793300,
             "",
             Vec::new(),
-        );
+        ));
 
         let op = RustOperation::new(
             proto,
@@ -533,7 +534,7 @@ fn create_transaction_from_scratch_matches_mainnet_vote() {
                 weight: 10000,
             }),
         );
-        tx = tx.push_operation(op);
+        let mut tx = tx.push_operation(Box::new(op));
         tx.set_expiration("2024-05-15T13:04:16")
             .expect("set_expiration");
         tx.add_signature("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf")

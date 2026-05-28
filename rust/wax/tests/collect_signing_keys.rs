@@ -84,8 +84,8 @@ fn posting_only(key: &str) -> Authorities {
     }
 }
 
-fn vote_op(voter: &str) -> RustOperation {
-    RustOperation::new(
+fn vote_op(voter: &str) -> Box<dyn wax::Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::VoteOperation(Vote {
             voter: voter.into(),
@@ -93,10 +93,10 @@ fn vote_op(voter: &str) -> RustOperation {
             permlink: "p".into(),
             weight: 10_000,
         }),
-    )
+    ))
 }
 
-fn vote_tx(voters: &[&str]) -> RustTransaction {
+fn vote_tx(voters: &[&str]) -> Box<dyn Transaction> {
     let ops = voters
         .iter()
         .map(|voter| Operation {
@@ -108,14 +108,14 @@ fn vote_tx(voters: &[&str]) -> RustTransaction {
             })),
         })
         .collect();
-    RustTransaction::new(
+    Box::new(RustTransaction::new(
         test_protocol(),
         MAINNET_CHAIN_ID,
         42,
         0xdead_beef,
         "2026-05-11T12:00:00",
         ops,
-    )
+    ))
 }
 
 #[test]

@@ -1,4 +1,4 @@
-use wax_core::RustOperation;
+use wax_core::{RustOperation, proto};
 
 use crate::WaxError;
 use crate::interfaces::Operation;
@@ -6,6 +6,10 @@ use crate::internal::protocol::rust_protocol;
 use crate::models::basic::AccountName;
 
 impl Operation for RustOperation {
+    fn proto(&self) -> &proto::Operation {
+        RustOperation::proto(self)
+    }
+
     fn validate(&self) -> Result<(), WaxError> {
         rust_protocol()
             .cpp_op_validate(&self.handle)

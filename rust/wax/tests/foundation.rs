@@ -6,7 +6,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::asset::NaiAsset;
-use wax::{Transaction, WaxFoundation, WaxOptions, create_wax_foundation};
+use wax::{WaxFoundation, WaxOptions, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -108,46 +108,27 @@ fn get_tapos_data_rejects_invalid_block_id() {
 
 #[test]
 fn deserialize_transaction_round_trips_through_binary() {
-    use cxx::UniquePtr;
-    use std::sync::OnceLock;
-    use wax::Transaction;
-    use wax_core::ffi::{new_rust_protocol, rust_protocol};
-    use wax_core::proto::{Vote, operation::Value};
-    use wax_core::{RustOperation, RustTransaction};
+    use wax::proto::{Vote, operation::Value};
 
-    struct SyncProtocol(UniquePtr<rust_protocol>);
-    unsafe impl Sync for SyncProtocol {}
-    unsafe impl Send for SyncProtocol {}
-    static TEST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
-    let protocol = TEST_PROTOCOL
-        .get_or_init(|| SyncProtocol(new_rust_protocol()))
-        .0
-        .as_ref()
-        .expect("new_rust_protocol returned null");
+    let f = foundation();
 
     // Build a minimal transaction so we have a known binary blob to feed
     // back through deserialize_transaction.
-    let tx = RustTransaction::new(
-        protocol,
-        MAINNET_CHAIN_ID,
-        1,
-        0xfeed_face,
-        "2026-05-15T12:00:00",
-        Vec::new(),
-    )
-    .push_operation(RustOperation::new(
-        protocol,
-        Value::VoteOperation(Vote {
+    let tx = f
+        .create_transaction_with_tapos(
+            "00000001feedfacedeadbeef00000000000000000000",
+            "2026-05-15T12:00:00",
+        )
+        .expect("create_transaction_with_tapos")
+        .push_operation(f.create_operation(Value::VoteOperation(Vote {
             voter: "alice".into(),
             author: "bob".into(),
             permlink: "p".into(),
             weight: 10_000,
-        }),
-    ));
+        })));
 
     let hex = tx.to_binary_form(false).expect("to_binary_form");
 
-    let f = foundation();
     let json = f
         .deserialize_transaction(&hex)
         .expect("deserialize_transaction should succeed for hex from to_binary_form");
@@ -484,36 +465,19 @@ fn get_public_key_from_signature_rejects_invalid_signature() {
 
 #[test]
 fn set_expiration_updates_both_handle_and_proto_state() {
-    use cxx::UniquePtr;
-    use std::sync::OnceLock;
-    use wax::Transaction;
-    use wax_core::RustTransaction;
-    use wax_core::ffi::{new_rust_protocol, rust_protocol};
-
-    struct SyncProtocol(UniquePtr<rust_protocol>);
-    unsafe impl Sync for SyncProtocol {}
-    unsafe impl Send for SyncProtocol {}
-    static TEST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
-    let protocol = TEST_PROTOCOL
-        .get_or_init(|| SyncProtocol(new_rust_protocol()))
-        .0
-        .as_ref()
-        .expect("new_rust_protocol returned null");
-
-    let mut tx = RustTransaction::new(
-        protocol,
-        MAINNET_CHAIN_ID,
-        1,
-        0xfeed_face,
-        "2026-05-15T12:00:00",
-        Vec::new(),
-    );
+    let f = foundation();
+    let mut tx = f
+        .create_transaction_with_tapos(
+            "00000001feedfacedeadbeef00000000000000000000",
+            "2026-05-15T12:00:00",
+        )
+        .expect("create_transaction_with_tapos");
 
     let new_expiration = "2026-12-31T23:59:00";
     tx.set_expiration(new_expiration).expect("set_expiration");
 
     // Proto mirror is updated...
-    assert_eq!(tx.proto().expiration, new_expiration);
+    assert_eq!(tx.transaction().expiration, new_expiration);
     // ...and the underlying handle reflects the change too (visible via JSON).
     let json = tx.to_api().expect("to_api");
     assert!(

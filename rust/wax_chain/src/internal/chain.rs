@@ -16,7 +16,7 @@ use wax::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData, JsonPrice,
     PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
 };
-use wax::{ManabarData, RustTransaction};
+use wax::{ManabarData, Operation, Transaction};
 
 use crate::chain::HiveChain;
 use crate::error::WaxChainError;
@@ -269,29 +269,32 @@ impl WaxFoundation for HiveChainApi {
         fn create_transaction_from_legacy_json(
             &self,
             legacy_json: &str,
-        ) -> Result<RustTransaction, WaxError>;
+        ) -> Result<Box<dyn Transaction>, WaxError>;
 
         fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
 
         fn create_transaction_from_proto(
             &self,
             transaction: proto::Transaction,
-        ) -> Result<RustTransaction, WaxError>;
+        ) -> Result<Box<dyn Transaction>, WaxError>;
 
-        fn create_transaction_from_json(&self, json: &str) -> Result<RustTransaction, WaxError>;
+        fn create_transaction_from_json(
+            &self,
+            json: &str,
+        ) -> Result<Box<dyn Transaction>, WaxError>;
 
         fn create_transaction_with_tapos(
             &self,
             tapos_block_id: &str,
             expiration: &str,
-        ) -> Result<RustTransaction, WaxError>;
+        ) -> Result<Box<dyn Transaction>, WaxError>;
 
         fn create_transaction_with_chain_reference_data(
             &self,
             tapos_block_id: &str,
             head_block_time: Option<HiveDateTime>,
             expiration: Option<&str>,
-        ) -> Result<RustTransaction, WaxError>;
+        ) -> Result<Box<dyn Transaction>, WaxError>;
 
         fn operation_get_impacted_accounts(
             &self,
@@ -303,6 +306,13 @@ impl WaxFoundation for HiveChainApi {
             operation: &proto::Operation,
             use_hf26_serialization: bool,
         ) -> Result<BinaryViewOutputData, WaxError>;
+
+        fn create_operation_from_proto(
+            &self,
+            operation: proto::Operation,
+        ) -> Box<dyn Operation>;
+
+        fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
 
         fn serialize_witness_props(
             &self,

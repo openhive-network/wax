@@ -55,10 +55,11 @@ pub struct DefineRecurrentTransferOperation {
 
 impl OperationBuilder for DefineRecurrentTransferOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let amount = coerce_hive_or_hbd(foundation, self.amount)?;
+        let this = *self;
+        let amount = coerce_hive_or_hbd(foundation, this.amount)?;
         if amount.amount == "0" {
             return Err(WaxError::new("Amount must be greater than 0"));
         }
@@ -66,13 +67,13 @@ impl OperationBuilder for DefineRecurrentTransferOperation {
         Ok(vec![proto::Operation {
             value: Some(proto::operation::Value::RecurrentTransferOperation(
                 proto::RecurrentTransfer {
-                    from_account: self.from_account,
-                    to_account: self.to_account,
+                    from_account: this.from_account,
+                    to_account: this.to_account,
                     amount,
-                    memo: self.memo.unwrap_or_default(),
-                    recurrence: self.recurrence.unwrap_or(DEFAULT_RECURRENCE_HOURS),
-                    executions: self.executions.unwrap_or(DEFAULT_EXECUTIONS),
-                    extensions: build_extensions(self.pair_id),
+                    memo: this.memo.unwrap_or_default(),
+                    recurrence: this.recurrence.unwrap_or(DEFAULT_RECURRENCE_HOURS),
+                    executions: this.executions.unwrap_or(DEFAULT_EXECUTIONS),
+                    extensions: build_extensions(this.pair_id),
                 },
             )),
         }])
@@ -90,9 +91,10 @@ pub struct RecurrentTransferRemovalOperation {
 
 impl OperationBuilder for RecurrentTransferRemovalOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
+        let this = *self;
         // TS defaults to `{ ...ASSETS.HIVE, amount: "0" }` when the amount is
         // undefined; the symbol parser handles HIVE-zero cleanly.
         let amount = foundation.hive_satoshis(0)?;
@@ -100,13 +102,13 @@ impl OperationBuilder for RecurrentTransferRemovalOperation {
         Ok(vec![proto::Operation {
             value: Some(proto::operation::Value::RecurrentTransferOperation(
                 proto::RecurrentTransfer {
-                    from_account: self.from_account,
-                    to_account: self.to_account,
+                    from_account: this.from_account,
+                    to_account: this.to_account,
                     amount,
                     memo: String::new(),
                     recurrence: DEFAULT_RECURRENCE_HOURS,
                     executions: DEFAULT_EXECUTIONS,
-                    extensions: build_extensions(self.pair_id),
+                    extensions: build_extensions(this.pair_id),
                 },
             )),
         }])

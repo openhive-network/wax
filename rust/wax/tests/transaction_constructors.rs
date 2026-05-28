@@ -8,7 +8,7 @@
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::proto::{Operation, Transaction as ProtoTransaction, Vote, operation::Value};
-use wax::{Transaction, WaxFoundation, create_wax_foundation};
+use wax::{WaxFoundation, create_wax_foundation};
 
 fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
@@ -198,16 +198,12 @@ fn create_transaction_with_tapos_returns_usable_handle() {
         .create_transaction_with_tapos(block_id, "2026-05-15T12:00:00")
         .expect("create_transaction_with_tapos");
 
-    let protocol = wax_core::ffi::new_rust_protocol();
-    let pushed = wax::RustOperation::new(
-        protocol.as_ref().unwrap(),
-        Value::VoteOperation(Vote {
-            voter: "alice".into(),
-            author: "bob".into(),
-            permlink: "p".into(),
-            weight: 1,
-        }),
-    );
+    let pushed = f.create_operation(Value::VoteOperation(Vote {
+        voter: "alice".into(),
+        author: "bob".into(),
+        permlink: "p".into(),
+        weight: 1,
+    }));
     tx = tx.push_operation(pushed);
 
     let api = tx.to_api().expect("to_api");

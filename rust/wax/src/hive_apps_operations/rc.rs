@@ -129,10 +129,11 @@ impl ResourceCreditsOperation {
 
 impl OperationBuilder for ResourceCreditsOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         _foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        Ok(self
+        let this = *self;
+        Ok(this
             .authorized
             .into_iter()
             .map(|cj| proto::Operation {

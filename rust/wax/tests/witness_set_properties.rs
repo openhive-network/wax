@@ -18,7 +18,7 @@ fn foundation() -> Box<dyn WaxFoundation> {
 const TAPOS_BLOCK_ID: &str = "04c1c7a566fc0da66aee465714acee7346b48ac2";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
 
-fn empty_tx(f: &dyn WaxFoundation) -> wax::RustTransaction {
+fn empty_tx(f: &dyn WaxFoundation) -> Box<dyn Transaction> {
     f.create_transaction_with_tapos(TAPOS_BLOCK_ID, EXPIRATION)
         .expect("create_transaction_with_tapos")
 }
@@ -31,7 +31,7 @@ fn decay_and_budget() {
     let tx = empty_tx(&*f)
         .push_builder(
             &*f,
-            WitnessSetPropertiesOperation {
+            Box::new(WitnessSetPropertiesOperation {
                 owner: "emrebeyler".into(),
                 witness_signing_key: "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju"
                     .into(),
@@ -43,7 +43,7 @@ fn decay_and_budget() {
                 hbd_interest_rate: None,
                 account_subsidy_budget: Some(1),
                 account_subsidy_decay: Some(64),
-            },
+            }),
         )
         .expect("push_builder");
 
@@ -70,7 +70,7 @@ fn url_only() {
     let tx = empty_tx(&*f)
         .push_builder(
             &*f,
-            WitnessSetPropertiesOperation {
+            Box::new(WitnessSetPropertiesOperation {
                 owner: "therealwolf".into(),
                 witness_signing_key: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC"
                     .into(),
@@ -85,7 +85,7 @@ fn url_only() {
                 hbd_interest_rate: None,
                 account_subsidy_budget: None,
                 account_subsidy_decay: None,
-            },
+            }),
         )
         .expect("push_builder");
 
@@ -116,7 +116,7 @@ fn with_exchange_rate() {
     let tx = empty_tx(&*f)
         .push_builder(
             &*f,
-            WitnessSetPropertiesOperation {
+            Box::new(WitnessSetPropertiesOperation {
                 owner: "ctrpch".into(),
                 witness_signing_key: "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU"
                     .into(),
@@ -131,7 +131,7 @@ fn with_exchange_rate() {
                 hbd_interest_rate: None,
                 account_subsidy_budget: None,
                 account_subsidy_decay: None,
-            },
+            }),
         )
         .expect("push_builder");
 
@@ -156,7 +156,7 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
 
     let result = empty_tx(&*f).push_builder(
         &*f,
-        WitnessSetPropertiesOperation {
+        Box::new(WitnessSetPropertiesOperation {
             owner: "therealwolf".into(),
             witness_signing_key: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC".into(),
             new_signing_key: None,
@@ -167,7 +167,7 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
             hbd_interest_rate: None,
             account_subsidy_budget: None,
             account_subsidy_decay: None,
-        },
+        }),
     );
     assert!(
         result.is_err(),

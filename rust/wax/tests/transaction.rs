@@ -4,7 +4,7 @@ use std::sync::OnceLock;
 use cxx::UniquePtr;
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::result::BinaryViewNode;
-use wax::{SignatureProvider, Transaction, WaxError};
+use wax::{Operation, SignatureProvider, Transaction, WaxError};
 use wax_core::ffi::{new_rust_protocol, rust_protocol};
 use wax_core::proto::{
     AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount, Transfer, Vote,
@@ -31,24 +31,24 @@ fn test_protocol() -> &'static rust_protocol {
 
 // Canonical mainnet transaction shell used by most tests. Block data and
 // expiration are arbitrary fixed values — tests that care about those build
-// their own RustTransaction inline.
-fn mainnet_tx() -> RustTransaction {
+// their own transaction inline.
+fn mainnet_tx() -> Box<dyn Transaction> {
     tx_with_chain_id(MAINNET_CHAIN_ID)
 }
 
-fn tx_with_chain_id(chain_id: &str) -> RustTransaction {
-    RustTransaction::new(
+fn tx_with_chain_id(chain_id: &str) -> Box<dyn Transaction> {
+    Box::new(RustTransaction::new(
         test_protocol(),
         chain_id,
         1,
         0xfeed_face,
         "2026-05-13T12:00:00",
         Vec::new(),
-    )
+    ))
 }
 
-fn vote(voter: &str, weight: u32) -> RustOperation {
-    RustOperation::new(
+fn vote(voter: &str, weight: u32) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::VoteOperation(Vote {
             voter: voter.into(),
@@ -56,17 +56,17 @@ fn vote(voter: &str, weight: u32) -> RustOperation {
             permlink: "permlink".into(),
             weight,
         }),
-    )
+    ))
 }
 
-fn account_witness_proxy(account: &str, proxy: &str) -> RustOperation {
-    RustOperation::new(
+fn account_witness_proxy(account: &str, proxy: &str) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::AccountWitnessProxyOperation(AccountWitnessProxy {
             account: account.into(),
             proxy: proxy.into(),
         }),
-    )
+    ))
 }
 
 fn authority_with_key(public_key: &str) -> Authority {
@@ -77,8 +77,12 @@ fn authority_with_key(public_key: &str) -> Authority {
     }
 }
 
-fn recover_account(account: &str, new_owner_key: &str, recent_owner_key: &str) -> RustOperation {
-    RustOperation::new(
+fn recover_account(
+    account: &str,
+    new_owner_key: &str,
+    recent_owner_key: &str,
+) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::RecoverAccountOperation(RecoverAccount {
             account_to_recover: account.into(),
@@ -86,19 +90,19 @@ fn recover_account(account: &str, new_owner_key: &str, recent_owner_key: &str) -
             recent_owner_authority: authority_with_key(recent_owner_key),
             extensions: Vec::new(),
         }),
-    )
+    ))
 }
 
 #[test]
 fn push_operation_appends_op_to_proto_state() {
     let tx = mainnet_tx();
-    assert!(tx.proto().operations.is_empty());
+    assert!(tx.transaction().operations.is_empty());
 
     let tx = tx.push_operation(vote("alice", 10_000));
 
-    assert_eq!(tx.proto().operations.len(), 1);
+    assert_eq!(tx.transaction().operations.len(), 1);
     assert_eq!(
-        tx.proto().operations[0].value,
+        tx.transaction().operations[0].value,
         Some(Value::VoteOperation(Vote {
             voter: "alice".into(),
             author: "author".into(),
@@ -308,12 +312,12 @@ fn is_signed_stays_false_when_add_signature_fails() {
 #[test]
 fn add_signature_appends_to_proto_signatures() {
     let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
-    assert!(tx.proto().signatures.is_empty());
+    assert!(tx.transaction().signatures.is_empty());
 
     tx.add_signature(FAKE_SIG_A)
         .expect("valid hex signature should be accepted");
 
-    assert_eq!(tx.proto().signatures, vec![FAKE_SIG_A.to_string()]);
+    assert_eq!(tx.transaction().signatures, vec![FAKE_SIG_A.to_string()]);
 }
 
 // Stub wallet that hands back a canned signature and records what it saw, so
@@ -369,7 +373,7 @@ fn sign_routes_digest_and_pubkey_to_wallet_and_appends_returned_signature() {
 
     assert_eq!(returned, FAKE_SIG_A);
     assert_eq!(
-        tx.proto().signatures,
+        tx.transaction().signatures,
         vec![FAKE_SIG_A.to_string()],
         "sign must append the wallet's signature to the transaction"
     );
@@ -432,7 +436,7 @@ fn sign_can_be_called_multiple_times_for_multi_key_signing() {
     tx.sign(&wallet_b, "STM_PUBKEY_B").expect("second sign");
 
     assert_eq!(
-        tx.proto().signatures,
+        tx.transaction().signatures,
         vec![FAKE_SIG_A.to_string(), FAKE_SIG_B.to_string()]
     );
 }
@@ -481,7 +485,7 @@ fn add_signature_accumulates_across_calls() {
     tx.add_signature(FAKE_SIG_B).expect("second signature");
 
     assert_eq!(
-        tx.proto().signatures,
+        tx.transaction().signatures,
         vec![FAKE_SIG_A.to_string(), FAKE_SIG_B.to_string()]
     );
 }
@@ -519,7 +523,7 @@ fn add_signature_rejects_non_hex_input() {
 
     assert!(result.is_err(), "non-hex signature must fail");
     assert!(
-        tx.proto().signatures.is_empty(),
+        tx.transaction().signatures.is_empty(),
         "failed add_signature must not mutate proto state"
     );
 }
@@ -938,19 +942,19 @@ fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
 
 #[test]
 fn push_operation_preserves_order_when_chained() {
-    let tx = RustTransaction::new(
+    let tx: Box<dyn Transaction> = Box::new(RustTransaction::new(
         test_protocol(),
         MAINNET_CHAIN_ID,
         2,
         0xdead_beef,
         "2026-05-13T12:00:00",
         Vec::new(),
-    )
+    ))
     .push_operation(vote("first", 1))
     .push_operation(vote("second", 2));
 
     let voters: Vec<&str> = tx
-        .proto()
+        .transaction()
         .operations
         .iter()
         .map(|op| match op.value.as_ref().expect("op value present") {
@@ -1048,8 +1052,8 @@ fn hive_asset(amount: i64) -> Asset {
     }
 }
 
-fn transfer(from: &str, to: &str, memo: &str) -> RustOperation {
-    RustOperation::new(
+fn transfer(from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::TransferOperation(Transfer {
             from_account: from.into(),
@@ -1057,11 +1061,11 @@ fn transfer(from: &str, to: &str, memo: &str) -> RustOperation {
             amount: hive_asset(1),
             memo: memo.into(),
         }),
-    )
+    ))
 }
 
-fn comment_op(author: &str, permlink: &str, body: &str) -> RustOperation {
-    RustOperation::new(
+fn comment_op(author: &str, permlink: &str, body: &str) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::CommentOperation(Comment {
             parent_author: "".into(),
@@ -1072,11 +1076,11 @@ fn comment_op(author: &str, permlink: &str, body: &str) -> RustOperation {
             body: body.into(),
             json_metadata: "{}".into(),
         }),
-    )
+    ))
 }
 
-fn custom_json(account: &str, id: &str, json: &str) -> RustOperation {
-    RustOperation::new(
+fn custom_json(account: &str, id: &str, json: &str) -> Box<dyn Operation> {
+    Box::new(RustOperation::new(
         test_protocol(),
         Value::CustomJsonOperation(CustomJson {
             required_auths: Vec::new(),
@@ -1084,7 +1088,7 @@ fn custom_json(account: &str, id: &str, json: &str) -> RustOperation {
             id: id.into(),
             json: json.into(),
         }),
-    )
+    ))
 }
 
 // Records what was encrypted/decrypted and parrots back a tagged version so
@@ -1171,7 +1175,7 @@ fn perform_operation_encryption_is_noop_when_no_ranges_are_open() {
         wallet.encrypts.borrow().is_empty(),
         "wallet must not be called when no ranges are tracked"
     );
-    match tx.proto().operations[0].value.as_ref().unwrap() {
+    match tx.transaction().operations[0].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(t.memo, "plain"),
         other => panic!("unexpected op variant: {other:?}"),
     }
@@ -1191,12 +1195,12 @@ fn perform_operation_encryption_rewrites_memos_in_range() {
     tx.perform_operation_encryption(&CryptoStub::new())
         .expect("perform_operation_encryption should succeed");
 
-    let memos: Vec<&str> = tx
-        .proto()
+    let memos: Vec<String> = tx
+        .transaction()
         .operations
         .iter()
         .map(|op| match op.value.as_ref().unwrap() {
-            Value::TransferOperation(t) => t.memo.as_str(),
+            Value::TransferOperation(t) => t.memo.clone(),
             _ => panic!("unexpected variant"),
         })
         .collect();
@@ -1204,17 +1208,29 @@ fn perform_operation_encryption_rewrites_memos_in_range() {
     assert_eq!(
         memos,
         vec![
-            "before",
-            "#enc:STM_MAIN:secret-1",
-            "#enc:STM_MAIN:secret-2",
-            "after",
+            "before".to_string(),
+            "#enc:STM_MAIN:secret-1".to_string(),
+            "#enc:STM_MAIN:secret-2".to_string(),
+            "after".to_string(),
         ],
         "only ops inside the [start, stop) range must be encrypted"
     );
-    assert!(
-        tx.encryption_indices.is_empty(),
-        "ranges must be cleared after a successful perform_operation_encryption"
-    );
+    // NOTE: `encryption_indices` is no longer reachable through `dyn Transaction`.
+    // A second `perform_operation_encryption` must be a noop once ranges are
+    // cleared — verifying that exercises the same "ranges were consumed"
+    // invariant the old field probe asserted.
+    tx.perform_operation_encryption(&CryptoStub::new())
+        .expect("second perform_operation_encryption should noop");
+    let after: Vec<String> = tx
+        .transaction()
+        .operations
+        .iter()
+        .map(|op| match op.value.as_ref().unwrap() {
+            Value::TransferOperation(t) => t.memo.clone(),
+            _ => panic!("unexpected variant"),
+        })
+        .collect();
+    assert_eq!(after, memos, "second call must not re-encrypt anything");
 }
 
 #[test]
@@ -1259,7 +1275,7 @@ fn perform_operation_encryption_covers_all_supported_memo_fields() {
     tx.perform_operation_encryption(&CryptoStub::new())
         .expect("encryption");
 
-    let ops = &tx.proto().operations;
+    let ops = &tx.transaction().operations;
     match ops[0].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(t.memo, "#enc:K:transfer-memo"),
         _ => panic!("transfer variant"),
@@ -1301,7 +1317,7 @@ fn perform_operation_encryption_skips_unencryptable_operations() {
         1,
         "wallet must be called exactly once — the vote has no encryptable field"
     );
-    match &tx.proto().operations[1].value.as_ref().unwrap() {
+    match &tx.transaction().operations[1].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(t.memo, "#enc:K:secret"),
         _ => panic!("transfer variant"),
     }
@@ -1344,11 +1360,11 @@ fn decrypt_only_unwraps_fields_with_hash_prefix() {
         &["#enc:K:secret".to_string()],
         "only the #-prefixed memo must be sent to decrypt_data"
     );
-    match tx.proto().operations[0].value.as_ref().unwrap() {
+    match tx.transaction().operations[0].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(t.memo, "secret"),
         _ => panic!("transfer variant"),
     }
-    match tx.proto().operations[1].value.as_ref().unwrap() {
+    match tx.transaction().operations[1].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(t.memo, "plaintext"),
         _ => panic!("transfer variant"),
     }
@@ -1363,7 +1379,7 @@ fn decrypt_unwraps_custom_json_envelope() {
 
     tx.decrypt(&CryptoStub::new()).expect("decrypt");
 
-    match tx.proto().operations[0].value.as_ref().unwrap() {
+    match tx.transaction().operations[0].value.as_ref().unwrap() {
         Value::CustomJsonOperation(c) => assert_eq!(c.json, "{\"hello\":\"world\"}"),
         _ => panic!("custom_json variant"),
     }
@@ -1381,7 +1397,7 @@ fn encrypt_then_decrypt_round_trips_memo() {
         .expect("encryption");
     tx.decrypt(&CryptoStub::new()).expect("decryption");
 
-    match tx.proto().operations[0].value.as_ref().unwrap() {
+    match tx.transaction().operations[0].value.as_ref().unwrap() {
         Value::TransferOperation(t) => assert_eq!(
             t.memo, "round-trip",
             "encrypt then decrypt must restore the original memo with the stub wallet"

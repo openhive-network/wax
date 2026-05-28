@@ -8,19 +8,29 @@ use wax_core::{EncryptionIndex, RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::foundation::WaxFoundation;
-use crate::interfaces::{AuthorityDataProvider, OperationBuilder, SignatureProvider, Transaction};
+use crate::interfaces::{
+    AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider, Transaction,
+};
 use crate::internal::authority::{build_provider, to_rust_authorities};
 use crate::internal::protocol::rust_protocol;
 use crate::models::authority::RequiredAuthorities;
 use crate::result::{BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData};
 
 impl Transaction for RustTransaction {
-    fn push_operation(mut self, op: RustOperation) -> Self {
+    fn push_operation(
+        mut self: Box<Self>,
+        op: Box<dyn Operation>,
+    ) -> Box<dyn Transaction> {
+        // The Operation trait exposes only `&proto::Operation`, so we rebuild
+        // the C++ handle from the proto mirror. The extra handle creation is
+        // the price of keeping `RustOperation` out of the public surface.
+        let proto_op = op.proto().clone();
+        let new_op = RustOperation::from_proto(rust_protocol(), proto_op);
         rust_protocol()
-            .cpp_tx_add_operation(self.handle.pin_mut(), &op.handle)
+            .cpp_tx_add_operation(self.handle.pin_mut(), &new_op.handle)
             .expect("failed to add operation to transaction");
 
-        self.inner.operations.push(op.inner);
+        self.inner.operations.push(new_op.inner);
 
         self
     }
@@ -169,16 +179,19 @@ impl Transaction for RustTransaction {
     }
 
     fn push_builder(
-        self,
+        mut self: Box<Self>,
         foundation: &dyn WaxFoundation,
-        builder: impl OperationBuilder,
-    ) -> Result<Self, WaxError> {
+        builder: Box<dyn OperationBuilder>,
+    ) -> Result<Box<dyn Transaction>, WaxError> {
         let protocol = rust_protocol();
-        let mut tx = self;
         for op in builder.finalize(foundation)? {
-            tx = tx.push_operation(RustOperation::from_proto(protocol, op));
+            let rust_op = RustOperation::from_proto(protocol, op);
+            protocol
+                .cpp_tx_add_operation(self.handle.pin_mut(), &rust_op.handle)
+                .expect("failed to add operation to transaction");
+            self.inner.operations.push(rust_op.inner);
         }
-        Ok(tx)
+        Ok(self)
     }
 
     fn sign(
@@ -194,7 +207,11 @@ impl Transaction for RustTransaction {
         Ok(signature)
     }
 
-    fn start_encrypt(mut self, main_key: &str, other_key: Option<&str>) -> Self {
+    fn start_encrypt(
+        mut self: Box<Self>,
+        main_key: &str,
+        other_key: Option<&str>,
+    ) -> Box<dyn Transaction> {
         let begin = self.inner.operations.len();
         self.encryption_indices.push(EncryptionIndex {
             main_key: main_key.to_string(),
@@ -205,7 +222,7 @@ impl Transaction for RustTransaction {
         self
     }
 
-    fn stop_encrypt(mut self) -> Result<Self, WaxError> {
+    fn stop_encrypt(mut self: Box<Self>) -> Result<Box<dyn Transaction>, WaxError> {
         let current_len = self.inner.operations.len();
         let last = self.encryption_indices.last_mut().ok_or_else(|| {
             WaxError::new("Mismatch in index types - stop_encrypt called before start_encrypt")

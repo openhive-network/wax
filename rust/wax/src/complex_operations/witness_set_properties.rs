@@ -42,15 +42,16 @@ pub struct WitnessSetPropertiesOperation {
 
 impl OperationBuilder for WitnessSetPropertiesOperation {
     fn finalize(
-        self,
+        self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let account_creation_fee = self
+        let this = *self;
+        let account_creation_fee = this
             .account_creation_fee
             .map(|fee| foundation.create_asset_with_required_symbol(AssetName::Hive, fee))
             .transpose()?;
 
-        let hbd_exchange_rate = self
+        let hbd_exchange_rate = this
             .hbd_exchange_rate
             .map(|rate| {
                 let base =
@@ -62,15 +63,15 @@ impl OperationBuilder for WitnessSetPropertiesOperation {
             .transpose()?;
 
         let props = WitnessSetPropertiesProps {
-            key: self.witness_signing_key,
-            new_signing_key: self.new_signing_key,
+            key: this.witness_signing_key,
+            new_signing_key: this.new_signing_key,
             account_creation_fee,
-            url: self.url,
+            url: this.url,
             hbd_exchange_rate,
-            maximum_block_size: self.maximum_block_size,
-            hbd_interest_rate: self.hbd_interest_rate,
-            account_subsidy_budget: self.account_subsidy_budget,
-            account_subsidy_decay: self.account_subsidy_decay,
+            maximum_block_size: this.maximum_block_size,
+            hbd_interest_rate: this.hbd_interest_rate,
+            account_subsidy_budget: this.account_subsidy_budget,
+            account_subsidy_decay: this.account_subsidy_decay,
         };
 
         let serialized_props = foundation.serialize_witness_props(&props)?;
@@ -78,7 +79,7 @@ impl OperationBuilder for WitnessSetPropertiesOperation {
         Ok(vec![proto::Operation {
             value: Some(proto::operation::Value::WitnessSetPropertiesOperation(
                 proto::WitnessSetProperties {
-                    owner: self.owner,
+                    owner: this.owner,
                     props: serialized_props,
                     extensions: Vec::new(),
                 },

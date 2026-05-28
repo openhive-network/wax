@@ -1,6 +1,7 @@
-use wax_core::{RustTransaction, proto};
+use wax_core::proto;
 
 use crate::WaxError;
+use crate::interfaces::{Operation, Transaction};
 use crate::internal::models::manabar_data::ManabarData;
 use crate::models::asset::{AssetAmount, AssetName, NaiAsset, NaiAssetConvertible};
 use crate::models::authority::Authorities;
@@ -187,30 +188,30 @@ pub trait WaxFoundation {
 
     fn legacy_transaction_to_json(&self, legacy_json: &str) -> Result<String, WaxError>;
 
-    /// Build a [`RustTransaction`] from a legacy-form JSON transaction. Mirrors
-    /// TS `createTransactionFromLegacyJson` and Python's
+    /// Build a transaction from a legacy-form JSON transaction. Mirrors TS
+    /// `createTransactionFromLegacyJson` and Python's
     /// `create_transaction_from_legacy_json`: rewrites the legacy payload to
     /// HF26/API JSON via [`Self::legacy_transaction_to_json`] and then parses
     /// it with [`Self::create_transaction_from_json`].
     fn create_transaction_from_legacy_json(
         &self,
         legacy_json: &str,
-    ) -> Result<RustTransaction, WaxError>;
+    ) -> Result<Box<dyn Transaction>, WaxError>;
 
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
 
     fn create_transaction_from_proto(
         &self,
         transaction: proto::Transaction,
-    ) -> Result<RustTransaction, WaxError>;
+    ) -> Result<Box<dyn Transaction>, WaxError>;
 
-    fn create_transaction_from_json(&self, json: &str) -> Result<RustTransaction, WaxError>;
+    fn create_transaction_from_json(&self, json: &str) -> Result<Box<dyn Transaction>, WaxError>;
 
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
         expiration: &str,
-    ) -> Result<RustTransaction, WaxError>;
+    ) -> Result<Box<dyn Transaction>, WaxError>;
 
     /// Build a transaction from chain reference data: a tapos block id, plus
     /// optional head-block time and expiration spec. Mirrors TS
@@ -230,7 +231,16 @@ pub trait WaxFoundation {
         tapos_block_id: &str,
         head_block_time: Option<HiveDateTime>,
         expiration: Option<&str>,
-    ) -> Result<RustTransaction, WaxError>;
+    ) -> Result<Box<dyn Transaction>, WaxError>;
+
+    /// Build an [`Operation`] from a [`proto::Operation`]. Hides the underlying
+    /// `wax_core::RustOperation` so callers stay on the public trait surface.
+    fn create_operation_from_proto(&self, operation: proto::Operation) -> Box<dyn Operation>;
+
+    /// Build an [`Operation`] from an [`proto::operation::Value`] variant —
+    /// shorthand for wrapping the value in a `proto::Operation` and calling
+    /// [`Self::create_operation_from_proto`].
+    fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
 
     /// Accounts whose state would be affected by `operation`. Mirrors TS
     /// `operationGetImpactedAccounts` and Python's equivalent on the base API.
