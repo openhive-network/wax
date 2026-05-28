@@ -485,6 +485,15 @@ impl WaxFoundation for WaxFoundationApi {
         Ok(Box::new(tx))
     }
 
+    fn create_transaction_from_proto_json(
+        &self,
+        json: &str,
+    ) -> Result<Box<dyn Transaction>, WaxError> {
+        let tx = RustTransaction::from_json(rust_protocol(), self.options.chain_id.clone(), json)
+            .map_err(WaxError::new)?;
+        Ok(Box::new(tx))
+    }
+
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
@@ -539,6 +548,11 @@ impl WaxFoundation for WaxFoundationApi {
 
     fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation> {
         Box::new(RustOperation::new(rust_protocol(), value))
+    }
+
+    fn create_operation_from_json(&self, json: &str) -> Result<Box<dyn Operation>, WaxError> {
+        let op = RustOperation::from_json(rust_protocol(), json).map_err(WaxError::new)?;
+        Ok(Box::new(op))
     }
 
     fn operation_get_impacted_accounts(

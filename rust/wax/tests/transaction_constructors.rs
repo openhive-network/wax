@@ -2,7 +2,7 @@
 // `WaxFoundation`: `create_transaction_from_proto`,
 // `create_transaction_from_json`, and `create_transaction_with_tapos`.
 //
-// Each test verifies the proto state of the resulting `RustTransaction` and,
+// Each test verifies the proto state of the resulting `Transaction` and,
 // where appropriate, that the C++-backed handle is alive (by round-tripping
 // through `to_api()` or `to_binary_form()`).
 

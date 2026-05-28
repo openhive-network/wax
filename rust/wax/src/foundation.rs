@@ -207,6 +207,15 @@ pub trait WaxFoundation {
 
     fn create_transaction_from_json(&self, json: &str) -> Result<Box<dyn Transaction>, WaxError>;
 
+    /// Build a transaction from proto-shape JSON — operations keyed by their
+    /// oneof name (e.g. `{"vote_operation": { ... }}`) — as opposed to the Hive
+    /// API shape (`{"type": ..., "value": ...}`) consumed by
+    /// [`Self::create_transaction_from_json`].
+    fn create_transaction_from_proto_json(
+        &self,
+        json: &str,
+    ) -> Result<Box<dyn Transaction>, WaxError>;
+
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
@@ -241,6 +250,11 @@ pub trait WaxFoundation {
     /// shorthand for wrapping the value in a `proto::Operation` and calling
     /// [`Self::create_operation_from_proto`].
     fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
+
+    /// Build an [`Operation`] from proto-shape JSON (e.g.
+    /// `{"vote_operation": { ... }}`). The JSON counterpart of
+    /// [`Self::create_operation_from_proto`].
+    fn create_operation_from_json(&self, json: &str) -> Result<Box<dyn Operation>, WaxError>;
 
     /// Accounts whose state would be affected by `operation`. Mirrors TS
     /// `operationGetImpactedAccounts` and Python's equivalent on the base API.

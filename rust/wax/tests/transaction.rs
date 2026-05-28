@@ -1,32 +1,18 @@
 use std::collections::HashMap;
-use std::sync::OnceLock;
 
-use cxx::UniquePtr;
 use wax::constants::MAINNET_CHAIN_ID;
-use wax::result::BinaryViewNode;
-use wax::{Operation, SignatureProvider, Transaction, WaxError};
-use wax_core::ffi::{new_rust_protocol, rust_protocol};
-use wax_core::proto::{
-    AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount, Transfer, Vote,
-    operation::Value,
+use wax::proto::{
+    AccountWitnessProxy, Asset, Authority, Comment, CustomJson, RecoverAccount, Transfer,
+    Transaction as ProtoTransaction, Vote, operation::Value,
 };
-use wax_core::{RustOperation, RustTransaction};
+use wax::result::BinaryViewNode;
+use wax::{Operation, SignatureProvider, Transaction, WaxError, WaxOptions, create_wax_foundation};
 
-// Test-local replica of wax's internal protocol singleton. `rust_protocol` is
-// no longer re-exported from `wax`; tests bootstrap their own instance via the
-// (stateless) `wax_core::ffi::new_rust_protocol()` factory.
-struct SyncProtocol(UniquePtr<rust_protocol>);
-unsafe impl Sync for SyncProtocol {}
-unsafe impl Send for SyncProtocol {}
-
-static TEST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
-
-fn test_protocol() -> &'static rust_protocol {
-    TEST_PROTOCOL
-        .get_or_init(|| SyncProtocol(new_rust_protocol()))
-        .0
-        .as_ref()
-        .expect("new_rust_protocol returned null")
+// Operations and transactions are built through the public `WaxFoundation`
+// factory so tests stay on the crate's public surface. Spinning up a foundation
+// per call is cheap — it shares wax's internal protocol singleton.
+fn operation(value: Value) -> Box<dyn Operation> {
+    create_wax_foundation(None).create_operation(value)
 }
 
 // Canonical mainnet transaction shell used by most tests. Block data and
@@ -37,36 +23,34 @@ fn mainnet_tx() -> Box<dyn Transaction> {
 }
 
 fn tx_with_chain_id(chain_id: &str) -> Box<dyn Transaction> {
-    Box::new(RustTransaction::new(
-        test_protocol(),
-        chain_id,
-        1,
-        0xfeed_face,
-        "2026-05-13T12:00:00",
-        Vec::new(),
-    ))
+    create_wax_foundation(WaxOptions {
+        chain_id: chain_id.into(),
+    })
+    .create_transaction_from_proto(ProtoTransaction {
+        ref_block_num: 1,
+        ref_block_prefix: 0xfeed_face,
+        expiration: "2026-05-13T12:00:00".into(),
+        operations: Vec::new(),
+        extensions: Vec::new(),
+        signatures: Vec::new(),
+    })
+    .expect("create_transaction_from_proto")
 }
 
 fn vote(voter: &str, weight: u32) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::VoteOperation(Vote {
-            voter: voter.into(),
-            author: "author".into(),
-            permlink: "permlink".into(),
-            weight,
-        }),
-    ))
+    operation(Value::VoteOperation(Vote {
+        voter: voter.into(),
+        author: "author".into(),
+        permlink: "permlink".into(),
+        weight,
+    }))
 }
 
 fn account_witness_proxy(account: &str, proxy: &str) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::AccountWitnessProxyOperation(AccountWitnessProxy {
-            account: account.into(),
-            proxy: proxy.into(),
-        }),
-    ))
+    operation(Value::AccountWitnessProxyOperation(AccountWitnessProxy {
+        account: account.into(),
+        proxy: proxy.into(),
+    }))
 }
 
 fn authority_with_key(public_key: &str) -> Authority {
@@ -82,15 +66,12 @@ fn recover_account(
     new_owner_key: &str,
     recent_owner_key: &str,
 ) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::RecoverAccountOperation(RecoverAccount {
-            account_to_recover: account.into(),
-            new_owner_authority: authority_with_key(new_owner_key),
-            recent_owner_authority: authority_with_key(recent_owner_key),
-            extensions: Vec::new(),
-        }),
-    ))
+    operation(Value::RecoverAccountOperation(RecoverAccount {
+        account_to_recover: account.into(),
+        new_owner_authority: authority_with_key(new_owner_key),
+        recent_owner_authority: authority_with_key(recent_owner_key),
+        extensions: Vec::new(),
+    }))
 }
 
 #[test]
@@ -942,16 +923,18 @@ fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
 
 #[test]
 fn push_operation_preserves_order_when_chained() {
-    let tx: Box<dyn Transaction> = Box::new(RustTransaction::new(
-        test_protocol(),
-        MAINNET_CHAIN_ID,
-        2,
-        0xdead_beef,
-        "2026-05-13T12:00:00",
-        Vec::new(),
-    ))
-    .push_operation(vote("first", 1))
-    .push_operation(vote("second", 2));
+    let tx = create_wax_foundation(None)
+        .create_transaction_from_proto(ProtoTransaction {
+            ref_block_num: 2,
+            ref_block_prefix: 0xdead_beef,
+            expiration: "2026-05-13T12:00:00".into(),
+            operations: Vec::new(),
+            extensions: Vec::new(),
+            signatures: Vec::new(),
+        })
+        .expect("create_transaction_from_proto")
+        .push_operation(vote("first", 1))
+        .push_operation(vote("second", 2));
 
     let voters: Vec<&str> = tx
         .transaction()
@@ -1053,42 +1036,33 @@ fn hive_asset(amount: i64) -> Asset {
 }
 
 fn transfer(from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::TransferOperation(Transfer {
-            from_account: from.into(),
-            to_account: to.into(),
-            amount: hive_asset(1),
-            memo: memo.into(),
-        }),
-    ))
+    operation(Value::TransferOperation(Transfer {
+        from_account: from.into(),
+        to_account: to.into(),
+        amount: hive_asset(1),
+        memo: memo.into(),
+    }))
 }
 
 fn comment_op(author: &str, permlink: &str, body: &str) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::CommentOperation(Comment {
-            parent_author: "".into(),
-            parent_permlink: "hive-100000".into(),
-            author: author.into(),
-            permlink: permlink.into(),
-            title: "title".into(),
-            body: body.into(),
-            json_metadata: "{}".into(),
-        }),
-    ))
+    operation(Value::CommentOperation(Comment {
+        parent_author: "".into(),
+        parent_permlink: "hive-100000".into(),
+        author: author.into(),
+        permlink: permlink.into(),
+        title: "title".into(),
+        body: body.into(),
+        json_metadata: "{}".into(),
+    }))
 }
 
 fn custom_json(account: &str, id: &str, json: &str) -> Box<dyn Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::CustomJsonOperation(CustomJson {
-            required_auths: Vec::new(),
-            required_posting_auths: vec![account.into()],
-            id: id.into(),
-            json: json.into(),
-        }),
-    ))
+    operation(Value::CustomJsonOperation(CustomJson {
+        required_auths: Vec::new(),
+        required_posting_auths: vec![account.into()],
+        id: id.into(),
+        json: json.into(),
+    }))
 }
 
 // Records what was encrypted/decrypted and parrots back a tagged version so

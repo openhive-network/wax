@@ -14,7 +14,6 @@ use wax::models::asset::{NaiAsset, NaiAssetConvertible};
 use wax::models::basic::HiveDateTime;
 use wax::result::JsonPrice;
 use wax::{Operation, SignatureProvider, Transaction};
-use wax_core::RustOperation;
 
 use crate::common::{new_in_memory_beekeeper, wax_test, BeekeeperSignatureProvider};
 
@@ -141,13 +140,11 @@ fn tapos_with_implicit_expiration() {
                 None,
             )
             .expect("create_transaction_with_chain_reference_data")
-            .push_operation(Box::new(
-                RustOperation::from_json(
-                    wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
-                    VOTE_OPERATION_JSON,
-                )
-                .expect("vote op"),
-            ));
+            .push_operation(
+                ctx.base
+                    .create_operation_from_json(VOTE_OPERATION_JSON)
+                    .expect("vote op"),
+            );
         tx.validate().expect("validate");
 
         let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
@@ -482,8 +479,8 @@ fn bidirectional_json_proto_round_trip() {
 // TS line 313: "Should be able to get impacted accounts from example api
 // operation". The TS test calls `base.operationGetImpactedAccounts(op)` on a
 // bare operation; the Rust equivalent is the `Operation` trait's
-// `impacted_accounts` (impl'd on `RustOperation` in wax::internal::operation),
-// which goes through the same C++ entry point (`cpp_op_impacted_accounts`).
+// `impacted_accounts`, which goes through the same C++ entry point
+// (`cpp_op_impacted_accounts`).
 //
 // TS 313 and 321 differ only in fixture shape (api `{type, value}` vs proto
 // `{vote_operation: {...}}`). In Rust both end up as the same proto after
@@ -491,10 +488,11 @@ fn bidirectional_json_proto_round_trip() {
 // traceability.
 #[test]
 fn operation_get_impacted_accounts_api() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let op = RustOperation::from_json(protocol.as_ref().unwrap(), VOTE_OPERATION_JSON)
-            .expect("from_json");
+    wax_test(None, |ctx| {
+        let op = ctx
+            .base
+            .create_operation_from_json(VOTE_OPERATION_JSON)
+            .expect("create_operation_from_json");
         let accounts = op.impacted_accounts().expect("impacted_accounts");
         assert_eq!(accounts, vec!["c0ff33a".to_string(), "otom".to_string()]);
     });
@@ -504,10 +502,11 @@ fn operation_get_impacted_accounts_api() {
 // operation". Same body as the api-shape test — see the note above.
 #[test]
 fn operation_get_impacted_accounts_proto() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let op = RustOperation::from_json(protocol.as_ref().unwrap(), VOTE_OPERATION_JSON)
-            .expect("from_json");
+    wax_test(None, |ctx| {
+        let op = ctx
+            .base
+            .create_operation_from_json(VOTE_OPERATION_JSON)
+            .expect("create_operation_from_json");
         let accounts = op.impacted_accounts().expect("impacted_accounts");
         assert_eq!(accounts, vec!["c0ff33a".to_string(), "otom".to_string()]);
     });
@@ -527,8 +526,9 @@ fn create_transaction_using_object_interface() {
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let op = RustOperation::from_json(protocol.as_ref().unwrap(), VOTE_OPERATION_JSON)
+        let op = ctx
+            .base
+            .create_operation_from_json(VOTE_OPERATION_JSON)
             .expect("operation json");
 
         let mut tx = ctx
@@ -538,7 +538,7 @@ fn create_transaction_using_object_interface() {
                 "2023-08-01T15:38:48",
             )
             .expect("create_transaction_with_tapos")
-            .push_operation(Box::new(op));
+            .push_operation(op);
 
         tx.validate().expect("validate");
 
@@ -578,14 +578,13 @@ fn binary_serialize_signed_transaction() {
             )
             .expect("create_transaction_with_tapos");
 
-        let vote_op = RustOperation::from_json(
-            wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
-            VOTE_OPERATION_JSON,
-        )
-        .expect("vote op");
+        let vote_op = ctx
+            .base
+            .create_operation_from_json(VOTE_OPERATION_JSON)
+            .expect("vote op");
 
         let mut tx = tx
-            .push_operation(Box::new(vote_op))
+            .push_operation(vote_op)
             .push_builder(
                 &*ctx.base,
                 Box::new(DefineRecurrentTransferOperation {
@@ -945,15 +944,12 @@ fn update_proposal_with_extensions() {
 // encryption tests.
 fn transfer_op(amount: NaiAsset, from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
     use wax::proto::{Transfer, operation::Value};
-    Box::new(RustOperation::new(
-        wax_core::ffi::new_rust_protocol().as_ref().unwrap(),
-        Value::TransferOperation(Transfer {
-            from_account: from.into(),
-            to_account: to.into(),
-            amount,
-            memo: memo.into(),
-        }),
-    ))
+    wax::create_wax_foundation(None).create_operation(Value::TransferOperation(Transfer {
+        from_account: from.into(),
+        to_account: to.into(),
+        amount,
+        memo: memo.into(),
+    }))
 }
 
 // Extracts the memo from the i'th `TransferOperation` of `tx`.
@@ -1579,10 +1575,10 @@ fn legacy_transaction_id() {
 fn push_operation_onto_legacy_transaction() {
     wax_test(None, |ctx| {
         let tx = create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let extra = RustOperation::from_json(
-            protocol.as_ref().unwrap(),
-            r#"{
+        let extra = ctx
+            .base
+            .create_operation_from_json(
+                r#"{
                 "vote_operation": {
                     "voter": "alice",
                     "author": "bob",
@@ -1590,9 +1586,9 @@ fn push_operation_onto_legacy_transaction() {
                     "weight": 10000
                 }
             }"#,
-        )
-        .expect("operation json");
-        let tx = tx.push_operation(Box::new(extra));
+            )
+            .expect("operation json");
+        let tx = tx.push_operation(extra);
         assert_eq!(tx.transaction().operations.len(), 2);
     });
 }

@@ -18,8 +18,7 @@ use wax::proto::{
     Transaction as ProtoTransaction, Transfer, Vote, operation::Value,
 };
 use wax::result::{JsonPrice, WitnessSetPropertiesProps};
-use wax::{Manabar, Operation, Transaction, WaxOptions};
-use wax_core::{RustOperation, RustTransaction};
+use wax::{Manabar, WaxOptions};
 
 use crate::common::wax_test;
 
@@ -338,19 +337,16 @@ fn convert_api_to_protobuf_account_create_authority_serialization() {
 }
 
 // TS line 211: "Should be able to convert to api" (vote operation).
-// Rust equivalent: parse proto-shape JSON via `RustTransaction::from_json`,
+// Rust equivalent: parse proto-shape JSON via `create_transaction_from_proto_json`,
 // then call `to_api()` and compare the parsed JSON whole-object against the
 // TS-expected shape.
 #[test]
 fn convert_protobuf_to_api_vote_operation() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let tx = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            MAINNET_VOTE_TRANSACTION_PROTO_JSON,
-        )
-        .expect("from_json (proto shape)");
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_from_proto_json(MAINNET_VOTE_TRANSACTION_PROTO_JSON)
+            .expect("create_transaction_from_proto_json");
 
         let api_json = tx.to_api().expect("to_api");
         let parsed: serde_json::Value = serde_json::from_str(&api_json).expect("valid JSON");
@@ -384,7 +380,7 @@ fn convert_protobuf_to_api_vote_operation() {
 // resulting API JSON has key_auths back in array-of-pair form.
 #[test]
 fn convert_protobuf_to_api_account_create_authority_serialization() {
-    wax_test(None, |_ctx| {
+    wax_test(None, |ctx| {
         // Proto-shape: key_auths is a map of string → uint32.
         let proto_json = r#"{
             "ref_block_num": 27909,
@@ -422,13 +418,10 @@ fn convert_protobuf_to_api_account_create_authority_serialization() {
             ]
         }"#;
 
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let tx = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            proto_json,
-        )
-        .expect("from_json (proto shape)");
+        let tx = ctx
+            .base
+            .create_transaction_from_proto_json(proto_json)
+            .expect("create_transaction_from_proto_json");
 
         let api_json = tx.to_api().expect("to_api");
         let parsed: serde_json::Value = serde_json::from_str(&api_json).expect("valid JSON");
@@ -508,33 +501,30 @@ fn create_transaction_handle_mainnet_account_create() {
 }
 
 // TS line 499: "Should be able to create WasmTransaction from scratch".
-// Build via RustTransaction::new, push_operation, set_expiration, add_signature;
+// Build via create_transaction_from_proto, push_operation, set_expiration, add_signature;
 // assert id matches the mainnet block.
 #[test]
 fn create_transaction_from_scratch_matches_mainnet_vote() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let proto = protocol.as_ref().unwrap();
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_from_proto(ProtoTransaction {
+                ref_block_num: 25263,
+                ref_block_prefix: 1797793300,
+                expiration: String::new(),
+                operations: Vec::new(),
+                extensions: Vec::new(),
+                signatures: Vec::new(),
+            })
+            .expect("create_transaction_from_proto");
 
-        let tx: Box<dyn Transaction> = Box::new(RustTransaction::new(
-            proto,
-            wax::constants::MAINNET_CHAIN_ID,
-            25263,
-            1797793300,
-            "",
-            Vec::new(),
-        ));
-
-        let op = RustOperation::new(
-            proto,
-            Value::VoteOperation(Vote {
-                author: "macchiata".into(),
-                permlink: "revitalizing-tropical-living-spaces-where-pets-and-human-coexist".into(),
-                voter: "esecholo".into(),
-                weight: 10000,
-            }),
-        );
-        let mut tx = tx.push_operation(Box::new(op));
+        let op = ctx.base.create_operation(Value::VoteOperation(Vote {
+            author: "macchiata".into(),
+            permlink: "revitalizing-tropical-living-spaces-where-pets-and-human-coexist".into(),
+            voter: "esecholo".into(),
+            weight: 10000,
+        }));
+        let mut tx = tx.push_operation(op);
         tx.set_expiration("2024-05-15T13:04:16")
             .expect("set_expiration");
         tx.add_signature("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf")
@@ -868,16 +858,18 @@ fn get_hive_protocol_config_known_constants() {
 // fail". Empty transaction (no operations) must fail validation, not crash.
 #[test]
 fn validate_empty_transaction_fails_without_panic() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let tx = RustTransaction::new(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            0,
-            0,
-            "",
-            Vec::new(),
-        );
+    wax_test(None, |ctx| {
+        let tx = ctx
+            .base
+            .create_transaction_from_proto(ProtoTransaction {
+                ref_block_num: 0,
+                ref_block_prefix: 0,
+                expiration: String::new(),
+                operations: Vec::new(),
+                extensions: Vec::new(),
+                signatures: Vec::new(),
+            })
+            .expect("create_transaction_from_proto");
         assert!(
             tx.validate().is_err(),
             "validate() on an empty transaction must error"
@@ -887,7 +879,7 @@ fn validate_empty_transaction_fails_without_panic() {
 
 // TS line 831: "Should not crash the program - operation validation - but
 // fail". Default (no value) operation must fail validation.
-// TODO: Rust's `RustOperation::from_proto` eagerly builds the C++
+// TODO: Rust's `create_operation_from_proto` eagerly builds the C++
 // `hive_operation_handle`, which aborts when `proto::Operation.value` is
 // `None`. The TS test mirrors hive's deferred-validation model where the
 // handle exists and only `cpp_op_validate` errors; matching that requires a
@@ -899,17 +891,13 @@ fn validate_empty_operation_fails_without_panic() {}
 // TS line 838: "Should be able to validate example operation".
 #[test]
 fn validate_example_vote_operation() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let op = RustOperation::new(
-            protocol.as_ref().unwrap(),
-            Value::VoteOperation(Vote {
-                voter: "otom".into(),
-                author: "c0ff33a".into(),
-                permlink: "ewxhnjbj".into(),
-                weight: 2200,
-            }),
-        );
+    wax_test(None, |ctx| {
+        let op = ctx.base.create_operation(Value::VoteOperation(Vote {
+            voter: "otom".into(),
+            author: "c0ff33a".into(),
+            permlink: "ewxhnjbj".into(),
+            weight: 2200,
+        }));
         op.validate().expect("vote op must validate");
     });
 }
@@ -918,17 +906,13 @@ fn validate_example_vote_operation() {
 // operation".
 #[test]
 fn impacted_accounts_from_vote_operation() {
-    wax_test(None, |_ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let op = RustOperation::new(
-            protocol.as_ref().unwrap(),
-            Value::VoteOperation(Vote {
-                voter: "otom".into(),
-                author: "c0ff33a".into(),
-                permlink: "ewxhnjbj".into(),
-                weight: 2200,
-            }),
-        );
+    wax_test(None, |ctx| {
+        let op = ctx.base.create_operation(Value::VoteOperation(Vote {
+            voter: "otom".into(),
+            author: "c0ff33a".into(),
+            permlink: "ewxhnjbj".into(),
+            weight: 2200,
+        }));
         let impacted = op.impacted_accounts().expect("impacted_accounts");
         assert_eq!(impacted, vec!["c0ff33a".to_string(), "otom".to_string()]);
     });
@@ -1296,13 +1280,10 @@ fn api_to_proto_basic_transaction_no_data_loss() {
             .create_transaction_from_json(TRANSACTION_API_JSON)
             .expect("create_transaction_from_json (api)");
 
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let from_proto = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            TRANSACTION_PROTO_JSON,
-        )
-        .expect("RustTransaction::from_json (proto)");
+        let from_proto = ctx
+            .base
+            .create_transaction_from_proto_json(TRANSACTION_PROTO_JSON)
+            .expect("create_transaction_from_proto_json");
 
         assert_eq!(from_api.transaction(), from_proto.transaction());
     });
@@ -1313,13 +1294,10 @@ fn api_to_proto_basic_transaction_no_data_loss() {
 #[test]
 fn proto_to_api_basic_transaction_no_data_loss() {
     wax_test(None, |ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let from_proto = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            TRANSACTION_PROTO_JSON,
-        )
-        .expect("from_json (proto)");
+        let from_proto = ctx
+            .base
+            .create_transaction_from_proto_json(TRANSACTION_PROTO_JSON)
+            .expect("create_transaction_from_proto_json");
 
         let api_json = from_proto.to_api().expect("to_api");
         let re_parsed = ctx
@@ -1337,15 +1315,11 @@ fn proto_to_api_basic_transaction_no_data_loss() {
 #[test]
 fn multiple_bidirectional_conversion_basic_transaction() {
     wax_test(None, |ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-
         // proto → api1
-        let from_proto = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            TRANSACTION_PROTO_JSON,
-        )
-        .expect("from_json (proto)");
+        let from_proto = ctx
+            .base
+            .create_transaction_from_proto_json(TRANSACTION_PROTO_JSON)
+            .expect("create_transaction_from_proto_json");
         let api1 = from_proto.to_api().expect("to_api 1");
 
         // api1 → proto → api2
@@ -1381,13 +1355,10 @@ fn validate_after_api_to_proto_basic_transaction() {
 #[test]
 fn validate_after_proto_to_api_basic_transaction() {
     wax_test(None, |ctx| {
-        let protocol = wax_core::ffi::new_rust_protocol();
-        let from_proto = RustTransaction::from_json(
-            protocol.as_ref().unwrap(),
-            wax::constants::MAINNET_CHAIN_ID,
-            TRANSACTION_PROTO_JSON,
-        )
-        .expect("from_json (proto)");
+        let from_proto = ctx
+            .base
+            .create_transaction_from_proto_json(TRANSACTION_PROTO_JSON)
+            .expect("create_transaction_from_proto_json");
 
         let api_json = from_proto.to_api().expect("to_api");
         ctx.base

@@ -1,31 +1,9 @@
 use std::collections::HashMap;
-use std::sync::OnceLock;
 
-use cxx::UniquePtr;
-use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
 use wax::models::basic::HiveDateTime;
-use wax::{AuthorityDataProvider, Transaction, WaxError};
-use wax_core::ffi::{new_rust_protocol, rust_protocol};
-use wax_core::proto::{Operation, Vote, operation::Value};
-use wax_core::{RustOperation, RustTransaction};
-
-// Test-local protocol singleton, mirroring tests/transaction.rs. The wax crate
-// keeps its own internal singleton — tests can't reuse it, so we bootstrap one
-// here for handle creation.
-struct SyncProtocol(UniquePtr<rust_protocol>);
-unsafe impl Sync for SyncProtocol {}
-unsafe impl Send for SyncProtocol {}
-
-static TEST_PROTOCOL: OnceLock<SyncProtocol> = OnceLock::new();
-
-fn test_protocol() -> &'static rust_protocol {
-    TEST_PROTOCOL
-        .get_or_init(|| SyncProtocol(new_rust_protocol()))
-        .0
-        .as_ref()
-        .expect("new_rust_protocol returned null")
-}
+use wax::proto::{Operation, Transaction as ProtoTransaction, Vote, operation::Value};
+use wax::{AuthorityDataProvider, Transaction, WaxError, create_wax_foundation};
 
 fn placeholder_timestamp() -> HiveDateTime {
     // collect_signing_keys ignores owner-update recency, so any valid
@@ -76,7 +54,7 @@ fn posting_only(key: &str) -> Authorities {
     Authorities {
         owner: None,
         active: None,
-        posting: Some(wax_core::proto::Authority {
+        posting: Some(wax::proto::Authority {
             weight_threshold: 1,
             account_auths: HashMap::new(),
             key_auths: HashMap::from([(key.to_string(), 1)]),
@@ -85,19 +63,16 @@ fn posting_only(key: &str) -> Authorities {
 }
 
 fn vote_op(voter: &str) -> Box<dyn wax::Operation> {
-    Box::new(RustOperation::new(
-        test_protocol(),
-        Value::VoteOperation(Vote {
-            voter: voter.into(),
-            author: "anyone".into(),
-            permlink: "p".into(),
-            weight: 10_000,
-        }),
-    ))
+    create_wax_foundation(None).create_operation(Value::VoteOperation(Vote {
+        voter: voter.into(),
+        author: "anyone".into(),
+        permlink: "p".into(),
+        weight: 10_000,
+    }))
 }
 
 fn vote_tx(voters: &[&str]) -> Box<dyn Transaction> {
-    let ops = voters
+    let operations = voters
         .iter()
         .map(|voter| Operation {
             value: Some(Value::VoteOperation(Vote {
@@ -108,14 +83,16 @@ fn vote_tx(voters: &[&str]) -> Box<dyn Transaction> {
             })),
         })
         .collect();
-    Box::new(RustTransaction::new(
-        test_protocol(),
-        MAINNET_CHAIN_ID,
-        42,
-        0xdead_beef,
-        "2026-05-11T12:00:00",
-        ops,
-    ))
+    create_wax_foundation(None)
+        .create_transaction_from_proto(ProtoTransaction {
+            ref_block_num: 42,
+            ref_block_prefix: 0xdead_beef,
+            expiration: "2026-05-11T12:00:00".into(),
+            operations,
+            extensions: Vec::new(),
+            signatures: Vec::new(),
+        })
+        .expect("create_transaction_from_proto")
 }
 
 #[test]
