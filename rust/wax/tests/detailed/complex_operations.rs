@@ -1320,13 +1320,42 @@ fn blog_post_set_format() {
 }
 
 // TS line 1038: "Should be able to set explicit app in BlogPostOperation".
-//
-// TODO: the Rust comment builders don't surface the arbitrary `jsonMetadata`
-// object (only the typed metadata fields), so the explicit `app` override can't
-// be expressed. See `complex_operations/comment.rs` module docs.
 #[test]
-#[ignore = "arbitrary jsonMetadata object not ported to the Rust comment builders"]
-fn blog_post_explicit_app() {}
+fn blog_post_explicit_app() {
+    wax_test(None, |ctx| {
+        let op = BlogPostOperation {
+            category: "test-category".into(),
+            author: "gtg".into(),
+            title: "Set format".into(),
+            body: "Set format".into(),
+            permlink: Some("set-format".into()),
+            app: Some("thebest.blog@13.13".into()),
+            ..Default::default()
+        };
+
+        let tx = fresh_tx(ctx)
+            .push_builder(&*ctx.base, Box::new(op))
+            .expect("push_builder");
+
+        assert_eq!(
+            api_ops(&*tx),
+            json!([
+                {
+                    "type": "comment_operation",
+                    "value": {
+                        "author": "gtg",
+                        "body": "Set format",
+                        "json_metadata": r#"{"format":"markdown+html","app":"thebest.blog@13.13"}"#,
+                        "parent_author": "",
+                        "parent_permlink": "test-category",
+                        "permlink": "set-format",
+                        "title": "Set format"
+                    }
+                }
+            ])
+        );
+    });
+}
 
 // TS line 1070: "Should be able to push and set multiple properites".
 #[test]

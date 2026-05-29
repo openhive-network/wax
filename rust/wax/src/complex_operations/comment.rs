@@ -11,8 +11,9 @@
 //! Differences from the TS port:
 //! - `pushMetadataProperty` and the arbitrary user-supplied `jsonMetadata`
 //!   object are not ported. Only the typed metadata fields (`format`,
-//!   `tags`, `images`, `links`, `alternative_author`, `description`) are
-//!   surfaced; the `app` field is filled with `wax/{CARGO_PKG_VERSION}`.
+//!   `tags`, `images`, `links`, `alternative_author`, `description`, `app`)
+//!   are surfaced. `app` defaults to `wax/{CARGO_PKG_VERSION}` and can be
+//!   overridden via the `app` field (mirrors TS's `jsonMetadata.app`).
 //! - The default `comment_options` payload is hard-coded against the
 //!   protocol constants rather than fetched through an FFI call to
 //!   `cpp_get_default_comment_options_operation`. The values (1_000_000_000
@@ -85,6 +86,9 @@ pub struct ReplyOperation {
     pub links: Vec<String>,
     pub alternative_author: Option<AccountName>,
     pub description: Option<String>,
+    /// Overrides the `app` tag in `json_metadata`. Defaults to
+    /// `wax/{CARGO_PKG_VERSION}` when `None`.
+    pub app: Option<String>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
     pub allow_curation_rewards: Option<bool>,
@@ -111,6 +115,9 @@ pub struct BlogPostOperation {
     pub links: Vec<String>,
     pub alternative_author: Option<AccountName>,
     pub description: Option<String>,
+    /// Overrides the `app` tag in `json_metadata`. Defaults to
+    /// `wax/{CARGO_PKG_VERSION}` when `None`.
+    pub app: Option<String>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
     pub allow_curation_rewards: Option<bool>,
@@ -135,6 +142,7 @@ struct CommentInputs {
     links: Vec<String>,
     alternative_author: Option<AccountName>,
     description: Option<String>,
+    app: Option<String>,
     beneficiaries: Vec<BeneficiaryRoute>,
     allow_curation_rewards: Option<bool>,
     allow_votes: Option<bool>,
@@ -176,6 +184,7 @@ impl OperationBuilder for ReplyOperation {
             links: this.links,
             alternative_author: this.alternative_author,
             description: this.description,
+            app: this.app,
             beneficiaries: this.beneficiaries,
             allow_curation_rewards: this.allow_curation_rewards,
             allow_votes: this.allow_votes,
@@ -209,6 +218,7 @@ impl OperationBuilder for BlogPostOperation {
             links: this.links,
             alternative_author: this.alternative_author,
             description: this.description,
+            app: this.app,
             beneficiaries: this.beneficiaries,
             allow_curation_rewards: this.allow_curation_rewards,
             allow_votes: this.allow_votes,
@@ -246,6 +256,7 @@ impl CommentInputs {
             &self.links,
             self.alternative_author.as_deref(),
             self.description.as_deref(),
+            self.app.as_deref(),
         )?;
 
         let comment_op = proto::Comment {
@@ -326,10 +337,11 @@ fn build_json_metadata(
     links: &[String],
     alternative_author: Option<&str>,
     description: Option<&str>,
+    app: Option<&str>,
 ) -> Result<String, WaxError> {
     let metadata = JsonMetadata {
         format: format.as_str(),
-        app: APP_TAG,
+        app: app.unwrap_or(APP_TAG),
         tags: if tags.is_empty() {
             None
         } else {
