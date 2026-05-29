@@ -40,11 +40,14 @@ if [ "${DIRECT_EXECUTION}" -eq 0 ]; then
      "${SCRIPT_DIR}/docker"
 
   echo "Running ${WAX_PROFILE} build inside ${IMAGE_NAME}..."
-  docker run --rm \
+  # `exec bash` after the build keeps an interactive shell as PID 1, so the
+  # container stays open (even if the build fails) instead of exiting. `-it`
+  # gives it a TTY; `--rm` cleans it up once you exit the shell.
+  docker run --rm -it \
     -v "${WAX_DIR}":"${WAX_DIR}" \
     -w "${SCRIPT_DIR}" \
     "${IMAGE_NAME}" \
-    bash "${SCRIPT_DIR}/build.sh" --in-container "${WAX_PROFILE}"
+    bash -c "bash '${SCRIPT_DIR}/build.sh' --in-container ${WAX_PROFILE}; exec bash"
 else
   cd "${SCRIPT_DIR}"
 
