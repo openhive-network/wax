@@ -63,6 +63,19 @@ pub trait WaxFoundation {
     /// Creates a VESTS asset from a raw satoshi amount.
     fn vests_satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError>;
 
+    /// Creates an asset of an arbitrary symbol from its packed asset number and
+    /// a raw satoshi amount. Unlike
+    /// [`Self::create_asset_with_required_symbol`] (which only handles the
+    /// HIVE/HBD/VESTS symbols), this accepts any packed asset id — e.g.
+    /// `3_200_000_035` for HIVE.
+    ///
+    /// TS NOTE: mirrors `cpp_general_asset(asset_num, amount)`.
+    fn general_asset(
+        &self,
+        asset_num: u32,
+        amount: i64,
+    ) -> Result<NaiAsset, WaxError>;
+
     /// Converts an HBD amount into HIVE using the given price feed.
     fn hbd_to_hive(
         &self,
@@ -138,6 +151,15 @@ pub trait WaxFoundation {
         total_vesting_fund_hive: &NaiAsset,
     ) -> Result<String, WaxError>;
 
+    /// Calculates the instantaneous inflation rate, in basis points, for the
+    /// given block number.
+    ///
+    /// TS NOTE: mirrors `cpp_calculate_inflation_rate_for_block(block_num)`.
+    fn calculate_inflation_rate_for_block(
+        &self,
+        block_num: u32,
+    ) -> Result<i64, WaxError>;
+
     /// Resolves a convertible asset into a [`NaiAsset`] of the required symbol.
     fn create_asset_with_required_symbol(
         &self,
@@ -197,6 +219,11 @@ pub trait WaxFoundation {
         password: &str,
     ) -> Result<PrivateKeyData, WaxError>;
 
+    /// Generates a fresh, random WIF private key.
+    ///
+    /// TS NOTE: mirrors `cpp_generate_private_key()`.
+    fn generate_private_key(&self) -> Result<String, WaxError>;
+
     /// Converts a raw hex-encoded private key into its WIF form.
     fn convert_raw_private_key_to_wif(
         &self,
@@ -208,6 +235,15 @@ pub trait WaxFoundation {
         &self,
         raw_public_key: &Hex,
     ) -> Result<String, WaxError>;
+
+    /// Converts a WIF-form public key into its raw hex form — the inverse of
+    /// [`Self::convert_raw_public_key_to_wif`].
+    ///
+    /// TS NOTE: mirrors `cpp_convert_wif_public_key_to_raw(wif_public_key)`.
+    fn convert_wif_public_key_to_raw(
+        &self,
+        wif_public_key: &PublicKey,
+    ) -> Result<Hex, WaxError>;
 
     /// Converts a wire-form (hex) transaction into its API JSON string.
     fn deserialize_transaction(&self, hex: &Hex) -> Result<String, WaxError>;

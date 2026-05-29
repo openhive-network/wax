@@ -160,6 +160,17 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn general_asset(
+        &self,
+        asset_num: u32,
+        amount: i64,
+    ) -> Result<NaiAsset, WaxError> {
+        rust_protocol()
+            .cpp_general_asset(asset_num, amount)
+            .map(to_nai_asset)
+            .map_err(WaxError::from)
+    }
+
     fn hbd_to_hive(
         &self,
         hbd: &NaiAsset,
@@ -326,6 +337,15 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn calculate_inflation_rate_for_block(
+        &self,
+        block_num: u32,
+    ) -> Result<i64, WaxError> {
+        rust_protocol()
+            .cpp_calculate_inflation_rate_for_block(block_num)
+            .map_err(WaxError::from)
+    }
+
     fn create_asset_with_required_symbol(
         &self,
         required_symbol: AssetName,
@@ -428,6 +448,12 @@ impl WaxFoundation for WaxFoundationApi {
             .map_err(WaxError::from)
     }
 
+    fn generate_private_key(&self) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_generate_private_key()
+            .map_err(WaxError::from)
+    }
+
     fn convert_raw_private_key_to_wif(
         &self,
         raw_private_key: &Hex,
@@ -443,6 +469,15 @@ impl WaxFoundation for WaxFoundationApi {
     ) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_convert_raw_public_key_to_wif(raw_public_key)
+            .map_err(WaxError::from)
+    }
+
+    fn convert_wif_public_key_to_raw(
+        &self,
+        wif_public_key: &PublicKey,
+    ) -> Result<Hex, WaxError> {
+        rust_protocol()
+            .cpp_convert_wif_public_key_to_raw(wif_public_key)
             .map_err(WaxError::from)
     }
 

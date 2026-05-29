@@ -240,13 +240,6 @@ fn witness_properties() -> WitnessSetPropertiesProps {
 // Tests (TS source order)
 // ---------------------------------------------------------------------------
 
-// TS line 30: "Should be able to print author in C++ JS val handle".
-// TODO: needs a Rust equivalent of `cpp_get_js_object`; that helper is purely
-// a JS embind smoke test and has no analogue on the Rust side.
-#[test]
-#[ignore = "JS embind val-handle smoke test — no Rust analogue"]
-fn cpp_get_js_object_author() {}
-
 // TS line 40: "Should be able to convert to protobuf" (vote operation).
 // The TS test mutates the input object via `cpp_tx_api_to_proto`. Rust's
 // equivalent is `create_transaction_from_json` (which calls the same C++
@@ -548,12 +541,18 @@ fn create_transaction_from_scratch_matches_mainnet_vote() {
 }
 
 // TS line 545: "Should be able to generate random private key".
-// TODO: Rust doesn't expose `cpp_generate_private_key()` (random WIF
-// generation). `get_private_key_from_password` covers the deterministic
-// variant only.
+// The key is random, so (matching TS `toHaveLength(51)`) we only assert the
+// WIF length rather than an exact value.
 #[test]
-#[ignore = "needs WaxFoundation::generate_private_key (random WIF)"]
-fn generate_random_private_key() {}
+fn generate_random_private_key() {
+    wax_test(None, |ctx| {
+        let wif = ctx
+            .base
+            .generate_private_key()
+            .expect("generate_private_key");
+        assert_eq!(wif.len(), 51);
+    });
+}
 
 // TS line 553: "Should be able to convert between raw private key -> WIF
 // formats".
@@ -607,11 +606,22 @@ fn convert_raw_uncompressed_public_key_to_wif() {
 }
 
 // TS line 577: "Should be able to convert between WIF public key -> raw
-// formats".
-// TODO: Rust doesn't expose `cpp_convert_wif_public_key_to_raw`.
+// compressed formats".
 #[test]
-#[ignore = "needs WaxFoundation::convert_wif_public_key_to_raw"]
-fn convert_wif_public_key_to_raw() {}
+fn convert_wif_public_key_to_raw() {
+    wax_test(None, |ctx| {
+        let raw = ctx
+            .base
+            .convert_wif_public_key_to_raw(
+                &"STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4".into(),
+            )
+            .expect("convert_wif_public_key_to_raw");
+        assert_eq!(
+            raw,
+            "02be643d4c424ac7cf2f3cf51dd048773cbdcee30b111adb30d89c27668c501705"
+        );
+    });
+}
 
 // TS line 585: "Should be able to generate binary metadata information - tx
 // with vote operation".
@@ -1119,13 +1129,24 @@ fn create_vests_nai_min_safe() {
 }
 
 // TS line 964: "Should be able to create custom general asset in NAI form".
-// TODO: Rust's `create_asset_with_required_symbol` only accepts the
-// `AssetName` enum (Hive/Hbd/Vests). There's no analogue of
-// `cpp_general_asset(symbol_type, amount)` that takes an arbitrary packed
-// symbol id like the TS test's `3200000035`.
+// The packed asset num 3_200_000_035 decodes to the HIVE symbol.
 #[test]
-#[ignore = "needs WaxFoundation::general_asset(symbol_type, amount)"]
-fn create_general_asset_with_custom_nai() {}
+fn create_general_asset_with_custom_nai() {
+    wax_test(None, |ctx| {
+        let asset = ctx
+            .base
+            .general_asset(3_200_000_035, 10)
+            .expect("general_asset");
+        assert_eq!(
+            asset,
+            NaiAsset {
+                amount: "10".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            }
+        );
+    });
+}
 
 // TS line 976: "Should be able to calculate HP APR 1".
 #[test]
@@ -1178,21 +1199,40 @@ fn calculate_hp_apr_fixture_2() {
 }
 
 // TS line 996: "Should be able to calculate inflation rate for block 1_000_000".
-// TODO: Rust doesn't expose `calculate_inflation_rate_for_block` on
-// `WaxFoundation`.
 #[test]
-#[ignore = "needs WaxFoundation::calculate_inflation_rate_for_block"]
-fn calculate_inflation_rate_block_1m() {}
+fn calculate_inflation_rate_block_1m() {
+    wax_test(None, |ctx| {
+        let rate = ctx
+            .base
+            .calculate_inflation_rate_for_block(1_000_000)
+            .expect("calculate_inflation_rate_for_block");
+        assert_eq!(rate, 974);
+    });
+}
 
 // TS line 1004: "Should be able to calculate inflation rate for block 7_000_000".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_inflation_rate_for_block"]
-fn calculate_inflation_rate_block_7m() {}
+fn calculate_inflation_rate_block_7m() {
+    wax_test(None, |ctx| {
+        let rate = ctx
+            .base
+            .calculate_inflation_rate_for_block(7_000_000)
+            .expect("calculate_inflation_rate_for_block");
+        assert_eq!(rate, 950);
+    });
+}
 
 // TS line 1012: "Should be able to calculate inflation rate for block 9_000_000".
 #[test]
-#[ignore = "needs WaxFoundation::calculate_inflation_rate_for_block"]
-fn calculate_inflation_rate_block_9m() {}
+fn calculate_inflation_rate_block_9m() {
+    wax_test(None, |ctx| {
+        let rate = ctx
+            .base
+            .calculate_inflation_rate_for_block(9_000_000)
+            .expect("calculate_inflation_rate_for_block");
+        assert_eq!(rate, 942);
+    });
+}
 
 // TS line 1020: "Should be able to serialize witness properties and retrieve
 // serialized data".

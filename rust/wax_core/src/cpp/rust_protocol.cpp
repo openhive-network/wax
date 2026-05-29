@@ -393,6 +393,10 @@ namespace cpp {
 		return to_rust_json_asset(foundation::cpp_vests(amount));
 	}
 
+	RustJsonAsset rust_protocol::cpp_general_asset(uint32_t asset_num, int64_t amount) const {
+		return to_rust_json_asset(foundation::cpp_general_asset(asset_num, amount));
+	}
+
 	RustJsonAsset rust_protocol::cpp_hbd_to_hive(
 		const RustJsonAsset& hbd,
 		const RustJsonAsset& base,
@@ -493,6 +497,10 @@ namespace cpp {
 		);
 	}
 
+	int64_t rust_protocol::cpp_calculate_inflation_rate_for_block(uint32_t block_num) const {
+		return foundation::cpp_calculate_inflation_rate_for_block(block_num);
+	}
+
 	::rust::String rust_protocol::cpp_asset_value(const RustJsonAsset& asset) const {
 		return foundation::cpp_asset_value(from_rust_json_asset(asset));
 	}
@@ -572,6 +580,11 @@ namespace cpp {
 		};
 	}
 
+	::rust::String rust_protocol::cpp_generate_private_key() const {
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_generate_private_key();
+	}
+
 	::rust::String rust_protocol::cpp_convert_raw_private_key_to_wif(::rust::Str hex_data) const {
 		auto& self = const_cast<rust_protocol&>(*this);
 		return self.foundation::cpp_convert_raw_private_key_to_wif(std::string(hex_data));
@@ -580,6 +593,11 @@ namespace cpp {
 	::rust::String rust_protocol::cpp_convert_raw_public_key_to_wif(::rust::Str hex_data) const {
 		auto& self = const_cast<rust_protocol&>(*this);
 		return self.foundation::cpp_convert_raw_public_key_to_wif(std::string(hex_data));
+	}
+
+	::rust::String rust_protocol::cpp_convert_wif_public_key_to_raw(::rust::Str wif_public_key) const {
+		auto& self = const_cast<rust_protocol&>(*this);
+		return self.foundation::cpp_convert_wif_public_key_to_raw(std::string(wif_public_key));
 	}
 
 	std::unique_ptr<hive_transaction_handle>

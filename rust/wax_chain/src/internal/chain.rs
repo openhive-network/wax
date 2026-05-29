@@ -340,5 +340,34 @@ impl WaxFoundation for HiveChainApi {
             memo_key: &PublicKey,
             other_keys: &[PublicKey],
         ) -> Result<(), WaxError>;
+
+        fn general_asset(
+            &self,
+            asset_num: u32,
+            amount: i64,
+        ) -> Result<NaiAsset, WaxError>;
+
+        fn calculate_inflation_rate_for_block(
+            &self,
+            block_num: u32,
+        ) -> Result<i64, WaxError>;
+
+        fn generate_private_key(&self) -> Result<String, WaxError>;
+
+        fn convert_wif_public_key_to_raw(
+            &self,
+            wif_public_key: &PublicKey,
+        ) -> Result<Hex, WaxError>;
+
+        fn default_comment_options(
+            &self,
+            author: &str,
+            permlink: &str,
+        ) -> Result<proto::CommentOptions, WaxError>;
+
+        fn deserialize_witness_props(
+            &self,
+            serialized_props: &HashMap<String, String>,
+        ) -> Result<WitnessSetPropertiesProps, WaxError>;
     }
 }

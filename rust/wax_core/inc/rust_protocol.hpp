@@ -113,6 +113,8 @@ namespace cpp {
 		RustJsonAsset cpp_hbd(int64_t amount) const;
 		RustJsonAsset cpp_vests(int64_t amount) const;
 
+		RustJsonAsset cpp_general_asset(uint32_t asset_num, int64_t amount) const;
+
 		RustJsonAsset cpp_hbd_to_hive(const RustJsonAsset& hbd, const RustJsonAsset& base, const RustJsonAsset& quote) const;
 		RustJsonAsset cpp_hive_to_hbd(const RustJsonAsset& amount, const RustJsonAsset& base, const RustJsonAsset& quote) const;
 		RustJsonAsset cpp_vests_to_hp(const RustJsonAsset& vests, const RustJsonAsset& total_vesting_fund_hive, const RustJsonAsset& total_vesting_shares) const;
@@ -139,6 +141,8 @@ namespace cpp {
 			const RustJsonAsset& virtual_supply,
 			const RustJsonAsset& total_vesting_fund_hive
 		) const;
+
+		int64_t cpp_calculate_inflation_rate_for_block(uint32_t block_num) const;
 
 		::rust::String cpp_asset_value(const RustJsonAsset& asset) const;
 		::rust::String cpp_asset_symbol(const RustJsonAsset& asset) const;
@@ -174,9 +178,13 @@ namespace cpp {
 			::rust::Str password
 		) const;
 
+		::rust::String cpp_generate_private_key() const;
+
 		::rust::String cpp_convert_raw_private_key_to_wif(::rust::Str hex_data) const;
 
 		::rust::String cpp_convert_raw_public_key_to_wif(::rust::Str hex_data) const;
+
+		::rust::String cpp_convert_wif_public_key_to_raw(::rust::Str wif_public_key) const;
 
 		std::unique_ptr<hive_transaction_handle>
 		cpp_deserialize_transaction(::rust::Str hex) const;

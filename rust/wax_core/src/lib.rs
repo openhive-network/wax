@@ -428,6 +428,12 @@ pub mod ffi {
             amount: i64,
         ) -> Result<RustJsonAsset>;
 
+        fn cpp_general_asset(
+            self: &rust_protocol,
+            asset_num: u32,
+            amount: i64,
+        ) -> Result<RustJsonAsset>;
+
         fn cpp_hbd_to_hive(
             self: &rust_protocol,
             hbd: &RustJsonAsset,
@@ -481,6 +487,11 @@ pub mod ffi {
             total_vesting_fund_hive: &RustJsonAsset,
         ) -> Result<String>;
 
+        fn cpp_calculate_inflation_rate_for_block(
+            self: &rust_protocol,
+            block_num: u32,
+        ) -> Result<i64>;
+
         fn cpp_asset_value(
             self: &rust_protocol,
             asset: &RustJsonAsset,
@@ -530,6 +541,8 @@ pub mod ffi {
             password: &str,
         ) -> Result<RustPrivateKeyData>;
 
+        fn cpp_generate_private_key(self: &rust_protocol) -> Result<String>;
+
         fn cpp_convert_raw_private_key_to_wif(
             self: &rust_protocol,
             hex_data: &str,
@@ -538,6 +551,11 @@ pub mod ffi {
         fn cpp_convert_raw_public_key_to_wif(
             self: &rust_protocol,
             hex_data: &str,
+        ) -> Result<String>;
+
+        fn cpp_convert_wif_public_key_to_raw(
+            self: &rust_protocol,
+            wif_public_key: &str,
         ) -> Result<String>;
 
         fn cpp_deserialize_transaction(
