@@ -65,6 +65,19 @@ pub struct PrivateKeyData {
     pub associated_public_key: PublicKey,
 }
 
+/// Represents a decoded `crypto-memo`: the two public keys it was encrypted
+/// for and the inner base58 encrypted content (the buffer produced by a
+/// wallet's `encrypt_data`).
+///
+/// TS NOTE: mirrors the `crypto_memo` shape passed to / returned from
+/// `cpp_crypto_memo_dump_string` / `cpp_crypto_memo_from_string`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CryptoMemo {
+    pub from: PublicKey,
+    pub to: PublicKey,
+    pub content: String,
+}
+
 /// Represents one node in the binary view tree returned by
 /// [`crate::Transaction::binary_view_metadata`]. The shape is a recursive AST
 /// over the wire-serialized transaction: scalars hold a printable `value`,

@@ -150,7 +150,7 @@ fn tapos_with_implicit_expiration() {
             );
         tx.validate().expect("validate");
 
-        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let provider = BeekeeperSignatureProvider::new(wallet);
         tx.sign(&provider, &public_key).expect("sign");
 
         // TS NOTE: TS asserts `now < applied_expiration + 60s`; since `"+1m"`
@@ -571,7 +571,7 @@ fn create_transaction_using_object_interface() {
             "sig digest must match the value pinned by the TS suite"
         );
 
-        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let provider = BeekeeperSignatureProvider::new(wallet);
         tx.sign(&provider, &public_key).expect("sign");
 
         let signees = tx.signature_keys().expect("signature_keys");
@@ -622,7 +622,7 @@ fn binary_serialize_signed_transaction() {
             )
             .expect("define builder");
 
-        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let provider = BeekeeperSignatureProvider::new(wallet);
         let signature = tx.sign(&provider, &public_key).expect("sign");
 
         assert_eq!(
@@ -1059,7 +1059,7 @@ fn create_encrypted_operations() {
                 "This also should be encrypted",
             ));
 
-        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let provider = BeekeeperSignatureProvider::new(wallet);
         tx.perform_operation_encryption(&provider)
             .expect("perform_operation_encryption");
         tx.sign(&provider, &public_key).expect("sign");
@@ -1123,7 +1123,7 @@ fn decrypt_operations() {
                     "This should be encrypted",
                 ));
 
-        let provider = BeekeeperSignatureProvider::new(wallet, &public_key);
+        let provider = BeekeeperSignatureProvider::new(wallet);
         tx.perform_operation_encryption(&provider)
             .expect("perform_operation_encryption");
         tx.sign(&provider, &public_key).expect("sign");

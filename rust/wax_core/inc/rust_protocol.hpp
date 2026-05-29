@@ -22,6 +22,7 @@ namespace cpp {
     struct RustConfigEntry;
     struct RustWitnessPropEntry;
     struct RustWitnessSetPropertiesData;
+    struct RustCryptoMemo;
 }
 
 #include "rust_managed_object.hpp"
@@ -229,6 +230,10 @@ namespace cpp {
 			::rust::Str memo_key,
 			const ::rust::Vec<::rust::String>& other_keys
 		) const;
+
+		::rust::String cpp_crypto_memo_dump_string(const RustCryptoMemo& value) const;
+
+		RustCryptoMemo cpp_crypto_memo_from_string(::rust::Str value) const;
 	};
 
 	std::unique_ptr<rust_protocol> new_rust_protocol();

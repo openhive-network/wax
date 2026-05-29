@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use wax_core::ffi::{
-    RustJsonAsset, RustJsonPrice, RustWitnessPropEntry,
+    RustCryptoMemo, RustJsonAsset, RustJsonPrice, RustWitnessPropEntry,
     RustWitnessSetPropertiesData,
 };
 use wax_core::{RustOperation, RustTransaction, proto};
@@ -30,8 +30,9 @@ use crate::models::basic::{
 };
 use crate::options::WaxOptions;
 use crate::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
-    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, CryptoMemo,
+    HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+    WitnessSetPropertiesProps,
 };
 
 pub(crate) struct WaxFoundationApi {
@@ -727,6 +728,34 @@ impl WaxFoundation for WaxFoundationApi {
                 content, account, &auths, memo_key, &others,
             )
             .map_err(WaxError::from)
+    }
+
+    fn crypto_memo_dump_string(
+        &self,
+        memo: &CryptoMemo,
+    ) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_crypto_memo_dump_string(&RustCryptoMemo {
+                from: memo.from.clone(),
+                to: memo.to.clone(),
+                content: memo.content.clone(),
+            })
+            .map_err(WaxError::from)
+    }
+
+    fn crypto_memo_from_string(
+        &self,
+        value: &str,
+    ) -> Result<CryptoMemo, WaxError> {
+        let memo = rust_protocol()
+            .cpp_crypto_memo_from_string(value)
+            .map_err(WaxError::from)?;
+
+        Ok(CryptoMemo {
+            from: memo.from,
+            to: memo.to,
+            content: memo.content,
+        })
     }
 }
 

@@ -229,6 +229,16 @@ pub mod ffi {
         pub has_account_subsidy_decay: bool,
     }
 
+    /// Represents a decoded `crypto-memo`: the two base58 public keys it was
+    /// encrypted for and the inner base58 encrypted content. Mirrors C++
+    /// `crypto_memo`. `from`/`to` carry the `STM` address prefix (as TS passes
+    /// them straight through from the encryption keys).
+    pub struct RustCryptoMemo {
+        pub from: String,
+        pub to: String,
+        pub content: String,
+    }
+
     extern "Rust" {
         type RustManagedObject;
         type RustAuthorityProvider;
@@ -621,6 +631,16 @@ pub mod ffi {
             memo_key: &str,
             other_keys: &Vec<String>,
         ) -> Result<()>;
+
+        fn cpp_crypto_memo_dump_string(
+            self: &rust_protocol,
+            value: &RustCryptoMemo,
+        ) -> Result<String>;
+
+        fn cpp_crypto_memo_from_string(
+            self: &rust_protocol,
+            value: &str,
+        ) -> Result<RustCryptoMemo>;
     }
 }
 

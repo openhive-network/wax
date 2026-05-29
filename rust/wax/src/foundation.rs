@@ -11,8 +11,9 @@ use crate::models::basic::{
     AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
 };
 use crate::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
-    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, CryptoMemo,
+    HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+    WitnessSetPropertiesProps,
 };
 use std::collections::HashMap;
 
@@ -434,4 +435,24 @@ pub trait WaxFoundation {
         memo_key: &PublicKey,
         other_keys: &[PublicKey],
     ) -> Result<(), WaxError>;
+
+    /// Encode a [`CryptoMemo`] into a `crypto-memo` string — the second step of
+    /// memo encryption, after a wallet has produced the inner `content`. The
+    /// returned string is the full `#`-prefixed memo payload.
+    ///
+    /// TS NOTE: mirrors `cpp_crypto_memo_dump_string`.
+    fn crypto_memo_dump_string(
+        &self,
+        memo: &CryptoMemo,
+    ) -> Result<String, WaxError>;
+
+    /// Decode a `crypto-memo` string into a [`CryptoMemo`] — the first step of
+    /// memo decryption, before handing `content` (with the embedded `from`/`to`
+    /// keys) to a wallet for decryption.
+    ///
+    /// TS NOTE: mirrors `cpp_crypto_memo_from_string`.
+    fn crypto_memo_from_string(
+        &self,
+        value: &str,
+    ) -> Result<CryptoMemo, WaxError>;
 }

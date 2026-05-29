@@ -9,7 +9,7 @@ use beekeeper_rust::{
 };
 use wax::{
     SignatureProvider, WaxError, WaxFoundation, WaxOptions,
-    create_wax_foundation,
+    create_wax_foundation, result::CryptoMemo,
 };
 
 pub struct WaxTestCtx {
@@ -34,23 +34,23 @@ pub fn wax_test<R>(
 ///
 /// Beekeeper's `sign_digest` / `encrypt_data` / `decrypt_data` take `&mut self`,
 /// so the wallet is wrapped in a `RefCell` to satisfy the `&self`-taking
-/// `SignatureProvider` methods. NOTE: a known limitation in wax core is that
-/// `Transaction::decrypt` invokes `decrypt_data` with an empty `key`; this
-/// adapter therefore falls back to `default_key` (the public key imported into
-/// the wallet) when it sees the empty marker.
+/// `SignatureProvider` methods.
+///
+/// Like TS's `createSigner(base, wallet, key)`, encryption is a two-step
+/// process: the beekeeper wallet produces the inner ciphertext, then the wax
+/// foundation's `crypto_memo` codec wraps it (embedding the from/to keys and
+/// the `#` prefix) into the final memo payload — and the reverse on decrypt.
+/// crypto-memo packing is stateless, so a default foundation suffices.
 pub struct BeekeeperSignatureProvider<'a> {
     wallet: RefCell<UnlockedWallet<'a>>,
-    default_key: String,
+    base: Box<dyn WaxFoundation>,
 }
 
 impl<'a> BeekeeperSignatureProvider<'a> {
-    pub fn new(
-        wallet: UnlockedWallet<'a>,
-        default_key: impl Into<String>,
-    ) -> Self {
+    pub fn new(wallet: UnlockedWallet<'a>) -> Self {
         Self {
             wallet: RefCell::new(wallet),
-            default_key: default_key.into(),
+            base: create_wax_foundation(None),
         }
     }
 }
@@ -77,26 +77,33 @@ impl<'a> SignatureProvider for BeekeeperSignatureProvider<'a> {
         // NOTE: Beekeeper treats `nonce == 0` as "generate a fresh random nonce".
         // wax core always passes `Some(ref_block_prefix)`, so for our deterministic
         // tests this collapses to a real, reproducible nonce.
-        self.wallet
+        let inner = self
+            .wallet
             .borrow_mut()
             .encrypt_data(key, other_key, content, nonce.unwrap_or(0))
-            .map_err(|e| WaxError::new(e.to_string()))
+            .map_err(|e| WaxError::new(e.to_string()))?;
+
+        self.base.crypto_memo_dump_string(&CryptoMemo {
+            from: key.to_string(),
+            to: other_key.unwrap_or(key).to_string(),
+            content: inner,
+        })
     }
 
     fn decrypt_data(
         &self,
         content: &str,
-        key: &str,
-        other_key: Option<&str>,
+        _key: &str,
+        _other_key: Option<&str>,
     ) -> Result<String, WaxError> {
-        let from = if key.is_empty() {
-            self.default_key.as_str()
-        } else {
-            key
-        };
+        // The from/to keys are embedded in the crypto-memo, so the inbound
+        // key arguments (wax core passes empty markers here) are unused — we
+        // recover the real keys by decoding the memo, mirroring TS `base.decrypt`.
+        let memo = self.base.crypto_memo_from_string(content)?;
+
         self.wallet
             .borrow_mut()
-            .decrypt_data(from, other_key, content)
+            .decrypt_data(&memo.from, Some(&memo.to), &memo.content)
             .map_err(|e| WaxError::new(e.to_string()))
     }
 }

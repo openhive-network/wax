@@ -746,6 +746,26 @@ namespace cpp {
 		);
 	}
 
+	::rust::String rust_protocol::cpp_crypto_memo_dump_string(const RustCryptoMemo& value) const {
+		crypto_memo cpp_memo{
+			std::string(value.from),
+			std::string(value.to),
+			std::string(value.content)
+		};
+
+		return foundation::cpp_crypto_memo_dump_string(cpp_memo);
+	}
+
+	RustCryptoMemo rust_protocol::cpp_crypto_memo_from_string(::rust::Str value) const {
+		const crypto_memo cpp_memo = foundation::cpp_crypto_memo_from_string(std::string(value));
+
+		return RustCryptoMemo{
+			::rust::String(cpp_memo._from),
+			::rust::String(cpp_memo.to),
+			::rust::String(cpp_memo.content)
+		};
+	}
+
 	::rust::Vec<RustWitnessPropEntry> rust_protocol::cpp_serialize_witness_set_properties(
 		const RustWitnessSetPropertiesData& data
 	) const {
