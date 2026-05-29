@@ -3,9 +3,9 @@
 // Tests appear in TS source order. Each Rust test has a `// TS line N` comment
 // pointing back to the TS original. Tests that rely on Rust surface area or
 // fixtures that haven't been ported yet (random key generation, WIF-pubkey →
-// raw, arbitrary-NAI general_asset, inflation rate, deserialize_witness_props,
-// BinaryViewNode tree fixtures, the JS-val sample) are kept as `#[ignore]`
-// stubs with a TODO so they remain visible in `cargo test` output.
+// raw, arbitrary-NAI general_asset, inflation rate, BinaryViewNode tree
+// fixtures, the JS-val sample) are kept as `#[ignore]` stubs with a TODO so
+// they remain visible in `cargo test` output.
 
 use std::collections::HashMap;
 
@@ -1223,10 +1223,23 @@ fn serialize_witness_set_properties_matches_fixture() {
 
 // TS line 1051: "Should be able to serialize witness properties and then
 // deserialize".
-// TODO: Rust doesn't expose `cpp_deserialize_witness_set_properties`.
 #[test]
-#[ignore = "needs WaxFoundation::deserialize_witness_props"]
-fn deserialize_witness_set_properties_round_trip() {}
+fn deserialize_witness_set_properties_round_trip() {
+    wax_test(None, |ctx| {
+        let props = witness_properties();
+
+        let serialized = ctx
+            .base
+            .serialize_witness_props(&props)
+            .expect("serialize_witness_props");
+        let deserialized = ctx
+            .base
+            .deserialize_witness_props(&serialized)
+            .expect("deserialize_witness_props");
+
+        assert_eq!(deserialized, props);
+    });
+}
 
 // TS line 1063: "Should be able to estimate hive collateral".
 #[test]

@@ -25,6 +25,9 @@ use serde::Serialize;
 use wax_core::proto;
 
 use crate::WaxError;
+use crate::constants::{
+    DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS, DEFAULT_COMMENT_PERCENT_HBD,
+};
 use crate::foundation::WaxFoundation;
 use crate::interfaces::OperationBuilder;
 use crate::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
@@ -32,8 +35,6 @@ use crate::models::basic::AccountName;
 
 const APP_TAG: &str =
     concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
-const DEFAULT_PERCENT_HBD: u32 = 10_000;
-const DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS: i64 = 1_000_000_000;
 
 /// Represents the wire-form `format` value written to `json_metadata.format`.
 ///
@@ -263,11 +264,8 @@ impl CommentInputs {
         });
 
         if has_options {
-            let default = default_comment_options(
-                foundation,
-                &self.author,
-                &self.permlink,
-            )?;
+            let default = foundation
+                .default_comment_options(&self.author, &self.permlink)?;
             let computed = build_comment_options(
                 foundation,
                 &self.author,
@@ -365,23 +363,6 @@ fn deduplicate_preserving_order(items: &[String]) -> Vec<String> {
     out
 }
 
-fn default_comment_options(
-    foundation: &dyn WaxFoundation,
-    author: &str,
-    permlink: &str,
-) -> Result<proto::CommentOptions, WaxError> {
-    Ok(proto::CommentOptions {
-        author: author.to_string(),
-        permlink: permlink.to_string(),
-        max_accepted_payout: foundation
-            .hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
-        percent_hbd: DEFAULT_PERCENT_HBD,
-        allow_votes: true,
-        allow_curation_rewards: true,
-        extensions: Vec::new(),
-    })
-}
-
 #[allow(clippy::too_many_arguments)]
 fn build_comment_options(
     foundation: &dyn WaxFoundation,
@@ -396,9 +377,8 @@ fn build_comment_options(
     let max_accepted_payout: NaiAsset = match max_accepted_payout {
         Some(asset) => foundation
             .create_asset_with_required_symbol(AssetName::Hbd, asset)?,
-        None => {
-            foundation.hbd_satoshis(DEFAULT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?
-        }
+        None => foundation
+            .hbd_satoshis(DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
     };
 
     let extensions = if beneficiaries.is_empty() {
@@ -425,7 +405,7 @@ fn build_comment_options(
         author: author.to_string(),
         permlink: permlink.to_string(),
         max_accepted_payout,
-        percent_hbd: percent_hbd.unwrap_or(DEFAULT_PERCENT_HBD),
+        percent_hbd: percent_hbd.unwrap_or(DEFAULT_COMMENT_PERCENT_HBD),
         allow_votes: allow_votes.unwrap_or(true),
         allow_curation_rewards: allow_curation_rewards.unwrap_or(true),
         extensions,

@@ -762,4 +762,60 @@ namespace cpp {
 		}
 		return result;
 	}
+
+	RustWitnessSetPropertiesData rust_protocol::cpp_deserialize_witness_set_properties(
+		const ::rust::Vec<RustWitnessPropEntry>& serialized
+	) const {
+		witness_set_properties_serialized input;
+		for (const auto& entry : serialized) {
+			input.emplace(std::string(entry.key), std::string(entry.value));
+		}
+
+		const auto data = foundation::cpp_deserialize_witness_set_properties(input);
+
+		// Mirror of cpp_serialize_witness_set_properties: the cxx bridge can't
+		// express std::optional, so absent fields are signalled by a false
+		// has_* flag and their value member is left value-initialized.
+		RustWitnessSetPropertiesData result{};
+		result.key = ::rust::String(data.key);
+
+		result.has_new_signing_key = data.new_signing_key.has_value();
+		if (result.has_new_signing_key)
+			result.new_signing_key = ::rust::String(data.new_signing_key.value());
+
+		result.has_account_creation_fee = data.account_creation_fee.has_value();
+		if (result.has_account_creation_fee)
+			result.account_creation_fee = to_rust_json_asset(data.account_creation_fee.value());
+
+		result.has_url = data.url.has_value();
+		if (result.has_url)
+			result.url = ::rust::String(data.url.value());
+
+		result.has_hbd_exchange_rate = data.hbd_exchange_rate.has_value();
+		if (result.has_hbd_exchange_rate) {
+			const auto& rate = data.hbd_exchange_rate.value();
+			result.hbd_exchange_rate = RustJsonPrice{
+				to_rust_json_asset(rate.base),
+				to_rust_json_asset(rate.quote),
+			};
+		}
+
+		result.has_maximum_block_size = data.maximum_block_size.has_value();
+		if (result.has_maximum_block_size)
+			result.maximum_block_size = data.maximum_block_size.value();
+
+		result.has_hbd_interest_rate = data.hbd_interest_rate.has_value();
+		if (result.has_hbd_interest_rate)
+			result.hbd_interest_rate = data.hbd_interest_rate.value();
+
+		result.has_account_subsidy_budget = data.account_subsidy_budget.has_value();
+		if (result.has_account_subsidy_budget)
+			result.account_subsidy_budget = data.account_subsidy_budget.value();
+
+		result.has_account_subsidy_decay = data.account_subsidy_decay.has_value();
+		if (result.has_account_subsidy_decay)
+			result.account_subsidy_decay = data.account_subsidy_decay.value();
+
+		return result;
+	}
 }

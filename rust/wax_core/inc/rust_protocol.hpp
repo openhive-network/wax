@@ -210,6 +210,10 @@ namespace cpp {
 			const RustWitnessSetPropertiesData& data
 		) const;
 
+		RustWitnessSetPropertiesData cpp_deserialize_witness_set_properties(
+			const ::rust::Vec<RustWitnessPropEntry>& serialized
+		) const;
+
 		void cpp_check_memo_for_private_keys(
 			::rust::Str content,
 			::rust::Str account,

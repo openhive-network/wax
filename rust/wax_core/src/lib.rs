@@ -590,6 +590,11 @@ pub mod ffi {
             data: &RustWitnessSetPropertiesData,
         ) -> Result<Vec<RustWitnessPropEntry>>;
 
+        fn cpp_deserialize_witness_set_properties(
+            self: &rust_protocol,
+            serialized: &Vec<RustWitnessPropEntry>,
+        ) -> Result<RustWitnessSetPropertiesData>;
+
         fn cpp_check_memo_for_private_keys(
             self: &rust_protocol,
             content: &str,

@@ -324,6 +324,20 @@ pub trait WaxFoundation {
         json: &str,
     ) -> Result<Box<dyn Operation>, WaxError>;
 
+    /// Build the chain-default `comment_options` payload for `author` /
+    /// `permlink` — the options a `comment_options_operation` carries when the
+    /// caller overrides nothing (1_000_000_000 HBD max payout, 10_000 bps
+    /// `percent_hbd`, votes and curation rewards allowed, no extensions). The
+    /// comment complex operation uses this to decide whether an explicit
+    /// options op is even needed.
+    ///
+    /// TS NOTE: mirrors `getDefaultCommentOptionsOperation(author, permlink)`.
+    fn default_comment_options(
+        &self,
+        author: &str,
+        permlink: &str,
+    ) -> Result<proto::CommentOptions, WaxError>;
+
     /// Accounts whose state would be affected by `operation`. Mirrors TS
     /// `operationGetImpactedAccounts` and Python's equivalent on the base API.
     /// The order of the returned list matches the C++ producer; callers that
@@ -353,6 +367,19 @@ pub trait WaxFoundation {
         &self,
         props: &WitnessSetPropertiesProps,
     ) -> Result<HashMap<String, String>, WaxError>;
+
+    /// Deserialize the `name → hex(packed bytes)` witness-props map produced
+    /// by [`Self::serialize_witness_props`] back into structured
+    /// [`WitnessSetPropertiesProps`] — the inverse of that call.
+    ///
+    /// Mirrors the TS `deserializeWitnessProps` and Python
+    /// `deserialize_witness_set_properties` base-API helpers. Entries absent
+    /// from the map come back as `None`; `key` is required and its absence is
+    /// surfaced as an error by the C++ side.
+    fn deserialize_witness_props(
+        &self,
+        serialized_props: &HashMap<String, String>,
+    ) -> Result<WitnessSetPropertiesProps, WaxError>;
 
     /// Scan `content` for any private keys that match `account`'s authorities,
     /// memo key, or any of `other_keys`. Mirrors TS

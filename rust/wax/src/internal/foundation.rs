@@ -2,7 +2,8 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 use wax_core::ffi::{
-    RustJsonAsset, RustJsonPrice, RustWitnessSetPropertiesData,
+    RustJsonAsset, RustJsonPrice, RustWitnessPropEntry,
+    RustWitnessSetPropertiesData,
 };
 use wax_core::{RustOperation, RustTransaction, proto};
 
@@ -10,7 +11,10 @@ use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
 
 use crate::WaxError;
-use crate::constants::DEFAULT_CHAIN_ID;
+use crate::constants::{
+    DEFAULT_CHAIN_ID, DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS,
+    DEFAULT_COMMENT_PERCENT_HBD,
+};
 use crate::foundation::WaxFoundation;
 use crate::interfaces::{Operation, Transaction};
 use crate::internal::authority::to_rust_authorities;
@@ -607,6 +611,23 @@ impl WaxFoundation for WaxFoundationApi {
         Ok(Box::new(op))
     }
 
+    fn default_comment_options(
+        &self,
+        author: &str,
+        permlink: &str,
+    ) -> Result<proto::CommentOptions, WaxError> {
+        Ok(proto::CommentOptions {
+            author: author.to_string(),
+            permlink: permlink.to_string(),
+            max_accepted_payout: self
+                .hbd_satoshis(DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS)?,
+            percent_hbd: DEFAULT_COMMENT_PERCENT_HBD,
+            allow_votes: true,
+            allow_curation_rewards: true,
+            extensions: Vec::new(),
+        })
+    }
+
     fn operation_get_impacted_accounts(
         &self,
         operation: &proto::Operation,
@@ -635,6 +656,25 @@ impl WaxFoundation for WaxFoundationApi {
             .cpp_serialize_witness_set_properties(&to_ffi_witness_props(props))
             .map_err(WaxError::from)?;
         Ok(entries.into_iter().map(|e| (e.key, e.value)).collect())
+    }
+
+    fn deserialize_witness_props(
+        &self,
+        serialized_props: &HashMap<String, String>,
+    ) -> Result<WitnessSetPropertiesProps, WaxError> {
+        let entries: Vec<RustWitnessPropEntry> = serialized_props
+            .iter()
+            .map(|(key, value)| RustWitnessPropEntry {
+                key: key.clone(),
+                value: value.clone(),
+            })
+            .collect();
+
+        let data = rust_protocol()
+            .cpp_deserialize_witness_set_properties(&entries)
+            .map_err(WaxError::from)?;
+
+        Ok(from_ffi_witness_props(data))
     }
 
     fn scan_text_for_matching_private_keys(
@@ -733,6 +773,41 @@ fn to_ffi_witness_props(
 
         account_subsidy_decay: props.account_subsidy_decay.unwrap_or(0),
         has_account_subsidy_decay: props.account_subsidy_decay.is_some(),
+    }
+}
+
+/// Map the cxx-bridge's flat `RustWitnessSetPropertiesData` back into the
+/// idiomatic `Option`-bearing `WitnessSetPropertiesProps`. The inverse of
+/// [`to_ffi_witness_props`]: a `false` `has_*` discriminant becomes `None`,
+/// and the paired value member (left value-initialized by C++) is ignored.
+fn from_ffi_witness_props(
+    data: RustWitnessSetPropertiesData,
+) -> WitnessSetPropertiesProps {
+    WitnessSetPropertiesProps {
+        key: data.key,
+        new_signing_key: data
+            .has_new_signing_key
+            .then_some(data.new_signing_key),
+        account_creation_fee: data
+            .has_account_creation_fee
+            .then(|| to_nai_asset(data.account_creation_fee)),
+        url: data.has_url.then_some(data.url),
+        hbd_exchange_rate: data.has_hbd_exchange_rate.then(|| JsonPrice {
+            base: to_nai_asset(data.hbd_exchange_rate.base),
+            quote: to_nai_asset(data.hbd_exchange_rate.quote),
+        }),
+        maximum_block_size: data
+            .has_maximum_block_size
+            .then_some(data.maximum_block_size),
+        hbd_interest_rate: data
+            .has_hbd_interest_rate
+            .then_some(data.hbd_interest_rate),
+        account_subsidy_budget: data
+            .has_account_subsidy_budget
+            .then_some(data.account_subsidy_budget),
+        account_subsidy_decay: data
+            .has_account_subsidy_decay
+            .then_some(data.account_subsidy_decay),
     }
 }
 
