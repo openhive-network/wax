@@ -1,11 +1,9 @@
 // Rust port of `ts/wasm/__tests__/detailed/protocol.ts`.
 //
 // Tests appear in TS source order. Each Rust test has a `// TS line N` comment
-// pointing back to the TS original. Tests that rely on Rust surface area or
-// fixtures that haven't been ported yet (random key generation, WIF-pubkey →
-// raw, arbitrary-NAI general_asset, inflation rate, BinaryViewNode tree
-// fixtures, the JS-val sample) are kept as `#[ignore]` stubs with a TODO so
-// they remain visible in `cargo test` output.
+// pointing back to the TS original. The one remaining `#[ignore]` stub covers a
+// case where Rust's eager C++ op-handle construction diverges from TS's
+// validate-time behaviour (see the empty-variant test below).
 
 use std::collections::HashMap;
 
@@ -17,7 +15,7 @@ use wax::proto::{
     AccountCreate, Asset, Authority, Operation as ProtoOperation,
     Transaction as ProtoTransaction, Transfer, Vote, operation::Value,
 };
-use wax::result::{JsonPrice, WitnessSetPropertiesProps};
+use wax::result::{BinaryViewNode, JsonPrice, WitnessSetPropertiesProps};
 use wax::{Manabar, WaxOptions};
 
 use crate::common::wax_test;
@@ -623,43 +621,342 @@ fn convert_wif_public_key_to_raw() {
     });
 }
 
+// ---------------------------------------------------------------------------
+// BinaryViewNode fixtures mirroring ts/wasm/__tests__/assets/data.binary.ts.
+// The C++ producer is shared with the WASM build, so these expected offset
+// trees match byte-for-byte. Object nodes always carry an empty `value`;
+// arrays carry a `"Length: N"` summary string.
+// ---------------------------------------------------------------------------
+
+fn scalar(key: &str, offset: u32, size: u32, value: &str) -> BinaryViewNode {
+    BinaryViewNode::Scalar {
+        key: key.into(),
+        offset,
+        size,
+        value: value.into(),
+    }
+}
+
+fn array(
+    key: &str,
+    offset: u32,
+    size: u32,
+    length: u32,
+    children: Vec<BinaryViewNode>,
+) -> BinaryViewNode {
+    BinaryViewNode::Array {
+        key: key.into(),
+        offset,
+        size,
+        length,
+        value: format!("Length: {length}"),
+        children,
+    }
+}
+
+fn object(
+    key: &str,
+    offset: u32,
+    size: u32,
+    children: Vec<BinaryViewNode>,
+) -> BinaryViewNode {
+    BinaryViewNode::Object {
+        key: key.into(),
+        offset,
+        size,
+        value: String::new(),
+        children,
+    }
+}
+
+// data.binary.ts: `binaryDataHf26Vote`.
+fn binary_data_hf26_vote() -> Vec<BinaryViewNode> {
+    vec![
+        scalar("ref_block_num", 0, 2, "19260"),
+        scalar("ref_block_prefix", 2, 4, "2140466769"),
+        scalar("expiration", 6, 4, "2016-09-15T19:47:33"),
+        array(
+            "operations",
+            10,
+            154,
+            1,
+            vec![object(
+                "0",
+                11,
+                153,
+                vec![
+                    scalar("type", 11, 1, "vote_operation"),
+                    object(
+                        "value",
+                        12,
+                        152,
+                        vec![
+                            scalar("voter", 12, 11, "taoteh1221"),
+                            scalar("author", 23, 11, "ozchartart"),
+                            scalar(
+                                "permlink",
+                                34,
+                                128,
+                                "usdsteem-btc-daily-poloniex-bittrex-technical-analysis-market-report-update-46-glass-half-full-but-the-bottle-s-left-empty-sept",
+                            ),
+                            scalar("weight", 162, 2, "10000"),
+                        ],
+                    ),
+                ],
+            )],
+        ),
+        array(
+            "extensions",
+            164,
+            2,
+            1,
+            vec![object(
+                "0",
+                165,
+                1,
+                vec![
+                    scalar("type", 165, 1, "void_t"),
+                    object("value", 166, 0, vec![]),
+                ],
+            )],
+        ),
+        array(
+            "signatures",
+            166,
+            66,
+            1,
+            vec![scalar(
+                "0",
+                167,
+                65,
+                "202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3",
+            )],
+        ),
+    ]
+}
+
+// data.binary.ts: `binaryDataHf26TransferOperationBase(offset)` — the transfer
+// op subtree, reused both standalone and nested inside the transaction tree.
+fn binary_data_hf26_transfer_operation(offset: u32) -> Vec<BinaryViewNode> {
+    vec![
+        scalar("type", offset, 1, "transfer_operation"),
+        object(
+            "value",
+            1 + offset,
+            61,
+            vec![
+                scalar("from", 1 + offset, 9, "oneplus7"),
+                scalar("to", 10 + offset, 12, "kryptogames"),
+                object(
+                    "amount",
+                    22 + offset,
+                    12,
+                    vec![
+                        object(
+                            "amount",
+                            22 + offset,
+                            8,
+                            vec![scalar("value", 22 + offset, 8, "300000")],
+                        ),
+                        scalar("symbol", 30 + offset, 4, "@@000000021"),
+                    ],
+                ),
+                scalar("memo", 34 + offset, 28, "Roll under 50 4d434bd943616"),
+            ],
+        ),
+    ]
+}
+
+// data.binary.ts: `binaryDataHf26Transfer`.
+fn binary_data_hf26_transfer() -> Vec<BinaryViewNode> {
+    vec![
+        scalar("ref_block_num", 0, 2, "1959"),
+        scalar("ref_block_prefix", 2, 4, "3625727107"),
+        scalar("expiration", 6, 4, "2023-11-09T22:01:24"),
+        array(
+            "operations",
+            10,
+            63,
+            1,
+            vec![object("0", 11, 62, binary_data_hf26_transfer_operation(11))],
+        ),
+        array("extensions", 73, 1, 0, vec![]),
+        array("signatures", 74, 1, 0, vec![]),
+    ]
+}
+
+// data.binary.ts: `binaryDataLegacyTransferOperationBase(offset)`.
+fn binary_data_legacy_transfer_operation(offset: u32) -> Vec<BinaryViewNode> {
+    vec![
+        scalar("type", offset, 1, "transfer_operation"),
+        object(
+            "value",
+            1 + offset,
+            65,
+            vec![
+                scalar("from", 1 + offset, 9, "oneplus7"),
+                scalar("to", 10 + offset, 12, "kryptogames"),
+                object(
+                    "amount",
+                    22 + offset,
+                    16,
+                    vec![
+                        object(
+                            "amount",
+                            22 + offset,
+                            8,
+                            vec![scalar("value", 22 + offset, 8, "300000")],
+                        ),
+                        scalar("symbol", 30 + offset, 8, "STEEM"),
+                    ],
+                ),
+                scalar("memo", 38 + offset, 28, "Roll under 50 4d434bd943616"),
+            ],
+        ),
+    ]
+}
+
+// data.binary.ts: `binaryDataLegacyTransfer`.
+fn binary_data_legacy_transfer() -> Vec<BinaryViewNode> {
+    vec![
+        scalar("ref_block_num", 0, 2, "1959"),
+        scalar("ref_block_prefix", 2, 4, "3625727107"),
+        scalar("expiration", 6, 4, "2023-11-09T22:01:24"),
+        array(
+            "operations",
+            10,
+            67,
+            1,
+            vec![object(
+                "0",
+                11,
+                66,
+                binary_data_legacy_transfer_operation(11),
+            )],
+        ),
+        array("extensions", 77, 1, 0, vec![]),
+        array("signatures", 78, 1, 0, vec![]),
+    ]
+}
+
+// data.protocol.ts: `transfer_operation` — proto-shape transfer op the
+// operation-level binary tests serialize on its own.
+fn transfer_operation() -> ProtoOperation {
+    ProtoOperation {
+        value: Some(Value::TransferOperation(Transfer {
+            from_account: "oneplus7".into(),
+            to_account: "kryptogames".into(),
+            amount: Asset {
+                amount: "300000".into(),
+                precision: 3,
+                nai: "@@000000021".into(),
+            },
+            memo: "Roll under 50 4d434bd943616".into(),
+        })),
+    }
+}
+
 // TS line 585: "Should be able to generate binary metadata information - tx
 // with vote operation".
-// TODO: Rust binary view APIs work, but the `binaryDataHf26Vote` offset-tree
-// fixture from `data.binary.ts` has not been ported to Rust. The hex portion
-// of this coverage is already exercised by tests/transaction.rs
-// (`binary_view_metadata_returns_tree_matching_binary_form`).
 #[test]
-#[ignore = "needs BinaryViewNode fixture (binaryDataHf26Vote) ported from TS"]
-fn binary_metadata_vote_transaction_hf26() {}
+fn binary_metadata_vote_transaction_hf26() {
+    wax_test(None, |ctx| {
+        let view = ctx
+            .base
+            .create_transaction_from_json(
+                REQUIRED_AUTHORITIES_TRANSACTION_API_JSON,
+            )
+            .expect("create_transaction_from_json")
+            .binary_view_metadata()
+            .expect("binary_view_metadata");
+
+        assert_eq!(
+            view.binary,
+            "3c4b51ee947fd5fada5701000a74616f746568313232310a6f7a63686172746172747f757364737465656d2d6274632d6461696c792d706f6c6f6e6965782d626974747265782d746563686e6963616c2d616e616c797369732d6d61726b65742d7265706f72742d7570646174652d34362d676c6173732d68616c662d66756c6c2d6275742d7468652d626f74746c652d732d6c6566742d656d7074792d736570741027010001202bd7ff67ba97db6b5fecb389ca279e0c98db9a49fd9f49acea63ea523ed35ac602933e9bbb0916b6ee137b5550cbe1ae4594c52a27d1505b1adb53f8b37d3fb3"
+        );
+        assert_eq!(view.offsets, binary_data_hf26_vote());
+    });
+}
 
 // TS line 601: "Should be able to generate binary metadata information using
 // hf26 pack type - tx with transfer".
-// TODO: see binary_metadata_vote_transaction_hf26. Same fixture gap.
 #[test]
-#[ignore = "needs BinaryViewNode fixture (binaryDataHf26Transfer) ported from TS"]
-fn binary_metadata_transfer_transaction_hf26() {}
+fn binary_metadata_transfer_transaction_hf26() {
+    wax_test(None, |ctx| {
+        let view = ctx
+            .base
+            .create_transaction_from_json(
+                SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON,
+            )
+            .expect("create_transaction_from_json")
+            .binary_view_metadata()
+            .expect("binary_view_metadata");
+
+        assert_eq!(
+            view.binary,
+            "a70783341cd8b4564d650102086f6e65706c7573370b6b727970746f67616d6573e0930400000000002320bcbe1b526f6c6c20756e64657220353020346434333462643934333631360000"
+        );
+        assert_eq!(view.offsets, binary_data_hf26_transfer());
+    });
+}
 
 // TS line 618: "Should be able to generate binary metadata information using
 // legacy pack type - tx with transfer".
-// TODO: needs legacy binary tree fixture.
 #[test]
-#[ignore = "needs BinaryViewNode fixture (binaryDataLegacyTransfer) ported from TS"]
-fn binary_metadata_transfer_transaction_legacy() {}
+fn binary_metadata_transfer_transaction_legacy() {
+    wax_test(None, |ctx| {
+        let view = ctx
+            .base
+            .create_transaction_from_json(
+                SERIALIZATION_SENSITIVE_TRANSACTION_API_JSON,
+            )
+            .expect("create_transaction_from_json")
+            .legacy_binary_view_metadata()
+            .expect("legacy_binary_view_metadata");
+
+        assert_eq!(
+            view.binary,
+            "a70783341cd8b4564d650102086f6e65706c7573370b6b727970746f67616d6573e09304000000000003535445454d00001b526f6c6c20756e64657220353020346434333462643934333631360000"
+        );
+        assert_eq!(view.offsets, binary_data_legacy_transfer());
+    });
+}
 
 // TS line 634: "Should be able to generate binary metadata information using
 // hf26 pack type - single transfer operation".
-// TODO: needs op-level binary tree fixture.
 #[test]
-#[ignore = "needs BinaryViewNode fixture (binaryDataHf26TransferOperation) ported from TS"]
-fn binary_metadata_transfer_operation_hf26() {}
+fn binary_metadata_transfer_operation_hf26() {
+    wax_test(None, |ctx| {
+        let view = ctx
+            .base
+            .operation_binary_view_metadata(&transfer_operation(), true)
+            .expect("operation_binary_view_metadata");
+
+        assert_eq!(
+            view.binary,
+            "02086f6e65706c7573370b6b727970746f67616d6573e0930400000000002320bcbe1b526f6c6c20756e6465722035302034643433346264393433363136"
+        );
+        assert_eq!(view.offsets, binary_data_hf26_transfer_operation(0));
+    });
+}
 
 // TS line 652: "Should be able to generate binary metadata information using
 // legacy pack type - single transfer operation".
-// TODO: needs op-level legacy binary tree fixture.
 #[test]
-#[ignore = "needs BinaryViewNode fixture (binaryDataLegacyTransferOperation) ported from TS"]
-fn binary_metadata_transfer_operation_legacy() {}
+fn binary_metadata_transfer_operation_legacy() {
+    wax_test(None, |ctx| {
+        let view = ctx
+            .base
+            .operation_binary_view_metadata(&transfer_operation(), false)
+            .expect("operation_binary_view_metadata");
+
+        assert_eq!(
+            view.binary,
+            "02086f6e65706c7573370b6b727970746f67616d6573e09304000000000003535445454d00001b526f6c6c20756e6465722035302034643433346264393433363136"
+        );
+        assert_eq!(view.offsets, binary_data_legacy_transfer_operation(0));
+    });
+}
 
 // TS line 670: "Should be able to generate random private key using password".
 #[test]

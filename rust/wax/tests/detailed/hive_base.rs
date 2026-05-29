@@ -1832,6 +1832,7 @@ fn calculate_public_key_rejects_invalid_input() {
             .base
             .calculate_public_key("invalid_key")
             .expect_err("calculate_public_key should reject malformed WIF");
+
         let _ = err.to_string();
     });
 }
