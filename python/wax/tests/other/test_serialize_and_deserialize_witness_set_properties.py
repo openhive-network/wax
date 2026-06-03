@@ -91,12 +91,12 @@ def test_deserialize_witness_set_properties(props_to_serialize: dict[str, Any]) 
 
 
 def test_serialize_witness_set_properties_with_missing_argument() -> None:
-    with pytest.raises((TypeError, WaxError)):
+    with pytest.raises(WaxError):
         wax.serialize_witness_set_properties()  # type: ignore[call-arg]
 
 
 def test_serialize_witness_set_properties_with_additional_argument() -> None:
-    with pytest.raises((TypeError, WaxError)):
+    with pytest.raises(WaxError):
         wax.serialize_witness_set_properties(  # type: ignore[call-arg]
             python_witness_set_properties_data(
                 account_subsidy_budget=123,
@@ -107,12 +107,12 @@ def test_serialize_witness_set_properties_with_additional_argument() -> None:
 
 
 def test_deserialize_witness_set_properties_with_missing_argument() -> None:
-    with pytest.raises((TypeError, WaxError)):
+    with pytest.raises(WaxError):
         wax.deserialize_witness_set_properties()  # type: ignore[call-arg]
 
 
 def test_deserialize_witness_set_properties_with_additional_argument() -> None:
-    with pytest.raises((TypeError, WaxError)):
+    with pytest.raises(WaxError):
         wax.deserialize_witness_set_properties(  # type: ignore[call-arg]
             {
                 "account_creation_fee": "606d00000000000003535445454d0000",
