@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Generic, Self, TypeAlias
 
 from typing_extensions import TypeVar
 
+from beekeepy.interfaces import SelfContextAsync, SelfContextSync
 from wax.api.collection import WaxApiCollection
 
 if TYPE_CHECKING:
@@ -696,7 +697,7 @@ class IWaxBaseInterface(ABC):
         """
 
 
-class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
+class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, Generic[ApiCollectionT]):
     @property
     @abstractmethod
     def api(self) -> ApiCollectionT:
@@ -771,6 +772,14 @@ class IHiveChainInterface(IWaxBaseInterface, Generic[ApiCollectionT]):
     @abstractmethod
     def teardown(self) -> None:
         """Call when work with API communication is over."""
+
+    @abstractmethod
+    async def async_teardown(self) -> None:
+        """Async version of teardown, useful when the API communication owns async resources."""
+
+    @abstractmethod
+    async def aclose(self) -> None:
+        """Close async API communication resources."""
 
     @abstractmethod
     async def create_transaction(self, expiration: TTimestamp | None = None) -> IOnlineTransaction:
