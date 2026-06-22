@@ -96,6 +96,20 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         """Call when work with communicator is over."""
         self._api_caller.teardown()
 
+    async def async_teardown(self) -> None:
+        """Call when work with async communicator is over."""
+        await self._api_caller.async_teardown()
+
+    async def aclose(self) -> None:
+        """Close async API communication resources."""
+        await self.async_teardown()
+
+    def _finally(self) -> None:
+        self.teardown()
+
+    async def _afinally(self) -> None:
+        await self.async_teardown()
+
     async def create_transaction(self, expiration: datetime | timedelta | None = None) -> IOnlineTransaction:
         chain_reference_data = await self._acquire_chain_reference_data()
         expiration = self._resolve_expiration(expiration)
@@ -130,7 +144,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
 
     @property
     def _internal_api(self) -> WaxApiCollection:
-        return cast(WaxApiCollection, self._api_caller.api)
+        return cast("WaxApiCollection", self._api_caller.api)
 
     async def _acquire_chain_reference_data(self) -> ChainReferenceData:
         now = self._current_milli_time()
@@ -155,7 +169,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         return WaxAuthority(
             weight_threshold=api_authority.weight_threshold,
             account_auths={account[entity_index]: account[weight_index] for account in api_authority.account_auths},  # type: ignore[misc, unused-ignore]
-            key_auths={key[entity_index]: cast(int, key[weight_index]) for key in api_authority.key_auths},  # type: ignore[misc, unused-ignore]
+            key_auths={key[entity_index]: cast("int", key[weight_index]) for key in api_authority.key_auths},  # type: ignore[misc, unused-ignore]
         )
 
     def _extract_authority_from_find_accounts_response(

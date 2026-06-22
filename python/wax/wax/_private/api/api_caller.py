@@ -94,10 +94,22 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
     def _target_service(self) -> str:
         return "wax_api_caller"
 
+    def teardown(self) -> None:
+        try:
+            super().teardown()
+        finally:
+            self._INSTANCES.discard(self)
+
+    async def async_teardown(self) -> None:
+        try:
+            await super().async_teardown()
+        finally:
+            self._INSTANCES.discard(self)
+
 
 def _cleanup_instances() -> None:
     """Cleanup all WaxApiCaller instances before interpreter shutdown."""
-    for instance in WaxApiCaller._INSTANCES:
+    for instance in tuple(WaxApiCaller._INSTANCES):
         instance.teardown()
 
     WaxApiCaller._INSTANCES.clear()
