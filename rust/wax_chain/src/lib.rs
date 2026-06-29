@@ -9,6 +9,7 @@
 mod authority_trace;
 mod chain;
 mod error;
+mod healthchecker;
 mod internal;
 mod online_transaction;
 mod options;
@@ -20,6 +21,11 @@ pub use authority_trace::{
 };
 pub use chain::HiveChain;
 pub use error::WaxChainError;
+pub use healthchecker::{
+    ChainApiType, EndpointInfo, ErrorReason, HealthCheckerError, HiveEndpoint,
+    HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, NewBestEvent,
+    NewUpDownEvent, RequestError,
+};
 pub use online_transaction::OnlineTransaction;
 pub use options::WaxChainOptions;
 
