@@ -53,6 +53,13 @@ variables:
   CI_BASE_IMAGE_TAG: "pypa_2_28-13"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
+  # wax-rust-builder image: the wax ci-base-image plus a stable Rust toolchain and
+  # protobuf-compiler, used to build the rust/ workspace (wax_core compiles C++ via CMake).
+  # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
+  # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
+  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-13-rust1"
+  WAX_RUST_BUILDER_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}"
+
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
   HIVE_PYPI_INDEX: "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
 
@@ -214,6 +221,23 @@ build_wheel:
     expire_in: 1 week
     reports:
       dotenv: "build_wheel.env"
+  tags:
+    - public-runner-docker
+
+build_rust:
+  stage: build
+  image: "${WAX_RUST_BUILDER_IMAGE}"
+  variables:
+    # proto_builder reads .proto files from the hive submodule (and its nested deps)
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - git config --global --add safe.directory '*'
+  script:
+    # --in-container skips the nested docker run in build.sh: this job already runs
+    # inside wax-rust-builder, which provides Rust, protobuf-compiler and the prebuilt
+    # Boost/OpenSSL/CMake from the wax ci-base-image.
+    - cd "${CI_PROJECT_DIR}/rust"
+    - ./build.sh --in-container release
   tags:
     - public-runner-docker
 
@@ -798,6 +822,42 @@ build_wax_ci_base_image:
         paths:
           - python/wax/docker/Dockerfile.ci
           - python/wax/scripts/prepare_boost.sh
+      when: on_success
+    # Manual trigger available
+    - when: manual
+      allow_failure: true
+
+# =============================================================================
+# WAX Rust Builder Image Build Job
+# =============================================================================
+# Builds wax-rust-builder = wax ci-base-image + stable Rust toolchain + protobuf-compiler.
+# Consumed by the build_rust job via the WAX_RUST_BUILDER_IMAGE variable.
+# Manual trigger - only runs automatically when the Dockerfile changes.
+
+build_wax_rust_builder_image:
+  extends: .docker_image_builder_job_template
+  stage: prepare
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - |
+      echo "Building wax-rust-builder image"
+      echo "Base image: ${CI_BASE_IMAGE}"
+      echo "Target tag: ${WAX_RUST_BUILDER_IMAGE}"
+    - |
+      docker buildx build \
+        --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}/wax-rust-builder/cache:${WAX_RUST_BUILDER_IMAGE_TAG} \
+        --cache-to type=registry,mode=max,ref=${CI_REGISTRY_IMAGE}/wax-rust-builder/cache:${WAX_RUST_BUILDER_IMAGE_TAG} \
+        -t "${WAX_RUST_BUILDER_IMAGE}" \
+        -f rust/docker/wax-rust-builder.dockerfile \
+        --push rust/docker
+  tags:
+    - public-runner-docker
+  rules:
+    # Run on Dockerfile changes
+    - if: $CI_COMMIT_BRANCH
+      changes:
+        paths:
+          - rust/docker/wax-rust-builder.dockerfile
       when: on_success
     # Manual trigger available
     - when: manual
