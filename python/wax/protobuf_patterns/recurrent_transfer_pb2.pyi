@@ -66,7 +66,9 @@ class recurrent_transfer(google.protobuf.message.Message):
     """
     executions: builtins.int
     """@param {number} executions - How many times the recurrent payment will be executed.
-                                 Executions must be at least 2, if you set executions to 1 the recurrent transfer will not be executed.
+                                 Executions must be at least 2 when creating a new recurrent transfer.
+                                 Since HF 29 executions may be set to 1 when modifying an existing recurrent transfer
+                                 (e.g. to update the amount or memo on the last remaining payment).
     """
     @property
     def extensions(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[recurrent_transfer_extension_pb2.recurrent_transfer_extension]:
