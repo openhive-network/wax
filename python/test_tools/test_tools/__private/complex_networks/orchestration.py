@@ -136,19 +136,21 @@ def init_network(  # noqa: C901
     if block_log_directory_name is not None:
         # Prepare dedicated directory
         if block_log_directory_name.exists():
+            # remove both the block log files and their artifacts, otherwise a newly generated block log would be
+            # left next to stale artifacts from the previous generation, which no longer match it
             mono_block_log = tt.BlockLog(block_log_directory_name, "monolithic")
-            for file in mono_block_log.block_files:
+            for file in [*mono_block_log.block_files, *mono_block_log.artifact_files]:
                 file.unlink(missing_ok=True)
             split_block_log = tt.BlockLog(block_log_directory_name, "split")
-            for file in split_block_log.block_files:
+            for file in [*split_block_log.block_files, *split_block_log.artifact_files]:
                 file.unlink(missing_ok=True)
         else:
             Path.mkdir(block_log_directory_name)
 
-        # Copy newly created block log into dedicated directory
+        # Copy newly created block log (together with its matching artifacts) into dedicated directory
         wallet.close()
         init_node.close()
-        init_node.block_log.copy_to(block_log_directory_name)
+        init_node.block_log.copy_to(block_log_directory_name, artifacts="optional")
 
 
 def modify_time_offset(old_iso_date: datetime.datetime, offset_in_seconds: int) -> OffsetTimeControl:

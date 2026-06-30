@@ -254,6 +254,8 @@ class NetworksBuilder:
             if network.init_node is not None:
                 assert self.init_node is None, "InitNode already exists"
                 self.init_node = tt.InitNode(network=tt_network)
+                # the saved/committed complex_networks block logs are monolithic, so generate them as such
+                self.init_node.config.block_log_split = -1
                 self.nodes.append(self.init_node)
                 if network.init_node.prepare:
                     self.prepare_nodes.append(self.init_node)
