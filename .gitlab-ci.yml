@@ -3,6 +3,7 @@ stages:
   - build
   - static_code_analysis
   - test_python
+  - test_rust
   - test
   - deploy
   - test-tools
@@ -238,6 +239,33 @@ build_rust:
     # Boost/OpenSSL/CMake from the wax ci-base-image.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./build.sh --in-container release
+  artifacts:
+    paths:
+      - rust/protobuf_patterns/hive.protocol.buffers.bin
+    expire_in: 1 week
+  tags:
+    - public-runner-docker
+
+test_rust:
+  stage: test_rust
+  image: "${WAX_RUST_BUILDER_IMAGE}"
+  needs:
+    # Pull in the generated FileDescriptorSet (hive.protocol.buffers.bin) that
+    # wax_core embeds at compile time; it is not committed (gitignored).
+    - job: build_rust
+      artifacts: true
+  variables:
+    # beekeeper_rust's build.rs compiles fc_crypto_bridge from beekeeper's nested
+    # submodules (fc, secp256k1), so the full submodule tree must be checked out.
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - git config --global --add safe.directory '*'
+  script:
+    # cargo test -p wax --test detailed. beekeeper_rust's build.rs builds the C++
+    # fc_crypto_bridge via its standalone CMake driver (BOOST_ROOT comes from the
+    # wax-rust-builder image), so no prebuilt beekeeper C++ is required.
+    - cd "${CI_PROJECT_DIR}/rust"
+    - ./test.sh --in-container release
   tags:
     - public-runner-docker
 
