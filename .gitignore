@@ -216,9 +216,6 @@ python/wax/*.wallet
 python/wax/setup.py
 *.bin
 
-#TODO - temporary path for beekeeper
-rust/crates
-
 # Generated files
 # Wee need .npmrc now for other npm GitLab packages from @hiveio scope
 # .npmrc
