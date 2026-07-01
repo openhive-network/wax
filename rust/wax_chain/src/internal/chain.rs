@@ -17,8 +17,9 @@ use wax::models::basic::{
 };
 use wax::proto;
 use wax::result::{
-    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, HiveAssetData,
-    JsonPrice, PrivateKeyData, RefBlockData, WitnessSetPropertiesProps,
+    Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, CryptoMemo,
+    HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
+    WitnessSetPropertiesProps,
 };
 use wax::{ManabarData, Operation, Transaction};
 
@@ -123,6 +124,15 @@ impl WaxFoundation for HiveChainApi {
     }
 
     forward! {
+        fn crypto_memo_dump_string(
+            &self,
+            memo: &CryptoMemo
+        ) -> Result<String, WaxError>;
+        fn crypto_memo_from_string(
+            &self,
+            value: &str
+        ) -> Result<CryptoMemo, WaxError>;
+
         fn address_prefix(&self) -> Result<String, WaxError>;
         fn config(&self) -> Result<ChainConfig, WaxError>;
         fn assets(&self) -> Result<Assets, WaxError>;
