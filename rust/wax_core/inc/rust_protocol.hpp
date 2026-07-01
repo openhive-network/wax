@@ -36,7 +36,7 @@ namespace cpp {
 		rust_protocol() = default;
 
 		std::unique_ptr<hive_operation_handle>
-		cpp_create_operation_handle(::rust::Box<RustManagedObject> obj) const;
+		cpp_create_operation_handle(::rust::Box<RustManagedObject> obj, bool is_protobuf) const;
 
 		std::unique_ptr<hive_transaction_handle>
 		cpp_create_transaction_handle(::rust::Box<RustManagedObject> obj) const;

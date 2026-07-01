@@ -317,6 +317,7 @@ pub mod ffi {
         fn cpp_create_operation_handle(
             self: &rust_protocol,
             obj: Box<RustManagedObject>,
+            is_protobuf: bool,
         ) -> Result<UniquePtr<hive_operation_handle>>;
 
         fn cpp_create_transaction_handle(

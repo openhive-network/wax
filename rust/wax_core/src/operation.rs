@@ -58,6 +58,6 @@ fn create_handle(
     op: &proto::Operation,
 ) -> UniquePtr<hive_operation_handle> {
     protocol
-        .cpp_create_operation_handle(RustManagedObject::from_operation(op))
+        .cpp_create_operation_handle(RustManagedObject::from_operation(op), true)
         .expect("failed to create operation handle")
 }

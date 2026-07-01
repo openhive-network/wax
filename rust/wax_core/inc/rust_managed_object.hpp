@@ -3,6 +3,8 @@
 #include "rust/cxx.h"
 #include "wax_core/src/lib.rs.h"
 
+#include <fc/exception/exception.hpp>
+
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -104,7 +106,15 @@ namespace cpp {
 		}
 
 		std::string get_underlying_sv_type() const {
-			return static_cast<std::string>(rmo_oneof_variant(borrow()));
+			std::string variant = static_cast<std::string>(rmo_oneof_variant(borrow()));
+			// TS NOTE: emscripten_managed_object::get_underlying_sv_type FC_ASSERTs
+			// when the value has no keys. Mirror it: an empty oneof would otherwise
+			// make from_jsval evaluate jsval[""], and rust_managed_object's get_field
+			// panics on the unknown field — a non-Result cxx boundary turns that panic
+			// into SIGABRT. Asserting here throws a catchable fc::assert_exception
+			// (-> safe_exception_wrapper -> cxx Err) instead.
+			FC_ASSERT(!variant.empty(), "Expected a key in static variant");
+			return variant;
 		}
 
 		std::vector<std::string> get_map_keys() const {

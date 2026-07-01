@@ -194,13 +194,14 @@ namespace cpp {
 
 	std::unique_ptr<hive_operation_handle>
 	rust_protocol::cpp_create_operation_handle(
-		::rust::Box<RustManagedObject> obj
+		::rust::Box<RustManagedObject> obj,
+		bool is_protobuf
 	) const {
 		return safe_exception_wrapper([&]() -> std::unique_ptr<hive_operation_handle> {
 			auto handle = std::make_unique<hive_operation_handle>();
 
 			hive::protocol::operation op;
-			cpp::from_jsval(rust_managed_object{ std::move(obj) }, op, true);
+			cpp::from_jsval(rust_managed_object{ std::move(obj) }, op, is_protobuf);
 			handle->op.reset(new hive_op(std::move(op)));
 
 			return handle;

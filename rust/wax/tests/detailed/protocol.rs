@@ -17,6 +17,7 @@ use wax::proto::{
 };
 use wax::result::{BinaryViewNode, JsonPrice, WitnessSetPropertiesProps};
 use wax::{Manabar, WaxOptions};
+use wax_core::RustManagedObject;
 
 use crate::common::wax_test;
 
@@ -1223,16 +1224,30 @@ fn validate_empty_transaction_fails_without_panic() {
 }
 
 // TS line 831: "Should not crash the program - operation validation - but
-// fail". Default (no value) operation must fail validation.
-// TODO: Rust's `create_operation_from_proto` eagerly builds the C++
-// `hive_operation_handle`, which aborts when `proto::Operation.value` is
-// `None`. The TS test mirrors hive's deferred-validation model where the
-// handle exists and only `cpp_op_validate` errors; matching that requires a
-// non-panicking handle constructor on the Rust side.
+// fail". A default (no value) operation must fail without crashing.
+//
+// TS NOTE: the TS test drives the raw protocol FFI
+// (`cpp_create_operation_handle` / `cpp_op_validate`) and asserts it throws, so
+// we mirror that layer here rather than the high-level `Foundation` wrapper. An
+// empty operation has no oneof set, so
+// `rust_managed_object::get_underlying_sv_type` FC_ASSERTs (mirroring
+// `emscripten_managed_object`); that surfaces through `safe_exception_wrapper`
+// as a catchable `Err` — no panic/abort. (The
+// `Foundation::create_operation_from_proto` wrapper `.expect()`s this same error
+// and would panic; that is a wrapper-level concern, not what this protocol-layer
+// test covers.)
 #[test]
-#[ignore = "Rust eagerly constructs the C++ op handle; empty-variant aborts at construction time, not validate()"]
-fn validate_empty_operation_fails_without_panic() {}
+fn validate_empty_operation_fails_without_panic() {
+    let protocol = wax_core::ffi::new_rust_protocol();
 
+    let empty = ProtoOperation { value: None };
+    let managed = wax_core::RustManagedObject::from_operation(&empty);
+
+    assert!(
+        protocol.cpp_create_operation_handle(managed, true).is_err(),
+        "empty operation must fail, not panic"
+    );
+}
 // TS line 838: "Should be able to validate example operation".
 #[test]
 fn validate_example_vote_operation() {
