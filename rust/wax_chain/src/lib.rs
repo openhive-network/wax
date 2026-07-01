@@ -14,6 +14,7 @@ mod internal;
 mod online_transaction;
 mod options;
 mod rpc;
+mod util;
 
 pub use authority_trace::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,

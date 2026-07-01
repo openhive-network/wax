@@ -9,6 +9,8 @@
 
 use std::collections::{HashMap, HashSet};
 
+use crate::util::DetailedResponseData;
+
 use super::Dummy;
 use super::errors::ChainApiType;
 
@@ -28,7 +30,7 @@ pub struct HiveEndpoint {
     /// TS NOTE: `(apiUrl: string) => Promise<IDetailedResponseData<any>>`. The
     /// request_helper response type is not yet ported, so its result is
     /// [`Dummy`].
-    caller: Box<dyn Fn(String) -> Dummy>,
+    caller: Box<dyn Fn(String) -> DetailedResponseData>,
     up: HashMap<String, HiveEndpointDataUp>,
     down: HashMap<String, HiveEndpointDataDown>,
 }
@@ -42,7 +44,7 @@ impl HiveEndpoint {
         api_caller_id: ChainApiType,
         paths: Vec<String>,
         endpoint_urls: HashSet<String>,
-        caller: Box<dyn Fn(String) -> Dummy>,
+        caller: Box<dyn Fn(String) -> DetailedResponseData>,
     ) -> Self {
         Self {
             checker,
