@@ -4,13 +4,24 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-wax_core = { path = "../wax_core" }
-cxx = "1.0"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+cxx = "1.0"
+pbjson = "0.7"
+percent-encoding = "2"
+prost = "0.13"
+prost-reflect = { version = "0.16", features = ["serde"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 rust_decimal = { version = "1", default-features = false, features = ["std"] }
+serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
-serde = "1.0.228"
+url = "2"
 
 [dev-dependencies]
 beekeeper_rust = { path = "../crates/beekeeper/programs/beekeeper/beekeeper_rust" }
+
+[build-dependencies]
+cmake = "0.1"
+cxx-build = "1.0"
+pbjson-build = "0.7"
+prost-build = "0.13"

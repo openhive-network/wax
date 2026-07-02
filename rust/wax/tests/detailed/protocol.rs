@@ -9,6 +9,7 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 
+use wax::core::RustManagedObject;
 use wax::models::asset::NaiAsset;
 use wax::models::basic::HiveDateTime;
 use wax::proto::{
@@ -17,7 +18,6 @@ use wax::proto::{
 };
 use wax::result::{BinaryViewNode, JsonPrice, WitnessSetPropertiesProps};
 use wax::{Manabar, WaxOptions};
-use wax_core::RustManagedObject;
 
 use crate::common::wax_test;
 
@@ -1238,10 +1238,10 @@ fn validate_empty_transaction_fails_without_panic() {
 // test covers.)
 #[test]
 fn validate_empty_operation_fails_without_panic() {
-    let protocol = wax_core::ffi::new_rust_protocol();
+    let protocol = wax::core::ffi::new_rust_protocol();
 
     let empty = ProtoOperation { value: None };
-    let managed = wax_core::RustManagedObject::from_operation(&empty);
+    let managed = wax::core::RustManagedObject::from_operation(&empty);
 
     assert!(
         protocol.cpp_create_operation_handle(managed, true).is_err(),

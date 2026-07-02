@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
+use wax::core::proto;
 use wax::models::authority::{AccountAuthorityInfo, Authorities};
 use wax::models::basic::HiveDateTime;
 use wax::{AuthorityDataProvider, WaxError};
-use wax_core::proto;
 
 fn placeholder_timestamp() -> HiveDateTime {
     // Fixed epoch-ish timestamp for tests that don't care about owner-update

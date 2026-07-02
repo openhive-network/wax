@@ -1,6 +1,6 @@
 # Building wax (Rust) in Docker
 
-This directory contains the container recipe used by [`rust/build.sh`](../build.sh) to build the Rust workspace against the canonical CI environment, without installing C++ dependencies on the host.
+This directory contains the container recipe used by [`rust/build.sh`](../build.sh) to build the `wax` package against the canonical CI environment, without installing C++ dependencies on the host.
 
 ## Files
 
@@ -34,16 +34,14 @@ Artifacts land under `rust/target/docker/<profile>/` on the host (see [Why a sep
 Inside the container, `build.sh` runs:
 
 ```bash
-cargo run -p proto_builder              # regenerate proto-derived Rust sources
-cargo build [--release] -p wax_core     # build the C++ bridge via CMake
-cargo build [--release] -p wax          # build the public crate
+cargo build [--release] -p wax
 ```
 
-`proto_builder` reads `.proto` files from `hive/libraries/protocol/proto/` (the `hive` submodule must be initialized — `git submodule update --init --recursive`).
+`wax`'s build script does the rest: protobuf codegen (from `hive/libraries/protocol/proto/` into `OUT_DIR`), the CMake build of the C++ side, and the cxx bridge. The `hive` submodule must be initialized — `git submodule update --init --recursive`.
 
 ## Why a separate target dir
 
-The C++ side of `wax_core` is built through CMake (via the [`cmake` build-script crate](https://docs.rs/cmake)). CMake bakes absolute library paths into `CMakeCache.txt` — e.g. `/usr/lib/x86_64-linux-gnu/libreadline.a` on a Debian host vs `/usr/lib64/libreadline.a` on the Rocky-based CI image. If host and container builds share the same target directory, whichever ran first poisons the cache for the other.
+The C++ side of `wax` is built through CMake (via the [`cmake` build-script crate](https://docs.rs/cmake)). CMake bakes absolute library paths into `CMakeCache.txt` — e.g. `/usr/lib/x86_64-linux-gnu/libreadline.a` on a Debian host vs `/usr/lib64/libreadline.a` on the Rocky-based CI image. If host and container builds share the same target directory, whichever ran first poisons the cache for the other.
 
 `build.sh` sets `CARGO_TARGET_DIR=rust/target/docker` inside the container so:
 
@@ -57,8 +55,6 @@ If the C++ build dependencies (Boost ≥ 1.74, OpenSSL, CMake ≥ 3.16, a C++17 
 
 ```bash
 cd rust
-cargo run -p proto_builder
-cargo build -p wax_core
 cargo build -p wax
 ```
 
@@ -69,7 +65,7 @@ Output goes to the standard `rust/target/<profile>/`.
 The dockerfile:
 
 - inherits `WAX_BOOST_ROOT=/wax_boost_root/` (set by the base image, points at the prebuilt Boost 1.83 install) and re-exports it as `BOOST_ROOT` so CMake's `find_package(Boost)` finds it
-- installs `protobuf-compiler` (required by `prost-build` for `proto_builder`)
+- installs `protobuf-compiler` (required by `prost-build` in `wax`'s build script)
 - installs Rust via rustup with the `RUST_TOOLCHAIN` build-arg (default: `stable`)
 - creates a `user` account with build-arg `USER_ID` / `GROUP_ID` so files written through the bind mount are owned by the host user
 

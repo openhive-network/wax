@@ -77,7 +77,6 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 name = "beekeeper_rust"
 version = "0.1.0"
 dependencies = [
- "cmake",
  "cxx",
  "cxx-build",
  "tempfile",
@@ -1053,14 +1052,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "proto_builder"
-version = "0.1.0"
-dependencies = [
- "pbjson-build",
- "prost-build",
-]
-
-[[package]]
 name = "ptr_meta"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1684,19 +1675,7 @@ dependencies = [
  "mio",
  "pin-project-lite",
  "socket2",
- "tokio-macros",
  "windows-sys 0.61.2",
-]
-
-[[package]]
-name = "tokio-macros"
-version = "2.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "385a6cb71ab9ab790c5fe8d67f1645e6c450a7ce006a33de03daa956cf70a496"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
 ]
 
 [[package]]
@@ -1995,40 +1974,21 @@ version = "0.1.0"
 dependencies = [
  "beekeeper_rust",
  "chrono",
- "cxx",
- "rust_decimal",
- "serde",
- "serde_json",
- "thiserror",
- "wax_core",
-]
-
-[[package]]
-name = "wax_chain"
-version = "0.1.0"
-dependencies = [
- "percent-encoding",
- "reqwest",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "url",
- "wax",
-]
-
-[[package]]
-name = "wax_core"
-version = "0.1.0"
-dependencies = [
  "cmake",
  "cxx",
  "cxx-build",
  "pbjson",
+ "pbjson-build",
+ "percent-encoding",
  "prost 0.13.5",
+ "prost-build",
  "prost-reflect",
+ "reqwest",
+ "rust_decimal",
  "serde",
  "serde_json",
+ "thiserror",
+ "url",
 ]
 
 [[package]]

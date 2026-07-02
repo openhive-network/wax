@@ -1,8 +1,8 @@
 // Smoke tests for the methods that `rust/wax` newly exposes on
-// `WaxFoundation` after wax_core's 6cd3af55 wired up the underlying FFI.
+// `WaxFoundation` after 6cd3af55 wired up the underlying FFI.
 // Aim: validate the end-to-end shape (FFI types translate correctly into the
-// wax-level types), not exhaustive C++ behavior — that lives next to
-// `wax_core`.
+// wax-level types), not exhaustive C++ behavior — that lives in the
+// `core_*` tests.
 
 use wax::constants::MAINNET_CHAIN_ID;
 use wax::models::asset::NaiAsset;
@@ -253,7 +253,7 @@ fn create_transaction_from_legacy_json_returns_parsed_transaction() {
     assert_eq!(ops.len(), 1, "legacy fixture has exactly one transfer op");
 
     let transfer = match ops[0].value.as_ref().expect("op value present") {
-        wax_core::proto::operation::Value::TransferOperation(t) => t,
+        wax::core::proto::operation::Value::TransferOperation(t) => t,
         other => panic!("expected transfer_operation, got {other:?}"),
     };
     assert_eq!(transfer.from_account, "oneplus7");
@@ -403,9 +403,9 @@ fn chain_reference_data_rejects_malformed_offset() {
 
 // Shared `vote_operation` fixture from ts/wasm/__tests__/assets/data.protocol.ts —
 // reusing it keeps the Rust port verifying against the same bytes the TS suite does.
-fn sample_vote_operation() -> wax_core::proto::Operation {
-    use wax_core::proto::{Vote, operation::Value};
-    wax_core::proto::Operation {
+fn sample_vote_operation() -> wax::core::proto::Operation {
+    use wax::core::proto::{Vote, operation::Value};
+    wax::core::proto::Operation {
         value: Some(Value::VoteOperation(Vote {
             voter: "otom".into(),
             author: "c0ff33a".into(),

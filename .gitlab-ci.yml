@@ -55,7 +55,7 @@ variables:
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
   # wax-rust-builder image: the wax ci-base-image plus a stable Rust toolchain and
-  # protobuf-compiler, used to build the rust/ workspace (wax_core compiles C++ via CMake).
+  # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
   # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
   # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
   WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-13-rust1"
@@ -229,7 +229,7 @@ build_rust:
   stage: build
   image: "${WAX_RUST_BUILDER_IMAGE}"
   variables:
-    # proto_builder reads .proto files from the hive submodule (and its nested deps)
+    # wax's build.rs compiles the .proto files from the hive submodule (and its nested deps)
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - git config --global --add safe.directory '*'
@@ -239,10 +239,6 @@ build_rust:
     # Boost/OpenSSL/CMake from the wax ci-base-image.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./build.sh --in-container release
-  artifacts:
-    paths:
-      - rust/protobuf_patterns/hive.protocol.buffers.bin
-    expire_in: 1 week
   tags:
     - public-runner-docker
 
@@ -250,10 +246,10 @@ test_rust:
   stage: test_rust
   image: "${WAX_RUST_BUILDER_IMAGE}"
   needs:
-    # Pull in the generated FileDescriptorSet (hive.protocol.buffers.bin) that
-    # wax_core embeds at compile time; it is not committed (gitignored).
+    # No artifacts needed: wax's build.rs regenerates the protobuf outputs
+    # (incl. the FileDescriptorSet) into OUT_DIR during the test build.
     - job: build_rust
-      artifacts: true
+      artifacts: false
   variables:
     # beekeeper_rust's build.rs compiles fc_crypto_bridge from beekeeper's nested
     # submodules (fc, secp256k1), so the full submodule tree must be checked out.

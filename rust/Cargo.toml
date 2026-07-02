@@ -1,5 +1,5 @@
 [workspace]
-members = ["proto_builder", "wax", "wax_chain", "wax_core"]
+members = ["wax"]
 resolver = "3"
 
 [profile.release]
