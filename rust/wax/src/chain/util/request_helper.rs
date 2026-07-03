@@ -236,3 +236,152 @@ impl Default for RequestHelper {
         Self::new()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    //! TS NOTE: mirrors `ts/wasm/__tests__/detailed/wax_api_caller_header.ts`.
+    //! The TS tests intercept the chain's request data via `withProxy` and
+    //! assert the `waxApiCaller` option is propagated down to the request
+    //! layer. The Rust port has no `ApiCaller` layer yet, so `RequestOptions`
+    //! is built directly in the test and asserting `wax_api_caller` on it
+    //! would be vacuous; the observable equivalent at this layer is the
+    //! `x-wax-api-caller` header that `init_bulider` emits from that option
+    //! (the TS counterpart is `request_helper.ts` lines 58-59), captured here
+    //! off the wire by a local server.
+
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+    use std::sync::mpsc;
+    use std::thread;
+
+    use super::*;
+
+    /// `waxApiCaller` fixture pinned by the TS suite.
+    const WAX_API_CALLER: &str = "test-wax-client-v1.0";
+
+    /// Serves a single request with a canned 200 JSON body, returning the
+    /// server URL and a receiver yielding the raw captured request.
+    fn spawn_capture_server(
+        body: &'static str,
+    ) -> (String, mpsc::Receiver<String>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}", listener.local_addr().unwrap());
+        let (tx, rx) = mpsc::channel();
+
+        thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut raw = Vec::new();
+            let mut buf = [0u8; 1024];
+
+            let head_end = loop {
+                let n = stream.read(&mut buf).unwrap();
+                raw.extend_from_slice(&buf[..n]);
+
+                if let Some(pos) = raw.windows(4).position(|w| w == b"\r\n\r\n")
+                {
+                    break pos + 4;
+                }
+            };
+
+            let head = String::from_utf8_lossy(&raw[..head_end]).to_lowercase();
+            let content_length = head
+                .lines()
+                .find_map(|line| line.strip_prefix("content-length:"))
+                .map_or(0, |value| value.trim().parse::<usize>().unwrap());
+
+            while raw.len() < head_end + content_length {
+                let n = stream.read(&mut buf).unwrap();
+                raw.extend_from_slice(&buf[..n]);
+            }
+
+            let response = format!(
+                "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\n\
+                 content-length: {}\r\nconnection: close\r\n\r\n{body}",
+                body.len(),
+            );
+            stream.write_all(response.as_bytes()).unwrap();
+
+            tx.send(String::from_utf8_lossy(&raw).into_owned()).unwrap();
+        });
+
+        (url, rx)
+    }
+
+    /// Extracts a header value from the captured raw request; header names
+    /// are case-insensitive per HTTP.
+    fn header_value(raw: &str, name: &str) -> Option<String> {
+        raw.lines().take_while(|line| !line.is_empty()).find_map(
+            |line| {
+                let (key, value) = line.split_once(':')?;
+
+                key.eq_ignore_ascii_case(name)
+                    .then(|| value.trim().to_string())
+            },
+        )
+    }
+
+    // TS line 10: 'Should set x-wax-api-caller header in REST API requests
+    // when configured'. The REST caller issues a bodiless GET with the query
+    // already encoded in the URL.
+    #[tokio::test]
+    async fn sets_wax_api_caller_header_on_rest_api_requests() {
+        let (endpoint, captured) =
+            spawn_capture_server(r#"[{"block_num":1}]"#);
+
+        RequestHelper::new()
+            .request(RequestOptions {
+                endpoint,
+                url: "/hafbe-api/operation-type-counts?result-limit=1".into(),
+                method: "GET".into(),
+                timeout: 0,
+                data: None,
+                response_type: None,
+                wax_api_caller: Some(WAX_API_CALLER.into()),
+            })
+            .await
+            .unwrap();
+
+        let raw = captured.recv().unwrap();
+
+        assert_eq!(
+            header_value(&raw, "x-wax-api-caller").as_deref(),
+            Some(WAX_API_CALLER)
+        );
+    }
+
+    // TS line 45: 'Should set x-wax-api-caller header in standard API
+    // requests when configured'. The JSON-RPC caller posts to the endpoint
+    // root (`url: ""` after the TS request rewrite in `chain_api.ts`).
+    #[tokio::test]
+    async fn sets_wax_api_caller_header_on_standard_api_requests() {
+        let (endpoint, captured) =
+            spawn_capture_server(r#"{"jsonrpc":"2.0","result":{},"id":1}"#);
+
+        let data = serde_json::json!({
+            "jsonrpc": "2.0",
+            "method": "database_api.get_dynamic_global_properties",
+            "params": {},
+            "id": 1
+        });
+
+        RequestHelper::new()
+            .request(RequestOptions {
+                endpoint,
+                url: String::new(),
+                method: "POST".into(),
+                timeout: 0,
+                data: Some(RequestData::Json(data)),
+                response_type: None,
+                wax_api_caller: Some(WAX_API_CALLER.into()),
+            })
+            .await
+            .unwrap();
+
+        let raw = captured.recv().unwrap();
+
+        assert_eq!(
+            header_value(&raw, "x-wax-api-caller").as_deref(),
+            Some(WAX_API_CALLER)
+        );
+    }
+}

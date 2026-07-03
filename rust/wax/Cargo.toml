@@ -26,6 +26,7 @@ url = "2"
 
 [dev-dependencies]
 beekeeper_rust = { path = "../crates/beekeeper/programs/beekeeper/beekeeper_rust" }
+tokio = { version = "1", features = ["macros", "rt"] }
 
 [build-dependencies]
 cmake = "0.1"
