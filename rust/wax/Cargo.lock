@@ -471,6 +471,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
+name = "hiveio-wax"
+version = "0.0.0"
+dependencies = [
+ "beekeeper_rust",
+ "chrono",
+ "cmake",
+ "cxx",
+ "cxx-build",
+ "pbjson",
+ "pbjson-build",
+ "percent-encoding",
+ "prost 0.13.5",
+ "prost-build",
+ "prost-reflect",
+ "reqwest",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "http"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1891,30 +1915,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc1b4cb0cc549fcf58d7dfc081778139b3d283a081644e833e84682ad71cea24"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "wax"
-version = "0.1.0"
-dependencies = [
- "beekeeper_rust",
- "chrono",
- "cmake",
- "cxx",
- "cxx-build",
- "pbjson",
- "pbjson-build",
- "percent-encoding",
- "prost 0.13.5",
- "prost-build",
- "prost-reflect",
- "reqwest",
- "rust_decimal",
- "serde",
- "serde_json",
- "thiserror",
- "tokio",
- "url",
 ]
 
 [[package]]

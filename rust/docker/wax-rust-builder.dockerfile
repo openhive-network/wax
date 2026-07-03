@@ -24,4 +24,7 @@ ENV CARGO_HOME=/home/${USER_NAME}/.cargo \
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
         sh -s -- -y --profile minimal --default-toolchain ${RUST_TOOLCHAIN}
 
+RUN cargo install cargo-edit --locked -f \
+        --no-default-features --features "set-version"
+
 CMD ["/bin/bash"]

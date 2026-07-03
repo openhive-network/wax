@@ -61,6 +61,10 @@ fn main() {
 
     generate_protos(&repo_root, &out_dir);
 
+    // The C++ sources include the generated bridge header as
+    // "wax/src/core.rs.h"; pin the prefix so it doesn't follow the
+    // crates.io package name (hiveio-wax).
+    cxx_build::CFG.include_prefix = "wax";
     let mut build = cxx_build::bridge("src/core.rs");
     build.std("c++17").include("src/core/inc");
 

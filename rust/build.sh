@@ -53,7 +53,7 @@ else
 
   # Keep container-built artifacts in a separate target dir so they don't
   # share cmake caches (with absolute paths baked in) with host builds.
-  export CARGO_TARGET_DIR="${SCRIPT_DIR}/target/docker"
+  export CARGO_TARGET_DIR="${SCRIPT_DIR}/wax/target/docker"
   
   cd wax
 

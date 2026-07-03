@@ -24,7 +24,7 @@ fi
 if [ "${DIRECT_EXECUTION}" -eq 1 ]; then
   cd "${SCRIPT_DIR}"/wax
 
-  export CARGO_TARGET_DIR="${SCRIPT_DIR}/target/docker"
+  export CARGO_TARGET_DIR="${SCRIPT_DIR}/wax/target/docker"
 
   # Leave the BEEKEEPER_FC_* env vars unset so beekeeper_rust's build.rs takes
   # its self-contained path: it builds fc_crypto_bridge (+ fc, secp256k1) itself
