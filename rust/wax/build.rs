@@ -62,7 +62,7 @@ fn main() {
     generate_protos(&repo_root, &out_dir);
 
     let mut build = cxx_build::bridge("src/core.rs");
-    build.std("c++17").include("inc");
+    build.std("c++17").include("src/core/inc");
 
     let mut cmake_cfg = cmake::Config::new(&manifest_dir);
     cmake_cfg.build_target("wax_core").profile("Release");
@@ -143,8 +143,8 @@ fn main() {
     build.include(build_dir.join("generated_assert_id"));
 
     println!("cargo:rerun-if-changed=src/core/cpp/rust_protocol.cpp");
-    println!("cargo:rerun-if-changed=inc/rust_protocol.hpp");
-    println!("cargo:rerun-if-changed=inc/rust_managed_object.hpp");
+    println!("cargo:rerun-if-changed=src/core/inc/rust_protocol.hpp");
+    println!("cargo:rerun-if-changed=src/core/inc/rust_managed_object.hpp");
     println!("cargo:rerun-if-changed=CMakeLists.txt");
 
     build.compile("cpp_rust_bridge");
