@@ -22,7 +22,7 @@ if [ "${WAX_PROFILE}" = "release" ]; then
 fi
 
 if [ "${DIRECT_EXECUTION}" -eq 1 ]; then
-  cd "${SCRIPT_DIR}"
+  cd "${SCRIPT_DIR}"/wax
 
   export CARGO_TARGET_DIR="${SCRIPT_DIR}/target/docker"
 
@@ -33,7 +33,7 @@ if [ "${DIRECT_EXECUTION}" -eq 1 ]; then
 
   # Default to the offline `detailed` suite; forward any args to cargo test.
   if [ "${#CARGO_ARGS[@]}" -eq 0 ]; then
-    exec cargo test ${CARGO_FLAGS} -p wax --test detailed
+    exec cargo test ${CARGO_FLAGS} --test detailed
   else
     exec cargo test ${CARGO_FLAGS} "${CARGO_ARGS[@]}"
   fi
