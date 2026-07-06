@@ -9,6 +9,15 @@ homepage = "https://gitlab.syncad.com/hive/wax"
 readme = "README.md"
 keywords = ["hive", "blockchain", "wax", "crypto"]
 categories = ["cryptography::cryptocurrencies"]
+# The published crate ships the prelinked native bundle (see
+# prelink_bundle.sh) instead of the C++ sources it was built from.
+include = [
+    "src/**",
+    "proto/**",
+    "build.rs",
+    "lib/libwax_native.a",
+    "README.md",
+]
 
 [lib]
 name = "wax"
@@ -22,7 +31,7 @@ panic = "abort"
 
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
-cxx = "1.0"
+cxx = "=1.0.194"
 pbjson = "0.7"
 percent-encoding = "2"
 prost = "0.13"
@@ -40,4 +49,4 @@ tokio = { version = "1", features = ["macros", "rt"] }
 
 [build-dependencies]
 cmake = "0.1"
-cxx-build = "1.0"
+cxx-build = "=1.0.194"

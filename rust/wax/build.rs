@@ -15,22 +15,71 @@ fn collect_archives(dir: &Path, out: &mut Vec<PathBuf>) {
 }
 
 fn main() {
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    // Runtime lookup, not the env! macro: cargo reuses the compiled build
+    // script across the repo crate and the `cargo package` verify copy, so a
+    // compile-time path would leak from one into the other.
+    let manifest_dir = PathBuf::from(
+        std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR set by cargo"),
+    );
     let repo_root = manifest_dir
         .ancestors()
         .nth(2)
         .expect("expected repo root two levels above rust/wax/Cargo.toml")
         .to_path_buf();
 
+    // Every build links the prelinked native bundle at lib/libwax_native.a;
+    // WAX_FROM_SOURCE=1 instead compiles the C++ from the hive submodule and
+    // is only set by prelink_bundle.sh to (re)generate that bundle.
+    println!("cargo:rerun-if-env-changed=WAX_FROM_SOURCE");
+
+    if std::env::var_os("WAX_FROM_SOURCE").is_some() {
+        build_from_source(&manifest_dir, &repo_root);
+        return;
+    }
+
+    link_prebuilt(&manifest_dir);
+}
+
+fn link_prebuilt(manifest_dir: &Path) {
+    let lib_dir = manifest_dir.join("lib");
+    let bundle = lib_dir.join("libwax_native.a");
+    assert!(
+        bundle.is_file(),
+        "prebuilt bundle missing: {}; run rust/wax/prelink_bundle.sh first",
+        bundle.display()
+    );
+
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("cargo:rustc-link-lib=static=wax_native");
+    // The bundle statically contains Boost, OpenSSL, zlib and bz2; only the
+    // system C++ runtime stays dynamic.
+    println!("cargo:rustc-link-lib=stdc++");
+    println!("cargo:rerun-if-changed={}", bundle.display());
+}
+
+fn build_from_source(manifest_dir: &Path, repo_root: &Path) {
     // The C++ sources include the generated bridge header as
     // "wax/src/core.rs.h"; pin the prefix so it doesn't follow the
     // crates.io package name (hiveio-wax).
     cxx_build::CFG.include_prefix = "wax";
     let mut build = cxx_build::bridge("src/core.rs");
-    build.std("c++17").include("src/core/inc");
+    build
+        .std("c++17")
+        .include("src/core/inc")
+        .opt_level_str("s")
+        // STB_GNU_UNIQUE symbols (guard variables, inline-function statics)
+        // cannot be localized by objcopy and would collide between prelinked
+        // bundles at final link.
+        .flag_if_supported("-fno-gnu-unique");
 
     let mut cmake_cfg = cmake::Config::new(&manifest_dir);
     cmake_cfg.build_target("wax_core").profile("Release");
+
+    // The native code ships prebuilt inside the crate, so optimize for size
+    // rather than speed (default Release flags are -O3). -fno-gnu-unique for
+    // the same reason as on the bridge build above.
+    cmake_cfg.define("CMAKE_C_FLAGS_RELEASE", "-Os -DNDEBUG");
+    cmake_cfg.define("CMAKE_CXX_FLAGS_RELEASE", "-Os -DNDEBUG -fno-gnu-unique");
 
     for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR", "BOOST_ROOT"] {
         if let Ok(v) = std::env::var(var) {
