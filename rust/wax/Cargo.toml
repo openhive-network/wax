@@ -41,5 +41,3 @@ tokio = { version = "1", features = ["macros", "rt"] }
 [build-dependencies]
 cmake = "0.1"
 cxx-build = "1.0"
-pbjson-build = "0.7"
-prost-build = "0.13"
