@@ -55,9 +55,17 @@ else
   # share cmake caches (with absolute paths baked in) with host builds.
   export CARGO_TARGET_DIR="${SCRIPT_DIR}/wax/target/docker"
   
+  cd proto_builder
+
+  cargo build
+
+  cd ..
+
   cd wax
 
-  cargo build ${CARGO_FLAGS}
+  ./prelink_bundle.sh "${WAX_PROFILE}"
+
+  cargo build ${CARGO_FLAGS} -j10
 
   echo "Built artifacts under ${CARGO_TARGET_DIR}/${WAX_PROFILE}/"
 fi

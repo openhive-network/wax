@@ -239,6 +239,9 @@ build_rust:
     # Boost/OpenSSL/CMake from the wax ci-base-image.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./build.sh --in-container release
+  artifacts:
+    - ${CI_PROJECT_DIR}/rust/proto
+    - ${CI_PROJECT_DIR}/lib
   tags:
     - public-runner-docker
 
@@ -270,6 +273,8 @@ deploy_rust_crate_to_crates_io:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   needs:
+    - job: build_rust
+      artifacts: true
     - job: test_rust
   rules:
     - if: $QUICK_TEST == "true"
@@ -282,7 +287,7 @@ deploy_rust_crate_to_crates_io:
   script:
   - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
   - cd rust/wax
-  - cargo publish
+  - cargo publish --allow-dirty
   tags:
     - public-runner-docker
 
