@@ -240,8 +240,10 @@ build_rust:
     - cd "${CI_PROJECT_DIR}/rust"
     - ./build.sh --in-container release
   artifacts:
-    - ${CI_PROJECT_DIR}/rust/proto
-    - ${CI_PROJECT_DIR}/lib
+    when: always
+    paths:
+      - ${CI_PROJECT_DIR}/rust/proto
+      - ${CI_PROJECT_DIR}/lib
   tags:
     - public-runner-docker
 
