@@ -50,9 +50,9 @@ pub fn object_to_query_string(params: &Map<String, Value>) -> String {
 
 /// Converts a JSON value to the string JavaScript's `String()` coercion would
 /// produce. Exists to special-case [`Value::String`]: [`Value::to_string`]
-/// would render it as quoted JSON (`"foo"`), whereas the query string needs the
-/// raw text (`foo`).
-fn stringify(value: &Value) -> String {
+/// would render it as quoted JSON (`"foo"`), whereas the query string and the
+/// REST path parameters need the raw text (`foo`).
+pub(super) fn stringify(value: &Value) -> String {
     match value {
         Value::String(text) => text.clone(),
         scalar => scalar.to_string(),
