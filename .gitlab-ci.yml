@@ -242,8 +242,8 @@ build_rust:
   artifacts:
     when: always
     paths:
-      - ${CI_PROJECT_DIR}/rust/proto
-      - ${CI_PROJECT_DIR}/lib
+      - ${CI_PROJECT_DIR}/rust/wax/proto
+      - ${CI_PROJECT_DIR}/rust/wax/lib
   tags:
     - public-runner-docker
 
