@@ -5,7 +5,8 @@ mod request_helper;
 #[cfg(test)]
 pub(super) mod test_support;
 
-// NOTE: api_caller is not re-exported yet — its consumers (the generated API
-// surfaces behind `extend_rest`) arrive in a later phase.
+pub use api_caller::{RestCallDescriptor, RestCaller};
+
+pub(super) use api_caller::ApiCaller;
 pub(super) use query_string::*;
 pub(super) use request_helper::*;

@@ -6,8 +6,11 @@
 //! that also implements [`crate::WaxFoundation`], so a chain instance can be used
 //! wherever an offline foundation is expected.
 
+pub mod api;
+
 mod authority_trace;
 mod error;
+mod extend;
 mod healthchecker;
 mod hive_chain;
 mod internal;
@@ -16,11 +19,13 @@ mod options;
 mod rpc;
 mod util;
 
+pub use api::DefaultHiveApi;
 pub use authority_trace::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
 };
 pub use error::WaxChainError;
+pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::{
     ChainApiType, EndpointInfo, ErrorReason, HealthCheckerError, HiveEndpoint,
     HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, NewBestEvent,
@@ -29,6 +34,8 @@ pub use healthchecker::{
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
 pub use options::WaxChainOptions;
+pub use rpc::JsonRpcCaller;
+pub use util::{RestCallDescriptor, RestCaller};
 
 /// Constructs a [`HiveChain`] from the given options.
 ///

@@ -1,7 +1,7 @@
 mod request;
 
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use serde::Serialize;
@@ -10,6 +10,41 @@ use serde::de::DeserializeOwned;
 use crate::chain::error::WaxChainError;
 
 use self::request::{JsonRpcRequest, JsonRpcResponse};
+
+/// Provides a cloneable handle to a chain's JSON-RPC transport. Typed API
+/// surfaces produced by [`define_hive_api!`](crate::define_hive_api) hold one
+/// and issue requests through [`JsonRpcCaller::call`].
+///
+/// The handle shares the chain's [`JsonRpcClient`], so a later
+/// `set_endpoint_url` on the chain is reflected by API surfaces already
+/// handed out.
+///
+/// TS NOTE: the TS analog is the `ApiCaller` proxy configured for JSON-RPC in
+/// `chain_api.ts`; the generated Rust methods bind to this handle instead.
+#[derive(Clone)]
+pub struct JsonRpcCaller {
+    client: Arc<JsonRpcClient>,
+}
+
+impl JsonRpcCaller {
+    pub(crate) fn new(client: Arc<JsonRpcClient>) -> Self {
+        Self { client }
+    }
+
+    /// Calls the JSON-RPC method `"<namespace>.<method>"` with `params`,
+    /// returning the decoded `result`.
+    pub async fn call<P, R>(
+        &self,
+        method: &str,
+        params: P,
+    ) -> Result<R, WaxChainError>
+    where
+        P: Serialize,
+        R: DeserializeOwned,
+    {
+        self.client.call(method, params).await
+    }
+}
 
 /// Provides JSON-RPC transport to a Hive node.
 ///
@@ -52,7 +87,6 @@ impl JsonRpcClient {
     /// Issues a single JSON-RPC call. Returns the decoded `result` payload, or
     /// a [`WaxChainError`] when the transport fails, the response can't be
     /// decoded, or the node reports an error envelope.
-    #[allow(dead_code)] // wired in by Phase 2+ API namespaces
     pub(crate) async fn call<P, R>(
         &self,
         method: &str,

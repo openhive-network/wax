@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Duration;
 
 use crate::WaxError;
@@ -25,16 +25,22 @@ use crate::{ManabarData, Operation, Transaction};
 
 use crate::chain::error::WaxChainError;
 use crate::chain::hive_chain::HiveChain;
-use crate::chain::rpc::JsonRpcClient;
+use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
+use crate::chain::util::{ApiCaller, RestCaller};
+
+/// Used to identify the chain-owned REST caller.
+///
+/// TS NOTE: `EChainApiType.REST` — TS passes it as the `apiCallerId` of the
+/// REST `ApiCaller`.
+const REST_API_CALLER_ID: &str = "rest";
 
 /// Concrete [`HiveChain`] implementation. Composes a [`WaxFoundation`] for
-/// offline operations and holds the JSON-RPC / REST endpoints used for
+/// offline operations and owns the JSON-RPC / REST transports used for
 /// online calls.
 pub(crate) struct HiveChainApi {
     foundation: Box<dyn WaxFoundation>,
-    #[allow(dead_code)]
     rpc: Arc<JsonRpcClient>,
-    rest_endpoint: Mutex<String>,
+    rest: Arc<ApiCaller>,
 }
 
 impl HiveChainApi {
@@ -49,11 +55,17 @@ impl HiveChainApi {
             options.api_endpoint.clone(),
             Duration::from_millis(options.api_timeout_ms.into()),
         )?);
+        let rest = Arc::new(ApiCaller::new(
+            REST_API_CALLER_ID.to_string(),
+            options.rest_api_endpoint,
+            options.api_timeout_ms.into(),
+            options.wax_api_caller,
+        ));
 
         Ok(Self {
             foundation,
             rpc,
-            rest_endpoint: Mutex::new(options.rest_api_endpoint),
+            rest,
         })
     }
 }
@@ -79,19 +91,22 @@ impl HiveChain for HiveChainApi {
     }
 
     fn rest_endpoint_url(&self) -> String {
-        self.rest_endpoint
-            .lock()
-            .expect("rest endpoint mutex poisoned")
-            .clone()
+        self.rest.endpoint()
     }
 
     fn set_rest_endpoint_url(&self, url: &str) -> Result<(), WaxChainError> {
         validate_endpoint(url)?;
-        *self
-            .rest_endpoint
-            .lock()
-            .expect("rest endpoint mutex poisoned") = url.to_string();
+        self.rest.set_endpoint(url.to_string());
+
         Ok(())
+    }
+
+    fn json_rpc_caller(&self) -> JsonRpcCaller {
+        JsonRpcCaller::new(self.rpc.clone())
+    }
+
+    fn rest_caller(&self) -> RestCaller {
+        RestCaller::new(self.rest.clone())
     }
 }
 

@@ -32,6 +32,7 @@ panic = "abort"
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 cxx = "=1.0.194"
+paste = "1"
 pbjson = "0.7"
 percent-encoding = "2"
 prost = "0.13"

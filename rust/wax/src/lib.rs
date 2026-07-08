@@ -26,8 +26,14 @@ pub use base::{
 pub use chain::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ChainApiType,
-    EndpointInfo, ErrorReason, HealthCheckerError, HiveChain, HiveEndpoint,
-    HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, NewBestEvent,
-    NewUpDownEvent, OnlineTransaction, ProcessedEntry, RequestError,
-    WaxChainError, WaxChainOptions, create_hive_chain,
+    DefaultHiveApi, EndpointInfo, ErrorReason, HealthCheckerError, HiveApi,
+    HiveChain, HiveChainExt, HiveEndpoint, HiveEndpointData,
+    HiveEndpointDataDown, HiveEndpointDataUp, HiveRestApi, JsonRpcCaller,
+    NewBestEvent, NewUpDownEvent, OnlineTransaction, ProcessedEntry,
+    RequestError, RestCallDescriptor, RestCaller, WaxChainError,
+    WaxChainOptions, api, create_hive_chain,
 };
+
+// Re-exported for `define_hive_api!` expansions; not part of the public API.
+#[doc(hidden)]
+pub use paste;

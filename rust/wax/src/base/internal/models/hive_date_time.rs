@@ -65,3 +65,46 @@ impl std::fmt::Display for HiveDateTime {
         f.write_str(&self.serialize())
     }
 }
+
+// Serde speaks Hive's wire format ("%Y-%m-%dT%H:%M:%S"), matching how the
+// chain APIs emit and accept timestamps.
+
+impl serde::Serialize for HiveDateTime {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.collect_str(self)
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for HiveDateTime {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = String::deserialize(deserializer)?;
+
+        Self::parse(&value).map_err(serde::de::Error::custom)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serde_round_trips_wire_format() {
+        let json = "\"2025-07-08T12:34:57\"";
+        let value: HiveDateTime = serde_json::from_str(json).unwrap();
+
+        assert_eq!(serde_json::to_string(&value).unwrap(), json);
+    }
+
+    #[test]
+    fn serde_rejects_malformed_timestamps() {
+        assert!(
+            serde_json::from_str::<HiveDateTime>("\"2025-07-08\"").is_err()
+        );
+    }
+}

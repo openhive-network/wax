@@ -18,11 +18,7 @@
 //! (`paths` / `realPaths` / `lastMethod` / `config`) disappears as well:
 //! callers pass an immutable [`RestCallDescriptor`] instead.
 
-// The REST engine is fully ported, but its consumers (the generated API
-// surfaces behind `extend_rest`) are not yet in place.
-#![allow(dead_code)]
-
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -35,6 +31,54 @@ use super::{
     DetailedResponseData, RequestData, RequestHelper, RequestOptions,
     ResponseType, object_to_query_string, stringify,
 };
+
+/// Provides a cloneable handle to a chain's REST transport. Typed REST API
+/// surfaces hold one and issue requests through [`RestCaller::call`].
+///
+/// The handle shares the chain's [`ApiCaller`], so a later
+/// `set_rest_endpoint_url` on the chain is reflected by API surfaces already
+/// handed out.
+#[derive(Clone)]
+pub struct RestCaller {
+    caller: Arc<ApiCaller>,
+}
+
+impl RestCaller {
+    pub(crate) fn new(caller: Arc<ApiCaller>) -> Self {
+        Self { caller }
+    }
+
+    /// Returns the id of the underlying REST engine.
+    ///
+    /// TS NOTE: `apiCallerId`.
+    pub fn id(&self) -> &str {
+        self.caller.id()
+    }
+
+    /// Calls the REST method described by `descriptor` with `params`,
+    /// returning the decoded result. See [`ApiCaller::call`].
+    pub async fn call<P, R>(
+        &self,
+        descriptor: &RestCallDescriptor,
+        params: P,
+    ) -> Result<R, WaxChainError>
+    where
+        P: Serialize,
+        R: DeserializeOwned,
+    {
+        self.caller.call(descriptor, params).await
+    }
+
+    /// Sets (or clears with `None`) the endpoint override for the given
+    /// namespace path. See [`ApiCaller::set_endpoint_url_for_path`].
+    pub fn set_endpoint_url_for_path(
+        &self,
+        path: &[&str],
+        url: Option<String>,
+    ) {
+        self.caller.set_endpoint_url_for_path(path, url);
+    }
+}
 
 /// Provides the REST request engine behind the typed API surfaces produced by
 /// `extend_rest`.
