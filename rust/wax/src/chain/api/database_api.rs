@@ -9,12 +9,39 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::hive_api;
 use crate::models::asset::NaiAsset;
 use crate::models::basic::{AccountName, Hex, HiveDateTime};
 
 use super::types::{
     ApiAccount, ApiTransaction, ApiWitness, NumberOrString, TransactionPackType,
 };
+
+/// `database_api` JSON-RPC namespace of
+/// [`DefaultHiveApi`](super::DefaultHiveApi).
+#[hive_api]
+pub trait DatabaseApi {
+    /// Returns the requested accounts.
+    async fn find_accounts(params: FindAccountsRequest)
+    -> FindAccountsResponse;
+    /// Returns the requested witnesses.
+    async fn find_witnesses(
+        params: FindWitnessesRequest,
+    ) -> FindWitnessesResponse;
+    /// Returns the current dynamic global properties.
+    async fn get_dynamic_global_properties(
+        params: GetDynamicGlobalPropertiesRequest,
+    ) -> GetDynamicGlobalPropertiesResponse;
+    /// Returns the current witness schedule.
+    async fn get_witness_schedule(
+        params: GetWitnessScheduleRequest,
+    ) -> GetWitnessScheduleResponse;
+    /// Verifies that a signed transaction carries the authorities it
+    /// requires.
+    async fn verify_authority(
+        params: VerifyAuthorityRequest,
+    ) -> VerifyAuthorityResponse;
+}
 
 /// Represents the parameters of `database_api.find_accounts`.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]

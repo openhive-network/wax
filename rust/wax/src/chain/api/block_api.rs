@@ -4,7 +4,24 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::hive_api;
+
 use super::types::{ApiBlock, ApiBlockHeader};
+
+/// `block_api` JSON-RPC namespace of [`DefaultHiveApi`](super::DefaultHiveApi).
+#[hive_api]
+pub trait BlockApi {
+    /// Returns the requested block.
+    async fn get_block(params: GetBlockRequest) -> GetBlockResponse;
+    /// Returns the requested block header.
+    async fn get_block_header(
+        params: GetBlockHeaderRequest,
+    ) -> GetBlockHeaderResponse;
+    /// Returns a range of blocks.
+    async fn get_block_range(
+        params: GetBlockRangeRequest,
+    ) -> GetBlockRangeResponse;
+}
 
 /// Represents the parameters of `block_api.get_block`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

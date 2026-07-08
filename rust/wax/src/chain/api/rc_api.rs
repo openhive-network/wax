@@ -4,10 +4,20 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::hive_api;
 use crate::models::asset::NaiAsset;
 use crate::models::basic::AccountName;
 
 use super::types::{ApiManabar, NumberOrString};
+
+/// `rc_api` JSON-RPC namespace of [`DefaultHiveApi`](super::DefaultHiveApi).
+#[hive_api]
+pub trait RcApi {
+    /// Returns the resource-credit state of the requested accounts.
+    async fn find_rc_accounts(
+        params: FindRcAccountsRequest,
+    ) -> FindRcAccountsResponse;
+}
 
 /// Represents the parameters of `rc_api.find_rc_accounts`.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]

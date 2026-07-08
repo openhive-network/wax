@@ -32,7 +32,9 @@ panic = "abort"
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 cxx = "=1.0.194"
-paste = "1"
+# Proc-macro companion (the #[hive_api] attribute). Pinned exactly: the
+# generated code and this crate's items must move in lockstep.
+hiveio-wax-macros = { version = "=0.0.0", path = "../wax_macros" }
 pbjson = "0.7"
 percent-encoding = "2"
 prost = "0.13"

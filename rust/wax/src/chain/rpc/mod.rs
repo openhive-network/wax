@@ -12,8 +12,8 @@ use crate::chain::error::WaxChainError;
 use self::request::{JsonRpcRequest, JsonRpcResponse};
 
 /// Provides a cloneable handle to a chain's JSON-RPC transport. Typed API
-/// surfaces produced by [`define_hive_api!`](crate::define_hive_api) hold one
-/// and issue requests through [`JsonRpcCaller::call`].
+/// surfaces produced by [`#[hive_api]`](crate::hive_api) hold one and issue
+/// requests through [`JsonRpcCaller::call`].
 ///
 /// The handle shares the chain's [`JsonRpcClient`], so a later
 /// `set_endpoint_url` on the chain is reflected by API surfaces already

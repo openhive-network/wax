@@ -1,0 +1,19 @@
+[package]
+name = "hiveio-wax-macros"
+version = "0.0.0"
+edition = "2024"
+description = "Proc-macro companion of the hiveio-wax crate: the #[hive_api] attribute generating typed Hive API surfaces. Do not depend on this crate directly — use hiveio-wax, which re-exports the attribute."
+license = "MIT"
+repository = "https://gitlab.syncad.com/hive/wax"
+homepage = "https://gitlab.syncad.com/hive/wax"
+keywords = ["hive", "blockchain", "wax", "macros"]
+categories = ["cryptography::cryptocurrencies"]
+
+[lib]
+name = "wax_macros"
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }

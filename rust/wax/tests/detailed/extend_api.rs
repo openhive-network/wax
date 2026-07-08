@@ -1,15 +1,15 @@
 // Exercises the `extend` / `extend_rest` surface from an external crate — the
-// same view user code gets (`$crate` inside `define_hive_api!` expands to
-// `::wax` here, unlike the in-crate unit tests). The chain points at an
-// unroutable endpoint: each call must reach the transport and fail there,
-// proving the whole binding chain without a live node (the wire behavior is
-// covered by the in-crate unit tests against a capture server).
+// same view user code gets (`#[hive_api]` emits `::wax::` paths, which
+// resolve differently here than in the in-crate unit tests). The chain points
+// at an unroutable endpoint: each call must reach the transport and fail
+// there, proving the whole binding chain without a live node (the wire
+// behavior is covered by the in-crate unit tests against a capture server).
 
 use serde::{Deserialize, Serialize};
 
 use wax::{
-    HiveChain, HiveChainExt, HiveRestApi, RestCallDescriptor, RestCaller,
-    WaxChainError, WaxChainOptions, create_hive_chain,
+    HiveChain, HiveChainExt, WaxChainError, WaxChainOptions, create_hive_chain,
+    hive_api,
 };
 
 #[derive(Serialize)]
@@ -20,26 +20,27 @@ pub struct PingRequest {
 #[derive(Deserialize)]
 pub struct PingResponse {}
 
-wax::define_hive_api! {
-    /// Custom surface as a user crate would declare it.
-    pub struct CustomApi {
-        /// `custom_api` JSON-RPC namespace.
-        custom_api {
-            /// Sends a ping.
-            fn ping(PingRequest) -> PingResponse;
-        }
-    }
+/// Custom namespace surface as a user crate would declare it.
+#[hive_api]
+pub trait CustomApi {
+    /// Sends a ping.
+    async fn ping(params: PingRequest) -> PingResponse;
 }
 
-wax::define_hive_api! {
-    /// Custom surface composed on top of the default one.
-    pub struct ExtendedApi: wax::DefaultHiveApi {
-        /// `custom_api` JSON-RPC namespace.
-        custom_api {
-            /// Sends a ping.
-            fn ping(PingRequest) -> PingResponse;
-        }
-    }
+/// Custom REST surface as a user crate would declare it.
+#[hive_api(rest)]
+pub trait HafahApi {
+    /// Returns the head block.
+    #[get("/hafah-api/headblock")]
+    async fn headblock() -> serde_json::Value;
+}
+
+/// Custom surface composed on top of the default one.
+#[hive_api]
+pub struct ExtendedApi {
+    pub custom_api: CustomApi,
+    #[hive_api(base)]
+    base: wax::DefaultHiveApi,
 }
 
 fn unroutable_chain() -> Box<dyn HiveChain> {
@@ -56,7 +57,7 @@ async fn extend_binds_custom_api_to_the_chain_transport() {
     let chain = unroutable_chain();
     let api = chain.extend::<CustomApi>();
 
-    let result = api.custom_api.ping(PingRequest { token: 1 }).await;
+    let result = api.ping(PingRequest { token: 1 }).await;
 
     assert!(matches!(result, Err(WaxChainError::Http(_))));
 }
@@ -90,29 +91,12 @@ async fn chain_api_exposes_default_namespaces() {
     assert!(result.is_err());
 }
 
-struct HeadBlockRestApi {
-    caller: RestCaller,
-}
-
-impl HiveRestApi for HeadBlockRestApi {
-    fn bind(caller: RestCaller) -> Self {
-        Self { caller }
-    }
-}
-
 #[tokio::test]
-async fn extend_rest_binds_hand_written_surface() {
-    const HEADBLOCK: RestCallDescriptor = RestCallDescriptor {
-        method: "GET",
-        path_template: "/hafah-api/headblock",
-        namespace_path: &["hafah_api", "headblock"],
-    };
-
+async fn extend_rest_binds_generated_rest_surface() {
     let chain = unroutable_chain();
-    let rest = chain.extend_rest::<HeadBlockRestApi>();
+    let rest = chain.extend_rest::<HafahApi>();
 
-    let result: Result<serde_json::Value, _> =
-        rest.caller.call(&HEADBLOCK, ()).await;
+    let result = rest.headblock().await;
 
     assert!(matches!(result, Err(WaxChainError::Request(_))));
 }

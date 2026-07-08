@@ -116,9 +116,10 @@ struct EndpointOverride {
     url: String,
 }
 
-/// Represents one REST method as emitted by the future `define_hive_api!`
-/// macro — the static analog of the call the TS proxy assembles at
-/// property-access time (`paths`, `lastMethod` and `config.urlPath`).
+/// Represents one REST method as emitted by
+/// [`#[hive_api(rest)]`](crate::hive_api) — the static analog of the call
+/// the TS proxy assembles at property-access time (`paths`, `lastMethod` and
+/// `config.urlPath`).
 pub struct RestCallDescriptor {
     /// HTTP verb of the method.
     ///

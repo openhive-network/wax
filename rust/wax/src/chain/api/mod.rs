@@ -23,61 +23,26 @@ pub use network_broadcast_api::*;
 pub use rc_api::*;
 pub use types::*;
 
-crate::define_hive_api! {
-    /// Represents the default JSON-RPC API surface available on every chain
-    /// via [`HiveChain::api`](crate::HiveChain::api), composable into custom
-    /// surfaces with `define_hive_api!`'s `: DefaultHiveApi` arm.
-    ///
-    /// TS NOTE: mirrors the `HiveApiTypes` default set of `chain_api_data.ts`
-    /// (TS `chain.api`); TS `HiveRestApiTypes` is empty, so there is no REST
-    /// counterpart.
-    pub struct DefaultHiveApi {
-        /// `account_by_key_api` JSON-RPC namespace.
-        account_by_key_api {
-            /// Returns, for each given public key, the accounts referencing
-            /// it.
-            fn get_key_references(GetKeyReferencesRequest)
-                -> GetKeyReferencesResponse;
-        }
-        /// `database_api` JSON-RPC namespace.
-        database_api {
-            /// Returns the requested accounts.
-            fn find_accounts(FindAccountsRequest) -> FindAccountsResponse;
-            /// Returns the requested witnesses.
-            fn find_witnesses(FindWitnessesRequest) -> FindWitnessesResponse;
-            /// Returns the current dynamic global properties.
-            fn get_dynamic_global_properties(
-                GetDynamicGlobalPropertiesRequest
-            ) -> GetDynamicGlobalPropertiesResponse;
-            /// Returns the current witness schedule.
-            fn get_witness_schedule(GetWitnessScheduleRequest)
-                -> GetWitnessScheduleResponse;
-            /// Verifies that a signed transaction carries the authorities it
-            /// requires.
-            fn verify_authority(VerifyAuthorityRequest)
-                -> VerifyAuthorityResponse;
-        }
-        /// `network_broadcast_api` JSON-RPC namespace.
-        network_broadcast_api {
-            /// Broadcasts a signed transaction to the network.
-            fn broadcast_transaction(BroadcastTransactionRequest)
-                -> BroadcastTransactionResponse;
-        }
-        /// `block_api` JSON-RPC namespace.
-        block_api {
-            /// Returns the requested block.
-            fn get_block(GetBlockRequest) -> GetBlockResponse;
-            /// Returns the requested block header.
-            fn get_block_header(GetBlockHeaderRequest)
-                -> GetBlockHeaderResponse;
-            /// Returns a range of blocks.
-            fn get_block_range(GetBlockRangeRequest) -> GetBlockRangeResponse;
-        }
-        /// `rc_api` JSON-RPC namespace.
-        rc_api {
-            /// Returns the resource-credit state of the requested accounts.
-            fn find_rc_accounts(FindRcAccountsRequest)
-                -> FindRcAccountsResponse;
-        }
-    }
+use crate::hive_api;
+
+/// Represents the default JSON-RPC API surface available on every chain via
+/// [`HiveChain::api`](crate::HiveChain::api), composable into custom
+/// surfaces via `#[hive_api(base)]`.
+///
+/// TS NOTE: mirrors the `HiveApiTypes` default set of `chain_api_data.ts`
+/// (TS `chain.api`); TS `HiveRestApiTypes` is empty, so there is no REST
+/// counterpart.
+#[hive_api]
+#[derive(Clone)]
+pub struct DefaultHiveApi {
+    /// `account_by_key_api` JSON-RPC namespace.
+    pub account_by_key_api: AccountByKeyApi,
+    /// `database_api` JSON-RPC namespace.
+    pub database_api: DatabaseApi,
+    /// `network_broadcast_api` JSON-RPC namespace.
+    pub network_broadcast_api: NetworkBroadcastApi,
+    /// `block_api` JSON-RPC namespace.
+    pub block_api: BlockApi,
+    /// `rc_api` JSON-RPC namespace.
+    pub rc_api: RcApi,
 }
