@@ -58,7 +58,7 @@ variables:
   # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
   # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
   # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
-  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-13-rust1"
+  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-13-rust2"
   WAX_RUST_BUILDER_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}"
 
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
@@ -261,9 +261,10 @@ test_rust:
   before_script:
     - git config --global --add safe.directory '*'
   script:
-    # cargo test -p wax --test detailed. beekeeper_rust's build.rs builds the C++
-    # fc_crypto_bridge via its standalone CMake driver (BOOST_ROOT comes from the
-    # wax-rust-builder image), so no prebuilt beekeeper C++ is required.
+    # cargo test -p wax --test detailed. test.sh first generates beekeeper's
+    # prelinked native bundle (prelink_bundle.sh; BOOST_ROOT comes from the
+    # wax-rust-builder image) if lib/libbeekeeper_native.a is missing, so no
+    # prebuilt beekeeper C++ is required.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./test.sh --in-container release
   tags:
@@ -293,6 +294,36 @@ deploy_rust_crate_to_crates_io:
   tags:
     - public-runner-docker
 
+deploy_rust_crate_to_gitlab:
+  stage: deploy
+  image: "${WAX_RUST_BUILDER_IMAGE}"
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  needs:
+    - job: build_rust
+      artifacts: true
+    - job: test_rust
+  rules:
+    - if: $QUICK_TEST == "true"
+      when: never
+    - if: $SKIP_PRODUCTION_DEPLOY == "true"
+      when: never
+    - when: on_success
+  script:
+    - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
+    - cd rust/wax
+    - VERSION=$(grep -m1 '^version' Cargo.toml | sed -E 's/version = "(.*)"/\1/')
+    - cargo package --allow-dirty
+    # --fail-with-body needs curl >= 7.76 and the pypa_2_28 image ships 7.61,
+    # so replicate it: print the response body, fail on non-2xx.
+    - |
+      HTTP_CODE=$(curl --silent --show-error --write-out "%{http_code}" \
+        --output upload_response.txt \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file "target/package/hiveio-wax-${VERSION}.crate" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/hiveio-wax/${VERSION}/hiveio-wax-${VERSION}.crate")
+      cat upload_response.txt; echo
+      [ "${HTTP_CODE}" -ge 200 ] && [ "${HTTP_CODE}" -lt 300 ]
 
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
