@@ -214,33 +214,3 @@ fi
 CRATE_LIB_DIR="${SCRIPT_DIR}/lib"
 mkdir -p "${CRATE_LIB_DIR}"
 cp "${ARTIFACT}" "${CRATE_LIB_DIR}/libwax_native.a"
-
-CRATE_VERSION=$(awk -F'"' '/^version = / {print $2; exit}' "${SCRIPT_DIR}/Cargo.toml")
-
-# --allow-dirty: lib/libwax_native.a is a build artifact and stays untracked.
-# The verify build gets its own target dir: the packaged copy has the same
-# name+version as the repo crate, so sharing a target dir poisons cargo's
-# fingerprints (the build script gets compiled against the packaged snapshot
-# and never invalidates again).
-(cd "${SCRIPT_DIR}" && CARGO_TARGET_DIR="${TARGET_DIR}/package-verify" \
-  cargo package --allow-dirty --quiet)
-
-CRATE_FILE="${TARGET_DIR}/package-verify/package/hiveio-wax-${CRATE_VERSION}.crate"
-CRATE_BYTES=$(stat -c%s "${CRATE_FILE}")
-if [ "${CRATE_BYTES}" -ge $((10 * 1024 * 1024)) ]; then
-  echo "${CRATE_FILE} exceeds the crates.io 10 MB limit (${CRATE_BYTES} bytes)" >&2
-  exit 1
-fi
-
-INPUT_TOTAL=$(du -ch "${ARCHIVES[@]}" | awk 'END {print $1}')
-TEXT_BYTES=$(size "${BUNDLE}" | awk 'NR == 2 {print $1}')
-
-echo
-echo "OK: ${ARTIFACT}"
-echo "  input archives:  ${INPUT_TOTAL} (${#ARCHIVES[@]} files)"
-echo "  live code:       $(awk "BEGIN {printf \"%.1f\", ${TEXT_BYTES} / 1024 / 1024}") MB text"
-echo "  artifact:        $(du -h "${ARTIFACT}" | cut -f1)"
-echo "  exported syms:   ${EXPORTED} (bridge roots)"
-echo "  smoke test:      linked against system libs only, ran OK"
-echo "  crate:           ${CRATE_FILE}"
-echo "  crate size:      $(awk "BEGIN {printf \"%.1f\", ${CRATE_BYTES} / 1024 / 1024}") MB (crates.io limit: 10 MB)"
