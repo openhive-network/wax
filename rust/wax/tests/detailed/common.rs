@@ -4,7 +4,7 @@
 
 use std::cell::RefCell;
 
-use beekeeper_rust::{
+use beekeeper::{
     api::BeekeeperApi, options::BeekeeperOptions, wallet::UnlockedWallet,
 };
 use wax::{

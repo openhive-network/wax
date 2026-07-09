@@ -5,7 +5,7 @@
 //! `foundation::cpp_serialize_witness_set_properties`.
 //!
 //! Standalone test binary (no shared fixture) so it doesn't transitively
-//! link against beekeeper_rust like the `detailed` suite does.
+//! link against beekeeper like the `detailed` suite does.
 
 use wax::complex_operations::{HbdExchangeRate, WitnessSetPropertiesOperation};
 use wax::models::asset::NaiAssetConvertible;
