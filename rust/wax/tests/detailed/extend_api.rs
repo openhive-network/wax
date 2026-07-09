@@ -59,7 +59,7 @@ async fn extend_binds_custom_api_to_the_chain_transport() {
 
     let result = api.ping(PingRequest { token: 1 }).await;
 
-    assert!(matches!(result, Err(WaxChainError::Http(_))));
+    assert!(matches!(result, Err(WaxChainError::Request(_))));
 }
 
 #[tokio::test]

@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::chain::error::WaxChainError;
+
 /// Outgoing JSON-RPC 2.0 envelope.
 #[derive(Debug, Serialize)]
 pub(crate) struct JsonRpcRequest<'a, P> {
@@ -31,4 +33,23 @@ pub(crate) struct JsonRpcResponse<R> {
 pub(crate) struct JsonRpcError {
     pub code: i64,
     pub message: String,
+}
+
+/// Converts a decoded JSON-RPC envelope into its `result` payload, or the
+/// matching [`WaxChainError`] when the node reports an error envelope or the
+/// envelope carries neither field.
+pub(crate) fn unwrap_envelope<R>(
+    response: JsonRpcResponse<R>,
+) -> Result<R, WaxChainError> {
+    if let Some(err) = response.error {
+        return Err(WaxChainError::JsonRpc {
+            code: err.code,
+            message: err.message,
+        });
+    }
+
+    response.result.ok_or(WaxChainError::JsonRpc {
+        code: 0,
+        message: "JSON-RPC response missing both `result` and `error`".into(),
+    })
 }

@@ -2,7 +2,6 @@ mod request;
 
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -14,7 +13,7 @@ use crate::chain::util::{
     ResponseType,
 };
 
-use self::request::{JsonRpcRequest, JsonRpcResponse};
+use self::request::{JsonRpcRequest, JsonRpcResponse, unwrap_envelope};
 
 /// Provides a cloneable handle to a chain's JSON-RPC transport. Typed API
 /// surfaces produced by [`#[hive_api]`](crate::hive_api) hold one and issue
@@ -76,39 +75,32 @@ impl JsonRpcCaller {
 
 /// Provides JSON-RPC transport to a Hive node.
 ///
-/// Holds a single `reqwest::Client` (with connection pooling) and a mutable
+/// Holds a [`RequestHelper`] (one pooled `reqwest::Client`) and a mutable
 /// endpoint URL. Per-method DTOs live in `api::*`; this layer only knows
 /// envelopes.
-///
-/// NOTE: the probe path ([`Self::call_at`]) goes through a [`RequestHelper`]
-/// instead of the plain `reqwest::Client`, because probes need the recorded
-/// timings and the request-layer error taxonomy ([`crate::RequestError`]);
-/// the regular [`Self::call`] path stays on the leaner client.
 pub(crate) struct JsonRpcClient {
-    http: reqwest::Client,
     helper: RequestHelper,
     endpoint: Mutex<String>,
     /// Request timeout in milliseconds; `0` disables it.
     timeout_ms: u64,
+    /// `X-Wax-Api-Caller` header value attached to every request.
+    wax_api_caller: Option<String>,
     next_id: AtomicU64,
 }
 
 impl JsonRpcClient {
     pub(crate) fn new(
         endpoint: String,
-        timeout: Duration,
-    ) -> Result<Self, WaxChainError> {
-        let http = reqwest::Client::builder()
-            .timeout(timeout)
-            .build()
-            .map_err(WaxChainError::from)?;
-        Ok(Self {
-            http,
+        timeout_ms: u64,
+        wax_api_caller: Option<String>,
+    ) -> Self {
+        Self {
             helper: RequestHelper::new(),
             endpoint: Mutex::new(endpoint),
-            timeout_ms: timeout.as_millis() as u64,
+            timeout_ms,
+            wax_api_caller,
             next_id: AtomicU64::new(1),
-        })
+        }
     }
 
     pub(crate) fn endpoint(&self) -> String {
@@ -134,21 +126,10 @@ impl JsonRpcClient {
         P: Serialize,
         R: DeserializeOwned,
     {
-        let id = self.next_id.fetch_add(1, Ordering::Relaxed);
-        let body = JsonRpcRequest::new(id, method, params);
         let endpoint = self.endpoint();
+        let (result, _) = self.call_at(&endpoint, method, params).await?;
 
-        let response: JsonRpcResponse<R> = self
-            .http
-            .post(&endpoint)
-            .json(&body)
-            .send()
-            .await?
-            .error_for_status()?
-            .json()
-            .await?;
-
-        unwrap_envelope(response)
+        Ok(result)
     }
 
     /// Issues a single JSON-RPC call against an explicit `endpoint`,
@@ -173,9 +154,7 @@ impl JsonRpcClient {
             timeout: self.timeout_ms,
             data: Some(RequestData::Json(serde_json::to_value(&body)?)),
             response_type: Some(ResponseType::Json),
-            // NOTE: the chain-level `wax_api_caller` tag currently only
-            // reaches the REST caller (TS sets it on both transports).
-            wax_api_caller: None,
+            wax_api_caller: self.wax_api_caller.clone(),
         };
 
         let response = self.helper.request(request).await?;
@@ -188,35 +167,41 @@ impl JsonRpcClient {
     }
 }
 
-/// Converts a decoded JSON-RPC envelope into its `result` payload, or the
-/// matching [`WaxChainError`] when the node reports an error envelope or the
-/// envelope carries neither field.
-fn unwrap_envelope<R>(
-    response: JsonRpcResponse<R>,
-) -> Result<R, WaxChainError> {
-    if let Some(err) = response.error {
-        return Err(WaxChainError::JsonRpc {
-            code: err.code,
-            message: err.message,
-        });
-    }
-
-    response.result.ok_or(WaxChainError::JsonRpc {
-        code: 0,
-        message: "JSON-RPC response missing both `result` and `error`".into(),
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use serde_json::{Value, json};
 
-    use super::super::util::test_support::spawn_capture_server;
+    use super::super::util::test_support::{
+        header_value, spawn_capture_server,
+    };
     use super::*;
 
     fn client(endpoint: &str) -> JsonRpcClient {
-        JsonRpcClient::new(endpoint.to_string(), Duration::from_secs(5))
-            .unwrap()
+        JsonRpcClient::new(endpoint.to_string(), 5_000, None)
+    }
+
+    // TS NOTE: the standard-API case of
+    // `ts/wasm/__tests__/detailed/wax_api_caller_header.ts` — the chain-level
+    // tag must reach regular JSON-RPC calls, like it reaches REST calls.
+    #[tokio::test]
+    async fn call_sets_wax_api_caller_header() {
+        let (endpoint, captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":1,"result":{"pong":1}}"#,
+        );
+
+        let rpc = JsonRpcClient::new(
+            endpoint,
+            0,
+            Some("test-wax-client-v1.0".into()),
+        );
+        let _: Value = rpc.call("test_api.ping", ()).await.unwrap();
+
+        let raw = captured.recv().unwrap();
+
+        assert_eq!(
+            header_value(&raw, "x-wax-api-caller").as_deref(),
+            Some("test-wax-client-v1.0")
+        );
     }
 
     // TS NOTE: the health-checker seam for JSON-RPC probes — `withProxy`'s

@@ -58,7 +58,6 @@ impl<T: HiveChain + ?Sized> HiveChainExt for T {}
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
-    use std::time::Duration;
 
     use serde::{Deserialize, Serialize};
     use serde_json::{Value, json};
@@ -114,9 +113,7 @@ mod tests {
     }
 
     fn caller(endpoint: String) -> JsonRpcCaller {
-        JsonRpcCaller::new(Arc::new(
-            JsonRpcClient::new(endpoint, Duration::from_secs(5)).unwrap(),
-        ))
+        JsonRpcCaller::new(Arc::new(JsonRpcClient::new(endpoint, 5_000, None)))
     }
 
     // TS NOTE: mirrors `ts/wasm/__tests__/detailed/hive_chain.ts` ('Should be

@@ -11,9 +11,6 @@ use crate::chain::util::{DetailedResponseData, RequestOptions};
 /// online-only variants.
 #[derive(Debug, Error)]
 pub enum WaxChainError {
-    #[error("HTTP transport error: {0}")]
-    Http(#[from] reqwest::Error),
-
     #[error("JSON-RPC error {code}: {message}")]
     JsonRpc { code: i64, message: String },
 

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::Duration;
 
 use crate::WaxError;
 use crate::WaxFoundation;
@@ -28,12 +27,6 @@ use crate::chain::hive_chain::HiveChain;
 use crate::chain::rest::{RestCaller, RestClient};
 use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
 
-/// Used to identify the chain-owned REST caller.
-///
-/// TS NOTE: `EChainApiType.REST` — TS passes it as the `apiCallerId` of the
-/// REST `ApiCaller`.
-const REST_API_CALLER_ID: &str = "rest";
-
 /// Concrete [`HiveChain`] implementation. Composes a [`WaxFoundation`] for
 /// offline operations and owns the JSON-RPC / REST transports used for
 /// online calls.
@@ -53,10 +46,10 @@ impl HiveChainApi {
         });
         let rpc = Arc::new(JsonRpcClient::new(
             options.api_endpoint.clone(),
-            Duration::from_millis(options.api_timeout_ms.into()),
-        )?);
+            options.api_timeout_ms.into(),
+            options.wax_api_caller.clone(),
+        ));
         let rest = Arc::new(RestClient::new(
-            REST_API_CALLER_ID.to_string(),
             options.rest_api_endpoint,
             options.api_timeout_ms.into(),
             options.wax_api_caller,
