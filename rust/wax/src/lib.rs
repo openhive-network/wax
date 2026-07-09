@@ -36,8 +36,9 @@ pub use chain::{
     HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, HiveRestApi,
     JsonRpcCaller, NewBestEvent, NewUpDownEvent, OnlineTransaction,
     ProcessedEntry, RequestData, RequestError, RequestOptions, ResponseType,
-    RestCallDescriptor, RestCaller, WaxChainError, WaxChainOptions, api,
-    create_hive_chain,
+    RestCallDescriptor, RestCaller, ScoredEndpoint, ScoredEndpointDown,
+    ScoredEndpointUp, WaxChainError, WaxChainOptions, api, create_hive_chain,
+    default_calc_scores,
 };
 
 /// Generates a typed Hive API surface from idiomatic declarations, for use

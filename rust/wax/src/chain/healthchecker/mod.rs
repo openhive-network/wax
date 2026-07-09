@@ -1,11 +1,14 @@
 //! Endpoint health checking: latency probing and failover across multiple Hive
 //! API nodes.
 //!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/`. Only the error
-//! surface is present so far.
+//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/`. The error
+//! surface, the endpoint data types and the scoring math are present; the
+//! `HealthChecker` probe loop is not ported yet.
 
 mod endpoint;
 mod errors;
+mod math;
+mod scored_endpoint;
 
 /// Used as a placeholder for types that are not yet ported to Rust.
 ///
@@ -20,4 +23,8 @@ pub use endpoint::{
 };
 pub use errors::{
     ChainApiType, EndpointInfo, HealthCheckerError, RequestError,
+};
+pub use math::default_calc_scores;
+pub use scored_endpoint::{
+    ScoredEndpoint, ScoredEndpointDown, ScoredEndpointUp,
 };

@@ -30,7 +30,8 @@ pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::{
     ChainApiType, EndpointInfo, ErrorReason, HealthCheckerError, HiveEndpoint,
     HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, NewBestEvent,
-    NewUpDownEvent, RequestError,
+    NewUpDownEvent, RequestError, ScoredEndpoint, ScoredEndpointDown,
+    ScoredEndpointUp, default_calc_scores,
 };
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
