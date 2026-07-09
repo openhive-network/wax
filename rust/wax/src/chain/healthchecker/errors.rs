@@ -17,6 +17,7 @@ use std::error::Error;
 
 use thiserror::Error;
 
+use crate::chain::error::WaxChainError;
 use crate::chain::util::{DetailedResponseData, RequestOptions};
 
 /// Represents a failure raised by the health checker itself.
@@ -42,6 +43,25 @@ pub enum HealthCheckerError {
         request: RequestOptions,
         response: DetailedResponseData,
     },
+}
+
+/// Represents a failure returned by a registered probe.
+///
+/// TS NOTE: the errors thrown out of the TS `register` caller closure — a
+/// transport/API failure, or the `WaxHealthCheckerValidatorFailedError`
+/// raised when the user validator rejects a decoded response. The rich
+/// validator error ([`HealthCheckerError::ValidatorFailed`]) is built where
+/// the request context is known; the probe result only carries the reason.
+#[derive(Debug, Error)]
+pub enum ProbeFailure {
+    #[error(transparent)]
+    Chain(#[from] WaxChainError),
+
+    // Constructed by the checker's `register` closure, which is not yet
+    // ported (only tests build it so far).
+    #[allow(dead_code)]
+    #[error("Validator did not pass: \"{0}\"")]
+    Validation(String),
 }
 
 /// Represents a failure while performing an HTTP request to a Hive node.

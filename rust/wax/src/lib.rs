@@ -33,12 +33,11 @@ pub use chain::{
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ChainApiType,
     DefaultHiveApi, DetailedResponseData, EndpointInfo, ErrorReason,
     HealthCheckerError, HiveApi, HiveChain, HiveChainExt, HiveEndpoint,
-    HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, HiveRestApi,
-    JsonRpcCaller, NewBestEvent, NewUpDownEvent, OnlineTransaction,
-    ProcessedEntry, RequestData, RequestError, RequestOptions, ResponseType,
-    RestCallDescriptor, RestCaller, ScoredEndpoint, ScoredEndpointDown,
-    ScoredEndpointUp, WaxChainError, WaxChainOptions, api, create_hive_chain,
-    default_calc_scores,
+    HiveEndpointData, HiveRestApi, JsonRpcCaller, NewUpDownEvent,
+    OnlineTransaction, ProbeState, ProcessedEntry, RequestData, RequestError,
+    RequestOptions, ResponseType, RestCallDescriptor, RestCaller,
+    ScoredEndpoint, ScoredState, WaxChainError, WaxChainOptions, api,
+    create_hive_chain, default_calc_scores,
 };
 
 /// Generates a typed Hive API surface from idiomatic declarations, for use

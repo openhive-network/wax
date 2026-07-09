@@ -3,10 +3,8 @@
 //!
 //! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/math.ts`.
 
-use super::endpoint::{ErrorReason, HiveEndpointData};
-use super::scored_endpoint::{
-    ScoredEndpoint, ScoredEndpointDown, ScoredEndpointUp,
-};
+use super::endpoint::{ErrorReason, ProbeState};
+use super::scored_endpoint::{ScoredEndpoint, ScoredState};
 
 /// Used to turn a down probe into a synthetic latency: a URL's down samples
 /// enter the score as this multiple of the highest observed latency, so a
@@ -33,7 +31,7 @@ const CONNECTION_ISSUES_MULTIPLIER: f64 = 0.2;
 /// all-zero-latency path); the unused TS min-latency tracking is not
 /// ported.
 pub fn default_calc_scores(
-    data: &[(String, Vec<HiveEndpointData>)],
+    data: &[(String, Vec<ProbeState>)],
 ) -> Vec<ScoredEndpoint> {
     let Some(max_latency) = max_up_latency(data) else {
         return Vec::new();
@@ -50,46 +48,43 @@ pub fn default_calc_scores(
 
     blend_jitter_penalty(&mut raw_up);
 
-    let mut result: Vec<ScoredEndpoint> = normalize_best_first(raw_up)
-        .into_iter()
-        .map(ScoredEndpoint::Up)
-        .collect();
-    result.extend(down.into_iter().map(ScoredEndpoint::Down));
+    let mut result = normalize_best_first(raw_up);
+    result.extend(down);
 
     result
 }
 
-/// Represents an up URL mid-calculation: its scored data (the `score` field
-/// holds the raw median, later the blended value) and the coefficient of
-/// variation of its penalized latencies.
+/// Represents an up URL mid-calculation: its raw median score (later the
+/// blended value) and the coefficient of variation of its penalized
+/// latencies.
 struct RawUpScore {
-    scored: ScoredEndpointUp,
+    url: String,
+    score: f64,
+    latencies: Vec<u64>,
     coef: f64,
 }
 
 /// Calculates the highest latency among all up probes; `None` when no probe
 /// was up at all.
-fn max_up_latency(data: &[(String, Vec<HiveEndpointData>)]) -> Option<u64> {
+fn max_up_latency(data: &[(String, Vec<ProbeState>)]) -> Option<u64> {
     data.iter()
         .flat_map(|(_, history)| history)
         .filter_map(|entry| match entry {
-            HiveEndpointData::Up(up) => Some(up.latency),
-            HiveEndpointData::Down(_) => None,
+            ProbeState::Up { latency } => Some(*latency),
+            ProbeState::Down { .. } => None,
         })
         .max()
 }
 
 /// Converts every URL into a down entry carrying its newest failure reason.
-fn list_all_down(
-    data: &[(String, Vec<HiveEndpointData>)],
-) -> Vec<ScoredEndpoint> {
+fn list_all_down(data: &[(String, Vec<ProbeState>)]) -> Vec<ScoredEndpoint> {
     data.iter()
         .filter(|(_, history)| !history.is_empty())
-        .map(|(endpoint_url, history)| {
-            ScoredEndpoint::Down(ScoredEndpointDown {
-                endpoint_url: endpoint_url.clone(),
+        .map(|(url, history)| ScoredEndpoint {
+            url: url.clone(),
+            state: ScoredState::Down {
                 last_error_reason: last_error_reason(history),
-            })
+            },
         })
         .collect()
 }
@@ -98,22 +93,24 @@ fn list_all_down(
 /// the jitter coefficient — and the down bucket of URLs that were never up,
 /// skipping empty histories.
 fn bucket_urls(
-    data: &[(String, Vec<HiveEndpointData>)],
+    data: &[(String, Vec<ProbeState>)],
     penalty_ms: f64,
-) -> (Vec<RawUpScore>, Vec<ScoredEndpointDown>) {
+) -> (Vec<RawUpScore>, Vec<ScoredEndpoint>) {
     let mut up = Vec::new();
     let mut down = Vec::new();
 
-    for (endpoint_url, history) in data {
+    for (url, history) in data {
         if history.is_empty() {
             continue;
         }
 
         let latencies = up_latencies(history);
         if latencies.is_empty() {
-            down.push(ScoredEndpointDown {
-                endpoint_url: endpoint_url.clone(),
-                last_error_reason: last_error_reason(history),
+            down.push(ScoredEndpoint {
+                url: url.clone(),
+                state: ScoredState::Down {
+                    last_error_reason: last_error_reason(history),
+                },
             });
 
             continue;
@@ -121,12 +118,10 @@ fn bucket_urls(
 
         let penalized = penalized_latencies(history, penalty_ms);
         up.push(RawUpScore {
+            url: url.clone(),
             coef: coef(&penalized),
-            scored: ScoredEndpointUp {
-                endpoint_url: endpoint_url.clone(),
-                score: median(penalized),
-                latencies,
-            },
+            score: median(penalized),
+            latencies,
         });
     }
 
@@ -134,27 +129,24 @@ fn bucket_urls(
 }
 
 /// Extracts the raw latencies of the up probes, newest last.
-fn up_latencies(history: &[HiveEndpointData]) -> Vec<u64> {
+fn up_latencies(history: &[ProbeState]) -> Vec<u64> {
     history
         .iter()
         .filter_map(|entry| match entry {
-            HiveEndpointData::Up(up) => Some(up.latency),
-            HiveEndpointData::Down(_) => None,
+            ProbeState::Up { latency } => Some(*latency),
+            ProbeState::Down { .. } => None,
         })
         .collect()
 }
 
 /// Converts a probe history into the latencies entering the score: an up
 /// sample contributes its latency, a down sample the synthetic penalty.
-fn penalized_latencies(
-    history: &[HiveEndpointData],
-    penalty_ms: f64,
-) -> Vec<f64> {
+fn penalized_latencies(history: &[ProbeState], penalty_ms: f64) -> Vec<f64> {
     history
         .iter()
         .map(|entry| match entry {
-            HiveEndpointData::Up(up) => up.latency as f64,
-            HiveEndpointData::Down(_) => penalty_ms,
+            ProbeState::Up { latency } => *latency as f64,
+            ProbeState::Down { .. } => penalty_ms,
         })
         .collect()
 }
@@ -163,9 +155,9 @@ fn penalized_latencies(
 /// when that sample is an up one.
 ///
 /// TS NOTE: `endpointData[endpointData.length - 1].reason || 'other'`.
-fn last_error_reason(history: &[HiveEndpointData]) -> ErrorReason {
+fn last_error_reason(history: &[ProbeState]) -> ErrorReason {
     match history.last() {
-        Some(HiveEndpointData::Down(down)) => down.reason,
+        Some(ProbeState::Down { reason }) => *reason,
         _ => ErrorReason::Other,
     }
 }
@@ -177,34 +169,34 @@ fn last_error_reason(history: &[HiveEndpointData]) -> ErrorReason {
 /// TS NOTE: TS tracks the median range while bucketing; computing it here
 /// from the finished bucket is equivalent.
 fn blend_jitter_penalty(raw_up: &mut [RawUpScore]) {
-    let medians = raw_up.iter().map(|raw| raw.scored.score);
+    let medians = raw_up.iter().map(|raw| raw.score);
     let min_median = medians.clone().fold(f64::MAX, f64::min);
     let max_median = medians.fold(0.0, f64::max);
 
     for raw in raw_up {
-        raw.scored.score =
-            scale(raw.scored.score, min_median, max_median, 0.0, 100.0)
-                * (1.0 - CONNECTION_ISSUES_MULTIPLIER)
-                + raw.coef * 100.0 * CONNECTION_ISSUES_MULTIPLIER;
+        raw.score = scale(raw.score, min_median, max_median, 0.0, 100.0)
+            * (1.0 - CONNECTION_ISSUES_MULTIPLIER)
+            + raw.coef * 100.0 * CONNECTION_ISSUES_MULTIPLIER;
     }
 }
 
 /// Sorts the blended scores ascending and inverts them into the final
 /// best-first `0.1..=1.0` range, the best URL scoring exactly `1.0`.
-fn normalize_best_first(mut raw_up: Vec<RawUpScore>) -> Vec<ScoredEndpointUp> {
-    raw_up.sort_by(|a, b| a.scored.score.total_cmp(&b.scored.score));
+fn normalize_best_first(mut raw_up: Vec<RawUpScore>) -> Vec<ScoredEndpoint> {
+    raw_up.sort_by(|a, b| a.score.total_cmp(&b.score));
 
     // Non-empty: the caller only reaches this with at least one up URL.
-    let min = raw_up[0].scored.score;
-    let max = raw_up[raw_up.len() - 1].scored.score;
+    let min = raw_up[0].score;
+    let max = raw_up[raw_up.len() - 1].score;
 
     raw_up
         .into_iter()
-        .map(|mut raw| {
-            raw.scored.score =
-                1.1 - scale(raw.scored.score, min, max, 0.1, 1.0);
-
-            raw.scored
+        .map(|raw| ScoredEndpoint {
+            url: raw.url,
+            state: ScoredState::Up {
+                score: 1.1 - scale(raw.score, min, max, 0.1, 1.0),
+                latencies: raw.latencies,
+            },
         })
         .collect()
 }
@@ -273,41 +265,30 @@ fn coef(values: &[f64]) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::super::endpoint::{HiveEndpointDataDown, HiveEndpointDataUp};
     use super::*;
 
-    fn up(latency: u64) -> HiveEndpointData {
-        HiveEndpointData::Up(HiveEndpointDataUp {
-            endpoint_url: String::new(),
-            latency,
-        })
+    fn up(latency: u64) -> ProbeState {
+        ProbeState::Up { latency }
     }
 
-    fn down(reason: ErrorReason) -> HiveEndpointData {
-        HiveEndpointData::Down(HiveEndpointDataDown {
-            endpoint_url: String::new(),
-            reason,
-        })
+    fn down(reason: ErrorReason) -> ProbeState {
+        ProbeState::Down { reason }
     }
 
-    fn entry(
-        url: &str,
-        history: Vec<HiveEndpointData>,
-    ) -> (String, Vec<HiveEndpointData>) {
+    fn entry(url: &str, history: Vec<ProbeState>) -> (String, Vec<ProbeState>) {
         (url.to_string(), history)
     }
 
     fn assert_score(scored: &ScoredEndpoint, url: &str, score: f64) {
-        match scored {
-            ScoredEndpoint::Up(data) => {
-                assert_eq!(data.endpoint_url, url);
+        assert_eq!(scored.url, url);
+        match &scored.state {
+            ScoredState::Up { score: actual, .. } => {
                 assert!(
-                    (data.score - score).abs() < 1e-9,
-                    "expected score {score} for {url}, got {}",
-                    data.score
+                    (actual - score).abs() < 1e-9,
+                    "expected score {score} for {url}, got {actual}"
                 );
             }
-            ScoredEndpoint::Down(_) => panic!("{url} must be scored as up"),
+            ScoredState::Down { .. } => panic!("{url} must be scored as up"),
         }
     }
 
@@ -332,8 +313,8 @@ mod tests {
         assert_eq!(scored.len(), 1);
         assert_score(&scored[0], "https://a", 1.0);
         assert!(matches!(
-            &scored[0],
-            ScoredEndpoint::Up(data) if data.latencies == [100, 150]
+            &scored[0].state,
+            ScoredState::Up { latencies, .. } if latencies == &[100, 150]
         ));
     }
 
@@ -386,9 +367,12 @@ mod tests {
         assert_score(&scored[0], "https://alive", 1.0);
         assert!(matches!(
             &scored[1],
-            ScoredEndpoint::Down(data)
-                if data.endpoint_url == "https://dead"
-                    && data.last_error_reason == ErrorReason::Timeout
+            ScoredEndpoint {
+                url,
+                state: ScoredState::Down {
+                    last_error_reason: ErrorReason::Timeout
+                },
+            } if url == "https://dead"
         ));
     }
 
@@ -404,15 +388,21 @@ mod tests {
         assert_eq!(scored.len(), 2);
         assert!(matches!(
             &scored[0],
-            ScoredEndpoint::Down(data)
-                if data.endpoint_url == "https://zero"
-                    && data.last_error_reason == ErrorReason::Other
+            ScoredEndpoint {
+                url,
+                state: ScoredState::Down {
+                    last_error_reason: ErrorReason::Other
+                },
+            } if url == "https://zero"
         ));
         assert!(matches!(
             &scored[1],
-            ScoredEndpoint::Down(data)
-                if data.endpoint_url == "https://dead"
-                    && data.last_error_reason == ErrorReason::Timeout
+            ScoredEndpoint {
+                url,
+                state: ScoredState::Down {
+                    last_error_reason: ErrorReason::Timeout
+                },
+            } if url == "https://dead"
         ));
     }
 

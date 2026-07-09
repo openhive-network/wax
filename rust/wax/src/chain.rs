@@ -29,9 +29,8 @@ pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::{
     ChainApiType, EndpointInfo, ErrorReason, HealthCheckerError, HiveEndpoint,
-    HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, NewBestEvent,
-    NewUpDownEvent, RequestError, ScoredEndpoint, ScoredEndpointDown,
-    ScoredEndpointUp, default_calc_scores,
+    HiveEndpointData, NewUpDownEvent, ProbeState, RequestError, ScoredEndpoint,
+    ScoredState, default_calc_scores,
 };
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
