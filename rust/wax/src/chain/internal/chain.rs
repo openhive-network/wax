@@ -25,8 +25,8 @@ use crate::{ManabarData, Operation, Transaction};
 
 use crate::chain::error::WaxChainError;
 use crate::chain::hive_chain::HiveChain;
+use crate::chain::rest::{RestCaller, RestClient};
 use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
-use crate::chain::util::{ApiCaller, RestCaller};
 
 /// Used to identify the chain-owned REST caller.
 ///
@@ -40,7 +40,7 @@ const REST_API_CALLER_ID: &str = "rest";
 pub(crate) struct HiveChainApi {
     foundation: Box<dyn WaxFoundation>,
     rpc: Arc<JsonRpcClient>,
-    rest: Arc<ApiCaller>,
+    rest: Arc<RestClient>,
 }
 
 impl HiveChainApi {
@@ -55,7 +55,7 @@ impl HiveChainApi {
             options.api_endpoint.clone(),
             Duration::from_millis(options.api_timeout_ms.into()),
         )?);
-        let rest = Arc::new(ApiCaller::new(
+        let rest = Arc::new(RestClient::new(
             REST_API_CALLER_ID.to_string(),
             options.rest_api_endpoint,
             options.api_timeout_ms.into(),

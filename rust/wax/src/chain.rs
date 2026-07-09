@@ -16,6 +16,7 @@ mod hive_chain;
 mod internal;
 mod online_transaction;
 mod options;
+mod rest;
 mod rpc;
 mod util;
 
@@ -34,8 +35,11 @@ pub use healthchecker::{
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
 pub use options::WaxChainOptions;
+pub use rest::{RestCallDescriptor, RestCaller};
 pub use rpc::JsonRpcCaller;
-pub use util::{RestCallDescriptor, RestCaller};
+pub use util::{
+    DetailedResponseData, RequestData, RequestOptions, ResponseType,
+};
 
 /// Constructs a [`HiveChain`] from the given options.
 ///

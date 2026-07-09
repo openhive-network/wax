@@ -18,6 +18,9 @@
 //! (`paths` / `realPaths` / `lastMethod` / `config`) disappears as well:
 //! callers pass an immutable [`RestCallDescriptor`] instead.
 
+mod braced_strings;
+mod query_string;
+
 use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
@@ -25,38 +28,39 @@ use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
 
 use crate::chain::error::WaxChainError;
-
-use super::braced_strings::extract_braced_strings;
-use super::{
+use crate::chain::util::{
     DetailedResponseData, RequestData, RequestHelper, RequestOptions,
-    ResponseType, object_to_query_string, stringify,
+    ResponseType,
 };
+
+use self::braced_strings::extract_braced_strings;
+use self::query_string::{object_to_query_string, stringify};
 
 /// Provides a cloneable handle to a chain's REST transport. Typed REST API
 /// surfaces hold one and issue requests through [`RestCaller::call`].
 ///
-/// The handle shares the chain's [`ApiCaller`], so a later
+/// The handle shares the chain's [`RestClient`], so a later
 /// `set_rest_endpoint_url` on the chain is reflected by API surfaces already
 /// handed out.
 #[derive(Clone)]
 pub struct RestCaller {
-    caller: Arc<ApiCaller>,
+    client: Arc<RestClient>,
 }
 
 impl RestCaller {
-    pub(crate) fn new(caller: Arc<ApiCaller>) -> Self {
-        Self { caller }
+    pub(crate) fn new(client: Arc<RestClient>) -> Self {
+        Self { client }
     }
 
     /// Returns the id of the underlying REST engine.
     ///
     /// TS NOTE: `apiCallerId`.
     pub fn id(&self) -> &str {
-        self.caller.id()
+        self.client.id()
     }
 
     /// Calls the REST method described by `descriptor` with `params`,
-    /// returning the decoded result. See [`ApiCaller::call`].
+    /// returning the decoded result. See [`RestClient::call`].
     pub async fn call<P, R>(
         &self,
         descriptor: &RestCallDescriptor,
@@ -66,17 +70,34 @@ impl RestCaller {
         P: Serialize,
         R: DeserializeOwned,
     {
-        self.caller.call(descriptor, params).await
+        self.client.call(descriptor, params).await
+    }
+
+    /// Calls the REST method described by `descriptor` against an explicit
+    /// `endpoint`, returning the decoded result together with the raw
+    /// response data (timings, status, headers). Used by health-check
+    /// probes. See [`RestClient::call_at`].
+    pub async fn call_at<P, R>(
+        &self,
+        endpoint: &str,
+        descriptor: &RestCallDescriptor,
+        params: P,
+    ) -> Result<(R, DetailedResponseData), WaxChainError>
+    where
+        P: Serialize,
+        R: DeserializeOwned,
+    {
+        self.client.call_at(endpoint, descriptor, params).await
     }
 
     /// Sets (or clears with `None`) the endpoint override for the given
-    /// namespace path. See [`ApiCaller::set_endpoint_url_for_path`].
+    /// namespace path. See [`RestClient::set_endpoint_url_for_path`].
     pub fn set_endpoint_url_for_path(
         &self,
         path: &[&str],
         url: Option<String>,
     ) {
-        self.caller.set_endpoint_url_for_path(path, url);
+        self.client.set_endpoint_url_for_path(path, url);
     }
 }
 
@@ -84,10 +105,10 @@ impl RestCaller {
 /// `extend_rest`.
 ///
 /// Each generated method holds a static [`RestCallDescriptor`] and delegates
-/// to [`ApiCaller::call`], which substitutes path parameters, splits the
+/// to [`RestClient::call`], which substitutes path parameters, splits the
 /// remaining params into query string or body, performs the request and
 /// decodes the typed result.
-pub struct ApiCaller {
+pub struct RestClient {
     helper: RequestHelper,
     /// TS NOTE: `apiCallerId`; TS interceptors use it for originator
     /// identification, the Rust health checker will use it to identify
@@ -132,7 +153,7 @@ pub struct RestCallDescriptor {
     pub namespace_path: &'static [&'static str],
 }
 
-impl ApiCaller {
+impl RestClient {
     /// Creates a REST caller issuing requests against `endpoint`.
     pub fn new(
         id: String,
@@ -226,12 +247,39 @@ impl ApiCaller {
         P: Serialize,
         R: DeserializeOwned,
     {
+        let endpoint = self.resolve_endpoint(descriptor.namespace_path);
+        let (result, _) = self.call_at(&endpoint, descriptor, params).await?;
+
+        Ok(result)
+    }
+
+    /// Calls the REST method described by `descriptor` against an explicit
+    /// `endpoint` (ignoring the caller's endpoint and overrides), returning
+    /// the decoded result together with the raw response data (timings,
+    /// status, headers). Used by health-check probes.
+    ///
+    /// TS NOTE: the capability behind `withProxy` — the TS health checker
+    /// redirects a call through a request interceptor rewriting
+    /// `data.endpoint` and captures the timings through a response
+    /// interceptor; Rust takes the endpoint as an argument and returns the
+    /// timings instead.
+    pub async fn call_at<P, R>(
+        &self,
+        endpoint: &str,
+        descriptor: &RestCallDescriptor,
+        params: P,
+    ) -> Result<(R, DetailedResponseData), WaxChainError>
+    where
+        P: Serialize,
+        R: DeserializeOwned,
+    {
         let params = to_params_map(params)?;
         let (path, params) =
             substitute_path_params(descriptor.path_template, params)?;
         let (query_string, body) = split_payload(descriptor.method, params);
 
-        let request = self.build_request(descriptor, path, query_string, body);
+        let request =
+            self.build_request(endpoint, descriptor, path, query_string, body);
         let response = self.helper.request(request.clone()).await?;
 
         extract_result(request, response)
@@ -240,13 +288,14 @@ impl ApiCaller {
     /// Assembles the request options; TS `api_caller.ts` lines 129-143.
     fn build_request(
         &self,
+        endpoint: &str,
         descriptor: &RestCallDescriptor,
         path: String,
         query_string: String,
         body: Option<RequestData>,
     ) -> RequestOptions {
         RequestOptions {
-            endpoint: self.resolve_endpoint(descriptor.namespace_path),
+            endpoint: endpoint.to_string(),
             url: format!("{path}{query_string}"),
             method: descriptor.method.to_string(),
             timeout: self.timeout_ms,
@@ -325,7 +374,8 @@ fn split_payload(
     }
 }
 
-/// Decodes the response body into the typed result.
+/// Decodes the response body into the typed result, passing the raw response
+/// data along for callers that need the timings.
 ///
 /// TS NOTE: TS only checks that a result is present when the API config
 /// declares one (`api_caller.ts` lines 148-151) and returns it untyped; typed
@@ -333,14 +383,17 @@ fn split_payload(
 fn extract_result<R: DeserializeOwned>(
     request: RequestOptions,
     response: DetailedResponseData,
-) -> Result<R, WaxChainError> {
+) -> Result<(R, DetailedResponseData), WaxChainError> {
     let value = response.response.clone().unwrap_or(Value::Null);
 
-    serde_json::from_value(value).map_err(|source| WaxChainError::ApiResponse {
-        request,
-        response,
-        source,
-    })
+    match serde_json::from_value(value) {
+        Ok(result) => Ok((result, response)),
+        Err(source) => Err(WaxChainError::ApiResponse {
+            request,
+            response,
+            source,
+        }),
+    }
 }
 
 #[cfg(test)]
@@ -348,7 +401,9 @@ mod tests {
     use serde::Deserialize;
     use serde_json::json;
 
-    use super::super::test_support::{header_value, spawn_capture_server};
+    use super::super::util::test_support::{
+        header_value, spawn_capture_server,
+    };
     use super::*;
 
     fn map(value: Value) -> Option<Map<String, Value>> {
@@ -491,7 +546,7 @@ mod tests {
             namespace_path: &["hafah_api", "transactions"],
         };
 
-        let caller = ApiCaller::new(
+        let caller = RestClient::new(
             "rest".into(),
             endpoint,
             0,
@@ -533,7 +588,7 @@ mod tests {
             namespace_path: &["items"],
         };
 
-        let caller = ApiCaller::new("rest".into(), endpoint, 0, None);
+        let caller = RestClient::new("rest".into(), endpoint, 0, None);
 
         let _: Value = caller
             .call(&DESC, json!({ "id": 7, "name": "widget" }))
@@ -546,8 +601,8 @@ mod tests {
         assert!(raw.ends_with(r#"{"name":"widget"}"#));
     }
 
-    fn caller_with_default(endpoint: &str) -> ApiCaller {
-        ApiCaller::new("rest".into(), endpoint.into(), 0, None)
+    fn caller_with_default(endpoint: &str) -> RestClient {
+        RestClient::new("rest".into(), endpoint.into(), 0, None)
     }
 
     // TS NOTE: mirrors the per-path `endpointUrl` semantics asserted in
@@ -599,6 +654,30 @@ mod tests {
         caller.set_endpoint(String::from("http://changed"));
 
         assert_eq!(caller.resolve_endpoint(&["a"]), "http://changed");
+    }
+
+    // TS NOTE: the health-checker seam — `withProxy`'s endpoint rewrite and
+    // timings capture become an explicit argument and a returned value. The
+    // caller-wide default is unroutable, so `call_at` must hit the given
+    // endpoint.
+    #[tokio::test]
+    async fn call_at_hits_explicit_endpoint_and_returns_timings() {
+        let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        const DESC: RestCallDescriptor = RestCallDescriptor {
+            method: "GET",
+            path_template: "/headblock",
+            namespace_path: &["hafah_api", "headblock"],
+        };
+
+        let caller = caller_with_default("http://127.0.0.1:1");
+        let (result, timings): (Value, _) =
+            caller.call_at(&endpoint, &DESC, ()).await.unwrap();
+
+        assert_eq!(result, json!({ "ok": true }));
+        assert_eq!(timings.status, Some(200));
+        assert!(timings.end.expect("set on success") >= timings.start);
+        assert!(captured.recv().unwrap().starts_with("GET /headblock"));
     }
 
     // End-to-end: an overridden namespace routes to its own server. The

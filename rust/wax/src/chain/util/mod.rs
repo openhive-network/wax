@@ -1,12 +1,12 @@
-mod api_caller;
-mod braced_strings;
-mod query_string;
 mod request_helper;
 #[cfg(test)]
 pub(super) mod test_support;
 
-pub use api_caller::{RestCallDescriptor, RestCaller};
+// NOTE: the request/response payload types were always reachable through the
+// public `WaxChainError` fields; `call_at` returning [`DetailedResponseData`]
+// makes them properly nameable.
+pub use request_helper::{
+    DetailedResponseData, RequestData, RequestOptions, ResponseType,
+};
 
-pub(super) use api_caller::ApiCaller;
-pub(super) use query_string::*;
-pub(super) use request_helper::*;
+pub(super) use request_helper::RequestHelper;

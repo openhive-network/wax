@@ -31,12 +31,13 @@ pub use base::{
 pub use chain::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ChainApiType,
-    DefaultHiveApi, EndpointInfo, ErrorReason, HealthCheckerError, HiveApi,
-    HiveChain, HiveChainExt, HiveEndpoint, HiveEndpointData,
-    HiveEndpointDataDown, HiveEndpointDataUp, HiveRestApi, JsonRpcCaller,
-    NewBestEvent, NewUpDownEvent, OnlineTransaction, ProcessedEntry,
-    RequestError, RestCallDescriptor, RestCaller, WaxChainError,
-    WaxChainOptions, api, create_hive_chain,
+    DefaultHiveApi, DetailedResponseData, EndpointInfo, ErrorReason,
+    HealthCheckerError, HiveApi, HiveChain, HiveChainExt, HiveEndpoint,
+    HiveEndpointData, HiveEndpointDataDown, HiveEndpointDataUp, HiveRestApi,
+    JsonRpcCaller, NewBestEvent, NewUpDownEvent, OnlineTransaction,
+    ProcessedEntry, RequestData, RequestError, RequestOptions, ResponseType,
+    RestCallDescriptor, RestCaller, WaxChainError, WaxChainOptions, api,
+    create_hive_chain,
 };
 
 /// Generates a typed Hive API surface from idiomatic declarations, for use

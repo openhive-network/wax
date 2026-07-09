@@ -3,8 +3,8 @@ use crate::WaxFoundation;
 use crate::chain::api::DefaultHiveApi;
 use crate::chain::error::WaxChainError;
 use crate::chain::extend::HiveApi;
+use crate::chain::rest::RestCaller;
 use crate::chain::rpc::JsonRpcCaller;
-use crate::chain::util::RestCaller;
 
 /// Provides online (chain-bound) capabilities on top of [`WaxFoundation`]:
 /// endpoint configuration, transport handles and the typed API surfaces
