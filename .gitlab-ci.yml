@@ -292,9 +292,12 @@ deploy_rust_crate_to_crates_io:
   # set-version/publish, so fetch it first (it never ships in the crate:
   # path-only dev-dependencies are stripped from the published manifest).
   - ./rust/fetch_beekeeper.sh
-  - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
-  - cd rust/wax
-  - cargo publish --allow-dirty
+  - ./rust/generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
+  - cd rust
+  # --workspace publishes hiveio-wax-macros before hiveio-wax: the proc-macro
+  # crate is a regular (non-dev) dependency, so it must exist on crates.io
+  # for hiveio-wax to resolve.
+  - cargo publish --workspace --allow-dirty
   tags:
     - public-runner-docker
 
@@ -318,20 +321,27 @@ deploy_rust_crate_to_gitlab:
     # set-version/package, so fetch it first (it never ships in the crate:
     # path-only dev-dependencies are stripped from the published manifest).
     - ./rust/fetch_beekeeper.sh
-    - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
-    - cd rust/wax
-    - VERSION=$(grep -m1 '^version' Cargo.toml | sed -E 's/version = "(.*)"/\1/')
-    - cargo package --allow-dirty
+    - ./rust/generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
+    - cd rust
+    - VERSION=$(grep -m1 '^version' wax/Cargo.toml | sed -E 's/version = "(.*)"/\1/')
+    # --workspace packages hiveio-wax-macros alongside hiveio-wax and verifies
+    # wax's exact-version dependency on it against the just-packaged copy
+    # instead of a registry index (stable since cargo 1.90).
+    - cargo package --workspace --allow-dirty
     # --fail-with-body needs curl >= 7.76 and the pypa_2_28 image ships 7.61,
-    # so replicate it: print the response body, fail on non-2xx.
+    # so replicate it: print the response body, fail on non-2xx. Both crates
+    # are uploaded: consumers extracting hiveio-wax need hiveio-wax-macros
+    # from the same pipeline to satisfy the exact-version dependency.
     - |
-      HTTP_CODE=$(curl --silent --show-error --write-out "%{http_code}" \
-        --output upload_response.txt \
-        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
-        --upload-file "target/package/hiveio-wax-${VERSION}.crate" \
-        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/hiveio-wax/${VERSION}/hiveio-wax-${VERSION}.crate")
-      cat upload_response.txt; echo
-      [ "${HTTP_CODE}" -ge 200 ] && [ "${HTTP_CODE}" -lt 300 ]
+      for PKG in hiveio-wax-macros hiveio-wax; do
+        HTTP_CODE=$(curl --silent --show-error --write-out "%{http_code}" \
+          --output upload_response.txt \
+          --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+          --upload-file "target/package/${PKG}-${VERSION}.crate" \
+          "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PKG}/${VERSION}/${PKG}-${VERSION}.crate")
+        cat upload_response.txt; echo
+        if [ "${HTTP_CODE}" -lt 200 ] || [ "${HTTP_CODE}" -ge 300 ]; then exit 1; fi
+      done
 
 wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
