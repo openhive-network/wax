@@ -255,16 +255,16 @@ test_rust:
     # (incl. the FileDescriptorSet) into OUT_DIR during the test build.
     - job: build_rust
   variables:
-    # beekeeper_rust's build.rs compiles fc_crypto_bridge from beekeeper's nested
-    # submodules (fc, secp256k1), so the full submodule tree must be checked out.
+    # wax's build.rs compiles C++ and .proto files from the hive submodule's
+    # nested tree during the test build.
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - git config --global --add safe.directory '*'
   script:
-    # cargo test -p wax --test detailed. test.sh first generates beekeeper's
-    # prelinked native bundle (prelink_bundle.sh; BOOST_ROOT comes from the
-    # wax-rust-builder image) if lib/libbeekeeper_native.a is missing, so no
-    # prebuilt beekeeper C++ is required.
+    # cargo test -p wax --test detailed. test.sh first downloads the packaged
+    # hiveio-beekeeper crate (prebuilt native bundle included, so no beekeeper
+    # C++ build) from the beekeeper project's GitLab generic package registry
+    # — see rust/fetch_beekeeper.sh.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./test.sh --in-container release
   tags:
@@ -288,6 +288,10 @@ deploy_rust_crate_to_crates_io:
       when: manual
       allow_failure: true
   script:
+  # cargo resolves the hiveio-beekeeper path dev-dependency even for
+  # set-version/publish, so fetch it first (it never ships in the crate:
+  # path-only dev-dependencies are stripped from the published manifest).
+  - ./rust/fetch_beekeeper.sh
   - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
   - cd rust/wax
   - cargo publish --allow-dirty
@@ -310,6 +314,10 @@ deploy_rust_crate_to_gitlab:
       when: never
     - when: on_success
   script:
+    # cargo resolves the hiveio-beekeeper path dev-dependency even for
+    # set-version/package, so fetch it first (it never ships in the crate:
+    # path-only dev-dependencies are stripped from the published manifest).
+    - ./rust/fetch_beekeeper.sh
     - ./rust/rust_generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
     - cd rust/wax
     - VERSION=$(grep -m1 '^version' Cargo.toml | sed -E 's/version = "(.*)"/\1/')

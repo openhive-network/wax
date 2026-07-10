@@ -54,7 +54,12 @@ else
   # Keep container-built artifacts in a separate target dir so they don't
   # share cmake caches (with absolute paths baked in) with host builds.
   export CARGO_TARGET_DIR="${SCRIPT_DIR}/wax/target/docker"
-  
+
+  # Cargo resolves wax's hiveio-beekeeper path dev-dependency on every
+  # invocation (even plain builds that never link it), so the crate must be
+  # fetched before the first cargo command in the workspace. Idempotent.
+  "${SCRIPT_DIR}/fetch_beekeeper.sh"
+
   cd proto_builder
 
   cargo build

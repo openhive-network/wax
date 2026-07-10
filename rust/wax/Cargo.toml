@@ -49,7 +49,11 @@ thiserror = "2"
 url = "2"
 
 [dev-dependencies]
-hiveio-beekeeper = { path = "../crates/beekeeper/programs/beekeeper/beekeeper_rust" }
+# Extracted from the beekeeper project's GitLab generic package registry by
+# ../fetch_beekeeper.sh (run it once before any cargo command). Deliberately
+# path-only: cargo strips path-only dev-dependencies from the published
+# manifest, so beekeeper never ships with the wax crate.
+hiveio-beekeeper = { path = "../crates/hiveio-beekeeper" }
 tokio = { version = "1", features = ["macros", "rt"] }
 
 [build-dependencies]

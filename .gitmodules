@@ -4,7 +4,3 @@
 [submodule "ts/npm-common-config"]
 	path = ts/npm-common-config
 	url = ../common-ci-configuration.git
-[submodule "rust/crates/beekeeper"]
-	path = rust/crates/beekeeper
-	url = https://gitlab.syncad.com/hive/beekeeper
-	branch = rustdev

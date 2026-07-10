@@ -1,0 +1,11 @@
+[workspace]
+resolver = "3"
+members = ["wax_macros", "wax"]
+exclude = ["proto_builder", "crates"]
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+opt-level = "z"
+panic = "abort"

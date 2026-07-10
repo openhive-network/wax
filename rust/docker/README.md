@@ -37,7 +37,7 @@ Inside the container, `build.sh` runs:
 cargo build [--release] -p wax
 ```
 
-`wax`'s build script does the rest: protobuf codegen (from `hive/libraries/protocol/proto/` into `OUT_DIR`), the CMake build of the C++ side, and the cxx bridge. The `hive` submodule must be initialized — `git submodule update --init --recursive`.
+`wax`'s build script does the rest: protobuf codegen (from `hive/libraries/protocol/proto/` into `OUT_DIR`), the CMake build of the C++ side, and the cxx bridge. The `hive` submodule must be initialized — `git submodule update --init --recursive`. The scripts also download the `hiveio-beekeeper` test dependency into `rust/crates/hiveio-beekeeper` (see [`../fetch_beekeeper.sh`](../fetch_beekeeper.sh)) — cargo resolves that path dev-dependency on every invocation, tests or not.
 
 ## Why a separate target dir
 

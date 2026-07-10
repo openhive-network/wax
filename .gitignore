@@ -246,4 +246,7 @@ storage_root-node
 # Ignore directory holding browser extention binaries to verify external signers (like Hive Keychain)
 /examples/ts/signature-extension/__tests__/extensions
 
+# hiveio-beekeeper crate downloaded by rust/fetch_beekeeper.sh
+/rust/crates/
+
 .DS_Store

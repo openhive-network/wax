@@ -26,10 +26,11 @@ if [ "${DIRECT_EXECUTION}" -eq 1 ]; then
 
   export CARGO_TARGET_DIR="${SCRIPT_DIR}/wax/target/docker"
 
-  # Leave the BEEKEEPER_FC_* env vars unset so beekeeper_rust's build.rs takes
-  # its self-contained path: it builds fc_crypto_bridge (+ fc, secp256k1) itself
-  # via the minimal fc_bridge_cmake driver, using BOOST_ROOT from the image. No
-  # prebuilt beekeeper C++ is required, but its nested submodules must be present
+  # The hiveio-beekeeper test dependency comes packaged from the beekeeper
+  # project's GitLab generic package registry, prebuilt native bundle
+  # included — no beekeeper C++ build, no beekeeper submodules. Cargo resolves
+  # the path dev-dependency on every invocation, so fetch first. Idempotent.
+  "${SCRIPT_DIR}/fetch_beekeeper.sh"
 
   # Default to the offline `detailed` suite; forward any args to cargo test.
   if [ "${#CARGO_ARGS[@]}" -eq 0 ]; then
@@ -49,7 +50,7 @@ else
   echo "Running tests inside ${IMAGE_NAME}..."
   # The repo is bind-mounted from the host, so its files are owned by the host
   # uid; git inside the container would otherwise reject it as "dubious
-  # ownership". '*' also covers the nested submodules (hive, beekeeper).
+  # ownership". '*' also covers the hive submodule's nested tree.
   docker run --rm \
     -v "${WAX_DIR}":"${WAX_DIR}" \
     -w "${SCRIPT_DIR}" \
