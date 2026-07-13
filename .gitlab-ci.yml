@@ -239,11 +239,16 @@ build_rust:
     # Boost/OpenSSL/CMake from the wax ci-base-image.
     - cd "${CI_PROJECT_DIR}/rust"
     - ./build.sh --in-container release
+    - ./fetch_beekeeper.sh
+    - ./generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
   artifacts:
     when: always
     paths:
       - ${CI_PROJECT_DIR}/rust/wax/proto
       - ${CI_PROJECT_DIR}/rust/wax/lib
+      - ${CI_PROJECT_DIR}/rust/wax/Cargo.toml
+      - ${CI_PROJECT_DIR}/rust/crates
+      - ${CI_PROJECT_DIR}/rust/wax_macros/Cargo.toml
   tags:
     - public-runner-docker
 
@@ -270,9 +275,7 @@ test_rust:
   tags:
     - public-runner-docker
 
-deploy_rust_crate_to_crates_io:
-  stage: deploy
-  image: "${WAX_RUST_BUILDER_IMAGE}"
+.deploy_rust_crate_to_crates_io:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   needs:
@@ -288,18 +291,26 @@ deploy_rust_crate_to_crates_io:
       when: manual
       allow_failure: true
   script:
-  # cargo resolves the hiveio-beekeeper path dev-dependency even for
-  # set-version/publish, so fetch it first (it never ships in the crate:
-  # path-only dev-dependencies are stripped from the published manifest).
-  - ./rust/fetch_beekeeper.sh
-  - ./rust/generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
-  - cd rust
-  # --workspace publishes hiveio-wax-macros before hiveio-wax: the proc-macro
-  # crate is a regular (non-dev) dependency, so it must exist on crates.io
-  # for hiveio-wax to resolve.
-  - cargo publish --workspace --allow-dirty
+  - cd ${CRATE_PATH}
+  - cargo publish -p ${CRATE_NAME} --allow-dirty
   tags:
     - public-runner-docker
+
+deploy_wax_macros_to_crates_io:
+  extends: .deploy_rust_crate_to_crates_io
+  stage: deploy
+  image: "${WAX_RUST_BUILDER_IMAGE}"
+  variables:
+    CRATE_PATH: "${CI_PROJECT_DIR}/rust"
+    CRATE_NAME: "hiveio-wax-macros"
+
+deploy_wax_to_crates_io:
+  extends: .deploy_rust_crate_to_crates_io
+  stage: deploy
+  image: "${WAX_RUST_BUILDER_IMAGE}"
+  variables:
+    CRATE_PATH: "${CI_PROJECT_DIR}/rust"
+    CRATE_NAME: "hiveio-wax"
 
 deploy_rust_crate_to_gitlab:
   stage: deploy
