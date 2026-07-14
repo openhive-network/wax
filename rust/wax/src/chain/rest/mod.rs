@@ -22,15 +22,15 @@ mod braced_strings;
 mod payload;
 mod query_string;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 
 use crate::chain::error::WaxChainError;
 use crate::chain::util::{
-    DetailedResponseData, RequestData, RequestHelper, RequestOptions,
-    ResponseType,
+    DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
+    RequestOptions, ResponseType,
 };
 
 use self::payload::{
@@ -104,27 +104,13 @@ impl RestCaller {
 /// decodes the typed result.
 pub struct RestClient {
     helper: RequestHelper,
-    /// TS NOTE: `defaultEndpointUrl`. Mutable behind a shared reference so an
-    /// endpoint change on the chain is reflected by API handles already
-    /// handed out, like the live TS proxy.
-    endpoint: Mutex<String>,
+    /// Default endpoint plus the per-namespace overrides (see
+    /// [`EndpointResolver`]).
+    endpoints: EndpointResolver,
     /// Request timeout in milliseconds; `0` disables it.
     timeout_ms: u64,
     /// `X-Wax-Api-Caller` header value attached to every request.
     wax_api_caller: Option<String>,
-    /// Per-namespace endpoint overrides; the deepest matching prefix wins.
-    ///
-    /// TS NOTE: TS scatters `endpointUrl` keys across the `localTypes` tree
-    /// (`getEndpointUrlForRestApi` / `setEndpointUrlForPath`); the Rust port
-    /// keeps a flat prefix list instead.
-    overrides: Mutex<Vec<EndpointOverride>>,
-}
-
-/// Represents a single per-namespace endpoint override: calls whose namespace
-/// path starts with `path` are routed to `url`.
-struct EndpointOverride {
-    path: Vec<String>,
-    url: String,
 }
 
 /// Represents one REST method as emitted by
@@ -153,22 +139,18 @@ impl RestClient {
     ) -> Self {
         Self {
             helper: RequestHelper::new(),
-            endpoint: Mutex::new(endpoint),
+            endpoints: EndpointResolver::new(endpoint),
             timeout_ms,
             wax_api_caller,
-            overrides: Mutex::new(Vec::new()),
         }
     }
 
     pub fn endpoint(&self) -> String {
-        self.endpoint
-            .lock()
-            .expect("endpoint mutex poisoned")
-            .clone()
+        self.endpoints.default_url()
     }
 
     pub fn set_endpoint(&self, url: String) {
-        *self.endpoint.lock().expect("endpoint mutex poisoned") = url;
+        self.endpoints.set_default_url(url);
     }
 
     /// Sets (or clears with `None`) the endpoint override for the given
@@ -183,38 +165,7 @@ impl RestClient {
         path: &[&str],
         url: Option<String>,
     ) {
-        let mut overrides =
-            self.overrides.lock().expect("overrides mutex poisoned");
-
-        overrides.retain(|o| o.path != path);
-
-        if let Some(url) = url {
-            overrides.push(EndpointOverride {
-                path: path.iter().map(ToString::to_string).collect(),
-                url,
-            });
-        }
-    }
-
-    /// Resolves the endpoint for a call: the deepest override whose path
-    /// prefixes the namespace path, or the caller-wide endpoint.
-    ///
-    /// TS NOTE: `getEndpointUrlForRestApi` — TS walks the `localTypes` tree
-    /// keeping the deepest `endpointUrl` seen on the way; the flat
-    /// equivalent is the longest matching prefix.
-    fn resolve_endpoint(&self, namespace_path: &[&str]) -> String {
-        let overrides =
-            self.overrides.lock().expect("overrides mutex poisoned");
-
-        overrides
-            .iter()
-            .filter(|o| {
-                o.path.len() <= namespace_path.len()
-                    && o.path.iter().zip(namespace_path).all(|(a, b)| a == b)
-            })
-            .max_by_key(|o| o.path.len())
-            .map(|o| o.url.clone())
-            .unwrap_or_else(|| self.endpoint())
+        self.endpoints.set_url_for_path(path, url);
     }
 
     /// Calls the REST method described by `descriptor` with `params`,
@@ -232,7 +183,7 @@ impl RestClient {
         P: Serialize,
         R: DeserializeOwned,
     {
-        let endpoint = self.resolve_endpoint(descriptor.namespace_path);
+        let endpoint = self.endpoints.resolve(descriptor.namespace_path);
         let (result, _) = self.call_at(&endpoint, descriptor, params).await?;
 
         Ok(result)
@@ -377,56 +328,9 @@ mod tests {
         RestClient::new(endpoint.into(), 0, None)
     }
 
-    // TS NOTE: mirrors the per-path `endpointUrl` semantics asserted in
-    // `hive_chain_rest_api.ts` ('extended.restApi.a.endpointUrl = url1;
-    // extended.restApi.a.b.endpointUrl = url2') — the deepest override wins
-    // and siblings fall back to the shallower one.
-    #[test]
-    fn resolves_endpoint_from_longest_matching_override() {
-        let caller = caller_with_default("http://default");
-
-        caller.set_endpoint_url_for_path(&["a"], Some("http://a".into()));
-        caller.set_endpoint_url_for_path(&["a", "b"], Some("http://ab".into()));
-
-        assert_eq!(caller.resolve_endpoint(&["a", "b", "c"]), "http://ab");
-        assert_eq!(caller.resolve_endpoint(&["a", "x"]), "http://a");
-        assert_eq!(caller.resolve_endpoint(&["z"]), "http://default");
-    }
-
-    // TS NOTE: `chain.restApi.endpointUrl = url` — a root-level override
-    // applies to every namespace of the caller.
-    #[test]
-    fn root_override_applies_to_every_path() {
-        let caller = caller_with_default("http://default");
-
-        caller.set_endpoint_url_for_path(&[], Some("http://root".into()));
-
-        assert_eq!(caller.resolve_endpoint(&["any", "path"]), "http://root");
-        assert_eq!(caller.resolve_endpoint(&[]), "http://root");
-    }
-
-    #[test]
-    fn replaces_existing_override_for_same_path() {
-        let caller = caller_with_default("http://default");
-
-        caller.set_endpoint_url_for_path(&["a"], Some("http://old".into()));
-        caller.set_endpoint_url_for_path(&["a"], Some("http://new".into()));
-
-        assert_eq!(caller.resolve_endpoint(&["a"]), "http://new");
-    }
-
-    // Documents the intentional TS divergence: clearing an override follows
-    // the live default instead of pinning the default current at clear time.
-    #[test]
-    fn clearing_override_restores_live_default() {
-        let caller = caller_with_default("http://default");
-
-        caller.set_endpoint_url_for_path(&["a"], Some("http://a".into()));
-        caller.set_endpoint_url_for_path(&["a"], None);
-        caller.set_endpoint(String::from("http://changed"));
-
-        assert_eq!(caller.resolve_endpoint(&["a"]), "http://changed");
-    }
+    // NOTE: the pure prefix-resolution semantics (longest match, root
+    // override, replace, clear) are covered on the shared
+    // [`EndpointResolver`] in `util/endpoints.rs`.
 
     // TS NOTE: the health-checker seam — `withProxy`'s endpoint rewrite and
     // timings capture become an explicit argument and a returned value. The

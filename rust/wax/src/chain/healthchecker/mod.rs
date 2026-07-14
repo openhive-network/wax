@@ -2,9 +2,10 @@
 //! API nodes.
 //!
 //! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/`. Register API
-//! probes with [`HealthChecker::register`], spawn [`HealthChecker::run`] on
-//! an async runtime, and watch the scoreboard through
-//! [`HealthChecker::events`] / [`HealthChecker::best`].
+//! probes with [`HealthChecker::register`], spawn the checker with
+//! [`HealthChecker::spawn`] (or hand [`HealthChecker::run`] to your runtime
+//! yourself), and watch the scoreboard through [`HealthChecker::events`] /
+//! [`HealthChecker::best`].
 
 mod checker;
 mod endpoint;
@@ -15,7 +16,7 @@ mod options;
 mod probe;
 mod scored_endpoint;
 
-pub use checker::HealthChecker;
+pub use checker::{HealthChecker, HealthCheckerGuard};
 pub use endpoint::{ErrorReason, HiveEndpoint, HiveEndpointData, ProbeState};
 pub use errors::{
     ChainApiType, EndpointInfo, HealthCheckerError, RequestError,

@@ -277,7 +277,63 @@ impl HealthChecker {
         self.inner.subscriptions().clear();
     }
 
-    /// Drives the periodic health checks; spawn it on your async runtime.
+    /// Spawns [`run`](Self::run) on the current tokio runtime, returning a
+    /// guard that aborts the task when dropped — shutting the checker down
+    /// becomes leaving the guard's scope:
+    /// `let _guard = checker.spawn();`.
+    ///
+    /// NOTE: dropping a raw `tokio::spawn` handle would *detach* the task,
+    /// leaving the checker probing forever with no way to reach it; the
+    /// guard makes the shutdown path explicit. Must be called within a
+    /// tokio runtime.
+    pub fn spawn(&self) -> HealthCheckerGuard {
+        let checker = self.clone();
+
+        HealthCheckerGuard {
+            run: tokio::spawn(async move { checker.run().await }),
+            dispatcher: None,
+        }
+    }
+
+    /// Spawns the checker like [`spawn`](Self::spawn) and additionally a
+    /// dispatcher task feeding every [`HealthCheckerEvent`] to `handler`.
+    /// The returned guard aborts both tasks when dropped.
+    ///
+    /// The handler runs on the dispatcher task, never inside the checker,
+    /// so it may freely call back into this checker. It is deliberately
+    /// synchronous — for async reactions consume a receiver from
+    /// [`events`](Self::events) with a `while let` loop instead.
+    ///
+    /// TS NOTE: the closest analog of the TS `EventEmitter` `on(...)`
+    /// surface; one handler receives all events (match on the variant)
+    /// instead of one listener per event name.
+    pub fn spawn_with_handler<F>(&self, mut handler: F) -> HealthCheckerGuard
+    where
+        F: FnMut(HealthCheckerEvent) + Send + 'static,
+    {
+        // Subscribe before the run task spawns, so its first round cannot
+        // slip past the dispatcher.
+        let mut events = self.events();
+        let dispatcher = tokio::spawn(async move {
+            loop {
+                match events.recv().await {
+                    Ok(event) => handler(event),
+                    // A lagged receiver skips the oldest backlog but stays
+                    // subscribed.
+                    Err(broadcast::error::RecvError::Lagged(_)) => {}
+                    Err(broadcast::error::RecvError::Closed) => break,
+                }
+            }
+        });
+
+        let mut guard = self.spawn();
+        guard.dispatcher = Some(dispatcher);
+
+        guard
+    }
+
+    /// Drives the periodic health checks; spawn it on your async runtime
+    /// (or let [`spawn`](Self::spawn) do both).
     /// The future never resolves — drop it (or abort its task) to shut the
     /// checker down. Requires a tokio runtime with the time driver enabled.
     ///
@@ -536,6 +592,29 @@ impl HealthChecker {
 impl Default for HealthChecker {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+/// Represents the running tasks behind a spawned health checker
+/// ([`HealthChecker::spawn`] / [`HealthChecker::spawn_with_handler`]);
+/// dropping the guard aborts them, tying the checker's activity to a scope.
+///
+/// The checker itself outlives the guard — respawning later is just another
+/// `spawn` call.
+#[must_use = "dropping the guard aborts the spawned health checker tasks \
+              immediately; bind it, e.g. `let _guard = checker.spawn();`"]
+pub struct HealthCheckerGuard {
+    run: tokio::task::JoinHandle<()>,
+    dispatcher: Option<tokio::task::JoinHandle<()>>,
+}
+
+impl Drop for HealthCheckerGuard {
+    fn drop(&mut self) {
+        self.run.abort();
+
+        if let Some(dispatcher) = &self.dispatcher {
+            dispatcher.abort();
+        }
     }
 }
 
@@ -967,6 +1046,71 @@ mod tests {
             endpoint.endpoint_urls(),
             HashSet::from(["https://custom".to_string()])
         );
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn spawn_drives_rounds_and_the_guard_aborts_on_drop() {
+        let checker = HealthChecker::new();
+        let mut events = checker.events();
+
+        checker.register(
+            probe(ChainApiType::Rest, up_probe(20)),
+            urls(&["https://a"]),
+        );
+
+        let guard = checker.spawn();
+
+        let event =
+            tokio::time::timeout(Duration::from_secs(5), events.recv()).await;
+        assert!(matches!(
+            event,
+            Ok(Ok(HealthCheckerEvent::NewBest(scored))) if scored.url == "https://a"
+        ));
+
+        drop(guard);
+        while events.try_recv().is_ok() {}
+
+        // With the run task aborted nothing performs the due round, however
+        // far the clock advances.
+        tokio::time::advance(Duration::from_millis(
+            INITIAL_CHECK_INTERVAL_MS * 2,
+        ))
+        .await;
+        assert!(events.try_recv().is_err());
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn spawn_with_handler_dispatches_events_until_dropped() {
+        let checker = HealthChecker::new();
+        let (sender, mut received) = tokio::sync::mpsc::unbounded_channel();
+
+        checker.register(
+            probe(ChainApiType::Rest, up_probe(20)),
+            urls(&["https://a"]),
+        );
+
+        let guard = checker.spawn_with_handler(move |event| {
+            let _ = sender.send(event);
+        });
+
+        let event =
+            tokio::time::timeout(Duration::from_secs(5), received.recv())
+                .await
+                .expect("handler feeds the channel")
+                .expect("sender alive");
+        assert!(matches!(
+            event,
+            HealthCheckerEvent::NewBest(scored) if scored.url == "https://a"
+        ));
+
+        // Both tasks die with the guard: no run task performs the due
+        // round, and a manually driven round's events reach no handler.
+        drop(guard);
+        while received.try_recv().is_ok() {}
+
+        next_round(&checker).await;
+
+        assert!(received.try_recv().is_err());
     }
 
     #[tokio::test(start_paused = true)]

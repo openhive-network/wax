@@ -1,3 +1,4 @@
+mod endpoints;
 mod request_helper;
 #[cfg(test)]
 pub(super) mod test_support;
@@ -9,4 +10,5 @@ pub use request_helper::{
     DetailedResponseData, RequestData, RequestOptions, ResponseType,
 };
 
+pub(super) use endpoints::EndpointResolver;
 pub(super) use request_helper::RequestHelper;

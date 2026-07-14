@@ -30,9 +30,10 @@ pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::{
     ApiProbe, CalcScoresFn, ChainApiType, DEFAULT_JSON_RPC_ENDPOINTS,
     DEFAULT_REST_API_ENDPOINTS, EndpointInfo, ErrorReason, HealthChecker,
-    HealthCheckerError, HealthCheckerEvent, HealthCheckerOptions, HiveEndpoint,
-    HiveEndpointData, ProbeState, RequestError, ScoredEndpoint, ScoredState,
-    ValidatorFailedError, default_calc_scores,
+    HealthCheckerError, HealthCheckerEvent, HealthCheckerGuard,
+    HealthCheckerOptions, HiveEndpoint, HiveEndpointData, ProbeState,
+    RequestError, ScoredEndpoint, ScoredState, ValidatorFailedError,
+    default_calc_scores,
 };
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;

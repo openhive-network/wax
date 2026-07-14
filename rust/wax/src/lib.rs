@@ -34,13 +34,13 @@ pub use chain::{
     AuthorityTraceSignatureInfo, CalcScoresFn, ChainApiType,
     DEFAULT_JSON_RPC_ENDPOINTS, DEFAULT_REST_API_ENDPOINTS, DefaultHiveApi,
     DetailedResponseData, EndpointInfo, ErrorReason, HealthChecker,
-    HealthCheckerError, HealthCheckerEvent, HealthCheckerOptions, HiveApi,
-    HiveChain, HiveChainExt, HiveEndpoint, HiveEndpointData, HiveRestApi,
-    JsonRpcCallDescriptor, JsonRpcCaller, OnlineTransaction, ProbeState,
-    ProcessedEntry, RequestData, RequestError, RequestOptions, ResponseType,
-    RestCallDescriptor, RestCaller, ScoredEndpoint, ScoredState,
-    ValidatorFailedError, WaxChainError, WaxChainOptions, api,
-    create_hive_chain, default_calc_scores,
+    HealthCheckerError, HealthCheckerEvent, HealthCheckerGuard,
+    HealthCheckerOptions, HiveApi, HiveChain, HiveChainExt, HiveEndpoint,
+    HiveEndpointData, HiveRestApi, JsonRpcCallDescriptor, JsonRpcCaller,
+    OnlineTransaction, ProbeState, ProcessedEntry, RequestData, RequestError,
+    RequestOptions, ResponseType, RestCallDescriptor, RestCaller,
+    ScoredEndpoint, ScoredState, ValidatorFailedError, WaxChainError,
+    WaxChainOptions, api, create_hive_chain, default_calc_scores,
 };
 
 /// Generates a typed Hive API surface from idiomatic declarations, for use
@@ -56,6 +56,19 @@ pub use chain::{
 /// `"<namespace>.<name>"`; the namespace is the snake_cased trait name,
 /// overridable with `#[hive_api(namespace = "...")]`. `P` must implement
 /// `serde::Serialize` and `R` `serde::de::DeserializeOwned`.
+///
+/// TS NOTE: the type-level `responseArray` knob of `TWaxApiRequest` is not
+/// ported — it only lifts the declared element type into `ResultType[]` for
+/// endpoints returning bare JSON arrays, working around the TS descriptor
+/// indirection. Rust declares such a method naturally:
+/// `async fn m(params: P) -> Vec<Item>;`.
+///
+/// Every generated struct carries a `set_endpoint_url(Option<String>)`
+/// method routing that namespace's calls to an explicit endpoint — the TS
+/// `api.<namespace>.endpointUrl = url` surface; a root-level override
+/// covering a whole transport is
+/// [`JsonRpcCaller::set_endpoint_url_for_path`] /
+/// [`RestCaller::set_endpoint_url_for_path`] with an empty path.
 ///
 /// Every method additionally emits its call descriptor
 /// ([`JsonRpcCallDescriptor`] / [`RestCallDescriptor`]) as the

@@ -1,7 +1,7 @@
 mod request;
 
+use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -9,8 +9,8 @@ use serde_json::Value;
 
 use crate::chain::error::WaxChainError;
 use crate::chain::util::{
-    DetailedResponseData, RequestData, RequestHelper, RequestOptions,
-    ResponseType,
+    DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
+    RequestOptions, ResponseType,
 };
 
 use self::request::{JsonRpcRequest, JsonRpcResponse, unwrap_envelope};
@@ -35,18 +35,20 @@ impl JsonRpcCaller {
         Self { client }
     }
 
-    /// Calls the JSON-RPC method `"<namespace>.<method>"` with `params`,
-    /// returning the decoded `result`.
+    /// Calls the JSON-RPC method described by `descriptor` with `params`
+    /// against the endpoint resolved from the descriptor's namespace path
+    /// (per-namespace override, else the chain-wide endpoint), returning
+    /// the decoded `result`.
     pub async fn call<P, R>(
         &self,
-        method: &str,
+        descriptor: &JsonRpcCallDescriptor,
         params: P,
     ) -> Result<R, WaxChainError>
     where
         P: Serialize,
         R: DeserializeOwned,
     {
-        self.client.call(method, params).await
+        self.client.call(descriptor, params).await
     }
 
     /// Calls the JSON-RPC method against an explicit `endpoint` (ignoring
@@ -70,6 +72,22 @@ impl JsonRpcCaller {
         R: DeserializeOwned,
     {
         self.client.call_at(endpoint, method, params).await
+    }
+
+    /// Sets (or clears with `None`) the endpoint override for the given
+    /// namespace path; an empty path overrides every call of this
+    /// transport.
+    ///
+    /// TS NOTE: `setEndpointUrlForPath`. Clearing diverges: TS pins the
+    /// *current* `defaultEndpointUrl` into the path, so a later default
+    /// change no longer reaches it; the Rust port removes the override, so
+    /// the path follows the live default again.
+    pub fn set_endpoint_url_for_path(
+        &self,
+        path: &[&str],
+        url: Option<String>,
+    ) {
+        self.client.set_endpoint_url_for_path(path, url);
     }
 }
 
@@ -97,7 +115,9 @@ pub struct JsonRpcCallDescriptor {
 /// envelopes.
 pub(crate) struct JsonRpcClient {
     helper: RequestHelper,
-    endpoint: Mutex<String>,
+    /// Default endpoint plus the per-namespace overrides (see
+    /// [`EndpointResolver`]).
+    endpoints: EndpointResolver,
     /// Request timeout in milliseconds; `0` disables it.
     timeout_ms: u64,
     /// `X-Wax-Api-Caller` header value attached to every request.
@@ -113,7 +133,7 @@ impl JsonRpcClient {
     ) -> Self {
         Self {
             helper: RequestHelper::new(),
-            endpoint: Mutex::new(endpoint),
+            endpoints: EndpointResolver::new(endpoint),
             timeout_ms,
             wax_api_caller,
             next_id: AtomicU64::new(1),
@@ -121,30 +141,42 @@ impl JsonRpcClient {
     }
 
     pub(crate) fn endpoint(&self) -> String {
-        self.endpoint
-            .lock()
-            .expect("endpoint mutex poisoned")
-            .clone()
+        self.endpoints.default_url()
     }
 
     pub(crate) fn set_endpoint(&self, url: String) {
-        *self.endpoint.lock().expect("endpoint mutex poisoned") = url;
+        self.endpoints.set_default_url(url);
     }
 
-    /// Issues a single JSON-RPC call. Returns the decoded `result` payload, or
-    /// a [`WaxChainError`] when the transport fails, the response can't be
+    /// Sets (or clears with `None`) the endpoint override for the given
+    /// namespace path; an empty path overrides every call of this client.
+    /// See [`EndpointResolver::set_url_for_path`] for the TS divergence on
+    /// clearing.
+    pub(crate) fn set_endpoint_url_for_path(
+        &self,
+        path: &[&str],
+        url: Option<String>,
+    ) {
+        self.endpoints.set_url_for_path(path, url);
+    }
+
+    /// Issues a single JSON-RPC call against the endpoint resolved from the
+    /// descriptor's namespace path (per-namespace override, else the
+    /// client-wide endpoint). Returns the decoded `result` payload, or a
+    /// [`WaxChainError`] when the transport fails, the response can't be
     /// decoded, or the node reports an error envelope.
     pub(crate) async fn call<P, R>(
         &self,
-        method: &str,
+        descriptor: &JsonRpcCallDescriptor,
         params: P,
     ) -> Result<R, WaxChainError>
     where
         P: Serialize,
         R: DeserializeOwned,
     {
-        let endpoint = self.endpoint();
-        let (result, _) = self.call_at(&endpoint, method, params).await?;
+        let endpoint = self.endpoints.resolve(descriptor.namespace_path);
+        let (result, _) =
+            self.call_at(&endpoint, descriptor.method, params).await?;
 
         Ok(result)
     }
@@ -197,6 +229,11 @@ mod tests {
         JsonRpcClient::new(endpoint.to_string(), 5_000, None)
     }
 
+    const PING: JsonRpcCallDescriptor = JsonRpcCallDescriptor {
+        method: "test_api.ping",
+        namespace_path: &["test_api", "ping"],
+    };
+
     // TS NOTE: the standard-API case of
     // `ts/wasm/__tests__/detailed/wax_api_caller_header.ts` — the chain-level
     // tag must reach regular JSON-RPC calls, like it reaches REST calls.
@@ -211,13 +248,35 @@ mod tests {
             0,
             Some("test-wax-client-v1.0".into()),
         );
-        let _: Value = rpc.call("test_api.ping", ()).await.unwrap();
+        let _: Value = rpc.call(&PING, ()).await.unwrap();
 
         let raw = captured.recv().unwrap();
 
         assert_eq!(
             header_value(&raw, "x-wax-api-caller").as_deref(),
             Some("test-wax-client-v1.0")
+        );
+    }
+
+    // End-to-end: an overridden namespace routes to its own server, like on
+    // the REST side. The client-wide default is unroutable, so a routing
+    // mistake fails loudly.
+    #[tokio::test]
+    async fn routes_call_to_overridden_endpoint() {
+        let (endpoint, captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":1,"result":{"pong":1}}"#,
+        );
+
+        let rpc = client("http://127.0.0.1:1");
+        rpc.set_endpoint_url_for_path(&["test_api"], Some(endpoint));
+
+        let _: Value = rpc.call(&PING, ()).await.unwrap();
+
+        assert!(
+            captured
+                .recv()
+                .unwrap()
+                .contains(r#""method":"test_api.ping""#)
         );
     }
 

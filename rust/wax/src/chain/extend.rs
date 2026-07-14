@@ -271,6 +271,47 @@ mod tests {
         assert_eq!(checker.best(), Some(endpoint));
     }
 
+    // TS NOTE: mirrors `api.hafah_api.endpointUrl = url` — the generated
+    // per-namespace setter must route this namespace's calls on both
+    // transports. The chain defaults are unroutable, so the calls only
+    // succeed through the override.
+    #[tokio::test]
+    async fn generated_set_endpoint_url_overrides_namespace_endpoint() {
+        let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+            rest_api_endpoint: "http://127.0.0.1:1".into(),
+            ..Default::default()
+        })
+        .unwrap();
+
+        let rest = chain.extend_rest::<HafahApi>();
+        rest.set_endpoint_url(Some(endpoint));
+        rest.make_item(json!({ "id": 1 })).await.unwrap();
+
+        assert!(captured.recv().unwrap().starts_with("POST /items/1"));
+
+        // The JSON-RPC side carries the same surface.
+        let (endpoint, captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":1,"result":{"pong":5}}"#,
+        );
+
+        let api = TestApi::bind(caller("http://127.0.0.1:1".into()));
+        api.set_endpoint_url(Some(endpoint));
+        api.ping(PingRequest { token: 5 }).await.unwrap();
+
+        assert!(
+            captured
+                .recv()
+                .unwrap()
+                .contains(r#""method":"test_api.ping""#)
+        );
+
+        // Clearing the override falls back to the (unroutable) default.
+        api.set_endpoint_url(None);
+        assert!(api.ping(PingRequest { token: 5 }).await.is_err());
+    }
+
     #[tokio::test]
     async fn rest_method_posts_remaining_params_as_body() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
