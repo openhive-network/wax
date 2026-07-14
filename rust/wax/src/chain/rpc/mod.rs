@@ -73,6 +73,23 @@ impl JsonRpcCaller {
     }
 }
 
+/// Represents one JSON-RPC method as emitted by
+/// [`#[hive_api]`](crate::hive_api): the wire method name and the logical
+/// path of the method within the API surface.
+///
+/// TS NOTE: the JSON-RPC counterpart of [`crate::RestCallDescriptor`] — the
+/// static analog of the path the TS proxy assembles at property-access time
+/// (`paths` and the `"<ns>.<method>"` string built from them).
+#[derive(Debug, Clone, Copy)]
+pub struct JsonRpcCallDescriptor {
+    /// Wire method name, e.g. `"block_api.get_block"`.
+    pub method: &'static str,
+    /// Logical path of the method within the API surface, e.g.
+    /// `["block_api", "get_block"]`; feeds health-check endpoint
+    /// registration (TS `paths`).
+    pub namespace_path: &'static [&'static str],
+}
+
 /// Provides JSON-RPC transport to a Hive node.
 ///
 /// Holds a [`RequestHelper`] (one pooled `reqwest::Client`) and a mutable

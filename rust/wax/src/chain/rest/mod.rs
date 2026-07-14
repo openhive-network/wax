@@ -131,6 +131,7 @@ struct EndpointOverride {
 /// [`#[hive_api(rest)]`](crate::hive_api) — the static analog of the call
 /// the TS proxy assembles at property-access time (`paths`, `lastMethod` and
 /// `config.urlPath`).
+#[derive(Debug, Clone, Copy)]
 pub struct RestCallDescriptor {
     /// HTTP verb of the method.
     ///

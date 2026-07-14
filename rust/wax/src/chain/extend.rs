@@ -224,6 +224,53 @@ mod tests {
         ));
     }
 
+    // The health-checker sugar: the generated descriptor consts must carry
+    // the wire identity, and a generated `<name>_probe` bundle must drive a
+    // real check round end to end.
+    #[tokio::test]
+    async fn generated_probe_registers_with_the_health_checker() {
+        assert_eq!(TestApi::PING.method, "test_api.ping");
+        assert_eq!(TestApi::PING.namespace_path, ["test_api", "ping"]);
+        assert_eq!(HafahApi::GET_TRANSACTION.method, "GET");
+        assert_eq!(
+            HafahApi::GET_TRANSACTION.namespace_path,
+            ["hafah_api", "get_transaction"]
+        );
+
+        let (endpoint, captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":1,"result":{"pong":9}}"#,
+        );
+
+        let api = TestApi::bind(caller("http://127.0.0.1:1".into()));
+        let checker = crate::HealthChecker::new();
+        let handle = checker.register_with_validator(
+            api.ping_probe(PingRequest { token: 9 }),
+            |response: &PingResponse| {
+                if response.pong == 9 {
+                    Ok(())
+                } else {
+                    Err("wrong pong".into())
+                }
+            },
+            vec![endpoint.clone()],
+        );
+
+        assert_eq!(handle.api_caller_id(), crate::ChainApiType::JsonRpc);
+        assert_eq!(handle.paths(), ["test_api", "ping"]);
+
+        checker.perform_checks().await;
+
+        // The probe must hit the checked URL (not the caller's endpoint)
+        // and a passing validator must score it up.
+        assert!(
+            captured
+                .recv()
+                .unwrap()
+                .contains(r#""method":"test_api.ping""#)
+        );
+        assert_eq!(checker.best(), Some(endpoint));
+    }
+
     #[tokio::test]
     async fn rest_method_posts_remaining_params_as_body() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);

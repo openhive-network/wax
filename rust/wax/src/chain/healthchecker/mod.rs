@@ -12,6 +12,7 @@ mod errors;
 mod events;
 mod math;
 mod options;
+mod probe;
 mod scored_endpoint;
 
 pub use checker::HealthChecker;
@@ -26,4 +27,5 @@ pub use options::{
     CalcScoresFn, DEFAULT_JSON_RPC_ENDPOINTS, DEFAULT_REST_API_ENDPOINTS,
     HealthCheckerOptions,
 };
+pub use probe::ApiProbe;
 pub use scored_endpoint::{ScoredEndpoint, ScoredState};

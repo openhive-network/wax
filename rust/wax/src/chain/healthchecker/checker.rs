@@ -7,7 +7,6 @@
 //! becomes the user-spawned [`HealthChecker::run`] future.
 
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::future::Future;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
@@ -15,9 +14,6 @@ use std::time::Duration;
 use futures_util::future::join_all;
 use tokio::sync::broadcast;
 use tokio::time::{Instant, MissedTickBehavior};
-
-use crate::chain::error::WaxChainError;
-use crate::chain::util::DetailedResponseData;
 
 use super::endpoint::{
     CheckOutcome, EndpointCore, HiveEndpoint, HiveEndpointData, ProbeFn,
@@ -29,6 +25,7 @@ use super::options::{
     CalcScoresFn, DEFAULT_JSON_RPC_ENDPOINTS, DEFAULT_REST_API_ENDPOINTS,
     HealthCheckerOptions,
 };
+use super::probe::ApiProbe;
 use super::scored_endpoint::ScoredEndpoint;
 
 /// Used as the tick period of [`HealthChecker::run`].
@@ -107,11 +104,12 @@ impl HealthChecker {
         self.inner.events.subscribe()
     }
 
-    /// Registers an endpoint group to the periodic health checks and returns
-    /// its handle. `probe` calls the API method to check against the given
-    /// node URL — build it over [`crate::JsonRpcCaller::call_at`] or
-    /// [`crate::RestCaller::call_at`] — and `test_on_endpoints` lists the
-    /// URLs to check (empty falls back to
+    /// Registers a health check and returns its endpoint-group handle.
+    /// `probe` bundles the transport, the API paths and the call — take it
+    /// from a `<method>_probe` constructor emitted by
+    /// [`#[hive_api]`](crate::hive_api), or build one with
+    /// [`ApiProbe::new`] / [`ApiProbe::json_rpc`] / [`ApiProbe::rest`].
+    /// `test_on_endpoints` lists the node URLs to check (empty falls back to
     /// [`HealthCheckerOptions::default_endpoints`], then to the per-transport
     /// defaults).
     ///
@@ -119,34 +117,21 @@ impl HealthChecker {
     /// by the [`run`](Self::run) future.
     ///
     /// TS NOTE: `register(endpointToCheck, toSend, validator?,
-    /// testOnEndpoints?)`. TS reflects `apiCallerId` and `paths` off the
-    /// proxied API method and closes over `toSend`; the Rust probe closes
-    /// over its own params, so transport and paths are passed explicitly
-    /// (`#[hive_api]`-derived call descriptors can later supply them).
-    pub fn register<P, F, R>(
+    /// testOnEndpoints?)`. TS reflects the transport and paths off the
+    /// proxied API method and closes over `toSend`; [`ApiProbe`] carries the
+    /// same three things explicitly.
+    pub fn register<R>(
         &self,
-        api_caller_id: ChainApiType,
-        paths: Vec<String>,
+        probe: ApiProbe<R>,
         test_on_endpoints: Vec<String>,
-        probe: P,
     ) -> HiveEndpoint
     where
-        P: Fn(String) -> F + Send + Sync + 'static,
-        F: Future<Output = Result<(R, DetailedResponseData), WaxChainError>>
-            + Send
-            + 'static,
         R: Send + 'static,
     {
-        self.register_with_validator(
-            api_caller_id,
-            paths,
-            test_on_endpoints,
-            probe,
-            |_: &R| Ok(()),
-        )
+        self.register_with_validator(probe, |_: &R| Ok(()), test_on_endpoints)
     }
 
-    /// Registers an endpoint group like [`register`](Self::register), with a
+    /// Registers a health check like [`register`](Self::register), with a
     /// validator inspecting each decoded probe response. A rejection —
     /// `Err(reason)` — marks the URL down with
     /// [`super::ErrorReason::ValidationError`] and emits
@@ -154,22 +139,22 @@ impl HealthChecker {
     ///
     /// TS NOTE: the `validator` parameter of `register`; `true | string`
     /// becomes `Result<(), String>`.
-    pub fn register_with_validator<P, F, R, V>(
+    pub fn register_with_validator<R, V>(
         &self,
-        api_caller_id: ChainApiType,
-        paths: Vec<String>,
-        test_on_endpoints: Vec<String>,
-        probe: P,
+        probe: ApiProbe<R>,
         validator: V,
+        test_on_endpoints: Vec<String>,
     ) -> HiveEndpoint
     where
-        P: Fn(String) -> F + Send + Sync + 'static,
-        F: Future<Output = Result<(R, DetailedResponseData), WaxChainError>>
-            + Send
-            + 'static,
         R: Send + 'static,
         V: Fn(&R) -> Result<(), String> + Send + Sync + 'static,
     {
+        let ApiProbe {
+            api_caller_id,
+            paths,
+            probe,
+        } = probe;
+
         let validator = Arc::new(validator);
         let caller: ProbeFn = Box::new(move |url| {
             let future = probe(url);
@@ -318,8 +303,9 @@ impl HealthChecker {
     /// concurrently, applies the outcomes, refreshes the scoreboard and
     /// schedules the next round.
     ///
-    /// TS NOTE: `performChecks`.
-    async fn perform_checks(&self) {
+    /// TS NOTE: `performChecks`. Crate-visible so in-crate tests can drive
+    /// rounds without spawning [`Self::run`].
+    pub(crate) async fn perform_checks(&self) {
         let due = {
             let mut next_check = self.inner.next_check();
 
@@ -630,6 +616,9 @@ mod tests {
     use std::sync::atomic::AtomicBool;
     use std::time::Instant as StdInstant;
 
+    use crate::chain::error::WaxChainError;
+    use crate::chain::util::DetailedResponseData;
+
     use super::super::endpoint::ErrorReason;
     use super::super::options::INITIAL_CHECK_INTERVAL_MS;
     use super::super::scored_endpoint::ScoredState;
@@ -677,6 +666,14 @@ mod tests {
         vec!["block_api".into(), "get_block".into()]
     }
 
+    /// Bundles a fake probe closure for `register`.
+    fn probe<F>(api_caller_id: ChainApiType, probe: F) -> ApiProbe<()>
+    where
+        F: Fn(String) -> Ready<ProbeResult> + Send + Sync + 'static,
+    {
+        ApiProbe::new(api_caller_id, paths(), probe)
+    }
+
     fn urls(list: &[&str]) -> Vec<String> {
         list.iter().map(ToString::to_string).collect()
     }
@@ -696,10 +693,8 @@ mod tests {
         let mut events = checker.events();
 
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(50)),
             urls(&["https://a"]),
-            up_probe(50),
         );
         checker.perform_checks().await;
 
@@ -727,10 +722,8 @@ mod tests {
         let checker = HealthChecker::new();
 
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(50)),
             urls(&["https://a"]),
-            up_probe(50),
         );
         checker.perform_checks().await;
 
@@ -749,10 +742,8 @@ mod tests {
     async fn unregister_clears_stats_and_stops_scheduling() {
         let checker = HealthChecker::new();
         let endpoint = checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(50)),
             urls(&["https://a"]),
-            up_probe(50),
         );
         checker.perform_checks().await;
 
@@ -767,10 +758,8 @@ mod tests {
         // The dropped group's stats are gone: a fresh round only sees the
         // new registration.
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(50)),
             urls(&["https://b"]),
-            up_probe(50),
         );
         checker.perform_checks().await;
 
@@ -786,10 +775,9 @@ mod tests {
         let mut events = checker.events();
 
         let endpoint = checker.register_with_validator(
-            ChainApiType::JsonRpc,
-            paths(),
-            urls(&["https://a"]),
-            |_url: String| ready(Ok((7u32, response_with_latency(10)))),
+            ApiProbe::new(ChainApiType::JsonRpc, paths(), |_url: String| {
+                ready(Ok((7u32, response_with_latency(10))))
+            }),
             |head_block: &u32| {
                 if *head_block == 7 {
                     Err("head block too old".to_string())
@@ -797,6 +785,7 @@ mod tests {
                     Ok(())
                 }
             },
+            urls(&["https://a"]),
         );
         checker.perform_checks().await;
 
@@ -827,10 +816,8 @@ mod tests {
         let healthy = Arc::new(AtomicBool::new(true));
 
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, flip_probe(healthy.clone(), 40)),
             urls(&["https://a", "https://b"]),
-            flip_probe(healthy.clone(), 40),
         );
         checker.subscribe("https://b");
         checker.perform_checks().await;
@@ -863,10 +850,8 @@ mod tests {
 
         // Limit = max URL count (2) × group count (1).
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(30)),
             urls(&["https://a", "https://b"]),
-            up_probe(30),
         );
 
         checker.perform_checks().await;
@@ -890,10 +875,7 @@ mod tests {
 
         let flag = a_healthy.clone();
         checker.register(
-            ChainApiType::Rest,
-            paths(),
-            urls(&["https://a", "https://b"]),
-            move |url: String| {
+            probe(ChainApiType::Rest, move |url: String| {
                 if url == "https://b" {
                     ready(Ok(((), response_with_latency(500))))
                 } else if flag.load(Ordering::Relaxed) {
@@ -904,7 +886,8 @@ mod tests {
                         message: "node down".into(),
                     }))
                 }
-            },
+            }),
+            urls(&["https://a", "https://b"]),
         );
 
         let mut events = checker.events();
@@ -931,16 +914,12 @@ mod tests {
     fn adds_and_removes_urls_by_transport_type() {
         let checker = HealthChecker::new();
         let rpc = checker.register(
-            ChainApiType::JsonRpc,
-            paths(),
+            probe(ChainApiType::JsonRpc, up_probe(10)),
             urls(&["https://rpc"]),
-            up_probe(10),
         );
         let rest = checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(10)),
             urls(&["https://rest"]),
-            up_probe(10),
         );
 
         checker.add_endpoint_url("https://extra", ChainApiType::Rest);
@@ -964,23 +943,15 @@ mod tests {
     fn falls_back_to_default_endpoints_per_transport() {
         let checker = HealthChecker::new();
 
-        let rpc = checker.register(
-            ChainApiType::JsonRpc,
-            paths(),
-            Vec::new(),
-            up_probe(10),
-        );
+        let rpc = checker
+            .register(probe(ChainApiType::JsonRpc, up_probe(10)), Vec::new());
         assert_eq!(
             rpc.endpoint_urls(),
             HashSet::from(["https://api.hive.blog".to_string()])
         );
 
-        let rest = checker.register(
-            ChainApiType::Rest,
-            paths(),
-            Vec::new(),
-            up_probe(10),
-        );
+        let rest = checker
+            .register(probe(ChainApiType::Rest, up_probe(10)), Vec::new());
         assert_eq!(
             rest.endpoint_urls(),
             HashSet::from(["https://api.syncad.com".to_string()])
@@ -990,12 +961,8 @@ mod tests {
             default_endpoints: Some(urls(&["https://custom"])),
             ..Default::default()
         });
-        let endpoint = custom.register(
-            ChainApiType::JsonRpc,
-            paths(),
-            Vec::new(),
-            up_probe(10),
-        );
+        let endpoint = custom
+            .register(probe(ChainApiType::JsonRpc, up_probe(10)), Vec::new());
         assert_eq!(
             endpoint.endpoint_urls(),
             HashSet::from(["https://custom".to_string()])
@@ -1008,10 +975,8 @@ mod tests {
         let mut events = checker.events();
 
         checker.register(
-            ChainApiType::Rest,
-            paths(),
+            probe(ChainApiType::Rest, up_probe(20)),
             urls(&["https://a"]),
-            up_probe(20),
         );
 
         let runner = {

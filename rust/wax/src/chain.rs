@@ -28,7 +28,7 @@ pub use authority_trace::{
 pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::{
-    CalcScoresFn, ChainApiType, DEFAULT_JSON_RPC_ENDPOINTS,
+    ApiProbe, CalcScoresFn, ChainApiType, DEFAULT_JSON_RPC_ENDPOINTS,
     DEFAULT_REST_API_ENDPOINTS, EndpointInfo, ErrorReason, HealthChecker,
     HealthCheckerError, HealthCheckerEvent, HealthCheckerOptions, HiveEndpoint,
     HiveEndpointData, ProbeState, RequestError, ScoredEndpoint, ScoredState,
@@ -38,7 +38,7 @@ pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
 pub use options::WaxChainOptions;
 pub use rest::{RestCallDescriptor, RestCaller};
-pub use rpc::JsonRpcCaller;
+pub use rpc::{JsonRpcCallDescriptor, JsonRpcCaller};
 pub use util::{
     DetailedResponseData, RequestData, RequestOptions, ResponseType,
 };
