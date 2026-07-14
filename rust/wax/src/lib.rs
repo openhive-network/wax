@@ -30,13 +30,15 @@ pub use base::{
 };
 pub use chain::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
-    AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ChainApiType,
+    AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, CalcScoresFn,
+    ChainApiType, DEFAULT_JSON_RPC_ENDPOINTS, DEFAULT_REST_API_ENDPOINTS,
     DefaultHiveApi, DetailedResponseData, EndpointInfo, ErrorReason,
-    HealthCheckerError, HiveApi, HiveChain, HiveChainExt, HiveEndpoint,
-    HiveEndpointData, HiveRestApi, JsonRpcCaller, NewUpDownEvent,
-    OnlineTransaction, ProbeState, ProcessedEntry, RequestData, RequestError,
-    RequestOptions, ResponseType, RestCallDescriptor, RestCaller,
-    ScoredEndpoint, ScoredState, WaxChainError, WaxChainOptions, api,
+    HealthChecker, HealthCheckerError, HealthCheckerEvent,
+    HealthCheckerOptions, HiveApi, HiveChain, HiveChainExt, HiveEndpoint,
+    HiveEndpointData, HiveRestApi, JsonRpcCaller, OnlineTransaction,
+    ProbeState, ProcessedEntry, RequestData, RequestError, RequestOptions,
+    ResponseType, RestCallDescriptor, RestCaller, ScoredEndpoint, ScoredState,
+    ValidatorFailedError, WaxChainError, WaxChainOptions, api,
     create_hive_chain, default_calc_scores,
 };
 

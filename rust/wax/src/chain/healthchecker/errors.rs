@@ -3,9 +3,9 @@
 //! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/errors.ts`. The TS
 //! class hierarchy (`WaxError` ← `WaxHealthCheckerError` /
 //! `WaxHealthCheckerValidatorFailedError`, and `WaxError` ← `WaxRequestError` ←
-//! the concrete request errors) is expressed here as two `thiserror` enums. The
-//! request-error subclasses differ only by message, so they become variants of
-//! [`RequestError`].
+//! the concrete request errors) is expressed here as two `thiserror` structs
+//! and one enum. The request-error subclasses differ only by message, so they
+//! become variants of [`RequestError`].
 //!
 //! TS NOTE: the `request` / `response` fields carry the ported
 //! [`RequestOptions`] / [`DetailedResponseData`] payloads (from
@@ -20,48 +20,57 @@ use thiserror::Error;
 use crate::chain::error::WaxChainError;
 use crate::chain::util::{DetailedResponseData, RequestOptions};
 
-/// Represents a failure raised by the health checker itself.
+/// Represents a probe failure wrapped by the health checker, emitted through
+/// [`super::HealthCheckerEvent::Error`].
+///
+/// TS NOTE: `WaxHealthCheckerError`.
 #[derive(Debug, Error)]
-pub enum HealthCheckerError {
-    /// TS NOTE: `WaxHealthCheckerError`.
-    #[error("Health checker error: {source}")]
-    Check {
-        #[source]
-        source: Box<dyn Error + Send + Sync>,
-        endpoint: EndpointInfo,
-        api_url: Option<String>,
-    },
+#[error("Health checker error: {source}")]
+pub struct HealthCheckerError {
+    #[source]
+    pub source: Box<dyn Error + Send + Sync>,
+    pub endpoint: EndpointInfo,
+    pub api_url: Option<String>,
+}
 
-    /// TS NOTE: `WaxHealthCheckerValidatorFailedError`.
-    #[error(
-        "Validator did not pass on api: \"{} {}{}\": \"{failed_reason}\"",
-        .request.method, .request.endpoint, .request.url
-    )]
-    ValidatorFailed {
-        failed_reason: String,
-        endpoint: EndpointInfo,
-        request: RequestOptions,
-        response: DetailedResponseData,
-    },
+/// Represents a user validator rejecting an otherwise successful probe
+/// response, emitted through
+/// [`super::HealthCheckerEvent::ValidationError`].
+///
+/// TS NOTE: `WaxHealthCheckerValidatorFailedError`. The TS message
+/// interpolates the request options captured by its request interceptor; the
+/// Rust transport builds those internally and only the response data leaves
+/// [`crate::JsonRpcCaller::call_at`] / [`crate::RestCaller::call_at`], so
+/// this error carries the probed node URL instead.
+#[derive(Debug, Error)]
+#[error("Validator did not pass on api: \"{url}\": \"{failed_reason}\"")]
+pub struct ValidatorFailedError {
+    pub failed_reason: String,
+    pub endpoint: EndpointInfo,
+    /// The node URL whose response failed validation.
+    pub url: String,
+    pub response: DetailedResponseData,
 }
 
 /// Represents a failure returned by a registered probe.
 ///
 /// TS NOTE: the errors thrown out of the TS `register` caller closure — a
 /// transport/API failure, or the `WaxHealthCheckerValidatorFailedError`
-/// raised when the user validator rejects a decoded response. The rich
-/// validator error ([`HealthCheckerError::ValidatorFailed`]) is built where
-/// the request context is known; the probe result only carries the reason.
+/// raised when the user validator rejects a decoded response. TS builds the
+/// rich validator error inside that closure; the Rust closure returns the
+/// reason and the raw response instead, and the endpoint builds the
+/// [`ValidatorFailedError`] while recording the failure, where the live
+/// endpoint identity is known.
 #[derive(Debug, Error)]
 pub enum ProbeFailure {
     #[error(transparent)]
     Chain(#[from] WaxChainError),
 
-    // Constructed by the checker's `register` closure, which is not yet
-    // ported (only tests build it so far).
-    #[allow(dead_code)]
-    #[error("Validator did not pass: \"{0}\"")]
-    Validation(String),
+    #[error("Validator did not pass: \"{reason}\"")]
+    Validation {
+        reason: String,
+        response: DetailedResponseData,
+    },
 }
 
 /// Represents a failure while performing an HTTP request to a Hive node.
@@ -105,21 +114,10 @@ pub enum RequestError {
         response: DetailedResponseData,
     },
 
-    /// TS NOTE: `WaxRequestAbortedByUser`. Kept for parity with the TS error
-    /// hierarchy; not produced by the Rust request layer (see
-    /// `util::request_helper`).
-    /// TODO: probably remove this: reqwest doesn't provide an abort error.
-    #[error(
-        "Request aborted by user action (browser stop button, closing tab, \
-         etc.): \"{} {}{}\"",
-        .request.method, .request.endpoint, .request.url
-    )]
-    AbortedByUser {
-        request: RequestOptions,
-        response: DetailedResponseData,
-    },
-
-    /// TS NOTE: `WaxUnknownRequestError`.
+    /// TS NOTE: `WaxUnknownRequestError`. TS also has
+    /// `WaxRequestAbortedByUser` for the browser abort signal
+    /// (`AbortController`); the Rust request layer has no user-abort path
+    /// (`reqwest` reports no such error), so that subclass is not ported.
     #[error(
         "Unknown request error caught (possible network or CORS error): \
          \"{} {}{}\"",

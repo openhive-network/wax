@@ -9,10 +9,6 @@
 //! `any`, the Rust port decodes into a dynamic [`serde_json::Value`] and drops
 //! the generic.
 
-// The request layer is fully ported, but its only consumer (the health-checker
-// probe loop) is not yet in place, so most items are currently unused.
-#![allow(dead_code)]
-
 use std::time::{Duration, Instant};
 
 use reqwest::header::CONTENT_TYPE;

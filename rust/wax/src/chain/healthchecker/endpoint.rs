@@ -1,39 +1,120 @@
-//! A single health-checked endpoint group and its probe state.
+//! A single health-checked endpoint group: the public [`HiveEndpoint`]
+//! handle and its probe internals.
 //!
 //! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/endpoint.ts`. TS
 //! splits the public surface into the `IHiveEndpoint` interface and hides the
-//! probe internals in the `HiveEndpoint` class; since there is only ever one
-//! implementation, Rust collapses both into a single [`HiveEndpoint`] struct
-//! whose `pub` methods are the former interface and whose private fields and
-//! methods are the former class internals.
+//! probe internals in the `HiveEndpoint` class; in Rust the internals live in
+//! [`EndpointCore`] and the public surface is the [`HiveEndpoint`] handle
+//! the checker hands out. TS also holds a `checker` back-reference purely to
+//! emit events while probing; [`EndpointCore::perform_check`] returns them
+//! as a [`CheckOutcome`] instead, so no back-reference exists.
 
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 use futures_util::future::join_all;
 
 use crate::chain::error::WaxChainError;
 use crate::chain::util::DetailedResponseData;
 
+use super::checker::HealthChecker;
 use super::errors::{
     ChainApiType, EndpointInfo, HealthCheckerError, ProbeFailure, RequestError,
+    ValidatorFailedError,
 };
 
-/// Represents a single health-checked endpoint group: a set of node URLs sharing
-/// the same API call paths, together with their probe results.
+/// Represents a registered endpoint group: a cheap-clone handle to inspect
+/// and adjust the node URLs it checks.
 ///
-/// TS NOTE: the `IHiveEndpoint` interface and `HiveEndpoint` class merged.
-/// TS also holds a `checker` back-reference purely to emit events while
-/// probing; [`Self::perform_check`] returns them as a [`CheckOutcome`]
-/// instead, so no back-reference exists.
-#[allow(dead_code)]
+/// TS NOTE: `IHiveEndpoint` — TS hands out the live `HiveEndpoint` class,
+/// whose URL removal reaches the checker through the internal 'clearunused'
+/// event; the Rust handle pairs the shared group core with its checker to do
+/// the same directly.
+#[derive(Clone)]
 pub struct HiveEndpoint {
+    checker: HealthChecker,
+    core: Arc<EndpointCore>,
+}
+
+impl HiveEndpoint {
+    /// Creates the handle pairing a registered group with its checker.
+    pub(super) fn new(checker: HealthChecker, core: Arc<EndpointCore>) -> Self {
+        Self { checker, core }
+    }
+
+    /// Returns the unique identifier of this endpoint group. Can be used
+    /// upon validation-error parsing to properly identify the endpoint
+    /// (see [`EndpointInfo::id`]), and unregisters it
+    /// ([`HealthChecker::unregister`]).
+    pub fn id(&self) -> u32 {
+        self.core.id()
+    }
+
+    /// Returns the API caller this endpoint group belongs to, e.g.
+    /// `json_rpc` or `rest`.
+    pub fn api_caller_id(&self) -> ChainApiType {
+        self.core.api_caller_id()
+    }
+
+    /// Returns the API call paths, e.g. `["block_api", "get_block_header"]`
+    /// or `["hafbe-api", "operation-type-counts"]`.
+    pub fn paths(&self) -> &[String] {
+        self.core.paths()
+    }
+
+    /// Returns a snapshot of the node URLs that will be checked.
+    pub fn endpoint_urls(&self) -> HashSet<String> {
+        self.core.endpoint_urls()
+    }
+
+    /// Lists the endpoint URL statuses: the ones that are up first, ordered
+    /// by ascending latency, followed by the ones that are down.
+    pub fn list(&self) -> Vec<HiveEndpointData> {
+        self.core.list()
+    }
+
+    /// Adds a new node URL to the set of URLs to check.
+    pub fn add_endpoint_url(&self, endpoint_url: impl Into<String>) {
+        self.core.add_endpoint_url(endpoint_url.into());
+
+        // TS NOTE: TS leaves the cached-scored-list limit stale until the
+        // next register/unregister; Rust keeps the invariant on every URL
+        // set change.
+        self.checker.recalculate_stats_limit();
+    }
+
+    /// Removes a node URL from the set of URLs to check, dropping its stats
+    /// unless another endpoint group still checks it. Returns `true` if the
+    /// URL was present, `false` otherwise.
+    pub fn remove_endpoint_url(&self, endpoint_url: &str) -> bool {
+        let removed = self.core.remove_endpoint_url(endpoint_url);
+
+        self.checker.clear_unused_endpoint_urls_from_stats();
+
+        removed
+    }
+}
+
+/// Represents a single health-checked endpoint group: a set of node URLs
+/// sharing the same API call paths, together with their probe results.
+///
+/// The identity fields are immutable; everything the probes and the user can
+/// mutate lives in [`EndpointState`] behind a lock that is only held for
+/// bookkeeping, never across a probe.
+pub(crate) struct EndpointCore {
     id: u32,
     api_caller_id: ChainApiType,
     paths: Vec<String>,
-    endpoint_urls: HashSet<String>,
     caller: ProbeFn,
+    state: Mutex<EndpointState>,
+}
+
+/// Represents the mutable half of an endpoint group: the node URLs to check
+/// and the latest probe result per URL.
+struct EndpointState {
+    endpoint_urls: HashSet<String>,
     /// Latest latency (in milliseconds) per node URL currently up.
     up: HashMap<String, u64>,
     /// Latest failure reason per node URL currently down.
@@ -44,8 +125,8 @@ pub struct HiveEndpoint {
 /// node URL, returning the raw response data (with its timings) on success.
 ///
 /// TS NOTE: the `(apiUrl: string) => Promise<IDetailedResponseData<any>>`
-/// closure TS `register` builds around `withProxy`; the Rust checker will
-/// build it around `call_at`, erasing the user validator into it.
+/// closure TS `register` builds around `withProxy`; the Rust checker builds
+/// it around `call_at`, erasing the user validator into it.
 pub(crate) type ProbeFn = Box<dyn Fn(String) -> ProbeFuture + Send + Sync>;
 
 /// Represents the boxed future a probe call resolves to.
@@ -53,8 +134,7 @@ pub(crate) type ProbeFuture = Pin<
     Box<dyn Future<Output = Result<DetailedResponseData, ProbeFailure>> + Send>,
 >;
 
-#[allow(dead_code)]
-impl HiveEndpoint {
+impl EndpointCore {
     /// Creates an endpoint group probing `endpoint_urls` through `caller`.
     pub(crate) fn new(
         id: u32,
@@ -67,56 +147,55 @@ impl HiveEndpoint {
             id,
             api_caller_id,
             paths,
-            endpoint_urls,
             caller,
-            up: HashMap::new(),
-            down: HashMap::new(),
+            state: Mutex::new(EndpointState {
+                endpoint_urls,
+                up: HashMap::new(),
+                down: HashMap::new(),
+            }),
         }
     }
 
-    /// Returns the API call paths, e.g. `["block_api", "get_block_header"]` or
-    /// `["hafbe-api", "operation-type-counts"]`.
-    pub fn paths(&self) -> &[String] {
+    /// Returns the API call paths, e.g. `["block_api", "get_block_header"]`
+    /// or `["hafbe-api", "operation-type-counts"]`.
+    pub(crate) fn paths(&self) -> &[String] {
         &self.paths
     }
 
     /// Returns the API caller this endpoint group belongs to, e.g. `json_rpc`
     /// or `rest`.
-    pub fn api_caller_id(&self) -> ChainApiType {
+    pub(crate) fn api_caller_id(&self) -> ChainApiType {
         self.api_caller_id
     }
 
-    /// Returns the node URLs that will be checked.
-    pub fn endpoint_urls(&self) -> &HashSet<String> {
-        &self.endpoint_urls
+    /// Returns a snapshot of the node URLs that will be checked.
+    pub(crate) fn endpoint_urls(&self) -> HashSet<String> {
+        self.state().endpoint_urls.clone()
     }
 
     /// Returns the unique identifier of this endpoint group. Can be used upon
     /// validation-error parsing to properly identify the endpoint.
-    pub fn id(&self) -> u32 {
+    pub(crate) fn id(&self) -> u32 {
         self.id
     }
 
     /// Adds a new node URL to the set of URLs to check.
-    pub fn add_endpoint_url(&mut self, endpoint_url: String) {
-        self.endpoint_urls.insert(endpoint_url);
+    pub(crate) fn add_endpoint_url(&self, endpoint_url: String) {
+        self.state().endpoint_urls.insert(endpoint_url);
     }
 
-    /// Removes a node URL from the set of URLs to check. Returns `true` if the
-    /// URL was present, `false` otherwise.
-    pub fn remove_endpoint_url(&mut self, endpoint_url: &str) -> bool {
-        let deleted = self.endpoint_urls.remove(endpoint_url);
-
-        // TS NOTE: TS also emits a `clearunused` event through the HealthChecker
-        // (not yet ported) to drop the stats of the removed URL.
-
-        deleted
+    /// Removes a node URL from the set of URLs to check. Returns `true` if
+    /// the URL was present, `false` otherwise.
+    pub(crate) fn remove_endpoint_url(&self, endpoint_url: &str) -> bool {
+        self.state().endpoint_urls.remove(endpoint_url)
     }
 
-    /// Lists the endpoint URL statuses: the ones that are up first, ordered by
-    /// ascending latency, followed by the ones that are down.
-    pub fn list(&self) -> Vec<HiveEndpointData> {
-        let mut up: Vec<(&String, u64)> = self
+    /// Lists the endpoint URL statuses: the ones that are up first, ordered
+    /// by ascending latency, followed by the ones that are down.
+    pub(crate) fn list(&self) -> Vec<HiveEndpointData> {
+        let state = self.state();
+
+        let mut up: Vec<(&String, u64)> = state
             .up
             .iter()
             .map(|(url, latency)| (url, *latency))
@@ -131,9 +210,11 @@ impl HiveEndpoint {
             })
             .collect();
 
-        result.extend(self.down.iter().map(|(url, reason)| HiveEndpointData {
-            url: url.clone(),
-            state: ProbeState::Down { reason: *reason },
+        result.extend(state.down.iter().map(|(url, reason)| {
+            HiveEndpointData {
+                url: url.clone(),
+                state: ProbeState::Down { reason: *reason },
+            }
         }));
 
         result
@@ -146,20 +227,27 @@ impl HiveEndpoint {
     ///
     /// TS NOTE: `performCheck`; TS emits 'stats' / 'statechanged' / 'error'
     /// through the checker as each probe settles, Rust applies the same
-    /// transitions once all probes settled and returns them instead.
-    pub(crate) async fn perform_check(&mut self) -> CheckOutcome {
-        let urls: Vec<String> = self.endpoint_urls.iter().cloned().collect();
+    /// transitions once all probes settled and returns them instead. Like TS
+    /// (which snapshots the URL set before looping), URLs added or removed
+    /// while a round is in flight only affect the next round.
+    pub(crate) async fn perform_check(&self) -> CheckOutcome {
+        let urls: Vec<String> =
+            self.state().endpoint_urls.iter().cloned().collect();
 
-        let this: &Self = self;
         let results =
-            join_all(urls.iter().map(|url| this.verify_upon_url(url.clone())))
+            join_all(urls.iter().map(|url| self.verify_upon_url(url.clone())))
                 .await;
 
+        let mut state = self.state();
         let mut outcome = CheckOutcome::default();
         for (url, result) in urls.into_iter().zip(results) {
             match result {
-                Ok(latency) => self.record_up(url, latency, &mut outcome),
-                Err(failure) => self.record_down(url, failure, &mut outcome),
+                Ok(latency) => {
+                    self.record_up(&mut state, url, latency, &mut outcome)
+                }
+                Err(failure) => {
+                    self.record_down(&mut state, url, failure, &mut outcome)
+                }
             }
         }
 
@@ -185,7 +273,8 @@ impl HiveEndpoint {
     /// Records a responding URL: collects the stats entry (plus the
     /// transition if it just left the down bucket) and stores its latency.
     fn record_up(
-        &mut self,
+        &self,
+        state: &mut EndpointState,
         url: String,
         latency: u64,
         outcome: &mut CheckOutcome,
@@ -195,19 +284,21 @@ impl HiveEndpoint {
             state: ProbeState::Up { latency },
         };
 
-        if self.down.remove(&url).is_some() {
-            outcome.state_changes.push(self.state_change(data.clone()));
+        if state.down.remove(&url).is_some() {
+            outcome.state_changes.push(data.clone());
         }
 
         outcome.stats.push(data);
-        self.up.insert(url, latency);
+        state.up.insert(url, latency);
     }
 
     /// Records a failing URL: collects the stats entry (plus the transition
-    /// if it just left the up bucket), the wrapped failure, and stores its
-    /// down reason.
+    /// if it just left the up bucket), the wrapped failure — and, for a
+    /// validator rejection, the rich validation error — and stores its down
+    /// reason.
     fn record_down(
-        &mut self,
+        &self,
+        state: &mut EndpointState,
         url: String,
         failure: ProbeFailure,
         outcome: &mut CheckOutcome,
@@ -218,36 +309,45 @@ impl HiveEndpoint {
             state: ProbeState::Down { reason },
         };
 
-        if self.up.remove(&url).is_some() {
-            outcome.state_changes.push(self.state_change(data.clone()));
+        if state.up.remove(&url).is_some() {
+            outcome.state_changes.push(data.clone());
+        }
+
+        // TS NOTE: TS builds this error inside the `register` closure and
+        // emits 'validationerror' right away; the Rust closure only returns
+        // the reason and the response, and the rich error is built here,
+        // where the live endpoint identity is known.
+        if let ProbeFailure::Validation { reason, response } = &failure {
+            outcome.validation_errors.push(ValidatorFailedError {
+                failed_reason: reason.clone(),
+                endpoint: self.info(state),
+                url: url.clone(),
+                response: response.clone(),
+            });
         }
 
         outcome.stats.push(data);
-        outcome.errors.push(HealthCheckerError::Check {
+        outcome.errors.push(HealthCheckerError {
             source: Box::new(failure),
-            endpoint: self.info(),
+            endpoint: self.info(state),
             api_url: Some(url.clone()),
         });
-        self.down.insert(url, reason);
-    }
-
-    /// Builds the transition event for this endpoint group.
-    fn state_change(&self, data: HiveEndpointData) -> NewUpDownEvent {
-        NewUpDownEvent {
-            data,
-            paths: self.paths.clone(),
-            api_caller_id: self.api_caller_id,
-        }
+        state.down.insert(url, reason);
     }
 
     /// Returns the owned identity snapshot attached to error payloads.
-    fn info(&self) -> EndpointInfo {
+    fn info(&self, state: &EndpointState) -> EndpointInfo {
         EndpointInfo {
             id: self.id,
             api_caller_id: self.api_caller_id,
             paths: self.paths.clone(),
-            endpoint_urls: self.endpoint_urls.clone(),
+            endpoint_urls: state.endpoint_urls.clone(),
         }
+    }
+
+    /// Locks the mutable state.
+    fn state(&self) -> MutexGuard<'_, EndpointState> {
+        self.state.lock().expect("endpoint state mutex poisoned")
     }
 }
 
@@ -257,14 +357,13 @@ impl HiveEndpoint {
 /// (`endpoint.ts` lines 146-155).
 fn classify_reason(failure: &ProbeFailure) -> ErrorReason {
     match failure {
-        ProbeFailure::Validation(_) => ErrorReason::ValidationError,
+        ProbeFailure::Validation { .. } => ErrorReason::ValidationError,
         ProbeFailure::Chain(WaxChainError::Request(request_error)) => {
             match request_error {
                 RequestError::Timeout { .. } => ErrorReason::Timeout,
                 RequestError::NonSuccessResponseCode { .. } => {
                     ErrorReason::ServerError
                 }
-                RequestError::AbortedByUser { .. } => ErrorReason::UserAbort,
                 _ => ErrorReason::Other,
             }
         }
@@ -272,31 +371,27 @@ fn classify_reason(failure: &ProbeFailure) -> ErrorReason {
     }
 }
 
-/// Represents everything one [`HiveEndpoint::perform_check`] round produced:
+/// Represents everything one [`EndpointCore::perform_check`] round produced:
 /// the per-URL probe results, the up/down transitions and the failures.
 ///
 /// TS NOTE: TS pushes these through the `HealthChecker` event emitter
-/// ('stats', 'statechanged' and 'error') as each probe settles; the Rust
-/// endpoint returns them and the checker will do the emitting.
+/// ('stats', 'statechanged', 'error' and 'validationerror') as each probe
+/// settles; the Rust endpoint returns them and the checker does the emitting.
 #[derive(Debug, Default)]
 pub(crate) struct CheckOutcome {
     pub stats: Vec<HiveEndpointData>,
-    pub state_changes: Vec<NewUpDownEvent>,
+    /// The URLs that switched buckets, with their new state.
+    ///
+    /// TS NOTE: `INewUpDownEvent` — its `endpointUrl` / `up` fields duplicate
+    /// `data`, and its `paths` / `apiCallerId` only serve 'statechanged'
+    /// listeners, which Rust does not expose (the checker filters
+    /// subscriptions by URL); what remains is the plain data entry. The
+    /// dead-code TS `INewBestEvent` is not ported either — the TS 'newbest'
+    /// event actually emits a `TScoredEndpoint`
+    /// ([`super::ScoredEndpoint`]).
+    pub state_changes: Vec<HiveEndpointData>,
     pub errors: Vec<HealthCheckerError>,
-}
-
-/// Represents a node URL transitioning between the up and down states.
-///
-/// TS NOTE: `INewUpDownEvent`; its `endpointUrl` and `up` fields are
-/// derivable from `data` (`data.url` and the [`ProbeState`] variant), so
-/// they are not ported. The dead-code TS `INewBestEvent` is not ported
-/// either — the TS 'newbest' event actually emits a `TScoredEndpoint`
-/// ([`super::ScoredEndpoint`]).
-#[derive(Debug, Clone)]
-pub struct NewUpDownEvent {
-    pub data: HiveEndpointData,
-    pub paths: Vec<String>,
-    pub api_caller_id: ChainApiType,
+    pub validation_errors: Vec<ValidatorFailedError>,
 }
 
 /// Represents the latest probe result for a single node URL.
@@ -327,13 +422,14 @@ pub enum ProbeState {
 
 /// Represents why a node URL was marked as down.
 ///
-/// TS NOTE: `TErrorReason`.
+/// TS NOTE: `TErrorReason`; its `userabort` value maps the browser-only
+/// abort signal behind the unported `WaxRequestAbortedByUser` (see
+/// [`RequestError`]), so it is not ported either.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorReason {
     Timeout,
     ServerError,
     ValidationError,
-    UserAbort,
     Other,
 }
 
@@ -361,8 +457,8 @@ mod tests {
         }
     }
 
-    fn endpoint(urls: &[&str], caller: ProbeFn) -> HiveEndpoint {
-        HiveEndpoint::new(
+    fn endpoint(urls: &[&str], caller: ProbeFn) -> EndpointCore {
+        EndpointCore::new(
             7,
             ChainApiType::Rest,
             vec!["hafah_api".into(), "headblock".into()],
@@ -380,6 +476,13 @@ mod tests {
             status: Some(200),
             headers: None,
             response: None,
+        }
+    }
+
+    fn validation_failure(reason: &str) -> ProbeFailure {
+        ProbeFailure::Validation {
+            reason: reason.into(),
+            response: response_with_latency(5),
         }
     }
 
@@ -408,7 +511,7 @@ mod tests {
 
     #[test]
     fn records_latency_and_marks_url_up() {
-        let mut endpoint = endpoint(
+        let endpoint = endpoint(
             &["https://a"],
             Box::new(|_| Box::pin(async { Ok(response_with_latency(120)) })),
         );
@@ -436,11 +539,11 @@ mod tests {
 
     #[test]
     fn reports_failure_with_wrapped_error() {
-        let mut endpoint = endpoint(
+        let endpoint = endpoint(
             &["https://a"],
             Box::new(|_| {
                 Box::pin(async {
-                    Err(ProbeFailure::Validation("head block too old".into()))
+                    Err(validation_failure("head block too old"))
                 })
             }),
         );
@@ -461,9 +564,17 @@ mod tests {
         ));
         assert!(matches!(
             &outcome.errors[..],
-            [HealthCheckerError::Check { endpoint, api_url, .. }]
+            [HealthCheckerError { endpoint, api_url, .. }]
                 if endpoint.id == 7
                     && api_url.as_deref() == Some("https://a")
+        ));
+        // The validator rejection must also surface as the rich error.
+        assert!(matches!(
+            &outcome.validation_errors[..],
+            [ValidatorFailedError { failed_reason, url, endpoint, .. }]
+                if failed_reason == "head block too old"
+                    && url == "https://a"
+                    && endpoint.id == 7
         ));
     }
 
@@ -471,7 +582,7 @@ mod tests {
     fn emits_state_changes_on_up_down_transitions() {
         let healthy = Arc::new(AtomicBool::new(true));
         let flag = healthy.clone();
-        let mut endpoint = endpoint(
+        let endpoint = endpoint(
             &["https://a"],
             Box::new(move |_| {
                 let healthy = flag.load(Ordering::Relaxed);
@@ -495,16 +606,10 @@ mod tests {
 
         assert!(matches!(
             &outcome.state_changes[..],
-            [NewUpDownEvent {
-                data: HiveEndpointData {
-                    url,
-                    state: ProbeState::Down { .. },
-                },
-                paths,
-                api_caller_id,
+            [HiveEndpointData {
+                url,
+                state: ProbeState::Down { .. },
             }] if url == "https://a"
-                && paths == &["hafah_api", "headblock"]
-                && *api_caller_id == ChainApiType::Rest
         ));
         assert_eq!(outcome.errors.len(), 1);
 
@@ -513,11 +618,8 @@ mod tests {
 
         assert!(matches!(
             &outcome.state_changes[..],
-            [NewUpDownEvent {
-                data: HiveEndpointData {
-                    state: ProbeState::Up { .. },
-                    ..
-                },
+            [HiveEndpointData {
+                state: ProbeState::Up { .. },
                 ..
             }]
         ));
@@ -551,12 +653,6 @@ mod tests {
                 ErrorReason::ServerError,
             ),
             (
-                request_failure(|request, response| {
-                    RequestError::AbortedByUser { request, response }
-                }),
-                ErrorReason::UserAbort,
-            ),
-            (
                 request_failure(|request, response| RequestError::Unknown {
                     request,
                     response,
@@ -571,10 +667,7 @@ mod tests {
                 }),
                 ErrorReason::Other,
             ),
-            (
-                ProbeFailure::Validation("mismatch".into()),
-                ErrorReason::ValidationError,
-            ),
+            (validation_failure("mismatch"), ErrorReason::ValidationError),
         ];
 
         for (failure, expected) in cases {
@@ -584,12 +677,12 @@ mod tests {
 
     #[test]
     fn probes_every_url_of_the_group() {
-        let mut endpoint = endpoint(
+        let endpoint = endpoint(
             &["https://a", "https://b", "https://c"],
             Box::new(|url| {
                 Box::pin(async move {
                     if url == "https://b" {
-                        Err(ProbeFailure::Validation("bad".into()))
+                        Err(validation_failure("bad"))
                     } else {
                         Ok(response_with_latency(10))
                     }
