@@ -18,7 +18,7 @@ fn foundation() -> Box<dyn WaxFoundation> {
 const TAPOS_BLOCK_ID: &str = "04c1c7a566fc0da66aee465714acee7346b48ac2";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
 
-fn empty_tx(f: &dyn WaxFoundation) -> Box<dyn Transaction> {
+fn empty_tx(f: &dyn WaxFoundation) -> Transaction {
     f.create_transaction_with_tapos(TAPOS_BLOCK_ID, EXPIRATION)
         .expect("create_transaction_with_tapos")
 }
@@ -28,8 +28,8 @@ fn empty_tx(f: &dyn WaxFoundation) -> Box<dyn Transaction> {
 fn decay_and_budget() {
     let f = foundation();
 
-    let tx = empty_tx(&*f)
-        .push_builder(
+    let mut tx = empty_tx(&*f);
+    tx.push_builder(
             &*f,
             Box::new(WitnessSetPropertiesOperation {
                 owner: "emrebeyler".into(),
@@ -80,8 +80,8 @@ fn decay_and_budget() {
 fn url_only() {
     let f = foundation();
 
-    let tx = empty_tx(&*f)
-        .push_builder(
+    let mut tx = empty_tx(&*f);
+    tx.push_builder(
             &*f,
             Box::new(WitnessSetPropertiesOperation {
                 owner: "therealwolf".into(),
@@ -134,8 +134,8 @@ fn with_exchange_rate() {
     let base = f.hbd_satoshis(424).expect("hbd_satoshis");
     let quote = f.hive_satoshis(1000).expect("hive_satoshis");
 
-    let tx = empty_tx(&*f)
-        .push_builder(
+    let mut tx = empty_tx(&*f);
+    tx.push_builder(
             &*f,
             Box::new(WitnessSetPropertiesOperation {
                 owner: "ctrpch".into(),
@@ -180,7 +180,8 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
     let f = foundation();
     let wrong = f.hbd_satoshis(3000).expect("hbd_satoshis");
 
-    let result = empty_tx(&*f).push_builder(
+    let mut tx = empty_tx(&*f);
+    let result = tx.push_builder(
         &*f,
         Box::new(WitnessSetPropertiesOperation {
             owner: "therealwolf".into(),

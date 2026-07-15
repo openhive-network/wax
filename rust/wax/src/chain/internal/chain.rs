@@ -290,37 +290,37 @@ impl WaxFoundation for HiveChainApi {
         fn create_transaction_from_legacy_json(
             &self,
             legacy_json: &str,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
 
         fn create_transaction_from_proto(
             &self,
             transaction: proto::Transaction,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn create_transaction_from_json(
             &self,
             json: &str,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn create_transaction_from_proto_json(
             &self,
             json: &str,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn create_transaction_with_tapos(
             &self,
             tapos_block_id: &str,
             expiration: &str,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn create_transaction_with_chain_reference_data(
             &self,
             tapos_block_id: &str,
             head_block_time: Option<HiveDateTime>,
             expiration: Option<&str>,
-        ) -> Result<Box<dyn Transaction>, WaxError>;
+        ) -> Result<Transaction, WaxError>;
 
         fn operation_get_impacted_accounts(
             &self,

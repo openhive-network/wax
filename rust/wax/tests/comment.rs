@@ -21,7 +21,7 @@ fn foundation() -> Box<dyn WaxFoundation> {
     create_wax_foundation(None)
 }
 
-fn fresh_tx(f: &dyn WaxFoundation) -> Box<dyn Transaction> {
+fn fresh_tx(f: &dyn WaxFoundation) -> Transaction {
     f.create_transaction_with_tapos(TAPOS, EXPIRATION)
         .expect("create_transaction_with_tapos")
 }
@@ -66,9 +66,8 @@ fn reply_with_beneficiaries_and_tags() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2, "comment + comment_options expected");
 
@@ -123,9 +122,8 @@ fn reply_with_percent_hbd_emits_options() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
 
@@ -162,9 +160,8 @@ fn reply_with_images_emits_only_comment() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(
         ops.len(),
@@ -197,9 +194,8 @@ fn blog_post_with_category() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 1);
 
@@ -228,16 +224,16 @@ fn options_at_default_values_are_suppressed() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     assert_eq!(tx.transaction().operations.len(), 1);
 }
 
 #[test]
 fn reply_rejects_empty_parent_author() {
     let f = foundation();
-    let result = fresh_tx(&*f).push_builder(
+    let mut tx = fresh_tx(&*f);
+    let result = tx.push_builder(
         &*f,
         Box::new(ReplyOperation {
             parent_author: String::new(),
@@ -253,7 +249,8 @@ fn reply_rejects_empty_parent_author() {
 #[test]
 fn reply_rejects_empty_parent_permlink() {
     let f = foundation();
-    let result = fresh_tx(&*f).push_builder(
+    let mut tx = fresh_tx(&*f);
+    let result = tx.push_builder(
         &*f,
         Box::new(ReplyOperation {
             parent_author: "alice".into(),
@@ -271,7 +268,8 @@ fn rejects_wrong_asset_for_max_accepted_payout() {
     let f = foundation();
     let hive = f.hive_satoshis(1_000_000_000).expect("hive_satoshis");
 
-    let result = fresh_tx(&*f).push_builder(
+    let mut tx = fresh_tx(&*f);
+    let result = tx.push_builder(
         &*f,
         Box::new(ReplyOperation {
             parent_author: "alice".into(),
@@ -302,9 +300,8 @@ fn reply_default_permlink_template() {
         ..Default::default()
     };
 
-    let tx = fresh_tx(&*f)
-        .push_builder(&*f, Box::new(op))
-        .expect("push_builder");
+    let mut tx = fresh_tx(&*f);
+    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
     let comment = extract_comment(&tx.transaction().operations[0]);
     assert!(
         comment.permlink.starts_with("re-alice-"),

@@ -510,7 +510,7 @@ fn create_transaction_handle_mainnet_account_create() {
 #[test]
 fn create_transaction_from_scratch_matches_mainnet_vote() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_from_proto(ProtoTransaction {
                 ref_block_num: 25263,
@@ -528,7 +528,7 @@ fn create_transaction_from_scratch_matches_mainnet_vote() {
             voter: "esecholo".into(),
             weight: 10000,
         }));
-        let mut tx = tx.push_operation(op);
+        tx.push_operation(op);
         tx.set_expiration("2024-05-15T13:04:16")
             .expect("set_expiration");
         tx.add_signature("1f31829d3166d9da185f3f33d804596944515c21f21c0c12618bbd442357ae94873ec4770763453ddd14ebc09eabfe4163b68e85d43b2a4057f1da767bc1ea91bf")

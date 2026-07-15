@@ -1,3 +1,6 @@
+//! The offline transaction type: building, signing, serialization, authority
+//! inspection and memo encryption.
+
 use std::collections::HashMap;
 
 use crate::core::ffi::{
@@ -11,207 +14,269 @@ use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::interfaces::{
     AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider,
-    Transaction,
 };
 use crate::base::internal::authority::{build_provider, to_rust_authorities};
 use crate::base::internal::protocol::rust_protocol;
 use crate::base::models::authority::RequiredAuthorities;
+use crate::base::models::basic::{
+    AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId,
+};
 use crate::base::result::{
     BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData,
 };
 
-impl Transaction for RustTransaction {
-    fn push_operation(
-        mut self: Box<Self>,
-        op: Box<dyn Operation>,
-    ) -> Box<dyn Transaction> {
+/// Represents a transaction through its full lifecycle: building, signing,
+/// serialization, authority inspection and memo encryption. Created by the
+/// `create_transaction*` factories on [`WaxFoundation`].
+///
+/// The chain-bound counterpart adding online checks is
+/// [`OnlineTransaction`](crate::OnlineTransaction), which composes this type.
+///
+/// TS NOTE: the TS `Transaction` class. TS builder methods return `this` for
+/// fluent chaining; the Rust builders take `&mut self` (and return
+/// `&mut Self`), so a fallible builder never consumes the transaction.
+pub struct Transaction {
+    pub(crate) inner: RustTransaction,
+}
+
+impl Transaction {
+    pub(crate) fn from_rust(inner: RustTransaction) -> Self {
+        Self { inner }
+    }
+
+    /// Appends `op` to this transaction.
+    pub fn push_operation(&mut self, op: Box<dyn Operation>) -> &mut Self {
         // The Operation trait exposes only `&proto::Operation`, so we rebuild
         // the C++ handle from the proto mirror. The extra handle creation is
         // the price of keeping `RustOperation` out of the public surface.
         let proto_op = op.proto().clone();
         let new_op = RustOperation::from_proto(rust_protocol(), proto_op);
         rust_protocol()
-            .cpp_tx_add_operation(self.handle.pin_mut(), &new_op.handle)
+            .cpp_tx_add_operation(self.inner.handle.pin_mut(), &new_op.handle)
             .expect("failed to add operation to transaction");
 
-        self.inner.operations.push(new_op.inner);
+        self.inner.inner.operations.push(new_op.inner);
 
         self
     }
 
-    fn add_signature(&mut self, signature: &str) -> Result<(), WaxError> {
+    /// Finalizes `builder` against `foundation` and appends the resulting
+    /// operations to this transaction.
+    pub fn push_builder(
+        &mut self,
+        foundation: &dyn WaxFoundation,
+        builder: Box<dyn OperationBuilder>,
+    ) -> Result<&mut Self, WaxError> {
+        let protocol = rust_protocol();
+        for op in builder.finalize(foundation)? {
+            let rust_op = RustOperation::from_proto(protocol, op);
+            protocol
+                .cpp_tx_add_operation(
+                    self.inner.handle.pin_mut(),
+                    &rust_op.handle,
+                )
+                .expect("failed to add operation to transaction");
+            self.inner.inner.operations.push(rust_op.inner);
+        }
+
+        Ok(self)
+    }
+
+    /// Appends a precomputed signature to the transaction.
+    pub fn add_signature(&mut self, signature: &str) -> Result<(), WaxError> {
         rust_protocol()
-            .cpp_tx_add_signature(self.handle.pin_mut(), signature)
+            .cpp_tx_add_signature(self.inner.handle.pin_mut(), signature)
             .map_err(WaxError::from)?;
 
-        self.inner.signatures.push(signature.to_string());
+        self.inner.inner.signatures.push(signature.to_string());
 
         Ok(())
     }
 
-    fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError> {
+    /// Sets the transaction's expiration timestamp.
+    pub fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError> {
         rust_protocol()
-            .cpp_tx_set_expiration(self.handle.pin_mut(), expiration)
+            .cpp_tx_set_expiration(self.inner.handle.pin_mut(), expiration)
             .map_err(WaxError::from)?;
 
-        self.inner.expiration = expiration.to_string();
+        self.inner.inner.expiration = expiration.to_string();
 
         Ok(())
     }
 
-    fn is_signed(&self) -> bool {
-        !self.inner.signatures.is_empty()
+    /// Returns whether the transaction carries at least one signature.
+    pub fn is_signed(&self) -> bool {
+        !self.inner.inner.signatures.is_empty()
     }
 
-    fn validate(&self) -> Result<(), WaxError> {
+    /// Validates the transaction against the protocol rules.
+    pub fn validate(&self) -> Result<(), WaxError> {
         rust_protocol()
-            .cpp_tx_validate(&self.handle)
+            .cpp_tx_validate(&self.inner.handle)
             .map_err(WaxError::from)
     }
 
-    fn sig_digest(&self) -> Result<String, WaxError> {
+    /// Returns the HF26 signing digest of the transaction.
+    pub fn sig_digest(&self) -> Result<SigDigest, WaxError> {
         rust_protocol()
-            .cpp_tx_sig_digest(&self.handle, &self.chain_id)
+            .cpp_tx_sig_digest(&self.inner.handle, &self.inner.chain_id)
             .map_err(WaxError::from)
     }
 
-    fn legacy_sig_digest(&self) -> Result<String, WaxError> {
+    /// Returns the legacy-serialization signing digest of the transaction.
+    pub fn legacy_sig_digest(&self) -> Result<SigDigest, WaxError> {
         rust_protocol()
-            .cpp_tx_legacy_sig_digest(&self.handle, &self.chain_id)
+            .cpp_tx_legacy_sig_digest(&self.inner.handle, &self.inner.chain_id)
             .map_err(WaxError::from)
     }
 
-    fn id(&self) -> Result<String, WaxError> {
+    /// Returns the HF26 transaction id.
+    pub fn id(&self) -> Result<TransactionId, WaxError> {
         rust_protocol()
-            .cpp_tx_id(&self.handle)
+            .cpp_tx_id(&self.inner.handle)
             .map_err(WaxError::from)
     }
 
-    fn legacy_id(&self) -> Result<String, WaxError> {
+    /// Returns the legacy-serialization transaction id.
+    pub fn legacy_id(&self) -> Result<TransactionId, WaxError> {
         rust_protocol()
-            .cpp_tx_legacy_id(&self.handle)
+            .cpp_tx_legacy_id(&self.inner.handle)
             .map_err(WaxError::from)
     }
 
-    fn to_binary_form(
+    /// Converts the transaction into its wire-form hex, optionally stripped
+    /// to the unsigned form.
+    pub fn to_binary_form(
         &self,
         strip_to_unsigned: bool,
-    ) -> Result<String, WaxError> {
+    ) -> Result<Hex, WaxError> {
         rust_protocol()
-            .cpp_tx_to_binary(&self.handle, strip_to_unsigned)
+            .cpp_tx_to_binary(&self.inner.handle, strip_to_unsigned)
             .map_err(WaxError::from)
     }
 
-    fn binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError> {
-        rust_protocol()
-            .cpp_tx_binary_view(&self.handle, true, false)
-            .map(to_binary_view_output)
-            .map_err(WaxError::from)
-    }
-
-    fn legacy_binary_view_metadata(
+    /// Returns the HF26 binary view: the wire-form hex plus a parsed AST
+    /// annotating each byte range with its field name and type.
+    pub fn binary_view_metadata(
         &self,
     ) -> Result<BinaryViewOutputData, WaxError> {
         rust_protocol()
-            .cpp_tx_binary_view(&self.handle, false, false)
+            .cpp_tx_binary_view(&self.inner.handle, true, false)
             .map(to_binary_view_output)
             .map_err(WaxError::from)
     }
 
-    fn to_api(&self) -> Result<String, WaxError> {
+    /// Legacy-serialization counterpart to [`Self::binary_view_metadata`].
+    pub fn legacy_binary_view_metadata(
+        &self,
+    ) -> Result<BinaryViewOutputData, WaxError> {
         rust_protocol()
-            .cpp_tx_to_json(&self.handle)
+            .cpp_tx_binary_view(&self.inner.handle, false, false)
+            .map(to_binary_view_output)
             .map_err(WaxError::from)
     }
 
-    fn to_api_json(&self) -> Result<serde_json::Value, WaxError> {
+    /// Converts the transaction into its HF26 API JSON string.
+    pub fn to_api(&self) -> Result<String, WaxError> {
+        rust_protocol()
+            .cpp_tx_to_json(&self.inner.handle)
+            .map_err(WaxError::from)
+    }
+
+    /// Same payload as [`Self::to_api`], parsed into a [`serde_json::Value`]
+    /// for callers that want structured access without a manual parse step.
+    pub fn to_api_json(&self) -> Result<serde_json::Value, WaxError> {
         let raw = self.to_api()?;
         serde_json::from_str(&raw).map_err(|e| WaxError::new(e.to_string()))
     }
 
-    fn to_legacy_api(&self) -> Result<String, WaxError> {
+    /// Converts the transaction into its legacy API JSON string.
+    pub fn to_legacy_api(&self) -> Result<String, WaxError> {
         rust_protocol()
-            .cpp_tx_to_legacy_json(&self.handle)
+            .cpp_tx_to_legacy_json(&self.inner.handle)
             .map_err(WaxError::from)
     }
 
-    fn signature_keys(&self) -> Result<Vec<String>, WaxError> {
+    /// Returns the public keys that produced the transaction's signatures.
+    pub fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError> {
         rust_protocol()
-            .cpp_tx_signature_keys(&self.handle, &self.chain_id)
+            .cpp_tx_signature_keys(&self.inner.handle, &self.inner.chain_id)
             .map_err(WaxError::from)
     }
 
-    fn legacy_signature_keys(&self) -> Result<Vec<String>, WaxError> {
+    /// Legacy-serialization counterpart to [`Self::signature_keys`].
+    pub fn legacy_signature_keys(&self) -> Result<Vec<PublicKey>, WaxError> {
         rust_protocol()
-            .cpp_tx_legacy_signature_keys(&self.handle, &self.chain_id)
+            .cpp_tx_legacy_signature_keys(
+                &self.inner.handle,
+                &self.inner.chain_id,
+            )
             .map_err(WaxError::from)
     }
 
-    fn impacted_accounts(&self) -> Result<Vec<String>, WaxError> {
+    /// Returns the accounts impacted by the transaction's operations.
+    pub fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError> {
         rust_protocol()
-            .cpp_tx_impacted_accounts(&self.handle)
+            .cpp_tx_impacted_accounts(&self.inner.handle)
             .map_err(WaxError::from)
     }
 
-    fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError> {
+    /// Returns the authorities the transaction requires to be signed.
+    pub fn required_authorities(
+        &self,
+    ) -> Result<RequiredAuthorities, WaxError> {
         rust_protocol()
-            .cpp_tx_required_authorities(&self.handle)
+            .cpp_tx_required_authorities(&self.inner.handle)
             .map(to_required_authorities)
             .map_err(WaxError::from)
     }
 
-    fn collect_signing_keys(
+    /// Collects the signing keys needed to satisfy the transaction's
+    /// authorities, resolving them through `provider`.
+    pub fn collect_signing_keys(
         &self,
         provider: &dyn AuthorityDataProvider,
-    ) -> Result<Vec<String>, WaxError> {
+    ) -> Result<Vec<PublicKey>, WaxError> {
         let core_provider = build_provider(provider);
         rust_protocol()
-            .cpp_tx_collect_signing_keys(&self.handle, &core_provider)
+            .cpp_tx_collect_signing_keys(&self.inner.handle, &core_provider)
             .map_err(WaxError::from)
     }
 
-    fn minimize_required_signatures(
+    /// Returns the minimal set of signing keys that still satisfies the
+    /// transaction's authorities, subject to the limits in `data`.
+    pub fn minimize_required_signatures(
         &self,
         data: &MinimizeRequiredSignaturesData,
         provider: &dyn AuthorityDataProvider,
-    ) -> Result<Vec<String>, WaxError> {
+    ) -> Result<Vec<PublicKey>, WaxError> {
         let core_provider = build_provider(provider);
         let ffi_data = to_rust_minimize_data(data);
 
         rust_protocol()
             .cpp_minimize_required_signatures(
-                &self.handle,
+                &self.inner.handle,
                 &ffi_data,
                 &core_provider,
             )
             .map_err(WaxError::from)
     }
 
-    fn transaction(&self) -> &proto::Transaction {
-        self.proto()
+    /// Returns the underlying [`proto::Transaction`] mirror.
+    pub fn transaction(&self) -> &proto::Transaction {
+        self.inner.proto()
     }
 
-    fn push_builder(
-        mut self: Box<Self>,
-        foundation: &dyn WaxFoundation,
-        builder: Box<dyn OperationBuilder>,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
-        let protocol = rust_protocol();
-        for op in builder.finalize(foundation)? {
-            let rust_op = RustOperation::from_proto(protocol, op);
-            protocol
-                .cpp_tx_add_operation(self.handle.pin_mut(), &rust_op.handle)
-                .expect("failed to add operation to transaction");
-            self.inner.operations.push(rust_op.inner);
-        }
-        Ok(self)
-    }
-
-    fn sign(
+    /// Convenience: compute the transaction's `sig_digest`, ask `wallet` to
+    /// sign it with the private key matching `public_key`, append the result
+    /// to this transaction, and return it.
+    ///
+    /// To sign with multiple keys, call this once per key.
+    pub fn sign(
         &mut self,
         wallet: &dyn SignatureProvider,
         public_key: &str,
-    ) -> Result<String, WaxError> {
+    ) -> Result<Signature, WaxError> {
         self.validate()?;
         let digest = self.sig_digest()?;
         let signature = wallet.sign_digest(public_key, &digest)?;
@@ -220,28 +285,37 @@ impl Transaction for RustTransaction {
         Ok(signature)
     }
 
-    fn start_encrypt(
-        mut self: Box<Self>,
+    /// Opens an encryption range. Operations pushed (or already at) the
+    /// current end of the transaction will be encrypted by the next
+    /// `perform_operation_encryption` call. Multiple ranges may be opened
+    /// sequentially, each with its own key(s).
+    ///
+    /// `main_key` is the principal recipient public key; `other_key` is an
+    /// optional second recipient (memo-style two-party encryption).
+    pub fn start_encrypt(
+        &mut self,
         main_key: &str,
         other_key: Option<&str>,
-    ) -> Box<dyn Transaction> {
-        let begin = self.inner.operations.len();
-        self.encryption_indices.push(EncryptionIndex {
+    ) -> &mut Self {
+        let begin = self.inner.inner.operations.len();
+        self.inner.encryption_indices.push(EncryptionIndex {
             main_key: main_key.to_string(),
             other_key: other_key.map(str::to_string),
             begin,
             end: None,
         });
+
         self
     }
 
-    fn stop_encrypt(
-        mut self: Box<Self>,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
-        let current_len = self.inner.operations.len();
-        let last = self.encryption_indices.last_mut().ok_or_else(|| {
-            WaxError::new("Mismatch in index types - stop_encrypt called before start_encrypt")
-        })?;
+    /// Closes the most recently opened encryption range. Errors if no range
+    /// is open or the latest range is already closed.
+    pub fn stop_encrypt(&mut self) -> Result<&mut Self, WaxError> {
+        let current_len = self.inner.inner.operations.len();
+        let last =
+            self.inner.encryption_indices.last_mut().ok_or_else(|| {
+                WaxError::new("Mismatch in index types - stop_encrypt called before start_encrypt")
+            })?;
         if last.end.is_some() {
             return Err(WaxError::new(format!(
                 "Encryption on operation index: #{} for key: {:?} already closed",
@@ -249,24 +323,39 @@ impl Transaction for RustTransaction {
             )));
         }
         last.end = Some(current_len);
+
         Ok(self)
     }
 
-    fn perform_operation_encryption(
+    /// Walks each tracked encryption range and encrypts the memo-style field
+    /// on the operations it covers, using `wallet.encrypt_data` with the
+    /// range's keys and the transaction's `ref_block_prefix` as the nonce.
+    /// The C++ transaction handle is rebuilt from the mutated proto, and all
+    /// ranges are cleared on success.
+    ///
+    /// The affected fields are: `transfer.memo`, `transfer_to_savings.memo`,
+    /// `transfer_from_savings.memo`, `recurrent_transfer.memo`,
+    /// `comment.body`, and `custom_json.json` (which is wrapped as
+    /// `{"encrypted": "<ciphertext>"}`). Operations without an encryptable
+    /// field are skipped silently.
+    pub fn perform_operation_encryption(
         &mut self,
         wallet: &dyn SignatureProvider,
     ) -> Result<(), WaxError> {
-        if self.encryption_indices.is_empty() {
+        let tx = &mut self.inner;
+        if tx.encryption_indices.is_empty() {
             return Ok(());
         }
-        let nonce = Some(u64::from(self.inner.ref_block_prefix));
-        let total = self.inner.operations.len();
+
+        let nonce = Some(u64::from(tx.inner.ref_block_prefix));
+        let total = tx.inner.operations.len();
         // Take ownership of the index list up-front so we can iterate while
-        // mutably borrowing self.inner. On success we leave it cleared (matches TS).
-        let indices = std::mem::take(&mut self.encryption_indices);
+        // mutably borrowing the proto. On success we leave it cleared
+        // (matches TS).
+        let indices = std::mem::take(&mut tx.encryption_indices);
         for index in &indices {
             let end = index.end.unwrap_or(total).min(total);
-            for op in &mut self.inner.operations[index.begin..end] {
+            for op in &mut tx.inner.operations[index.begin..end] {
                 visit_encryptable(op, EncryptMode::Encrypt, |data| {
                     wallet.encrypt_data(
                         data,
@@ -277,20 +366,27 @@ impl Transaction for RustTransaction {
                 })?;
             }
         }
-        refresh_handle(self);
+        tx.refresh_handle(rust_protocol());
+
         Ok(())
     }
 
-    fn decrypt(
+    /// Walks every operation on the transaction and, for memo-style fields
+    /// whose value starts with `#` (the encrypted marker used by hived),
+    /// decrypts it via `wallet.decrypt_data`. Plaintext fields and operations
+    /// without an encryptable field are left untouched. The C++ transaction
+    /// handle is rebuilt from the mutated proto on success.
+    pub fn decrypt(
         &mut self,
         wallet: &dyn SignatureProvider,
     ) -> Result<(), WaxError> {
         // decrypt visits every operation; ranges are not consulted. Per TS,
         // only memo-style values that begin with '#' are sent to the wallet —
         // everything else is left untouched.
+        let tx = &mut self.inner;
         let mutated = {
             let mut any = false;
-            for op in &mut self.inner.operations {
+            for op in &mut tx.inner.operations {
                 visit_encryptable(op, EncryptMode::Decrypt, |data| {
                     if data.starts_with('#') {
                         any = true;
@@ -304,8 +400,9 @@ impl Transaction for RustTransaction {
             any
         };
         if mutated {
-            refresh_handle(self);
+            tx.refresh_handle(rust_protocol());
         }
+
         Ok(())
     }
 }
@@ -387,10 +484,6 @@ where
         }
     }
     Ok(())
-}
-
-fn refresh_handle(tx: &mut RustTransaction) {
-    tx.refresh_handle(rust_protocol());
 }
 
 fn to_rust_minimize_data(

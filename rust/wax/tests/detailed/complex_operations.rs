@@ -44,7 +44,7 @@ const APP: &str =
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn fresh_tx(ctx: &WaxTestCtx) -> Box<dyn Transaction> {
+fn fresh_tx(ctx: &WaxTestCtx) -> Transaction {
     ctx.base
         .create_transaction_with_tapos(TAPOS, EXPIRATION)
         .expect("create_transaction_with_tapos")
@@ -77,15 +77,15 @@ fn hive_asset(amount: &str) -> NaiAsset {
     }
 }
 
-fn api_op0(tx: &dyn Transaction) -> serde_json::Value {
+fn api_op0(tx: &Transaction) -> serde_json::Value {
     tx.to_api_json().expect("to_api_json")["operations"][0].clone()
 }
 
-fn api_ops(tx: &dyn Transaction) -> serde_json::Value {
+fn api_ops(tx: &Transaction) -> serde_json::Value {
     tx.to_api_json().expect("to_api_json")["operations"].clone()
 }
 
-fn legacy_value(tx: &dyn Transaction) -> serde_json::Value {
+fn legacy_value(tx: &Transaction) -> serde_json::Value {
     serde_json::from_str(&tx.to_legacy_api().expect("to_legacy_api"))
         .expect("parse legacy json")
 }
@@ -135,12 +135,11 @@ fn witness_set_properties_basic() {
         op.maximum_block_size = Some(1000);
         op.url = Some("https://hive.io".into());
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -177,12 +176,11 @@ fn witness_set_properties_url_only() {
                 .into(),
         );
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -211,12 +209,11 @@ fn witness_set_properties_budget_and_fee() {
             Some(NaiAssetConvertible::Asset(hive_asset("3000")));
         op.account_subsidy_budget = Some(700);
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -245,12 +242,11 @@ fn witness_set_properties_decay_and_budget() {
         op.account_subsidy_budget = Some(1);
         op.account_subsidy_decay = Some(64);
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -281,12 +277,11 @@ fn witness_set_properties_hbd_exchange_rate() {
             quote: NaiAssetConvertible::Asset(hive_sat(ctx, 1000)),
         });
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -326,12 +321,11 @@ fn witness_set_properties_all_properties() {
         );
         op.url = Some("https://guiltyparties.com".into());
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "witness_set_properties_operation",
                 "value": {
@@ -363,23 +357,23 @@ fn witness_set_properties_all_properties() {
 #[test]
 fn recurrent_transfer_basic() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(DefineRecurrentTransferOperation {
-                    from_account: "alice".into(),
-                    to_account: "bob".into(),
-                    amount: NaiAssetConvertible::Asset(hbd_asset("100")),
-                    recurrence: Some(24),
-                    executions: Some(2),
-                    memo: Some("thanks for the service".into()),
-                    pair_id: None,
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(DefineRecurrentTransferOperation {
+                from_account: "alice".into(),
+                to_account: "bob".into(),
+                amount: NaiAssetConvertible::Asset(hbd_asset("100")),
+                recurrence: Some(24),
+                executions: Some(2),
+                memo: Some("thanks for the service".into()),
+                pair_id: None,
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "recurrent_transfer_operation",
                 "value": {
@@ -401,23 +395,23 @@ fn recurrent_transfer_basic() {
 #[test]
 fn recurrent_transfer_with_pair_id() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(DefineRecurrentTransferOperation {
-                    from_account: "alice".into(),
-                    to_account: "bob".into(),
-                    pair_id: Some(123),
-                    amount: NaiAssetConvertible::Asset(hive_asset("100")),
-                    memo: Some("monthly subscription".into()),
-                    recurrence: Some(24),
-                    executions: Some(2),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(DefineRecurrentTransferOperation {
+                from_account: "alice".into(),
+                to_account: "bob".into(),
+                pair_id: Some(123),
+                amount: NaiAssetConvertible::Asset(hive_asset("100")),
+                memo: Some("monthly subscription".into()),
+                recurrence: Some(24),
+                executions: Some(2),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "recurrent_transfer_operation",
                 "value": {
@@ -442,19 +436,19 @@ fn recurrent_transfer_with_pair_id() {
 #[test]
 fn recurrent_transfer_removal() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(RecurrentTransferRemovalOperation {
-                    from_account: "grace".into(),
-                    to_account: "henry".into(),
-                    pair_id: Some(143),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(RecurrentTransferRemovalOperation {
+                from_account: "grace".into(),
+                to_account: "henry".into(),
+                pair_id: Some(143),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "recurrent_transfer_operation",
                 "value": {
@@ -485,22 +479,22 @@ fn recurrent_transfer_removal() {
 #[test]
 fn update_proposal_mandatory_fields() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(UpdateProposalOperation {
-                    proposal_id: 123,
-                    creator: "alice".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
-                    subject: "Improve UI Design".into(),
-                    permlink: "improve-ui".into(),
-                    end_date: None,
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(UpdateProposalOperation {
+                proposal_id: 123,
+                creator: "alice".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
+                subject: "Improve UI Design".into(),
+                permlink: "improve-ui".into(),
+                end_date: None,
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "update_proposal_operation",
                 "value": {
@@ -520,24 +514,24 @@ fn update_proposal_mandatory_fields() {
 #[test]
 fn update_proposal_with_end_date() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(UpdateProposalOperation {
-                    proposal_id: 123,
-                    creator: "alice".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
-                    subject: "Improve UI Design".into(),
-                    permlink: "improve-ui".into(),
-                    end_date: Some(
-                        HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
-                    ),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(UpdateProposalOperation {
+                proposal_id: 123,
+                creator: "alice".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
+                subject: "Improve UI Design".into(),
+                permlink: "improve-ui".into(),
+                end_date: Some(
+                    HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
+                ),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "update_proposal_operation",
                 "value": {
@@ -566,24 +560,24 @@ fn update_proposal_with_end_date() {
 #[test]
 fn update_proposal_with_timestamp_end_date() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(UpdateProposalOperation {
-                    proposal_id: 123,
-                    creator: "alice".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
-                    subject: "Improve UI Design".into(),
-                    permlink: "improve-ui".into(),
-                    end_date: Some(
-                        HiveDateTime::parse("2023-03-15T22:00:00").unwrap(),
-                    ),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(UpdateProposalOperation {
+                proposal_id: 123,
+                creator: "alice".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
+                subject: "Improve UI Design".into(),
+                permlink: "improve-ui".into(),
+                end_date: Some(
+                    HiveDateTime::parse("2023-03-15T22:00:00").unwrap(),
+                ),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            api_op0(&*tx),
+            api_op0(&tx),
             json!({
                 "type": "update_proposal_operation",
                 "value": {
@@ -611,19 +605,19 @@ fn update_proposal_with_timestamp_end_date() {
 #[test]
 fn recurrent_transfer_removal_to_legacy_api() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(RecurrentTransferRemovalOperation {
-                    from_account: "alice".into(),
-                    to_account: "bob".into(),
-                    pair_id: Some(50),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(RecurrentTransferRemovalOperation {
+                from_account: "alice".into(),
+                to_account: "bob".into(),
+                pair_id: Some(50),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            legacy_value(&*tx)["operations"][0],
+            legacy_value(&tx)["operations"][0],
             json!([
                 "recurrent_transfer",
                 {
@@ -645,24 +639,24 @@ fn recurrent_transfer_removal_to_legacy_api() {
 #[test]
 fn update_proposal_to_legacy_api() {
     wax_test(None, |ctx| {
-        let tx = fresh_tx(ctx)
-            .push_builder(
-                &*ctx.base,
-                Box::new(UpdateProposalOperation {
-                    proposal_id: 123,
-                    creator: "alice".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
-                    subject: "Improve UI Design".into(),
-                    permlink: "improve-ui".into(),
-                    end_date: Some(
-                        HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
-                    ),
-                }),
-            )
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(UpdateProposalOperation {
+                proposal_id: 123,
+                creator: "alice".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
+                subject: "Improve UI Design".into(),
+                permlink: "improve-ui".into(),
+                end_date: Some(
+                    HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
+                ),
+            }),
+        )
+        .expect("push_builder");
 
         assert_eq!(
-            legacy_value(&*tx)["operations"][0],
+            legacy_value(&tx)["operations"][0],
             json!([
                 "update_proposal",
                 {
@@ -699,16 +693,15 @@ fn reply_with_beneficiaries_to_legacy_api() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with beneficiaries"}}"#
         );
 
         assert_eq!(
-            legacy_value(&*tx),
+            legacy_value(&tx),
             json!({
                 "ref_block_num": 1960,
                 "ref_block_prefix": 3_915_120_327_u64,
@@ -769,16 +762,15 @@ fn reply_set_percent_hbd() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Set percent"}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -826,16 +818,15 @@ fn reply_push_images() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test2.png","test.png"],"description":"Push Images"}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -873,16 +864,15 @@ fn blog_post_set_category() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with category"}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -915,16 +905,15 @@ fn blog_post_alternative_author() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","author":"initminer"}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -961,16 +950,15 @@ fn blog_post_push_links() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","links":["https://test.com","https://test2.com","http://test3.com"]}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1007,7 +995,8 @@ fn blog_post_invalid_max_accepted_payout_asset() {
             ..Default::default()
         };
 
-        let result = fresh_tx(ctx).push_builder(&*ctx.base, Box::new(op));
+        let mut tx = fresh_tx(ctx);
+        let result = tx.push_builder(&*ctx.base, Box::new(op));
         assert!(
             result.is_err(),
             "max_accepted_payout must be HBD; HIVE should be rejected"
@@ -1031,15 +1020,14 @@ fn blog_post_max_accepted_payout() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1091,15 +1079,14 @@ fn blog_post_max_accepted_payout_as_number() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1145,15 +1132,14 @@ fn blog_post_allow_curation_rewards() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1198,15 +1184,14 @@ fn blog_post_allow_votes_false() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1253,15 +1238,14 @@ fn blog_post_blockchain_default_skips_options() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1294,14 +1278,13 @@ fn blog_post_set_format() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(r#"{{"format":"markdown","app":"{APP}"}}"#);
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1355,16 +1338,15 @@ fn blog_post_multiple_properties() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test.png"],"links":["https://test.com"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}}"#
         );
 
         assert_eq!(
-            api_ops(&*tx),
+            api_ops(&tx),
             json!([
                 {
                     "type": "comment_operation",
@@ -1417,9 +1399,8 @@ fn blog_post_operation_count() {
             ..Default::default()
         };
 
-        let tx = fresh_tx(ctx)
-            .push_builder(&*ctx.base, Box::new(op))
-            .expect("push_builder");
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
 
         assert_eq!(tx.transaction().operations.len(), 1);
     });

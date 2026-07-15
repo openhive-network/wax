@@ -11,19 +11,23 @@ mod error;
 mod foundation;
 pub mod hive_apps_operations;
 mod interfaces;
-mod internal;
+// pub(crate): the online layer reuses the FFI conversion and construction
+// helpers (`internal::authority`, `internal::protocol`, ...).
+pub(crate) mod internal;
 pub mod models;
 mod options;
 pub mod result;
+pub(crate) mod transaction;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
 pub use interfaces::{
     AuthorityDataProvider, Manabar, Operation, OperationBuilder,
-    SignatureProvider, Transaction,
+    SignatureProvider,
 };
 pub use internal::models::manabar_data::ManabarData;
 pub use options::WaxOptions;
+pub use transaction::Transaction;
 
 /// Creates a [`WaxFoundation`] for offline operations, using the given
 /// [`WaxOptions`] (or the defaults when `None` is passed).

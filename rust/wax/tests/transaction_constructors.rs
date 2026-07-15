@@ -206,7 +206,7 @@ fn create_transaction_with_tapos_returns_usable_handle() {
         permlink: "p".into(),
         weight: 1,
     }));
-    tx = tx.push_operation(pushed);
+    tx.push_operation(pushed);
 
     let api = tx.to_api().expect("to_api");
     assert!(api.contains("\"voter\":\"alice\""), "vote missing: {api}");

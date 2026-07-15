@@ -3,15 +3,8 @@ use rust_decimal::Decimal;
 
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::models::authority::{
-    AccountAuthorityInfo, RequiredAuthorities,
-};
-use crate::base::models::basic::{
-    AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId,
-};
-use crate::base::result::{
-    BinaryViewOutputData, MinimizeRequiredSignaturesData,
-};
+use crate::base::models::authority::AccountAuthorityInfo;
+use crate::base::models::basic::{AccountName, PublicKey, Signature};
 
 /// Provides read access to an account's mana pool and its computed percentage.
 pub trait Manabar {
@@ -47,7 +40,7 @@ pub trait SignatureProvider {
     /// Sign a transaction `sig_digest` with the private key matching `public_key`.
     ///
     /// `public_key` is a WIF-format key string; `sig_digest` is a hex string
-    /// produced by [`Transaction::sig_digest`] (or its legacy variant).
+    /// produced by [`crate::Transaction::sig_digest`] (or its legacy variant).
     fn sign_digest(
         &self,
         public_key: &str,
@@ -98,139 +91,14 @@ pub trait Operation {
 pub trait OperationBuilder {
     /// Consume the builder and emit the wire-form operations it represents.
     ///
-    /// Takes `self: Box<Self>` so the trait remains object-safe — `Transaction::push_builder`
-    /// accepts `Box<dyn OperationBuilder>`.
+    /// Takes `self: Box<Self>` so the trait remains object-safe —
+    /// [`crate::Transaction::push_builder`] accepts `Box<dyn OperationBuilder>`.
     fn finalize(
         self: Box<Self>,
         foundation: &dyn WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError>;
 }
 
-/// Provides the full lifecycle of a transaction: building, signing,
-/// serialization, authority inspection and memo encryption.
-pub trait Transaction {
-    /// Append `op` to this transaction, consuming and returning it as a
-    /// `Box<dyn Transaction>` so chains stay object-safe.
-    fn push_operation(
-        self: Box<Self>,
-        op: Box<dyn Operation>,
-    ) -> Box<dyn Transaction>;
-
-    /// Appends a precomputed signature to the transaction.
-    fn add_signature(&mut self, signature: &str) -> Result<(), WaxError>;
-    /// Sets the transaction's expiration timestamp.
-    fn set_expiration(&mut self, expiration: &str) -> Result<(), WaxError>;
-    /// Returns whether the transaction carries at least one signature.
-    fn is_signed(&self) -> bool;
-    /// Validates the transaction against the protocol rules.
-    fn validate(&self) -> Result<(), WaxError>;
-    /// Returns the HF26 signing digest of the transaction.
-    fn sig_digest(&self) -> Result<SigDigest, WaxError>;
-    /// Returns the legacy-serialization signing digest of the transaction.
-    fn legacy_sig_digest(&self) -> Result<SigDigest, WaxError>;
-    /// Returns the HF26 transaction id.
-    fn id(&self) -> Result<TransactionId, WaxError>;
-    /// Returns the legacy-serialization transaction id.
-    fn legacy_id(&self) -> Result<TransactionId, WaxError>;
-    /// Converts the transaction into its wire-form hex, optionally stripped to
-    /// the unsigned form.
-    fn to_binary_form(&self, strip_to_unsigned: bool) -> Result<Hex, WaxError>;
-    /// Returns the HF26 binary view: the wire-form hex plus a parsed AST
-    /// annotating each byte range with its field name and type.
-    fn binary_view_metadata(&self) -> Result<BinaryViewOutputData, WaxError>;
-    /// Legacy-serialization counterpart to [`Self::binary_view_metadata`].
-    fn legacy_binary_view_metadata(
-        &self,
-    ) -> Result<BinaryViewOutputData, WaxError>;
-    /// Converts the transaction into its HF26 API JSON string.
-    fn to_api(&self) -> Result<String, WaxError>;
-    /// Same payload as [`Self::to_api`], parsed into a [`serde_json::Value`]
-    /// for callers that want structured access without a manual parse step.
-    fn to_api_json(&self) -> Result<serde_json::Value, WaxError>;
-    /// Converts the transaction into its legacy API JSON string.
-    fn to_legacy_api(&self) -> Result<String, WaxError>;
-    /// Returns the public keys that produced the transaction's signatures.
-    fn signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
-    /// Legacy-serialization counterpart to [`Self::signature_keys`].
-    fn legacy_signature_keys(&self) -> Result<Vec<PublicKey>, WaxError>;
-    /// Returns the accounts impacted by the transaction's operations.
-    fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
-    /// Returns the authorities the transaction requires to be signed.
-    fn required_authorities(&self) -> Result<RequiredAuthorities, WaxError>;
-    /// Collects the signing keys needed to satisfy the transaction's
-    /// authorities, resolving them through `provider`.
-    fn collect_signing_keys(
-        &self,
-        provider: &dyn AuthorityDataProvider,
-    ) -> Result<Vec<PublicKey>, WaxError>;
-    /// Returns the minimal set of signing keys that still satisfies the
-    /// transaction's authorities, subject to the limits in `data`.
-    fn minimize_required_signatures(
-        &self,
-        data: &MinimizeRequiredSignaturesData,
-        provider: &dyn AuthorityDataProvider,
-    ) -> Result<Vec<PublicKey>, WaxError>;
-    /// Returns the underlying [`proto::Transaction`] mirror.
-    fn transaction(&self) -> &proto::Transaction;
-
-    /// Finalize `builder` against `foundation` and append the resulting
-    /// operations to this transaction.
-    fn push_builder(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
-        builder: Box<dyn OperationBuilder>,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
-
-    /// Convenience: compute the transaction's `sig_digest`, ask `wallet` to
-    /// sign it with the private key matching `public_key`, append the result
-    /// to this transaction, and return it.
-    ///
-    /// To sign with multiple keys, call this once per key.
-    fn sign(
-        &mut self,
-        wallet: &dyn SignatureProvider,
-        public_key: &str,
-    ) -> Result<Signature, WaxError>;
-
-    /// Open an encryption range. Operations pushed (or already at) the
-    /// current end of the transaction will be encrypted by the next
-    /// `perform_operation_encryption` call. Multiple ranges may be opened
-    /// sequentially, each with its own key(s).
-    ///
-    /// `main_key` is the principal recipient public key; `other_key` is an
-    /// optional second recipient (memo-style two-party encryption).
-    fn start_encrypt(
-        self: Box<Self>,
-        main_key: &str,
-        other_key: Option<&str>,
-    ) -> Box<dyn Transaction>;
-
-    /// Close the most recently opened encryption range. Errors if no range is
-    /// open or the latest range is already closed.
-    fn stop_encrypt(self: Box<Self>) -> Result<Box<dyn Transaction>, WaxError>;
-
-    /// Walk each tracked encryption range and encrypt the memo-style field on
-    /// the operations it covers, using `wallet.encrypt_data` with the range's
-    /// keys and the transaction's `ref_block_prefix` as the nonce. The C++
-    /// transaction handle is rebuilt from the mutated proto, and all ranges
-    /// are cleared on success.
-    ///
-    /// The affected fields are: `transfer.memo`, `transfer_to_savings.memo`,
-    /// `transfer_from_savings.memo`, `recurrent_transfer.memo`, `comment.body`,
-    /// and `custom_json.json` (which is wrapped as `{"encrypted": "<ciphertext>"}`).
-    /// Operations without an encryptable field are skipped silently.
-    fn perform_operation_encryption(
-        &mut self,
-        wallet: &dyn SignatureProvider,
-    ) -> Result<(), WaxError>;
-
-    /// Walk every operation on the transaction and, for memo-style fields whose
-    /// value starts with `#` (the encrypted marker used by hived), decrypt it
-    /// via `wallet.decrypt_data`. Plaintext fields and operations without an
-    /// encryptable field are left untouched. The C++ transaction handle is
-    /// rebuilt from the mutated proto on success.
-    fn decrypt(
-        &mut self,
-        wallet: &dyn SignatureProvider,
-    ) -> Result<(), WaxError>;
-}
+// NOTE: the transaction type itself is the concrete
+// [`Transaction`](crate::Transaction) struct (`base::transaction`) — layered
+// concrete types replaced the former object-safe transaction trait.

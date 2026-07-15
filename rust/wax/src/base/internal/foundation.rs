@@ -16,11 +16,11 @@ use crate::base::constants::{
     DEFAULT_COMMENT_PERCENT_HBD,
 };
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::{Operation, Transaction};
+use crate::base::interfaces::Operation;
 use crate::base::internal::authority::to_rust_authorities;
 use crate::base::internal::models::manabar_data::ManabarData;
 use crate::base::internal::protocol::rust_protocol;
-use crate::base::internal::transaction::to_binary_view_output;
+use crate::base::transaction::{Transaction, to_binary_view_output};
 use crate::base::models::asset::{
     Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
 };
@@ -520,7 +520,7 @@ impl WaxFoundation for WaxFoundationApi {
     fn create_transaction_from_legacy_json(
         &self,
         legacy_json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
+    ) -> Result<Transaction, WaxError> {
         let api_json = self.legacy_transaction_to_json(legacy_json)?;
         self.create_transaction_from_json(&api_json)
     }
@@ -538,8 +538,8 @@ impl WaxFoundation for WaxFoundationApi {
     fn create_transaction_from_proto(
         &self,
         transaction: proto::Transaction,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
-        Ok(Box::new(RustTransaction::from_proto(
+    ) -> Result<Transaction, WaxError> {
+        Ok(Transaction::from_rust(RustTransaction::from_proto(
             rust_protocol(),
             self.options.chain_id.clone(),
             transaction,
@@ -549,7 +549,7 @@ impl WaxFoundation for WaxFoundationApi {
     fn create_transaction_from_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
+    ) -> Result<Transaction, WaxError> {
         let proto_json = rust_protocol()
             .cpp_tx_api_to_proto_json(json)
             .map_err(WaxError::from)?;
@@ -559,31 +559,31 @@ impl WaxFoundation for WaxFoundationApi {
             &proto_json,
         )
         .map_err(WaxError::new)?;
-        Ok(Box::new(tx))
+        Ok(Transaction::from_rust(tx))
     }
 
     fn create_transaction_from_proto_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
+    ) -> Result<Transaction, WaxError> {
         let tx = RustTransaction::from_json(
             rust_protocol(),
             self.options.chain_id.clone(),
             json,
         )
         .map_err(WaxError::new)?;
-        Ok(Box::new(tx))
+        Ok(Transaction::from_rust(tx))
     }
 
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
         expiration: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
+    ) -> Result<Transaction, WaxError> {
         let tapos = rust_protocol()
             .cpp_get_tapos_data(tapos_block_id)
             .map_err(WaxError::from)?;
-        Ok(Box::new(RustTransaction::new(
+        Ok(Transaction::from_rust(RustTransaction::new(
             rust_protocol(),
             self.options.chain_id.clone(),
             tapos.ref_block_num as u32,
@@ -598,29 +598,14 @@ impl WaxFoundation for WaxFoundationApi {
         tapos_block_id: &str,
         head_block_time: Option<HiveDateTime>,
         expiration: Option<&str>,
-    ) -> Result<Box<dyn Transaction>, WaxError> {
-        let expiration_spec = expiration.unwrap_or("+1m");
-        // TS deliberately ignores caller-supplied head_block_time on the
-        // default chain so mainnet expiration is anchored to the local clock —
-        // see createTransactionWithChainReferenceData / Transaction ctor.
-        let reference = if self.options.chain_id == DEFAULT_CHAIN_ID {
-            None
-        } else {
-            head_block_time
-        };
-        let resolved = resolve_expiration(expiration_spec, reference)?;
-
-        let tapos = rust_protocol()
-            .cpp_get_tapos_data(tapos_block_id)
-            .map_err(WaxError::from)?;
-        Ok(Box::new(RustTransaction::new(
-            rust_protocol(),
-            self.options.chain_id.clone(),
-            tapos.ref_block_num as u32,
-            tapos.ref_block_prefix,
-            &resolved,
-            Vec::new(),
-        )))
+    ) -> Result<Transaction, WaxError> {
+        build_transaction_with_chain_reference_data(
+            &self.options.chain_id,
+            tapos_block_id,
+            head_block_time,
+            expiration,
+        )
+        .map(Transaction::from_rust)
     }
 
     fn create_operation_from_proto(
@@ -876,6 +861,41 @@ fn from_ffi_witness_props(
 
 fn head_block_time_to_now(dt: HiveDateTime) -> i32 {
     dt.inner().timestamp() as i32
+}
+
+/// Builds a [`RustTransaction`] anchored to the given chain reference data
+/// (TaPoS block id, head block time, expiration spec). Shared by
+/// `WaxFoundation::create_transaction_with_chain_reference_data` and the
+/// online `create_transaction` factory, which needs the concrete type.
+pub(crate) fn build_transaction_with_chain_reference_data(
+    chain_id: &str,
+    tapos_block_id: &str,
+    head_block_time: Option<HiveDateTime>,
+    expiration: Option<&str>,
+) -> Result<RustTransaction, WaxError> {
+    let expiration_spec = expiration.unwrap_or("+1m");
+    // TS deliberately ignores caller-supplied head_block_time on the
+    // default chain so mainnet expiration is anchored to the local clock —
+    // see createTransactionWithChainReferenceData / Transaction ctor.
+    let reference = if chain_id == DEFAULT_CHAIN_ID {
+        None
+    } else {
+        head_block_time
+    };
+    let resolved = resolve_expiration(expiration_spec, reference)?;
+
+    let tapos = rust_protocol()
+        .cpp_get_tapos_data(tapos_block_id)
+        .map_err(WaxError::from)?;
+
+    Ok(RustTransaction::new(
+        rust_protocol(),
+        chain_id,
+        tapos.ref_block_num as u32,
+        tapos.ref_block_prefix,
+        &resolved,
+        Vec::new(),
+    ))
 }
 
 /// Resolve an expiration spec to a concrete Hive-formatted timestamp.

@@ -9,9 +9,9 @@ use crate::chain::rpc::JsonRpcCaller;
 /// Provides online (chain-bound) capabilities on top of [`WaxFoundation`]:
 /// endpoint configuration, transport handles and the typed API surfaces
 /// bound to them ([`Self::api`] and
-/// [`HiveChainExt`](crate::HiveChainExt)). `broadcast`, `create_transaction`
-/// and online-only helpers are added in subsequent phases (see
-/// `rust/hive.md`).
+/// [`HiveChainExt`](crate::HiveChainExt), which also hosts the
+/// `create_transaction` online-transaction factory). `broadcast` and further
+/// online-only helpers are added in subsequent phases.
 ///
 /// TS NOTE: TypeScript `IHiveChainInterface` extends `IWaxBaseInterface` and
 /// exposes the same surface — Rust mirrors that via the [`WaxFoundation`]

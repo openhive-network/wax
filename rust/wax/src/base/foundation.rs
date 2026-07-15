@@ -1,7 +1,8 @@
 use crate::core::proto;
 
 use crate::WaxError;
-use crate::base::interfaces::{Operation, Transaction};
+use crate::base::interfaces::Operation;
+use crate::base::transaction::Transaction;
 use crate::base::internal::models::manabar_data::ManabarData;
 use crate::base::models::asset::{
     AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
@@ -285,7 +286,7 @@ pub trait WaxFoundation {
     fn create_transaction_from_legacy_json(
         &self,
         legacy_json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Returns the TaPoS reference-block data derived from a block id.
     fn get_tapos_data(&self, block_id: &str) -> Result<RefBlockData, WaxError>;
@@ -294,13 +295,13 @@ pub trait WaxFoundation {
     fn create_transaction_from_proto(
         &self,
         transaction: proto::Transaction,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Creates a transaction from Hive API-shape JSON.
     fn create_transaction_from_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Build a transaction from proto-shape JSON — operations keyed by their
     /// oneof name (e.g. `{"vote_operation": { ... }}`) — as opposed to the Hive
@@ -309,14 +310,14 @@ pub trait WaxFoundation {
     fn create_transaction_from_proto_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Creates a transaction bound to the given TaPoS block id and expiration.
     fn create_transaction_with_tapos(
         &self,
         tapos_block_id: &str,
         expiration: &str,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Build a transaction from chain reference data: a tapos block id, plus
     /// optional head-block time and expiration spec. Mirrors TS
@@ -336,7 +337,7 @@ pub trait WaxFoundation {
         tapos_block_id: &str,
         head_block_time: Option<HiveDateTime>,
         expiration: Option<&str>,
-    ) -> Result<Box<dyn Transaction>, WaxError>;
+    ) -> Result<Transaction, WaxError>;
 
     /// Build an [`Operation`] from a [`proto::Operation`]. Hides the underlying
     /// `crate::core::RustOperation` so callers stay on the public trait surface.

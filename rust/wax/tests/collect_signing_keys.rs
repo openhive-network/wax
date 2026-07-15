@@ -80,7 +80,7 @@ fn vote_op(voter: &str) -> Box<dyn wax::Operation> {
     }))
 }
 
-fn vote_tx(voters: &[&str]) -> Box<dyn Transaction> {
+fn vote_tx(voters: &[&str]) -> Transaction {
     let operations = voters
         .iter()
         .map(|voter| Operation {
@@ -192,7 +192,8 @@ fn provider_can_be_passed_as_trait_object() {
     )]);
     let dyn_provider: &dyn AuthorityDataProvider = &provider;
 
-    let tx = vote_tx(&[]).push_operation(vote_op("alice"));
+    let mut tx = vote_tx(&[]);
+    tx.push_operation(vote_op("alice"));
     let keys = tx
         .collect_signing_keys(dyn_provider)
         .expect("dyn AuthorityDataProvider must work");

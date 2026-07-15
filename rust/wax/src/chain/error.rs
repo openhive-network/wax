@@ -3,6 +3,7 @@ use thiserror::Error;
 
 use crate::chain::healthchecker::RequestError;
 use crate::chain::util::{DetailedResponseData, RequestOptions};
+use crate::models::basic::AccountName;
 
 /// Represents any failure originating from the online chain layer.
 ///
@@ -56,6 +57,33 @@ pub enum WaxChainError {
         source: serde_json::Error,
     },
 
+    /// TS NOTE: `findAccounts` throws when `database_api.find_accounts`
+    /// returns fewer accounts than requested.
+    #[error(
+        "No such account{s} on chain with given name{s}: \"{}\"",
+        .accounts.join(", "),
+        s = plural(.accounts)
+    )]
+    AccountsNotFound { accounts: Vec<AccountName> },
+
+    /// TS NOTE: `findWitnessAccounts` throws when
+    /// `database_api.find_witnesses` returns fewer witnesses than requested.
+    #[error(
+        "No such witness{s} on chain with given name{s}: \"{}\"",
+        .witnesses.join(", "),
+        s = plural(.witnesses)
+    )]
+    WitnessesNotFound { witnesses: Vec<AccountName> },
+
+    /// TS NOTE: `OnChainOperationValidator.ensureAccountsExist` throws when
+    /// `rc_api.find_rc_accounts` reports fewer accounts than checked.
+    #[error("Accounts \"{}\" do not exist!", .accounts.join("\", \""))]
+    AccountsDoNotExist { accounts: Vec<AccountName> },
+
     #[error(transparent)]
     Foundation(#[from] WaxError),
+}
+
+fn plural(names: &[AccountName]) -> &'static str {
+    if names.len() == 1 { "" } else { "s" }
 }

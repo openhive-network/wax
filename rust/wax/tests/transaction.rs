@@ -21,11 +21,11 @@ fn operation(value: Value) -> Box<dyn Operation> {
 // Canonical mainnet transaction shell used by most tests. Block data and
 // expiration are arbitrary fixed values — tests that care about those build
 // their own transaction inline.
-fn mainnet_tx() -> Box<dyn Transaction> {
+fn mainnet_tx() -> Transaction {
     tx_with_chain_id(MAINNET_CHAIN_ID)
 }
 
-fn tx_with_chain_id(chain_id: &str) -> Box<dyn Transaction> {
+fn tx_with_chain_id(chain_id: &str) -> Transaction {
     create_wax_foundation(WaxOptions {
         chain_id: chain_id.into(),
     })
@@ -79,10 +79,10 @@ fn recover_account(
 
 #[test]
 fn push_operation_appends_op_to_proto_state() {
-    let tx = mainnet_tx();
+    let mut tx = mainnet_tx();
     assert!(tx.transaction().operations.is_empty());
 
-    let tx = tx.push_operation(vote("alice", 10_000));
+    tx.push_operation(vote("alice", 10_000));
 
     assert_eq!(tx.transaction().operations.len(), 1);
     assert_eq!(
@@ -98,7 +98,8 @@ fn push_operation_appends_op_to_proto_state() {
 
 #[test]
 fn validate_passes_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     tx.validate()
         .expect("well-formed transaction should validate");
@@ -106,7 +107,8 @@ fn validate_passes_for_well_formed_transaction() {
 
 #[test]
 fn sig_digest_returns_hex_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let digest = tx
         .sig_digest()
@@ -125,8 +127,10 @@ fn sig_digest_returns_hex_for_well_formed_transaction() {
 
 #[test]
 fn sig_digest_differs_when_operations_differ() {
-    let a = mainnet_tx().push_operation(vote("alice", 10_000));
-    let b = mainnet_tx().push_operation(vote("bob", 10_000));
+    let mut a = mainnet_tx();
+    a.push_operation(vote("alice", 10_000));
+    let mut b = mainnet_tx();
+    b.push_operation(vote("bob", 10_000));
 
     let da = a.sig_digest().expect("a digest");
     let db = b.sig_digest().expect("b digest");
@@ -139,7 +143,8 @@ fn sig_digest_differs_when_operations_differ() {
 
 #[test]
 fn sig_digest_fails_for_invalid_chain_id() {
-    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
 
     assert!(
         tx.sig_digest().is_err(),
@@ -149,7 +154,8 @@ fn sig_digest_fails_for_invalid_chain_id() {
 
 #[test]
 fn id_returns_40_char_hex_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let id = tx.id().expect("id should succeed for a valid transaction");
 
@@ -176,7 +182,8 @@ fn id_differs_when_operations_differ() {
 
 #[test]
 fn id_is_independent_of_chain_id() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let id_via_self = tx.id().expect("id should succeed");
     let digest_main = tx.sig_digest().expect("digest should succeed");
@@ -191,7 +198,8 @@ fn id_is_independent_of_chain_id() {
 
 #[test]
 fn to_binary_form_returns_hex_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let bin = tx
         .to_binary_form(false)
@@ -228,7 +236,8 @@ fn to_binary_form_differs_when_operations_differ() {
 
 #[test]
 fn to_binary_form_stripped_is_no_longer_than_full() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let full = tx.to_binary_form(false).expect("full bin");
     let stripped = tx.to_binary_form(true).expect("stripped bin");
@@ -243,7 +252,8 @@ fn to_binary_form_stripped_is_no_longer_than_full() {
 
 #[test]
 fn validate_fails_for_invalid_operation() {
-    let tx = mainnet_tx().push_operation(vote("alice", 20_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 20_000));
 
     assert!(
         tx.validate().is_err(),
@@ -259,7 +269,8 @@ const FAKE_SIG_B: &str = "20ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766
 
 #[test]
 fn is_signed_is_false_for_fresh_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     assert!(
         !tx.is_signed(),
@@ -269,7 +280,8 @@ fn is_signed_is_false_for_fresh_transaction() {
 
 #[test]
 fn is_signed_becomes_true_after_add_signature() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     assert!(!tx.is_signed());
 
     tx.add_signature(FAKE_SIG_A)
@@ -283,7 +295,8 @@ fn is_signed_becomes_true_after_add_signature() {
 
 #[test]
 fn is_signed_stays_false_when_add_signature_fails() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let _ = tx.add_signature("not-a-hex-signature");
 
@@ -295,7 +308,8 @@ fn is_signed_stays_false_when_add_signature_fails() {
 
 #[test]
 fn add_signature_appends_to_proto_signatures() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     assert!(tx.transaction().signatures.is_empty());
 
     tx.add_signature(FAKE_SIG_A)
@@ -352,7 +366,8 @@ impl SignatureProvider for StubWallet {
 
 #[test]
 fn sign_routes_digest_and_pubkey_to_wallet_and_appends_returned_signature() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     let expected_digest = tx.sig_digest().expect("digest");
     let wallet = StubWallet::new(FAKE_SIG_A);
 
@@ -424,7 +439,8 @@ fn sign_refuses_to_run_when_transaction_is_invalid() {
 
 #[test]
 fn sign_can_be_called_multiple_times_for_multi_key_signing() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     let wallet_a = StubWallet::new(FAKE_SIG_A);
     let wallet_b = StubWallet::new(FAKE_SIG_B);
 
@@ -467,7 +483,8 @@ fn sign_propagates_wallet_error_without_mutating_transaction() {
         }
     }
 
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     let result = tx.sign(&FailingWallet, "STM_PUBKEY_X");
 
     assert!(result.is_err(), "wallet error must surface");
@@ -479,7 +496,8 @@ fn sign_propagates_wallet_error_without_mutating_transaction() {
 
 #[test]
 fn add_signature_accumulates_across_calls() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     tx.add_signature(FAKE_SIG_A).expect("first signature");
     tx.add_signature(FAKE_SIG_B).expect("second signature");
@@ -492,7 +510,8 @@ fn add_signature_accumulates_across_calls() {
 
 #[test]
 fn add_signature_extends_full_binary_form_but_not_stripped() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let full_before = tx.to_binary_form(false).expect("full bin pre-sig");
     let stripped_before =
@@ -519,7 +538,8 @@ fn add_signature_extends_full_binary_form_but_not_stripped() {
 
 #[test]
 fn add_signature_rejects_non_hex_input() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let result = tx.add_signature("not-a-hex-signature");
 
@@ -532,7 +552,8 @@ fn add_signature_rejects_non_hex_input() {
 
 #[test]
 fn to_api_returns_json_describing_the_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let json = tx
         .to_api()
@@ -566,7 +587,8 @@ fn to_api_returns_json_describing_the_transaction() {
 
 #[test]
 fn to_api_json_returns_parsed_object_matching_to_api() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let raw = tx.to_api().expect("to_api should succeed");
     let parsed = tx.to_api_json().expect("to_api_json should succeed");
@@ -590,7 +612,8 @@ fn to_api_json_returns_parsed_object_matching_to_api() {
 #[test]
 fn to_api_reflects_pushed_operations() {
     let empty_tx = mainnet_tx();
-    let voted_tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut voted_tx = mainnet_tx();
+    voted_tx.push_operation(vote("alice", 10_000));
 
     let before = empty_tx.to_api().expect("empty to_api");
     let after = voted_tx.to_api().expect("voted to_api");
@@ -605,7 +628,8 @@ fn to_api_reflects_pushed_operations() {
 
 #[test]
 fn to_api_reflects_added_signatures() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let before = tx.to_api().expect("to_api before sig");
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
@@ -635,7 +659,8 @@ fn required_authorities_is_empty_for_transaction_without_operations() {
 
 #[test]
 fn required_authorities_collects_posting_for_vote() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let auths = tx.required_authorities().expect("required_authorities");
 
@@ -647,7 +672,8 @@ fn required_authorities_collects_posting_for_vote() {
 
 #[test]
 fn required_authorities_collects_active_for_account_witness_proxy() {
-    let tx = mainnet_tx().push_operation(account_witness_proxy("alice", "bob"));
+    let mut tx = mainnet_tx();
+    tx.push_operation(account_witness_proxy("alice", "bob"));
 
     let auths = tx.required_authorities().expect("required_authorities");
 
@@ -664,11 +690,8 @@ fn required_authorities_collects_other_for_recover_account() {
     const RECENT_OWNER: &str =
         "STM4wJYLcRnALfbpb4ziqiH3oLEgw9PTJZTBBj8goFyjta3mm6D1s";
 
-    let tx = mainnet_tx().push_operation(recover_account(
-        "alice",
-        NEW_OWNER,
-        RECENT_OWNER,
-    ));
+    let mut tx = mainnet_tx();
+    tx.push_operation(recover_account("alice", NEW_OWNER, RECENT_OWNER));
 
     let auths = tx.required_authorities().expect("required_authorities");
 
@@ -708,7 +731,8 @@ fn impacted_accounts_is_empty_for_transaction_without_operations() {
 
 #[test]
 fn impacted_accounts_returns_voter_and_author_for_vote() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let accounts = tx.impacted_accounts().expect("impacted_accounts");
 
@@ -718,8 +742,8 @@ fn impacted_accounts_returns_voter_and_author_for_vote() {
 
 #[test]
 fn impacted_accounts_unions_across_operations() {
-    let tx = mainnet_tx()
-        .push_operation(vote("zebra", 1))
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("zebra", 1))
         .push_operation(vote("alice", 1));
 
     let accounts = tx.impacted_accounts().expect("impacted_accounts");
@@ -737,7 +761,8 @@ fn impacted_accounts_unions_across_operations() {
 
 #[test]
 fn signature_keys_is_empty_for_unsigned_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let keys = tx
         .signature_keys()
@@ -753,7 +778,8 @@ fn signature_keys_is_empty_for_unsigned_transaction() {
 fn signature_keys_skips_chain_id_when_unsigned() {
     // Even with a deliberately bad chain_id baked into the tx, signature_keys must
     // not consult it when there are no signatures to recover.
-    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
 
     let keys = tx.signature_keys().expect(
         "signature_keys must not touch chain_id when signatures are empty",
@@ -764,8 +790,8 @@ fn signature_keys_skips_chain_id_when_unsigned() {
 
 #[test]
 fn signature_keys_fails_for_invalid_chain_id_when_signed() {
-    let mut tx =
-        tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
 
     assert!(
@@ -776,7 +802,8 @@ fn signature_keys_fails_for_invalid_chain_id_when_signed() {
 
 #[test]
 fn legacy_sig_digest_returns_hex_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let digest = tx
         .legacy_sig_digest()
@@ -795,8 +822,10 @@ fn legacy_sig_digest_returns_hex_for_well_formed_transaction() {
 
 #[test]
 fn legacy_sig_digest_differs_when_operations_differ() {
-    let a = mainnet_tx().push_operation(vote("alice", 10_000));
-    let b = mainnet_tx().push_operation(vote("bob", 10_000));
+    let mut a = mainnet_tx();
+    a.push_operation(vote("alice", 10_000));
+    let mut b = mainnet_tx();
+    b.push_operation(vote("bob", 10_000));
 
     let da = a.legacy_sig_digest().expect("a legacy digest");
     let db = b.legacy_sig_digest().expect("b legacy digest");
@@ -809,7 +838,8 @@ fn legacy_sig_digest_differs_when_operations_differ() {
 
 #[test]
 fn legacy_sig_digest_fails_for_invalid_chain_id() {
-    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
 
     assert!(
         tx.legacy_sig_digest().is_err(),
@@ -819,7 +849,8 @@ fn legacy_sig_digest_fails_for_invalid_chain_id() {
 
 #[test]
 fn legacy_id_returns_40_char_hex_for_well_formed_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let id = tx
         .legacy_id()
@@ -855,7 +886,8 @@ fn legacy_id_differs_when_operations_differ() {
 
 #[test]
 fn to_legacy_api_returns_json_describing_the_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let json = tx
         .to_legacy_api()
@@ -886,7 +918,8 @@ fn to_legacy_api_returns_json_describing_the_transaction() {
 #[test]
 fn to_legacy_api_reflects_pushed_operations() {
     let empty_tx = mainnet_tx();
-    let voted_tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut voted_tx = mainnet_tx();
+    voted_tx.push_operation(vote("alice", 10_000));
 
     let before = empty_tx.to_legacy_api().expect("empty to_legacy_api");
     let after = voted_tx.to_legacy_api().expect("voted to_legacy_api");
@@ -901,7 +934,8 @@ fn to_legacy_api_reflects_pushed_operations() {
 
 #[test]
 fn to_legacy_api_reflects_added_signatures() {
-    let mut tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let before = tx.to_legacy_api().expect("to_legacy_api before sig");
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
@@ -919,7 +953,8 @@ fn to_legacy_api_reflects_added_signatures() {
 
 #[test]
 fn legacy_signature_keys_is_empty_for_unsigned_transaction() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let keys = tx
         .legacy_signature_keys()
@@ -933,7 +968,8 @@ fn legacy_signature_keys_is_empty_for_unsigned_transaction() {
 
 #[test]
 fn legacy_signature_keys_skips_chain_id_when_unsigned() {
-    let tx = tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
 
     let keys = tx
         .legacy_signature_keys()
@@ -944,8 +980,8 @@ fn legacy_signature_keys_skips_chain_id_when_unsigned() {
 
 #[test]
 fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
-    let mut tx =
-        tx_with_chain_id("not-hex").push_operation(vote("alice", 10_000));
+    let mut tx = tx_with_chain_id("not-hex");
+    tx.push_operation(vote("alice", 10_000));
     tx.add_signature(FAKE_SIG_A).expect("signature accepted");
 
     assert!(
@@ -956,7 +992,7 @@ fn legacy_signature_keys_fails_for_invalid_chain_id_when_signed() {
 
 #[test]
 fn push_operation_preserves_order_when_chained() {
-    let tx = create_wax_foundation(None)
+    let mut tx = create_wax_foundation(None)
         .create_transaction_from_proto(ProtoTransaction {
             ref_block_num: 2,
             ref_block_prefix: 0xdead_beef,
@@ -965,8 +1001,8 @@ fn push_operation_preserves_order_when_chained() {
             extensions: Vec::new(),
             signatures: Vec::new(),
         })
-        .expect("create_transaction_from_proto")
-        .push_operation(vote("first", 1))
+        .expect("create_transaction_from_proto");
+    tx.push_operation(vote("first", 1))
         .push_operation(vote("second", 2));
 
     let voters: Vec<&str> = tx
@@ -992,7 +1028,8 @@ fn node_key(node: &BinaryViewNode) -> &str {
 
 #[test]
 fn binary_view_metadata_returns_tree_matching_binary_form() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     let bin = tx.to_binary_form(false).expect("binary form");
 
     let view = tx
@@ -1032,7 +1069,8 @@ fn binary_view_metadata_reflects_pushed_operations() {
         None
     }
 
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
     let view = tx.binary_view_metadata().expect("view");
 
     let voter = find_voter(&view.offsets)
@@ -1045,7 +1083,8 @@ fn binary_view_metadata_reflects_pushed_operations() {
 
 #[test]
 fn legacy_binary_view_metadata_returns_tree() {
-    let tx = mainnet_tx().push_operation(vote("alice", 10_000));
+    let mut tx = mainnet_tx();
+    tx.push_operation(vote("alice", 10_000));
 
     let view = tx
         .legacy_binary_view_metadata()
@@ -1155,7 +1194,7 @@ impl SignatureProvider for CryptoStub {
 
 #[test]
 fn stop_encrypt_without_start_returns_error() {
-    let tx = mainnet_tx();
+    let mut tx = mainnet_tx();
     assert!(
         tx.stop_encrypt().is_err(),
         "stop_encrypt with no open range must fail"
@@ -1164,8 +1203,8 @@ fn stop_encrypt_without_start_returns_error() {
 
 #[test]
 fn stop_encrypt_twice_on_same_range_returns_error() {
-    let tx = mainnet_tx()
-        .start_encrypt("STM_K1", None)
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("STM_K1", None)
         .stop_encrypt()
         .expect("first stop_encrypt should succeed");
 
@@ -1177,7 +1216,8 @@ fn stop_encrypt_twice_on_same_range_returns_error() {
 
 #[test]
 fn perform_operation_encryption_is_noop_when_no_ranges_are_open() {
-    let mut tx = mainnet_tx().push_operation(transfer("alice", "bob", "plain"));
+    let mut tx = mainnet_tx();
+    tx.push_operation(transfer("alice", "bob", "plain"));
     let wallet = CryptoStub::new();
 
     tx.perform_operation_encryption(&wallet)
@@ -1195,8 +1235,8 @@ fn perform_operation_encryption_is_noop_when_no_ranges_are_open() {
 
 #[test]
 fn perform_operation_encryption_rewrites_memos_in_range() {
-    let mut tx = mainnet_tx()
-        .push_operation(transfer("alice", "bob", "before"))
+    let mut tx = mainnet_tx();
+    tx.push_operation(transfer("alice", "bob", "before"))
         .start_encrypt("STM_MAIN", Some("STM_OTHER"))
         .push_operation(transfer("alice", "carol", "secret-1"))
         .push_operation(transfer("alice", "dave", "secret-2"))
@@ -1227,7 +1267,8 @@ fn perform_operation_encryption_rewrites_memos_in_range() {
         ],
         "only ops inside the [start, stop) range must be encrypted"
     );
-    // NOTE: `encryption_indices` is no longer reachable through `dyn Transaction`.
+    // NOTE: `encryption_indices` is no longer reachable through the public
+    // `Transaction` surface.
     // A second `perform_operation_encryption` must be a noop once ranges are
     // cleared — verifying that exercises the same "ranges were consumed"
     // invariant the old field probe asserted.
@@ -1248,8 +1289,8 @@ fn perform_operation_encryption_rewrites_memos_in_range() {
 #[test]
 fn perform_operation_encryption_passes_keys_and_nonce_to_wallet() {
     const REF_BLOCK_PREFIX: u32 = 0xfeed_face;
-    let mut tx = mainnet_tx()
-        .start_encrypt("STM_MAIN", Some("STM_OTHER"))
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("STM_MAIN", Some("STM_OTHER"))
         .push_operation(transfer("alice", "bob", "msg"))
         .stop_encrypt()
         .expect("stop_encrypt");
@@ -1276,8 +1317,8 @@ fn perform_operation_encryption_passes_keys_and_nonce_to_wallet() {
 
 #[test]
 fn perform_operation_encryption_covers_all_supported_memo_fields() {
-    let mut tx = mainnet_tx()
-        .start_encrypt("K", None)
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("K", None)
         .push_operation(transfer("alice", "bob", "transfer-memo"))
         .push_operation(comment_op("alice", "p", "comment-body"))
         .push_operation(custom_json("alice", "test", "{\"hello\":\"world\"}"))
@@ -1316,8 +1357,8 @@ fn perform_operation_encryption_covers_all_supported_memo_fields() {
 fn perform_operation_encryption_skips_unencryptable_operations() {
     // Vote has no memo/body/json — the visitor must leave it alone, but other
     // ops in the same range must still get encrypted.
-    let mut tx = mainnet_tx()
-        .start_encrypt("K", None)
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("K", None)
         .push_operation(vote("alice", 10_000))
         .push_operation(transfer("alice", "bob", "secret"))
         .stop_encrypt()
@@ -1342,8 +1383,8 @@ fn perform_operation_encryption_skips_unencryptable_operations() {
 fn perform_operation_encryption_rebuilds_handle_for_subsequent_calls() {
     // After encryption mutates the proto in-place, the C++ handle must be
     // rebuilt so derived outputs reflect the new state.
-    let mut tx = mainnet_tx()
-        .start_encrypt("K", None)
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("K", None)
         .push_operation(transfer("alice", "bob", "secret"))
         .stop_encrypt()
         .expect("stop_encrypt");
@@ -1363,8 +1404,8 @@ fn perform_operation_encryption_rebuilds_handle_for_subsequent_calls() {
 fn decrypt_only_unwraps_fields_with_hash_prefix() {
     // Construct a tx whose ops mix encrypted (#-prefixed) and plaintext memos.
     // Only the prefixed ones should be sent to the wallet.
-    let mut tx = mainnet_tx()
-        .push_operation(transfer("alice", "bob", "#enc:K:secret"))
+    let mut tx = mainnet_tx();
+    tx.push_operation(transfer("alice", "bob", "#enc:K:secret"))
         .push_operation(transfer("alice", "carol", "plaintext"));
     let wallet = CryptoStub::new();
 
@@ -1392,8 +1433,8 @@ fn decrypt_unwraps_custom_json_envelope() {
     let envelope =
         serde_json::json!({ "encrypted": "#enc:K:{\"hello\":\"world\"}" })
             .to_string();
-    let mut tx =
-        mainnet_tx().push_operation(custom_json("alice", "test", &envelope));
+    let mut tx = mainnet_tx();
+    tx.push_operation(custom_json("alice", "test", &envelope));
 
     tx.decrypt(&CryptoStub::new()).expect("decrypt");
 
@@ -1407,8 +1448,8 @@ fn decrypt_unwraps_custom_json_envelope() {
 
 #[test]
 fn encrypt_then_decrypt_round_trips_memo() {
-    let mut tx = mainnet_tx()
-        .start_encrypt("K", None)
+    let mut tx = mainnet_tx();
+    tx.start_encrypt("K", None)
         .push_operation(transfer("alice", "bob", "round-trip"))
         .stop_encrypt()
         .expect("stop_encrypt");

@@ -92,7 +92,7 @@ const LEGACY_TRANSACTION_JSON: &str = r#"{
 fn create_transaction_from_legacy_json(
     ctx: &crate::common::WaxTestCtx,
     legacy_json: &str,
-) -> Box<dyn Transaction> {
+) -> Transaction {
     ctx.base
         .create_transaction_from_legacy_json(legacy_json)
         .expect("create_transaction_from_legacy_json")
@@ -142,12 +142,12 @@ fn tapos_with_implicit_expiration() {
                 None,
                 None,
             )
-            .expect("create_transaction_with_chain_reference_data")
-            .push_operation(
-                ctx.base
-                    .create_operation_from_json(VOTE_OPERATION_JSON)
-                    .expect("vote op"),
-            );
+            .expect("create_transaction_with_chain_reference_data");
+        tx.push_operation(
+            ctx.base
+                .create_operation_from_json(VOTE_OPERATION_JSON)
+                .expect("vote op"),
+        );
         tx.validate().expect("validate");
 
         let provider = BeekeeperSignatureProvider::new(wallet);
@@ -559,8 +559,8 @@ fn create_transaction_using_object_interface() {
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
                 "2023-08-01T15:38:48",
             )
-            .expect("create_transaction_with_tapos")
-            .push_operation(op);
+            .expect("create_transaction_with_tapos");
+        tx.push_operation(op);
 
         tx.validate().expect("validate");
 
@@ -593,7 +593,7 @@ fn binary_serialize_signed_transaction() {
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -606,8 +606,7 @@ fn binary_serialize_signed_transaction() {
             .create_operation_from_json(VOTE_OPERATION_JSON)
             .expect("vote op");
 
-        let mut tx = tx
-            .push_operation(vote_op)
+        tx.push_operation(vote_op)
             .push_builder(
                 &*ctx.base,
                 Box::new(DefineRecurrentTransferOperation {
@@ -745,7 +744,7 @@ fn binary_to_json_to_binary_round_trip() {
 #[test]
 fn recurrent_transfer_with_extensions() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -753,31 +752,29 @@ fn recurrent_transfer_with_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        let tx = tx
-            .push_builder(
-                &*ctx.base,
-                Box::new(RecurrentTransferRemovalOperation {
-                    from_account: "initminer".into(),
-                    to_account: "gtg".into(),
-                    pair_id: Some(100),
-                }),
-            )
-            .expect("removal builder");
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(RecurrentTransferRemovalOperation {
+                from_account: "initminer".into(),
+                to_account: "gtg".into(),
+                pair_id: Some(100),
+            }),
+        )
+        .expect("removal builder");
 
-        let tx = tx
-            .push_builder(
-                &*ctx.base,
-                Box::new(DefineRecurrentTransferOperation {
-                    from_account: "initminer".into(),
-                    to_account: "gtg".into(),
-                    amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
-                    memo: None,
-                    recurrence: None,
-                    executions: None,
-                    pair_id: None,
-                }),
-            )
-            .expect("define builder");
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(DefineRecurrentTransferOperation {
+                from_account: "initminer".into(),
+                to_account: "gtg".into(),
+                amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
+                memo: None,
+                recurrence: None,
+                executions: None,
+                pair_id: None,
+            }),
+        )
+        .expect("define builder");
 
         let ops = &tx.transaction().operations;
         assert_eq!(ops.len(), 2);
@@ -825,7 +822,7 @@ fn recurrent_transfer_with_extensions() {
 #[test]
 fn recurrent_transfer_without_extensions() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -833,20 +830,19 @@ fn recurrent_transfer_without_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        let tx = tx
-            .push_builder(
-                &*ctx.base,
-                Box::new(DefineRecurrentTransferOperation {
-                    from_account: "initminer".into(),
-                    to_account: "gtg".into(),
-                    amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
-                    memo: None,
-                    recurrence: None,
-                    executions: None,
-                    pair_id: None,
-                }),
-            )
-            .expect("define builder");
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(DefineRecurrentTransferOperation {
+                from_account: "initminer".into(),
+                to_account: "gtg".into(),
+                amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
+                memo: None,
+                recurrence: None,
+                executions: None,
+                pair_id: None,
+            }),
+        )
+        .expect("define builder");
 
         let ops = &tx.transaction().operations;
         assert_eq!(ops.len(), 1);
@@ -878,7 +874,7 @@ fn recurrent_transfer_without_extensions() {
 #[test]
 fn invalid_asset_in_update_proposal_fails() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -911,7 +907,7 @@ fn invalid_asset_in_update_proposal_fails() {
 #[test]
 fn update_proposal_with_extensions() {
     wax_test(None, |ctx| {
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -919,35 +915,33 @@ fn update_proposal_with_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        let tx = tx
-            .push_builder(
-                &*ctx.base,
-                Box::new(wax::complex_operations::UpdateProposalOperation {
-                    proposal_id: 100,
-                    creator: "initminer".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
-                    subject: "subject".into(),
-                    permlink: "permlink".into(),
-                    end_date: Some(
-                        HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
-                    ),
-                }),
-            )
-            .expect("update_proposal with end_date");
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(wax::complex_operations::UpdateProposalOperation {
+                proposal_id: 100,
+                creator: "initminer".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
+                subject: "subject".into(),
+                permlink: "permlink".into(),
+                end_date: Some(
+                    HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
+                ),
+            }),
+        )
+        .expect("update_proposal with end_date");
 
-        let tx = tx
-            .push_builder(
-                &*ctx.base,
-                Box::new(wax::complex_operations::UpdateProposalOperation {
-                    proposal_id: 100,
-                    creator: "initminer".into(),
-                    daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
-                    subject: "subject".into(),
-                    permlink: "permlink".into(),
-                    end_date: None,
-                }),
-            )
-            .expect("update_proposal without end_date");
+        tx.push_builder(
+            &*ctx.base,
+            Box::new(wax::complex_operations::UpdateProposalOperation {
+                proposal_id: 100,
+                creator: "initminer".into(),
+                daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
+                subject: "subject".into(),
+                permlink: "permlink".into(),
+                end_date: None,
+            }),
+        )
+        .expect("update_proposal without end_date");
 
         let ops = &tx.transaction().operations;
         assert_eq!(ops.len(), 2);
@@ -1003,7 +997,7 @@ fn transfer_op(
 }
 
 // Extracts the memo from the i'th `TransferOperation` of `tx`.
-fn transfer_memo(tx: &dyn Transaction, index: usize) -> String {
+fn transfer_memo(tx: &Transaction, index: usize) -> String {
     match tx.transaction().operations[index]
         .value
         .as_ref()
@@ -1033,7 +1027,7 @@ fn create_encrypted_operations() {
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -1041,8 +1035,7 @@ fn create_encrypted_operations() {
             )
             .expect("create_transaction_with_tapos");
 
-        let mut tx = tx
-            .start_encrypt(&public_key, None)
+        tx.start_encrypt(&public_key, None)
             .push_operation(transfer_op(
                 hive_sat(ctx, 100),
                 "gtg",
@@ -1064,8 +1057,8 @@ fn create_encrypted_operations() {
             .expect("perform_operation_encryption");
         tx.sign(&provider, &public_key).expect("sign");
 
-        let encrypted0 = transfer_memo(&*tx, 0);
-        let encrypted1 = transfer_memo(&*tx, 1);
+        let encrypted0 = transfer_memo(&tx, 0);
+        let encrypted1 = transfer_memo(&tx, 1);
         assert_eq!(
             encrypted0,
             "#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWZSsvTXr78tSCezfzAwehn1umdeHgCefsE1rTp45N3A9P"
@@ -1106,7 +1099,7 @@ fn decrypt_operations() {
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
-        let tx = ctx
+        let mut tx = ctx
             .base
             .create_transaction_with_tapos(
                 "04c1c7a566fc0da66aee465714acee7346b48ac2",
@@ -1114,28 +1107,27 @@ fn decrypt_operations() {
             )
             .expect("create_transaction_with_tapos");
 
-        let mut tx =
-            tx.start_encrypt(&public_key, None)
-                .push_operation(transfer_op(
-                    hive_sat(ctx, 100),
-                    "gtg",
-                    "initminer",
-                    "This should be encrypted",
-                ));
+        tx.start_encrypt(&public_key, None)
+            .push_operation(transfer_op(
+                hive_sat(ctx, 100),
+                "gtg",
+                "initminer",
+                "This should be encrypted",
+            ));
 
         let provider = BeekeeperSignatureProvider::new(wallet);
         tx.perform_operation_encryption(&provider)
             .expect("perform_operation_encryption");
         tx.sign(&provider, &public_key).expect("sign");
 
-        let encrypted = transfer_memo(&*tx, 0);
+        let encrypted = transfer_memo(&tx, 0);
         assert_eq!(
             encrypted,
             "#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWZSsvTXr78tSCezfzAwehn1umdeHgCefsE1rTp45N3A9P"
         );
 
         tx.decrypt(&provider).expect("decrypt");
-        assert_eq!(transfer_memo(&*tx, 0), "This should be encrypted");
+        assert_eq!(transfer_memo(&tx, 0), "This should be encrypted");
     });
 }
 
@@ -1685,7 +1677,7 @@ fn legacy_transaction_id() {
 #[test]
 fn push_operation_onto_legacy_transaction() {
     wax_test(None, |ctx| {
-        let tx =
+        let mut tx =
             create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let extra = ctx
             .base
@@ -1700,7 +1692,7 @@ fn push_operation_onto_legacy_transaction() {
             }"#,
             )
             .expect("operation json");
-        let tx = tx.push_operation(extra);
+        tx.push_operation(extra);
         assert_eq!(tx.transaction().operations.len(), 2);
     });
 }

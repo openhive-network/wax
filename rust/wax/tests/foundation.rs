@@ -114,18 +114,18 @@ fn deserialize_transaction_round_trips_through_binary() {
 
     // Build a minimal transaction so we have a known binary blob to feed
     // back through deserialize_transaction.
-    let tx = f
+    let mut tx = f
         .create_transaction_with_tapos(
             "00000001feedfacedeadbeef00000000000000000000",
             "2026-05-15T12:00:00",
         )
-        .expect("create_transaction_with_tapos")
-        .push_operation(f.create_operation(Value::VoteOperation(Vote {
-            voter: "alice".into(),
-            author: "bob".into(),
-            permlink: "p".into(),
-            weight: 10_000,
-        })));
+        .expect("create_transaction_with_tapos");
+    tx.push_operation(f.create_operation(Value::VoteOperation(Vote {
+        voter: "alice".into(),
+        author: "bob".into(),
+        permlink: "p".into(),
+        weight: 10_000,
+    })));
 
     let hex = tx.to_binary_form(false).expect("to_binary_form");
 
