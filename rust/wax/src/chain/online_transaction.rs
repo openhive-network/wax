@@ -81,7 +81,7 @@ impl OnlineTransaction {
     }
 
     /// Appends `op` to this transaction. See [`Transaction::push_operation`].
-    pub fn push_operation(&mut self, op: Box<dyn Operation>) -> &mut Self {
+    pub fn push_operation(&mut self, op: Operation) -> &mut Self {
         self.base.push_operation(op);
         self
     }
@@ -252,7 +252,10 @@ impl VerificationData {
         op: &proto::Operation,
         texts: &[&str],
     ) -> Result<(), WaxError> {
-        let operation = RustOperation::from_proto(rust_protocol(), op.clone());
+        let operation = Operation::from_rust(RustOperation::from_proto(
+            rust_protocol(),
+            op.clone(),
+        ));
 
         for account in operation.impacted_accounts()? {
             self.key_leak_texts
@@ -308,13 +311,16 @@ fn collect_verification_data(
             // TS NOTE: the account_create*/account_update* arms also call
             // `collectModifiedAuthorityData`, an empty TODO in TS — omitted.
             Value::AccountCreateOperation(create) => {
-                data.created_accounts.insert(create.new_account_name.clone());
+                data.created_accounts
+                    .insert(create.new_account_name.clone());
             }
             Value::AccountCreateWithDelegationOperation(create) => {
-                data.created_accounts.insert(create.new_account_name.clone());
+                data.created_accounts
+                    .insert(create.new_account_name.clone());
             }
             Value::CreateClaimedAccountOperation(create) => {
-                data.created_accounts.insert(create.new_account_name.clone());
+                data.created_accounts
+                    .insert(create.new_account_name.clone());
             }
             Value::AccountUpdate2Operation(update) => {
                 data.collect_referenced_accounts(update)

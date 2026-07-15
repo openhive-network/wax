@@ -16,11 +16,9 @@ use crate::base::constants::{
     DEFAULT_COMMENT_PERCENT_HBD,
 };
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::Operation;
 use crate::base::internal::authority::to_rust_authorities;
 use crate::base::internal::models::manabar_data::ManabarData;
 use crate::base::internal::protocol::rust_protocol;
-use crate::base::transaction::{Transaction, to_binary_view_output};
 use crate::base::models::asset::{
     Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
 };
@@ -28,12 +26,14 @@ use crate::base::models::authority::Authorities;
 use crate::base::models::basic::{
     AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
 };
+use crate::base::operation::Operation;
 use crate::base::options::WaxOptions;
 use crate::base::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, CryptoMemo,
     HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
     WitnessSetPropertiesProps,
 };
+use crate::base::transaction::{Transaction, to_binary_view_output};
 
 pub(crate) struct WaxFoundationApi {
     options: WaxOptions,
@@ -611,24 +611,25 @@ impl WaxFoundation for WaxFoundationApi {
     fn create_operation_from_proto(
         &self,
         operation: proto::Operation,
-    ) -> Box<dyn Operation> {
-        Box::new(RustOperation::from_proto(rust_protocol(), operation))
+    ) -> Operation {
+        Operation::from_rust(RustOperation::from_proto(
+            rust_protocol(),
+            operation,
+        ))
     }
 
-    fn create_operation(
-        &self,
-        value: proto::operation::Value,
-    ) -> Box<dyn Operation> {
-        Box::new(RustOperation::new(rust_protocol(), value))
+    fn create_operation(&self, value: proto::operation::Value) -> Operation {
+        Operation::from_rust(RustOperation::new(rust_protocol(), value))
     }
 
     fn create_operation_from_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Operation>, WaxError> {
+    ) -> Result<Operation, WaxError> {
         let op = RustOperation::from_json(rust_protocol(), json)
             .map_err(WaxError::new)?;
-        Ok(Box::new(op))
+
+        Ok(Operation::from_rust(op))
     }
 
     fn default_comment_options(
@@ -652,8 +653,8 @@ impl WaxFoundation for WaxFoundationApi {
         &self,
         operation: &proto::Operation,
     ) -> Result<Vec<AccountName>, WaxError> {
-        let op = RustOperation::from_proto(rust_protocol(), operation.clone());
-        op.impacted_accounts()
+        self.create_operation_from_proto(operation.clone())
+            .impacted_accounts()
     }
 
     fn operation_binary_view_metadata(

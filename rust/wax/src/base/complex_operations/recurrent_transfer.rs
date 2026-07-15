@@ -5,9 +5,9 @@ use crate::core::proto;
 
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::OperationBuilder;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::AccountName;
+use crate::base::operation::OperationBuilder;
 
 const DEFAULT_RECURRENCE_HOURS: u32 = 24;
 const DEFAULT_EXECUTIONS: u32 = 2;

@@ -352,14 +352,14 @@ impl WaxFoundation for HiveChainApi {
         fn create_operation_from_proto(
             &self,
             operation: proto::Operation,
-        ) -> Box<dyn Operation>;
+        ) -> Operation;
 
-        fn create_operation(&self, value: proto::operation::Value) -> Box<dyn Operation>;
+        fn create_operation(&self, value: proto::operation::Value) -> Operation;
 
         fn create_operation_from_json(
             &self,
             json: &str,
-        ) -> Result<Box<dyn Operation>, WaxError>;
+        ) -> Result<Operation, WaxError>;
 
         fn serialize_witness_props(
             &self,

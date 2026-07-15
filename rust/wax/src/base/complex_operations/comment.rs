@@ -30,9 +30,9 @@ use crate::base::constants::{
     DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS, DEFAULT_COMMENT_PERCENT_HBD,
 };
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::OperationBuilder;
 use crate::base::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
 use crate::base::models::basic::AccountName;
+use crate::base::operation::OperationBuilder;
 
 const APP_TAG: &str =
     concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));

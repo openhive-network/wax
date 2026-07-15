@@ -71,7 +71,7 @@ fn posting_only(key: &str) -> Authorities {
     }
 }
 
-fn vote_op(voter: &str) -> Box<dyn wax::Operation> {
+fn vote_op(voter: &str) -> wax::Operation {
     create_wax_foundation(None).create_operation(Value::VoteOperation(Vote {
         voter: voter.into(),
         author: "anyone".into(),

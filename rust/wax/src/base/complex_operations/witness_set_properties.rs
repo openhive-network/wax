@@ -2,9 +2,9 @@ use crate::core::proto;
 
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::OperationBuilder;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::{AccountName, PublicKey};
+use crate::base::operation::OperationBuilder;
 use crate::base::result::{JsonPrice, WitnessSetPropertiesProps};
 
 /// Represents the base/quote pair for the witness HBD↔HIVE exchange rate.

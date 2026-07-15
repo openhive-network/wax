@@ -12,15 +12,14 @@ use crate::core::{EncryptionIndex, RustOperation, RustTransaction, proto};
 
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::{
-    AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider,
-};
+use crate::base::interfaces::{AuthorityDataProvider, SignatureProvider};
 use crate::base::internal::authority::{build_provider, to_rust_authorities};
 use crate::base::internal::protocol::rust_protocol;
 use crate::base::models::authority::RequiredAuthorities;
 use crate::base::models::basic::{
     AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId,
 };
+use crate::base::operation::{Operation, OperationBuilder};
 use crate::base::result::{
     BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData,
 };
@@ -45,17 +44,12 @@ impl Transaction {
     }
 
     /// Appends `op` to this transaction.
-    pub fn push_operation(&mut self, op: Box<dyn Operation>) -> &mut Self {
-        // The Operation trait exposes only `&proto::Operation`, so we rebuild
-        // the C++ handle from the proto mirror. The extra handle creation is
-        // the price of keeping `RustOperation` out of the public surface.
-        let proto_op = op.proto().clone();
-        let new_op = RustOperation::from_proto(rust_protocol(), proto_op);
+    pub fn push_operation(&mut self, op: Operation) -> &mut Self {
         rust_protocol()
-            .cpp_tx_add_operation(self.inner.handle.pin_mut(), &new_op.handle)
+            .cpp_tx_add_operation(self.inner.handle.pin_mut(), &op.inner.handle)
             .expect("failed to add operation to transaction");
 
-        self.inner.inner.operations.push(new_op.inner);
+        self.inner.inner.operations.push(op.inner.inner);
 
         self
     }

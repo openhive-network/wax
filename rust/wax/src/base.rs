@@ -15,17 +15,16 @@ mod interfaces;
 // helpers (`internal::authority`, `internal::protocol`, ...).
 pub(crate) mod internal;
 pub mod models;
+mod operation;
 mod options;
 pub mod result;
 pub(crate) mod transaction;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
-pub use interfaces::{
-    AuthorityDataProvider, Manabar, Operation, OperationBuilder,
-    SignatureProvider,
-};
+pub use interfaces::{AuthorityDataProvider, Manabar, SignatureProvider};
 pub use internal::models::manabar_data::ManabarData;
+pub use operation::{Operation, OperationBuilder};
 pub use options::WaxOptions;
 pub use transaction::Transaction;
 

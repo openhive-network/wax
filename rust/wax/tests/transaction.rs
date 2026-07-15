@@ -14,7 +14,7 @@ use wax::{
 // Operations and transactions are built through the public `WaxFoundation`
 // factory so tests stay on the crate's public surface. Spinning up a foundation
 // per call is cheap — it shares wax's internal protocol singleton.
-fn operation(value: Value) -> Box<dyn Operation> {
+fn operation(value: Value) -> Operation {
     create_wax_foundation(None).create_operation(value)
 }
 
@@ -40,7 +40,7 @@ fn tx_with_chain_id(chain_id: &str) -> Transaction {
     .expect("create_transaction_from_proto")
 }
 
-fn vote(voter: &str, weight: u32) -> Box<dyn Operation> {
+fn vote(voter: &str, weight: u32) -> Operation {
     operation(Value::VoteOperation(Vote {
         voter: voter.into(),
         author: "author".into(),
@@ -49,7 +49,7 @@ fn vote(voter: &str, weight: u32) -> Box<dyn Operation> {
     }))
 }
 
-fn account_witness_proxy(account: &str, proxy: &str) -> Box<dyn Operation> {
+fn account_witness_proxy(account: &str, proxy: &str) -> Operation {
     operation(Value::AccountWitnessProxyOperation(AccountWitnessProxy {
         account: account.into(),
         proxy: proxy.into(),
@@ -68,7 +68,7 @@ fn recover_account(
     account: &str,
     new_owner_key: &str,
     recent_owner_key: &str,
-) -> Box<dyn Operation> {
+) -> Operation {
     operation(Value::RecoverAccountOperation(RecoverAccount {
         account_to_recover: account.into(),
         new_owner_authority: authority_with_key(new_owner_key),
@@ -1111,7 +1111,7 @@ fn hive_asset(amount: i64) -> Asset {
     }
 }
 
-fn transfer(from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
+fn transfer(from: &str, to: &str, memo: &str) -> Operation {
     operation(Value::TransferOperation(Transfer {
         from_account: from.into(),
         to_account: to.into(),
@@ -1120,7 +1120,7 @@ fn transfer(from: &str, to: &str, memo: &str) -> Box<dyn Operation> {
     }))
 }
 
-fn comment_op(author: &str, permlink: &str, body: &str) -> Box<dyn Operation> {
+fn comment_op(author: &str, permlink: &str, body: &str) -> Operation {
     operation(Value::CommentOperation(Comment {
         parent_author: "".into(),
         parent_permlink: "hive-100000".into(),
@@ -1132,7 +1132,7 @@ fn comment_op(author: &str, permlink: &str, body: &str) -> Box<dyn Operation> {
     }))
 }
 
-fn custom_json(account: &str, id: &str, json: &str) -> Box<dyn Operation> {
+fn custom_json(account: &str, id: &str, json: &str) -> Operation {
     operation(Value::CustomJsonOperation(CustomJson {
         required_auths: Vec::new(),
         required_posting_auths: vec![account.into()],

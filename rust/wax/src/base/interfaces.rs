@@ -1,10 +1,8 @@
-use crate::core::proto;
 use rust_decimal::Decimal;
 
 use crate::WaxError;
-use crate::base::foundation::WaxFoundation;
 use crate::base::models::authority::AccountAuthorityInfo;
-use crate::base::models::basic::{AccountName, PublicKey, Signature};
+use crate::base::models::basic::{PublicKey, Signature};
 
 /// Provides read access to an account's mana pool and its computed percentage.
 pub trait Manabar {
@@ -73,32 +71,8 @@ pub trait SignatureProvider {
     ) -> Result<String, WaxError>;
 }
 
-/// Provides read and validation access to a single operation.
-pub trait Operation {
-    /// Returns the underlying [`proto::Operation`] mirror. Exposed on the trait
-    /// so the public API can stay object-safe (`Box<dyn Operation>`) — consumers
-    /// of `dyn Operation` need a way to read the operation's wire-form state
-    /// without knowing the concrete implementor.
-    fn proto(&self) -> &proto::Operation;
-
-    /// Validates the operation against the protocol rules.
-    fn validate(&self) -> Result<(), WaxError>;
-    /// Returns the accounts impacted by the operation.
-    fn impacted_accounts(&self) -> Result<Vec<AccountName>, WaxError>;
-}
-
-/// Provides construction of one or more operations from higher-level inputs.
-pub trait OperationBuilder {
-    /// Consume the builder and emit the wire-form operations it represents.
-    ///
-    /// Takes `self: Box<Self>` so the trait remains object-safe —
-    /// [`crate::Transaction::push_builder`] accepts `Box<dyn OperationBuilder>`.
-    fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
-    ) -> Result<Vec<proto::Operation>, WaxError>;
-}
-
-// NOTE: the transaction type itself is the concrete
-// [`Transaction`](crate::Transaction) struct (`base::transaction`) — layered
-// concrete types replaced the former object-safe transaction trait.
+// NOTE: the transaction and operation types are the concrete
+// [`Transaction`](crate::Transaction) / [`Operation`](crate::Operation)
+// structs (`base::transaction`, `base::operation`) — layered concrete types
+// replaced the former object-safe traits. `OperationBuilder` lives with
+// `Operation` in `base::operation`.

@@ -1,8 +1,6 @@
 use crate::core::proto;
 
 use crate::WaxError;
-use crate::base::interfaces::Operation;
-use crate::base::transaction::Transaction;
 use crate::base::internal::models::manabar_data::ManabarData;
 use crate::base::models::asset::{
     AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
@@ -11,11 +9,13 @@ use crate::base::models::authority::Authorities;
 use crate::base::models::basic::{
     AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
 };
+use crate::base::operation::Operation;
 use crate::base::result::{
     Assets, BinaryViewOutputData, BrainKeyData, ChainConfig, CryptoMemo,
     HiveAssetData, JsonPrice, PrivateKeyData, RefBlockData,
     WitnessSetPropertiesProps,
 };
+use crate::base::transaction::Transaction;
 use std::collections::HashMap;
 
 /// Provides the offline Hive API: asset math, key and account helpers,
@@ -340,19 +340,16 @@ pub trait WaxFoundation {
     ) -> Result<Transaction, WaxError>;
 
     /// Build an [`Operation`] from a [`proto::Operation`]. Hides the underlying
-    /// `crate::core::RustOperation` so callers stay on the public trait surface.
+    /// `crate::core::RustOperation` so callers stay on the public surface.
     fn create_operation_from_proto(
         &self,
         operation: proto::Operation,
-    ) -> Box<dyn Operation>;
+    ) -> Operation;
 
     /// Build an [`Operation`] from an [`proto::operation::Value`] variant —
     /// shorthand for wrapping the value in a `proto::Operation` and calling
     /// [`Self::create_operation_from_proto`].
-    fn create_operation(
-        &self,
-        value: proto::operation::Value,
-    ) -> Box<dyn Operation>;
+    fn create_operation(&self, value: proto::operation::Value) -> Operation;
 
     /// Build an [`Operation`] from proto-shape JSON (e.g.
     /// `{"vote_operation": { ... }}`). The JSON counterpart of
@@ -360,7 +357,7 @@ pub trait WaxFoundation {
     fn create_operation_from_json(
         &self,
         json: &str,
-    ) -> Result<Box<dyn Operation>, WaxError>;
+    ) -> Result<Operation, WaxError>;
 
     /// Build the chain-default `comment_options` payload for `author` /
     /// `permlink` — the options a `comment_options_operation` carries when the

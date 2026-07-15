@@ -4,9 +4,9 @@ use crate::core::proto;
 
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::OperationBuilder;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::{AccountName, HiveDateTime};
+use crate::base::operation::OperationBuilder;
 
 /// Represents the builder for the update-proposal operation.
 ///

@@ -500,8 +500,8 @@ fn bidirectional_json_proto_round_trip() {
 
 // TS line 313: "Should be able to get impacted accounts from example api
 // operation". The TS test calls `base.operationGetImpactedAccounts(op)` on a
-// bare operation; the Rust equivalent is the `Operation` trait's
-// `impacted_accounts`, which goes through the same C++ entry point
+// bare operation; the Rust equivalent is `Operation::impacted_accounts`,
+// which goes through the same C++ entry point
 // (`cpp_op_impacted_accounts`).
 //
 // TS 313 and 321 differ only in fixture shape (api `{type, value}` vs proto
@@ -984,7 +984,7 @@ fn transfer_op(
     from: &str,
     to: &str,
     memo: &str,
-) -> Box<dyn Operation> {
+) -> Operation {
     use wax::proto::{Transfer, operation::Value};
     wax::create_wax_foundation(None).create_operation(Value::TransferOperation(
         Transfer {

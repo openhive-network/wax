@@ -11,8 +11,8 @@ use serde_json::{Value, json};
 use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
-use crate::base::interfaces::OperationBuilder;
 use crate::base::models::basic::AccountName;
+use crate::base::operation::OperationBuilder;
 
 const OPERATION_ID: &str = "community";
 
