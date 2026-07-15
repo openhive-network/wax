@@ -3,15 +3,16 @@ use crate::WaxFoundation;
 use crate::chain::api::DefaultHiveApi;
 use crate::chain::error::WaxChainError;
 use crate::chain::extend::HiveApi;
+use crate::chain::options::WaxChainOptions;
 use crate::chain::rest::RestCaller;
 use crate::chain::rpc::JsonRpcCaller;
 
 /// Provides online (chain-bound) capabilities on top of [`WaxFoundation`]:
 /// endpoint configuration, transport handles and the typed API surfaces
 /// bound to them ([`Self::api`] and
-/// [`HiveChainExt`](crate::HiveChainExt), which also hosts the
-/// `create_transaction` online-transaction factory). `broadcast` and further
-/// online-only helpers are added in subsequent phases.
+/// [`HiveChainExt`](crate::HiveChainExt), which also hosts the online-only
+/// helpers — the `create_transaction` factory, `broadcast` and the
+/// per-account manabar accessors).
 ///
 /// TS NOTE: TypeScript `IHiveChainInterface` extends `IWaxBaseInterface` and
 /// exposes the same surface — Rust mirrors that via the [`WaxFoundation`]
@@ -40,6 +41,18 @@ pub trait HiveChain: WaxFoundation {
     /// bind typed REST API surfaces to the chain (see
     /// [`HiveChainExt`](crate::HiveChainExt)).
     fn rest_caller(&self) -> RestCaller;
+
+    /// Returns a snapshot of the chain's current configuration: the chain id,
+    /// the live endpoints and the construction-time transport settings.
+    ///
+    /// TS NOTE: with [`create_hive_chain`](crate::create_hive_chain) and
+    /// struct-update syntax this covers `IHiveChainInterface.extendConfig` —
+    /// deriving a chain with selectively overridden options:
+    /// `create_hive_chain(WaxChainOptions { api_timeout_ms: 5_000,
+    /// ..chain.options() })`. TS additionally links the derived chain back to
+    /// its originator (endpoint changes propagate up); the Rust copies are
+    /// independent.
+    fn options(&self) -> WaxChainOptions;
 
     /// Returns the default typed API surface bound to this chain.
     ///

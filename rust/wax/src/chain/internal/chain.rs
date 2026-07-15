@@ -34,6 +34,10 @@ pub(crate) struct HiveChainApi {
     foundation: Box<dyn WaxFoundation>,
     rpc: Arc<JsonRpcClient>,
     rest: Arc<RestClient>,
+    // Kept for the `options()` snapshot — the transports do not expose them
+    // back.
+    api_timeout_ms: u32,
+    wax_api_caller: Option<String>,
 }
 
 impl HiveChainApi {
@@ -52,13 +56,15 @@ impl HiveChainApi {
         let rest = Arc::new(RestClient::new(
             options.rest_api_endpoint,
             options.api_timeout_ms.into(),
-            options.wax_api_caller,
+            options.wax_api_caller.clone(),
         ));
 
         Ok(Self {
             foundation,
             rpc,
             rest,
+            api_timeout_ms: options.api_timeout_ms,
+            wax_api_caller: options.wax_api_caller,
         })
     }
 }
@@ -100,6 +106,16 @@ impl HiveChain for HiveChainApi {
 
     fn rest_caller(&self) -> RestCaller {
         RestCaller::new(self.rest.clone())
+    }
+
+    fn options(&self) -> WaxChainOptions {
+        WaxChainOptions {
+            chain_id: self.foundation.chain_id().to_string(),
+            api_endpoint: self.rpc.endpoint(),
+            rest_api_endpoint: self.rest.endpoint(),
+            api_timeout_ms: self.api_timeout_ms,
+            wax_api_caller: self.wax_api_caller.clone(),
+        }
     }
 }
 

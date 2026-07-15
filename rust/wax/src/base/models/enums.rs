@@ -1,10 +1,12 @@
 //! Enums shared with the comment builders and online manabar accessors.
 
-/// Represents which manabar pool to inspect on an account.
+/// Represents which manabar pool to inspect on an account. Consumed by the
+/// per-account manabar accessors of [`crate::HiveChainExt`]
+/// (`calculate_current_manabar_value_for_account` /
+/// `calculate_manabar_full_regeneration_time_for_account`).
 ///
 /// TS NOTE: mirrors `EManabarType` (`chain_api.ts`); discriminant values match
-/// TS exactly so the FFI form is identical when an online layer consumes it.
-#[allow(dead_code)]
+/// TS exactly.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum EManabarType {

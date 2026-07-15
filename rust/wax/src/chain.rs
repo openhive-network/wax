@@ -9,6 +9,7 @@
 pub mod api;
 
 mod authority_trace;
+mod broadcast;
 mod error;
 mod extend;
 mod healthchecker;
@@ -25,6 +26,7 @@ pub use authority_trace::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
 };
+pub use broadcast::Broadcastable;
 pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
 pub use healthchecker::*;
