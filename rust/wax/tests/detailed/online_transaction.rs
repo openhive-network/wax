@@ -1,5 +1,5 @@
 // Integration tests of the online transaction surface:
-// `HiveChainExt::create_transaction`, `OnlineTransaction`
+// `HiveChain::create_transaction`, `OnlineTransaction`
 // (`generate_authority_verification_trace`, `perform_on_chain_verification`)
 // and the round-based authority fetching behind them, all exercised against
 // a scripted JSON-RPC server (see `common.rs` for the server and the
@@ -12,8 +12,8 @@
 use serde_json::json;
 
 use wax::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, HiveChainExt,
-    ProcessedEntry, WaxChainError, WaxChainOptions, create_hive_chain,
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, ProcessedEntry,
+    WaxChainError, WaxChainOptions, create_hive_chain,
 };
 
 use crate::common::{
@@ -88,7 +88,10 @@ async fn trace_accepts_directly_authorized_signature_key() {
     let provider = BeekeeperSignatureProvider::new(wallet);
     let signature = tx.sign(&provider, &public_key).expect("sign");
 
-    let trace = tx.generate_authority_verification_trace(false).await.unwrap();
+    let trace = tx
+        .generate_authority_verification_trace(false)
+        .await
+        .unwrap();
 
     assert!(matches!(
         trace.verification_status,
@@ -152,7 +155,10 @@ async fn trace_fetches_redirected_account_authority_in_second_round() {
     let provider = BeekeeperSignatureProvider::new(wallet);
     tx.sign(&provider, &public_key).expect("sign");
 
-    let trace = tx.generate_authority_verification_trace(false).await.unwrap();
+    let trace = tx
+        .generate_authority_verification_trace(false)
+        .await
+        .unwrap();
 
     assert!(matches!(
         trace.verification_status,
@@ -165,9 +171,12 @@ async fn trace_fetches_redirected_account_authority_in_second_round() {
 
     // The signature key sits behind an account-authority redirection, so the
     // path must descend through `corp`.
-    assert!(any_entry(&trace.collected_data[0].final_authority_path, &|entry| {
-        matches!(&entry.processed_entry, ProcessedEntry::Account(name) if name == "corp")
-    }));
+    assert!(any_entry(
+        &trace.collected_data[0].final_authority_path,
+        &|entry| {
+            matches!(&entry.processed_entry, ProcessedEntry::Account(name) if name == "corp")
+        }
+    ));
 
     captured.recv().unwrap();
     let first = captured.recv().unwrap();
@@ -204,7 +213,10 @@ async fn trace_terminates_when_redirected_account_does_not_exist() {
     tx.push_operation(chain.create_operation(transfer_value("hello")));
 
     // Unsigned: the point is loop termination and the missing-account flag.
-    let trace = tx.generate_authority_verification_trace(false).await.unwrap();
+    let trace = tx
+        .generate_authority_verification_trace(false)
+        .await
+        .unwrap();
 
     assert!(matches!(
         trace.verification_status,
@@ -223,7 +235,10 @@ async fn trace_terminates_when_redirected_account_does_not_exist() {
     }));
 
     captured.recv().unwrap();
-    assert_eq!(captured.recv().unwrap().method, "database_api.find_accounts");
+    assert_eq!(
+        captured.recv().unwrap().method,
+        "database_api.find_accounts"
+    );
     assert_eq!(
         captured.recv().unwrap().params,
         json!({ "accounts": ["ghost"], "delayed_votes_active": true })

@@ -12,11 +12,11 @@ use wax::{Transaction, WaxFoundation, create_wax_foundation};
 const TAPOS: &str = "04c507a8c7fe5be96be64ce7c86855e1806cbde3";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 
-fn fresh_tx(f: &dyn WaxFoundation) -> Transaction {
+fn fresh_tx(f: &WaxFoundation) -> Transaction {
     f.create_transaction_with_tapos(TAPOS, EXPIRATION)
         .expect("create_transaction_with_tapos")
 }
@@ -44,8 +44,8 @@ fn delegate_then_remove() {
         .authorize(vec!["initminer".into()], Vec::new())
         .expect("authorize remove");
 
-    let mut tx = fresh_tx(&*f);
-    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
+    let mut tx = fresh_tx(&f);
+    tx.push_builder(&f, op).expect("push_builder");
 
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
@@ -82,8 +82,8 @@ fn delegate_multiple_delegatees() {
         .authorize(vec!["testAuthority".into()], Vec::new())
         .expect("authorize");
 
-    let mut tx = fresh_tx(&*f);
-    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
+    let mut tx = fresh_tx(&f);
+    tx.push_builder(&f, op).expect("push_builder");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
 
     assert_eq!(
@@ -104,8 +104,8 @@ fn authorizes_via_active_auth() {
         .authorize(Vec::new(), vec!["alice".into()])
         .expect("authorize");
 
-    let mut tx = fresh_tx(&*f);
-    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
+    let mut tx = fresh_tx(&f);
+    tx.push_builder(&f, op).expect("push_builder");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
     assert_eq!(cj.required_auths, vec!["alice".to_string()]);
     assert!(cj.required_posting_auths.is_empty());
@@ -147,7 +147,7 @@ fn unauthorized_stage_yields_no_ops() {
         .delegate("alice", 1000, vec!["bob".into()])
         .expect("delegate");
 
-    let mut tx = fresh_tx(&*f);
-    tx.push_builder(&*f, Box::new(op)).expect("push_builder");
+    let mut tx = fresh_tx(&f);
+    tx.push_builder(&f, op).expect("push_builder");
     assert!(tx.transaction().operations.is_empty());
 }

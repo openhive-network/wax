@@ -11,14 +11,14 @@ use wax::complex_operations::{HbdExchangeRate, WitnessSetPropertiesOperation};
 use wax::models::asset::NaiAssetConvertible;
 use wax::{Transaction, WaxFoundation, create_wax_foundation};
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 
 const TAPOS_BLOCK_ID: &str = "04c1c7a566fc0da66aee465714acee7346b48ac2";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
 
-fn empty_tx(f: &dyn WaxFoundation) -> Transaction {
+fn empty_tx(f: &WaxFoundation) -> Transaction {
     f.create_transaction_with_tapos(TAPOS_BLOCK_ID, EXPIRATION)
         .expect("create_transaction_with_tapos")
 }
@@ -28,25 +28,24 @@ fn empty_tx(f: &dyn WaxFoundation) -> Transaction {
 fn decay_and_budget() {
     let f = foundation();
 
-    let mut tx = empty_tx(&*f);
+    let mut tx = empty_tx(&f);
     tx.push_builder(
-            &*f,
-            Box::new(WitnessSetPropertiesOperation {
-                owner: "emrebeyler".into(),
-                witness_signing_key:
-                    "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju"
-                        .into(),
-                new_signing_key: None,
-                account_creation_fee: None,
-                url: None,
-                hbd_exchange_rate: None,
-                maximum_block_size: None,
-                hbd_interest_rate: None,
-                account_subsidy_budget: Some(1),
-                account_subsidy_decay: Some(64),
-            }),
-        )
-        .expect("push_builder");
+        &f,
+        WitnessSetPropertiesOperation {
+            owner: "emrebeyler".into(),
+            witness_signing_key:
+                "STM5ShFW6UPxDRyjG4mVWYiwVWTzkmfL2k7zYoamWz2yJLpEkycju".into(),
+            new_signing_key: None,
+            account_creation_fee: None,
+            url: None,
+            hbd_exchange_rate: None,
+            maximum_block_size: None,
+            hbd_interest_rate: None,
+            account_subsidy_budget: Some(1),
+            account_subsidy_decay: Some(64),
+        },
+    )
+    .expect("push_builder");
 
     let op = match &tx.transaction().operations[0].value {
         Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
@@ -80,10 +79,10 @@ fn decay_and_budget() {
 fn url_only() {
     let f = foundation();
 
-    let mut tx = empty_tx(&*f);
+    let mut tx = empty_tx(&f);
     tx.push_builder(
-            &*f,
-            Box::new(WitnessSetPropertiesOperation {
+            &f,
+            WitnessSetPropertiesOperation {
                 owner: "therealwolf".into(),
                 witness_signing_key: "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC"
                     .into(),
@@ -98,7 +97,7 @@ fn url_only() {
                 hbd_interest_rate: None,
                 account_subsidy_budget: None,
                 account_subsidy_decay: None,
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -134,28 +133,27 @@ fn with_exchange_rate() {
     let base = f.hbd_satoshis(424).expect("hbd_satoshis");
     let quote = f.hive_satoshis(1000).expect("hive_satoshis");
 
-    let mut tx = empty_tx(&*f);
+    let mut tx = empty_tx(&f);
     tx.push_builder(
-            &*f,
-            Box::new(WitnessSetPropertiesOperation {
-                owner: "ctrpch".into(),
-                witness_signing_key:
-                    "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU"
-                        .into(),
-                new_signing_key: None,
-                account_creation_fee: None,
-                url: None,
-                hbd_exchange_rate: Some(HbdExchangeRate {
-                    base: NaiAssetConvertible::Asset(base),
-                    quote: NaiAssetConvertible::Asset(quote),
-                }),
-                maximum_block_size: None,
-                hbd_interest_rate: None,
-                account_subsidy_budget: None,
-                account_subsidy_decay: None,
+        &f,
+        WitnessSetPropertiesOperation {
+            owner: "ctrpch".into(),
+            witness_signing_key:
+                "STM5oxZMtLbjgnsZVY2XUi58wriYCF1KUNedCzut4ogNEA19GhbiU".into(),
+            new_signing_key: None,
+            account_creation_fee: None,
+            url: None,
+            hbd_exchange_rate: Some(HbdExchangeRate {
+                base: NaiAssetConvertible::Asset(base),
+                quote: NaiAssetConvertible::Asset(quote),
             }),
-        )
-        .expect("push_builder");
+            maximum_block_size: None,
+            hbd_interest_rate: None,
+            account_subsidy_budget: None,
+            account_subsidy_decay: None,
+        },
+    )
+    .expect("push_builder");
 
     let op = match &tx.transaction().operations[0].value {
         Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
@@ -180,10 +178,10 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
     let f = foundation();
     let wrong = f.hbd_satoshis(3000).expect("hbd_satoshis");
 
-    let mut tx = empty_tx(&*f);
+    let mut tx = empty_tx(&f);
     let result = tx.push_builder(
-        &*f,
-        Box::new(WitnessSetPropertiesOperation {
+        &f,
+        WitnessSetPropertiesOperation {
             owner: "therealwolf".into(),
             witness_signing_key:
                 "STM8kPZiPjyWBjmZVMEPW4Qh2BspKuvKMBjvh9dxpZL7Kv2MGBYzC".into(),
@@ -195,7 +193,7 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
             hbd_interest_rate: None,
             account_subsidy_budget: None,
             account_subsidy_decay: None,
-        }),
+        },
     );
     assert!(
         result.is_err(),

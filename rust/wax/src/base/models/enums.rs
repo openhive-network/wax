@@ -1,7 +1,7 @@
 //! Enums shared with the comment builders and online manabar accessors.
 
 /// Represents which manabar pool to inspect on an account. Consumed by the
-/// per-account manabar accessors of [`crate::HiveChainExt`]
+/// per-account manabar accessors of [`crate::HiveChain`]
 /// (`calculate_current_manabar_value_for_account` /
 /// `calculate_manabar_full_regeneration_time_for_account`).
 ///

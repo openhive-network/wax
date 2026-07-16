@@ -58,8 +58,8 @@ impl Transaction {
     /// operations to this transaction.
     pub fn push_builder(
         &mut self,
-        foundation: &dyn WaxFoundation,
-        builder: Box<dyn OperationBuilder>,
+        foundation: &WaxFoundation,
+        builder: impl OperationBuilder,
     ) -> Result<&mut Self, WaxError> {
         let protocol = rust_protocol();
         for op in builder.finalize(foundation)? {

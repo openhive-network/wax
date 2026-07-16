@@ -15,7 +15,7 @@ const DEFAULT_EXECUTIONS: u32 = 2;
 /// Coerces `amount` to HIVE or HBD, mirroring TS's multi-symbol
 /// `createAssetWithRequiredSymbol([HBD, HIVE], …)`.
 fn coerce_hive_or_hbd(
-    foundation: &dyn WaxFoundation,
+    foundation: &WaxFoundation,
     amount: NaiAssetConvertible,
 ) -> Result<proto::Asset, WaxError> {
     // Try HIVE first to match the dominant case; fall through to HBD if the
@@ -64,10 +64,10 @@ pub struct DefineRecurrentTransferOperation {
 
 impl OperationBuilder for DefineRecurrentTransferOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         let amount = coerce_hive_or_hbd(foundation, this.amount)?;
         if amount.amount == "0" {
             return Err(WaxError::new("Amount must be greater than 0"));
@@ -104,10 +104,10 @@ pub struct RecurrentTransferRemovalOperation {
 
 impl OperationBuilder for RecurrentTransferRemovalOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         // TS defaults to `{ ...ASSETS.HIVE, amount: "0" }` when the amount is
         // undefined; the symbol parser handles HIVE-zero cleanly.
         let amount = foundation.hive_satoshis(0)?;

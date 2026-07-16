@@ -152,10 +152,10 @@ struct CommentInputs {
 
 impl OperationBuilder for ReplyOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         if this.parent_author.is_empty() {
             return Err(WaxError::new(
                 "No parent author specified in the reply operation",
@@ -197,10 +197,10 @@ impl OperationBuilder for ReplyOperation {
 
 impl OperationBuilder for BlogPostOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         let permlink = this
             .permlink
             .unwrap_or_else(|| format!("{}-{}", this.author, now_millis()));
@@ -242,7 +242,7 @@ impl CommentInputs {
 
     fn into_operations(
         self,
-        foundation: &dyn WaxFoundation,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
         // Snapshot the options-trigger before consuming `self` field-by-field
         // below — `has_options_input` needs `&self` and would conflict with
@@ -377,7 +377,7 @@ fn deduplicate_preserving_order(items: &[String]) -> Vec<String> {
 
 #[allow(clippy::too_many_arguments)]
 fn build_comment_options(
-    foundation: &dyn WaxFoundation,
+    foundation: &WaxFoundation,
     author: &str,
     permlink: &str,
     allow_curation_rewards: Option<bool>,

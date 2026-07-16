@@ -608,8 +608,8 @@ fn binary_serialize_signed_transaction() {
 
         tx.push_operation(vote_op)
             .push_builder(
-                &*ctx.base,
-                Box::new(DefineRecurrentTransferOperation {
+                &ctx.base,
+                DefineRecurrentTransferOperation {
                     from_account: "initminer".into(),
                     to_account: "gtg".into(),
                     amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
@@ -617,7 +617,7 @@ fn binary_serialize_signed_transaction() {
                     recurrence: None,
                     executions: None,
                     pair_id: None,
-                }),
+                },
             )
             .expect("define builder");
 
@@ -753,18 +753,18 @@ fn recurrent_transfer_with_extensions() {
             .expect("create_transaction_with_tapos");
 
         tx.push_builder(
-            &*ctx.base,
-            Box::new(RecurrentTransferRemovalOperation {
+            &ctx.base,
+            RecurrentTransferRemovalOperation {
                 from_account: "initminer".into(),
                 to_account: "gtg".into(),
                 pair_id: Some(100),
-            }),
+            },
         )
         .expect("removal builder");
 
         tx.push_builder(
-            &*ctx.base,
-            Box::new(DefineRecurrentTransferOperation {
+            &ctx.base,
+            DefineRecurrentTransferOperation {
                 from_account: "initminer".into(),
                 to_account: "gtg".into(),
                 amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
@@ -772,7 +772,7 @@ fn recurrent_transfer_with_extensions() {
                 recurrence: None,
                 executions: None,
                 pair_id: None,
-            }),
+            },
         )
         .expect("define builder");
 
@@ -831,8 +831,8 @@ fn recurrent_transfer_without_extensions() {
             .expect("create_transaction_with_tapos");
 
         tx.push_builder(
-            &*ctx.base,
-            Box::new(DefineRecurrentTransferOperation {
+            &ctx.base,
+            DefineRecurrentTransferOperation {
                 from_account: "initminer".into(),
                 to_account: "gtg".into(),
                 amount: NaiAssetConvertible::Asset(hive_sat(ctx, 100)),
@@ -840,7 +840,7 @@ fn recurrent_transfer_without_extensions() {
                 recurrence: None,
                 executions: None,
                 pair_id: None,
-            }),
+            },
         )
         .expect("define builder");
 
@@ -883,8 +883,8 @@ fn invalid_asset_in_update_proposal_fails() {
             .expect("create_transaction_with_tapos");
 
         let result = tx.push_builder(
-            &*ctx.base,
-            Box::new(wax::complex_operations::UpdateProposalOperation {
+            &ctx.base,
+            wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,
                 creator: "initminer".into(),
                 daily_pay: NaiAssetConvertible::Asset(hive_sat(ctx, 0)),
@@ -893,7 +893,7 @@ fn invalid_asset_in_update_proposal_fails() {
                 end_date: Some(
                     HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
                 ),
-            }),
+            },
         );
         assert!(
             result.is_err(),
@@ -916,8 +916,8 @@ fn update_proposal_with_extensions() {
             .expect("create_transaction_with_tapos");
 
         tx.push_builder(
-            &*ctx.base,
-            Box::new(wax::complex_operations::UpdateProposalOperation {
+            &ctx.base,
+            wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,
                 creator: "initminer".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
@@ -926,20 +926,20 @@ fn update_proposal_with_extensions() {
                 end_date: Some(
                     HiveDateTime::parse("2023-08-01T15:38:48").unwrap(),
                 ),
-            }),
+            },
         )
         .expect("update_proposal with end_date");
 
         tx.push_builder(
-            &*ctx.base,
-            Box::new(wax::complex_operations::UpdateProposalOperation {
+            &ctx.base,
+            wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,
                 creator: "initminer".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_sat(ctx, 0)),
                 subject: "subject".into(),
                 permlink: "permlink".into(),
                 end_date: None,
-            }),
+            },
         )
         .expect("update_proposal without end_date");
 

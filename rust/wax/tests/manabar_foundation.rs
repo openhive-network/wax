@@ -7,7 +7,7 @@ use chrono::{DateTime, Utc};
 use wax::models::basic::HiveDateTime;
 use wax::{Manabar, WaxFoundation, create_wax_foundation};
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 

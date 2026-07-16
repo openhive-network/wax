@@ -1,5 +1,5 @@
 //! Broadcast input forms: the [`Broadcastable`] trait accepted by
-//! [`HiveChainExt::broadcast`](crate::HiveChainExt::broadcast).
+//! [`HiveChain::broadcast`](crate::HiveChain::broadcast).
 
 use crate::Transaction;
 
@@ -8,7 +8,7 @@ use crate::chain::error::WaxChainError;
 use crate::chain::online_transaction::OnlineTransaction;
 
 /// Provides conversion of a transaction form into the wire form
-/// [`HiveChainExt::broadcast`](crate::HiveChainExt::broadcast) posts, running
+/// [`HiveChain::broadcast`](crate::HiveChain::broadcast) posts, running
 /// any pre-broadcast checks the form implies.
 ///
 /// TS NOTE: models the `ApiTransaction | ITransaction | IOnlineTransaction`

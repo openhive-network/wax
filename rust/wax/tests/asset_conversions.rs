@@ -14,7 +14,7 @@ const VESTS_NAI: &str = "@@000000037";
 const ASSET_PRECISION: u32 = 3;
 const VESTS_PRECISION: u32 = 6;
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 

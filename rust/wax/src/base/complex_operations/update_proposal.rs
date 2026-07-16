@@ -27,10 +27,10 @@ pub struct UpdateProposalOperation {
 
 impl OperationBuilder for UpdateProposalOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         let daily_pay = foundation.create_asset_with_required_symbol(
             AssetName::Hbd,
             this.daily_pay,

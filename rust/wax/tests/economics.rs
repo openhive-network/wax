@@ -14,7 +14,7 @@ const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
 const ASSET_PRECISION: u32 = 3;
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 

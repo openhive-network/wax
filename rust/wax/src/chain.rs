@@ -3,8 +3,8 @@
 //! authority verification.
 //!
 //! The entry point is [`create_hive_chain`], which returns a [`HiveChain`]
-//! that also implements [`crate::WaxFoundation`], so a chain instance can be used
-//! wherever an offline foundation is expected.
+//! that also derefs to [`crate::WaxFoundation`], so a chain instance can be
+//! used wherever an offline foundation is expected.
 
 pub mod api;
 
@@ -28,7 +28,7 @@ pub use authority_trace::{
 };
 pub use broadcast::Broadcastable;
 pub use error::WaxChainError;
-pub use extend::{HiveApi, HiveChainExt, HiveRestApi};
+pub use extend::{HiveApi, HiveRestApi};
 pub use healthchecker::*;
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
@@ -44,7 +44,7 @@ pub use util::*;
 /// when calling chain methods.
 pub fn create_hive_chain(
     options: impl Into<Option<WaxChainOptions>>,
-) -> Result<Box<dyn HiveChain>, WaxChainError> {
+) -> Result<HiveChain, WaxChainError> {
     let options = options.into().unwrap_or_default();
-    Ok(Box::new(internal::chain::HiveChainApi::new(options)?))
+    HiveChain::new(options)
 }

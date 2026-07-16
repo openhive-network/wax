@@ -43,11 +43,8 @@ impl Operation {
 /// Provides construction of one or more operations from higher-level inputs.
 pub trait OperationBuilder {
     /// Consume the builder and emit the wire-form operations it represents.
-    ///
-    /// Takes `self: Box<Self>` so the trait remains object-safe —
-    /// [`crate::Transaction::push_builder`] accepts `Box<dyn OperationBuilder>`.
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError>;
 }

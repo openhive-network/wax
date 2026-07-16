@@ -12,7 +12,7 @@ use wax::proto::{
 };
 use wax::{WaxFoundation, create_wax_foundation};
 
-fn foundation() -> Box<dyn WaxFoundation> {
+fn foundation() -> WaxFoundation {
     create_wax_foundation(None)
 }
 

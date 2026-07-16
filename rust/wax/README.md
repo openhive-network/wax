@@ -20,8 +20,8 @@ on. It provides:
 ## Responsibility
 
 - Expose a stable, idiomatic Rust API and hide the unsafe FFI types behind
-  concrete wrapper types (`Transaction`, `OnlineTransaction`) and trait
-  objects (`Box<dyn Operation>`, ...).
+  concrete wrapper types (`WaxFoundation`, `HiveChain`, `Transaction`,
+  `OnlineTransaction`, `Operation`, ...).
 - Build transactions from protobuf, API-form JSON, proto-form JSON, or legacy
   JSON; push operations and high-level operation builders.
 - Produce signing digests and transaction ids (HF26 and legacy), serialize to
@@ -57,10 +57,10 @@ Offline exports (from the crate root):
 
 | Item | Description |
 |------|-------------|
-| `create_wax_foundation` | Factory returning a `Box<dyn WaxFoundation>`. |
+| `create_wax_foundation` | Factory returning a `WaxFoundation`. |
 | `WaxFoundation` | The offline API surface: asset math, manabar math, key derivation, transaction/operation factories, witness-prop serialization, impacted-accounts, private-key leak scanning, config, … |
 | `Transaction` | Concrete offline transaction: push ops/builders (`&mut self`), sign, set expiration, digests/ids, binary & API serialization, authority/signing-key queries, memo encrypt/decrypt. |
-| `Operation` | Object-safe single operation: proto access, validation, impacted accounts. |
+| `Operation` | Single operation: proto access, validation, impacted accounts. |
 | `OperationBuilder` | Finalizes high-level builders into `proto::Operation`s. |
 | `SignatureProvider` | Pluggable wallet: digest signing and memo data encrypt/decrypt. |
 | `AuthorityDataProvider` | Supplies account authorities / witness keys for signing-key collection. |
@@ -74,9 +74,8 @@ Online exports (from the crate root):
 
 | Item | Description |
 |------|-------------|
-| `create_hive_chain` | Factory returning a `Box<dyn HiveChain>`. Synchronous (unlike the async TS `createHiveChain`). |
-| `HiveChain` | Online API surface; extends `WaxFoundation`. JSON-RPC and REST endpoint get/set, transport handles, the default typed API surface (`api`). |
-| `HiveChainExt` | Non-object-safe companion: `extend` / `extend_rest` typed-API constructors and the `create_transaction` online-transaction factory. |
+| `create_hive_chain` | Factory returning a `HiveChain`. Synchronous (unlike the async TS `createHiveChain`). |
+| `HiveChain` | Online API surface; derefs to `WaxFoundation`. JSON-RPC and REST endpoint get/set, transport handles, the default typed API surface (`api`), the `extend` / `extend_rest` typed-API constructors and the `create_transaction` online-transaction factory. |
 | `OnlineTransaction` | `Transaction` composed with a chain binding, returned by `create_transaction`. Mirrors the full offline surface and adds the chain-dependent checks: `perform_on_chain_verification` (private-key leak detection, account existence), `generate_authority_verification_trace`. |
 | `WaxChainOptions` | Construction options: `chain_id`, `api_endpoint`, `rest_api_endpoint`, `api_timeout_ms`, optional caller tag. |
 | `WaxChainError` | Error enum: HTTP, JSON-RPC envelope, deserialization, endpoint-parse, and wrapped `WaxError`. |
@@ -99,7 +98,7 @@ Modules:
 |--------|----------|
 | `base` (private) | The offline API implementation: `WaxFoundation`, transaction/operation wrappers, `models`, `result`, `complex_operations`, `hive_apps_operations`, `constants`. Its public items are re-exported at the crate root. |
 | `core` (`#[doc(hidden)]`) | The low-level C++ bridge: the `cxx::bridge` in `src/core.rs` declares the shared structs and the `rust_protocol` C++ handle whose methods implement transaction/operation serialization, signing digests, asset math, manabar math, key derivation, witness-prop packing, authority tracing, etc. Wrappers: `RustTransaction`, `RustOperation`, `RustAsset`, `RustManagedObject`, `AuthorityProvider`/`RustAuthorityProvider`, `descriptor_pool`. Hidden from docs; exercised directly by the `tests/core_*.rs` suites. |
-| `chain` (private) | The online layer implementation: endpoint healthchecker, JSON-RPC client, `HiveChainApi`. Its public types are re-exported at the crate root. |
+| `chain` (private) | The online layer implementation: endpoint healthchecker, JSON-RPC client, `HiveChain`. Its public types are re-exported at the crate root. |
 
 The build script (`build.rs`) does three things:
 

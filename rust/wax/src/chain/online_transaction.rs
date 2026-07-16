@@ -41,7 +41,7 @@ const MAX_ACCOUNTS_PER_CALL: usize = 100;
 /// - authority verification trace generation
 ///
 /// Created by
-/// [`HiveChainExt::create_transaction`](crate::HiveChainExt::create_transaction).
+/// [`HiveChain::create_transaction`](crate::HiveChain::create_transaction).
 /// Every [`Transaction`] method is mirrored here; the builders return
 /// `&mut Self` so building keeps the online type.
 ///
@@ -90,8 +90,8 @@ impl OnlineTransaction {
     /// operations. See [`Transaction::push_builder`].
     pub fn push_builder(
         &mut self,
-        foundation: &dyn WaxFoundation,
-        builder: Box<dyn OperationBuilder>,
+        foundation: &WaxFoundation,
+        builder: impl OperationBuilder,
     ) -> Result<&mut Self, WaxError> {
         self.base.push_builder(foundation, builder)?;
 

@@ -5,7 +5,7 @@
 //! `create_transaction` factory, `broadcast` and the per-account manabar
 //! accessors.
 
-use crate::base::internal::foundation::build_transaction_with_chain_reference_data;
+use crate::base::build_transaction_with_chain_reference_data;
 use crate::models::basic::HiveDateTime;
 use crate::models::enums::EManabarType;
 use crate::{ManabarData, Transaction, WaxError};
@@ -41,28 +41,25 @@ pub trait HiveRestApi {
     fn bind(caller: RestCaller) -> Self;
 }
 
-/// Provides the generic `extend` / `extend_rest` constructors on every chain.
-///
-/// TS NOTE: mirrors `IHiveChainInterface.extend<YourApi>()` /
-/// `extendRest<YourRestApi>()`. Lives in a non-object-safe extension trait so
-/// the generic methods don't break `dyn HiveChain` object safety; the blanket
-/// impl makes them callable on every [`HiveChain`], including
-/// `Box<dyn HiveChain>`.
-///
-/// TS NOTE: TS `extend` returns *the chain* widened with an `api` field
-/// (`this & { api: ... }`); Rust returns the typed API surface as its own
-/// value — the chain and the API handle are separate objects sharing one
-/// transport, so a later `set_endpoint_url` on the chain is reflected by
-/// handles already handed out.
-#[allow(async_fn_in_trait)]
-pub trait HiveChainExt: HiveChain {
+// The generic `extend` / `extend_rest` constructors and online helpers.
+impl HiveChain {
     /// Builds the typed JSON-RPC API surface `A` bound to this chain.
-    fn extend<A: HiveApi>(&self) -> A {
+    ///
+    /// TS NOTE: mirrors `IHiveChainInterface.extend<YourApi>()`. TS `extend`
+    /// returns *the chain* widened with an `api` field (`this & { api: ... }`);
+    /// Rust returns the typed API surface as its own value — the chain and
+    /// the API handle are separate objects sharing one transport, so a later
+    /// `set_endpoint_url` on the chain is reflected by handles already handed
+    /// out.
+    pub fn extend<A: HiveApi>(&self) -> A {
         A::bind(self.json_rpc_caller())
     }
 
     /// Builds the typed REST API surface `A` bound to this chain.
-    fn extend_rest<A: HiveRestApi>(&self) -> A {
+    ///
+    /// TS NOTE: mirrors `extendRest<YourRestApi>()`; see [`Self::extend`] for
+    /// how the returned surface relates to the chain.
+    pub fn extend_rest<A: HiveRestApi>(&self) -> A {
         A::bind(self.rest_caller())
     }
 
@@ -77,7 +74,7 @@ pub trait HiveChainExt: HiveChain {
     /// TS NOTE: `createTransaction(expirationTime?)`. TS caches the chain
     /// reference data between calls for 3 s (`acquireChainReferenceData`);
     /// the Rust port fetches it on every call.
-    async fn create_transaction(
+    pub async fn create_transaction(
         &self,
         expiration: Option<&str>,
     ) -> Result<OnlineTransaction, WaxChainError> {
@@ -107,7 +104,7 @@ pub trait HiveChainExt: HiveChain {
     /// TS NOTE: `IHiveChainInterface.broadcast(transaction)` — posts
     /// `network_broadcast_api.broadcast_transaction` with
     /// `max_block_age: -1`.
-    async fn broadcast(
+    pub async fn broadcast(
         &self,
         transaction: &impl Broadcastable,
     ) -> Result<(), WaxChainError> {
@@ -131,7 +128,7 @@ pub trait HiveChainExt: HiveChain {
     /// `calculateCurrentManabarValueForAccount(account, manabarType)`; the TS
     /// parameter defaults to `UPVOTE` — Rust callers pass the type
     /// explicitly (or `EManabarType::default()`).
-    async fn calculate_current_manabar_value_for_account(
+    pub async fn calculate_current_manabar_value_for_account(
         &self,
         account: &str,
         manabar_type: EManabarType,
@@ -153,7 +150,7 @@ pub trait HiveChainExt: HiveChain {
     ///
     /// TS NOTE:
     /// `calculateManabarFullRegenerationTimeForAccount(account, manabarType)`.
-    async fn calculate_manabar_full_regeneration_time_for_account(
+    pub async fn calculate_manabar_full_regeneration_time_for_account(
         &self,
         account: &str,
         manabar_type: EManabarType,
@@ -193,8 +190,6 @@ fn regeneration_date(seconds: u64) -> Result<HiveDateTime, WaxChainError> {
 
     Ok(HiveDateTime::new(date_time))
 }
-
-impl<T: HiveChain + ?Sized> HiveChainExt for T {}
 
 #[cfg(test)]
 mod tests {
@@ -318,9 +313,9 @@ mod tests {
         );
     }
 
-    // `extend` must resolve on `Box<dyn HiveChain>` via the blanket impl.
+    // `extend` must resolve on a factory-built chain.
     #[tokio::test]
-    async fn extends_chain_trait_object() {
+    async fn extends_chain() {
         let (endpoint, _captured) = spawn_capture_server(
             r#"{"jsonrpc":"2.0","id":1,"result":{"pong":3}}"#,
         );

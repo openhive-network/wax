@@ -8,8 +8,7 @@
 use serde::{Deserialize, Serialize};
 
 use wax::{
-    HiveChain, HiveChainExt, WaxChainError, WaxChainOptions, create_hive_chain,
-    hive_api,
+    HiveChain, WaxChainError, WaxChainOptions, create_hive_chain, hive_api,
 };
 
 #[derive(Serialize)]
@@ -43,7 +42,7 @@ pub struct ExtendedApi {
     base: wax::DefaultHiveApi,
 }
 
-fn unroutable_chain() -> Box<dyn HiveChain> {
+fn unroutable_chain() -> HiveChain {
     create_hive_chain(WaxChainOptions {
         api_endpoint: "http://127.0.0.1:1".into(),
         rest_api_endpoint: "http://127.0.0.1:1".into(),

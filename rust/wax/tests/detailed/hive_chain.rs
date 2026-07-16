@@ -12,7 +12,7 @@ use serde_json::{Value, json};
 
 use wax::models::basic::HiveDateTime;
 use wax::models::enums::EManabarType;
-use wax::{HiveChain, HiveChainExt, WaxChainOptions, create_hive_chain};
+use wax::{HiveChain, WaxChainOptions, create_hive_chain};
 
 use crate::common::{
     DGPO_TIME_SECONDS, OTHER_PUBLIC_KEY, account_update2_value,
@@ -24,7 +24,7 @@ use crate::common::{
 // ref_block_prefix 0x6dcf900a.
 const HEAD_BLOCK_ID: &str = "05c1578e0a90cf6de23e3fbd407ba00fedbb1c15";
 
-fn chain_for(endpoint: String) -> Box<dyn HiveChain> {
+fn chain_for(endpoint: String) -> HiveChain {
     create_hive_chain(WaxChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
@@ -75,7 +75,10 @@ async fn broadcast_converts_offline_transaction_to_api_form() {
     assert_eq!(call.params["max_block_age"], json!(-1));
     assert_eq!(call.params["trx"]["ref_block_num"], json!(0x578e));
     assert_eq!(call.params["trx"]["ref_block_prefix"], json!(0x6dcf900au32));
-    assert_eq!(call.params["trx"]["expiration"], json!("2025-07-08T12:35:57"));
+    assert_eq!(
+        call.params["trx"]["expiration"],
+        json!("2025-07-08T12:35:57")
+    );
     assert_eq!(
         call.params["trx"]["operations"][0]["type"],
         json!("transfer_operation")
@@ -116,7 +119,10 @@ async fn broadcast_runs_on_chain_verification_for_online_transaction() {
     );
     // ...broadcast first performs the on-chain verification (key-leak scan
     // over the impacted accounts)...
-    assert_eq!(captured.recv().unwrap().method, "database_api.find_accounts");
+    assert_eq!(
+        captured.recv().unwrap().method,
+        "database_api.find_accounts"
+    );
     // ...and only then posts.
     let broadcast = captured.recv().unwrap();
     assert_eq!(
@@ -125,7 +131,10 @@ async fn broadcast_runs_on_chain_verification_for_online_transaction() {
     );
     assert_eq!(broadcast.params["max_block_age"], json!(-1));
     assert_eq!(
-        broadcast.params["trx"]["operations"].as_array().unwrap().len(),
+        broadcast.params["trx"]["operations"]
+            .as_array()
+            .unwrap()
+            .len(),
         1
     );
     assert!(captured.try_recv().is_err(), "expected exactly three calls");

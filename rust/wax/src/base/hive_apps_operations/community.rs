@@ -363,9 +363,9 @@ impl HiveAppsOperation for CommunityOperation {
 
 impl OperationBuilder for CommunityOperation {
     fn finalize(
-        self: Box<Self>,
-        _foundation: &dyn WaxFoundation,
+        self,
+        _foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        Ok((*self).base.finalize())
+        Ok(self.base.finalize())
     }
 }

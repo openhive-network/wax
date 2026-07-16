@@ -44,10 +44,10 @@ pub struct WitnessSetPropertiesOperation {
 
 impl OperationBuilder for WitnessSetPropertiesOperation {
     fn finalize(
-        self: Box<Self>,
-        foundation: &dyn WaxFoundation,
+        self,
+        foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
-        let this = *self;
+        let this = self;
         let account_creation_fee = this
             .account_creation_fee
             .map(|fee| {

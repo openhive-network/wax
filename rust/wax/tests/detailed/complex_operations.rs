@@ -136,7 +136,7 @@ fn witness_set_properties_basic() {
         op.url = Some("https://hive.io".into());
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -177,7 +177,7 @@ fn witness_set_properties_url_only() {
         );
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -210,7 +210,7 @@ fn witness_set_properties_budget_and_fee() {
         op.account_subsidy_budget = Some(700);
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -243,7 +243,7 @@ fn witness_set_properties_decay_and_budget() {
         op.account_subsidy_decay = Some(64);
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -278,7 +278,7 @@ fn witness_set_properties_hbd_exchange_rate() {
         });
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -322,7 +322,7 @@ fn witness_set_properties_all_properties() {
         op.url = Some("https://guiltyparties.com".into());
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(
             api_op0(&tx),
@@ -359,8 +359,8 @@ fn recurrent_transfer_basic() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(DefineRecurrentTransferOperation {
+            &ctx.base,
+            DefineRecurrentTransferOperation {
                 from_account: "alice".into(),
                 to_account: "bob".into(),
                 amount: NaiAssetConvertible::Asset(hbd_asset("100")),
@@ -368,7 +368,7 @@ fn recurrent_transfer_basic() {
                 executions: Some(2),
                 memo: Some("thanks for the service".into()),
                 pair_id: None,
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -397,8 +397,8 @@ fn recurrent_transfer_with_pair_id() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(DefineRecurrentTransferOperation {
+            &ctx.base,
+            DefineRecurrentTransferOperation {
                 from_account: "alice".into(),
                 to_account: "bob".into(),
                 pair_id: Some(123),
@@ -406,7 +406,7 @@ fn recurrent_transfer_with_pair_id() {
                 memo: Some("monthly subscription".into()),
                 recurrence: Some(24),
                 executions: Some(2),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -438,12 +438,12 @@ fn recurrent_transfer_removal() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(RecurrentTransferRemovalOperation {
+            &ctx.base,
+            RecurrentTransferRemovalOperation {
                 from_account: "grace".into(),
                 to_account: "henry".into(),
                 pair_id: Some(143),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -481,15 +481,15 @@ fn update_proposal_mandatory_fields() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(UpdateProposalOperation {
+            &ctx.base,
+            UpdateProposalOperation {
                 proposal_id: 123,
                 creator: "alice".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
                 subject: "Improve UI Design".into(),
                 permlink: "improve-ui".into(),
                 end_date: None,
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -516,8 +516,8 @@ fn update_proposal_with_end_date() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(UpdateProposalOperation {
+            &ctx.base,
+            UpdateProposalOperation {
                 proposal_id: 123,
                 creator: "alice".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
@@ -526,7 +526,7 @@ fn update_proposal_with_end_date() {
                 end_date: Some(
                     HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
                 ),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -562,8 +562,8 @@ fn update_proposal_with_timestamp_end_date() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(UpdateProposalOperation {
+            &ctx.base,
+            UpdateProposalOperation {
                 proposal_id: 123,
                 creator: "alice".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
@@ -572,7 +572,7 @@ fn update_proposal_with_timestamp_end_date() {
                 end_date: Some(
                     HiveDateTime::parse("2023-03-15T22:00:00").unwrap(),
                 ),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -607,12 +607,12 @@ fn recurrent_transfer_removal_to_legacy_api() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(RecurrentTransferRemovalOperation {
+            &ctx.base,
+            RecurrentTransferRemovalOperation {
                 from_account: "alice".into(),
                 to_account: "bob".into(),
                 pair_id: Some(50),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -641,8 +641,8 @@ fn update_proposal_to_legacy_api() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
         tx.push_builder(
-            &*ctx.base,
-            Box::new(UpdateProposalOperation {
+            &ctx.base,
+            UpdateProposalOperation {
                 proposal_id: 123,
                 creator: "alice".into(),
                 daily_pay: NaiAssetConvertible::Asset(hbd_asset("1000")),
@@ -651,7 +651,7 @@ fn update_proposal_to_legacy_api() {
                 end_date: Some(
                     HiveDateTime::parse("2023-03-14T00:00:00").unwrap(),
                 ),
-            }),
+            },
         )
         .expect("push_builder");
 
@@ -694,7 +694,7 @@ fn reply_with_beneficiaries_to_legacy_api() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with beneficiaries"}}"#
@@ -763,7 +763,7 @@ fn reply_set_percent_hbd() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Set percent"}}"#
@@ -819,7 +819,7 @@ fn reply_push_images() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test2.png","test.png"],"description":"Push Images"}}"#
@@ -865,7 +865,7 @@ fn blog_post_set_category() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with category"}}"#
@@ -906,7 +906,7 @@ fn blog_post_alternative_author() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","author":"initminer"}}"#
@@ -951,7 +951,7 @@ fn blog_post_push_links() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","links":["https://test.com","https://test2.com","http://test3.com"]}}"#
@@ -996,7 +996,7 @@ fn blog_post_invalid_max_accepted_payout_asset() {
         };
 
         let mut tx = fresh_tx(ctx);
-        let result = tx.push_builder(&*ctx.base, Box::new(op));
+        let result = tx.push_builder(&ctx.base, op);
         assert!(
             result.is_err(),
             "max_accepted_payout must be HBD; HIVE should be rejected"
@@ -1021,7 +1021,7 @@ fn blog_post_max_accepted_payout() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1080,7 +1080,7 @@ fn blog_post_max_accepted_payout_as_number() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1133,7 +1133,7 @@ fn blog_post_allow_curation_rewards() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1185,7 +1185,7 @@ fn blog_post_allow_votes_false() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1239,7 +1239,7 @@ fn blog_post_blockchain_default_skips_options() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1279,7 +1279,7 @@ fn blog_post_set_format() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(r#"{{"format":"markdown","app":"{APP}"}}"#);
 
@@ -1339,7 +1339,7 @@ fn blog_post_multiple_properties() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test.png"],"links":["https://test.com"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}}"#
@@ -1400,7 +1400,7 @@ fn blog_post_operation_count() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&*ctx.base, Box::new(op)).expect("push_builder");
+        tx.push_builder(&ctx.base, op).expect("push_builder");
 
         assert_eq!(tx.transaction().operations.len(), 1);
     });

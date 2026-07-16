@@ -22,6 +22,9 @@ pub(crate) mod transaction;
 
 pub use error::WaxError;
 pub use foundation::WaxFoundation;
+// The online `create_transaction` factory shares the offline construction
+// helper but needs the internal `RustTransaction` it returns.
+pub(crate) use foundation::build_transaction_with_chain_reference_data;
 pub use interfaces::{AuthorityDataProvider, Manabar, SignatureProvider};
 pub use internal::models::manabar_data::ManabarData;
 pub use operation::{Operation, OperationBuilder};
@@ -32,7 +35,7 @@ pub use transaction::Transaction;
 /// [`WaxOptions`] (or the defaults when `None` is passed).
 pub fn create_wax_foundation(
     options: impl Into<Option<WaxOptions>>,
-) -> Box<dyn WaxFoundation> {
+) -> WaxFoundation {
     let options = options.into().unwrap_or_default();
-    Box::new(internal::foundation::WaxFoundationApi::new(options))
+    WaxFoundation::new(options)
 }

@@ -13,9 +13,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-use wax::{
-    HiveChain, HiveChainExt, WaxChainOptions, create_hive_chain, hive_api,
-};
+use wax::{HiveChain, WaxChainOptions, create_hive_chain, hive_api};
 
 /// Provides the JSON-RPC introspection namespace served by every Hive node.
 #[hive_api(namespace = "jsonrpc")]
@@ -69,7 +67,7 @@ pub struct GetTransactionResponse {
 /// Used to fetch a known mainnet transaction (same id as the TS test).
 const TEST_TRANSACTION_ID: &str = "954f6de36e6715d128fa8eb5a053fc254b05ded0";
 
-fn live_chain() -> Box<dyn HiveChain> {
+fn live_chain() -> HiveChain {
     create_hive_chain(WaxChainOptions {
         // The 2s default is tuned for nearby nodes; give the public ones
         // room to answer before a slow round trip reads as a failure.

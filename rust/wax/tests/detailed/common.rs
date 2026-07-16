@@ -22,7 +22,7 @@ use wax::{
 };
 
 pub struct WaxTestCtx {
-    pub base: Box<dyn WaxFoundation>,
+    pub base: WaxFoundation,
 }
 
 pub fn wax_test<R>(
@@ -52,7 +52,7 @@ pub fn wax_test<R>(
 /// crypto-memo packing is stateless, so a default foundation suffices.
 pub struct BeekeeperSignatureProvider<'a> {
     wallet: RefCell<UnlockedWallet<'a>>,
-    base: Box<dyn WaxFoundation>,
+    base: WaxFoundation,
 }
 
 impl<'a> BeekeeperSignatureProvider<'a> {
