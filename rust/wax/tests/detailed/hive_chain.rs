@@ -12,7 +12,7 @@ use serde_json::{Value, json};
 
 use wax::models::basic::HiveDateTime;
 use wax::models::enums::EManabarType;
-use wax::{HiveChain, WaxChainOptions, create_hive_chain};
+use wax::{HiveChain, HiveChainOptions, create_hive_chain};
 
 use crate::common::{
     DGPO_TIME_SECONDS, OTHER_PUBLIC_KEY, account_update2_value,
@@ -25,7 +25,7 @@ use crate::common::{
 const HEAD_BLOCK_ID: &str = "05c1578e0a90cf6de23e3fbd407ba00fedbb1c15";
 
 fn chain_for(endpoint: String) -> HiveChain {
-    create_hive_chain(WaxChainOptions {
+    create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })

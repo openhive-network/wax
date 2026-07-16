@@ -9,7 +9,7 @@
 use serde_json::json;
 
 use crate::models::basic::HiveDateTime;
-use crate::{WaxChainOptions, create_hive_chain};
+use crate::{HiveChainOptions, create_hive_chain};
 
 use super::super::util::test_support::spawn_capture_server;
 use super::*;
@@ -317,7 +317,7 @@ async fn chain_api_calls_default_namespace_over_json_rpc() {
     );
     let (endpoint, captured) = spawn_capture_server(envelope);
 
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })

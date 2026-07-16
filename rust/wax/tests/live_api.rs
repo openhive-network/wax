@@ -13,7 +13,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-use wax::{HiveChain, WaxChainOptions, create_hive_chain, hive_api};
+use wax::{HiveChain, HiveChainOptions, create_hive_chain, hive_api};
 
 /// Provides the JSON-RPC introspection namespace served by every Hive node.
 #[hive_api(namespace = "jsonrpc")]
@@ -68,10 +68,10 @@ pub struct GetTransactionResponse {
 const TEST_TRANSACTION_ID: &str = "954f6de36e6715d128fa8eb5a053fc254b05ded0";
 
 fn live_chain() -> HiveChain {
-    create_hive_chain(WaxChainOptions {
+    create_hive_chain(HiveChainOptions {
         // The 2s default is tuned for nearby nodes; give the public ones
         // room to answer before a slow round trip reads as a failure.
-        api_timeout_ms: 15_000,
+        api_timeout: 15_000,
         ..Default::default()
     })
     .unwrap()

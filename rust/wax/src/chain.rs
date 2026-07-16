@@ -32,7 +32,7 @@ pub use extend::{HiveApi, HiveRestApi};
 pub use healthchecker::*;
 pub use hive_chain::HiveChain;
 pub use online_transaction::OnlineTransaction;
-pub use options::WaxChainOptions;
+pub use options::HiveChainOptions;
 pub use rest::{RestCallDescriptor, RestCaller};
 pub use rpc::{JsonRpcCallDescriptor, JsonRpcCaller};
 pub use util::*;
@@ -43,7 +43,7 @@ pub use util::*;
 /// has no such dependency, so this factory is sync — async I/O only happens
 /// when calling chain methods.
 pub fn create_hive_chain(
-    options: impl Into<Option<WaxChainOptions>>,
+    options: impl Into<Option<HiveChainOptions>>,
 ) -> Result<HiveChain, WaxChainError> {
     let options = options.into().unwrap_or_default();
     HiveChain::new(options)
