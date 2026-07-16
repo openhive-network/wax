@@ -320,7 +320,7 @@ mod tests {
             r#"{"jsonrpc":"2.0","id":1,"result":{"pong":3}}"#,
         );
 
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             api_endpoint: endpoint,
             ..Default::default()
         })
@@ -340,7 +340,7 @@ mod tests {
         let (endpoint, captured) =
             spawn_capture_server(r#"{"transaction_json":{"id":1}}"#);
 
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             rest_api_endpoint: endpoint,
             ..Default::default()
         })
@@ -415,7 +415,7 @@ mod tests {
     async fn generated_set_endpoint_url_overrides_namespace_endpoint() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
 
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             rest_api_endpoint: "http://127.0.0.1:1".into(),
             ..Default::default()
         })
@@ -452,7 +452,7 @@ mod tests {
     async fn rest_method_posts_remaining_params_as_body() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
 
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             rest_api_endpoint: endpoint,
             ..Default::default()
         })
@@ -477,7 +477,7 @@ mod tests {
         let (endpoint, captured) =
             spawn_capture_server(r#"{"jsonrpc":"2.0","id":1,"result":{}}"#);
 
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             api_endpoint: endpoint,
             ..Default::default()
         })
@@ -510,15 +510,15 @@ mod tests {
     // `extendConfig(config)` — a derived chain with selective overrides.
     #[test]
     fn options_snapshot_derives_reconfigured_chain() {
-        let chain = crate::create_hive_chain(crate::WaxChainOptions {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
             api_endpoint: "http://127.0.0.1:1/".into(),
-            api_timeout_ms: 1_234,
+            api_timeout: 1_234,
             ..Default::default()
         })
         .unwrap();
         chain.set_endpoint_url("http://127.0.0.1:2/").unwrap();
 
-        let derived = crate::create_hive_chain(crate::WaxChainOptions {
+        let derived = crate::create_hive_chain(crate::HiveChainOptions {
             chain_id: "42".repeat(32),
             ..chain.options()
         })
@@ -527,7 +527,7 @@ mod tests {
         assert_eq!(derived.chain_id(), "42".repeat(32));
         // The snapshot carries the live endpoint, not the constructed one.
         assert_eq!(derived.endpoint_url(), "http://127.0.0.1:2/");
-        assert_eq!(derived.options().api_timeout_ms, 1_234);
+        assert_eq!(derived.options().api_timeout, 1_234);
         assert_eq!(derived.rest_endpoint_url(), chain.rest_endpoint_url());
     }
 }

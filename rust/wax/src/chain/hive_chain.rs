@@ -11,7 +11,7 @@ use crate::WaxOptions;
 use crate::chain::api::DefaultHiveApi;
 use crate::chain::error::WaxChainError;
 use crate::chain::extend::HiveApi;
-use crate::chain::options::WaxChainOptions;
+use crate::chain::options::HiveChainOptions;
 use crate::chain::rest::{RestCaller, RestClient};
 use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
 
@@ -35,12 +35,14 @@ pub struct HiveChain {
     rest: Arc<RestClient>,
     // Kept for the `options()` snapshot — the transports do not expose them
     // back.
-    api_timeout_ms: u32,
+    api_timeout: u32,
     wax_api_caller: Option<String>,
 }
 
 impl HiveChain {
-    pub(crate) fn new(options: WaxChainOptions) -> Result<Self, WaxChainError> {
+    pub(crate) fn new(
+        options: HiveChainOptions,
+    ) -> Result<Self, WaxChainError> {
         validate_endpoint(&options.api_endpoint)?;
         validate_endpoint(&options.rest_api_endpoint)?;
 
@@ -49,12 +51,12 @@ impl HiveChain {
         });
         let rpc = Arc::new(JsonRpcClient::new(
             options.api_endpoint.clone(),
-            options.api_timeout_ms.into(),
+            options.api_timeout.into(),
             options.wax_api_caller.clone(),
         ));
         let rest = Arc::new(RestClient::new(
             options.rest_api_endpoint,
-            options.api_timeout_ms.into(),
+            options.api_timeout.into(),
             options.wax_api_caller.clone(),
         ));
 
@@ -62,7 +64,7 @@ impl HiveChain {
             foundation,
             rpc,
             rest,
-            api_timeout_ms: options.api_timeout_ms,
+            api_timeout: options.api_timeout,
             wax_api_caller: options.wax_api_caller,
         })
     }
@@ -114,16 +116,16 @@ impl HiveChain {
     /// TS NOTE: with [`create_hive_chain`](crate::create_hive_chain) and
     /// struct-update syntax this covers `IHiveChainInterface.extendConfig` —
     /// deriving a chain with selectively overridden options:
-    /// `create_hive_chain(WaxChainOptions { api_timeout_ms: 5_000,
+    /// `create_hive_chain(HiveChainOptions { api_timeout: 5_000,
     /// ..chain.options() })`. TS additionally links the derived chain back to
     /// its originator (endpoint changes propagate up); the Rust copies are
     /// independent.
-    pub fn options(&self) -> WaxChainOptions {
-        WaxChainOptions {
+    pub fn options(&self) -> HiveChainOptions {
+        HiveChainOptions {
             chain_id: self.foundation.chain_id().to_string(),
             api_endpoint: self.rpc.endpoint(),
             rest_api_endpoint: self.rest.endpoint(),
-            api_timeout_ms: self.api_timeout_ms,
+            api_timeout: self.api_timeout,
             wax_api_caller: self.wax_api_caller.clone(),
         }
     }

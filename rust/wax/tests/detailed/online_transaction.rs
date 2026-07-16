@@ -12,8 +12,8 @@
 use serde_json::json;
 
 use wax::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, ProcessedEntry,
-    WaxChainError, WaxChainOptions, create_hive_chain,
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, HiveChainOptions,
+    ProcessedEntry, WaxChainError, create_hive_chain,
 };
 
 use crate::common::{
@@ -32,7 +32,7 @@ const FIXTURE_PUBLIC_KEY: &str =
 #[tokio::test]
 async fn create_transaction_anchors_tapos_to_head_block() {
     let (endpoint, captured) = spawn_json_rpc_server(vec![dgpo_result()]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -67,7 +67,7 @@ async fn trace_accepts_directly_authorized_signature_key() {
             OTHER_PUBLIC_KEY,
         )]),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -134,7 +134,7 @@ async fn trace_fetches_redirected_account_authority_in_second_round() {
             OTHER_PUBLIC_KEY,
         )]),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -203,7 +203,7 @@ async fn trace_terminates_when_redirected_account_does_not_exist() {
         // The chain does not know `ghost`.
         find_accounts_result(vec![]),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -266,7 +266,7 @@ async fn on_chain_verification_passes_for_clean_memo() {
             ),
         ]),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -306,7 +306,7 @@ async fn on_chain_verification_detects_private_key_leaked_into_memo() {
             ),
         ]),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })
@@ -328,7 +328,7 @@ async fn on_chain_verification_reports_nonexistent_referenced_accounts() {
         // Only `alice` exists; `ghost` is missing from the rc response.
         json!({ "rc_accounts": [rc_account_json("alice")] }),
     ]);
-    let chain = create_hive_chain(WaxChainOptions {
+    let chain = create_hive_chain(HiveChainOptions {
         api_endpoint: endpoint,
         ..Default::default()
     })

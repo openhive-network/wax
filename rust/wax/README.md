@@ -42,14 +42,14 @@ on. It provides:
 Entry points:
 
 ```rust
-use wax::{create_wax_foundation, create_hive_chain, WaxChainOptions};
+use wax::{create_wax_foundation, create_hive_chain, HiveChainOptions};
 
 // Offline: transaction building, signing, validation.
 let foundation = create_wax_foundation(None);           // default options
 let tx = foundation.create_transaction_with_tapos(block_id, "+1m")?;
 
 // Online: chain-bound operations.
-let chain = create_hive_chain(WaxChainOptions::default())?;
+let chain = create_hive_chain(HiveChainOptions::default())?;
 chain.set_endpoint_url("https://api.hive.blog")?;
 ```
 
@@ -77,7 +77,7 @@ Online exports (from the crate root):
 | `create_hive_chain` | Factory returning a `HiveChain`. Synchronous (unlike the async TS `createHiveChain`). |
 | `HiveChain` | Online API surface; derefs to `WaxFoundation`. JSON-RPC and REST endpoint get/set, transport handles, the default typed API surface (`api`), the `extend` / `extend_rest` typed-API constructors and the `create_transaction` online-transaction factory. |
 | `OnlineTransaction` | `Transaction` composed with a chain binding, returned by `create_transaction`. Mirrors the full offline surface and adds the chain-dependent checks: `perform_on_chain_verification` (private-key leak detection, account existence), `generate_authority_verification_trace`. |
-| `WaxChainOptions` | Construction options: `chain_id`, `api_endpoint`, `rest_api_endpoint`, `api_timeout_ms`, optional caller tag. |
+| `HiveChainOptions` | Construction options: `chain_id`, `api_endpoint`, `rest_api_endpoint`, `api_timeout`, optional caller tag. |
 | `WaxChainError` | Error enum: HTTP, JSON-RPC envelope, deserialization, endpoint-parse, and wrapped `WaxError`. |
 | Authority-trace types | `AuthorityTrace`, `AuthorityPathTraceData`, `AuthorityPathEntry`, `AuthorityTraceSignatureInfo`, `AuthorityEntryProcessingStatus`, `ProcessedEntry`, `AuthorityRole` — the structured output of authority verification. |
 | Healthchecker types | `HiveEndpoint`, `EndpointInfo`, `ChainApiType`, `HealthCheckerError`, … — endpoint health tracking. |

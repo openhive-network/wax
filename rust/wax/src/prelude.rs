@@ -7,7 +7,7 @@
 //! from the crate root.
 
 pub use crate::{
-    HiveChain, Manabar, OnlineTransaction, Operation, OperationBuilder,
-    Transaction, WaxChainError, WaxChainOptions, WaxError, WaxFoundation,
+    HiveChain, HiveChainOptions, Manabar, OnlineTransaction, Operation,
+    OperationBuilder, Transaction, WaxChainError, WaxError, WaxFoundation,
     WaxOptions, create_hive_chain, create_wax_foundation, hive_api,
 };
