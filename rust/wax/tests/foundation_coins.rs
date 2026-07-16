@@ -8,7 +8,6 @@
 use std::str::FromStr;
 
 use rust_decimal::Decimal;
-use wax::models::asset::AssetAmount;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -32,7 +31,7 @@ fn hive_coins_scales_integer_by_precision() {
     // 1 HIVE @ precision 3 = 1000 satoshi.
     let f = foundation();
 
-    let asset = f.hive_coins(AssetAmount::Int(1)).expect("hive_coins");
+    let asset = f.hive_coins(1).expect("hive_coins");
 
     assert_eq!(asset.amount, "1000");
     assert_eq!(asset.precision, ASSET_PRECISION);
@@ -44,9 +43,7 @@ fn hive_coins_scales_decimal_by_precision() {
     // 1.5 HIVE @ precision 3 = 1500 satoshi.
     let f = foundation();
 
-    let asset = f
-        .hive_coins(AssetAmount::Decimal(dp("1.5")))
-        .expect("hive_coins");
+    let asset = f.hive_coins(dp("1.5")).expect("hive_coins");
 
     assert_eq!(asset.amount, "1500");
 }
@@ -57,9 +54,7 @@ fn hive_coins_truncates_subprecision_digits() {
     // `naiAssetToLong` rule (`frac.substring(0, precision)`), not rounding.
     let f = foundation();
 
-    let asset = f
-        .hive_coins(AssetAmount::Decimal(dp("1.2349")))
-        .expect("hive_coins");
+    let asset = f.hive_coins(dp("1.2349")).expect("hive_coins");
 
     assert_eq!(asset.amount, "1234");
 }
@@ -68,9 +63,7 @@ fn hive_coins_truncates_subprecision_digits() {
 fn hive_coins_accepts_float_input() {
     let f = foundation();
 
-    let asset = f
-        .hive_coins(AssetAmount::Float(2.5))
-        .expect("hive_coins float");
+    let asset = f.hive_coins(2.5).expect("hive_coins float");
 
     assert_eq!(asset.amount, "2500");
 }
@@ -79,7 +72,7 @@ fn hive_coins_accepts_float_input() {
 fn hbd_coins_uses_same_precision_as_hive() {
     let f = foundation();
 
-    let asset = f.hbd_coins(AssetAmount::Int(2)).expect("hbd_coins");
+    let asset = f.hbd_coins(2).expect("hbd_coins");
 
     assert_eq!(asset.amount, "2000");
     assert_eq!(asset.precision, ASSET_PRECISION);
@@ -91,7 +84,7 @@ fn vests_coins_uses_six_decimal_precision() {
     // 1 VESTS @ precision 6 = 1_000_000 satoshi.
     let f = foundation();
 
-    let asset = f.vests_coins(AssetAmount::Int(1)).expect("vests_coins");
+    let asset = f.vests_coins(1).expect("vests_coins");
 
     assert_eq!(asset.amount, "1000000");
     assert_eq!(asset.precision, VESTS_PRECISION);
@@ -104,9 +97,7 @@ fn vests_coins_handles_six_decimal_amount() {
     // there are exactly 6 fractional digits).
     let f = foundation();
 
-    let asset = f
-        .vests_coins(AssetAmount::Decimal(dp("1.234567")))
-        .expect("vests_coins");
+    let asset = f.vests_coins(dp("1.234567")).expect("vests_coins");
 
     assert_eq!(asset.amount, "1234567");
 }
@@ -116,9 +107,7 @@ fn vests_coins_truncates_seventh_digit() {
     // 1.2345679 VESTS @ precision 6 → trunc(1234567.9) = 1234567.
     let f = foundation();
 
-    let asset = f
-        .vests_coins(AssetAmount::Decimal(dp("1.2345679")))
-        .expect("vests_coins");
+    let asset = f.vests_coins(dp("1.2345679")).expect("vests_coins");
 
     assert_eq!(asset.amount, "1234567");
 }
@@ -127,7 +116,7 @@ fn vests_coins_truncates_seventh_digit() {
 fn hive_coins_zero_is_zero_satoshi() {
     let f = foundation();
 
-    let asset = f.hive_coins(AssetAmount::Int(0)).expect("hive_coins");
+    let asset = f.hive_coins(0).expect("hive_coins");
 
     assert_eq!(asset.amount, "0");
     assert_eq!(asset.nai, HIVE_NAI);
@@ -140,7 +129,7 @@ fn hive_coins_negative_amount_preserves_sign() {
     // the cpp_hive round-trip.
     let f = foundation();
 
-    let asset = f.hive_coins(AssetAmount::Int(-2)).expect("hive_coins");
+    let asset = f.hive_coins(-2).expect("hive_coins");
 
     assert_eq!(asset.amount, "-2000");
 }
@@ -187,7 +176,7 @@ fn hive_coins_equivalent_to_hive_satoshis_after_scaling() {
     // `hive_satoshis(n * 10^precision)` for integer n.
     let f = foundation();
 
-    let via_coins = f.hive_coins(AssetAmount::Int(3)).expect("hive_coins");
+    let via_coins = f.hive_coins(3).expect("hive_coins");
     let via_satoshis = f.hive_satoshis(3_000).expect("hive_satoshis");
 
     assert_eq!(via_coins, via_satoshis);
@@ -197,7 +186,7 @@ fn hive_coins_equivalent_to_hive_satoshis_after_scaling() {
 fn vests_coins_equivalent_to_vests_satoshis_after_scaling() {
     let f = foundation();
 
-    let via_coins = f.vests_coins(AssetAmount::Int(2)).expect("vests_coins");
+    let via_coins = f.vests_coins(2).expect("vests_coins");
     let via_satoshis = f.vests_satoshis(2_000_000).expect("vests_satoshis");
 
     assert_eq!(via_coins, via_satoshis);

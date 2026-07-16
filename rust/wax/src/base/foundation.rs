@@ -148,24 +148,27 @@ impl WaxFoundation {
     /// Creates a HIVE asset from a whole-coin amount.
     pub fn hive_coins(
         &self,
-        amount: AssetAmount,
+        amount: impl Into<AssetAmount>,
     ) -> Result<NaiAsset, WaxError> {
-        let satoshis = amount_to_satoshis(amount, HIVE_PRECISION)?;
+        let satoshis = amount_to_satoshis(amount.into(), HIVE_PRECISION)?;
         self.hive_satoshis(satoshis)
     }
 
     /// Creates an HBD asset from a whole-coin amount.
-    pub fn hbd_coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError> {
-        let satoshis = amount_to_satoshis(amount, HBD_PRECISION)?;
+    pub fn hbd_coins(
+        &self,
+        amount: impl Into<AssetAmount>,
+    ) -> Result<NaiAsset, WaxError> {
+        let satoshis = amount_to_satoshis(amount.into(), HBD_PRECISION)?;
         self.hbd_satoshis(satoshis)
     }
 
     /// Creates a VESTS asset from a whole-coin amount.
     pub fn vests_coins(
         &self,
-        amount: AssetAmount,
+        amount: impl Into<AssetAmount>,
     ) -> Result<NaiAsset, WaxError> {
-        let satoshis = amount_to_satoshis(amount, VESTS_PRECISION)?;
+        let satoshis = amount_to_satoshis(amount.into(), VESTS_PRECISION)?;
         self.vests_satoshis(satoshis)
     }
 

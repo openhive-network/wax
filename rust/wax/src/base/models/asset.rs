@@ -84,12 +84,3 @@ pub struct AssetInfo {
     pub nai: String,
     pub precision: u32,
 }
-
-/// Provides constructors for a fixed asset symbol from either whole coins or
-/// raw satoshis.
-pub trait AssetFactory {
-    /// Creates an asset from a whole-coin amount (precision applied).
-    fn coins(&self, amount: AssetAmount) -> Result<NaiAsset, crate::WaxError>;
-    /// Creates an asset from a raw satoshi amount (no precision scaling).
-    fn satoshis(&self, amount: i64) -> Result<NaiAsset, crate::WaxError>;
-}

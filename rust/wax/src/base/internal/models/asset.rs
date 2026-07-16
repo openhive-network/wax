@@ -7,8 +7,7 @@ use rust_decimal::prelude::*;
 use crate::WaxError;
 use crate::base::internal::protocol::rust_protocol;
 use crate::base::models::asset::{
-    AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset,
-    NaiAssetConvertible,
+    AssetAmount, AssetInfo, AssetName, NaiAsset, NaiAssetConvertible,
 };
 
 const INIT_CPP_ASSET_AMOUNT: i64 = 0;
@@ -66,9 +65,10 @@ impl Asset {
     pub fn create_wax_asset(
         &self,
         asset_name: AssetName,
-        amount: AssetAmount,
+        amount: impl Into<AssetAmount>,
         use_precision: bool,
     ) -> Result<NaiAsset, WaxError> {
+        let amount = amount.into();
         let info = self.get_asset_info(asset_name)?;
 
         if !use_precision {
@@ -102,7 +102,7 @@ impl Asset {
         self.create_wax_asset(asset_name, AssetAmount::Int(amount), false)
     }
 
-    /// Returns an [`AssetFactory`] bound to the given symbol.
+    /// Returns a [`NaiAssetFactory`] bound to the given symbol.
     pub fn create_asset_factory(
         &self,
         asset_name: AssetName,
@@ -219,18 +219,24 @@ impl Asset {
     }
 }
 
-/// Represents an [`AssetFactory`] bound to a single symbol of an [`Asset`].
+/// Represents an asset constructor bound to a single symbol of an [`Asset`],
+/// building assets from either whole coins or raw satoshis.
 pub struct NaiAssetFactory<'a> {
     asset: &'a Asset,
     asset_name: AssetName,
 }
 
-impl<'a> AssetFactory for NaiAssetFactory<'a> {
-    fn coins(&self, amount: AssetAmount) -> Result<NaiAsset, WaxError> {
+impl<'a> NaiAssetFactory<'a> {
+    /// Creates an asset from a whole-coin amount (precision applied).
+    pub fn coins(
+        &self,
+        amount: impl Into<AssetAmount>,
+    ) -> Result<NaiAsset, WaxError> {
         self.asset.create_wax_asset(self.asset_name, amount, true)
     }
 
-    fn satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError> {
+    /// Creates an asset from a raw satoshi amount (no precision scaling).
+    pub fn satoshis(&self, amount: i64) -> Result<NaiAsset, WaxError> {
         self.asset.create_asset_satoshis(self.asset_name, amount)
     }
 }
