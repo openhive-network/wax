@@ -1,9 +1,7 @@
 use rust_decimal::Decimal;
 use std::str::FromStr;
 
-use wax::models::asset::{
-    Asset, AssetAmount, AssetFactory, AssetName, NaiAsset, NaiAssetConvertible,
-};
+use wax::models::asset::{Asset, AssetName, NaiAsset, NaiAssetConvertible};
 
 const HIVE_NAI: &str = "@@000000021";
 const HBD_NAI: &str = "@@000000013";
@@ -42,9 +40,7 @@ fn create_wax_asset_applies_precision_for_integer_amounts() {
     let a = asset();
 
     // 1 HIVE @ precision 3 = "1000" satoshis.
-    let hive = a
-        .create_wax_asset(AssetName::Hive, AssetAmount::Int(1), true)
-        .unwrap();
+    let hive = a.create_wax_asset(AssetName::Hive, 1, true).unwrap();
     assert_eq!(hive.amount, "1000");
     assert_eq!(hive.precision, ASSET_PRECISION);
     assert_eq!(hive.nai, HIVE_NAI);
@@ -55,7 +51,7 @@ fn create_wax_asset_applies_precision_for_decimal_amounts() {
     let a = asset();
 
     // 1.5 HIVE @ precision 3 = "1500" satoshis.
-    let amount = AssetAmount::Decimal(Decimal::from_str("1.5").unwrap());
+    let amount = Decimal::from_str("1.5").unwrap();
     let asset = a.create_wax_asset(AssetName::Hive, amount, true).unwrap();
     assert_eq!(asset.amount, "1500");
 }
@@ -66,7 +62,7 @@ fn create_wax_asset_truncates_subprecision_digits() {
 
     // 1.2349 HIVE @ precision 3: Python's `int(Decimal("1.2349") * 1000) =
     // int(Decimal("1234.9")) = 1234`. Truncation, not rounding.
-    let amount = AssetAmount::Decimal(Decimal::from_str("1.2349").unwrap());
+    let amount = Decimal::from_str("1.2349").unwrap();
     let asset = a.create_wax_asset(AssetName::Hive, amount, true).unwrap();
     assert_eq!(asset.amount, "1234");
 }
@@ -75,7 +71,7 @@ fn create_wax_asset_truncates_subprecision_digits() {
 fn create_wax_asset_handles_six_decimal_vests() {
     let a = asset();
 
-    let amount = AssetAmount::Decimal(Decimal::from_str("1.234567").unwrap());
+    let amount = Decimal::from_str("1.234567").unwrap();
     let asset = a.create_wax_asset(AssetName::Vests, amount, true).unwrap();
     assert_eq!(asset.amount, "1234567");
     assert_eq!(asset.precision, VESTS_PRECISION);
@@ -88,9 +84,7 @@ fn create_wax_asset_via_float_input() {
 
     // f64::from(1.5) should round-trip through Decimal::from_f64_retain
     // and produce the same "1500" satoshis as the Decimal input.
-    let asset = a
-        .create_wax_asset(AssetName::Hive, AssetAmount::Float(1.5), true)
-        .unwrap();
+    let asset = a.create_wax_asset(AssetName::Hive, 1.5, true).unwrap();
     assert_eq!(asset.amount, "1500");
 }
 
@@ -100,9 +94,7 @@ fn create_wax_asset_without_precision_passes_amount_through() {
 
     // use_precision=false stringifies amount as-is (no 10^precision
     // multiplication) — mirrors Python's `str(amount)` branch.
-    let asset = a
-        .create_wax_asset(AssetName::Hive, AssetAmount::Int(1500), false)
-        .unwrap();
+    let asset = a.create_wax_asset(AssetName::Hive, 1500, false).unwrap();
     assert_eq!(asset.amount, "1500");
     assert_eq!(asset.precision, ASSET_PRECISION);
     assert_eq!(asset.nai, HIVE_NAI);
@@ -127,7 +119,7 @@ fn factory_coins_uses_precision() {
     let a = asset();
     let factory = a.create_asset_factory(AssetName::Hive);
 
-    let asset = factory.coins(AssetAmount::Int(2)).unwrap();
+    let asset = factory.coins(2).unwrap();
     assert_eq!(asset.amount, "2000");
     assert_eq!(asset.nai, HIVE_NAI);
 }
