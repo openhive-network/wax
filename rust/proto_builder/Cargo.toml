@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [build-dependencies]
-pbjson-build = "0.7"
+pbjson-build = "0.9"
 prost-build = "0.13"
