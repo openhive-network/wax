@@ -10,6 +10,7 @@ pub mod api;
 
 mod authority_trace;
 mod broadcast;
+mod complex_operations;
 mod error;
 mod extend;
 mod healthchecker;
@@ -27,6 +28,10 @@ pub use authority_trace::{
     AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
 };
 pub use broadcast::Broadcastable;
+pub use complex_operations::{
+    AccountAuthorityUpdateOperation, HiveRole, HiveRoleAuthority,
+    HiveRoleMemoKey, LegacyVoteOperation,
+};
 pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveRestApi};
 pub use healthchecker::*;
