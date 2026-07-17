@@ -7,7 +7,8 @@ use std::net::TcpListener;
 use std::thread;
 
 use crate::{
-    OperationBuilder, WaxChainOptions, create_hive_chain, create_wax_foundation,
+    OperationBuilder, HiveChainOptions, create_hive_chain,
+    create_wax_foundation,
 };
 
 use super::{AccountAuthorityUpdateOperation, LegacyVoteOperation};
@@ -190,7 +191,7 @@ fn read_http_request(stream: &mut impl Read) -> String {
 }
 
 fn chain_for(requests: usize) -> crate::HiveChain {
-    create_hive_chain(WaxChainOptions {
+    create_hive_chain(HiveChainOptions {
         api_endpoint: spawn_json_rpc_server(requests),
         ..Default::default()
     })

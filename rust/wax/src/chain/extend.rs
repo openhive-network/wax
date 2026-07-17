@@ -71,27 +71,23 @@ impl HiveChain {
     /// `expiration` accepts an absolute Hive timestamp or a `+N[s|m|h]`
     /// offset; `None` defaults to `+1m`.
     ///
-    /// TS NOTE: `createTransaction(expirationTime?)`. TS caches the chain
-    /// reference data between calls for 3 s (`acquireChainReferenceData`);
-    /// the Rust port fetches it on every call.
+    /// TS NOTE: `createTransaction(expirationTime?)`. Like TS
+    /// (`acquireChainReferenceData`), the chain reference data is cached
+    /// between calls for 3 s.
     pub async fn create_transaction(
         &self,
         expiration: Option<&str>,
     ) -> Result<OnlineTransaction, WaxChainError> {
-        let api = self.api();
-        let properties = api
-            .database_api
-            .get_dynamic_global_properties(Default::default())
-            .await?;
+        let reference = self.acquire_chain_reference_data().await?;
 
         let tx = build_transaction_with_chain_reference_data(
             self.chain_id(),
-            &properties.head_block_id,
-            Some(properties.time),
+            &reference.head_block_id,
+            Some(reference.time),
             expiration,
         )?;
 
-        Ok(OnlineTransaction::new(Transaction::from_rust(tx), api))
+        Ok(OnlineTransaction::new(Transaction::from_rust(tx), self.api()))
     }
 
     /// Broadcasts `transaction` to the chain's JSON-RPC endpoint, with no
