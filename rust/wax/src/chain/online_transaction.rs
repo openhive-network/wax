@@ -180,19 +180,27 @@ impl OnlineTransaction {
     }
 
     /// Builds an authority verification trace for the (already signed)
-    /// transaction. `use_legacy` forces pre-HF26 serialization when true.
+    /// transaction — or for `source` when given, resolving authorities
+    /// through this transaction's chain binding. `use_legacy` forces
+    /// pre-HF26 serialization when true.
+    ///
+    /// TS NOTE:
+    /// `generateAuthorityVerificationTrace(useLegacySerialization?, externalTx?)`.
     pub async fn generate_authority_verification_trace(
         &self,
         use_legacy: bool,
+        source: Option<&Transaction>,
     ) -> Result<AuthorityTrace, WaxChainError> {
+        let source = source.unwrap_or(&self.base);
+
         let signature_keys = if use_legacy {
-            self.base.legacy_signature_keys()?
+            source.legacy_signature_keys()?
         } else {
-            self.base.signature_keys()?
+            source.signature_keys()?
         };
 
         let required_authorities = rust_protocol()
-            .cpp_tx_required_authorities(&self.base.inner.handle)
+            .cpp_tx_required_authorities(&source.inner.handle)
             .map_err(WaxError::from)?;
 
         let seed_accounts = required_authorities
@@ -225,7 +233,7 @@ impl OnlineTransaction {
         let key_signatures: HashMap<PublicKey, Signature> = signature_keys
             .iter()
             .cloned()
-            .zip(self.base.transaction().signatures.iter().cloned())
+            .zip(source.transaction().signatures.iter().cloned())
             .collect();
 
         Ok(convert_authority_trace(&key_signatures, &trace))

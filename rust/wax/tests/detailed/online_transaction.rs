@@ -89,7 +89,7 @@ async fn trace_accepts_directly_authorized_signature_key() {
     let signature = tx.sign(&provider, &public_key).expect("sign");
 
     let trace = tx
-        .generate_authority_verification_trace(false)
+        .generate_authority_verification_trace(false, None)
         .await
         .unwrap();
 
@@ -156,7 +156,7 @@ async fn trace_fetches_redirected_account_authority_in_second_round() {
     tx.sign(&provider, &public_key).expect("sign");
 
     let trace = tx
-        .generate_authority_verification_trace(false)
+        .generate_authority_verification_trace(false, None)
         .await
         .unwrap();
 
@@ -214,7 +214,7 @@ async fn trace_terminates_when_redirected_account_does_not_exist() {
 
     // Unsigned: the point is loop termination and the missing-account flag.
     let trace = tx
-        .generate_authority_verification_trace(false)
+        .generate_authority_verification_trace(false, None)
         .await
         .unwrap();
 
