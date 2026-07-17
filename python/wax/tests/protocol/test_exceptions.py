@@ -311,6 +311,26 @@ class TestProtocolNumberAssertions:
         assert exc.value.category == "protocol"
         assert exc.value.subject_type == "number"
 
+    def test_recurrent_transfer_too_few_executions(self) -> None:
+        """recurrent_transfer requires at least one execution."""
+        op = _op(
+            "recurrent_transfer_operation",
+            {
+                "from": "initminer",
+                "to": "alpha",
+                "amount": _hive("100"),
+                "memo": "",
+                "recurrence": 24,
+                "executions": 0,
+                "extensions": [],
+            },
+        )
+
+        with pytest.raises(WaxAssertionError) as exc:
+            wax.validate_operation(op)
+
+        assert exc.value.category == "protocol"
+        assert exc.value.subject_type == "number"
 
 # ---------------------------------------------------------------------------
 # subject_type: "string" — HIVE_PROTOCOL_STRING_ASSERT
