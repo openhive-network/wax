@@ -3,6 +3,10 @@
 
 use std::ops::Deref;
 use std::sync::Arc;
+use std::time::Duration;
+
+use tokio::sync::Mutex;
+use tokio::time::Instant;
 
 use crate::WaxFoundation;
 use crate::create_wax_foundation;
@@ -14,6 +18,14 @@ use crate::chain::extend::HiveApi;
 use crate::chain::options::HiveChainOptions;
 use crate::chain::rest::{RestCaller, RestClient};
 use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
+use crate::models::basic::ChainReferenceData;
+
+/// Used to bound the reuse of cached TaPoS reference data between
+/// [`create_transaction`](HiveChain::create_transaction) calls.
+///
+/// TS NOTE: the `taposLiveness` argument TS `createTransaction` passes to
+/// `acquireChainReferenceData` — the same 3 s.
+const TAPOS_LIVENESS: Duration = Duration::from_secs(3);
 
 /// Represents the online (chain-bound) API on top of [`WaxFoundation`]:
 /// endpoint configuration, transport handles and the typed API surfaces
@@ -37,6 +49,14 @@ pub struct HiveChain {
     // back.
     api_timeout: u32,
     wax_api_caller: Option<String>,
+    tapos_cache: Mutex<Option<TaposCache>>,
+}
+
+/// Represents the TaPoS reference data last fetched from the node, reused
+/// while younger than [`TAPOS_LIVENESS`].
+struct TaposCache {
+    data: ChainReferenceData,
+    fetched_at: Instant,
 }
 
 impl HiveChain {
@@ -66,6 +86,7 @@ impl HiveChain {
             rest,
             api_timeout: options.api_timeout,
             wax_api_caller: options.wax_api_caller,
+            tapos_cache: Mutex::new(None),
         })
     }
 
@@ -137,6 +158,43 @@ impl HiveChain {
     pub fn api(&self) -> DefaultHiveApi {
         DefaultHiveApi::bind(self.json_rpc_caller())
     }
+
+    /// Returns the chain reference data (head-block id and time) anchoring
+    /// new transactions, fetched from the node and cached for
+    /// [`TAPOS_LIVENESS`] — a burst of transaction creations costs one
+    /// `get_dynamic_global_properties` call. The cache lock is held across
+    /// the fetch, so concurrent callers wait for the one in flight instead
+    /// of fetching again.
+    ///
+    /// TS NOTE: `acquireChainReferenceData(taposLiveness)`.
+    pub(crate) async fn acquire_chain_reference_data(
+        &self,
+    ) -> Result<ChainReferenceData, WaxChainError> {
+        let mut cache = self.tapos_cache.lock().await;
+
+        if let Some(cached) = cache.as_ref() {
+            if cached.fetched_at.elapsed() < TAPOS_LIVENESS {
+                return Ok(cached.data.clone());
+            }
+        }
+
+        let properties = self
+            .api()
+            .database_api
+            .get_dynamic_global_properties(Default::default())
+            .await?;
+        let data = ChainReferenceData {
+            time: properties.time,
+            head_block_id: properties.head_block_id,
+        };
+
+        *cache = Some(TaposCache {
+            data: data.clone(),
+            fetched_at: Instant::now(),
+        });
+
+        Ok(data)
+    }
 }
 
 // NOTE: Rust has no "extends" — the offline surface is exposed through the
@@ -158,4 +216,113 @@ fn validate_endpoint(url: &str) -> Result<(), WaxChainError> {
     })?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::util::test_support::spawn_capture_server;
+    use super::*;
+    use crate::create_hive_chain;
+    use crate::models::basic::HiveDateTime;
+
+    // A real `database_api.get_dynamic_global_properties` payload in its
+    // JSON-RPC envelope (see `chain/api/tests.rs`).
+    const DGP_RESPONSE: &str = r#"{"jsonrpc":"2.0","id":1,"result":{
+        "id": 0,
+        "head_block_number": 96549390,
+        "head_block_id": "05c1578e0a90cf6de23e3fbd407ba00fedbb1c15",
+        "time": "2025-07-08T12:34:57",
+        "current_witness": "gtg",
+        "total_pow": 514415,
+        "num_pow_witnesses": 172,
+        "virtual_supply": {"amount": "504726954597", "precision": 3, "nai": "@@000000021"},
+        "current_supply": {"amount": "489233021062", "precision": 3, "nai": "@@000000021"},
+        "init_hbd_supply": {"amount": "0", "precision": 3, "nai": "@@000000013"},
+        "current_hbd_supply": {"amount": "13126252559", "precision": 3, "nai": "@@000000013"},
+        "total_vesting_fund_hive": {"amount": "141086068060", "precision": 3, "nai": "@@000000021"},
+        "total_vesting_shares": {"amount": "263084307129416595", "precision": 6, "nai": "@@000000037"},
+        "pending_rewarded_vesting_shares": {"amount": "365194429725286", "precision": 6, "nai": "@@000000037"},
+        "pending_rewarded_vesting_hive": {"amount": "194858873", "precision": 3, "nai": "@@000000021"},
+        "hbd_interest_rate": 2000,
+        "hbd_print_rate": 10000,
+        "maximum_block_size": 65536,
+        "current_aslot": 96921594,
+        "recent_slots_filled": "340282366920938463463374607431768211455",
+        "participation_count": 128,
+        "last_irreversible_block_num": 96549371,
+        "vote_power_reserve_rate": 10,
+        "delegation_return_period": 432000,
+        "reverse_auction_seconds": 0,
+        "available_account_subsidies": 17017685,
+        "hbd_stop_percent": 2000,
+        "hbd_start_percent": 1900,
+        "next_maintenance_time": "2025-07-08T12:47:40",
+        "last_budget_time": "2025-07-08T11:47:40",
+        "next_daily_maintenance_time": "2025-07-09T02:07:40",
+        "content_reward_percent": 6500,
+        "vesting_reward_percent": 1500,
+        "proposal_fund_percent": 1000,
+        "dhf_interval_ledger": {"amount": "8206", "precision": 3, "nai": "@@000000013"},
+        "downvote_pool_percent": 2500,
+        "current_remove_threshold": 200,
+        "early_voting_seconds": 86400,
+        "mid_voting_seconds": 172800,
+        "max_consecutive_recurrent_transfer_failures": 10,
+        "max_recurrent_transfer_end_date": 730,
+        "min_recurrent_transfers_recurrence": 24,
+        "max_open_recurrent_transfers": 255
+    }}"#;
+
+    // TS NOTE: mirrors `acquireChainReferenceData` — a second call within
+    // the liveness window reuses the cached reference data. The capture
+    // server is single-shot, so a second fetch would fail with a connection
+    // error instead of succeeding.
+    #[tokio::test]
+    async fn chain_reference_data_is_cached_between_calls() {
+        let (endpoint, _captured) = spawn_capture_server(DGP_RESPONSE);
+
+        let chain = create_hive_chain(HiveChainOptions {
+            api_endpoint: endpoint,
+            ..Default::default()
+        })
+        .unwrap();
+
+        let first = chain.acquire_chain_reference_data().await.unwrap();
+        let second = chain.acquire_chain_reference_data().await.unwrap();
+
+        assert_eq!(
+            first.head_block_id,
+            "05c1578e0a90cf6de23e3fbd407ba00fedbb1c15"
+        );
+        assert_eq!(first, second);
+    }
+
+    // The cached reference data must expire after `TAPOS_LIVENESS`: a later
+    // call goes back to the node (unroutable here, so it errors instead of
+    // serving the stale cache).
+    #[tokio::test(start_paused = true)]
+    async fn chain_reference_data_cache_expires() {
+        let chain = create_hive_chain(HiveChainOptions {
+            api_endpoint: "http://127.0.0.1:1".into(),
+            ..Default::default()
+        })
+        .unwrap();
+
+        let seeded = ChainReferenceData {
+            time: HiveDateTime::parse("2025-07-08T12:34:57").unwrap(),
+            head_block_id: "05c1578e0a90cf6de23e3fbd407ba00fedbb1c15".into(),
+        };
+        *chain.tapos_cache.lock().await = Some(TaposCache {
+            data: seeded.clone(),
+            fetched_at: Instant::now(),
+        });
+
+        let cached = chain.acquire_chain_reference_data().await.unwrap();
+
+        assert_eq!(cached, seeded);
+
+        tokio::time::advance(TAPOS_LIVENESS).await;
+
+        chain.acquire_chain_reference_data().await.unwrap_err();
+    }
 }
