@@ -371,22 +371,30 @@ impl WaxFoundation {
             .map_err(WaxError::from)
     }
 
-    /// Calculates the current Hive Power APR.
+    /// Calculates the current Hive Power APR, in percent (2 decimal
+    /// places).
+    ///
+    /// TS NOTE: the core returns the APR as a string to dodge floating
+    /// point issues; TS `calculateHpApr` parses it into a JS number, Rust
+    /// into a lossless `Decimal` — mirroring Python.
     pub fn calculate_hp_apr(
         &self,
         head_block_num: u32,
         vesting_reward_percent: u16,
         virtual_supply: &NaiAsset,
         total_vesting_fund_hive: &NaiAsset,
-    ) -> Result<String, WaxError> {
-        rust_protocol()
+    ) -> Result<Decimal, WaxError> {
+        let apr = rust_protocol()
             .cpp_calculate_hp_apr(
                 head_block_num,
                 vesting_reward_percent,
                 &to_ffi_asset(virtual_supply),
                 &to_ffi_asset(total_vesting_fund_hive),
             )
-            .map_err(WaxError::from)
+            .map_err(WaxError::from)?;
+
+        apr.parse()
+            .map_err(|_| WaxError::DecimalConversionNotANumber)
     }
 
     /// Calculates the instantaneous inflation rate, in basis points, for the

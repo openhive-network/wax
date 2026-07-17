@@ -6,6 +6,7 @@
 // Python wax suite (python/wax/tests/...), so any divergence is a regression
 // against the canonical implementation rather than reinventing the math here.
 
+use rust_decimal::Decimal;
 use wax::models::asset::NaiAsset;
 use wax::result::JsonPrice;
 use wax::{WaxFoundation, create_wax_foundation};
@@ -180,7 +181,7 @@ fn calculate_hp_apr_matches_python_protocol_fixture() {
             &hive(173_009_633_181),
         )
         .expect("calculate_hp_apr");
-    assert_eq!(apr, "4.48");
+    assert_eq!(apr, Decimal::new(448, 2));
 
     let apr_later = f
         .calculate_hp_apr(
@@ -190,7 +191,7 @@ fn calculate_hp_apr_matches_python_protocol_fixture() {
             &hive(173_009_633_181),
         )
         .expect("calculate_hp_apr later block");
-    assert_eq!(apr_later, "2.97");
+    assert_eq!(apr_later, Decimal::new(297, 2));
 }
 
 #[test]
@@ -198,21 +199,14 @@ fn calculate_hp_apr_matches_python_base_api_fixture() {
     // Mirrors python/wax/tests/base_api/test_calculate_hp_apr.py:
     //   head_block_num=1_000_000, vesting_reward_percent=1500,
     //   virtual_supply = total_vesting_fund_hive = 10 HIVE (= 10_000 sat),
-    // expected "1.46" (Python's Decimal post-format keeps trailing zeros).
+    // expected Decimal("1.46").
     let f = foundation();
 
     let apr = f
         .calculate_hp_apr(1_000_000, 1_500, &hive(10_000), &hive(10_000))
         .expect("calculate_hp_apr");
 
-    // C++ returns the raw "<int>.<int>" form; Decimal normalization happens in
-    // the Python layer. "1.46" and "1.46" must agree numerically.
-    let parsed: f64 = apr.parse().expect("apr should be numeric");
-    assert!(
-        (parsed - 1.46_f64).abs() < 1e-9,
-        "expected ~1.46, got '{}'",
-        apr
-    );
+    assert_eq!(apr, Decimal::new(146, 2));
 }
 
 #[test]
