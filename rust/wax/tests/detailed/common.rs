@@ -375,12 +375,29 @@ const API_ACCOUNT_TEMPLATE: &str = r#"{
 /// A full `ApiAccount` object with the given name, active authority and memo
 /// key; owner and posting default to a key nothing signs with.
 pub fn api_account_json(name: &str, active: Value, memo_key: &str) -> Value {
+    api_account_json_roles(
+        name,
+        authority_json(1, &[], &[(OTHER_PUBLIC_KEY, 1)]),
+        active,
+        authority_json(1, &[], &[(OTHER_PUBLIC_KEY, 1)]),
+        memo_key,
+    )
+}
+
+/// A full `ApiAccount` object with an explicit authority for every role.
+pub fn api_account_json_roles(
+    name: &str,
+    owner: Value,
+    active: Value,
+    posting: Value,
+    memo_key: &str,
+) -> Value {
     let mut account: Value =
         serde_json::from_str(API_ACCOUNT_TEMPLATE).unwrap();
     account["name"] = json!(name);
-    account["owner"] = authority_json(1, &[], &[(OTHER_PUBLIC_KEY, 1)]);
+    account["owner"] = owner;
     account["active"] = active;
-    account["posting"] = authority_json(1, &[], &[(OTHER_PUBLIC_KEY, 1)]);
+    account["posting"] = posting;
     account["memo_key"] = json!(memo_key);
 
     account
