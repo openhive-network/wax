@@ -4,10 +4,10 @@ import { AEncryptionProvider, isPublicKey } from "@hiveio/wax";
 type KeychainKeyTypes = string;
 
 const mapRoles: Record<TRole, KeychainKeyTypes | undefined> = {
-  active: "active",
-  posting: "posting",
+  active: "Active",
+  posting: "Posting",
   owner: undefined,
-  memo: "memo"
+  memo: "Memo"
 };
 
 export class WaxKeychainProviderError extends Error {}
