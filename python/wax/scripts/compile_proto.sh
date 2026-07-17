@@ -19,8 +19,8 @@ mkdir -vp "${OUTPUT_DIR}"
 echo "Regenerate poetry.lock if needed..."
 poetry -C ${PROJECT_DIR} lock --no-update 2>/dev/null || poetry -C ${PROJECT_DIR} lock
 
-echo "Install poetry dependencies."
-poetry -C ${PROJECT_DIR} install --no-root
+echo "Install proto-generation dependencies."
+poetry -C ${PROJECT_DIR} install --no-root --only dev,static-analysis
 
 GLOBIGNORE="${PROTO_DIR}/block.proto"
 
