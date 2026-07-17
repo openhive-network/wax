@@ -7,6 +7,7 @@
 // calculateWitnessVotesHp) are kept as `#[ignore]` stubs so they remain
 // visible in `cargo test` output.
 
+use rust_decimal::Decimal;
 use wax::complex_operations::{
     DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation,
 };
@@ -1436,8 +1437,8 @@ fn calculate_hp_apr_basic() {
                 &hive_sat(ctx, 10),
             )
             .expect("calculate_hp_apr");
-        // TS asserts the numeric `1.46`; the Rust API returns a string.
-        assert_eq!(apr, "1.46");
+        // TS asserts the numeric `1.46`; the Rust API returns a Decimal.
+        assert_eq!(apr, Decimal::new(146, 2));
     });
 }
 
@@ -1455,7 +1456,7 @@ fn calculate_hp_apr_mixed_params() {
                 &hive_sat(ctx, 10),
             )
             .expect("calculate_hp_apr");
-        assert_eq!(apr, "1.46");
+        assert_eq!(apr, Decimal::new(146, 2));
     });
 }
 

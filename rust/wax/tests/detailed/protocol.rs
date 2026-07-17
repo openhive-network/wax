@@ -8,6 +8,7 @@
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
+use rust_decimal::Decimal;
 
 use wax::core::RustManagedObject;
 use wax::models::asset::NaiAsset;
@@ -1481,7 +1482,7 @@ fn calculate_hp_apr_fixture_1() {
                 &total_vesting_fund_hive,
             )
             .expect("calculate_hp_apr");
-        assert_eq!(apr, "4.48");
+        assert_eq!(apr, Decimal::new(448, 2));
     });
 }
 
@@ -1506,7 +1507,7 @@ fn calculate_hp_apr_fixture_2() {
                 &total_vesting_fund_hive,
             )
             .expect("calculate_hp_apr");
-        assert_eq!(apr, "2.97");
+        assert_eq!(apr, Decimal::new(297, 2));
     });
 }
 
