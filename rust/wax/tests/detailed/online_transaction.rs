@@ -16,11 +16,12 @@ use wax::{
     ProcessedEntry, WaxChainError, create_hive_chain,
 };
 
+use wax_signers_beekeeper::BeekeeperSignatureProvider;
+
 use crate::common::{
-    BeekeeperSignatureProvider, OTHER_PUBLIC_KEY, account_update2_value,
-    api_account_json, authority_json, dgpo_result, find_accounts_result,
-    new_in_memory_beekeeper, rc_account_json, spawn_json_rpc_server,
-    transfer_value,
+    OTHER_PUBLIC_KEY, account_update2_value, api_account_json, authority_json,
+    dgpo_result, find_accounts_result, new_in_memory_beekeeper,
+    rc_account_json, spawn_json_rpc_server, transfer_value,
 };
 
 // The WIF / public-key pair pinned by the TS fixtures — see

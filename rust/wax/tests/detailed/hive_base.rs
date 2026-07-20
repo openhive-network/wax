@@ -16,9 +16,9 @@ use wax::models::basic::HiveDateTime;
 use wax::result::JsonPrice;
 use wax::{Operation, SignatureProvider, Transaction};
 
-use crate::common::{
-    BeekeeperSignatureProvider, new_in_memory_beekeeper, wax_test,
-};
+use wax_signers_beekeeper::BeekeeperSignatureProvider;
+
+use crate::common::{new_in_memory_beekeeper, wax_test};
 
 // `5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT` →
 // `STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh`. Pinned by the TS

@@ -1,0 +1,22 @@
+[package]
+name = "hiveio-wax-signers-beekeeper"
+version = "0.0.0"
+edition = "2024"
+description = "Beekeeper signer companion of the hiveio-wax crate: bridges a Beekeeper wallet to wax's SignatureProvider trait. Name reserved for the official Hive project; implementation in progress."
+license = "MIT"
+repository = "https://gitlab.syncad.com/hive/wax"
+homepage = "https://gitlab.syncad.com/hive/wax"
+keywords = ["hive", "blockchain", "wax", "beekeeper"]
+categories = ["cryptography::cryptocurrencies"]
+
+[lib]
+name = "wax_signers_beekeeper"
+
+[dependencies]
+# Path-only on purpose (same rationale as the hiveio-beekeeper dev-dependency
+# of hiveio-wax): version-only requirements resolve to the crates.io
+# name-reservation placeholders instead of the local crates. Extracted from
+# the beekeeper project's GitLab generic package registry by
+# ../../fetch_beekeeper.sh (run it once before any cargo command).
+hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper" }
+hiveio-wax = { path = "../../wax" }

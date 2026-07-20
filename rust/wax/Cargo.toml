@@ -58,6 +58,8 @@ url = "2"
 # path-only: cargo strips path-only dev-dependencies from the published
 # manifest, so beekeeper never ships with the wax crate.
 hiveio-beekeeper = { path = "../crates/hiveio-beekeeper" }
+# Beekeeper-backed SignatureProvider used by the detailed test suite.
+hiveio-wax-signers-beekeeper = { path = "../signers/beekeeper" }
 # `test-util` powers the paused-clock scheduling tests of the health checker.
 tokio = { version = "1", features = ["macros", "rt", "test-util"] }
 

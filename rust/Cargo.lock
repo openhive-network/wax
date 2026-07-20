@@ -453,6 +453,7 @@ dependencies = [
  "futures-util",
  "hiveio-beekeeper",
  "hiveio-wax-macros",
+ "hiveio-wax-signers-beekeeper",
  "pbjson",
  "percent-encoding",
  "prost 0.13.5",
@@ -473,6 +474,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.118",
+]
+
+[[package]]
+name = "hiveio-wax-signers-beekeeper"
+version = "0.0.0"
+dependencies = [
+ "hiveio-beekeeper",
+ "hiveio-wax",
 ]
 
 [[package]]

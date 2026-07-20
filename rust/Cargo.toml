@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["wax_macros", "wax"]
+members = ["wax_macros", "wax", "signers/beekeeper"]
 exclude = ["proto_builder", "crates"]
 
 [profile.release]

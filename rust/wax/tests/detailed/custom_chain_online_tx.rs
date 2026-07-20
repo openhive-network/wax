@@ -22,7 +22,9 @@ use wax::{
     create_wax_foundation,
 };
 
-use crate::common::{BeekeeperSignatureProvider, new_in_memory_beekeeper};
+use wax_signers_beekeeper::BeekeeperSignatureProvider;
+
+use crate::common::new_in_memory_beekeeper;
 
 const MIRRORNET_API_ENDPOINT: &str = "https://api.fake.openhive.network/";
 const MIRRORNET_CHAIN_ID: &str = "42";
