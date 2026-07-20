@@ -9,11 +9,14 @@
 //! `deepEqual(defaultCommentOptions, this.commentOptions)` check.
 //!
 //! Differences from the TS port:
-//! - `pushMetadataProperty` and the arbitrary user-supplied `jsonMetadata`
-//!   object are not ported. Only the typed metadata fields (`format`,
+//! - `pushMetadataProperty` is not ported as a method; the public
+//!   `json_metadata` field covers the same use case. Its entries are merged
+//!   into the generated metadata with TS constructor semantics: they
+//!   override the `format`/`app` defaults, and the typed fields (`format`,
 //!   `tags`, `images`, `links`, `alternative_author`, `description`, `app`)
-//!   are surfaced. `app` defaults to `wax/{CARGO_PKG_VERSION}` and can be
-//!   overridden via the `app` field (mirrors TS's `jsonMetadata.app`).
+//!   are applied on top. `app` defaults to `wax/{CARGO_PKG_VERSION}` and
+//!   can be overridden via the `app` field or a `json_metadata` entry
+//!   (mirrors TS's `jsonMetadata.app`).
 //! - The default `comment_options` payload is hard-coded against the
 //!   protocol constants rather than fetched through an FFI call to
 //!   `cpp_get_default_comment_options_operation`. The values (1_000_000_000
@@ -23,7 +26,8 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::core::proto;
-use serde::Serialize;
+use serde::ser::{Serialize, SerializeMap, Serializer};
+use serde_json::Value;
 
 use crate::WaxError;
 use crate::base::constants::{
@@ -89,6 +93,12 @@ pub struct ReplyOperation {
     /// Overrides the `app` tag in `json_metadata`. Defaults to
     /// `wax/{CARGO_PKG_VERSION}` when `None`.
     pub app: Option<String>,
+    /// Arbitrary extra `json_metadata` entries, merged in order over the
+    /// `format`/`app` defaults before the typed fields above are applied.
+    ///
+    /// TS NOTE: mirrors the constructor `jsonMetadata` object; entry order
+    /// is preserved in the serialized output like JS object key order.
+    pub json_metadata: Vec<(String, Value)>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
     pub allow_curation_rewards: Option<bool>,
@@ -118,6 +128,12 @@ pub struct BlogPostOperation {
     /// Overrides the `app` tag in `json_metadata`. Defaults to
     /// `wax/{CARGO_PKG_VERSION}` when `None`.
     pub app: Option<String>,
+    /// Arbitrary extra `json_metadata` entries, merged in order over the
+    /// `format`/`app` defaults before the typed fields above are applied.
+    ///
+    /// TS NOTE: mirrors the constructor `jsonMetadata` object; entry order
+    /// is preserved in the serialized output like JS object key order.
+    pub json_metadata: Vec<(String, Value)>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
     pub allow_curation_rewards: Option<bool>,
@@ -143,6 +159,7 @@ struct CommentInputs {
     alternative_author: Option<AccountName>,
     description: Option<String>,
     app: Option<String>,
+    json_metadata: Vec<(String, Value)>,
     beneficiaries: Vec<BeneficiaryRoute>,
     allow_curation_rewards: Option<bool>,
     allow_votes: Option<bool>,
@@ -185,6 +202,7 @@ impl OperationBuilder for ReplyOperation {
             alternative_author: this.alternative_author,
             description: this.description,
             app: this.app,
+            json_metadata: this.json_metadata,
             beneficiaries: this.beneficiaries,
             allow_curation_rewards: this.allow_curation_rewards,
             allow_votes: this.allow_votes,
@@ -219,6 +237,7 @@ impl OperationBuilder for BlogPostOperation {
             alternative_author: this.alternative_author,
             description: this.description,
             app: this.app,
+            json_metadata: this.json_metadata,
             beneficiaries: this.beneficiaries,
             allow_curation_rewards: this.allow_curation_rewards,
             allow_votes: this.allow_votes,
@@ -249,15 +268,7 @@ impl CommentInputs {
         // the partial moves into `proto::Comment`.
         let has_options = self.has_options_input();
 
-        let json_metadata = build_json_metadata(
-            self.format.unwrap_or(CommentFormat::Mixed),
-            &self.tags,
-            &self.images,
-            &self.links,
-            self.alternative_author.as_deref(),
-            self.description.as_deref(),
-            self.app.as_deref(),
-        )?;
+        let json_metadata = self.build_json_metadata()?;
 
         let comment_op = proto::Comment {
             parent_author: self.parent_author,
@@ -301,6 +312,69 @@ impl CommentInputs {
 
         Ok(ops)
     }
+
+    /// Builds the serialized `json_metadata` string, replicating the TS
+    /// constructor sequence: the `format` default, then the user-supplied
+    /// `json_metadata` entries (`Object.assign` semantics), then `app`,
+    /// then the typed fields on top.
+    fn build_json_metadata(&self) -> Result<String, WaxError> {
+        let mut metadata = OrderedObject(Vec::new());
+        metadata.set("format", Value::from(CommentFormat::Mixed.as_str()));
+
+        for (key, value) in &self.json_metadata {
+            metadata.set(key, value.clone());
+        }
+
+        // TS NOTE: `optionalJsonMeta.app ?? wax/version` — an `app` entry
+        // in the user metadata beats the default tag; the typed `app`
+        // field beats both.
+        let app = match (&self.app, metadata.get("app")) {
+            (Some(app), _) => Value::from(app.as_str()),
+            (None, Some(app)) => app.clone(),
+            (None, None) => Value::from(APP_TAG),
+        };
+        metadata.set("app", app);
+
+        if !self.tags.is_empty() {
+            let combined = metadata_array(&metadata, "tags")?
+                .into_iter()
+                .chain(self.tags.iter().map(|t| Value::from(t.as_str())));
+            metadata.set(
+                "tags",
+                Value::Array(deduplicate_preserving_order(combined)),
+            );
+        }
+
+        if !self.images.is_empty() {
+            let mut image = metadata_array(&metadata, "image")?;
+            image.extend(self.images.iter().map(|i| Value::from(i.as_str())));
+            metadata.set("image", Value::Array(image));
+        }
+
+        if !self.links.is_empty() {
+            let mut links = metadata_array(&metadata, "links")?;
+            links.extend(self.links.iter().map(|l| Value::from(l.as_str())));
+            metadata.set("links", Value::Array(links));
+        }
+
+        if let Some(author) = &self.alternative_author {
+            metadata.set("author", Value::from(author.as_str()));
+        }
+
+        if let Some(description) = &self.description {
+            metadata.set("description", Value::from(description.as_str()));
+        }
+
+        if let Some(format) = self.format {
+            metadata.set("format", Value::from(format.as_str()));
+        }
+
+        serde_json::to_string(&metadata).map_err(|e| {
+            WaxError::new(format!(
+                "failed to serialize comment json_metadata: {e}"
+            ))
+        })
+    }
 }
 
 fn now_millis() -> u64 {
@@ -310,68 +384,72 @@ fn now_millis() -> u64 {
         .as_millis() as u64
 }
 
-/// Internal struct backing the JSON metadata serialization. Field
-/// declaration order matters: `serde_json` preserves it, so the output
-/// matches the TS `JSON.stringify` shape byte-for-byte
-/// (`format`, `app`, `tags`, `image`, `links`, `author`, `description`).
-#[derive(Serialize)]
-struct JsonMetadata<'a> {
-    format: &'a str,
-    app: &'a str,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    tags: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    image: Option<&'a [String]>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    links: Option<&'a [String]>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    author: Option<&'a str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    description: Option<&'a str>,
+/// Represents an insertion-ordered JSON object mirroring JS object key
+/// semantics: setting an existing key updates it in place, a new key is
+/// appended. Serialized entry order therefore matches the TS
+/// `JSON.stringify` output byte-for-byte without enabling `serde_json`'s
+/// crate-wide `preserve_order` feature.
+struct OrderedObject(Vec<(String, Value)>);
+
+impl OrderedObject {
+    fn get(&self, key: &str) -> Option<&Value> {
+        self.0.iter().find(|(k, _)| k == key).map(|(_, v)| v)
+    }
+
+    fn set(&mut self, key: &str, value: Value) {
+        match self.0.iter_mut().find(|(k, _)| k == key) {
+            Some((_, existing)) => *existing = value,
+            None => self.0.push((key.to_string(), value)),
+        }
+    }
 }
 
-fn build_json_metadata(
-    format: CommentFormat,
-    tags: &[String],
-    images: &[String],
-    links: &[String],
-    alternative_author: Option<&str>,
-    description: Option<&str>,
-    app: Option<&str>,
-) -> Result<String, WaxError> {
-    let metadata = JsonMetadata {
-        format: format.as_str(),
-        app: app.unwrap_or(APP_TAG),
-        tags: if tags.is_empty() {
-            None
-        } else {
-            Some(deduplicate_preserving_order(tags))
-        },
-        image: if images.is_empty() {
-            None
-        } else {
-            Some(images)
-        },
-        links: if links.is_empty() { None } else { Some(links) },
-        author: alternative_author,
-        description,
-    };
+impl Serialize for OrderedObject {
+    fn serialize<S: Serializer>(
+        &self,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        let mut map = serializer.serialize_map(Some(self.0.len()))?;
+        for (key, value) in &self.0 {
+            map.serialize_entry(key, value)?;
+        }
 
-    serde_json::to_string(&metadata).map_err(|e| {
-        WaxError::new(format!("failed to serialize comment json_metadata: {e}"))
-    })
+        map.end()
+    }
+}
+
+/// Reads a metadata key that the typed fields extend (`tags`, `image`,
+/// `links`), defaulting to an empty array when the key is absent.
+/// NOTE: TS throws a `TypeError` when spreading a non-iterable
+/// user-supplied value here; surfaced as a [`WaxError`] instead.
+fn metadata_array(
+    metadata: &OrderedObject,
+    key: &str,
+) -> Result<Vec<Value>, WaxError> {
+    match metadata.get(key) {
+        None => Ok(Vec::new()),
+        Some(Value::Array(items)) => Ok(items.clone()),
+        Some(_) => Err(WaxError::new(format!(
+            "comment json_metadata key `{key}` must be an array"
+        ))),
+    }
 }
 
 /// First-occurrence-wins dedupe preserving order. Mirrors TS
 /// `[...new Set([...existing, ...data.tags])]`.
-fn deduplicate_preserving_order(items: &[String]) -> Vec<String> {
-    let mut seen = std::collections::HashSet::with_capacity(items.len());
-    let mut out = Vec::with_capacity(items.len());
+///
+/// TS NOTE: `Set` compares non-primitives by reference, so deep-equal
+/// user-supplied objects survive in TS but collapse here.
+fn deduplicate_preserving_order(
+    items: impl Iterator<Item = Value>,
+) -> Vec<Value> {
+    let mut out: Vec<Value> = Vec::new();
     for item in items {
-        if seen.insert(item.clone()) {
-            out.push(item.clone());
+        if !out.contains(&item) {
+            out.push(item);
         }
     }
+
     out
 }
 

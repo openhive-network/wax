@@ -7,12 +7,6 @@
 // the TS `toApi()` / `toLegacyApi()`, so the JSON shapes are asserted
 // byte-for-byte — the only deliberate divergence is the comment `app` tag,
 // which is `wax/{CARGO_PKG_VERSION}` here instead of TS's `@hiveio/wax/...`.
-//
-// Tests that depend on Rust surface that hasn't been ported are kept as
-// `#[ignore]` stubs so they stay visible in `cargo test` output:
-// - the explicit-`app` blog-post case needs the arbitrary `jsonMetadata`
-//   object, which the Rust comment builders don't surface (see
-//   `complex_operations/comment.rs` module docs).
 
 use serde_json::json;
 
@@ -1303,13 +1297,94 @@ fn blog_post_set_format() {
 }
 
 // TS line 1038: "Should be able to set explicit app in BlogPostOperation".
-//
-// TODO: the Rust comment builders don't surface the arbitrary `jsonMetadata`
-// object (only the typed metadata fields), so the explicit `app` override can't
-// be expressed. See `complex_operations/comment.rs` module docs.
 #[test]
-#[ignore = "arbitrary jsonMetadata object not ported to the Rust comment builders"]
-fn blog_post_explicit_app() {}
+fn blog_post_explicit_app() {
+    wax_test(None, |ctx| {
+        let op = BlogPostOperation {
+            category: "test-category".into(),
+            author: "gtg".into(),
+            title: "Set format".into(),
+            body: "Set format".into(),
+            permlink: Some("set-format".into()),
+            json_metadata: vec![("app".into(), json!("thebest.blog@13.13"))],
+            ..Default::default()
+        };
+
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&ctx.base, op).expect("push_builder");
+
+        let json_metadata =
+            r#"{"format":"markdown+html","app":"thebest.blog@13.13"}"#;
+
+        assert_eq!(
+            api_ops(&tx),
+            json!([
+                {
+                    "type": "comment_operation",
+                    "value": {
+                        "author": "gtg",
+                        "body": "Set format",
+                        "json_metadata": json_metadata,
+                        "parent_author": "",
+                        "parent_permlink": "test-category",
+                        "permlink": "set-format",
+                        "title": "Set format"
+                    }
+                }
+            ])
+        );
+    });
+}
+
+// No direct TS counterpart: arbitrary `json_metadata` entries merge with the
+// TS constructor precedence — user entries override the `format` default and
+// keep their insertion position, typed `tags` merge (deduplicated) into the
+// user-supplied array, and the default `app` tag is appended after the user
+// entries, exactly like `Object.assign` in the TS builder.
+#[test]
+fn blog_post_arbitrary_json_metadata() {
+    wax_test(None, |ctx| {
+        let op = BlogPostOperation {
+            category: "test-category".into(),
+            author: "gtg".into(),
+            title: "Custom metadata".into(),
+            body: "Custom metadata".into(),
+            permlink: Some("custom-metadata".into()),
+            tags: vec!["spam".into(), "photo".into()],
+            json_metadata: vec![
+                ("format".into(), json!("html")),
+                ("canonical_url".into(), json!("https://example.com/post")),
+                ("tags".into(), json!(["photo"])),
+            ],
+            ..Default::default()
+        };
+
+        let mut tx = fresh_tx(ctx);
+        tx.push_builder(&ctx.base, op).expect("push_builder");
+
+        let json_metadata = format!(
+            r#"{{"format":"html","canonical_url":"https://example.com/post","tags":["photo","spam"],"app":"{APP}"}}"#
+        );
+
+        assert_eq!(
+            api_ops(&tx),
+            json!([
+                {
+                    "type": "comment_operation",
+                    "value": {
+                        "author": "gtg",
+                        "body": "Custom metadata",
+                        "json_metadata": json_metadata,
+                        "parent_author": "",
+                        "parent_permlink": "test-category",
+                        "permlink": "custom-metadata",
+                        "title": "Custom metadata"
+                    }
+                }
+            ])
+        );
+    });
+}
 
 // TS line 1070: "Should be able to push and set multiple properites".
 #[test]
