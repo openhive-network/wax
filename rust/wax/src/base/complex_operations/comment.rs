@@ -36,7 +36,7 @@ use crate::base::constants::{
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
 use crate::base::models::basic::AccountName;
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 const APP_TAG: &str =
     concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
@@ -44,10 +44,13 @@ const APP_TAG: &str =
 /// Represents the wire-form `format` value written to `json_metadata.format`.
 ///
 /// TS NOTE: mirrors `ECommentFormat`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum CommentFormat {
     Html,
     Markdown,
+    /// The format the builders write to `json_metadata.format` when none is
+    /// set.
+    #[default]
     Mixed,
 }
 
@@ -64,7 +67,7 @@ impl CommentFormat {
 /// Represents one beneficiary entry for `comment_options.extensions`, mirroring
 /// `proto::BeneficiaryRouteType` without forcing callers to import from
 /// `wax::proto`.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct BeneficiaryRoute {
     pub account: AccountName,
     pub weight: u32,
@@ -167,7 +170,7 @@ struct CommentInputs {
     max_accepted_payout: Option<NaiAssetConvertible>,
 }
 
-impl OperationBuilder for ReplyOperation {
+impl ComplexOperation for ReplyOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,
@@ -213,7 +216,7 @@ impl OperationBuilder for ReplyOperation {
     }
 }
 
-impl OperationBuilder for BlogPostOperation {
+impl ComplexOperation for BlogPostOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,
@@ -319,7 +322,7 @@ impl CommentInputs {
     /// then the typed fields on top.
     fn build_json_metadata(&self) -> Result<String, WaxError> {
         let mut metadata = OrderedObject(Vec::new());
-        metadata.set("format", Value::from(CommentFormat::Mixed.as_str()));
+        metadata.set("format", Value::from(CommentFormat::default().as_str()));
 
         for (key, value) in &self.json_metadata {
             metadata.set(key, value.clone());

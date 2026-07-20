@@ -74,5 +74,5 @@ pub trait SignatureProvider {
 // NOTE: the transaction and operation types are the concrete
 // [`Transaction`](crate::Transaction) / [`Operation`](crate::Operation)
 // structs (`base::transaction`, `base::operation`) — layered concrete types
-// replaced the former object-safe traits. `OperationBuilder` lives with
+// replaced the former object-safe traits. `ComplexOperation` lives with
 // `Operation` in `base::operation`.

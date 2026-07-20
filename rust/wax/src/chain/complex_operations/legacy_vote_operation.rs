@@ -9,7 +9,7 @@ use crate::core::proto;
 use crate::chain::HiveChain;
 use crate::chain::api::{ApiManabar, FindAccountsRequest};
 use crate::chain::error::WaxChainError;
-use crate::{OperationBuilder, WaxError, WaxFoundation};
+use crate::{ComplexOperation, WaxError, WaxFoundation};
 
 const HIVE_PERCENT: i32 = 100;
 const HIVE_100_PERCENT: i32 = 100 * HIVE_PERCENT;
@@ -125,7 +125,7 @@ impl LegacyVoteOperation {
     }
 }
 
-impl OperationBuilder for LegacyVoteOperation {
+impl ComplexOperation for LegacyVoteOperation {
     fn finalize(
         self,
         _foundation: &WaxFoundation,

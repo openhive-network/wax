@@ -12,7 +12,7 @@ use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::basic::AccountName;
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 const OPERATION_ID: &str = "community";
 
@@ -361,7 +361,7 @@ impl HiveAppsOperation for CommunityOperation {
     }
 }
 
-impl OperationBuilder for CommunityOperation {
+impl ComplexOperation for CommunityOperation {
     fn finalize(
         self,
         _foundation: &WaxFoundation,

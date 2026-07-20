@@ -145,7 +145,7 @@ fn deserialize_transaction_rejects_bad_hex() {
     let f = foundation();
 
     assert!(
-        f.deserialize_transaction(&"not-hex".to_string()).is_err(),
+        f.deserialize_transaction("not-hex").is_err(),
         "non-hex blob must error"
     );
 }
@@ -191,7 +191,7 @@ fn convert_transaction_from_binary_form_returns_api_json_object() {
     let f = foundation();
 
     let value = f
-        .convert_transaction_from_binary_form(&SAMPLE_TX_HEX.to_string())
+        .convert_transaction_from_binary_form(SAMPLE_TX_HEX)
         .expect("convert_transaction_from_binary_form");
 
     assert_eq!(value, sample_tx_api_json());
@@ -202,7 +202,7 @@ fn convert_transaction_round_trips_hex_to_value_to_hex() {
     let f = foundation();
 
     let value = f
-        .convert_transaction_from_binary_form(&SAMPLE_TX_HEX.to_string())
+        .convert_transaction_from_binary_form(SAMPLE_TX_HEX)
         .expect("convert_transaction_from_binary_form");
     let hex = f
         .convert_transaction_to_binary_form(&value, false)
@@ -216,8 +216,7 @@ fn convert_transaction_from_binary_form_rejects_bad_hex() {
     let f = foundation();
 
     assert!(
-        f.convert_transaction_from_binary_form(&"not-hex".to_string())
-            .is_err(),
+        f.convert_transaction_from_binary_form("not-hex").is_err(),
         "non-hex blob must error"
     );
 }

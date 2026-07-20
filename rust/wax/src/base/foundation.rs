@@ -573,7 +573,7 @@ impl WaxFoundation {
     /// Converts a wire-form (hex) transaction into its API JSON string.
     pub fn deserialize_transaction(
         &self,
-        hex: &Hex,
+        hex: &str,
     ) -> Result<String, WaxError> {
         let protocol = rust_protocol();
         let handle = protocol
@@ -606,7 +606,7 @@ impl WaxFoundation {
     /// access by callers.
     pub fn convert_transaction_from_binary_form(
         &self,
-        hex: &Hex,
+        hex: &str,
     ) -> Result<serde_json::Value, WaxError> {
         let raw = self.deserialize_transaction(hex)?;
         serde_json::from_str(&raw).map_err(|e| WaxError::new(e.to_string()))

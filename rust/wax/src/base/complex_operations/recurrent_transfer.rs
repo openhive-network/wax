@@ -7,7 +7,7 @@ use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::AccountName;
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 const DEFAULT_RECURRENCE_HOURS: u32 = 24;
 const DEFAULT_EXECUTIONS: u32 = 2;
@@ -51,7 +51,7 @@ fn build_extensions(
 ///
 /// TS NOTE: mirrors `DefineRecurrentTransferOperation`
 /// (`complex_operations/recurrent_transfer.ts`).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct DefineRecurrentTransferOperation {
     pub from_account: AccountName,
     pub to_account: AccountName,
@@ -62,7 +62,7 @@ pub struct DefineRecurrentTransferOperation {
     pub pair_id: Option<u32>,
 }
 
-impl OperationBuilder for DefineRecurrentTransferOperation {
+impl ComplexOperation for DefineRecurrentTransferOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,
@@ -95,14 +95,14 @@ impl OperationBuilder for DefineRecurrentTransferOperation {
 /// zero-amount HIVE transfer).
 ///
 /// TS NOTE: mirrors `RecurrentTransferRemovalOperation`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct RecurrentTransferRemovalOperation {
     pub from_account: AccountName,
     pub to_account: AccountName,
     pub pair_id: Option<u32>,
 }
 
-impl OperationBuilder for RecurrentTransferRemovalOperation {
+impl ComplexOperation for RecurrentTransferRemovalOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,

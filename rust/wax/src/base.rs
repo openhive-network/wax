@@ -27,7 +27,7 @@ pub use foundation::WaxFoundation;
 pub(crate) use foundation::build_transaction_with_chain_reference_data;
 pub use interfaces::{AuthorityDataProvider, Manabar, SignatureProvider};
 pub use internal::models::manabar_data::ManabarData;
-pub use operation::{Operation, OperationBuilder};
+pub use operation::{ComplexOperation, Operation};
 pub use options::WaxOptions;
 pub use transaction::Transaction;
 

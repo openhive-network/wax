@@ -45,7 +45,8 @@ fn delegate_then_remove() {
         .expect("authorize remove");
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
 
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
@@ -83,7 +84,8 @@ fn delegate_multiple_delegatees() {
         .expect("authorize");
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
 
     assert_eq!(
@@ -105,7 +107,8 @@ fn authorizes_via_active_auth() {
         .expect("authorize");
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let cj = extract_custom_json(&tx.transaction().operations[0]);
     assert_eq!(cj.required_auths, vec!["alice".to_string()]);
     assert!(cj.required_posting_auths.is_empty());
@@ -148,6 +151,7 @@ fn unauthorized_stage_yields_no_ops() {
         .expect("delegate");
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     assert!(tx.transaction().operations.is_empty());
 }

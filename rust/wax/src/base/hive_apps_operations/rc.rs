@@ -15,7 +15,7 @@ use serde::Serialize;
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::basic::AccountName;
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 const OPERATION_ID: &str = "rc";
 const DELEGATE_RC_TAG: &str = "delegate_rc";
@@ -131,7 +131,7 @@ impl ResourceCreditsOperation {
     }
 }
 
-impl OperationBuilder for ResourceCreditsOperation {
+impl ComplexOperation for ResourceCreditsOperation {
     fn finalize(
         self,
         _foundation: &WaxFoundation,

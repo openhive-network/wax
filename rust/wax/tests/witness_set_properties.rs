@@ -29,7 +29,7 @@ fn decay_and_budget() {
     let f = foundation();
 
     let mut tx = empty_tx(&f);
-    tx.push_builder(
+    tx.push_complex_operation(
         &f,
         WitnessSetPropertiesOperation {
             owner: "emrebeyler".into(),
@@ -45,7 +45,7 @@ fn decay_and_budget() {
             account_subsidy_decay: Some(64),
         },
     )
-    .expect("push_builder");
+    .expect("push_complex_operation");
 
     let op = match &tx.transaction().operations[0].value {
         Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
@@ -80,7 +80,7 @@ fn url_only() {
     let f = foundation();
 
     let mut tx = empty_tx(&f);
-    tx.push_builder(
+    tx.push_complex_operation(
             &f,
             WitnessSetPropertiesOperation {
                 owner: "therealwolf".into(),
@@ -99,7 +99,7 @@ fn url_only() {
                 account_subsidy_decay: None,
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
     let op = match &tx.transaction().operations[0].value {
         Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
@@ -134,7 +134,7 @@ fn with_exchange_rate() {
     let quote = f.hive_satoshis(1000).expect("hive_satoshis");
 
     let mut tx = empty_tx(&f);
-    tx.push_builder(
+    tx.push_complex_operation(
         &f,
         WitnessSetPropertiesOperation {
             owner: "ctrpch".into(),
@@ -153,7 +153,7 @@ fn with_exchange_rate() {
             account_subsidy_decay: None,
         },
     )
-    .expect("push_builder");
+    .expect("push_complex_operation");
 
     let op = match &tx.transaction().operations[0].value {
         Some(wax::proto::operation::Value::WitnessSetPropertiesOperation(
@@ -179,7 +179,7 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
     let wrong = f.hbd_satoshis(3000).expect("hbd_satoshis");
 
     let mut tx = empty_tx(&f);
-    let result = tx.push_builder(
+    let result = tx.push_complex_operation(
         &f,
         WitnessSetPropertiesOperation {
             owner: "therealwolf".into(),
@@ -197,6 +197,6 @@ fn rejects_wrong_asset_symbol_for_creation_fee() {
     );
     assert!(
         result.is_err(),
-        "expected push_builder to reject an HBD asset where HIVE is required"
+        "expected push_complex_operation to reject an HBD asset where HIVE is required"
     );
 }

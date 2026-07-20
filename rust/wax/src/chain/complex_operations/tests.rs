@@ -7,7 +7,7 @@ use std::net::TcpListener;
 use std::thread;
 
 use crate::{
-    OperationBuilder, HiveChainOptions, create_hive_chain,
+    ComplexOperation, HiveChainOptions, create_hive_chain,
     create_wax_foundation,
 };
 
@@ -236,7 +236,7 @@ async fn legacy_vote_downvote_round_trips_through_cpp_validation() {
         .create_transaction_with_tapos(TAPOS, EXPIRATION)
         .unwrap();
 
-    tx.push_builder(&foundation, operation).unwrap();
+    tx.push_complex_operation(&foundation, operation).unwrap();
     tx.validate().unwrap();
 }
 
@@ -325,7 +325,7 @@ async fn account_authority_update_round_trips_through_cpp_validation() {
         .create_transaction_with_tapos(TAPOS, EXPIRATION)
         .unwrap();
 
-    tx.push_builder(&foundation, operation).unwrap();
+    tx.push_complex_operation(&foundation, operation).unwrap();
     tx.validate().unwrap();
 }
 

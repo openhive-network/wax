@@ -1,5 +1,5 @@
 //! The operation type: wire-form access, validation and impacted-account
-//! queries, plus the builder trait producing operations.
+//! queries, plus the complex-operation trait producing operations.
 
 use crate::core::{RustOperation, proto};
 
@@ -41,8 +41,9 @@ impl Operation {
 }
 
 /// Provides construction of one or more operations from higher-level inputs.
-pub trait OperationBuilder {
-    /// Consume the builder and emit the wire-form operations it represents.
+pub trait ComplexOperation {
+    /// Consume the complex operation and emit the wire-form operations it
+    /// represents.
     fn finalize(
         self,
         foundation: &WaxFoundation,

@@ -76,7 +76,7 @@ impl HiveChain {
     /// between calls for 3 s.
     pub async fn create_transaction(
         &self,
-        expiration: Option<&str>,
+        expiration: impl Into<Option<String>>,
     ) -> Result<OnlineTransaction, WaxChainError> {
         let reference = self.acquire_chain_reference_data().await?;
 
@@ -84,10 +84,13 @@ impl HiveChain {
             self.chain_id(),
             &reference.head_block_id,
             Some(reference.time),
-            expiration,
+            expiration.into().as_deref(),
         )?;
 
-        Ok(OnlineTransaction::new(Transaction::from_rust(tx), self.api()))
+        Ok(OnlineTransaction::new(
+            Transaction::from_rust(tx),
+            self.api(),
+        ))
     }
 
     /// Broadcasts `transaction` to the chain's JSON-RPC endpoint, with no

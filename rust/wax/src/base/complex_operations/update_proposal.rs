@@ -6,7 +6,7 @@ use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::{AccountName, HiveDateTime};
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 /// Represents the builder for the update-proposal operation.
 ///
@@ -15,7 +15,7 @@ use crate::base::operation::OperationBuilder;
 /// proto op is pushed onto a transaction.
 ///
 /// TS NOTE: mirrors `complex_operations/update_proposal.ts`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct UpdateProposalOperation {
     pub proposal_id: i64,
     pub creator: AccountName,
@@ -25,7 +25,7 @@ pub struct UpdateProposalOperation {
     pub end_date: Option<HiveDateTime>,
 }
 
-impl OperationBuilder for UpdateProposalOperation {
+impl ComplexOperation for UpdateProposalOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,

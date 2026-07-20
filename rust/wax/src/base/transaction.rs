@@ -19,7 +19,7 @@ use crate::base::models::authority::RequiredAuthorities;
 use crate::base::models::basic::{
     AccountName, Hex, PublicKey, SigDigest, Signature, TransactionId,
 };
-use crate::base::operation::{Operation, OperationBuilder};
+use crate::base::operation::{ComplexOperation, Operation};
 use crate::base::result::{
     BinaryViewNode, BinaryViewOutputData, MinimizeRequiredSignaturesData,
 };
@@ -35,7 +35,7 @@ use crate::base::result::{
 /// fluent chaining; the Rust builders take `&mut self` (and return
 /// `&mut Self`), so a fallible builder never consumes the transaction.
 pub struct Transaction {
-    pub(crate) inner: RustTransaction,
+    inner: RustTransaction,
 }
 
 impl Transaction {
@@ -54,15 +54,15 @@ impl Transaction {
         self
     }
 
-    /// Finalizes `builder` against `foundation` and appends the resulting
+    /// Finalizes `operation` against `foundation` and appends the resulting
     /// operations to this transaction.
-    pub fn push_builder(
+    pub fn push_complex_operation(
         &mut self,
         foundation: &WaxFoundation,
-        builder: impl OperationBuilder,
+        operation: impl ComplexOperation,
     ) -> Result<&mut Self, WaxError> {
         let protocol = rust_protocol();
-        for op in builder.finalize(foundation)? {
+        for op in operation.finalize(foundation)? {
             let rust_op = RustOperation::from_proto(protocol, op);
             protocol
                 .cpp_tx_add_operation(
@@ -215,14 +215,21 @@ impl Transaction {
             .map_err(WaxError::from)
     }
 
+    /// Returns the authorities the transaction requires to be signed, in the
+    /// FFI form consumed by the C++ authority-verification bridge.
+    pub(crate) fn required_authorities_ffi(
+        &self,
+    ) -> Result<RustRequiredAuthorities, WaxError> {
+        rust_protocol()
+            .cpp_tx_required_authorities(&self.inner.handle)
+            .map_err(WaxError::from)
+    }
+
     /// Returns the authorities the transaction requires to be signed.
     pub fn required_authorities(
         &self,
     ) -> Result<RequiredAuthorities, WaxError> {
-        rust_protocol()
-            .cpp_tx_required_authorities(&self.inner.handle)
-            .map(to_required_authorities)
-            .map_err(WaxError::from)
+        self.required_authorities_ffi().map(to_required_authorities)
     }
 
     /// Collects the signing keys needed to satisfy the transaction's

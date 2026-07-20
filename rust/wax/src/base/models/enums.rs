@@ -7,18 +7,13 @@
 ///
 /// TS NOTE: mirrors `EManabarType` (`chain_api.ts`); discriminant values match
 /// TS exactly.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum EManabarType {
+    #[default]
     Upvote = 0,
     Downvote = 1,
     Rc = 2,
-}
-
-impl Default for EManabarType {
-    fn default() -> Self {
-        Self::Upvote
-    }
 }
 
 /// Represents the content-format hint for the comment-family builders.

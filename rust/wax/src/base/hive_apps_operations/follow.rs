@@ -13,7 +13,7 @@ use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::basic::AccountName;
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 
 const OPERATION_ID: &str = "follow";
 
@@ -415,7 +415,7 @@ impl HiveAppsOperation for FollowOperation {
     }
 }
 
-impl OperationBuilder for FollowOperation {
+impl ComplexOperation for FollowOperation {
     fn finalize(
         self,
         _foundation: &WaxFoundation,

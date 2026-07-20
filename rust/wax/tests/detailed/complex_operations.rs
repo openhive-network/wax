@@ -129,7 +129,8 @@ fn witness_set_properties_basic() {
         op.url = Some("https://hive.io".into());
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -170,7 +171,8 @@ fn witness_set_properties_url_only() {
         );
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -203,7 +205,8 @@ fn witness_set_properties_budget_and_fee() {
         op.account_subsidy_budget = Some(700);
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -236,7 +239,8 @@ fn witness_set_properties_decay_and_budget() {
         op.account_subsidy_decay = Some(64);
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -271,7 +275,8 @@ fn witness_set_properties_hbd_exchange_rate() {
         });
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -315,7 +320,8 @@ fn witness_set_properties_all_properties() {
         op.url = Some("https://guiltyparties.com".into());
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -351,7 +357,7 @@ fn witness_set_properties_all_properties() {
 fn recurrent_transfer_basic() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             DefineRecurrentTransferOperation {
                 from_account: "alice".into(),
@@ -363,7 +369,7 @@ fn recurrent_transfer_basic() {
                 pair_id: None,
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -389,7 +395,7 @@ fn recurrent_transfer_basic() {
 fn recurrent_transfer_with_pair_id() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             DefineRecurrentTransferOperation {
                 from_account: "alice".into(),
@@ -401,7 +407,7 @@ fn recurrent_transfer_with_pair_id() {
                 executions: Some(2),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -430,7 +436,7 @@ fn recurrent_transfer_with_pair_id() {
 fn recurrent_transfer_removal() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             RecurrentTransferRemovalOperation {
                 from_account: "grace".into(),
@@ -438,7 +444,7 @@ fn recurrent_transfer_removal() {
                 pair_id: Some(143),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -473,7 +479,7 @@ fn recurrent_transfer_removal() {
 fn update_proposal_mandatory_fields() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             UpdateProposalOperation {
                 proposal_id: 123,
@@ -484,7 +490,7 @@ fn update_proposal_mandatory_fields() {
                 end_date: None,
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -508,7 +514,7 @@ fn update_proposal_mandatory_fields() {
 fn update_proposal_with_end_date() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             UpdateProposalOperation {
                 proposal_id: 123,
@@ -521,7 +527,7 @@ fn update_proposal_with_end_date() {
                 ),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -554,7 +560,7 @@ fn update_proposal_with_end_date() {
 fn update_proposal_with_timestamp_end_date() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             UpdateProposalOperation {
                 proposal_id: 123,
@@ -567,7 +573,7 @@ fn update_proposal_with_timestamp_end_date() {
                 ),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             api_op0(&tx),
@@ -599,7 +605,7 @@ fn update_proposal_with_timestamp_end_date() {
 fn recurrent_transfer_removal_to_legacy_api() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             RecurrentTransferRemovalOperation {
                 from_account: "alice".into(),
@@ -607,7 +613,7 @@ fn recurrent_transfer_removal_to_legacy_api() {
                 pair_id: Some(50),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             legacy_value(&tx)["operations"][0],
@@ -633,7 +639,7 @@ fn recurrent_transfer_removal_to_legacy_api() {
 fn update_proposal_to_legacy_api() {
     wax_test(None, |ctx| {
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             UpdateProposalOperation {
                 proposal_id: 123,
@@ -646,7 +652,7 @@ fn update_proposal_to_legacy_api() {
                 ),
             },
         )
-        .expect("push_builder");
+        .expect("push_complex_operation");
 
         assert_eq!(
             legacy_value(&tx)["operations"][0],
@@ -687,7 +693,8 @@ fn reply_with_beneficiaries_to_legacy_api() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with beneficiaries"}}"#
@@ -756,7 +763,8 @@ fn reply_set_percent_hbd() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Set percent"}}"#
@@ -812,7 +820,8 @@ fn reply_push_images() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test2.png","test.png"],"description":"Push Images"}}"#
@@ -858,7 +867,8 @@ fn blog_post_set_category() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"description":"Post with category"}}"#
@@ -899,7 +909,8 @@ fn blog_post_alternative_author() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","author":"initminer"}}"#
@@ -944,7 +955,8 @@ fn blog_post_push_links() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","links":["https://test.com","https://test2.com","http://test3.com"]}}"#
@@ -989,7 +1001,7 @@ fn blog_post_invalid_max_accepted_payout_asset() {
         };
 
         let mut tx = fresh_tx(ctx);
-        let result = tx.push_builder(&ctx.base, op);
+        let result = tx.push_complex_operation(&ctx.base, op);
         assert!(
             result.is_err(),
             "max_accepted_payout must be HBD; HIVE should be rejected"
@@ -1014,7 +1026,8 @@ fn blog_post_max_accepted_payout() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1073,7 +1086,8 @@ fn blog_post_max_accepted_payout_as_number() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1126,7 +1140,8 @@ fn blog_post_allow_curation_rewards() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1178,7 +1193,8 @@ fn blog_post_allow_votes_false() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1232,7 +1248,8 @@ fn blog_post_blockchain_default_skips_options() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             format!(r#"{{"format":"markdown+html","app":"{APP}"}}"#);
@@ -1272,7 +1289,8 @@ fn blog_post_set_format() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(r#"{{"format":"markdown","app":"{APP}"}}"#);
 
@@ -1311,7 +1329,8 @@ fn blog_post_explicit_app() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata =
             r#"{"format":"markdown+html","app":"thebest.blog@13.13"}"#;
@@ -1360,7 +1379,8 @@ fn blog_post_arbitrary_json_metadata() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"html","canonical_url":"https://example.com/post","tags":["photo","spam"],"app":"{APP}"}}"#
@@ -1413,7 +1433,8 @@ fn blog_post_multiple_properties() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         let json_metadata = format!(
             r#"{{"format":"markdown+html","app":"{APP}","tags":["spam"],"image":["test.png"],"links":["https://test.com"],"description":"Push links, images, tags, set allow votes, set max accepted payout, set percent HBD, add beneficiaries"}}"#
@@ -1474,7 +1495,8 @@ fn blog_post_operation_count() {
         };
 
         let mut tx = fresh_tx(ctx);
-        tx.push_builder(&ctx.base, op).expect("push_builder");
+        tx.push_complex_operation(&ctx.base, op)
+            .expect("push_complex_operation");
 
         assert_eq!(tx.transaction().operations.len(), 1);
     });
@@ -1518,7 +1540,8 @@ fn pushed_account_update2(
     op: AccountAuthorityUpdateOperation,
 ) -> proto::AccountUpdate2 {
     let mut tx = tapos_tx(chain);
-    tx.push_builder(chain, op).expect("push_builder");
+    tx.push_complex_operation(chain, op)
+        .expect("push_complex_operation");
 
     let operations = &tx.transaction().operations;
     assert_eq!(operations.len(), 1);

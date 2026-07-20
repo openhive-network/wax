@@ -4,14 +4,14 @@ use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
 use crate::base::models::basic::{AccountName, PublicKey};
-use crate::base::operation::OperationBuilder;
+use crate::base::operation::ComplexOperation;
 use crate::base::result::{JsonPrice, WitnessSetPropertiesProps};
 
 /// Represents the base/quote pair for the witness HBD↔HIVE exchange rate.
 /// `base` is the HBD-denominated side; `quote` is the HIVE-denominated side.
 /// Both are coerced to their required symbols in `finalize` so callers can
 /// pass any `NaiAssetConvertible` shape.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct HbdExchangeRate {
     pub base: NaiAssetConvertible,
     pub quote: NaiAssetConvertible,
@@ -26,7 +26,7 @@ pub struct HbdExchangeRate {
 ///
 /// TS NOTE: mirrors `complex_operations/witness_set_properties.ts`.
 /// Python NOTE: mirrors `complex_operations/witness_set_properties.py`.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct WitnessSetPropertiesOperation {
     pub owner: AccountName,
     /// Current witness signing key. Required — hived uses it to authorise
@@ -42,7 +42,7 @@ pub struct WitnessSetPropertiesOperation {
     pub account_subsidy_decay: Option<u32>,
 }
 
-impl OperationBuilder for WitnessSetPropertiesOperation {
+impl ComplexOperation for WitnessSetPropertiesOperation {
     fn finalize(
         self,
         foundation: &WaxFoundation,

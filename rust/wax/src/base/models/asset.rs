@@ -50,14 +50,14 @@ pub enum NaiAssetConvertible {
     Json(String),
 }
 
-/// Represents a HIVE-denominated [`NaiAssetConvertible`].
-pub type HiveNaiAssetConvertible = NaiAssetConvertible;
-/// Represents an HBD-denominated [`NaiAssetConvertible`].
-pub type HbdNaiAssetConvertible = NaiAssetConvertible;
-/// Represents a VESTS-denominated [`NaiAssetConvertible`].
-pub type VestsNaiAssetConvertible = NaiAssetConvertible;
-/// Represents a [`NaiAssetConvertible`] of any supported symbol.
-pub type AnyNaiAssetConvertible = NaiAssetConvertible;
+// NOTE: the default is an empty-asset placeholder enabling
+// `..Default::default()` on the complex-operation types carrying a required
+// amount; resolving it unset fails symbol coercion at `finalize` time.
+impl Default for NaiAssetConvertible {
+    fn default() -> Self {
+        Self::Asset(NaiAsset::default())
+    }
+}
 
 /// Represents one of the three native Hive asset symbols.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

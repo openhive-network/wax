@@ -608,7 +608,7 @@ fn binary_serialize_signed_transaction() {
             .expect("vote op");
 
         tx.push_operation(vote_op)
-            .push_builder(
+            .push_complex_operation(
                 &ctx.base,
                 DefineRecurrentTransferOperation {
                     from_account: "initminer".into(),
@@ -753,7 +753,7 @@ fn recurrent_transfer_with_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             RecurrentTransferRemovalOperation {
                 from_account: "initminer".into(),
@@ -763,7 +763,7 @@ fn recurrent_transfer_with_extensions() {
         )
         .expect("removal builder");
 
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             DefineRecurrentTransferOperation {
                 from_account: "initminer".into(),
@@ -831,7 +831,7 @@ fn recurrent_transfer_without_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             DefineRecurrentTransferOperation {
                 from_account: "initminer".into(),
@@ -883,7 +883,7 @@ fn invalid_asset_in_update_proposal_fails() {
             )
             .expect("create_transaction_with_tapos");
 
-        let result = tx.push_builder(
+        let result = tx.push_complex_operation(
             &ctx.base,
             wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,
@@ -898,7 +898,7 @@ fn invalid_asset_in_update_proposal_fails() {
         );
         assert!(
             result.is_err(),
-            "expected push_builder to reject a HIVE asset where HBD is required"
+            "expected push_complex_operation to reject a HIVE asset where HBD is required"
         );
     });
 }
@@ -916,7 +916,7 @@ fn update_proposal_with_extensions() {
             )
             .expect("create_transaction_with_tapos");
 
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,
@@ -931,7 +931,7 @@ fn update_proposal_with_extensions() {
         )
         .expect("update_proposal with end_date");
 
-        tx.push_builder(
+        tx.push_complex_operation(
             &ctx.base,
             wax::complex_operations::UpdateProposalOperation {
                 proposal_id: 100,

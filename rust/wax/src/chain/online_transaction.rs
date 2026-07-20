@@ -17,7 +17,7 @@ use crate::models::basic::{
 };
 use crate::result::{BinaryViewOutputData, MinimizeRequiredSignaturesData};
 use crate::{
-    AuthorityDataProvider, Operation, OperationBuilder, SignatureProvider,
+    AuthorityDataProvider, ComplexOperation, Operation, SignatureProvider,
     Transaction, WaxError, WaxFoundation,
 };
 
@@ -86,14 +86,14 @@ impl OnlineTransaction {
         self
     }
 
-    /// Finalizes `builder` against `foundation` and appends the resulting
-    /// operations. See [`Transaction::push_builder`].
-    pub fn push_builder(
+    /// Finalizes `operation` against `foundation` and appends the resulting
+    /// operations. See [`Transaction::push_complex_operation`].
+    pub fn push_complex_operation(
         &mut self,
         foundation: &WaxFoundation,
-        builder: impl OperationBuilder,
+        operation: impl ComplexOperation,
     ) -> Result<&mut Self, WaxError> {
-        self.base.push_builder(foundation, builder)?;
+        self.base.push_complex_operation(foundation, operation)?;
 
         Ok(self)
     }
@@ -199,9 +199,7 @@ impl OnlineTransaction {
             source.signature_keys()?
         };
 
-        let required_authorities = rust_protocol()
-            .cpp_tx_required_authorities(&source.inner.handle)
-            .map_err(WaxError::from)?;
+        let required_authorities = source.required_authorities_ffi()?;
 
         let seed_accounts = required_authorities
             .posting_accounts

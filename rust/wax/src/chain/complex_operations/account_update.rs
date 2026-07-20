@@ -14,7 +14,7 @@ use crate::chain::HiveChain;
 use crate::chain::api::FindAccountsRequest;
 use crate::chain::error::WaxChainError;
 use crate::chain::internal::account_data::to_wax_authority;
-use crate::{OperationBuilder, WaxError, WaxFoundation};
+use crate::{ComplexOperation, WaxError, WaxFoundation};
 
 const HIVE_TEMP_ACCOUNT_KEY: &str = "HIVE_TEMP_ACCOUNT";
 const HIVE_MAX_AUTHORITY_MEMBERSHIP_KEY: &str = "HIVE_MAX_AUTHORITY_MEMBERSHIP";
@@ -199,7 +199,7 @@ impl AccountAuthorityUpdateOperation {
     }
 }
 
-impl OperationBuilder for AccountAuthorityUpdateOperation {
+impl ComplexOperation for AccountAuthorityUpdateOperation {
     fn finalize(
         self,
         _foundation: &WaxFoundation,

@@ -67,7 +67,8 @@ fn reply_with_beneficiaries_and_tags() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2, "comment + comment_options expected");
 
@@ -123,7 +124,8 @@ fn reply_with_percent_hbd_emits_options() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 2);
 
@@ -161,7 +163,8 @@ fn reply_with_images_emits_only_comment() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let ops = &tx.transaction().operations;
     assert_eq!(
         ops.len(),
@@ -195,7 +198,8 @@ fn blog_post_with_category() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let ops = &tx.transaction().operations;
     assert_eq!(ops.len(), 1);
 
@@ -225,7 +229,8 @@ fn options_at_default_values_are_suppressed() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     assert_eq!(tx.transaction().operations.len(), 1);
 }
 
@@ -233,7 +238,7 @@ fn options_at_default_values_are_suppressed() {
 fn reply_rejects_empty_parent_author() {
     let f = foundation();
     let mut tx = fresh_tx(&f);
-    let result = tx.push_builder(
+    let result = tx.push_complex_operation(
         &f,
         ReplyOperation {
             parent_author: String::new(),
@@ -250,7 +255,7 @@ fn reply_rejects_empty_parent_author() {
 fn reply_rejects_empty_parent_permlink() {
     let f = foundation();
     let mut tx = fresh_tx(&f);
-    let result = tx.push_builder(
+    let result = tx.push_complex_operation(
         &f,
         ReplyOperation {
             parent_author: "alice".into(),
@@ -269,7 +274,7 @@ fn rejects_wrong_asset_for_max_accepted_payout() {
     let hive = f.hive_satoshis(1_000_000_000).expect("hive_satoshis");
 
     let mut tx = fresh_tx(&f);
-    let result = tx.push_builder(
+    let result = tx.push_complex_operation(
         &f,
         ReplyOperation {
             parent_author: "alice".into(),
@@ -301,7 +306,8 @@ fn reply_default_permlink_template() {
     };
 
     let mut tx = fresh_tx(&f);
-    tx.push_builder(&f, op).expect("push_builder");
+    tx.push_complex_operation(&f, op)
+        .expect("push_complex_operation");
     let comment = extract_comment(&tx.transaction().operations[0]);
     assert!(
         comment.permlink.starts_with("re-alice-"),
