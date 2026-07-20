@@ -4,11 +4,6 @@
 // `detailed/extend_api.rs`, which stops at the transport on purpose: here the
 // full path — binding, wire format, node behavior, strict DTO decoding — is
 // exercised for real, so node-side schema drift fails loudly.
-//
-// Every test is `#[ignore]`d: network tests are inherently flaky and must
-// stay out of the required CI path. Run them explicitly with:
-//
-//     cargo test --test live_api -- --ignored
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -82,7 +77,6 @@ fn live_chain() -> HiveChain {
 // only'), including its expected `{ args: {}, ret: [] }` reflection of
 // `jsonrpc.get_methods`.
 #[tokio::test]
-#[ignore = "live network test against the default public Hive nodes"]
 async fn extend_calls_json_rpc_introspection_on_live_node() {
     let chain = live_chain();
     let api = chain.extend::<JsonRpcApi>();
@@ -102,7 +96,6 @@ async fn extend_calls_json_rpc_introspection_on_live_node() {
 // enforces field presence, so this is the canary catching the node's
 // reflects drifting from the `chain/api/` DTOs.
 #[tokio::test]
-#[ignore = "live network test against the default public Hive nodes"]
 async fn default_api_decodes_live_dynamic_global_properties() {
     let chain = live_chain();
 
@@ -119,7 +112,6 @@ async fn default_api_decodes_live_dynamic_global_properties() {
 // TS NOTE: mirrors `hive_chain_rest_api.ts` ('Should be able to extend and
 // perform REST API calls returning INT').
 #[tokio::test]
-#[ignore = "live network test against the default public Hive nodes"]
 async fn extend_rest_fetches_live_headblock() {
     let chain = live_chain();
     let rest = chain.extend_rest::<HafahApi>();
@@ -133,7 +125,6 @@ async fn extend_rest_fetches_live_headblock() {
 // perform REST API calls') — same transaction id; `{transactionId}` must be
 // substituted into the live URL.
 #[tokio::test]
-#[ignore = "live network test against the default public Hive nodes"]
 async fn extend_rest_fetches_live_transaction_by_path_param() {
     let chain = live_chain();
     let rest = chain.extend_rest::<HafahApi>();

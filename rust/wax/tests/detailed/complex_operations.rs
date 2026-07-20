@@ -10,17 +10,12 @@
 //
 // Tests that depend on Rust surface that hasn't been ported are kept as
 // `#[ignore]` stubs so they stay visible in `cargo test` output:
-// - the six `AccountAuthorityUpdateOperation` cases need a builder that isn't
-//   in the Rust `complex_operations` module yet, plus the online `createFor`
-//   flow and the async `waxTest.dynamic` harness (the Rust `detailed` suite is
-//   offline-only);
 // - the explicit-`app` blog-post case needs the arbitrary `jsonMetadata`
 //   object, which the Rust comment builders don't surface (see
 //   `complex_operations/comment.rs` module docs).
 
 use serde_json::json;
 
-use wax::Transaction;
 use wax::complex_operations::{
     BeneficiaryRoute, BlogPostOperation, CommentFormat,
     DefineRecurrentTransferOperation, HbdExchangeRate,
@@ -29,6 +24,10 @@ use wax::complex_operations::{
 };
 use wax::models::asset::{NaiAsset, NaiAssetConvertible};
 use wax::models::basic::HiveDateTime;
+use wax::proto::{self, operation::Value as OperationValue};
+use wax::{
+    AccountAuthorityUpdateOperation, HiveChain, Transaction, create_hive_chain,
+};
 
 use crate::common::{WaxTestCtx, wax_test};
 
@@ -1407,45 +1406,169 @@ fn blog_post_operation_count() {
 }
 
 // ---------------------------------------------------------------------------
-// AccountAuthorityUpdateOperation — not ported
+// AccountAuthorityUpdateOperation
 // ---------------------------------------------------------------------------
 //
-// All six cases need `AccountAuthorityUpdateOperation` (absent from the Rust
-// `complex_operations` module), its online `createFor` constructor that fetches
-// the account's current authorities, and the async `waxTest.dynamic` harness.
-// The Rust `detailed` suite is offline-only, so these stay as `#[ignore]`
-// stubs.
+// Like the TS originals (run through the async `waxTest.dynamic` harness),
+// these tests fetch the accounts' real authority state from the live mainnet
+// chain; only building the operation is exercised — nothing is broadcast.
+
+/// The well-known initminer owner key the TS assertions pin.
+const INITMINER_PUBLIC_KEY: &str =
+    "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX";
+
+/// A mainnet chain plus the authority-update operation pre-initialized from
+/// the given account's live on-chain state.
+async fn authority_update_op(
+    account: &str,
+) -> (HiveChain, AccountAuthorityUpdateOperation) {
+    let chain = create_hive_chain(None).unwrap();
+    let op = AccountAuthorityUpdateOperation::create_for(&chain, account)
+        .await
+        .expect("create_for");
+
+    (chain, op)
+}
+
+fn tapos_tx(chain: &HiveChain) -> Transaction {
+    chain
+        .create_transaction_with_tapos(TAPOS, EXPIRATION)
+        .expect("create_transaction_with_tapos")
+}
+
+/// Pushes the operation and returns the transaction's single
+/// `account_update2_operation` — the TS `tx.transaction.operations[0]`.
+fn pushed_account_update2(
+    chain: &HiveChain,
+    op: AccountAuthorityUpdateOperation,
+) -> proto::AccountUpdate2 {
+    let mut tx = tapos_tx(chain);
+    tx.push_builder(chain, op).expect("push_builder");
+
+    let operations = &tx.transaction().operations;
+    assert_eq!(operations.len(), 1);
+
+    match &operations[0].value {
+        Some(OperationValue::AccountUpdate2Operation(update)) => update.clone(),
+        other => panic!("expected account_update2_operation, got {other:?}"),
+    }
+}
 
 // TS line 1152: "Should be able to create simple account authority update
 // operation for gtg".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_for_gtg() {}
+#[tokio::test]
+async fn account_authority_update_for_gtg() {
+    let (chain, mut op) = authority_update_op("gtg").await;
+
+    // Virtually add gtg to active authority - can't have circular authority -
+    // we just need it for tests.
+    op.active.add("gtg", 0).unwrap();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "gtg");
+    let active = update.active.as_ref().expect("active must be present");
+    assert_eq!(active.account_auths.get("gtg"), Some(&0));
+}
 
 // TS line 1172: "Should be able to create simple account authority update
 // operation for guest4test - no enforced Owner authority".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_no_enforced_owner() {}
+#[tokio::test]
+async fn account_authority_update_no_enforced_owner() {
+    let (chain, mut op) = authority_update_op("guest4test").await;
+
+    op.active.add("guest4test1", None).unwrap();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "guest4test");
+    let active = update.active.as_ref().expect("active must be present");
+    assert_eq!(active.account_auths.get("guest4test1"), Some(&1));
+    assert!(update.owner.is_none());
+}
 
 // TS line 1194: "Should be able to create simple account authority update
 // operation for guest4test - enforced Owner authority".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_enforced_owner() {}
+#[tokio::test]
+async fn account_authority_update_enforced_owner() {
+    let (chain, mut op) = authority_update_op("guest4test").await;
+
+    op.active.add("guest4test1", None).unwrap();
+    op.enforce_owner_role_authorisation();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "guest4test");
+    let active = update.active.as_ref().expect("active must be present");
+    assert_eq!(active.account_auths.get("guest4test1"), Some(&1));
+    assert!(update.owner.is_some());
+}
 
 // TS line 1219: "Should be able to remove owner key for initminer".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_remove_owner_key() {}
+#[tokio::test]
+async fn account_authority_update_remove_owner_key() {
+    let (chain, mut op) = authority_update_op("initminer").await;
+
+    // TS reads `Object.keys(...)[0]`; initminer has a single owner key.
+    let owner_key = op
+        .owner
+        .value()
+        .key_auths
+        .keys()
+        .next()
+        .expect("owner key")
+        .clone();
+    op.owner.remove(&owner_key).unwrap();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "initminer");
+    let owner = update.owner.as_ref().expect("owner must be present");
+    assert!(!owner.key_auths.contains_key(INITMINER_PUBLIC_KEY));
+}
 
 // TS line 1243: "Should be able to replace initminer owner key with gtg
 // account".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_replace_owner_key_with_account() {}
+#[tokio::test]
+async fn account_authority_update_replace_owner_key_with_account() {
+    let (chain, mut op) = authority_update_op("initminer").await;
+
+    let owner_key = op
+        .owner
+        .value()
+        .key_auths
+        .keys()
+        .next()
+        .expect("owner key")
+        .clone();
+    op.owner.replace(&owner_key, 1, Some("gtg")).unwrap();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "initminer");
+    let owner = update.owner.as_ref().expect("owner must be present");
+    assert!(!owner.key_auths.contains_key(INITMINER_PUBLIC_KEY));
+    assert_eq!(owner.account_auths.get("gtg"), Some(&1));
+}
 
 // TS line 1267: "Should be able to replace initminer owner key weight".
-#[test]
-#[ignore = "needs AccountAuthorityUpdateOperation + online createFor flow"]
-fn account_authority_update_replace_owner_key_weight() {}
+#[tokio::test]
+async fn account_authority_update_replace_owner_key_weight() {
+    let (chain, mut op) = authority_update_op("initminer").await;
+
+    let owner_key = op
+        .owner
+        .value()
+        .key_auths
+        .keys()
+        .next()
+        .expect("owner key")
+        .clone();
+    op.owner.replace(&owner_key, 2, None).unwrap();
+
+    let update = pushed_account_update2(&chain, op);
+
+    assert_eq!(update.account, "initminer");
+    let owner = update.owner.as_ref().expect("owner must be present");
+    assert_eq!(owner.key_auths.get(INITMINER_PUBLIC_KEY), Some(&2));
+}
